@@ -1,373 +1,218 @@
-# NBA Tools completion program
-
-Coordination file for trust projects that were **out of scope for PR #295** and
-must not be started inside it.
-
-PR #295's final bounded scope was *Phase 1A - explicit metric selection and no
-cross-metric substitution*: metric selection and aggregation integrity on the
-ranking branches that choose their metric from the query. The durable
-description of that scope lives in
-`docs/architecture/parser/leaderboard_metric_boundary.md`.
-
-Everything below is a real defect class that PR #295 does **not** fix and does
-**not** claim to fix.
-
----
-
-## Program status
-
-| Item | State |
-| --- | --- |
-| Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
-| CI-01 - trustworthy frontend verification and dependency security | **Merged** at `ed15443d5ddc3ef8982d580226eb5dc49c4c7e06` (PR #296) |
-| QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297) |
-| OPS-01 - production monitoring and dependency-security recovery | **Merged** at `c52e1cb26b2636b9609bf69a56baa43032da6e12` (PR #298) |
-| OPS-02 - `@vitest/mocker` advisory remediation | **Merged** at `b7ad7d47a0c09ccd0cf3bbde1cfba39396ceb551` (PR #300) |
-| OPS-MON-01 - cold-start response failures and false-alert policy | Deferred, unstarted (monitoring policy) |
-| CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
-| CI-SEC-01 - development-only advisory policy | **Merged** (this change) |
-| Phase 1B - compound event and filter routing integrity | **Active** |
-| Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
-| Phase 1D - filter execution receipts | Deferred, unstarted |
-| Immutable data-backed CI | Separate infrastructure decision, not taken |
-
-**CI-01** splits frontend CI into two independent verdicts so a newly published
-npm advisory can no longer mark the frontend build, lint, and test steps
-*skipped*. `frontend-verify` reports whether the code is healthy;
-`frontend-security` reports whether the dependency tree is. The audit stays a
-real check at `--audit-level=low` that fails the workflow, and project policy
-requires it green before merge — though GitHub does not currently enforce that
-mechanically (see CI-GOV-01 below). `tests/test_ci_workflow_policy.py` prevents
-the old ordering from returning and keeps verification unconditional.
-
-CI-01 is infrastructure. It changes no parser behavior, query routing, result
-contract, or frontend product behavior.
-
----
-
-## QA-01 - fail-closed Raw QA and filter-sweep signal integrity
-
-**Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297). It repairs
-two gates that reported success without producing the evidence their success
-claimed.
-
-1. `make raw-query-answer-qa` omitted `--fail-on-expectation-failure`, so the
-   repository's named Raw QA target printed failed cases and still exited zero.
-   The target now passes the flag and fails closed. Artifacts are still written
-   before exit, and the direct harness keeps its explicit report-only mode.
-2. `tools/filter_execution_sweep.py` classified every comparison as an honest
-   refusal when there was no data to compare, and exited zero - "no lies found"
-   from a run that compared nothing. Rows without a populated control are now
-   `NO_SIGNAL`, the run reports `PASS` / `PASS_WITH_GAPS` / `FAIL` /
-   `NO_SIGNAL`, and a run with no comparable rows exits 2.
-
-QA-01 is QA tooling. It changes no parser behavior, query routing, result
-contract, API behavior, frontend product behavior, NBA data, or Raw QA case
-expectation. `tests/test_qa_gate_integrity.py` runs without NBA data and pins
-both gates' exit semantics.
-
-**Immutable data-backed CI remains a separate decision.** GitHub CI does not
-carry the local NBA dataset, so the full Raw QA corpus and the data-backed
-filter sweep were deliberately not added to ordinary CI in QA-01.
-
-Phases 1B, 1C, and 1D stay deferred and unstarted.
-
----
-
-## OPS-01 - production monitoring and dependency-security recovery
-
-**Active task.** Operations only. It restores two signals that had gone
-untrustworthy after QA-01 merged.
-
-1. A sustained sequence of scheduled `Production Monitor` runs failed with
-   HTTP `410 Gone`. The workflow targeted
-   `nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app`, a single
-   deployment's URL from the Queue D acceptance receipt; that deployment has
-   since been removed, so its host answers `410` regardless of service state.
-   The tracked target is now `https://nbatools.vercel.app`, the project's
-   stable production alias, which was healthy at every probe taken during the
-   repair.
-
-   No evidence of a production outage was found. The failures are explained by
-   the dead target, and the stable alias and current production deployment were
-   healthy when probed. Continuous endpoint availability at every historical
-   failure timestamp was not directly proven and is not claimed: while the
-   monitor pointed at a host that could not serve the application, its runs
-   were a monitoring-coverage gap with unknown service state rather than an
-   outage record.
-
-   The regression test now asserts against the *parsed* workflow — the
-   executable target, and that exactly one step invokes the monitor — so a
-   correct-looking comment or a second overriding invocation cannot satisfy it.
-
-2. `frontend-security` went red on GHSA-p498-v437-472g
-   (`@humanfs/node < 0.16.8`, moderate), a transitive dev dependency of
-   `eslint@9.39.5`. Remediated by a lockfile-only update inside ESLint's
-   existing `^0.16.6` range.
-
-OPS-01 changes no parser behavior, query routing, result contract, frontend
-product behavior, NBA data, CI job architecture, audit severity policy, or
-monitoring threshold, case, or retry rule. It selects no query-integrity phase.
-
----
-
-## OPS-02 - `@vitest/mocker` advisory remediation
-
-**Active task.** Operations only.
-
-`frontend-security` went red on GHSA-82fw-gwwq-j7x9 (path traversal / arbitrary
-file read via the `@vitest/mocker` redirect mock, moderate), a transitive
-development dependency of `vitest`. The advisory's vulnerable range is
-`2.1.0 - 4.1.10` and the pinned tree resolved `4.1.10`.
-
-Remediated by a lockfile-only update inside the existing `^4.1.10` range:
-`vitest` and the six `@vitest/*` packages to `4.1.11`, plus `tinyrainbow`
-`3.1.1` as their shared transitive. `frontend/package.json` is unchanged, and
-the lockfile holds 309 packages before and after - nothing added or removed.
-
-`npm install` cannot produce this update under npm 10.9.7: it aborts in
-arborist's peer resolution (`Cannot read properties of null (reading
-'edgesOut')`) while walking `vitest`'s optional `canvas` peer.
-`--legacy-peer-deps` completes but drops eight genuinely required peer
-packages, including `@testing-library/dom`. The nine package entries were
-therefore taken verbatim from a reference resolution and spliced into the
-existing lockfile, with the root entry and package count asserted unchanged.
-`npm ci` under default (non-legacy) resolution is the proof the result is
-installable.
-
-OPS-02 changes no NBA Tools product, query, parser, filter, API,
-result-contract, or data behavior, and no CI job architecture, audit severity
-policy, or monitoring rule.
-
-### Recurrence
-
-This is the third advisory-driven `frontend-security` red in two months, all in
-development-only transitives: `brace-expansion` (patched 2026-08-03),
-`@humanfs/node` (patched 2026-09-04), `@vitest/mocker` (this item). Each was
-remediated by a lockfile-only bump. The rate is a property of a strict
-`--audit-level=low` gate over a large dev tree, not of any defect in this
-repository's code. Whether to keep absorbing it per-advisory or change the
-policy is recorded as **CI-SEC-01** below and is not decided here.
-
----
-
-## CI-SEC-01 - development-only advisory policy
-
-**Resolved.** Owner-approved 2026-09-27: scope the blocking gate to shipped
-dependencies, keep a non-blocking whole-tree audit beside it.
-
-**The problem.** `frontend-security` ran `npm audit --audit-level=low` across
-the whole dependency tree, development dependencies included. Every advisory
-published against any transitive of `eslint`, `vite`, `vitest`, `playwright` or
-`typescript-eslint` turned the workflow red until someone bumped a lockfile,
-even though none of those packages ships in the deployed bundle.
-
-Observed cost: 19 consecutive red scheduled runs for OPS-02
-(2026-09-09 to 2026-09-27), 20 for the advisory OPS-01 closed, and a
-comparable run before that.
-
-**Decision.** `frontend-security` now runs
-`npm audit --omit=dev --audit-level=low` and stays strict, unconditional and
-blocking: an advisory in a dependency that reaches a visitor's browser is
-reachable by real users. A new `frontend-security-dev` runs the whole-tree
-audit at the same threshold with `continue-on-error: true`, so toolchain
-advisories are still reported on every trigger but cannot mark the repository
-broken.
-
-`continue-on-error` is declared in the workflow, not hidden behind `|| true`,
-precisely so the policy test can assert on it.
-
-**The guard was re-pointed, not removed.** `tests/test_ci_workflow_policy.py`
-now pins the two-verdict contract and adds the invariant that **exactly one**
-audit job may fail the workflow, and that it is the production-scoped one. Six
-simulated regressions were verified to fail the suite: making the production
-audit non-blocking, making the dev audit blocking again, dropping the dev audit,
-narrowing the dev audit to production, removing `--omit=dev` from the gate, and
-raising its threshold.
-
-**Accepted risk, stated plainly.** Development-only advisories are not
-zero-risk — a compromised build tool is a real supply-chain vector. This is a
-judgement that for a solo repository with no CI secrets, a permanently-red gate
-cost more than that risk, because a red that is always red stops being read. A
-repository with deploy credentials in CI should decide differently.
-
----
-
-## OPS-MON-01 - cold-start response failures and false-alert policy
-
-**Deferred. Not the next active project.**
-
-Recorded during OPS-01, not acted on:
-
-- one direct cold `POST /query` probe returned HTTP `504`;
-- the monitor's single approved retry covers transport failures and latency
-  failures where a response was received; it does not retry a response failure,
-  and an HTTP `504` is classified as a response failure;
-- so a sufficiently cold serverless start could produce a failing run that the
-  current retry rule will not absorb;
-- deciding whether response failures should receive a bounded retry - or
-  whether this should be handled some other way - is a monitoring-policy change
-  that needs a separate owner-approved review.
-
-OPS-01 deliberately makes no threshold, timeout, case, or retry change.
-
----
-
-## CI-GOV-01 - required-check enforcement decision
-
-**Deferred governance item. Not the active next task.**
-
-Current project policy requires both `frontend-verify` and `frontend-security`
-to be green before a merge. That policy is real and binding on anyone working
-in this repo.
-
-GitHub does not currently enforce it. As of PR #296 there is no classic branch
-protection on `main` (the protection endpoint returns *Branch not protected*)
-and no repository ruleset - so no check is registered as *required*, and
-nothing mechanically prevents merging while a check is red.
-
-The accurate description of a red `frontend-security` is therefore:
-**policy-blocking and workflow-failing, but not currently enforced as a
-required GitHub merge check.**
-
-Deciding whether to configure required-check enforcement - and if so, which
-checks to require and whether to enforce for the solo maintainer - is separate
-repository-governance work. **It was deliberately not performed in PR #296**,
-which changed no branch protection and no ruleset.
-
-This item is recorded so the gap is known and deliberate rather than
-accidental. It does not block the active queue.
-
----
-
-## Phase 1B - compound event and filter routing integrity
-
-**Problem.** A clear, reasonably formatted query that combines a threshold, an
-event condition and a ranking intent can lose part of itself on the way to a
-route. The answer that comes back is confident and is not the question asked.
-
-**Priority queries.**
-
-- `teams with most games scoring 120+ and making 15+ threes since 2020`
-- `most efficient 30-point games`
-- `players with 25 points and 10 rebounds`
-- `most 40-point games while the player was injured`
-- `Lakers leading scorer while LeBron was out`
-
-**Requirement.** Preserve every requested threshold, event condition, ranking
-intent, and concrete availability filter - or refuse. No silent reduction.
-
-**Settled owner decision.** `players with 25 points and 10 rebounds` refuses.
-It names two game-level conditions and no operation over the matching games, so
-counting them would add an intent the question never stated. The accepted V1
-behavior preserves both thresholds, publishes no execution stat, and returns no
-sections. This is no longer an open decision.
-
-**Observed and recorded during the PR #295 repair.**
-
-- `field goals made and attempted leaders` refuses with
-  `leaderboard_request_unclear` and residual `["attempted"]`. The refusal is
-  correct and truthful, but the elliptical coordination ("field goals [made]
-  and [field goals] attempted") is not read as two metrics, so the sharper
-  `leaderboard_multiple_metrics_unsupported` reason is not reached.
-- `best offense and defense this season` refuses the same way, with residual
-  `["defense"]`.
-
-Both belong to compound parsing, not to metric selection.
-
----
-
-## Phase 1C - unexecuted qualifier protection across fixed-metric routes
-
-**Problem.** A route whose metric is fixed by the route itself can accept an
-extra clause it never executes, and answer anyway.
-
-**Route families.**
-
-- `team_record_leaderboard`
-- `player_occurrence_leaders`, `team_occurrence_leaders`
-- `playoff_appearances`, `playoff_round_record`
-- `record_by_decade_leaderboard`
-- `player_stretch_leaderboard`
-- `lineup_leaderboard`
-
-**Safety probes** (probes only - Phase 1C is *not* expected to define
-"depleted"):
-
-- `best team record while depleted`
-- `most playoff appearances while depleted`
-- `best finals record while depleted`
-
-**Requirement.** Stop a route from discarding an unsupported extra clause. That
-is all. Interpreting the clause is not part of this project.
-
-PR #295 pins these families only as *left alone by the metric boundary*; it
-does not audit their residual-clause behavior.
-
----
-
-## Phase 1D - filter execution receipts
-
-The work separated out of superseded PR #294. Keep it as its own future
-project: a receipt that a declared filter actually executed, rather than a
-parse-time assertion that it was recognized.
-
-Do not reintroduce `FilterExecutionLedger`, ContextVar receipt plumbing, route
-receipt decorators, or receipt validators into a metric-boundary PR.
-
----
-
-## Recorded coverage gaps (not trust defects)
-
-Found during the PR #295 total-backed alias audit, and extended by Phase 1B.
-These refuse or fail to route; none of them answers wrongly, so none is urgent.
-
-- **Compound player occurrence-count wording is not routed, though the team
-  form is.** `players with most games scoring 30+ and grabbing 10+ rebounds`
-  states an occurrence-count ranking outright - "most games" - yet reaches no
-  occurrence route, while the equivalent `teams with most games scoring 120+
-  and making 15+ threes since 2020` executes on `team_occurrence_leaders`. The
-  player form sets none of the three intent flags that route gates on. Current
-  behavior is a truthful refusal that preserves both conditions and publishes
-  no executed stat, and the pinned base refused it too, so nothing is silently
-  dropped and no wrong answer is returned. Extending player occurrence routing
-  to this wording is future coverage, to be taken with its own
-  baseline-to-candidate differential. It does not block Phase 1B trust
-  acceptance and is not a separate phase.
-
-- `games played` has no entry in the shared metric vocabulary, so
-  `games played leaders` does not route, even though `games_played` is an
-  allowed leaderboard stat. Its backing column is not a `*_total`, so a
-  `total games played` request would refuse if the alias were added. Making it
-  reachable is new metric coverage, not alias repair.
-- `3 pointers made` / `3-pointers made` are documented on the `season_leaders`
-  route but absent from the detector vocabulary, so the router cannot reach
-  them. Same class as the `three-point attempts` defect PR #295 fixed, but on a
-  per-game-backed metric and therefore outside that audit's scope.
-- `3 point attempts` / `3-point attempts` (digit-adjectival) do not resolve.
-  No sibling metric documents a digit-adjectival form, so adding one would be
-  new vocabulary rather than restoring parity.
-- *(Resolved in PR #295.)* `three-point attempts per game leaders` was stopped
-  by the broader `unsupported_concept` boundary before the metric boundary saw
-  it, because the bare phrase "attempts per game" was on the unsupported-phrase
-  list. That entry existed to catch a minimum-attempts qualifier; it is now
-  bound to a number, so the qualifier still refuses generically and the ranking
-  reaches the typed aggregation boundary.
-- The generic unsupported-phrase boundary still publishes the parser's `stat`
-  on its own refusals - it short-circuits before routing and predates the
-  truthful-refusal contract. Every remaining query it catches is genuinely
-  unrecognizable rather than a recognized ranking, so nothing is presented as a
-  metric that ran a ranking. Extending the truthful-refusal contract to the
-  generic boundary is Phase 1C-shaped work, not metric selection.
-- **Deferred metadata integrity on fixed count and occurrence routes.** Codex
-  observed that some fixed count/occurrence routes publish public metadata
-  inconsistently with the truthful-refusal contract the variable-metric
-  branches now follow. None of those routes chooses its metric from the query,
-  so none is governed by the metric boundary, and none of them is a
-  variable-metric aggregation decision. Extending the contract to them belongs
-  with **Phase 1C** (unexecuted qualifier protection across fixed-metric
-  routes), where those route families are already listed.
-- `games played` and the occurrence-count columns (`games_20p`, `wins`,
-  `losses`) are classified as `count`: only an unqualified request matches one,
-  so `total 30 point games` keeps refusing exactly as it did. Whether a season
-  count should accept "total" wording is a coverage question, not a trust one.
+# NBA Tools capability-completion queue
+
+Execution handoff updated 2026-10-02. Read `AGENTS.md` for the owner delegation
+and `ROADMAP.md` for the goal. This is the single active completion queue,
+replacing the stale trust-phase status narrative previously in this file.
+Historical detail remains in Git history and the linked PRs; this change does
+not alter old evidence or imply that unfinished features now work.
+
+## Start here
+
+**Next delivery unit: Q1, recent-game team records.** Reproduce its desired
+questions on the current checkout, implement missing behavior, verify the
+answers, and proceed through the queue. Do not start another general audit,
+create another validation workflow, or ask the owner for examples or approval
+to select a technical phase.
+
+The workflow/plan change is not Q1 implementation. All delivery units below
+remain open until their own acceptance evidence exists. An existing refusal
+expectation is a temporary safety baseline, not a reason to leave a requested
+capability unbuilt.
+
+## Verified starting snapshot
+
+Snapshot code: `878ab7e8611c7d7fcf387b1f8b09fc023bdd0dd6`.
+
+- Explicit metric-selection repair: merged, [PR #295](https://github.com/Bet-Zero/nbatools/pull/295).
+- Frontend check split and QA-gate integrity: merged, [#296](https://github.com/Bet-Zero/nbatools/pull/296), [#297](https://github.com/Bet-Zero/nbatools/pull/297).
+- Production-monitor target repair: merged, [#298](https://github.com/Bet-Zero/nbatools/pull/298).
+- Compound-event routing repair: merged, [#299](https://github.com/Bet-Zero/nbatools/pull/299), not still active.
+- Advisory remediation/scoping and version work: merged, #300-303 and #308.
+- Committed behavioral fixture and remote validation setup: merged, #304-305 and #309-310.
+- Local-path repair for two real-data tests: merged, [#311](https://github.com/Bet-Zero/nbatools/pull/311).
+- Ordinary main CI passed: [run 36988752207](https://github.com/Bet-Zero/nbatools/actions/runs/36988752207).
+- Latest inspected remote data validation: [run 36983673549](https://github.com/Bet-Zero/nbatools/actions/runs/36983673549), code `4953603a2f1c73010009da03f49d7420aebd8ee1`, generation `queue-d-production-0574735-20260716`.
+  The 361-case Raw QA expectation gate passed. The filter sweep reported
+  98 changed answers, 337 refusals, 42 unchanged/unbadged cases, 44 untestable
+  controls, zero LIED and zero ERROR. These are diagnostic classifications,
+  not a product success rate. The informational real-data suite had 1000
+  passes and two local-path failures repaired by #311.
+- No post-#311 real-data confirmation was present in the inspected snapshot.
+  Do not claim it occurred. Refresh these pointers when new evidence exists.
+
+The generation name is not proof of data freshness. Inspect actual coverage
+when freshness matters. Ordinary CI does not replace real-data verification.
+
+## Validation already available
+
+Use the existing manual `r2-real-data-validation.yml` and `r2-validation`
+environment; credentials are already wired. Pass the exact candidate SHA as
+its requested ref so all jobs read the same code, and retain the one pinned
+data generation. Never print secrets or duplicate workflows/credentials.
+
+At the next relevant integration run, confirm the #311 fix along with the
+candidate. That confirmation is not a reason to stop Q1 implementation or to
+repeat the full remote corpus for this documentation-only change. If remote
+access requires owner approval, identify that exact access step and continue
+fixture-backed implementation in the meantime.
+
+## Q1 - Recent-game team records
+
+State: **open; next**. This is a desired-answer task, not a refusal task.
+
+Desired examples (fixed historical season for verification):
+
+- `Lakers record last 10 games in 2023-24`
+- `what was the Lakers record over their last 10 games in 2023-24?`
+- `Celtics record last 5 games in 2023-24`
+
+Acceptance:
+
+- Return the correct win/loss record over the named team's most recent N
+  regular-season games within that season, with the sample/time scope visible.
+- Independently select/order the raw game rows and calculate wins/losses;
+  compare the returned values and counts. Use fixed fixtures for deterministic
+  mechanics and a pinned real generation for NBA numeric confirmation.
+- Exercise another team, another N, a shortened available sample, punctuation,
+  and unseen wording. Do not claim unsupported qualifier combinations work.
+- Preserve ordinary season records and existing meaningful qualifiers. Inspect
+  the route and shared filter helpers rather than add a string-specific path.
+- Update only the relevant prior refusal expectations after correct support is
+  proved; preserve separate missing-data/invalid-input safety tests.
+- Verify natural input through API and the existing rendered result, update the
+  query catalog, get independent semantic review, and follow merge/deploy rules.
+
+Likely entry points: team record command, natural-query routing/finalization,
+shared windows, `tests/test_filter_execution_integrity.py` and existing record
+coverage. Choose exact implementation/test files from live code, not this list
+alone. Use focused query/engine tests during iteration, the appropriate broad
+candidate gate, relevant Raw QA, and remote verification at integration.
+
+## Q2 - Ordinary stat wording and compound player counts
+
+State: **open; follows Q1**. Split into coherent PRs if the causes differ.
+
+Desired examples:
+
+- `games played leaders in 2023-24`
+- `3-pointers made leaders in 2023-24`
+- `players with most games scoring 30+ and grabbing 10+ rebounds in 2023-24`
+- `which players had the most 30 point and 10 rebound games in 2023-24?`
+
+Use the established metric/aggregation semantics, making totals versus
+averages explicit in the result. For occurrence rankings, count games meeting
+both conditions; do not rank one condition's statistic or a season average.
+Check values, ties/order, alternate names/thresholds, and untouched sibling
+queries. A phrase already supported is a positive control, not work to rebuild.
+Complete the same API/UI/data/regression acceptance path as Q1.
+
+The genuinely ambiguous `players with 25 points and 10 rebounds` does not state
+an operation or period. Preserve or improve clarification without pretending
+it is the same request as an explicit most-games ranking. No blanket claim
+that compound player questions are invalid.
+
+## Q3 - Correct full player names across data conditions
+
+State: **open; may run independently of Q1/Q2**.
+
+Reproduce the wrong-name findings reported in #304. Exact full-name matching
+already takes precedence when the data-backed index contains the name; do not
+claim universal live failure from the reported incomplete-data case.
+
+Desired examples: `Karl-Anthony Towns stats in 2023-24`,
+`Nikola Jovic stats in 2023-24`, plus their accented/canonical variants.
+
+Deliver actual answers for the correct named players where covered. Verify the
+identity and numbers, including collisions with Carmelo Anthony and Nikola
+Jokic. Under missing/incomplete coverage, prevent a partial alias from returning
+another player's stats; that guard is necessary but does not replace the
+positive covered-data tests. Do not fix this only by avoiding those players in
+the fixture or adding one more special-case alias.
+
+## Q4 - Complete meaningful qualifier combinations
+
+State: **open**. Continues the unfinished work formerly labeled Phase 1C.
+
+Inspect the existing sweep's 42 flagged cases and recorded extra-clause gaps.
+Do not turn them mechanically into 42 features: a valid filter can leave the
+answer unchanged, and combinations such as a team being 'a starter' may be
+ill-defined. Verify intent, dataset coverage, row selection, and calculations.
+
+For coherent desired questions, implement the missing qualifier and keep the
+item open until it answers. For invalid/ambiguous combinations, use dedicated
+negative/clarification tests. Use discriminating controls and independent
+calculations; a changed fingerprint alone does not prove correctness.
+
+Start with legitimate examples already recorded in the repo, such as player
+stretch starter/bench scope and minimum-sample constraints where meaningful.
+Check record/playoff/decade/stretch routes without treating the old route list
+as a reason to ignore related concrete defects. Handle required supported
+combinations at their real data grain. Do not automatically build the deferred
+Phase 1D receipt framework; use existing shared mechanisms unless a specific
+remaining defect makes more structure necessary.
+
+## Q5 - Deliver remaining data-backed answer families
+
+State: **open**. Use existing exploratory samples and documented gaps, not new
+owner homework. Start independently where data is available.
+
+Initial order: team bench scoring; team championship history and then player
+ring counts with their distinct membership requirements; clutch/period queries;
+lineups/on-off and other recorded supported-intent gaps. Reorder for dependency
+or verified user value, recording the reason rather than seeking routine
+permission. Reuse implemented rookie/sophomore and other families; do not
+rebuild them simply because they appear in old plans.
+
+For each family, add a bounded set of desired questions and concrete acceptance
+checks to this queue before implementing, then carry data -> calculation ->
+natural input -> output -> verification -> deployment through as one delivery
+unit. Investigate sources rather than stopping at 'dataset absent'. Do not
+infer player rings from a team-only champions table, infer injury status from
+missed games, or claim full history from incomplete seasons.
+
+An unavailable source, materially new cost, or access dependency is a concrete
+blocker to report, not feature completion. Keep the desired question visible
+and proceed with independent work. No unlimited spending or broadening of
+credential access is authorized by this queue.
+
+## Q6 - Verify the actual delivered app and operation
+
+State: **open; targeted deployed checks also belong in every prior unit**.
+
+Confirm the deployed revision/dataset, actual current-through coverage, source
+refresh and season rollover, and representative API/browser answers. Measure
+real response times and fix observed bottlenecks/timeouts; do not soften a
+monitor to conceal them. Reuse the existing deployment/monitoring path.
+
+Complete a bounded everyday-question acceptance set drawn from Q1-Q5 and the
+existing product promise. Required unanswered questions cannot pass by
+refusing. Preserve any open later expansion list and distinguish 'this release
+batch delivered' from 'all NBA questions supported'. Naming/domain/launch
+publicity decisions are not prerequisites for technical delivery.
+
+## Recording progress without another framework
+
+For each unit, update its state and append a compact result here or link its PR:
+
+```text
+Now answers: actual examples and capability.
+Still unfinished: desired questions, dependency, and next action.
+Verification: code SHA, data generation, numeric checks, API/UI checks,
+              applicable tests, independent reviewer (agent or human).
+Delivery: PR/merge and deployed verification, or explicitly pending.
+Next: exact action; normally no owner action needed.
+```
+
+Do not invent review states in existing QA schemas. Agent review is recorded as
+agent review in the PR/queue, not as historical human acceptance. Do not mark a
+whole unit complete after containment or one passing parser example. Keep the
+original desired examples and add representative unseen variations. Do not
+remove difficult cases to improve a coverage number.
+
+## Parked maintenance, not a serial prerequisite
+
+Required-check enforcement and monitor retry-policy changes remain separate
+maintenance decisions. Keep current blocking checks and security/privacy rules.
+Batch low-value docs/version/toolchain housekeeping instead of interrupting
+capability delivery. Only advance a framework/refactor task when its concrete
+benefit to an active answer capability justifies it.

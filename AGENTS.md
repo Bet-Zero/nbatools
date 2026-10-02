@@ -1,615 +1,224 @@
 # AGENTS.md
 
-This file tells coding agents how to work in the `nbatools` repo.
+Instructions for coding agents working in `Bet-Zero/nbatools`.
 
 ## Project goal
 
-`nbatools` is a **UI-based NBA search app with text input**.
+NBA Tools is a web-based NBA statistics search app. A person asks a normal
+basketball-statistics question in ordinary language and gets the correct,
+properly scoped answer. The shared engine also serves the API and CLI.
 
-The repo has three consumer surfaces: a CLI (development/power-user), a FastAPI HTTP layer, and a React + TypeScript + Vite web UI. The CLI and web UI are both thin presentation layers over a shared query engine.
+**Deliver useful answers. Do not mistake making an unsupported answer safe for
+implementing the requested capability.**
 
-That means:
+## Owner delegation and completion policy
 
-- core logic must remain **UI-agnostic**
-- natural query behavior must remain **transport-agnostic**
-- CLI wrappers should stay thin
-- the React frontend should stay thin — fetch, render, no business logic
-- machine-readable outputs must stay stable for all consumers (CLI, API, UI)
+Owner direction updated 2026-10-02. This section supersedes older instructions
+that make routine query review, technical prioritization, phase selection, or
+build-versus-refuse decisions an owner dependency. It changes the workflow,
+not the truth of historical evidence or the current implementation.
 
-## Working style
+- The owner supplies product intent and may contribute examples. Agents own
+  input generation, diagnosis, data research, implementation, numerical
+  verification, regression coverage, prioritization, and routine coordination.
+- For a desired, coherent question, `unsupported`, `filter_not_supported`,
+  `unrouted`, missing data, or a safer refusal means **capability unfinished**.
+  A containment repair can be recorded separately, but cannot close the feature
+  or count as an answered question.
+- A genuinely correct zero count or empty search result is an answer, not a
+  refusal. Verify data coverage and the calculation before accepting it.
+- Negative tests are for genuinely invalid requests, unresolved ambiguity,
+  unsupported data conditions, or explicit product exclusions. A legitimate
+  feature missing from today's implementation is not a bad input. Keep its
+  temporary safety regression separate from its open delivery requirement.
+- Current-boundary documents and historical `expected_unsupported` cases
+  describe what exists, not a permanent veto on implementing desired features.
+  Preserve protections until their replacement is implemented and verified.
+- Clarify genuinely ambiguous meaning; do not invent metrics, silently omit
+  clauses, substitute subjects, or force people to memorize special wording.
+  Normal shorthand, punctuation, aliases, and grammatical variation are not
+  reasons to label a clear request invalid.
+- Ask the owner only about genuinely unresolved product intent, necessary
+  account access/consent, meaningful new spending, or consequential actions
+  outside authorization. Resolve implementation questions from the repo and
+  verified data. Bring a recommendation with any real owner decision.
 
-Agents working in this repo should:
+## Task-based work queues
 
-- prefer small, targeted changes over broad rewrites
-- preserve existing public behavior unless the task explicitly changes it
-- keep parser logic, command logic, data processing, and formatting separated
-- avoid editing unrelated files while implementing a feature
-- tighten duplication when touching an area that already shows repeated logic
-- leave the repo in a cleaner state than they found it when reasonable
+`ROADMAP.md` defines the product direction. The current temporary coordination
+file is `working/nba-tools-completion-program/README.md`; use it until the
+completion program closes, then retain the continuing direction in the roadmap.
+This pointer is for active execution, not evidence of shipped behavior.
 
-Do not introduce architecture churn without a concrete reason tied to maintainability, correctness, or long-term UI/API readiness.
+The working loop is:
 
-## What this repo is optimizing for
+```text
+collect desired questions -> verify answers -> group gaps by cause
+-> implement capability -> verify unfamiliar variants and real results
+-> retain regression checks -> merge/deploy -> continue
+```
 
-The current phase is about building a durable NBA search engine that powers both the CLI and the web UI.
+1. Check the current branch, open PRs, queue, and relevant existing code before
+   adding anything. Do not create a second workflow or parallel source of truth.
+2. Start the next unfinished delivery unit. Reproduce its concrete examples;
+   do not restart a whole-project audit or request a new owner query battery.
+3. Group common causes, but keep PRs coherent and reviewable. Fix reusable
+   behavior instead of hardcoding names, query strings, or expected answers.
+4. The maker implements; a checker independently verifies meaningful query,
+   calculation, or data-semantic changes. A self-review is not independent.
+   Checker findings must identify a reproducible defect or material missing
+   evidence. Optional cleanup is non-blocking.
+5. Repair actionable findings directly. Do not send routine maker/checker
+   disagreements or review prompts through the owner. If a separate checker
+   cannot be invoked, leave one exact handoff and continue independent work;
+   never fabricate its approval.
+6. Update the same queue with what actually landed, remaining blockers, and the
+   exact next action. Continue through authorized work without a fresh prompt
+   at every task boundary. A session limit requires a resumable handoff, not a
+   new planning phase or an unsupported promise of background execution.
 
-Priority order:
+### Completion-level rule
 
-1. correct data behavior
-2. stable command/query semantics
-3. test coverage
-4. reusable output contracts
-5. CLI and UI presentation
-6. frontend iteration
+A desired capability is complete only when natural input reaches the intended
+computation; all meaningful requested conditions are honored; the answer and
+its presentation are correct; applicable automated/independent checks pass;
+and the deployed path is verified when changed. Parser recognition, route
+registration, containment, documentation, deferral, and green test totals are
+not substitutes. Report implementation and deployment separately when only
+one is complete. A blocked delivery item stays open with a concrete dependency;
+work on other independent items continues.
 
-## Change rules
+## Working style and architecture
 
-### General rule
+- Prefer targeted, reusable changes. No rewrite, new framework, extra receipt
+  system, or general cleanup project without a concrete delivery benefit.
+- Keep core logic UI-agnostic and transport-agnostic. CLI wrappers are thin;
+  React fetches and renders. Computation, filtering, and parsing belong in the
+  engine, not the frontend or CLI entrypoints.
+- Keep parsing/routing, command computation, data processing, and formatting
+  separated. `natural_query.py` orchestrates; substantial computation belongs
+  in command/helper modules. Avoid duplicate branches and silent player/team
+  behavior forks when touching shared behavior.
+- Support full questions, search fragments, and compressed shorthand. Read
+  `docs/operations/parser_routing_growth_guardrails.md` for route-collision
+  and parser-structure details. Apply those guards without turning temporary
+  unsupported states into the product goal.
+- Preserve public contracts unless intentionally extending them; update all
+  affected consumers. Follow `docs/operations/feature_promotion_rules.md`.
+- Do not claim shipped behavior from docs alone. Keep `query_catalog.md` and
+  relevant current-state/reference docs aligned with verified changes.
 
-When adding or changing a feature, agents should usually follow this order:
+## Data placement and dataset-structure rule
 
-1. implement or extend the underlying structured behavior
-2. wire or update natural query routing
-3. add or update tests
-4. update docs for verified shipped behavior
+Preserve the raw/processed/derived lifecycle and each dataset's grain. Do not
+silently repurpose canonical data, mix game/period/stint grains, or add ad hoc
+files without consumers and a contract. New or extended data needs a source,
+grain, join keys, coverage/trust rules, storage location, consumer, and honest
+missing-data behavior, documented in `docs/reference/data_contracts.md`.
 
-A feature should not be treated as shipped if docs changed but tests or behavior did not.
-
-### Command-layer rule
-
-Do not put business logic directly in CLI entrypoints or Typer command wrappers.
-
-- `src/nbatools/cli.py` and `src/nbatools/cli_apps/*` are for command registration, argument handling, and export plumbing
-- real query or analytics logic belongs in `src/nbatools/commands/*`
-
-### Natural query rule
-
-`src/nbatools/commands/natural_query.py` is a routing/orchestration layer.
-
-It may contain:
-
-- intent detection
-- alias resolution
-- route selection
-- natural language parsing helpers
-- orchestration across structured commands
-
-It should **not** become an unmanaged dumping ground for unrelated business logic.
-
-If a feature requires substantial new computation, reusable filtering logic, or domain-specific analysis, move that logic into a dedicated command/helper module.
-
-For parser work, treat all of these as first-class input styles:
-
-- full question form
-- search-bar / fragment form
-- compressed shorthand form
-
-Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. Use `docs/reference/query_catalog.md` for the shipped query inventory, `docs/reference/current_state_guide.md` for verified behavior, and the "Task-based work queues" section below for scheduled work.
-
-### Frontend-layer rule
-
-The React frontend in `frontend/` is a presentation layer.
-
-It may contain:
-
-- typed API client code (`frontend/src/api/`)
-- React components for rendering results (`frontend/src/components/`)
-- UI state management (loading, error, result)
-- styling (component CSS modules and shared files under `frontend/src/styles/`)
-
-It must **not** contain:
-
-- business logic, filtering, or analytics
-- data transformations that belong in the engine
-- query parsing or routing decisions
-
-The frontend calls the API and renders what it gets back. If a UI feature requires new data, add it to the engine/API response — do not compute it client-side.
-
-After any frontend source change, rebuild with `cd frontend && npm run build` so the FastAPI-served build stays current.
-
-### Duplication rule
-
-When touching duplicated route branches, duplicate post-processing, or repeated helper logic, agents should prefer cleanup instead of adding a third copy.
-
-Do not knowingly leave behind:
-
-- dead branches
-- duplicate route handling
-- one-off compatibility hacks with no comment or cleanup plan
-- silent behavior forks between player/team paths unless justified
-
-### Data placement and dataset-structure rule
-
-Data changes must preserve the repo's intentional dataset structure.
-
-- New saved data is allowed only when it cleanly fits the lifecycle model (`raw`, `processed`, `derived`) and has a documented contract.
-- Do not overwrite, silently repurpose, or quietly broaden canonical datasets to carry unrelated semantics.
-- Do not mix lifecycle layers (for example, play-by-play-derived outputs into canonical raw game-log tables).
-- Do not blur grains inside existing tables (for example, game-level, period-level, stint-level, and play-by-play-derived rows in one contract without an explicit approved design).
-- Do not add ad hoc files or one-off tables without defined consumers and contract coverage.
-
-If a new source is approved, implementation must document before broad rollout:
-
-- dataset name
-- lifecycle layer (`raw`, `processed`, or `derived`)
-- grain
-- join keys
-- trust fields and coverage semantics
-- fallback behavior when coverage/trust is missing
-- why the chosen placement is structurally correct
-
-Prefer a dedicated dataset and backfill path over mutating unrelated existing tables unless there is a strong documented reason recorded in the task preflight and promoted into the durable data contract.
+Use the configured data source, not laptop-only paths for runtime datasets.
+Use a fixed code revision and one immutable data generation for comparisons.
+Test data is not NBA evidence. Never publish fixtures as real stats, fabricate
+coverage, or infer complete history from a partial dataset. Follow
+`docs/operations/deployment.md` for generation publication and deployed checks.
 
 ## Testing expectations
 
-Every meaningful feature change should include appropriate tests.
+Tests protect delivery; test totals are not product-completion scores.
 
-### Test commands
-
-Use the Makefile targets — do not invent ad hoc pytest invocations.
-
-| Command               | What it does                                                                   | When to use                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `make test-impacted`  | Runs only tests whose file-level dependencies changed (pytest-testmon, serial) | Default for **localized** changes — small, leaf-level edits in a single module               |
-| `make test-preflight` | All tests except `slow` (parallel via xdist, no testmon)                       | Default for **cross-cutting** changes, or any time the rules below apply                     |
-| `make test`           | Full regression suite (parallel via xdist)                                     | Maximum-confidence validation: before merging, after broad changes, or explicitly risky work |
-
-#### When to skip `make test-impacted`
-
-Testmon runs serial (`-n0`). When it selects a large number of tests, it costs more wall time than `make test-preflight` running in parallel. Skip `test-impacted` and use `make test-preflight` instead when **any** of these apply:
-
-- The diff touches a high fan-in module: `src/nbatools/query_service.py`, `src/nbatools/commands/natural_query.py`, parser core, the API layer, or shared fixtures/conftest files.
-- The diff exceeds ~50 lines in a single `src/` file.
-- A previous `test-impacted` run on the same change selected more than ~300 tests.
-- Data files, environment variables, or dynamically loaded modules changed (testmon does not track these).
-
-For these cases, use `make test-preflight` (parallel, broad). If you also want a tight iteration loop first, run the matching domain slice (`make test-query`, `make test-api`, `make test-parser`, etc.) — these run the whole slice, not the testmon subset.
-
-#### Bail out fast when `test-impacted` runs slow
-
-Testmon should complete a small-change run in well under a minute. If it has not finished within **60 seconds**, or if its progress indicator is climbing slower than ~10% per minute, **kill it and use a focused pytest invocation instead** — do not "wait it out." This is the most common cause of agent loops dragging from minutes to hours.
-
-Replace the stalled `test-impacted` with a direct pytest call on the test files for the changed code, e.g.:
-
-```bash
-.venv/bin/pytest tests/test_<changed_file>.py -n0
-```
-
-Or run the matching domain slice (`make test-query`, `make test-api`, etc.). Either is sufficient for local "is my change sane" feedback.
-
-#### CI is the backstop — local tests are for fast feedback
-
-CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend verification (locked install/build/lint/test), frontend dependency security (locked install/audit), and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
-
-- Run focused pytest on the directly-changed test files, **or** the matching `make test-<domain>` slice.
-- Push the PR. CI runs the comprehensive suite in parallel while you move on.
-- Trust CI to catch what focused tests miss.
-
-Only run `make test` or `make test-preflight` locally when CI is unavailable, when you need maximum confidence before pushing (e.g., a risky cross-cutting change), or when investigating a CI-only failure.
-
-### Domain subset targets
-
-Run a specific subsystem's tests regardless of file changes:
-
-| Command            | What it runs                                                  |
-| ------------------ | ------------------------------------------------------------- |
-| `make test-unit`   | All tests except `needs_data` and `slow` — fast and data-free |
-| `make test-parser` | Parsing helpers, boolean parser, entity resolution            |
-| `make test-query`  | Natural query routing, intent detection, orchestration        |
-| `make test-engine` | Core command computation, metrics, records, streaks, pipeline |
-| `make test-api`    | HTTP API layer                                                |
-| `make test-output` | Formatting, result contracts, export                          |
-
-These targets do **not** use `--testmon`. They always run every test with the marker.
-
-### Choosing a test command based on what changed
-
-| Code area changed                      | Recommended command                                               |
-| -------------------------------------- | ----------------------------------------------------------------- |
-| A single small command module          | `make test-impacted` (testmon catches it)                         |
-| `natural_query.py` parsing helpers     | `make test-parser`, then `make test-preflight`                    |
-| `natural_query.py` routing logic       | `make test-query`, then `make test-preflight`                     |
-| `query_service.py`                     | `make test-query` and `make test-api`, then `make test-preflight` |
-| A command module + NQ routing together | `make test-engine`, then `make test-preflight`                    |
-| `api.py` or API response shape         | `make test-api`, then `make test-preflight`                       |
-| `format_output.py` or result contracts | `make test-output`, then `make test-preflight`                    |
-| Broad refactor or unclear scope        | `make test-preflight` (or `make test` for maximum confidence)     |
-
-### Testmon + marker interaction
-
-`pytest --testmon -m parser -n0` runs impacted tests that are also `parser`-marked.
-This is an **intersection** — fewer tests than either flag alone.
-Agents may combine them manually for narrow, fast feedback.
-The Makefile subset targets intentionally avoid `--testmon` so they always run
-the full slice.
-
-**Workflow for agents:**
-
-1. First, check the "When to skip `make test-impacted`" rules above against your diff. If any apply, jump to step 4.
-2. Otherwise, while iterating, run `make test-impacted` for fast feedback on small, localized changes.
-3. If the change is localized to a known subsystem, also run the matching `make test-<domain>` target. Steps 2–3 are the normal "done" signal for ordinary localized work.
-4. Run `make test-preflight` for cross-cutting changes, high fan-in edits (`query_service.py`, `natural_query.py` routing, parser core, API layer, shared fixtures), diffs >~50 lines in one `src/` file, or any time `test-impacted` is selecting hundreds of tests.
-5. Run `make test` only for maximum-confidence validation — before merging, or when even `test-preflight` is known to be unreliable for the change (dynamic imports, data file changes, monkey-patching).
-
-Testmon tracks file-level dependencies. It does **not** detect changes in data files, environment variables, or dynamically loaded modules. When in doubt, run the full suite.
-
-### Minimum expectations by change type
-
-- parsing change -> parser tests
-- output behavior change -> smoke tests
-- new calculation or metric -> formula/unit tests
-- export behavior change -> export tests
-- regression fix -> regression test covering the bug
-
-### Required mindset
-
-- do not claim a feature is supported just because one manual example worked
-- do not update README or current-state docs unless the behavior is verified
-- do not remove tests to make a failing implementation look clean
+- While iterating, use a focused test file or the relevant existing Make target:
+  `test-parser`, `test-query`, `test-engine`, `test-api`, or `test-output`.
+- Use `make test-impacted` only for small localized changes. Testmon is serial,
+  does not track data/environment/dynamic-import changes, and can select too
+  much. Stop it after 60 seconds without useful progress; use focused tests or
+  a parallel domain/preflight run instead.
+- High fan-in changes (`natural_query.py`, `query_service.py`, parser core,
+  API, shared fixtures) need broad candidate validation with
+  `make test-preflight` or `make test`, as appropriate. Do not rerun overlapping
+  full suites after every small edit. Reuse evidence for unchanged code/data.
+- `make test-unit` / `make test-ci-fast` exclude `needs_data` and `slow`.
+  `make test-preflight` excludes `slow`; `make test` selects the full suite.
+  Selection is not execution: disclose skips and unavailable data.
+- Use the committed fixture for behavioral checks. Verify numeric answers with
+  qualified real data and independently calculated expectations, including
+  scope, counts, ordering, thresholds, and displayed values. Backend `ok`, a
+  changed fingerprint, or a second agent agreeing is not enough on its own.
+- Run relevant Raw QA cases during iteration; run the full failing gate at
+  meaningful query/data integration checkpoints. The canonical command is
+  `make raw-query-answer-qa`; report-only runs are not passes.
+- Existing refusal regressions stay until verified support intentionally
+  replaces them. Do not mass-relabel cases, weaken assertions, hide failures,
+  or make desired-answer tests expect refusal to obtain a green result.
+- Frontend changes require build, lint, and tests; rebuild the FastAPI-served
+  assets. Inspect actual rendered output for changed layout/copy. Unchanged
+  renderers do not require a fresh owner screenshot tour.
+- Docs-only changes require `make docs-governance` and `git diff --check`.
+  Do not run a remote full NBA corpus solely for a documentation edit.
 
 ## CI testing policy
 
-CI is defined in `.github/workflows/ci.yml`. It implements a layered testing strategy:
+The workflow is `.github/workflows/ci.yml`; command details are in `Makefile`
+and `CONTRIBUTING.md`. Preserve these independent checks:
 
-### What runs when
+- `lint`, `docs-governance`, and `frontend-verify` (locked install/build/lint/test);
+- `frontend-security`: production-scoped audit, strict and blocking;
+- `frontend-security-dev`: whole-tree advisory audit, informational;
+- `test-fast`: data-free test selection on every PR;
+- `test-full`: full suite selection on main pushes, nightly, and dispatch.
 
-| Trigger             | `lint` | `docs-governance` | `frontend-verify` | `frontend-security` | `frontend-security-dev` | `test-fast` | `test-full` |
-| ------------------- | ------ | ----------------- | ----------------- | ------------------- | ----------------------- | ----------- | ----------- |
-| Pull request        | ✓      | ✓                 | ✓                 | ✓                   | ✓ (reports)             | ✓           |             |
-| Push to `main`      | ✓      | ✓                 | ✓                 | ✓                   | ✓ (reports)             | ✓           | ✓           |
-| Nightly (06:00 UTC) | ✓      | ✓                 | ✓                 | ✓                   | ✓ (reports)             | ✓           | ✓           |
-| Manual dispatch     | ✓      | ✓                 | ✓                 | ✓                   | ✓ (reports)             | ✓           | ✓           |
-
-- **`docs-governance`** calls `make docs-governance`, including the generated
-  repository-inventory drift check.
-- **`frontend-verify`** calls `npm --prefix frontend ci`, then
-  `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and
-  `npm --prefix frontend test`. It answers whether the frontend *code* is
-  healthy. It deliberately runs no dependency audit.
-- **`frontend-security`** calls `npm --prefix frontend ci`, then rejects any
-  low-or-higher advisory in the **shipped** dependency tree with
-  `npm --prefix frontend audit --omit=dev --audit-level=low`. It answers
-  whether code that reaches a visitor's browser carries known advisories. It
-  is strict and blocking.
-- **`frontend-security-dev`** runs the same audit across the **whole** tree,
-  development dependencies included, and is `continue-on-error: true`. It
-  answers whether the toolchain carries advisories, which is worth knowing but
-  cannot affect anyone using the app. It reports; it does not block.
-- **`test-fast`** calls `make test-unit`. Excludes `slow` and `needs_data` tests. Runs in parallel. This is the fast feedback path.
-- **`test-full`** calls `make test`. Full regression suite in parallel. This is the correctness backstop.
-
-### Frontend verification and dependency security are independent
-
-These are two verdicts, not one, and neither job depends on the other:
-
-- **Verification** asks "does this code build, lint, and pass its tests?"
-- **Security** asks "does the installed dependency tree contain published npm
-  advisories?"
-
-They are separated because they fail for unrelated reasons. An advisory
-published upstream overnight says nothing about whether the code builds, so it
-must not stop the repo from finding out. Before this split, one `frontend` job
-ran the audit *before* build/lint/test, so a single new advisory marked all
-three verification steps skipped and the code verdict was lost.
-
-#### What a red `frontend-security` means
-
-Be precise about three different claims:
-
-| Claim | True today? |
-| --- | --- |
-| **Workflow-failing** — the job fails and the CI run goes red | Yes |
-| **Policy-blocking** — this repo's policy says it must be green before merge | Yes |
-| **Technically merge-blocking** — GitHub refuses the merge | **No** |
-
-`frontend-security` is a real failing check and project policy requires it to
-be green before merge. A red result must not be ignored or bypassed. But
-GitHub does not currently *enforce* that: there is no branch protection rule or
-repository ruleset naming it as a required check, so the merge button still
-works. Treat the policy as binding anyway — the enforcement gap is a
-configuration decision recorded as **CI-GOV-01** in
-`working/nba-tools-completion-program/README.md`, not a licence to merge red.
-
-#### Why the audit is split by scope (CI-SEC-01)
-
-A third verdict exists because the first two conflated two different risks.
-
-An advisory in `react` is reachable by anyone visiting the site. An advisory in
-`vitest` is not: the test runner never ships. Between 2026-08 and 2026-09 three
-development-only advisories each held CI red for weeks — `brace-expansion`,
-`@humanfs/node`, `@vitest/mocker` — none of them caused by anything in this
-repository, and each one obscured the signal that mattered.
-
-So the gate is scoped to what ships, and the whole-tree audit reports
-alongside it:
-
-- `frontend-security` (`--omit=dev`) is **strict and blocking**. Never repair a
-  red result here by adding `continue-on-error`, appending `|| true`, raising
-  `--audit-level`, or adding blanket advisory ignores — fix the tree.
-- `frontend-security-dev` (whole tree) is **informational**. Its
-  `continue-on-error: true` is declared in the workflow, where the policy test
-  can see it, never hidden behind shell suppression. A red result here is real
-  and worth a lockfile fix when one is available in range; it is not a reason
-  to treat the repository as broken.
-
-Development-only advisories are not zero-risk — a compromised build tool is a
-real supply-chain vector. This split is a judgement that for a solo repository
-with no CI secrets the cost of a permanently-red gate exceeded that risk. A
-repository with deploy credentials in CI should decide differently.
-
-`tests/test_ci_workflow_policy.py` pins every part of this: that verification
-stays unconditional and installs from the committed lockfile, that the
-production audit stays strict, scoped and unsuppressed, that the whole-tree
-audit keeps auditing the whole tree, and that **exactly one** audit verdict can
-fail the workflow — the production one. Six simulated regressions were checked
-against it, and each one fails the suite.
-
-### How this maps to agent workflow
-
-| Agent phase                                              | Local command         | CI equivalent |
-| -------------------------------------------------------- | --------------------- | ------------- |
-| Active iteration on a small, localized change            | `make test-impacted`  | —             |
-| Active iteration on a cross-cutting / high fan-in change | `make test-<domain>`  | —             |
-| Subsystem confidence                                     | `make test-<domain>`  | —             |
-| Before declaring work complete (localized)               | `make test-impacted`  | —             |
-| Before declaring work complete (cross-cutting/risky)     | `make test-preflight` | —             |
-| PR pushed                                                | —                     | `docs-governance`, `frontend-verify`, `frontend-security`, `test-fast` |
-| Merged to main / nightly                                 | —                     | `test-full`   |
-
-Local development uses `make test-impacted` (testmon) for the fastest feedback **on localized changes**. For cross-cutting changes it degenerates into "almost the whole suite, but serial," so use `make test-preflight` (parallel) instead. CI does not use testmon — it uses `make test-unit` (marker-based exclusion, parallel) as the fast path. Testmon state is a local development optimization only.
-
-### Caching
-
-CI caches pip dependencies via `actions/setup-python`'s `cache: pip`. Testmon state (`.testmondata`) is **not** cached in CI — it is a local development tool and its state is not meaningful across CI runs from clean checkouts.
-
-### Key invariant
-
-The full regression suite (`make test`) always runs on merge to main and nightly. This is the backstop. Do not remove it.
+Do not remove the full-suite backstop, suppress failures, increase audit
+thresholds, or bypass blocking checks. Dev-tool advisories are not zero-risk;
+they are maintenance rather than automatic product-work blockers under the
+existing scoped policy. Ordinary CI remains secret-free. Real-data validation
+uses the existing manual `r2-real-data-validation.yml` workflow and dedicated
+`r2-validation` environment. Never duplicate or print credentials, move them
+into ordinary CI, or widen their scope to repair a wiring error. These docs do
+not change workflow triggers, permissions, secrets, or branch protection.
 
 ### Merge policy
 
-This is a solo-developer repo. PRs are used for CI gating and atomic per-change history, not for review. The expected workflow is:
+Use one PR per logical delivery unit. Before merging, require all applicable
+blocking checks, not just lint and test-fast, and the relevant independent
+semantic review. Routine docs/maintenance do not need a separate owner review.
+After acceptance, merge and continue the authorized queue. Do not bypass checks
+because GitHub technically permits a merge. A red advisory-only check must be
+reported as such, not confused with a blocking failure.
 
-1. Open a PR for each queue item or logical unit of work
-2. Wait for CI (`lint` + `test-fast`) to pass
-3. Merge immediately once CI is green — no review wait
+## Documentation and evidence
 
-Permanent execution rule for queue-driven work:
-
-1. A queue item is complete only when its acceptance criteria are met and required local tests pass.
-2. As soon as that queue item is complete, commit it as its own PR-sized unit, push, and open the PR immediately.
-3. Wait for CI (`lint` + `test-fast`) on that PR, then merge immediately once CI is green.
-4. After merge, immediately continue to the next unchecked item in the active queue.
-5. Do not treat one merged item as whole-workstream completion; stop only when the active queue's completion rule is met, or when the queue's current step explicitly requires review-handoff/blocker escalation.
-
-This gives us atomic per-item git history, keeps `main` green via CI, and avoids ceremony that doesn't apply to solo work. Do not leave PRs open waiting for review. Do not skip PRs in favor of direct-to-main commits unless explicitly told to.
-
-## Documentation expectations
-
-Each doc has a specific role. The `docs/` directory is organized by role:
-
-- `docs/reference/` — current-state, verified behavior, data specs
-- `docs/architecture/` — design docs, conventions, internal layers
-- `docs/operations/` — runbooks, pipeline ops, UI dev guide
-- `docs/audits/` — audit snapshots, historical docs
-
-Key docs:
-
-- `README.md` -> user-facing overview and high-level examples
-- `docs/reference/current_state_guide.md` -> verified shipped behavior only
-- `docs/reference/query_catalog.md` -> living catalog of supported question/query types and common phrasing patterns
-- `docs/architecture/project_conventions.md` -> architecture and engineering rules
-- `docs/reference/data_contracts.md` -> dataset definitions and expectations
-- `docs/operations/ui_guide.md` -> web UI setup, dev workflow, and component reference
-
-Agents should keep these boundaries clean.
-
-When adding a new doc, place it in the directory matching its role (see `docs/architecture/project_conventions.md` §10.7 for the full placement table). Update `docs/index.md` after adding or moving a doc.
-
-In particular:
-
-- do not put roadmap material into current-state docs
-- do not advertise unsupported or untested behavior in README
-- do not silently broaden claims without code and tests backing them up
-- when a meaningful shipped query capability changes, update `docs/reference/query_catalog.md` in the same pass so the repo keeps a living inventory of supported question types and phrasing patterns
+Current behavior belongs in `docs/reference/`, architecture in
+`docs/architecture/`, runbooks/policy in `docs/operations/`, retained historical
+audits in `docs/audits/`. Keep the docs index current when adding/moving docs.
+Use `docs/operations/working_and_archive_policy.md` for task-artifact lifecycle.
+Keep one active queue rather than several conflicting status narratives.
 
 ### Raw QA product-review rule
 
-For public Raw QA corpus waves, run the `public_query_acceptance` slice and
-inspect its generated `product_review.md` artifact. Raw case counts and green
-machine expectations do not prove family-level public acceptance.
+Inspect representative outputs and the generated product review for relevant
+public capability changes. Record machine verification and independent agent
+review separately. Historical human acceptance stays historical. Never write
+`human_review_complete`, a named human reviewer, or an owner acceptance receipt
+for work a human did not review.
 
-- Use `qa/raw_query_answer_acceptance_families.yaml` as the feature-family
-  registry.
-- Keep `acceptance.no_broad_fallback: true` backed by explicit route/status and
-  scoped or unsupported-boundary assertions.
-- Include the generated `outputs/raw_query_answer_qa/<run_id>/product_review.md`
-  path in the return package.
-- Declare one review state: `machine_only`, `human_review_pending`,
-  `human_review_complete`, or `human_review_complete_with_followup`.
-- Do not mark a family public accepted unless the variant matrix is resolved
-  and representative outputs were actually human-reviewed.
+The older Raw QA schema/runbooks retain human-review/closure fields. They still
+mean what they say; they no longer assign routine capability review to the
+owner under the 2026-10-02 delegation. Record agent verification in the PR/active
+queue without inventing a schema value. Legacy `human_review_pending` alone is
+not a routine engineering stop. Do not bypass genuine data, numerical, or
+regression failures. Human launch/branding decisions remain separate.
 
-See `docs/operations/raw_query_answer_qa.md`.
+### Owner updates
 
-### Return-package dependency rule
-
-Return packages are handoff/evidence receipts, not durable source-of-truth docs.
-Durable product, release, runbook, reference, architecture, and policy facts
-must be promoted into `docs/`.
-
-- Return packages are task-scoped working documents under the relevant tracked
-  `working/<task-slug>/` folder while a task is active. They are not durable
-  docs and not their own top-level folder.
-- Before completing a task, promote durable facts into `docs/` as needed, then
-  move the task folder to ignored top-level `archive/<task-slug>/`. Archived
-  working files are historical/local only and not source of truth.
-- Keep the existing top-level `return_packages/` ignore rule only as legacy
-  migration protection. Do not create new standalone return-package folders.
-- Do not use exact return-package paths in durable docs as primary evidence for
-  current behavior, release readiness, parser/routing policy, runbook behavior,
-  data contracts, result contracts, or UI behavior.
-- Exact return-package links in durable docs are allowed only as temporary
-  active-workstream handoff references. Mark them as temporary and name the
-  cleanup trigger.
-- At workstream closure, replace exact return-package dependencies with durable
-  doc or generated-output references before treating the workstream as closed.
-- Return-package cleanup is a separate explicit pass. Do not move, rename,
-  archive, or delete return packages as a side effect of an unrelated docs or
-  feature wave.
-- Before cleaning up return packages, scan `docs`, `README.md`, and `AGENTS.md`
-  for exact package references and remove or replace those dependencies in the
-  same cleanup wave.
-
-### Task-based work queues
-
-Active workstreams may use sequenced, PR-sized work queues. These are task
-coordination artifacts, not durable product documentation. Keep them in the
-tracked task workspace governed by `docs/operations/working_and_archive_policy.md`.
-
-When asked whether "the plan" is done, interpret that as the whole named
-workstream unless the user explicitly names a narrower subplan. Closed
-subplans, completed queues, explicit deferrals, placeholders, and parser-only
-completion do not answer overall completion. Follow the active continuation
-path named by the current task queue.
-
-#### How it works
-
-- The **task plan** defines phases, scope, guardrails, and direction. It stays stable across a phase.
-- The **active phase's work queue** contains the current sequenced items, each with acceptance criteria and test commands. It changes continuously as items complete.
-- The **final item of each queue** must either draft the next queue/phase or write an explicit review-handoff that names the files/artifacts to review and the immediate next action after review.
-
-#### Completion-level rule
-
-Task plans must distinguish between:
-
-- **parser/query-surface completion** — parser recognition, slot extraction, routing, and docs/tests for the surface are in place
-- **execution/data completion** — the user-facing query family returns execution-backed results for the documented product boundary, or the family is explicitly out of scope by documented product decision
-- **product/capability completion** — parser/query-surface completion and execution/data completion are both true, or the capability is explicitly out of scope by documented product decision
-
-Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. Explicit deferral is a tracked open state unless a documented product decision marks the family out of scope. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
-
-#### Agent workflow
-
-To pick up scheduled work on a phase-based plan, use this prompt:
-
-> Read the relevant plan doc and the active work queue it explicitly identifies as next. Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires, commit as a PR-sized unit, open the PR immediately, wait for CI, merge once green, then continue to the next unchecked item.
-
-The active queue is the queue named by the plan as the current continuation step. Do not infer global product completion from the absence of unchecked items in a subsystem-only queue. No separate prompt is needed for phase transitions as long as the current queue's final task drafts the next queue or writes the explicit review-handoff.
-
-#### Keeping plan and queue in sync
-
-If phase work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same session as the queue item that triggered the change. Plan and queue should not drift apart silently.
-
-## Output and interface expectations
-
-Outputs in this repo serve multiple consumers:
-
-- CLI pretty output
-- raw/export output (CSV, TXT, JSON)
-- web UI (React frontend consuming the API)
-- any future API clients
-
-Agents should treat raw command output as part of the engine contract.
-
-Guidelines:
-
-- pretty formatting is presentation only
-- structured/raw outputs must remain machine-readable
-- the React UI already consumes the same `QueryResponse` envelope the API returns
-- avoid coupling core logic to terminal-only or browser-only assumptions
-- if the UI needs a value that only exists in pretty CLI output, add it to the structured result
-
-## Assumptions agents must not make
-
-Agents must **not** assume:
-
-- the CLI is the only consumer of engine output
-- current docs are automatically correct
-- one passing example means broad support
-- all logic belongs in `natural_query.py`
-- all data will remain CSV forever
-- a refactor is justified just because it feels cleaner
-- frontend changes don't need a rebuild (`npm run build`)
-- the React UI should contain business logic
-
-CSV + pandas is the current local-first implementation model. That is acceptable for now. Any storage-layer change should be justified by a real need, not novelty.
-
-## Preferred implementation mindset
-
-When in doubt, optimize for:
-
-- explicitness over cleverness
-- correctness over breadth
-- reusable internals over CLI-only shortcuts
-- stable contracts over ad hoc output tweaks
-- documented and tested behavior over implied behavior
-
-## If adding a new feature
-
-Use this checklist:
-
-- Does the behavior belong in an existing command, or does it need a new one?
-- Is the new behavior expressible in structured form?
-- Does natural query routing map cleanly to that structured behavior?
-- Are parser tests updated if parsing changed?
-- Are smoke tests added if output/behavior changed?
-- Are docs updated only after verification?
-- Does this move the repo toward a reusable engine?
-- If changing the API response shape, is the React frontend updated to handle it?
-- If changing the frontend, was `npm run build` run to update the served assets?
-- If the shipped query surface changed, was `docs/reference/query_catalog.md` updated so the repo’s living query inventory stays current?
-
-If a feature does not improve the reusable engine or its consumers, rethink the implementation.
-
-## Frontend file layout
-
-```
-frontend/
-  src/
-    api/
-      client.ts         # Typed fetch wrappers (fetchHealth, postQuery, etc.)
-      types.ts          # TypeScript interfaces matching the API response envelope
-      savedQueryTypes.ts # Saved-query persistence contracts
-    components/
-      QueryBar.tsx       # Text input + submit
-      SampleQueries.tsx  # Pre-filled example query buttons
-      EmptyState.tsx     # Welcome state shown before first query
-      QueryHistory.tsx   # In-session query history list
-      FreshnessStatus.tsx # Collapsible data freshness panel (status, current_through, details)
-      ResultEnvelope.tsx # Envelope metadata (status, route, notes, caveats)
-      NoResultDisplay.tsx # No-result and error state display
-      QueryFeedback.tsx  # Deferred feedback UI boundary
-      results/
-        ResultRenderer.tsx       # Result-pattern dispatcher
-        config/routeToPattern.ts # Route-to-display-pattern registry
-        patterns/                # Query-class presentation patterns
-        primitives/              # Shared result display primitives
-    design-system/       # Reusable UI primitives and tokens
-    hooks/
-    storage/
-    styles/
-      global.css
-      tokens.css
-    test/
-    App.tsx              # Main app component — wires state + components
-    App.module.css       # App-scoped styles
-    InternalRoutes.tsx   # Local/preview review surfaces
-    main.tsx             # React entry point
-  vite.config.ts         # Dev proxy + build output path + vitest config
-```
-
-Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI.
+Lead with: **Now answers; Still unfinished; Verification; Next; Needed from
+you (normally nothing).** Explain actual examples in basketball language.
+Containment may be mentioned as a limitation removed, never celebrated as a
+completed desired feature. Keep technical receipts in the PR, not in owner
+homework. Report attempted/blocked work honestly.
 
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+When available, use the existing graph for relevant code navigation: scoped
+query/path/explain before a full report. Use its wiki index for broad navigation.
+Expected dirty graph output is not itself a blocker. Refresh the graph after
+code changes when the tool is available; do not make installation or graph
+cleanup a new dependency for this delivery program.

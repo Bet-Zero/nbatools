@@ -1,9 +1,21 @@
+# Claude startup
+
+Before planning or implementing work in `Bet-Zero/nbatools`, read `AGENTS.md`.
+It is the shared execution contract, including the owner's 2026-10-02 direction.
+Read `ROADMAP.md` for the destination and the active queue it names for the next
+unfinished delivery unit. Current execution starts at
+`working/nba-tools-completion-program/README.md`.
+
+Desired questions must become correct answers. A safe refusal does not complete
+a requested capability. Agents own routine diagnosis, implementation, numerical
+verification, review coordination and continuation; do not make the owner grade
+query batches or choose technical phases. Follow the shared instructions rather
+than an old chat handoff or historical acceptance label.
+
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+Use the existing knowledge graph when available. Prefer scoped `graphify query`,
+`graphify path`, and `graphify explain` for code navigation; use the wiki index
+for broad navigation and the full report only when needed. After code changes,
+refresh it with `graphify update .` when available. Graph installation/cleanup
+is not a prerequisite to the capability-delivery queue.
