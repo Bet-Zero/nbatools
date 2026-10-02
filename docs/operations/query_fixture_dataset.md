@@ -129,6 +129,18 @@ R2 generation.
 What the fixture changes is that the behavioural half of the trust surface no
 longer depends on a dataset that CI does not have.
 
+## The real dataset still runs, now automatically
+
+`.github/workflows/data-backed-validation.yml` runs the Raw QA corpus, the
+filter execution sweep and the `needs_data` suite against the immutable R2
+generation the deployed application reads — nightly and on demand. Those gates
+had previously only ever run locally, on one machine, undated and unretained.
+
+The `needs_data` skip check asks the *configured data source* rather than the
+local filesystem, so those tests are runnable under `DATA_SOURCE=r2`. Checking
+only the local path would have made that workflow skip all ~1000 of them and
+report a green run having verified nothing.
+
 See also:
 
 - [`query_validation_map.md`](query_validation_map.md) — which validation layer

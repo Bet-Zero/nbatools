@@ -1,18 +1,25 @@
 """Shared fixtures and markers for the nbatools test suite."""
 
+import os
 from pathlib import Path
 
 import pytest
 
 # ---------------------------------------------------------------------------
-# ``needs_data`` marker – skip tests that require local CSV data files
+# ``needs_data`` marker – skip tests that require the real NBA dataset
 # ---------------------------------------------------------------------------
 #
-# The ``data/raw/`` directory is gitignored and only exists when the user
-# has pulled NBA game data locally.  Tests that run real queries against
-# those CSVs should be marked with ``@pytest.mark.needs_data`` so they
-# are automatically skipped in environments without data (CI, fresh
-# clones, etc.).
+# These tests assert real values, so they need the real pinned generation.
+# ``data/raw/`` is gitignored and only exists when the user has pulled game
+# data locally, so they skip on a fresh clone.
+#
+# Availability is asked of the *configured data source*, not of the local
+# filesystem. With ``DATA_SOURCE=r2`` the engine reads an immutable R2
+# generation and these tests are perfectly runnable, which is how
+# ``.github/workflows/data-backed-validation.yml`` runs them — the first time
+# they have run anywhere automated. Checking only the local path would have made
+# that workflow skip all ~1000 of them and report a green run having verified
+# nothing.
 #
 # Usage:
 #   - Single test:   @pytest.mark.needs_data
@@ -21,11 +28,39 @@ import pytest
 # ---------------------------------------------------------------------------
 
 _DATA_SENTINEL = Path("data/raw/player_game_stats")
+_DATA_GLOB = "data/raw/player_game_stats/*.csv"
+
+# Memoised: with ~1000 needs_data tests, an uncached remote probe per test would
+# dominate the run.
+_DATA_AVAILABLE: bool | None = None
+
+
+def _probe_data() -> bool:
+    # Local checkout: answer without importing the engine at all.
+    if _DATA_SENTINEL.is_dir() and any(_DATA_SENTINEL.glob("*.csv")):
+        return True
+
+    # Only consult a remote source when one is actually configured, so an
+    # ordinary run stays filesystem-only and offline.
+    if os.environ.get("DATA_SOURCE", "local").strip().lower() != "r2":
+        return False
+
+    try:
+        from nbatools.data_source import data_glob
+
+        return bool(data_glob(_DATA_GLOB))
+    except Exception:
+        # An unreachable or misconfigured source means "no data", never an
+        # error that masquerades as a test failure.
+        return False
 
 
 def _has_local_data() -> bool:
-    """Return True when local CSV data files are present."""
-    return _DATA_SENTINEL.is_dir() and any(_DATA_SENTINEL.glob("*.csv"))
+    """Return True when the configured data source can see the game logs."""
+    global _DATA_AVAILABLE
+    if _DATA_AVAILABLE is None:
+        _DATA_AVAILABLE = _probe_data()
+    return _DATA_AVAILABLE
 
 
 def pytest_configure(config: pytest.Config) -> None:
