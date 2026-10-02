@@ -188,10 +188,42 @@ require owner approval before the values reach a runner.
 them, the cause is the environment or workflow configuration, not the scope —
 widening the scope hides the fault instead of fixing it.
 
-The job must therefore declare `environment: r2-validation`. A job that omits it
-receives all three as empty strings and fails as though the data were gone,
-which is silent in exactly the wrong way. `test_the_job_declares_the_environment_holding_the_credential`
-pins it.
+Every job must therefore declare `environment: r2-validation`. A job that omits
+it receives all three as empty strings and fails as though the data were gone,
+which is silent in exactly the wrong way.
+`test_every_job_declares_the_environment_holding_the_credential` pins it for
+each job, not just the first.
+
+### One generation, several parallel gates
+
+The workflow runs a `preflight` job that verifies the credential and resolves a
+single immutable generation, then runs three jobs against it in parallel: the Raw
+QA corpus, the filter execution sweep, and the `needs_data` suite
+(informational). Each pins `NBATOOLS_DATA_GENERATION` from the preflight's
+output, which the engine honours over the live pointer.
+
+Pinning once rather than per job is what makes the gates comparable. Resolved
+independently, a publication landing mid-run would leave one gate judging a
+generation another never saw, and the disagreement would read as an engine bug.
+
+They run in parallel because run 1 proved the alternative. As sequential steps in
+one job, the Raw QA corpus consumed 42m30s of a 45-minute budget, so the sweep
+was cancelled at pair 54 of 521 and the data-backed tests never started.
+Sequencing also buried the sweep — the highest-value trust check here — behind 43
+minutes of Raw QA. Both properties are pinned:
+`test_the_gates_run_in_parallel_rather_than_in_sequence` and
+`test_each_gate_has_a_timeout_that_fits_its_measured_runtime`.
+
+Measured timings, for anyone revising those budgets:
+
+| Gate | Work | Observed |
+| --- | --- | --- |
+| Raw QA corpus | 361 cases | 42m30s (~7s/case over the network) |
+| Filter execution sweep | 521 pairs | ~0.75s/pair, so ~7m |
+| `needs_data` suite | ~1000 tests | not yet measured |
+
+Reads go to R2 over the network rather than to local disk, which is why a corpus
+that runs in minutes on a laptop takes most of an hour here.
 
 ### Secret names versus variable names
 

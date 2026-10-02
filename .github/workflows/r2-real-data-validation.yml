@@ -3,6 +3,19 @@ name: R2 Real-Data Validation
 # Manual-only by design. This workflow is the only GitHub Actions path that
 # should receive the temporary, bucket-scoped read-only NBA data credential.
 # Keep ordinary CI secret-free.
+#
+# Credentials are secrets on the `r2-validation` GitHub Environment, not
+# repository secrets, so they reach only the jobs that name that environment.
+# Every job below must declare it; a job that omits it receives three empty
+# strings and fails as though the data were gone. See
+# docs/operations/deployment.md#github-actions-secrets.
+#
+# The gates run as parallel jobs rather than sequential steps. Run 1 proved why:
+# the Raw QA corpus took 42m30s of a 45-minute budget, so the filter execution
+# sweep was cancelled at pair 54 of 521 and the data-backed tests never started.
+# Sequencing also buried the sweep - the highest-value trust check here - behind
+# 43 minutes of Raw QA, so a sweep failure took most of an hour to surface.
+# In parallel it reports in under ten minutes.
 on:
   workflow_dispatch:
     inputs:
@@ -19,46 +32,44 @@ concurrency:
   group: r2-real-data-validation
   cancel-in-progress: false
 
+env:
+  DATA_SOURCE: r2
+  R2_BUCKET_NAME: nbatools-data
+  PYTHONUNBUFFERED: "1"
+
 jobs:
-  validate:
-    name: Raw QA + filter sweep against real R2 data
+  # ── Verify the credential once, and pin one generation for every gate ──
+  #
+  # Pinning here rather than per job is what makes the three gates comparable:
+  # they must all judge the same immutable data. Resolved independently, a
+  # publication landing mid-run would have one gate judging a generation another
+  # never saw, and the disagreement would look like a bug in the engine.
+  preflight:
+    name: Verify read-only access and pin one generation
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    # Store the three R2 credential values as environment secrets here, not as
-    # ordinary repository secrets:
-    #   R2_VALIDATION_ACCOUNT_ID
-    #   R2_VALIDATION_ACCESS_KEY_ID
-    #   R2_VALIDATION_SECRET_ACCESS_KEY
-    #
-    # The environment can require owner approval before these secrets are
-    # released to the runner.
+    timeout-minutes: 10
     environment: r2-validation
-
+    outputs:
+      generation: ${{ steps.pin.outputs.generation }}
     env:
-      DATA_SOURCE: r2
-      R2_BUCKET_NAME: nbatools-data
       R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
-      PYTHONUNBUFFERED: "1"
-
     steps:
       - name: Check out requested revision
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.target_ref }}
-
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
-
       - name: Install project
         run: pip install -e ".[dev,api]"
 
       - name: Verify read-only data access and pin one immutable generation
+        id: pin
         run: |
           python - <<'PY'
           import os
@@ -68,10 +79,16 @@ jobs:
               "R2_ACCESS_KEY_ID",
               "R2_SECRET_ACCESS_KEY",
           )
+          # Truthiness, not membership: an environment secret that never reached
+          # the job arrives as the empty string, exactly like one saved empty.
           missing = [name for name in required if not os.environ.get(name)]
           if missing:
               raise SystemExit(
-                  "Missing r2-validation environment secret(s): " + ", ".join(missing)
+                  "Missing r2-validation environment secret(s): "
+                  + ", ".join(missing)
+                  + ". These are secrets on the r2-validation GitHub Environment, "
+                  "and every job must declare `environment: r2-validation` to "
+                  "receive them. See docs/operations/deployment.md."
               )
 
           from nbatools.data_source import (
@@ -91,8 +108,8 @@ jobs:
                   "raw/player_game_stats CSVs"
               )
 
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
-              handle.write(f"NBATOOLS_DATA_GENERATION={generation}\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"generation={generation}\n")
 
           print(
               "R2 read check passed; pinned generation "
@@ -100,53 +117,114 @@ jobs:
           )
           PY
 
+  # ── Gate 1: are the answers what they are contracted to be? ───────────
+  raw-qa:
+    name: Raw QA corpus against real R2 data
+    needs: preflight
+    runs-on: ubuntu-latest
+    # 42m30s observed on run 1 for 361 cases. Headroom for a growing corpus and
+    # a slow runner, since a timeout here reports nothing at all.
+    timeout-minutes: 75
+    environment: r2-validation
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.target_ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+
       - name: Run full Raw QA corpus
-        id: raw_qa
-        continue-on-error: true
         run: |
           make raw-query-answer-qa \
             RAW_QA_ARGS="--run-id r2_validation --overwrite-run-id"
 
+      - name: Upload Raw QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-qa-${{ github.run_id }}
+          path: outputs/raw_query_answer_qa/r2_validation/
+          if-no-files-found: warn
+          retention-days: 7
+
+  # ── Gate 2: is any filter displayed but never applied? ────────────────
+  #
+  # Exit 1 is a LIED row - a filter badged as applied over an unfiltered answer.
+  # Exit 2 is NO_SIGNAL: nothing was comparable, which is not a pass. Both fail
+  # this job, which is the point of QA-01.
+  filter-sweep:
+    name: Filter execution sweep against real R2 data
+    needs: preflight
+    runs-on: ubuntu-latest
+    # 521 pairs at roughly 0.75s each on run 1, so well inside this.
+    timeout-minutes: 30
+    environment: r2-validation
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.target_ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+
       - name: Run real-data filter execution sweep
-        id: filter_sweep
-        continue-on-error: true
         run: |
           mkdir -p outputs/filter_execution_sweep
           python tools/filter_execution_sweep.py \
             --json outputs/filter_execution_sweep/r2_validation.json
 
-      # The `needs_data` suite asserts real values, so it skips wherever the
-      # pinned generation is absent - which is everywhere except this job. Its
-      # skip check asks the configured data source, so DATA_SOURCE=r2 makes it
-      # runnable here. Informational: it has no prior green run to regress from,
-      # and the two gates below are the verdict.
-      - name: Tests marked needs_data, against the pinned generation
-        id: data_backed_tests
-        continue-on-error: true
-        run: python -m pytest -m needs_data -rf --no-header -q
-
-      - name: Upload validation evidence
+      - name: Upload sweep evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: r2-real-data-validation-${{ github.run_id }}
-          path: |
-            outputs/raw_query_answer_qa/r2_validation/
-            outputs/filter_execution_sweep/r2_validation.json
+          name: filter-sweep-${{ github.run_id }}
+          path: outputs/filter_execution_sweep/r2_validation.json
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Enforce both validation gates
-        if: always()
-        run: |
-          raw_qa="${{ steps.raw_qa.outcome }}"
-          filter_sweep="${{ steps.filter_sweep.outcome }}"
+  # ── The data-backed tests that have never run anywhere automated ──────
+  #
+  # `needs_data` tests assert real values, so they skip wherever the pinned
+  # generation is absent - which is everywhere but this workflow. Their skip
+  # check asks the configured data source, so DATA_SOURCE=r2 makes them
+  # runnable here. Informational: they have no prior green run to regress from,
+  # and the two gates above are the verdict.
+  data-backed-tests:
+    name: Tests marked needs_data (informational)
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    environment: r2-validation
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      NBATOOLS_DATA_GENERATION: ${{ needs.preflight.outputs.generation }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.target_ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
 
-          echo "Raw QA outcome: $raw_qa"
-          echo "Filter sweep outcome: $filter_sweep"
-          echo "needs_data tests (informational): ${{ steps.data_backed_tests.outcome }}"
-
-          if [ "$raw_qa" != "success" ] || [ "$filter_sweep" != "success" ]; then
-            echo "Real-data validation failed. Inspect the uploaded evidence artifact."
-            exit 1
-          fi
+      - name: Tests marked needs_data, against the pinned generation
+        run: python -m pytest -m needs_data -rf --no-header -q
