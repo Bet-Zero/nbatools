@@ -21,7 +21,11 @@ import pytest
 from nbatools.query_service import execute_natural_query
 from tests._filter_evidence import assert_filter_applied_or_refused, collect_evidence
 
-pytestmark = [pytest.mark.query, pytest.mark.needs_data, pytest.mark.slow]
+# Behavioural, not numeric: every assertion here is "the filter changed the
+# answer, or was refused". That holds against any internally consistent
+# dataset, so this suite runs against the committed fixture everywhere --
+# including CI, where it previously always skipped.
+pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
 
 
 def _run(query: str):

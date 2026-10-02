@@ -11,6 +11,7 @@
 .PHONY: parser-examples-sweep raw-query-answer-qa exploratory-query-review query-feedback-export
 .PHONY: browser-release-review visual-qa-screenshots
 .PHONY: repository-inventory repository-inventory-check docs-governance
+.PHONY: query-fixture query-fixture-check
 
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then printf '%s' .venv/bin/python; elif command -v python3 >/dev/null 2>&1; then command -v python3; elif command -v python >/dev/null 2>&1; then command -v python; else printf '%s' python3; fi)
 PYTEST ?= $(PYTHON) -m pytest
@@ -188,5 +189,13 @@ repository-inventory-check:
 	$(PYTHON) tools/generate_repository_inventory.py --check
 
 ## Durable-doc path and relative-link governance check.
-docs-governance: repository-inventory-check
+docs-governance: repository-inventory-check query-fixture-check
 	$(PYTHON) tools/check_docs_governance.py
+
+## Regenerate the committed synthetic query fixture under qa/fixtures/.
+query-fixture:
+	$(PYTHON) tools/generate_query_fixture.py
+
+## Fail when the committed query fixture differs from its generator.
+query-fixture-check:
+	$(PYTHON) tools/generate_query_fixture.py --check
