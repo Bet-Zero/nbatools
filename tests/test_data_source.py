@@ -233,6 +233,28 @@ def test_r2_exists_does_not_remember_a_failed_manifest_read(
     assert client.get_calls.count("generations/gen-a/metadata/generation_manifest.json") == 1
 
 
+def test_r2_download_never_exposes_a_partial_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    client = FakeR2Client({"raw/sample.csv": b"name,value\nJokic,1\n"})
+    _configure_r2(monkeypatch, tmp_path, client)
+    cache_file = tmp_path / "cache" / "nbatools-data" / "legacy" / "raw" / "sample.csv"
+    cache_file.parent.mkdir(parents=True)
+    cache_file.write_bytes(b"name,value\nJokic,1\n")
+    replaced: list[tuple[str, str]] = []
+    real_replace = data_source.os.replace
+
+    def spy_replace(src, dst):
+        # At the moment of the swap the reader-visible file is still complete.
+        assert cache_file.read_bytes() == b"name,value\nJokic,1\n"
+        replaced.append((str(src), str(dst)))
+        real_replace(src, dst)
+
+    monkeypatch.setattr(data_source.os, "replace", spy_replace)
+
+    assert data_read_csv("raw/sample.csv")["value"].tolist() == [1]
+    assert replaced and replaced[0][1] == str(cache_file)
+    assert [p.name for p in cache_file.parent.iterdir()] == ["sample.csv"]
+
+
 def test_frame_cache_key_changes_with_generation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     from nbatools.commands.data_utils import load_latest_standings_snapshot
 

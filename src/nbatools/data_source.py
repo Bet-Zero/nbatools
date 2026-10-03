@@ -308,7 +308,16 @@ class _R2DataSource:
             raise DataSourceError(f"Could not read R2 object {key}: {format_client_error(exc)}")
 
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_bytes(body)
+        # Write then rename: another process or thread sharing the cache may be
+        # reading this path, and must never see a truncated file.
+        fd, temp_name = tempfile.mkstemp(dir=cache_path.parent, prefix=f".{cache_path.name}.")
+        try:
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(body)
+            os.replace(temp_name, cache_path)
+        except BaseException:
+            Path(temp_name).unlink(missing_ok=True)
+            raise
         self._downloaded_keys.add(key)
         return cache_path
 
