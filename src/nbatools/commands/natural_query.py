@@ -97,6 +97,7 @@ from nbatools.commands._occurrence_route_utils import (
     extract_compound_occurrence_event,
     extract_occurrence_event,
     try_compound_occurrence_route,
+    try_league_game_finder_route,
     try_occurrence_count_route,
     wants_occurrence_leaderboard,
 )
@@ -245,6 +246,10 @@ from nbatools.commands._parse_helpers import (
     extract_last_n_seasons as extract_last_n_seasons,
 )
 from nbatools.commands._parse_helpers import (
+    extract_min_attempts,
+    text_without_min_attempts,
+)
+from nbatools.commands._parse_helpers import (
     extract_min_games as extract_min_games,
 )
 from nbatools.commands._parse_helpers import (
@@ -346,7 +351,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "both play",
     "offensive rating when",
     "offensive rating without",
-    "10+ assists and 0 turnovers",
     "road by 20",
     "road team won by 20",
     "above .600",
@@ -365,18 +369,47 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
 # aggregation the product understands perfectly well. A generic "this phrase is
 # unsupported" answer preempted the specific one, so the reader was told the
 # question was unrecognizable rather than that only the season total exists.
+#
+# The player shooting-percentage leaderboard executes the qualifier
+# (``min_attempts``); every other route still refuses it rather than drop it.
 _ATTEMPT_QUALIFIER = re.compile(
     r"\bmin(?:imum)?\s+\d+\s+attempts\b|\b\d+\s+attempts?\s+per\s+game\b"
 )
 
 
 def _unsupported_phrase_boundary_note(q: str) -> str | None:
-    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or _ATTEMPT_QUALIFIER.search(q):
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
             "no result was executed for the unsupported concept"
         )
     return None
+
+
+def _unexecuted_attempt_qualifier_note(q: str, route: str, route_kwargs: dict) -> str | None:
+    """Refuse a shot-attempt minimum the selected route would drop."""
+    if not (extract_min_attempts(q) or _ATTEMPT_QUALIFIER.search(q)):
+        return None
+    if route == "season_leaders" and route_kwargs.get("min_attempts") is not None:
+        return None
+    return (
+        "unsupported_boundary: a shot-attempt minimum applies only to player "
+        "shooting-percentage leaderboards; no result was executed without it"
+    )
+
+
+def _min_attempts_kwargs(parsed: dict, stat: str | None) -> dict:
+    """The attempt qualifier as season_leaders kwargs, for shooting rates only."""
+    from nbatools.commands.season_leaders import ALLOWED_STATS, PERCENTAGE_STATS
+
+    qualifier = parsed.get("min_attempts")
+    if not qualifier or ALLOWED_STATS.get(str(stat or "").lower()) not in PERCENTAGE_STATS:
+        return {}
+    return {
+        "min_attempts": qualifier["value"],
+        "min_attempts_per_game": qualifier["per_game"],
+        "attempt_stat": qualifier["attempt_stat"],
+    }
 
 
 def _unsupported_boundary_note(
@@ -388,6 +421,8 @@ def _unsupported_boundary_note(
 ) -> str | None:
     if boundary_note := _unsupported_phrase_boundary_note(q):
         return boundary_note
+    if attempt_note := _unexecuted_attempt_qualifier_note(q, route, route_kwargs):
+        return attempt_note
 
     if route == "season_team_leaders":
         stat = requested_stat or route_kwargs.get("stat")
@@ -1265,7 +1300,11 @@ def _build_parse_state(query: str) -> dict:
             else:
                 season = first_date_season
 
-    stat = detect_stat(q)
+    min_attempts = extract_min_attempts(q)
+    # Metric and threshold detection skip the attempt qualifier: "minimum 150
+    # three point attempts" qualifies the ranking, it does not name its metric.
+    q_metric = text_without_min_attempts(q)
+    stat = detect_stat(q_metric)
     last_n = extract_last_n(q)
     min_games = extract_min_games(q)
     top_n = extract_top_n(q)
@@ -1306,9 +1345,9 @@ def _build_parse_state(query: str) -> dict:
     # promote a leaderboard-only alias (e.g. "scoring", "scorers") into the
     # `stat` slot so question/search/shorthand forms produce identical states.
     if stat is None and leaderboard_intent:
-        stat = detect_player_leaderboard_stat(q)
+        stat = detect_player_leaderboard_stat(q_metric)
     if stat is None and team_leaderboard_intent:
-        stat = detect_team_leaderboard_stat(q)
+        stat = detect_team_leaderboard_stat(q_metric)
     occurrence_event = extract_occurrence_event(q)
     compound_occurrence_conditions = extract_compound_occurrence_event(q)
     occurrence_leaderboard_intent = wants_occurrence_leaderboard(q)
@@ -1343,7 +1382,7 @@ def _build_parse_state(query: str) -> dict:
     )
 
     threshold_conditions = merge_opponent_points_allowed_conditions(
-        extract_threshold_conditions(q),
+        extract_threshold_conditions(q_metric),
         extract_opponent_points_allowed_conditions(q),
     )
 
@@ -1361,7 +1400,7 @@ def _build_parse_state(query: str) -> dict:
             if stat_context is not None:
                 stat = stat_context
                 stat_context_only = True
-        min_value = extract_min_value(q, stat)
+        min_value = extract_min_value(q_metric, stat)
         max_value = None
 
     # Stat resolution confidence: "confident" when a recognized alias was
@@ -1627,6 +1666,7 @@ def _build_parse_state(query: str) -> dict:
         "max_value": max_value,
         "last_n": last_n,
         "min_games": min_games,
+        "min_attempts": min_attempts,
         "top_n": top_n,
         "split_type": split_type,
         "home_only": home_only,
@@ -1908,8 +1948,11 @@ def _finalize_route(parsed: dict) -> dict:
     if occurrence_event and "special_event" not in occurrence_event:
         occ_stat = occurrence_event.get("stat")
         occ_min = occurrence_event.get("min_value")
+        occ_max = occurrence_event.get("max_value")
         if stat is None and occ_stat:
             stat = occ_stat
+            if max_value is None and occ_max is not None:
+                max_value = occ_max
         if min_value is None and occ_min is not None:
             min_value = occ_min
     special_event = (
@@ -2876,6 +2919,8 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ocr := try_compound_occurrence_route(parsed)) is not None:
         route, route_kwargs = ocr
+    elif (lgf := try_league_game_finder_route(parsed)) is not None:
+        route, route_kwargs = lgf
     # ---------------------------------------------------------------------------
     # Record-leaderboard routing cluster
     # ---------------------------------------------------------------------------
@@ -3413,6 +3458,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "losses_only": losses_only,
                 "last_n": last_n,
             }
+            route_kwargs.update(_min_attempts_kwargs(parsed, leaderboard_stat))
     # ---------------------------------------------------------------------------
     # Team-record player availability routing
     # ---------------------------------------------------------------------------

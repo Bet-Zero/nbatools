@@ -194,7 +194,10 @@ def anchored_leaderboard_metric(parsed: dict) -> str | None:
     tail. Keeping the order identical is what guarantees every question that
     resolves a metric today still resolves the same one.
     """
-    q = parsed.get("normalized_query") or ""
+    from nbatools.commands._parse_helpers import text_without_min_attempts
+
+    # A shot-attempt qualifier names an attempt stat that is not the metric.
+    q = text_without_min_attempts(parsed.get("normalized_query") or "")
     stat = parsed.get("stat")
     if parsed.get("team_leaderboard_intent"):
         return detect_team_leaderboard_stat(q) or stat
@@ -498,7 +501,10 @@ def requested_leaderboard_metrics(parsed: dict) -> tuple[str, ...]:
     starting point guard" contains "point", and counting it would report a
     compound points-and-assists request nobody made.
     """
-    text = parsed.get("normalized_query") or ""
+    from nbatools.commands._parse_helpers import text_without_min_attempts
+
+    # The attempt stat inside a qualifier is not a requested ranking metric.
+    text = text_without_min_attempts(parsed.get("normalized_query") or "")
     aliases = _alias_table(parsed)
     lookalikes = [m.span() for pattern in _METRIC_LOOKALIKE for m in re.finditer(pattern, text)]
     claimed: list[tuple[int, int]] = []
@@ -670,6 +676,15 @@ _MIN_GAMES = (
     r"\b(?:at\s+least|minimum(?:\s+of)?|min\.?)\s+\d+\s+games?\b",
     r"\bwith\s+\d+\+?\s+games?\b",
 )
+
+
+def _min_attempt_patterns() -> tuple[str, ...]:
+    from nbatools.commands._parse_helpers import _MIN_ATTEMPT_PATTERNS
+
+    return _MIN_ATTEMPT_PATTERNS
+
+
+_MIN_ATTEMPTS = _min_attempt_patterns()
 _TOP_N = (r"\btop\s+\d+\b", r"\bbottom\s+\d+\b", r"\b\d+\s+best\b", r"\bfirst\s+\d+\b")
 _THRESHOLD = (
     r"\b\d+\+",
@@ -700,6 +715,7 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("rookie_leaderboard_boundary",), _ROOKIE_POPULATION),
     (("sophomore_leaderboard_boundary",), _SOPHOMORE_POPULATION),
     (("min_games",), _MIN_GAMES),
+    (("min_attempts",), _MIN_ATTEMPTS),
     (("top_n",), _TOP_N),
     (("min_value", "max_value"), _THRESHOLD),
     (("team",), _SUBJECT),
@@ -821,9 +837,14 @@ def assess_leaderboard_request(
     for routes whose grammar
     this module does not model; they still get rules 1-3.
     """
+    from nbatools.commands._parse_helpers import text_without_min_attempts
+
     text = parsed.get("normalized_query") or ""
     requested = requested_leaderboard_metrics(parsed)
     team_scope = bool(parsed.get("team_leaderboard_intent")) or "team" in text
+    # "with 5+ attempts per game" qualifies who ranks; its "per game" says
+    # nothing about the aggregation of the metric being ranked.
+    aggregation_text = text_without_min_attempts(text)
 
     # 1. One ranking ranks by one metric. Picking whichever the detectors
     #    happened to return last silently deletes the rest of the request.
@@ -851,7 +872,9 @@ def assess_leaderboard_request(
             unsupported_scope=scope,
         )
 
-    if not _aggregation_supported(text, metric, team_scope=team_scope, ranking_mode=ranking_mode):
+    if not _aggregation_supported(
+        aggregation_text, metric, team_scope=team_scope, ranking_mode=ranking_mode
+    ):
         backing = metric_aggregation(metric, team_scope=team_scope, ranking_mode=ranking_mode)
         return LeaderboardEligibility(
             authorized=False,
@@ -861,7 +884,7 @@ def assess_leaderboard_request(
             # The resolved reading, so the copy names what was actually asked
             # for rather than the bare word "average".
             requested_aggregation=resolve_requested_aggregation(
-                detect_requested_aggregation(text), backing
+                detect_requested_aggregation(aggregation_text), backing
             ),
             available_aggregation=backing,
         )

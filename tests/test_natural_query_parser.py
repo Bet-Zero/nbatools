@@ -20,10 +20,13 @@ def test_generic_unsupported_phrases_fail_closed(phrase):
 
 
 def test_minimum_attempts_boundary_fails_closed():
+    # Only the player shooting-percentage leaderboard executes an attempt
+    # minimum; any other route refuses it instead of dropping it.
     parsed = parse_query("Jokic summary minimum 5 attempts")
 
-    assert parsed["route"] is None
     assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
+    assert "min_attempts" not in parsed["route_kwargs"]
+    assert any("shot-attempt minimum" in note for note in parsed.get("notes", []))
 
 
 def test_date_window_team_advanced_rating_boundary_fails_closed():

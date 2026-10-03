@@ -296,7 +296,9 @@ class _R2DataSource:
                 str(record["path"]) for record in document["files"] if record.get("path")
             )
         except Exception as exc:
-            if not is_not_found(exc) and not isinstance(exc, (ValueError, KeyError, TypeError)):
+            if not is_not_found(exc) and not isinstance(
+                exc, (ValueError, KeyError, TypeError, AttributeError)
+            ):
                 # Transient failure: fall back to HEAD now, try the manifest again later.
                 return None
             files = None

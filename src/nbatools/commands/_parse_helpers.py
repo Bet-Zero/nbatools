@@ -14,20 +14,23 @@ from nbatools.commands.entity_resolution import (
     resolve_players_in_query,
 )
 
+# "best 3 point percentage" names the three-point stat, not a top-3 list.
+_NOT_A_COUNT = r"(?!\s*-?\s*(?:point|pt|pointers?|ptrs?|p%|pa|pm|fg)\b)"
+
 
 def extract_top_n(text: str) -> int | None:
     # "top N" pattern
-    m = re.search(r"\btop\s+(\d+)\b", text)
+    m = re.search(rf"\btop\s+(\d+)\b{_NOT_A_COUNT}", text)
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
     # "bottom N" pattern
-    m = re.search(r"\bbottom\s+(\d+)\b", text)
+    m = re.search(rf"\bbottom\s+(\d+)\b{_NOT_A_COUNT}", text)
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
     # "rank N" / "best N" / "worst N" pattern (e.g. "best 10 scorers")
-    m = re.search(r"\b(?:best|worst)\s+(\d+)\b", text)
+    m = re.search(rf"\b(?:best|worst)\s+(\d+)\b{_NOT_A_COUNT}", text)
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
@@ -1224,6 +1227,73 @@ def extract_min_games(text: str) -> int | None:
             if value > 0:
                 return value
     return None
+
+
+# Shot-attempt nouns a rate qualifier is stated in, mapped to the attempt
+# column they count. A bare "attempts"/"shots" leaves the column to the rate
+# being ranked (three-point percentage counts three-point attempts).
+_ATTEMPT_NOUNS = (
+    (
+        r"(?:three[- ]?point(?:er)?|3[- ]?(?:pt|point)|three|3)s?\s+(?:attempts?|tries)|3pa|fg3a",
+        "fg3a",
+    ),
+    (r"free[- ]?throws?\s+(?:attempts?|tries)|ft\s+attempts?|fta", "fta"),
+    (r"(?:field[- ]?goal|fg|shot)s?\s+(?:attempts?|tries)|fga", "fga"),
+    (r"attempts?|shots", None),
+)
+_ATTEMPT_NOUN = "|".join(f"(?:{pattern})" for pattern, _ in _ATTEMPT_NOUNS)
+_PER_GAME_TAIL = r"(?P<per_game>\s+(?:per|a|each)\s+game)?"
+_MIN_ATTEMPT_PATTERNS = (
+    rf"\b(?:min(?:imum)?\.?(?:\s+of)?|at\s+least|with(?:\s+at\s+least)?)\s+"
+    rf"(?P<value>\d+(?:\.\d+)?)\+?\s+(?:or\s+more\s+)?(?P<noun>{_ATTEMPT_NOUN})\b{_PER_GAME_TAIL}",
+    rf"\b(?P<value>\d+(?:\.\d+)?)\+?\s+(?:or\s+more\s+)?(?P<noun>{_ATTEMPT_NOUN})\b{_PER_GAME_TAIL}"
+    r"\s+(?:min(?:imum)?|minimum\s+required|to\s+qualify)\b",
+    rf"\b(?P<value>\d+(?:\.\d+)?)\+\s+(?P<noun>{_ATTEMPT_NOUN})\b{_PER_GAME_TAIL}",
+)
+
+
+def extract_min_attempts(text: str) -> dict | None:
+    """Extract a shot-attempt qualifier such as ``minimum 100 attempts``.
+
+    A sample-size qualifier on a shooting-rate leaderboard, distinct from a
+    stat threshold: "best three point percentage minimum 100 attempts" ranks
+    three-point percentage among players with at least 100 three-point
+    attempts. Returns ``{"value", "per_game", "attempt_stat", "span"}``;
+    ``attempt_stat`` is ``None`` when the noun does not name a shot type.
+    """
+    for pattern in _MIN_ATTEMPT_PATTERNS:
+        m = re.search(pattern, text)
+        if not m:
+            continue
+        value = float(m.group("value"))
+        if value <= 0:
+            continue
+        noun = m.group("noun")
+        attempt_stat = next(
+            (stat for noun_pattern, stat in _ATTEMPT_NOUNS if re.fullmatch(noun_pattern, noun)),
+            None,
+        )
+        return {
+            "value": value,
+            "per_game": bool(m.group("per_game")),
+            "attempt_stat": attempt_stat,
+            "span": m.span(),
+        }
+    return None
+
+
+def text_without_min_attempts(text: str) -> str:
+    """*text* with any shot-attempt qualifier blanked out, offsets preserved.
+
+    The qualifier names an attempt stat ("minimum 150 three point attempts")
+    that is not the metric being ranked, so metric and threshold detection
+    read the question without it.
+    """
+    qualifier = extract_min_attempts(text)
+    if qualifier is None:
+        return text
+    start, end = qualifier["span"]
+    return text[:start] + " " * (end - start) + text[end:]
 
 
 def extract_min_value(text: str, stat: str | None) -> float | None:
