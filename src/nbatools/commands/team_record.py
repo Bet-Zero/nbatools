@@ -37,6 +37,7 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
     period_coverage_failure,
     period_window_label,
+    select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
@@ -228,10 +229,14 @@ def build_team_record_result(
     rest_days: str | int | None = None,
     one_possession: bool = False,
     nationally_televised: bool = False,
+    last_n: int | None = None,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
-    Returns a SummaryResult with wins/losses/win_pct prominently.
+    Returns a SummaryResult with wins/losses/win_pct prominently. ``last_n``
+    keeps the team's N most recent games after every other filter, the same
+    selection the team and player summaries make; the selected games are
+    returned in ``game_log``.
     """
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
@@ -432,6 +437,8 @@ def build_team_record_result(
         if tied_period_rows:
             df = df[df["wl"].astype(str).str.upper().isin({"W", "L"})].copy()
 
+    df = select_most_recent_games(df, last_n)
+
     if df.empty:
         if tied_period_rows:
             notes.append("period record excludes tied period windows from record totals")
@@ -478,7 +485,7 @@ def build_team_record_result(
         by_season["win_pct"] = (by_season["wins"] / by_season["games"]).round(3)
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
-    game_log = _build_game_log_section(df) if without_player or with_player else None
+    game_log = _build_game_log_section(df) if without_player or with_player or last_n else None
 
     caveats: list[str] = []
     if len(seasons) > 1:
@@ -506,6 +513,8 @@ def build_team_record_result(
         if max_value is not None:
             parts.append(f"<= {max_value}")
         caveats.append(" ".join(parts))
+    if last_n is not None:
+        caveats.append(f"last {last_n} games (played {len(df)})")
     if start_date or end_date:
         dp = []
         if start_date:

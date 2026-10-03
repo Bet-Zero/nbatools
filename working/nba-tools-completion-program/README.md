@@ -490,13 +490,36 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice implemented on `claude/issue-314-q0tbff` (PR pending review/merge); A1b open | Merge after CI and an independent check; R2 run for `test_player_identity_real_data.py`; then A1b (`player_id` selection, resolver for lineup/legacy alias scans) |
-| A2 | Open; next | Reproduced on the fixture: "Knicks record last 10 games" refuses because `team_record` has no `last_n` execution. Implement team last-N records sharing the player summary's game selection |
+| A1 | First slice merged (#315); R2 runs 37098675951 and 37099947680 passed, deployed check open; A1b open | A1b: `player_id` selection for identical names, resolver for lineup/legacy alias scans |
+| A2 | Team last-N records in PR #316 (draft); rest open | #316: refresh the `warriors_last_10_record_wave5` frontend-copy row from its R2 Raw QA artifact, independent check, merge. Then the remaining A2 acceptance (team last-N summaries, explicit date ranges, last N meetings vs overall) |
 | B1 | Open | Reuse A sample contract; complete operation/basis and compound counts |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
 | D1 / D2 | Open | O1 feasibility first; each source-backed slice then delivers independently |
-| O1 | Open; parallel | Dispatch `r2-real-data-validation.yml` on the A1 branch (also the pending #311 confirmation); read the active generation manifest for the section 2a data view |
+| O1 | Open; parallel | #311 confirmation passed in the R2 runs above. Read the active generation manifest for the section 2a data view |
 | O2 | Open | Act on O1; calendar/refresh and measured performance repairs |
 | E | Open | Integrated acceptance, without replacing per-feature delivery checks |
 
 Update these rows as work lands. Keep this one queue; no new phase tracker.
+
+Parallel workstreams. The remaining queue splits into four streams that can
+run as separate threads. Each owns its modules; a shared file has one owner,
+and other streams send changes to that owner rather than editing it.
+
+| Stream | Packages | Owns | Starts |
+| --- | --- | --- | --- |
+| 1. Identity | A1b (`player_id` selection for identical names, lineup "with X and Y" and legacy alias scans through the resolver) | `entity_resolution.py`, `_matchup_utils.py`, lineup scans | Now |
+| 2. Samples and combinations | A2 rest (explicit dates, "in the last N" vs "last N with a condition", last N meetings), then C1 | `_date_utils.py`, `_parse_helpers.py` season/date helpers, `data_utils.select_most_recent_games`, `team_record.py`, summaries/splits | Now; C1 after B1's operation contract |
+| 3. Operations and rankings | B1 (totals vs per game, compound occurrence rankings, "10+ assists and 0 turnovers", qualified rate leaders, games played), then C2 | `_leaderboard_eligibility.py`, `season_leaders.py`, `season_team_leaders.py`, occurrence leaders, `_compound_event_authorization.py`, finders | Now |
+| 4. Data and runtime | O1 (generation manifest, data view in section 2a, deployed checks), O2 (calendar/refresh, performance), then D1/D2 source slices | `data_source.py`, pipelines, workflows, deployment docs | Now; D after O1 |
+
+Shared files and owners: `natural_query.py` routing (stream 3; others keep
+their edits to small, separate hunks and rebase often), the Raw QA corpus and
+frontend-copy fixtures (append or edit only your own case ids), this queue
+(each stream updates only its own rows), and the full R2 run (one at a time;
+streams use targeted runs per change). E (integrated acceptance) starts once
+streams 2 and 3 land their contracts.
+
+Validation cadence: a full R2 run (Raw QA replay about 30 minutes, serialized) is
+not a per-fix wait. Keep building the next fix while one runs, verify each fix
+with its focused needs_data tests and relevant Raw QA cases, and run the full
+replay once per batch or integration point.

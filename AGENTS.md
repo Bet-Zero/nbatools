@@ -145,7 +145,11 @@ Tests protect delivery; test totals are not product-completion scores.
   changed fingerprint, or a second agent agreeing is not enough on its own.
 - Run relevant Raw QA cases during iteration; run the full failing gate at
   meaningful query/data integration checkpoints. The canonical command is
-  `make raw-query-answer-qa`; report-only runs are not passes.
+  `make raw-query-answer-qa`; report-only runs are not passes. On real data,
+  verify each change with a `scope: targeted` R2 run of its cases and
+  `needs_data` tests (minutes), and keep the `scope: full` run (Raw QA alone is
+  30-40 minutes) for batches and merge points. Never wait idle on a run: keep
+  building the next change while it works.
 - Existing refusal regressions stay until verified support intentionally
   replaces them. Do not mass-relabel cases, weaken assertions, hide failures,
   or make desired-answer tests expect refusal to obtain a green result.

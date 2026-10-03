@@ -220,10 +220,21 @@ Measured timings, for anyone revising those budgets:
 | --- | --- | --- |
 | Raw QA corpus | 361 cases | 42m30s (~7s/case over the network) |
 | Filter execution sweep | 521 pairs | ~0.75s/pair, so ~7m |
-| `needs_data` suite | ~1000 tests | not yet measured |
+| `needs_data` suite | ~1000 tests | ~13m |
 
 Reads go to R2 over the network rather than to local disk, which is why a corpus
 that runs in minutes on a laptop takes most of an hour here.
+
+### Scope: full or targeted
+
+Dispatch with `scope: full` (the default) at batch and merge points of
+query/data work: every gate runs over the whole corpus, and full runs queue
+behind each other. For a single change, dispatch `scope: targeted` with the
+Raw QA case ids (`raw_qa_cases`) and `needs_data` test files or node ids
+(`tests`) the change affects. A targeted run executes only those, skips the
+filter sweep, and queues only behind an earlier targeted run of the same ref,
+so it reports in minutes. Its run name says `targeted`; a green targeted run
+is evidence for that change, not a full validation.
 
 ### Secret names versus variable names
 
