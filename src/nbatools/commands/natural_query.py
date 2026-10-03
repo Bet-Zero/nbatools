@@ -4021,6 +4021,16 @@ def _finalize_route(parsed: dict) -> dict:
         route_kwargs["unsupported_filters"] = ["unsupported_concept"]
         notes.append(boundary_note)
 
+    if career_intent and route is not None:
+        from nbatools.commands._seasons import EARLIEST_SEASON
+
+        if route_kwargs.get("start_season") == EARLIEST_SEASON:
+            # The data starts in 1996-97, so a career that began earlier is
+            # only partly covered; say so rather than claim the full career.
+            notes.append(
+                f"career_span: covers {EARLIEST_SEASON} onward; earlier seasons are not in the data"
+            )
+
     if notes:
         out["notes"] = notes
 

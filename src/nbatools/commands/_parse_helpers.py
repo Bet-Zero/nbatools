@@ -2013,7 +2013,7 @@ def detect_season_high_intent(text: str) -> bool:
     scan = re.sub(r"\s+", " ", scan).strip()
 
     if re.search(
-        r"\bseason[- ]?high\b"
+        r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
         rf"|\b(?:top|best|highest)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
