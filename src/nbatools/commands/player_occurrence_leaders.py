@@ -29,6 +29,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_player_games_for_seasons
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -440,12 +441,11 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="no_match")
 
     # Filter to specific player if requested
+    identity_notes: list[str] = []
     if player:
-        player_upper = player.upper()
-        player_mask = basic["player_name"].str.upper() == player_upper
-        if not player_mask.any():
+        basic = select_player_rows(basic, player, notes=identity_notes)
+        if basic.empty:
             return NoResult(query_class="leaderboard", reason="no_match")
-        basic = basic[player_mask].copy()
 
     # Determine which games qualify
     if special_event:
@@ -555,4 +555,5 @@ def build_result(
         leaders=grouped[out_cols].copy(),
         current_through=current_through,
         caveats=caveats,
+        notes=identity_notes,
     )

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import (
@@ -55,12 +56,13 @@ def apply_base_filters(
     min_value: float | None = None,
     max_value: float | None = None,
     last_n: int | None = None,
+    identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"])
 
     if player:
-        out = out[out["player_name"].astype(str).str.upper() == player.upper()].copy()
+        out = select_player_rows(out, player, team=team, notes=identity_notes)
 
     if team:
         team_upper = team.upper()
@@ -163,6 +165,7 @@ def build_result(
         raise ValueError(f"Unsupported split: {split}. Allowed: {sorted(ALLOWED_SPLITS)}")
 
     seasons = resolve_seasons(season, start_season, end_season)
+    identity_notes: list[str] = []
 
     if df is None:
         try:
@@ -193,6 +196,7 @@ def build_result(
 
         df = apply_base_filters(
             df=df,
+            identity_notes=identity_notes,
             player=player,
             team=team,
             opponent=opponent,
@@ -275,6 +279,7 @@ def build_result(
         split_comparison=split_comparison,
         current_through=current_through,
         caveats=caveats,
+        notes=identity_notes,
     )
 
 

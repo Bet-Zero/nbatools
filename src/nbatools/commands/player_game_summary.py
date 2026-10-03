@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import unicodedata
-
 import pandas as pd
 
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -99,25 +98,6 @@ GAME_LOG_COLUMNS = [
     "ts_pct",
 ]
 
-_DASH_TRANSLATION = str.maketrans(
-    {
-        "\u2010": "-",
-        "\u2011": "-",
-        "\u2012": "-",
-        "\u2013": "-",
-        "\u2014": "-",
-        "\u2015": "-",
-        "\u2212": "-",
-    }
-)
-
-
-def _player_name_key(value: object) -> str:
-    text = str(value).translate(_DASH_TRANSLATION)
-    normalized = unicodedata.normalize("NFKD", text)
-    stripped = "".join(ch for ch in normalized if not unicodedata.combining(ch))
-    return " ".join(stripped.casefold().split())
-
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -143,6 +123,7 @@ def _apply_filters(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -159,8 +140,7 @@ def _apply_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if player:
-        player_key = _player_name_key(player)
-        out = out[out["player_name"].map(_player_name_key) == player_key].copy()
+        out = select_player_rows(out, player, team=team, notes=identity_notes)
 
     if team:
         team_upper = team.upper()
@@ -297,9 +277,8 @@ def build_result(
         # some seasons have zero matching filtered games.
         _player_arc_seasons: list[str] | None = None
         if career_intent and player:
-            _pk = _player_name_key(player)
             _player_arc_seasons = sorted(
-                df[df["player_name"].map(_player_name_key) == _pk]["season"].unique().tolist()
+                select_player_rows(df, player, team=team)["season"].unique().tolist()
             )
 
         df = _apply_filters(
@@ -317,6 +296,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            identity_notes=notes,
         )
 
         # Cross-reference filters: opponent_player and without_player

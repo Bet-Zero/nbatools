@@ -123,7 +123,7 @@ workflow, which is the exact access step for every "unverified" cell.
 | Family | Serves | One row is | Declared coverage | Evidence | Stored / derivable / missing | Next gap |
 | --- | --- | --- | --- | --- | --- | --- |
 | `player_game_stats`, `team_game_stats`, `games` | Summaries, finders, records, leaders, comparisons, streaks | Player-game / team-game / game | 1996-97 to 2025-26, regular season and playoffs | Doc: local Queue D baseline (`system_conventions.md` section 11); served generation unverified | Stored | O1: read the active generation manifest for the same span |
-| Player identity | Every named-player answer | Name and `player_id` on each player-game row | Follows game data | Verified: controlled names, fixture and data-free paths (A1 tests); real names await the R2 run | Stored; queries filter by exact name | Same-name different players (e.g. two Mike James) merge under a name filter; derivable by selecting on `player_id` (A1b) |
+| Player identity | Every named-player answer | Name and `player_id` on each player-game row | Follows game data | Verified: controlled names, fixture and data-free paths (A1 tests); real names await the R2 run | Stored; named-player rows are selected by `player_id` (A1b) | Real data: 12 names are two players each and 5 players have two spellings (listed in A1b); handled by id selection, one display name per id |
 | `rosters`, `player_game_starter_roles` | Team membership, starter/bench | Player-season-team / player-game role | Coverage-gated per slice | Doc only | Stored where trusted | D1: probe served seasons |
 | `team_conference_membership` | Conference/division opponents | Team-season | 2024-25 and 2025-26 trusted only | Doc (`data_catalog.md`) | Older seasons missing as rows; historical alignment is reference data, not box-score derivable | D1 |
 | `schedule`, `standings_snapshots`, `schedule_context_features` | Calendar, rest/back-to-back, standings | Game / team-date / team-game | Standings regular season only | Doc only | Rest/back-to-back derivable from game dates; standings stored | O1/O2 calendar work |
@@ -136,7 +136,7 @@ workflow, which is the exact access step for every "unverified" cell.
 
 | Operation | Existing implementation | State | Next |
 | --- | --- | --- | --- |
-| Subject selection (players) | `entity_resolution.py`, called by `_matchup_utils.detect_player*` and comparison extractors | Sound after the A1 slice for spelling/alias collisions (verified, section 4). Duplicated: `_parse_helpers._extract_player_mentions` (lineup "with X and Y") and legacy alias fallbacks scan aliases without the data index | A1b: route those scans through the resolver; select by `player_id` |
+| Subject selection (players) | `entity_resolution.py`, called by `_matchup_utils.detect_player*` and comparison extractors | Sound after A1 (spelling/alias collisions) and A1b: rows by `player_id` through `_player_identity.select_player_rows`; lineup members through `resolve_players_in_query`; raw legacy alias fallback removed | Data-free and real-data tests (section 4); lineup answers still need D2 data |
 | Subject selection (teams, populations) | `resolve_team*`, opponent quality/conference helpers | Unverified this session | C1 |
 | Time/sample selection | `_seasons.py`, `_date_utils.py`, per-route `last_n`/date handling | Inconsistent. Verified on the fixture: "Knicks record last 10 games" refuses (`team_record` parses `last_n` with no execution path) while player last-N summaries answer | A2 |
 | Predicates and joins | Condition utilities, finders, opponent/context filters | Parser allowlists and transport sets duplicate declarations (doc) | B1/C1 |
@@ -185,7 +185,50 @@ schema-valid request can still express the wrong question.
 Each package may contain small coherent PRs; it is not a demand for a giant PR.
 All packages use the common acceptance rules in section 6.
 
-### A1 - Identity integrity (first slice implemented; A1b open)
+### A1 - Identity integrity (first slice merged; A1b implemented)
+
+**A1b result (branch `claude/names-stream-791238`).** The real data (pinned
+generation, all season types) has twelve names shared by two players: Brandon
+Williams, Charles Smith, Chris Johnson, Chris Wright, Dee Brown, Glen Rice,
+Marcus Williams, Mike James, Patrick Ewing, Reggie Williams, Steven Smith, Tony
+Mitchell (four of them overlap inside one season). Five players carry two
+spellings under one id: Bobby Portis / Bobby Portis Jr. (renamed during 2024-25),
+Jonas Valančiūnas / Valanciunas, Vlatko Čančar / Cancar, Brandon Boston /
+Boston Jr., Lester Quinones / Quiñones. Name filters merged the first group
+("Mike James career" added two careers) and split the second ("Bobby Portis
+2024-25" found no games, all stored as "Jr."; multi-season leaderboards listed
+him twice).
+
+- Every named-player filter (summary, finder, streaks, comparison, splits,
+  occurrence counts, with/without/opponent-player) selects rows by
+  `player_id` through `_player_identity.select_player_rows`, so all spellings
+  of one player count.
+- A shared name picks the player on the requested team, otherwise the one
+  with the most games in the requested scope (Patrick Ewing career = the
+  Knicks centre; "Mike James 2018-19" = the only Mike James that season). A
+  note names the other player and says to add a team or season.
+- Loaded player rows and season leaderboards show one name per id (latest
+  spelling, keeping accents).
+- Lineup "with X and Y" members resolve through the shared resolver (data
+  full names, curated names, aliases; a bare last name only when listed after
+  "with"). A listed shared last name ("hart": Josh and Jason) stays as typed,
+  so the unit keeps its size and matches nothing rather than answering for
+  fewer players; era/team disambiguation for it waits on D2 lineup data. The
+  raw legacy alias fallback in `detect_player*` is removed.
+- Independent review (separate agent) found three defects, all fixed with
+  regression tests: player counts missed renamed spellings, ordinary words
+  ("early", "love", "strong") became lineup members, float ids missed the index.
+- Not changed: on/off rows (`player_on_off`, a D2 dataset) still match by
+  name; with/without/opponent-player filters choose a shared-name player
+  without a note. Stream 4 proposed a published `metadata/player_names.csv` to
+  skip the cold full scan; it must carry `player_id` for these indexes.
+
+Evidence: `tests/test_player_identity_selection.py` (data-free, controlled
+frames with the real ids) and the A1b block of
+`tests/test_player_identity_real_data.py` (values from raw rows by id), all
+16 real-data identity tests passing in targeted R2 runs 37118187291 and
+37130896078 (after the independent review fixes).
+
 
 **Result of the first slice (branch `claude/issue-314-q0tbff`).** Reproduced,
 then fixed in shared resolution, so every consumer (summaries, finders,
@@ -490,7 +533,7 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice merged (#315); R2 runs 37098675951 and 37099947680 passed, deployed check open; A1b open | A1b: `player_id` selection for identical names, resolver for lineup/legacy alias scans |
+| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`, real-data tests passed (R2 runs 37118187291, 37130896078) | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
 | A2 | Team last-N records merged (#316). Explicit date windows in #317: from/to, between/and, since/after (spans every season through today), before/until/through (open start within the date's season), lone ISO dates, cross-season ranges; impossible dates refuse. Real-data tests passed in targeted R2 run 37106273170 | "In the last N" vs "last N with a condition"; last N meetings vs last N overall; team last-N summaries beyond the record |
 | B1 | Totals vs per-game leaderboards in #317. Stream 3 branch `claude/rankings-stream-s8gywm`: condition-count rankings in adjective/shorthand form ("most 30 point 10 rebound games", "30/10 games", three conditions), exact-zero conditions ("10+ assists and 0 turnovers" no longer counts every 10-assist game; missing stats meet no bound), league-wide game lists and counts ("games with 10+ assists and 0 turnovers", "how often has a player had ..."), attempt-qualified shooting-rate leaders ("minimum 300 attempts", "5+ attempts per game"), games-played leaders, "best 3 point percentage" no longer read as top 3. PR #321: fixture checks pass; real data passed in targeted R2 runs 37130674898 (Raw QA 10/10, B1 needs_data tests) and 37131376968 (all needs_data tests in the touched files) | Independent check of #321 (re-derive 2023-24 "10+ assists and 0 turnovers" counts and the 300-attempt 3P% board from raw rows), then merge. Open: "players with X and Y" (no stated aggregation) still refuses; team attempt minimums; totals still use the 20-game floor; then C2 |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
