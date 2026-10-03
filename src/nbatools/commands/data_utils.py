@@ -310,6 +310,72 @@ def select_most_recent_games(df: pd.DataFrame, last_n: int | None) -> pd.DataFra
     return df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
 
 
+LAST_N_SCOPES = ("qualifying", "window", "outcome_window")
+WINDOW_SCOPES = ("window", "outcome_window")
+
+
+def _game_key(series: pd.Series) -> pd.Series:
+    return series.astype(str).str.lstrip("0")
+
+
+def last_n_outcome(scope: str | None, wins_only: bool, losses_only: bool) -> str | None:
+    """The result that defines an ``outcome_window`` ("his last 10 wins")."""
+    if scope != "outcome_window":
+        return None
+    if wins_only:
+        return "W"
+    if losses_only:
+        return "L"
+    return None
+
+
+def last_n_window_game_ids(
+    sample: pd.DataFrame, last_n: int, outcome: str | None = None
+) -> set[str]:
+    """Game ids of the ``last_n`` most recent games in a sample.
+
+    ``sample`` carries only the filters that define which games are in play
+    (entity, season, dates, opponent, home/away, teammate availability,
+    role); game results and stat conditions are applied afterwards, inside
+    the window, by :func:`apply_last_n_sample`. ``outcome`` ("W"/"L") makes
+    the window the N most recent wins or losses ("how many of his last 10
+    wins did he score 30").
+    """
+    if outcome and "wl" in sample.columns:
+        sample = sample[sample["wl"].astype(str).str.upper().eq(outcome)]
+    window = select_most_recent_games(sample, last_n)
+    return set(_game_key(window["game_id"])) if "game_id" in window.columns else set()
+
+
+def apply_last_n_sample(
+    df: pd.DataFrame,
+    last_n: int | None,
+    window_game_ids: set[str] | None = None,
+) -> pd.DataFrame:
+    """Finish a last-N request on a fully filtered game log.
+
+    - window scope ("30 point games in his last 10 games"): ``window_game_ids``
+      are the 10 most recent games in play, and the filtered rows are kept
+      only inside that window.
+    - qualifying scope ("his last 10 games where he scored 30", "last 10
+      wins"): every filter has already run, so keep the N most recent rows.
+    """
+    if window_game_ids is not None:
+        return df[_game_key(df["game_id"]).isin(window_game_ids)].copy()
+    return select_most_recent_games(df, last_n)
+
+
+def sample_season_span(df: pd.DataFrame, seasons: list[str], last_n: int | None) -> list[str]:
+    """Seasons a caveat should name: the ones a last-N sample actually used.
+
+    A last-N window may load the prior season to fill itself; when every
+    selected game is from the current season, the answer is single-season.
+    """
+    if last_n is None or "season" not in df.columns or df.empty:
+        return seasons
+    return sorted(df["season"].astype(str).unique())
+
+
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
 
@@ -938,8 +1004,15 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
     )
 
 
-def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
+def load_player_games_for_seasons(
+    seasons: list[str], season_type: str, *, player: str | None = None
+) -> pd.DataFrame:
+    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns.
+
+    ``player`` keeps only the rows that player's selection could use from each
+    season before combining, so a career query never concatenates every
+    league-wide season frame. Callers still select the player afterwards.
+    """
     data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
     frames = [
@@ -950,6 +1023,12 @@ def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.Da
     if not frames:
         joined = ", ".join(seasons)
         raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
+    if player:
+        from nbatools.commands._player_identity import player_rows_prefilter
+
+        frames = player_rows_prefilter(frames, player)
+        if len(frames) > 1:
+            return pd.concat(frames, ignore_index=True)
     return _combine_cached_frames(frames)
 
 
