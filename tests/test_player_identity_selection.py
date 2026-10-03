@@ -329,3 +329,60 @@ def test_player_count_matches_every_spelling(roster_index, monkeypatch):
     )
 
     assert counted.to_dict()["sections"]["count"][0]["count"] == 9
+
+
+# ---------------------------------------------------------------------------
+# Published name list (metadata/player_names.csv) instead of the full scan
+# ---------------------------------------------------------------------------
+
+
+def _patch_source(monkeypatch, published: pd.DataFrame | None, season_rows: list[pd.DataFrame]):
+    entity_resolution.reset_player_index()
+    monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "published-test")
+    globbed: list[bool] = []
+
+    def fake_exists(path):
+        return published is not None and str(path) == str(entity_resolution.PLAYER_NAMES_PATH)
+
+    def fake_glob(pattern):
+        globbed.append(True)
+        return [f"raw/player_game_stats/{n}.csv" for n in range(len(season_rows))]
+
+    def fake_read(path, *args, **kwargs):
+        if str(path) == str(entity_resolution.PLAYER_NAMES_PATH):
+            return published.astype(str)
+        frame = season_rows[int(str(path).rsplit("/", 1)[1].split(".")[0])].astype(str)
+        usecols = kwargs.get("usecols")
+        return frame[[c for c in frame.columns if usecols(c)]] if callable(usecols) else frame
+
+    monkeypatch.setattr(entity_resolution, "data_exists", fake_exists)
+    monkeypatch.setattr(entity_resolution, "data_glob", fake_glob)
+    monkeypatch.setattr(entity_resolution, "data_read_csv", fake_read)
+    return globbed
+
+
+def test_published_name_list_replaces_the_full_scan(monkeypatch, request):
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame(
+        {
+            "player_id": [1626171, 2229, 1628455, 1626171],
+            "player_name": ["Bobby Portis", "Mike James", "Mike James", "Bobby Portis Jr."],
+            "season": ["2023-24", "2005-06", "2017-18", "2025-26"],
+        }
+    )
+    globbed = _patch_source(monkeypatch, published, [])
+
+    assert entity_resolution.player_ids_for_name("Mike James") == {"2229", "1628455"}
+    assert entity_resolution.player_ids_for_name("bobby portis") == {"1626171"}
+    assert entity_resolution.canonical_player_names_by_id()["1626171"] == "Bobby Portis Jr."
+    assert globbed == []
+
+
+def test_name_list_without_ids_falls_back_to_the_full_scan(monkeypatch, request):
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame({"player_name": ["Mike James"]})
+    season = pd.DataFrame({"player_id": [2229], "player_name": ["Mike James"], "pts": [1]})
+    globbed = _patch_source(monkeypatch, published, [season])
+
+    assert entity_resolution.player_ids_for_name("Mike James") == {"2229"}
+    assert globbed == [True]

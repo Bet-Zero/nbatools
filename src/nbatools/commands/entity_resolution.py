@@ -22,7 +22,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.data_source import data_glob, data_read_csv, data_source_cache_key
+from nbatools.data_source import (
+    PLAYER_NAMES_PATH,
+    data_exists,
+    data_glob,
+    data_read_csv,
+    data_source_cache_key,
+)
 
 # ---------------------------------------------------------------------------
 # Resolution result types
@@ -601,41 +607,68 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
         return set(_player_names_cache)
 
     names: set[str] = set(_FALLBACK_PLAYER_NAMES)
-    if data_dir is None:
-        csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=str)
-        read_csv = data_read_csv
-    else:
-        stats_dir = data_dir / "raw" / "player_game_stats"
-        if not stats_dir.exists():
-            return names
-        csv_paths = sorted(stats_dir.glob("*.csv"))
-        read_csv = pd.read_csv
-
     ids_by_name: dict[str, set[str]] = {}
-    # Files sort by season, so the last spelling seen is the most recent one.
+    # Rows arrive in season order, so the last spelling seen is the most recent.
     name_by_id: dict[str, str] = {}
-    for csv_path in csv_paths:
-        try:
-            df = read_csv(
-                csv_path,
-                usecols=lambda column: column in {"player_id", "player_name"},
-                dtype=str,
-            )
-        except Exception:
-            continue
-        if "player_name" not in df.columns:
-            continue
+
+    def add_rows(df: pd.DataFrame) -> None:
         names.update(df["player_name"].dropna().unique())
-        if "player_id" in df.columns:
-            pairs = df[["player_name", "player_id"]].dropna().drop_duplicates()
-            for name, player_id in pairs.itertuples(index=False):
-                ids_by_name.setdefault(_normalize_for_matching(name), set()).add(player_id)
-                name_by_id[player_id] = _preferred_spelling(name_by_id.get(player_id), name)
+        if "player_id" not in df.columns:
+            return
+        pairs = df[["player_name", "player_id"]].dropna().drop_duplicates()
+        for name, player_id in pairs.itertuples(index=False):
+            ids_by_name.setdefault(_normalize_for_matching(name), set()).add(player_id)
+            name_by_id[player_id] = _preferred_spelling(name_by_id.get(player_id), name)
+
+    published = _read_published_player_names() if data_dir is None else None
+    if published is not None:
+        add_rows(published)
+    else:
+        if data_dir is None:
+            csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=str)
+            read_csv = data_read_csv
+        else:
+            stats_dir = data_dir / "raw" / "player_game_stats"
+            if not stats_dir.exists():
+                return names
+            csv_paths = sorted(stats_dir.glob("*.csv"))
+            read_csv = pd.read_csv
+        for csv_path in csv_paths:
+            try:
+                df = read_csv(
+                    csv_path,
+                    usecols=lambda column: column in {"player_id", "player_name"},
+                    dtype=str,
+                )
+            except Exception:
+                continue
+            if "player_name" in df.columns:
+                add_rows(df)
     if data_dir is None:
         _player_names_cache = set(names)
         _player_ids_by_name_cache = {key: frozenset(ids) for key, ids in ids_by_name.items()}
         _player_name_by_id_cache = name_by_id
     return names
+
+
+def _read_published_player_names() -> pd.DataFrame | None:
+    """The generation's published (player_id, player_name, season) list, if usable.
+
+    Publication writes it from the same player game rows, sorted by season, so
+    it replaces downloading every season file at a cold start. A generation
+    without it (or a list missing ``player_id``) falls back to the full scan.
+    """
+    try:
+        if not data_exists(PLAYER_NAMES_PATH):
+            return None
+        df = data_read_csv(PLAYER_NAMES_PATH, dtype=str)
+    except Exception:
+        return None
+    if not {"player_id", "player_name"}.issubset(df.columns) or df.empty:
+        return None
+    if "season" in df.columns:
+        df = df.sort_values("season", kind="stable")
+    return df
 
 
 def _preferred_spelling(previous: str | None, current: str) -> str:
