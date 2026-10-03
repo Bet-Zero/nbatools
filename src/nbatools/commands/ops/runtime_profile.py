@@ -14,8 +14,11 @@ not of the deployed function; use them to rank causes, not as latency claims.
 
 from __future__ import annotations
 
+import cProfile
+import io
 import json
 import os
+import pstats
 import sys
 import time
 from pathlib import Path
@@ -76,12 +79,38 @@ def profile(queries: tuple[str, ...] = DEFAULT_QUERIES) -> dict[str, Any]:
                 result = stage(f"{label}: {query}", lambda q=query: execute_natural_query(q))
                 stages[-1]["status"] = result.result_status
                 stages[-1]["route"] = result.route
+            stages[-1]["hotspots"] = _hotspots(lambda q=query: execute_natural_query(q))
+    import re
+
     return {
+        "regex_cache_entries": len(getattr(re, "_cache", {})),
         "generation": generation,
         "data_source": os.environ.get("DATA_SOURCE", "local"),
         "total_seconds": round(sum(item["seconds"] for item in stages), 3),
         "stages": stages,
     }
+
+
+def _hotspots(fn, limit: int = 12) -> list[str]:
+    """Top functions by cumulative time for one more warm call."""
+    profiler = cProfile.Profile()
+    profiler.enable()
+    fn()
+    profiler.disable()
+    buffer = io.StringIO()
+    stats = pstats.Stats(profiler, stream=buffer).sort_stats("cumulative")
+    rows = []
+    for func, (_cc, ncalls, _tt, cumtime, _callers) in sorted(
+        stats.stats.items(), key=lambda item: item[1][3], reverse=True
+    ):
+        filename, line, name = func
+        if "nbatools" not in filename and "pandas" not in filename and "re/" not in filename:
+            continue
+        short = filename.split("site-packages/")[-1].split("src/")[-1]
+        rows.append(f"{cumtime:7.3f}s {ncalls:>7} {short}:{line} {name}")
+        if len(rows) >= limit:
+            break
+    return rows
 
 
 def main(argv: list[str] | None = None) -> None:

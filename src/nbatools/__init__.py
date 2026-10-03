@@ -20,6 +20,11 @@ except PackageNotFoundError:  # pragma: no cover - source tree without an instal
     __version__ = _FALLBACK_VERSION
 
 
+from nbatools.regex_cache import ensure_regex_cache_capacity  # noqa: E402
+
+ensure_regex_cache_capacity()
+
+
 def __getattr__(name: str):
     """Lazily expose query-service convenience imports."""
     if name in {"QueryResult", "execute_natural_query", "execute_structured_query"}:
