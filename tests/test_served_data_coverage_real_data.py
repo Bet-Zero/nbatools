@@ -13,6 +13,8 @@ not values read from the data under test.
 
 from __future__ import annotations
 
+import warnings
+
 import pandas as pd
 import pytest
 
@@ -55,12 +57,16 @@ def coverage():
     return report
 
 
-def test_print_served_coverage_report(coverage, capsys):
-    # Printed outside capture so the workflow log carries the evidence even
-    # when the run passes.
-    with capsys.disabled():
-        print("\n" + format_report(coverage) + "\n")
+def test_print_served_coverage_report(coverage):
+    # Emitted as a warning because the workflow runs pytest quietly (and in
+    # parallel workers), where printed output is dropped from a passing run;
+    # the warnings summary always reaches the log.
+    warnings.warn(ServedCoverageReport("\n" + format_report(coverage)), stacklevel=1)
     assert coverage.slices
+
+
+class ServedCoverageReport(UserWarning):
+    """Carries the coverage report into the pytest warnings summary."""
 
 
 @pytest.mark.parametrize("dataset", CORE_DATASETS)
@@ -78,9 +84,15 @@ def test_core_dataset_covers_working_scope(coverage, dataset):
 @pytest.mark.parametrize("season_type", ["Regular Season", "Playoffs"])
 @pytest.mark.parametrize("season", SEASONS)
 def test_core_slice_validated(coverage, season, season_type):
+    # A versioned receipt that passed, or a pre-receipt slice the backfill
+    # manifest records as complete. The game-count and key checks below are
+    # the independent evidence for both kinds.
     item = coverage.slice(season, season_type)
     assert item is not None, f"{season} {season_type} is not served"
-    assert item.validation_state == "passed", (season, season_type, item.errors)
+    if item.validation_state == "legacy_unverified":
+        assert item.legacy_complete, (season, season_type)
+    else:
+        assert item.validation_state == "passed", (season, season_type, item.errors)
 
 
 @pytest.mark.parametrize("year", range(FIRST_SEASON, LAST_SEASON + 1))

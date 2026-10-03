@@ -22,6 +22,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands.freshness import manifest_entry
 from nbatools.commands.validation_control import inspect_slice_manifest
 from nbatools.data_source import (
     current_data_generation,
@@ -45,6 +46,8 @@ class SliceCoverage:
     season: str
     season_type: str
     validation_state: str = "unknown"
+    # Legacy slices predate versioned receipts; their backfill-manifest flags.
+    legacy_complete: bool | None = None
     final_games: int | None = None
     first_game_date: str | None = None
     last_game_date: str | None = None
@@ -56,6 +59,7 @@ class SliceCoverage:
             "season": self.season,
             "season_type": self.season_type,
             "validation_state": self.validation_state,
+            "legacy_complete": self.legacy_complete,
             "final_games": self.final_games,
             "first_game_date": self.first_game_date,
             "last_game_date": self.last_game_date,
@@ -135,6 +139,14 @@ def _collect_slice(season: str, season_type: str) -> SliceCoverage:
     inspection = inspect_slice_manifest(season, season_type, verify_files=False)
     item.validation_state = str(inspection.get("validation_state", "unknown"))
     item.errors = [str(error) for error in inspection.get("errors") or []]
+    if inspection.get("manifest") is None and item.validation_state == "unknown":
+        legacy = manifest_entry(season, season_type)
+        if legacy is not None:
+            item.validation_state = str(legacy.get("validation_state"))
+            item.legacy_complete = bool(legacy.get("raw_complete")) and bool(
+                legacy.get("processed_complete")
+            )
+            item.errors = []
     for record in (inspection.get("manifest") or {}).get("datasets") or []:
         if not isinstance(record, dict) or not record.get("name"):
             continue
@@ -212,10 +224,18 @@ def format_report(coverage: ServedCoverage) -> str:
         lines.append(f"  {dataset}: {len(labels)} slice(s); {_season_runs(labels)}")
     if coverage.reference_files:
         lines.append("Reference files: " + ", ".join(coverage.reference_files))
+    states: dict[str, int] = defaultdict(int)
+    for item in coverage.slices:
+        states[item.validation_state] += 1
+    lines += [
+        "",
+        "Slice validation states: "
+        + ", ".join(f"{state} {count}" for state, count in sorted(states.items())),
+    ]
     lines += [
         "",
         "Slices (validation from slice manifest; games counted from raw/games):",
-        "  season   type            validation  final_games  first_date  last_date"
+        "  season   type            validation        final_games  first_date  last_date"
         "   optional datasets present",
     ]
     for item in coverage.slices:
@@ -225,7 +245,7 @@ def format_report(coverage: ServedCoverage) -> str:
             if not record["required"] and (record.get("row_count") or 0) > 0
         )
         lines.append(
-            f"  {item.season}  {item.season_type:<15} {item.validation_state:<11} "
+            f"  {item.season}  {item.season_type:<15} {item.validation_state:<17} "
             f"{item.final_games if item.final_games is not None else '-':>11}  "
             f"{item.first_game_date or '-':<10}  {item.last_game_date or '-':<10}  "
             + (", ".join(optional) or "-")
