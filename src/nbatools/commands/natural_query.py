@@ -336,7 +336,11 @@ from nbatools.commands._playoff_record_route_utils import (
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
-from nbatools.commands.entity_resolution import format_ambiguity_message, resolve_stat
+from nbatools.commands.entity_resolution import (
+    TEAM_ALIASES,
+    format_ambiguity_message,
+    resolve_stat,
+)
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
@@ -1103,6 +1107,23 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 )
 
 
+_TEAM_ALIAS_PATTERN = re.compile(
+    r"(?<![\w'])("
+    + "|".join(re.escape(name) for name in sorted(TEAM_ALIASES, key=len, reverse=True))
+    + r")(?![\w'])"
+)
+
+
+def _named_team_abbrs(q: str) -> list[str]:
+    """Distinct teams named in the query, in order ("lakers and celtics")."""
+    seen: list[str] = []
+    for match in _TEAM_ALIAS_PATTERN.finditer(q):
+        abbr = TEAM_ALIASES[match.group(1)]
+        if abbr not in seen:
+            seen.append(abbr)
+    return seen
+
+
 def _stretch_display_mode(q: str, player: str | None) -> str | None:
     """Classify rolling-stretch display intent when the query says so plainly."""
     if not re.search(r"\b(?:stretch(?:es)?|windows?|rolling)\b", q):
@@ -1344,6 +1365,8 @@ def _build_parse_state(query: str) -> dict:
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
     team_stretch_request = detect_team_stretch_request(q)
+    if team_stretch_request is not None:
+        team_stretch_request["named_teams"] = _named_team_abbrs(q)
     stretch_names_players = bool(stretch_request and re.search(r"\b(?:players?|who)\b", q))
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
@@ -2372,6 +2395,10 @@ def _finalize_route(parsed: dict) -> dict:
         and (team_rolling_stretch_boundary or (team and not stretch_names_players))
     ):
         route = "team_stretch_leaderboard"
+        opponents = {opponent} if isinstance(opponent, str) else set(opponent or [])
+        subject_teams = [
+            abbr for abbr in team_stretch_request.get("named_teams", []) if abbr not in opponents
+        ]
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -2379,7 +2406,9 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "season_type": season_type,
-            "team": team,
+            # "Lakers and Celtics best 5 game stretch" ranks both teams' best runs.
+            "team": team if len(subject_teams) < 2 else None,
+            "teams": subject_teams if len(subject_teams) >= 2 else None,
             "opponent": opponent,
             "home_only": home_only,
             "away_only": away_only,

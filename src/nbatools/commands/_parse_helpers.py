@@ -1975,6 +1975,8 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
         r"\b\d+\s*(?:-\s*|\s+)games?\s+team\b",
         r"\bstretch(?:es)?\s+by\s+(?:a\s+)?team\b",
         r"\bby\s+(?:a\s+)?team\b",
+        r"\bteams?\s+with\b",
+        r"\bteams?\s+(?:best|top|hottest|worst|coldest|longest)\b",
     )
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
 
@@ -2000,7 +2002,12 @@ _TEAM_STRETCH_METRIC_PATTERNS = (
     (r"\bsteals?\b", "stl"),
     (r"\bblocks?\b", "blk"),
 )
-_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|lowest|poorest|bad|ugliest)\b")
+_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|bad|ugliest)\b")
+_TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest|top)\b")
+# "lowest"/"most" name the end of the raw number, not good or bad.
+_TEAM_STRETCH_LOW = re.compile(r"\b(?:lowest|fewest|least|min(?:imum)?)\b")
+_TEAM_STRETCH_HIGH = re.compile(r"\b(?:highest|most|max(?:imum)?)\b(?!\s+(?:efficient|efficiency))")
+_TEAM_STRETCH_LOWER_IS_BETTER = {"opp_pts", "tov", "def_rating"}
 
 
 def detect_team_stretch_request(text: str) -> dict | None:
@@ -2020,7 +2027,17 @@ def detect_team_stretch_request(text: str) -> dict | None:
             (key for pattern, key in _TEAM_STRETCH_METRIC_PATTERNS if re.search(pattern, text)),
             detect_stat(text) or "wins",
         )
-    return {"metric": metric, "worst": bool(_TEAM_STRETCH_WORST.search(text))}
+    if _TEAM_STRETCH_WORST.search(text):
+        worst = True
+    elif _TEAM_STRETCH_BEST.search(text):
+        worst = False
+    elif _TEAM_STRETCH_LOW.search(text):
+        worst = metric not in _TEAM_STRETCH_LOWER_IS_BETTER
+    elif _TEAM_STRETCH_HIGH.search(text):
+        worst = metric in _TEAM_STRETCH_LOWER_IS_BETTER
+    else:
+        worst = False
+    return {"metric": metric, "worst": worst}
 
 
 _LINEUP_MEMBER_SPAN_RE = re.compile(

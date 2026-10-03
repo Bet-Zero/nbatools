@@ -135,6 +135,7 @@ def build_result(
     end_season: str | None = None,
     season_type: str = "Regular Season",
     team: str | None = None,
+    teams: list[str] | None = None,
     opponent: str | list[str] | tuple[str, ...] | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -184,6 +185,12 @@ def build_result(
         start_date=start_date,
         end_date=end_date,
     )
+    if teams:
+        wanted = {t.upper() for t in teams}
+        df = df[
+            df["team_abbr"].astype(str).str.upper().isin(wanted)
+            | df["team_name"].astype(str).str.upper().isin(wanted)
+        ]
     if df.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
 
@@ -237,6 +244,11 @@ def build_result(
     return LeaderboardResult(
         leaders=rows,
         caveats=caveats,
-        metadata={"worst": worst, "stretch_metric": stretch_metric},
+        metadata={
+            "worst": worst,
+            "stretch_metric": stretch_metric,
+            "team": team,
+            "teams": teams,
+        },
         current_through=compute_current_through_for_seasons(seasons, season_type),
     )

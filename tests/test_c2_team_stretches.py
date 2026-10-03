@@ -135,3 +135,50 @@ def test_player_wording_on_a_team_stays_a_player_stretch():
     assert result.metadata["route"] == "player_stretch_leaderboard"
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert {row["team_abbr"] for row in rows} == {"LAL"}
+
+
+@pytest.mark.parametrize(
+    ("query", "value", "lowest"),
+    [
+        (
+            f"Lakers 5 game stretch with the lowest points allowed in {SEASON}",
+            lambda chunk: sum(r.pts - r.plus_minus for r in chunk) / 5,
+            True,
+        ),
+        (
+            f"Lakers 5 game stretch with the most points allowed in {SEASON}",
+            lambda chunk: sum(r.pts - r.plus_minus for r in chunk) / 5,
+            False,
+        ),
+        (
+            f"Lakers 5 game stretch with most turnovers in {SEASON}",
+            lambda chunk: sum(r.tov for r in chunk) / 5,
+            False,
+        ),
+        (
+            f"Lakers lowest scoring 5 game stretch in {SEASON}",
+            lambda chunk: sum(r.pts for r in chunk) / 5,
+            True,
+        ),
+    ],
+)
+def test_lowest_and_most_mean_the_raw_number(query, value, lowest):
+    lakers = _team_games().query("team_abbr == 'LAL'")
+    values = [w[0] for w in _windows(lakers, 5, value)]
+    rows, _ = _rows(query)
+    assert rows[0]["stretch_value"] == pytest.approx(
+        min(values) if lowest else max(values), abs=1e-3
+    )
+
+
+def test_two_named_teams_are_both_ranked():
+    games = _team_games()
+    best = {
+        abbr: max(_windows(games.query("team_abbr == @abbr"), 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr in ("LAL", "BOS")
+    }
+    rows, metadata = _rows(f"Lakers and Celtics best 5 game stretch in {SEASON}")
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+    assert "among the 2 teams" in metadata["answer_phrase"]

@@ -1064,20 +1064,36 @@ def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         value = float(row["stretch_value"])
         label = _TEAM_STRETCH_PHRASES.get(metric, metric)
         if metric.endswith("_pct"):
-            detail = f"posted a {value:.1%} {label} {span}, going {record}"
+            shown = f"{value:.1%}"
+            detail = f"posted {_indefinite_article(shown)} {shown} {label} {span}, going {record}"
         elif metric == "plus_minus":
             verb = "outscored opponents" if value >= 0 else "were outscored"
             margin_text = _format_one_decimal(abs(value))
             detail = f"{verb} by {margin_text} points per game {span}, going {record}"
         elif metric.endswith("_rating"):
-            detail = f"posted a {_format_one_decimal(value)} {label} {span}, going {record}"
+            shown = _format_one_decimal(value)
+            detail = f"posted {_indefinite_article(shown)} {shown} {label} {span}, going {record}"
         else:
             detail = f"averaged {_format_one_decimal(value)} {label} {span}, going {record}"
-    scope = "their" if metadata.get("team") else "the league's"
-    metadata["answer_phrase"] = (
-        f"The {row['team_name']} {detail}, {scope} {direction} {size}-game stretch "
-        f"of {row['season']}."
+    teams = result.metadata.get("teams")
+    if teams:
+        scope = f"the {direction} {size}-game stretch among the {len(teams)} teams"
+    elif result.metadata.get("team"):
+        scope = f"their {direction} {size}-game stretch"
+    else:
+        scope = f"the league's {direction} {size}-game stretch"
+    when = (
+        f"the {row['season']} playoffs"
+        if metadata.get("season_type") == "Playoffs"
+        else str(row["season"])
     )
+    metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} of {when}."
+
+
+def _indefinite_article(number_text: str) -> str:
+    """'an 84.4', 'an 11.2', 'an 18-point' but 'a 104.5'."""
+    whole = number_text.split(".")[0].lstrip("-")
+    return "an" if whole.startswith("8") or whole in {"11", "18"} else "a"
 
 
 def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> None:

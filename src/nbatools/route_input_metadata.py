@@ -784,6 +784,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "away_only",
             "last_n",
             "team",
+            "teams",
             "opponent",
             "stretch_metric",
             "worst",
