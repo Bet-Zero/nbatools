@@ -7,7 +7,12 @@ from nbatools.commands._leaderboard_utils import (
     detect_team_leaderboard_stat,
 )
 from nbatools.commands._matchup_utils import detect_player
-from nbatools.commands.entity_resolution import resolve_players_in_query
+from nbatools.commands.entity_resolution import (
+    _normalize_for_matching,
+    player_last_name_candidates,
+    resolve_player,
+    resolve_players_in_query,
+)
 
 
 def extract_top_n(text: str) -> int | None:
@@ -1597,8 +1602,68 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
 
 
+_LINEUP_MEMBER_SPAN_RE = re.compile(
+    r"\b(?:with|featuring|including)\s+(.+?)"
+    r"(?=\s+(?:in|during|for|since|this|last|over|at|on|from|who|that|together"
+    r"|lineups?|units?|combos?|minimum|min|playing|play|played)\b|\s+\d|[?!,.;]?$)"
+)
+_LINEUP_MEMBER_SPLIT_RE = re.compile(r"\s*(?:,|&|\band\b|\bplus\b)\s*")
+
+
+def _lineup_member_phrases(text: str) -> list[tuple[int, str]]:
+    """Phrases listed after "with" ("with brunson and hart" -> brunson, hart)."""
+    match = _LINEUP_MEMBER_SPAN_RE.search(text)
+    if not match:
+        return []
+    phrases = []
+    span_start = match.start(1)
+    for piece in _LINEUP_MEMBER_SPLIT_RE.split(match.group(1)):
+        piece = piece.strip()
+        if piece:
+            phrases.append((text.find(piece, span_start), piece))
+    return phrases
+
+
 def _extract_player_mentions(text: str) -> list[str]:
-    return resolve_players_in_query(text)
+    """Lineup members, in question order, resolved by the shared resolver.
+
+    Full names and aliases anywhere in the question count. A listed member
+    phrase ("with brunson and hart") that is only a last name resolves through
+    ``resolve_player``; when that name belongs to several players it is kept as
+    typed, so the lineup keeps its size and matches no real unit instead of
+    silently answering for the members that did resolve.
+    """
+    players = resolve_players_in_query(text)
+    extra: list[tuple[int, str]] = []
+    for position, phrase in _lineup_member_phrases(text):
+        if resolve_players_in_query(phrase):
+            continue
+        result = resolve_player(phrase)
+        if result.is_confident:
+            extra.append((position, result.resolved))
+        elif result.is_ambiguous or len(player_last_name_candidates(phrase)) > 1:
+            extra.append((position, phrase))
+    if not extra:
+        return players
+    # Members found by the full scan keep their order; each phrase-resolved
+    # member goes where its phrase sits in the question.
+    ordered: list[tuple[int, str]] = []
+    for name in players:
+        ordered.append((_mention_position(text, name), name))
+    ordered.extend(extra)
+    result_names: list[str] = []
+    for _, name in sorted(ordered, key=lambda item: item[0]):
+        if name not in result_names:
+            result_names.append(name)
+    return result_names
+
+
+def _mention_position(text: str, name: str) -> int:
+    """Earliest position in ``text`` of any word of ``name`` (accents folded)."""
+    folded = _normalize_for_matching(text)
+    hits = [folded.find(word) for word in _normalize_for_matching(name).split()]
+    hits = [hit for hit in hits if hit >= 0]
+    return min(hits) if hits else len(text)
 
 
 def detect_lineup_query(text: str) -> dict | None:

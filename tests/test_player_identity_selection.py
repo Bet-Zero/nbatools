@@ -42,6 +42,12 @@ ROSTER = [
     ("1630166", "Deni Avdija"),
     ("201950", "Jrue Holiday"),
     ("202331", "Paul George"),
+    ("2544", "LeBron James"),
+    # Real players whose surnames are ordinary words, and a second Hart.
+    ("2133", "Jason Hart"),
+    ("203516", "Cleanthony Early"),
+    ("1501", "Derek Strong"),
+    ("201567", "Kevin Love"),
 ]
 
 
@@ -238,8 +244,6 @@ def test_frames_without_ids_still_filter_by_name(roster_index):
         # Neither player has a curated alias: the scan used to find nobody.
         ("lineups with deni avdija and jrue holiday", ["Deni Avdija", "Jrue Holiday"]),
         ("jalen brunson and josh hart together", ["Jalen Brunson", "Josh Hart"]),
-        # Unique data last names resolve; order follows the question.
-        ("best lineups with hart and brunson", ["Josh Hart", "Jalen Brunson"]),
         # A curated nickname still works next to a data full name.
         ("lineups with pg and deni avdija", ["Paul George", "Deni Avdija"]),
     ],
@@ -258,5 +262,70 @@ def test_lineup_query_carries_data_backed_members(roster_index):
 
 
 def test_shared_last_names_never_become_a_lineup_member(roster_index):
-    """ "james" is two players here (and a common surname); it is not guessed."""
-    assert resolve_players_in_query("lineups with james and brunson") == ["Jalen Brunson"]
+    """ "james" is two players here: it is kept as typed, never guessed or dropped."""
+    parsed = detect_lineup_query("lineups with james and brunson")
+    assert parsed["lineup_members"] == ["james", "Jalen Brunson"]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "knicks lineups early in the season",
+        "lineups with a strong net rating",
+        "lineups fans love",
+        "best 5-man lineups with at least 200 minutes",
+    ],
+)
+def test_ordinary_words_that_are_surnames_are_not_lineup_members(roster_index, text):
+    parsed = detect_lineup_query(text)
+    assert parsed is not None
+    assert parsed["lineup_members"] == []
+
+
+def test_listed_unique_last_names_resolve_in_question_order(roster_index):
+    parsed = detect_lineup_query("best lineups with avdija and brunson")
+    assert parsed["lineup_members"] == ["Deni Avdija", "Jalen Brunson"]
+
+
+def test_a_listed_shared_last_name_keeps_the_lineup_size(roster_index):
+    """Josh and Jason Hart both exist: the lineup stays two members, not Brunson alone."""
+    parsed = detect_lineup_query("knicks lineups with brunson and hart")
+    assert parsed["lineup_members"] == ["Jalen Brunson", "hart"]
+    assert parsed["unit_size"] == 2
+
+
+def test_float_ids_match_the_index(roster_index):
+    df = _frame(_rows(1626171, "Bobby Portis Jr.", "MIL", {"2025-26": 3}))
+    df["player_id"] = df["player_id"].astype(float)
+
+    assert len(select_player_rows(df, "Bobby Portis")) == 3
+    assert set(canonicalize_player_names(df)["player_name"]) == {"Bobby Portis Jr."}
+
+
+def test_player_count_matches_every_spelling(roster_index, monkeypatch):
+    """ "How many 20-point games did Bobby Portis have" counts his "Jr." games too."""
+    from nbatools.commands import player_occurrence_leaders
+    from nbatools.query_service import _apply_count_intent
+
+    df = _frame(
+        _rows(1626171, "Bobby Portis", "MIL", {"2024-25": 5}),
+        _rows(1626171, "Bobby Portis Jr.", "MIL", {"2024-25": 4}),
+    )
+    df["game_id"] = [f"g{n}" for n in range(len(df))]
+    df["pts"] = 25
+    df["is_home"] = 1
+    df["is_away"] = 0
+    df["wl"] = "W"
+    df = canonicalize_player_names(df)
+    monkeypatch.setattr(
+        player_occurrence_leaders, "load_player_games_for_seasons", lambda *a, **k: df
+    )
+
+    result = player_occurrence_leaders.build_result(
+        stat="pts", min_value=20, season="2024-25", player="Bobby Portis", min_games=1
+    )
+    counted = _apply_count_intent(
+        result, {"count_intent": True, "player": "Bobby Portis"}, allow_stat_total=False
+    )
+
+    assert counted.to_dict()["sections"]["count"][0]["count"] == 9

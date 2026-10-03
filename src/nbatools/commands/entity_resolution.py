@@ -1255,21 +1255,9 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
     return _no_match()
 
 
-_LINEUP_SCAN_STOPWORDS: set[str] = {
-    "combo",
-    "combos",
-    "lineup",
-    "lineups",
-    "man",
-    "minute",
-    "minutes",
-    "net",
-    "plus",
-    "minus",
-    "together",
-    "unit",
-    "units",
-}
+def player_last_name_candidates(word: str) -> list[str]:
+    """Every data player whose last name is ``word`` (shared names included)."""
+    return list(_get_player_index().get(_normalize_for_matching(word), []))
 
 
 def resolve_players_in_query(text: str) -> list[str]:
@@ -1278,8 +1266,9 @@ def resolve_players_in_query(text: str) -> list[str]:
     Used where a question names several players at once ("lineups with Jalen
     Brunson and Josh Hart"). Full names from the data index and the curated
     canonical names beat shorter aliases on the same words, exactly as in
-    ``resolve_player_in_query``; a word not covered by a name or alias resolves
-    through a unique data last name. Shared last names never auto-resolve.
+    ``resolve_player_in_query``. Bare last names are not scanned here: across a
+    whole question too many ordinary words are also surnames ("early", "love",
+    "strong"); callers resolve explicit member phrases with ``resolve_player``.
     """
     q = _normalize_for_matching(text)
     if not q:
@@ -1309,26 +1298,6 @@ def resolve_players_in_query(text: str) -> list[str]:
         if any(start < t_end and end > t_start for t_start, t_end, _ in taken):
             continue
         taken.append((start, end, resolved))
-
-    last_name_index = _get_player_index()
-    for word_match in re.finditer(r"[a-z][a-z']+", q):
-        start, end = word_match.span()
-        if any(start < t_end and end > t_start for t_start, t_end, _ in taken):
-            continue
-        word = word_match.group(0)
-        if word.endswith("'s"):
-            word = word[:-2]
-        if (
-            len(word) < 4
-            or word in _PLAYER_REFERENCE_STOPWORDS
-            or word in _LINEUP_SCAN_STOPWORDS
-            or word in _TEAM_ALIAS_WORDS
-            or word in NEVER_AUTO_RESOLVE_LAST_NAMES
-        ):
-            continue
-        candidates = last_name_index.get(word, [])
-        if len(candidates) == 1:
-            taken.append((start, end, candidates[0]))
 
     players: list[str] = []
     for _start, _end, resolved in sorted(taken):

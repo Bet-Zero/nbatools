@@ -44,6 +44,14 @@ def player_name_mask(df: pd.DataFrame, player: str) -> pd.Series:
     return names.isin(matching)
 
 
+def _id_text(ids: pd.Series) -> pd.Series:
+    """Player ids as the index stores them: integer text ("1626171", not "1626171.0")."""
+    numeric = pd.to_numeric(ids, errors="coerce")
+    if numeric.notna().all() and (numeric % 1 == 0).all():
+        return numeric.astype("int64").astype(str)
+    return ids.astype(str)
+
+
 def canonicalize_player_names(df: pd.DataFrame) -> pd.DataFrame:
     """Give every row of one ``player_id`` that player's single display name.
 
@@ -54,7 +62,7 @@ def canonicalize_player_names(df: pd.DataFrame) -> pd.DataFrame:
     names = canonical_player_names_by_id()
     if not names:
         return df
-    canonical = df["player_id"].astype(str).map(names)
+    canonical = _id_text(df["player_id"]).map(names)
     current = df["player_name"]
     differs = canonical.notna() & canonical.ne(current)
     if not differs.any():
@@ -124,9 +132,13 @@ def select_player_rows(
 
     name_mask = player_name_mask(df, player)
     if "player_id" not in df.columns:
-        return df[name_mask].copy()
+        # Rows already carry one display name per player (leaderboard output),
+        # so the typed spelling also matches that player's canonical name.
+        canonical = canonical_player_names_by_id()
+        names = {canonical[pid] for pid in player_ids_for_name(player) if pid in canonical}
+        return df[name_mask | df["player_name"].astype(str).isin(names)].copy()
 
-    id_text = df["player_id"].astype(str)
+    id_text = _id_text(df["player_id"])
     ids = set(id_text[name_mask].unique()) | set(player_ids_for_name(player))
     rows = df[id_text.isin(ids)]
     row_ids = id_text[rows.index]
