@@ -210,13 +210,24 @@ him twice).
 - Loaded player rows and season leaderboards show one name per id (latest
   spelling, keeping accents).
 - Lineup "with X and Y" members resolve through the shared resolver (data
-  full names, curated names, aliases, unique last names); the raw legacy
-  alias fallback in `detect_player*` is removed.
+  full names, curated names, aliases; a bare last name only when listed after
+  "with"). A listed shared last name ("hart": Josh and Jason) stays as typed,
+  so the unit keeps its size and matches nothing rather than answering for
+  fewer players; era/team disambiguation for it waits on D2 lineup data. The
+  raw legacy alias fallback in `detect_player*` is removed.
+- Independent review (separate agent) found three defects, all fixed with
+  regression tests: player counts missed renamed spellings, ordinary words
+  ("early", "love", "strong") became lineup members, float ids missed the index.
+- Not changed: on/off rows (`player_on_off`, a D2 dataset) still match by
+  name; with/without/opponent-player filters choose a shared-name player
+  without a note. Stream 4 proposed a published `metadata/player_names.csv` to
+  skip the cold full scan; it must carry `player_id` for these indexes.
 
 Evidence: `tests/test_player_identity_selection.py` (data-free, controlled
 frames with the real ids) and the A1b block of
 `tests/test_player_identity_real_data.py` (values from raw rows by id), all
-16 real-data identity tests passing in targeted R2 run 37118187291.
+16 real-data identity tests passing in targeted R2 runs 37118187291 and
+37130896078 (after the independent review fixes).
 
 
 **Result of the first slice (branch `claude/issue-314-q0tbff`).** Reproduced,
@@ -522,7 +533,7 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`, real-data tests passed (R2 run 37118187291) | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
+| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`, real-data tests passed (R2 runs 37118187291, 37130896078) | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
 | A2 | Team last-N records merged (#316). Explicit date windows in #317: from/to, between/and, since/after (spans every season through today), before/until/through (open start within the date's season), lone ISO dates, cross-season ranges; impossible dates refuse. Real-data tests passed in targeted R2 run 37106273170 | "In the last N" vs "last N with a condition"; last N meetings vs last N overall; team last-N summaries beyond the record |
 | B1 | Totals vs per-game leaderboards in #317 (`<stat>_total` / `<stat>_per_game` siblings; rates still refuse). Real-data Raw QA 5/5 and boundary tests passed (R2 runs 37105803231, 37106273170) | Compound occurrence leaderboards ("most 30 point 10 rebound games"), "10+ assists and 0 turnovers", qualified rate leaders ("best three point percentage minimum 100 attempts"), "most games played"; totals still use the 20-game floor |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
