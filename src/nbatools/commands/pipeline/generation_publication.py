@@ -25,6 +25,7 @@ from nbatools.data_source import (
     LEGACY_GENERATION,
     PLAYER_NAMES_PATH,
     DataSourceError,
+    season_file_order,
     validate_data_generation_id,
 )
 from nbatools.r2_errors import (
@@ -362,15 +363,16 @@ def _build_staged_generation(source: Path, staged: Path, generation: str) -> Non
 def _write_player_names(stage: Path) -> Path | None:
     """Derive each player's id, name spellings and seasons from the staged game stats.
 
-    One row per distinct (player_id, player_name, season) across season types,
-    in season order, so a reader can build the name and id indexes (and take
-    the last spelling seen as current) without scanning every game row.
+    One row per distinct (player_id, player_name, season) across season types.
+    ``first_seen`` numbers the rows in game order (``season_file_order``, then
+    row order within a file), so a reader can build the name and id indexes and
+    take the last spelling seen as current without scanning every game row.
     """
     stats_dir = stage / "raw" / "player_game_stats"
-    paths = sorted(stats_dir.glob("*.csv")) if stats_dir.is_dir() else []
+    paths = sorted(stats_dir.glob("*.csv"), key=season_file_order) if stats_dir.is_dir() else []
     if not paths:
         return None
-    rows: set[tuple[str, str, str]] = set()
+    rows: dict[tuple[str, str, str], None] = {}
     for path in paths:
         relative = path.relative_to(stage)
         season = path.name[:7]
@@ -383,17 +385,17 @@ def _write_player_names(stage: Path) -> Path | None:
                 raise GenerationValidationError(
                     f"Player game stats lack {', '.join(sorted(missing))}: {relative}"
                 )
-            rows.update(
-                (season, row["player_id"], row["player_name"])
-                for row in reader
-                if row.get("player_name") and row.get("player_id")
-            )
+            for row in reader:
+                if row.get("player_name") and row.get("player_id"):
+                    rows.setdefault((row["player_id"], row["player_name"], season), None)
     destination = stage / PLAYER_NAMES_PATH
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["player_id", "player_name", "season"])
-        writer.writerows((player_id, name, season) for season, player_id, name in sorted(rows))
+        writer.writerow(["player_id", "player_name", "season", "first_seen"])
+        writer.writerows(
+            (player_id, name, season, index) for index, (player_id, name, season) in enumerate(rows)
+        )
     return destination
 
 

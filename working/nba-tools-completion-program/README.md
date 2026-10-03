@@ -186,9 +186,9 @@ schema-valid request can still express the wrong question.
 Each package may contain small coherent PRs; it is not a demand for a giant PR.
 All packages use the common acceptance rules in section 6.
 
-### A1 - Identity integrity (first slice merged; A1b implemented)
+### A1 - Identity integrity (first slice and A1b merged)
 
-**A1b result (branch `claude/names-stream-791238`).** The real data (pinned
+**A1b result (#319).** The real data (pinned
 generation, all season types) has twelve names shared by two players: Brandon
 Williams, Charles Smith, Chris Johnson, Chris Wright, Dee Brown, Glen Rice,
 Marcus Williams, Mike James, Patrick Ewing, Reggie Williams, Steven Smith, Tony
@@ -534,7 +534,7 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`, real-data tests passed (R2 runs 37118187291, 37130896078) | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
+| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) merged (#319); real-data tests passed (R2 runs 37118187291, 37130896078). #322: cold start builds the name/id indexes from the published `metadata/player_names.csv` (game-ordered `first_seen`; older or id-less lists fall back to the full scan) | Takes effect at the next published generation; deployed check for A1/A1b then. On/off still matches by name and with/without/opponent cross-filters pick a shared-name player without a note (D2); lineup answers wait on D2 lineup data |
 | A2 | Team last-N records merged (#316). Explicit date windows in #317: from/to, between/and, since/after (spans every season through today), before/until/through (open start within the date's season), lone ISO dates, cross-season ranges; impossible dates refuse. Real-data tests passed in targeted R2 run 37106273170 | "In the last N" vs "last N with a condition"; last N meetings vs last N overall; team last-N summaries beyond the record |
 | B1 | Totals vs per-game leaderboards in #317. Stream 3 branch `claude/rankings-stream-s8gywm`: condition-count rankings in adjective/shorthand form ("most 30 point 10 rebound games", "30/10 games", three conditions), exact-zero conditions ("10+ assists and 0 turnovers" no longer counts every 10-assist game; missing stats meet no bound), league-wide game lists and counts ("games with 10+ assists and 0 turnovers", "how often has a player had ..."), attempt-qualified shooting-rate leaders ("minimum 300 attempts", "5+ attempts per game"), games-played leaders, "best 3 point percentage" no longer read as top 3. PR #321: fixture checks pass; real data passed in targeted R2 runs 37130674898 (Raw QA 10/10, B1 needs_data tests) and 37131376968 (all needs_data tests in the touched files) | Independent check of #321 (re-derive 2023-24 "10+ assists and 0 turnovers" counts and the 300-attempt 3P% board from raw rows), then merge. Open: "players with X and Y" (no stated aggregation) still refuses; team attempt minimums; totals still use the 20-game floor; then C2 |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
