@@ -99,11 +99,13 @@ breaks the fixture in ways that are not obvious from the diff.
   `Nikola Jokić`, `Luka Dončić`, `Kristaps Porziņģis`. `apply_base_filters`
   matches `player_name` exactly against whatever entity resolution produced, so
   `Nikola Jokic` matches nothing.
-- **No seed name may resolve to a different player.** The generator refuses to
-  build if one does. Two real collisions were found and removed:
-  `Karl-Anthony Towns` resolves to `Carmelo Anthony`, and `Nikola Jovic` resolves
-  to `Nikola Jokić`. A fixture containing either would let one player's rows
-  answer another player's question.
+- **Every seed name must resolve to itself.**
+  `test_no_fixture_player_name_resolves_to_a_different_player` resolves each
+  roster name, alone and inside a question, against the fixture. A name that
+  resolved elsewhere would let one player's rows answer another player's
+  question. `Karl-Anthony Towns` and `Nikola Jović` are seeded deliberately:
+  they used to resolve to `Carmelo Anthony` and `Nikola Jokić`, and now prove
+  the identity fix end to end (`tests/test_player_identity_collisions.py`).
 - **Seasons must be long enough for documented minimums.** Tests query
   `at least 50 games`; a 20-game season made those two tests fail for want of
   data rather than for behaviour.

@@ -123,7 +123,10 @@ class Player:
 
 # Names the targeted tests reference by name must exist here: the filter
 # integrity suite asks about Jokić and Jamal Murray, and several controls ask
-# about the Lakers and the Celtics. Every position group the position filter
+# about the Lakers and the Celtics. Karl-Anthony Towns and Nikola Jović are
+# here on purpose: their names contain another player's alias ("anthony" is
+# Carmelo Anthony, "nikola" is Jokić), so the identity tests can prove each
+# question reaches its own player's rows. Every position group the position filter
 # resolves (guards, centers, forwards) has members, or a position-filtered
 # leaderboard could not restrict anything.
 PLAYERS: tuple[Player, ...] = (
@@ -151,7 +154,7 @@ PLAYERS: tuple[Player, ...] = (
     Player(1629057, "Robert Williams", "BOS", "C-F", 5, 8, 8, 1),
     # New York
     Player(1628973, "Jalen Brunson", "NYK", "G", 5, 26, 4, 7),
-    Player(1626164, "Isaiah Hartenstein", "NYK", "C", 9, 22, 11, 3),
+    Player(1626157, "Karl-Anthony Towns", "NYK", "C", 9, 22, 11, 3),
     Player(1629628, "RJ Barrett", "NYK", "G-F", 4, 18, 6, 3),
     Player(1630193, "Immanuel Quickley", "NYK", "G", 3, 13, 3, 4),
     Player(203944, "Julius Randle", "NYK", "F-C", 9, 21, 9, 4),
@@ -167,9 +170,9 @@ PLAYERS: tuple[Player, ...] = (
     Player(202710, "Jimmy Butler", "MIA", "F-G", 13, 22, 6, 5),
     Player(1629639, "Tyler Herro", "MIA", "G", 5, 20, 5, 5),
     Player(202355, "Bam Adebayo", "MIA", "C", 7, 19, 10, 4),
-    Player(1631107, "Jaime Jaquez", "MIA", "G-F", 1, 12, 4, 3),
+    Player(1631170, "Jaime Jaquez", "MIA", "G-F", 1, 12, 4, 3),
     Player(203482, "Kelly Olynyk", "MIA", "C-F", 11, 9, 5, 2),
-    Player(1630217, "Caleb Martin", "MIA", "F", 2, 8, 4, 2),
+    Player(1631107, "Nikola Jović", "MIA", "F", 2, 8, 4, 2),
 )
 PLAYERS_BY_TEAM: dict[str, list[Player]] = {
     team.abbr: [player for player in PLAYERS if player.team_abbr == team.abbr] for team in TEAMS

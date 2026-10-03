@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 
 # ---------------------------------------------------------------------------
 # Text normalisation helpers
@@ -18,6 +19,15 @@ def normalize_text(text: str) -> str:
         .replace("\u201c", '"')
         .replace("\u201d", '"')
         .lower()
+    )
+    # Fold diacritics ("Dončić" -> "doncic"). Parser patterns spell names in
+    # ASCII ([a-z]), so an accented name split a comparison or opponent phrase
+    # mid-word: "Luka Dončić vs Nikola Jokić" lost its second player. Entity
+    # resolution maps the ASCII spelling back to the canonical accented name.
+    normalized = "".join(
+        char
+        for char in unicodedata.normalize("NFKD", normalized)
+        if not unicodedata.combining(char)
     )
     collapsed = " ".join(normalized.strip().split())
     # Drop end-of-sentence punctuation. Detectors that anchor on a word boundary
