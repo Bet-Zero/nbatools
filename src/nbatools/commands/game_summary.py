@@ -9,10 +9,12 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
     apply_last_n_sample,
     build_opponent_mask,
     describe_opponent_filter,
     filter_without_player,
+    last_n_outcome,
     last_n_window_game_ids,
     load_player_games_for_seasons,
     load_team_games_for_seasons,
@@ -340,7 +342,7 @@ def build_result(
             raise ValueError(f"Missing required columns: {missing}")
 
         window_game_ids = None
-        if last_n is not None and last_n_scope == "window":
+        if last_n is not None and last_n_scope in WINDOW_SCOPES:
             sample = _apply_filters(
                 df=df,
                 team=team,
@@ -354,7 +356,9 @@ def build_result(
                 sample = filter_without_player(
                     sample, without_player, seasons, season_type, team=team
                 )
-            window_game_ids = last_n_window_game_ids(sample, last_n)
+            window_game_ids = last_n_window_game_ids(
+                sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+            )
 
         df = _apply_filters(
             df=df,

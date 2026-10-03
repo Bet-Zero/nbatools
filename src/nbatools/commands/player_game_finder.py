@@ -4,6 +4,7 @@ from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
     apply_last_n_sample,
     apply_player_clutch_filter,
     apply_player_role_filter,
@@ -13,6 +14,7 @@ from nbatools.commands.data_utils import (
     filter_by_opponent_player,
     filter_period_rows,
     filter_without_player,
+    last_n_outcome,
     last_n_window_game_ids,
     load_player_game_period_stats_for_seasons,
     load_player_games_for_seasons,
@@ -163,6 +165,7 @@ def _window_game_ids(
     start_date: str | None,
     end_date: str | None,
     role: str | None,
+    outcome: str | None = None,
 ) -> set[str]:
     """The player's N most recent games in play, before any game condition."""
     sample = _apply_filters(
@@ -181,7 +184,7 @@ def _window_game_ids(
         sample = filter_without_player(sample, without_player, seasons, season_type, team=team)
     if role and not sample.empty:
         sample, _ = apply_player_role_filter(sample, seasons, season_type, role)
-    return last_n_window_game_ids(sample, last_n)
+    return last_n_window_game_ids(sample, last_n, outcome)
 
 
 def build_result(
@@ -354,7 +357,7 @@ def build_result(
             )
 
     window_game_ids = None
-    if last_n is not None and last_n_scope == "window":
+    if last_n is not None and last_n_scope in WINDOW_SCOPES:
         window_game_ids = _window_game_ids(
             base_df,
             last_n,
@@ -370,6 +373,7 @@ def build_result(
             start_date=start_date,
             end_date=end_date,
             role=role,
+            outcome=last_n_outcome(last_n_scope, wins_only, losses_only),
         )
 
     df = _apply_filters(

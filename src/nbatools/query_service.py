@@ -920,6 +920,13 @@ def _count_context(
 ) -> str:
     query_text = (_clean_text(metadata.get("query_text")) or "").lower()
     if last_n:
+        if last_n_scope == "outcome_window":
+            owner = "his" if player else "their"
+            unit = "losses" if metadata.get("losses_only") else "wins"
+            if last_n == 1:
+                unit = "loss" if unit == "losses" else "win"
+                return f"in {owner} last {unit}"
+            return f"in {owner} last {last_n} {unit}"
         if last_n_scope != "window":
             # "last 10 games where he scored 30": the count is capped at N,
             # so say so rather than claiming a 10-game window.

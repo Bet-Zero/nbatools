@@ -324,3 +324,34 @@ def test_qualifying_count_wording_does_not_claim_a_window():
     assert _count_context({}, player=True, last_n=5, last_n_scope="window") == (
         "in his last 5 games"
     )
+
+
+# -- "his last 10 wins" is the sample when another condition is counted ------
+
+
+def _player_two_seasons(name: str) -> list[dict[str, str]]:
+    return _player(name) + _player(name, season="2024-25")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "how many of LeBron's last 10 wins did he score 30",
+        "how many of his last 10 wins did LeBron score 30",
+    ],
+)
+def test_condition_counted_inside_the_last_n_wins(query):
+    result = _run(query)
+    wins = [r for r in _player_two_seasons("LeBron James") if r["wl"] == "W"][:10]
+    expected = [r for r in wins if int(r["pts"]) >= 30]
+
+    assert _count(result) == len(expected)
+    assert _game_ids(result) == _ids(expected)
+    assert result.metadata["count_phrase"].endswith("in his last 10 wins.")
+
+
+def test_last_n_losses_alone_are_the_answer():
+    result = _run("Lakers last 5 losses how many")
+    expected = [r for r in _team("LAL") + _team("LAL", season="2024-25") if r["wl"] == "L"][:5]
+
+    assert _game_ids(result) == _ids(expected)

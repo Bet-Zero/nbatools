@@ -23,6 +23,7 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
     apply_last_n_sample,
     apply_schedule_context_filters,
     apply_team_clutch_filter,
@@ -34,6 +35,7 @@ from nbatools.commands.data_utils import (
     filter_period_rows,
     filter_with_player,
     filter_without_player,
+    last_n_outcome,
     last_n_window_game_ids,
     load_team_game_period_stats_for_seasons,
     load_team_games_for_seasons,
@@ -360,7 +362,7 @@ def build_team_record_result(
         df = base_df
 
     window_game_ids = None
-    if last_n is not None and last_n_scope == "window":
+    if last_n is not None and last_n_scope in WINDOW_SCOPES:
         # "how many games over 120 in their last 10": the window is the
         # team's N most recent games in play; results and stat conditions
         # are then counted inside it.
@@ -390,7 +392,9 @@ def build_team_record_result(
             one_possession=one_possession,
             nationally_televised=nationally_televised,
         )
-        window_game_ids = last_n_window_game_ids(sample, last_n)
+        window_game_ids = last_n_window_game_ids(
+            sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+        )
 
     df = _apply_game_filters(
         df,

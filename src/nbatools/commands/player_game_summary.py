@@ -10,6 +10,7 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
     apply_last_n_sample,
     apply_player_clutch_filter,
     apply_player_role_filter,
@@ -20,6 +21,7 @@ from nbatools.commands.data_utils import (
     describe_opponent_filter,
     filter_by_opponent_player,
     filter_without_player,
+    last_n_outcome,
     last_n_window_game_ids,
     load_player_games_for_seasons,
     sample_season_span,
@@ -286,7 +288,7 @@ def build_result(
                 select_player_rows(df, player, team=team)["season"].unique().tolist()
             )
 
-        if last_n is not None and last_n_scope == "window":
+        if last_n is not None and last_n_scope in WINDOW_SCOPES:
             # The window is the player's N most recent games in play; game
             # results and stat conditions then apply inside it.
             sample = _apply_filters(
@@ -315,7 +317,9 @@ def build_result(
                 nationally_televised=nationally_televised,
             )
             sample, _ = apply_player_role_filter(sample, seasons, season_type, role)
-            window_game_ids = last_n_window_game_ids(sample, last_n)
+            window_game_ids = last_n_window_game_ids(
+                sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+            )
 
         df = _apply_filters(
             df=df,

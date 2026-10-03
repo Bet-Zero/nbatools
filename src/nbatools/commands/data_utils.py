@@ -310,21 +310,39 @@ def select_most_recent_games(df: pd.DataFrame, last_n: int | None) -> pd.DataFra
     return df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
 
 
-LAST_N_SCOPES = ("qualifying", "window")
+LAST_N_SCOPES = ("qualifying", "window", "outcome_window")
+WINDOW_SCOPES = ("window", "outcome_window")
 
 
 def _game_key(series: pd.Series) -> pd.Series:
     return series.astype(str).str.lstrip("0")
 
 
-def last_n_window_game_ids(sample: pd.DataFrame, last_n: int) -> set[str]:
+def last_n_outcome(scope: str | None, wins_only: bool, losses_only: bool) -> str | None:
+    """The result that defines an ``outcome_window`` ("his last 10 wins")."""
+    if scope != "outcome_window":
+        return None
+    if wins_only:
+        return "W"
+    if losses_only:
+        return "L"
+    return None
+
+
+def last_n_window_game_ids(
+    sample: pd.DataFrame, last_n: int, outcome: str | None = None
+) -> set[str]:
     """Game ids of the ``last_n`` most recent games in a sample.
 
     ``sample`` carries only the filters that define which games are in play
     (entity, season, dates, opponent, home/away, teammate availability,
     role); game results and stat conditions are applied afterwards, inside
-    the window, by :func:`apply_last_n_sample`.
+    the window, by :func:`apply_last_n_sample`. ``outcome`` ("W"/"L") makes
+    the window the N most recent wins or losses ("how many of his last 10
+    wins did he score 30").
     """
+    if outcome and "wl" in sample.columns:
+        sample = sample[sample["wl"].astype(str).str.upper().eq(outcome)]
     window = select_most_recent_games(sample, last_n)
     return set(_game_key(window["game_id"])) if "game_id" in window.columns else set()
 

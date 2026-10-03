@@ -574,11 +574,12 @@ _LAST_N_GAMES = (
     r"(?:\s+(?:games?|contests?|outings?))?\b"
 )
 _POSSESSIVE_WINDOW = r"\bof\s+(?:the\s+)?(?:[\w.-]+\s+){0,2}[\w.-]+(?:'s|s'|')\s*$"
-_PERFORMANCE_WORDS = (
-    r"\b(?:triple[- ]doubles?|double[- ]doubles?|wins?|won|losses|lost)\b"
+_STAT_PERFORMANCE_WORDS = (
+    r"\b(?:triple[- ]doubles?|double[- ]doubles?)\b"
     r"|\b\d+\+?\s*[- ]?\s*(?:points?|pts?|rebounds?|rebs?|assists?|asts?|"
     r"steals?|blocks?|threes?|3s|3pm)\b"
 )
+_PERFORMANCE_WORDS = rf"\b(?:wins?|won|losses|lost)\b|{_STAT_PERFORMANCE_WORDS}"
 
 
 def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = None) -> str:
@@ -600,6 +601,14 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
     if not threshold_conditions and not re.search(_PERFORMANCE_WORDS, text):
         return "qualifying"
     after = text[match.end() :]
+    outcome_unit = re.match(r"\s+(?:wins?|losses|loss)\b", after)
+    if outcome_unit:
+        # "his last 10 wins" is the sample. With another condition ("how many
+        # of his last 10 wins did he score 30") it is counted inside those
+        # wins; alone, the 10 most recent wins are the answer.
+        rest = text[: match.start()] + " " + after[outcome_unit.end() :]
+        other_condition = threshold_conditions or re.search(_STAT_PERFORMANCE_WORDS, rest)
+        return "outcome_window" if other_condition else "qualifying"
     if re.match(_QUALIFYING_CLAUSE, after):
         return "qualifying"
     before = text[: match.start()]
