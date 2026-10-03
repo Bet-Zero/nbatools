@@ -490,13 +490,18 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice implemented on `claude/issue-314-q0tbff` (PR pending review/merge); A1b open | Merge after CI and an independent check; R2 run for `test_player_identity_real_data.py`; then A1b (`player_id` selection, resolver for lineup/legacy alias scans) |
-| A2 | Open; next | Reproduced on the fixture: "Knicks record last 10 games" refuses because `team_record` has no `last_n` execution. Implement team last-N records sharing the player summary's game selection |
+| A1 | First slice merged (#315); R2 runs 37098675951 and 37099947680 passed, deployed check open; A1b open | A1b: `player_id` selection for identical names, resolver for lineup/legacy alias scans |
+| A2 | Team last-N records in PR #316 (draft); rest open | #316: refresh the `warriors_last_10_record_wave5` frontend-copy row from its R2 Raw QA artifact, independent check, merge. Then the remaining A2 acceptance (team last-N summaries, explicit date ranges, last N meetings vs overall) |
 | B1 | Open | Reuse A sample contract; complete operation/basis and compound counts |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
 | D1 / D2 | Open | O1 feasibility first; each source-backed slice then delivers independently |
-| O1 | Open; parallel | Dispatch `r2-real-data-validation.yml` on the A1 branch (also the pending #311 confirmation); read the active generation manifest for the section 2a data view |
+| O1 | Open; parallel | #311 confirmation passed in the R2 runs above. Read the active generation manifest for the section 2a data view |
 | O2 | Open | Act on O1; calendar/refresh and measured performance repairs |
 | E | Open | Integrated acceptance, without replacing per-feature delivery checks |
 
 Update these rows as work lands. Keep this one queue; no new phase tracker.
+
+Validation cadence: a full R2 run (Raw QA replay about 30 minutes, serialized) is
+not a per-fix wait. Keep building the next fix while one runs, verify each fix
+with its focused needs_data tests and relevant Raw QA cases, and run the full
+replay once per batch or integration point.
