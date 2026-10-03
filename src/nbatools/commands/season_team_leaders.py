@@ -560,7 +560,7 @@ def build_result(
             notes=["No games matched the specified filters"],
         )
 
-    out_cols = ["team_name", "team_abbr", "team_id", "games_played", target_col]
+    out_cols = ["team_name", "team_abbr", "team_id", *dict.fromkeys(["games_played", target_col])]
     out_cols.extend(
         col
         for col in _leaderboard_context_columns(target_col)
@@ -573,8 +573,10 @@ def build_result(
     result = (
         df[out_cols]
         .sort_values(
-            by=[target_col, "games_played", "team_name"],
-            ascending=[ascending, False, True],
+            by=list(dict.fromkeys([target_col, "games_played", "team_name"])),
+            ascending=[ascending, True]
+            if target_col == "games_played"
+            else [ascending, False, True],
         )
         .head(limit)
         .reset_index(drop=True)
