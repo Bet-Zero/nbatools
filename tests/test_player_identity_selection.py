@@ -363,26 +363,53 @@ def _patch_source(monkeypatch, published: pd.DataFrame | None, season_rows: list
 
 def test_published_name_list_replaces_the_full_scan(monkeypatch, request):
     request.addfinalizer(entity_resolution.reset_player_index)
+    # Rows out of order on disk; first_seen gives game order. Within 2022-23 the
+    # newer spelling ("Nic Claxton") sorts before the older one alphabetically.
     published = pd.DataFrame(
         {
-            "player_id": [1626171, 2229, 1628455, 1626171],
-            "player_name": ["Bobby Portis", "Mike James", "Mike James", "Bobby Portis Jr."],
-            "season": ["2023-24", "2005-06", "2017-18", "2025-26"],
+            "player_id": [1629651, 1626171, 2229, 1628455, 1626171, 1629651],
+            "player_name": [
+                "Nic Claxton",
+                "Bobby Portis",
+                "Mike James",
+                "Mike James",
+                "Bobby Portis Jr.",
+                "Nicolas Claxton",
+            ],
+            "season": ["2022-23", "2023-24", "2005-06", "2017-18", "2025-26", "2022-23"],
+            "first_seen": [3, 4, 0, 1, 5, 2],
         }
     )
     globbed = _patch_source(monkeypatch, published, [])
 
     assert entity_resolution.player_ids_for_name("Mike James") == {"2229", "1628455"}
     assert entity_resolution.player_ids_for_name("bobby portis") == {"1626171"}
-    assert entity_resolution.canonical_player_names_by_id()["1626171"] == "Bobby Portis Jr."
+    names = entity_resolution.canonical_player_names_by_id()
+    assert names["1626171"] == "Bobby Portis Jr."
+    assert names["1629651"] == "Nic Claxton"
     assert globbed == []
 
 
 def test_name_list_without_ids_falls_back_to_the_full_scan(monkeypatch, request):
     request.addfinalizer(entity_resolution.reset_player_index)
-    published = pd.DataFrame({"player_name": ["Mike James"]})
+    published = pd.DataFrame({"player_name": ["Mike James"], "first_seen": [0]})
     season = pd.DataFrame({"player_id": [2229], "player_name": ["Mike James"], "pts": [1]})
     globbed = _patch_source(monkeypatch, published, [season])
 
     assert entity_resolution.player_ids_for_name("Mike James") == {"2229"}
+    assert globbed == [True]
+
+
+def test_name_list_without_game_order_falls_back_to_the_full_scan(monkeypatch, request):
+    # A list sorted alphabetically within a season can't say which spelling is newer.
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame(
+        {"player_id": [1629651], "player_name": ["Nicolas Claxton"], "season": ["2022-23"]}
+    )
+    season = pd.DataFrame(
+        {"player_id": [1629651, 1629651], "player_name": ["Nicolas Claxton", "Nic Claxton"]}
+    )
+    globbed = _patch_source(monkeypatch, published, [season])
+
+    assert entity_resolution.canonical_player_names_by_id()["1629651"] == "Nic Claxton"
     assert globbed == [True]

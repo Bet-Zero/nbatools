@@ -28,6 +28,7 @@ from nbatools.data_source import (
     data_glob,
     data_read_csv,
     data_source_cache_key,
+    season_file_order,
 )
 
 # ---------------------------------------------------------------------------
@@ -608,7 +609,7 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
 
     names: set[str] = set(_FALLBACK_PLAYER_NAMES)
     ids_by_name: dict[str, set[str]] = {}
-    # Rows arrive in season order, so the last spelling seen is the most recent.
+    # Rows arrive in game order, so the last spelling seen is the most recent.
     name_by_id: dict[str, str] = {}
 
     def add_rows(df: pd.DataFrame) -> None:
@@ -625,13 +626,13 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
         add_rows(published)
     else:
         if data_dir is None:
-            csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=str)
+            csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=season_file_order)
             read_csv = data_read_csv
         else:
             stats_dir = data_dir / "raw" / "player_game_stats"
             if not stats_dir.exists():
                 return names
-            csv_paths = sorted(stats_dir.glob("*.csv"))
+            csv_paths = sorted(stats_dir.glob("*.csv"), key=season_file_order)
             read_csv = pd.read_csv
         for csv_path in csv_paths:
             try:
@@ -652,11 +653,14 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
 
 
 def _read_published_player_names() -> pd.DataFrame | None:
-    """The generation's published (player_id, player_name, season) list, if usable.
+    """The generation's published name list, in game order, if usable.
 
-    Publication writes it from the same player game rows, sorted by season, so
-    it replaces downloading every season file at a cold start. A generation
-    without it (or a list missing ``player_id``) falls back to the full scan.
+    Publication writes one row per (player_id, player_name, season) from the
+    same player game rows, numbered by ``first_seen`` in game order, so it
+    replaces downloading every season file at a cold start. A generation
+    without it, or a list missing ``player_id`` or ``first_seen`` (an older
+    list sorted alphabetically within a season, which can't tell which
+    spelling is newer), falls back to the full scan.
     """
     try:
         if not data_exists(PLAYER_NAMES_PATH):
@@ -664,11 +668,12 @@ def _read_published_player_names() -> pd.DataFrame | None:
         df = data_read_csv(PLAYER_NAMES_PATH, dtype=str)
     except Exception:
         return None
-    if not {"player_id", "player_name"}.issubset(df.columns) or df.empty:
+    if not {"player_id", "player_name", "first_seen"}.issubset(df.columns) or df.empty:
         return None
-    if "season" in df.columns:
-        df = df.sort_values("season", kind="stable")
-    return df
+    order = pd.to_numeric(df["first_seen"], errors="coerce")
+    if order.isna().any():
+        return None
+    return df.iloc[order.argsort(kind="stable")]
 
 
 def _preferred_spelling(previous: str | None, current: str) -> str:

@@ -25,9 +25,10 @@ R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
 DATA_GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
 ACTIVE_GENERATION_PATH = Path("metadata/active_generation.json")
 GENERATION_MANIFEST_PATH = Path("metadata/generation_manifest.json")
-# Every distinct (player_id, player_name, season) in raw/player_game_stats, in
-# season order, derived at publication so a cold process can build its player
-# name and id indexes from one small file.
+# Every distinct (player_id, player_name, season) in raw/player_game_stats, with
+# ``first_seen`` numbering them in game order (seasons ascending, regular season
+# before playoffs, rows in file order), derived at publication so a cold process
+# can build its player name and id indexes from one small file.
 PLAYER_NAMES_PATH = Path("metadata/player_names.csv")
 GENERATIONS_DIR = "generations"
 LEGACY_GENERATION = "legacy"
@@ -78,6 +79,16 @@ def data_source_mode(env: Mapping[str, str] | None = None) -> str:
 def data_source_cache_key() -> str:
     """Return a cache key for the source and the request-pinned generation."""
     return f"{_data_source_config_key()}:{current_data_generation()}"
+
+
+def season_file_order(path: object) -> tuple[str, int, str]:
+    """Sort key putting ``YYYY-YY_<type>.csv`` files in game order.
+
+    Seasons ascend and, within one, the regular season comes before the
+    play-in and playoffs, so the last row read is the most recent.
+    """
+    name = Path(str(path)).name
+    return (name[:7], 0 if "regular_season" in name else 1, name)
 
 
 def current_data_generation() -> str:
