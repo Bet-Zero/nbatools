@@ -7,6 +7,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import shutil
 import tempfile
 import uuid
@@ -36,6 +37,7 @@ GENERATION_MANIFEST_PATH = Path("metadata/generation_manifest.json")
 GENERATION_MANIFEST_SCHEMA_VERSION = 1
 POINTER_SCHEMA_VERSION = 1
 SHA256_METADATA_KEY = "nbatools-sha256"
+_SEASON_FILE = re.compile(r"^\d{4}-\d{2}_[a-z_]+\.csv$")
 
 
 class GenerationPublicationError(Exception):
@@ -358,26 +360,40 @@ def _build_staged_generation(source: Path, staged: Path, generation: str) -> Non
 
 
 def _write_player_names(stage: Path) -> Path | None:
-    """Derive the distinct player names from the staged player game stats."""
+    """Derive each player's id, name spellings and seasons from the staged game stats.
+
+    One row per distinct (player_id, player_name, season) across season types,
+    in season order, so a reader can build the name and id indexes (and take
+    the last spelling seen as current) without scanning every game row.
+    """
     stats_dir = stage / "raw" / "player_game_stats"
     paths = sorted(stats_dir.glob("*.csv")) if stats_dir.is_dir() else []
     if not paths:
         return None
-    names: set[str] = set()
+    rows: set[tuple[str, str, str]] = set()
     for path in paths:
+        relative = path.relative_to(stage)
+        season = path.name[:7]
+        if not _SEASON_FILE.match(path.name):
+            raise GenerationValidationError(f"Unexpected player game stats file: {relative}")
         with path.open(newline="", encoding="utf-8") as handle:
             reader = csv.DictReader(handle)
-            if reader.fieldnames is None or "player_name" not in reader.fieldnames:
+            missing = {"player_id", "player_name"} - set(reader.fieldnames or ())
+            if missing:
                 raise GenerationValidationError(
-                    f"Player game stats lack player_name: {path.relative_to(stage)}"
+                    f"Player game stats lack {', '.join(sorted(missing))}: {relative}"
                 )
-            names.update(row["player_name"] for row in reader if row.get("player_name"))
+            rows.update(
+                (season, row["player_id"], row["player_name"])
+                for row in reader
+                if row.get("player_name") and row.get("player_id")
+            )
     destination = stage / PLAYER_NAMES_PATH
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["player_name"])
-        writer.writerows([name] for name in sorted(names))
+        writer.writerow(["player_id", "player_name", "season"])
+        writer.writerows((player_id, name, season) for season, player_id, name in sorted(rows))
     return destination
 
 

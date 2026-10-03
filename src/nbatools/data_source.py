@@ -25,8 +25,9 @@ R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
 DATA_GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
 ACTIVE_GENERATION_PATH = Path("metadata/active_generation.json")
 GENERATION_MANIFEST_PATH = Path("metadata/generation_manifest.json")
-# Every distinct player_name in raw/player_game_stats, derived at publication so a
-# cold process can build its name index from one small file.
+# Every distinct (player_id, player_name, season) in raw/player_game_stats, in
+# season order, derived at publication so a cold process can build its player
+# name and id indexes from one small file.
 PLAYER_NAMES_PATH = Path("metadata/player_names.csv")
 GENERATIONS_DIR = "generations"
 LEGACY_GENERATION = "legacy"
