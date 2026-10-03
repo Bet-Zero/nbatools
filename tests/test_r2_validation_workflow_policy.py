@@ -486,3 +486,36 @@ def test_a_targeted_run_is_labelled_as_one() -> None:
     assert inputs["scope"]["default"] == "full"
     assert inputs["scope"]["options"] == ["full", "targeted"]
     assert "${{ inputs.scope }}" in workflow["run-name"]
+
+
+def _run_targeted_test_selection(tests: str) -> subprocess.CompletedProcess:
+    """Run the needs_data step's own script, with pytest replaced by echo."""
+    step = next(s for s in _steps("data-backed-tests") if "needs_data" in s.get("name", ""))
+    script = step["run"].replace("python -m pytest", "echo pytest")
+    return subprocess.run(
+        ["bash", "-e", "-c", script],
+        env={"PATH": os.environ["PATH"], "SCOPE": "targeted", "TESTS": tests},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize(
+    "test_id",
+    [
+        "tests/test_explicit_date_ranges_real_data.py",
+        "tests/test_leaderboard_metric_boundary.py::test_case[total-rebounds]",
+    ],
+)
+def test_a_targeted_run_accepts_real_test_paths(test_id: str) -> None:
+    result = _run_targeted_test_selection(test_id)
+    assert result.returncode == 0, result.stderr
+    assert test_id in result.stdout
+
+
+@pytest.mark.parametrize("test_id", ["tests/../secrets.py", "tests/x.py;env", "qa/run.py", "-k"])
+def test_a_targeted_run_rejects_other_arguments(test_id: str) -> None:
+    result = _run_targeted_test_selection(test_id)
+    assert result.returncode != 0
+    assert "Invalid test path" in result.stderr

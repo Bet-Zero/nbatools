@@ -284,8 +284,9 @@ jobs:
         run: |
           selection=()
           if [ "$SCOPE" = "targeted" ]; then
+            test_pattern='^tests/[][A-Za-z0-9_./:-]+$'
             for test_id in $TESTS; do
-              if ! [[ "$test_id" =~ ^tests/[A-Za-z0-9_./:\[\]-]+$ ]]; then
+              if ! [[ "$test_id" =~ $test_pattern ]] || [[ "$test_id" == *..* ]]; then
                 echo "Invalid test path or node id: $test_id" >&2
                 exit 1
               fi
