@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from calendar import monthcalendar, monthrange
-from datetime import date
+from datetime import date, timedelta
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -204,10 +204,21 @@ def _extract_explicit_date_range(
             return start, end
         return None, None
 
-    m = re.search(rf"\b(?:since|after)\s+({_ISO_DATE})\b", text)
-    if m:
+    m = re.search(rf"\b(?:since|after|post)\s+({token})(?!\d)", text)
+    if m and (re.fullmatch(_ISO_DATE, m.group(1)) or re.search(r"\d{4}$", m.group(1))):
         start = _parse_date_token(m.group(1), season)
         return (start, anchor_date.date().isoformat()) if start else (None, None)
+
+    # An open start: "before" excludes the named day, "until"/"through" keep it.
+    # Without these the lone-date fallbacks answered about that single day.
+    m = re.search(rf"\b(before|prior\s+to|until|till|through|thru|up\s+to)\s+({token})(?!\d)", text)
+    if m:
+        end = _parse_date_token(m.group(2), season)
+        if end is None:
+            return None, None
+        if m.group(1) == "before" or m.group(1).startswith("prior"):
+            end = (date.fromisoformat(end) - timedelta(days=1)).isoformat()
+        return None, end
 
     m = re.search(rf"\b({_ISO_DATE})\b", text)
     if m:
@@ -248,6 +259,45 @@ def seasons_for_explicit_dates(text: str) -> tuple[str | None, str | None]:
     if not seasons:
         return None, None
     return min(seasons), max(seasons)
+
+
+def explicit_date_is_open_ended(text: str) -> bool:
+    """True when a year-bearing date opens a window that runs to today.
+
+    "since 2025-03-01" or "since March 2025" must load every season from that
+    date's season to the latest one, not only the season the date falls in.
+    """
+    month_pattern = _month_name_pattern()
+    return bool(
+        re.search(
+            rf"\b(?:since|after|post)\s+(?:(?:19|20)\d{{2}}-\d{{2}}-\d{{2}}"
+            rf"|(?:{month_pattern})\.?\s+(?:\d{{1,2}}(?:st|nd|rd|th)?,?\s+)?(?:19|20)\d{{2}})\b",
+            text,
+        )
+    )
+
+
+def invalid_explicit_date(text: str) -> str | None:
+    """Return a named calendar date that does not exist, such as "2025-02-30".
+
+    An impossible date must not silently fall back to the whole season.
+    """
+    for m in re.finditer(rf"\b({_ISO_DATE})\b", text):
+        try:
+            date.fromisoformat(m.group(1))
+        except ValueError:
+            return m.group(1)
+    month_pattern = _month_name_pattern()
+    for m in re.finditer(
+        rf"\b({month_pattern})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?(?:,?\s+((?:19|20)\d{{2}}))?\b",
+        text,
+    ):
+        month_num = MONTH_NAME_TO_NUM[m.group(1)]
+        # Without a year, judge against a leap year so "February 29" stands.
+        year = int(m.group(3)) if m.group(3) else 2024
+        if not 1 <= int(m.group(2)) <= monthrange(year, month_num)[1]:
+            return m.group(0).strip()
+    return None
 
 
 def uses_fuzzy_date_term(text: str) -> bool:

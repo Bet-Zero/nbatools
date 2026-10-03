@@ -20,8 +20,10 @@ from nbatools.commands._constants import (
 from nbatools.commands._date_utils import (
     CURRENT_QUERY_DATE,
     MONTH_NAME_TO_NUM,
+    explicit_date_is_open_ended,
     extract_date_range,
     has_explicit_calendar_date,
+    invalid_explicit_date,
     seasons_for_explicit_dates,
     uses_fuzzy_date_term,
 )
@@ -1254,6 +1256,10 @@ def _build_parse_state(query: str) -> dict:
             # fallbacks below, or the season stays on the current one while the
             # date window points at a year that season never covers.
             first_date_season, last_date_season = seasons_for_explicit_dates(q)
+            if first_date_season and explicit_date_is_open_ended(q):
+                from nbatools.commands._seasons import default_end_season
+
+                last_date_season = max(last_date_season, default_end_season(season_type))
             if first_date_season != last_date_season:
                 start_season, end_season = first_date_season, last_date_season
             else:
@@ -1999,6 +2005,27 @@ def _finalize_route(parsed: dict) -> dict:
             "source": "placeholder_template",
         }
         out["notes"] = [placeholder_note]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if invalid_date := invalid_explicit_date(q):
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["invalid_date"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            f"invalid_date: {invalid_date} is not a calendar date; "
+            "no reduced version of the question was answered"
+        ]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

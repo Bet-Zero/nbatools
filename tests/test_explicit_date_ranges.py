@@ -14,7 +14,13 @@ from pathlib import Path
 
 import pytest
 
-from nbatools.commands._date_utils import extract_date_range, seasons_for_explicit_dates
+from nbatools.commands._date_utils import (
+    CURRENT_QUERY_DATE,
+    explicit_date_is_open_ended,
+    extract_date_range,
+    invalid_explicit_date,
+    seasons_for_explicit_dates,
+)
 from nbatools.commands._parse_helpers import extract_season, extract_since_season
 
 RAW = Path("qa/fixtures/query_engine_sample/data/raw")
@@ -143,3 +149,100 @@ def test_player_games_over_explicit_range_match_fixture():
     assert result.result_status == "ok", result.result_reason
     rows = result.result.to_dict()["sections"]["finder"]
     assert sorted(int(row["game_id"]) for row in rows) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "season", "expected"),
+    [
+        ("knicks record before 2023-10-30", None, (None, "2023-10-29")),
+        ("knicks record until 2025-12-15", None, (None, "2025-12-15")),
+        ("knicks record through december 15", "2025-26", (None, "2025-12-15")),
+        ("knicks record prior to march 1, 2025", None, (None, "2025-02-28")),
+    ],
+)
+def test_an_open_start_bounds_only_the_end(text, season, expected):
+    assert extract_date_range(text, season) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("since 2025-03-01", True),
+        ("since march 1, 2025", True),
+        ("since january 2025", True),
+        ("after 2024-01-01", True),
+        ("since march 1", False),
+        ("from 2025-03-01 to 2025-04-01", False),
+    ],
+)
+def test_since_a_dated_day_runs_to_the_latest_season(text, expected):
+    assert explicit_date_is_open_ended(text) is expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("knicks record on 2025-02-30", "2025-02-30"),
+        ("knicks record from 2025-02-30 to 2025-03-10", "2025-02-30"),
+        ("knicks record april 31", "april 31"),
+        ("knicks record on february 29, 2025", "february 29, 2025"),
+        ("knicks record on february 29, 2024", None),
+        ("knicks record from 2025-11-01 to 2025-12-15", None),
+        ("knicks record 2025-26", None),
+    ],
+)
+def test_impossible_dates_are_named(text, expected):
+    assert invalid_explicit_date(text) == expected
+
+
+def _through_today(rows: list[dict[str, str]], start: str) -> list[dict[str, str]]:
+    return _in_range(rows, start, CURRENT_QUERY_DATE.date().isoformat())
+
+
+@pytest.mark.fixture_data
+@pytest.mark.query
+@pytest.mark.parametrize(
+    ("query", "start"),
+    [
+        ("Knicks record since 2025-03-01", "2025-03-01"),
+        ("Knicks record since 2024-01-01", "2024-01-01"),
+        ("Knicks record since March 1, 2025", "2025-03-01"),
+    ],
+)
+def test_since_an_earlier_season_counts_every_later_season(query, start):
+    from nbatools.query_service import execute_natural_query
+
+    seasons = ("2023-24", "2024-25", "2025-26")
+    expected = _record(_through_today(_rows("team_game_stats", seasons, team_abbr="NYK"), start))
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", (query, result.result_reason)
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert {key: summary[key] for key in expected} == expected
+
+
+@pytest.mark.fixture_data
+@pytest.mark.query
+def test_until_a_date_counts_the_season_up_to_that_day():
+    from nbatools.query_service import execute_natural_query
+
+    expected = _record(
+        _in_range(_rows("team_game_stats", ("2025-26",), team_abbr="NYK"), "", "2025-12-15")
+    )
+    assert expected["games"] > 1
+    result = execute_natural_query("Knicks record until 2025-12-15")
+    assert result.result_status == "ok", result.result_reason
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert {key: summary[key] for key in expected} == expected
+
+
+@pytest.mark.fixture_data
+@pytest.mark.query
+@pytest.mark.parametrize(
+    "query", ["Knicks record on 2025-02-30", "Knicks record from 2025-02-30 to 2025-03-10"]
+)
+def test_an_impossible_date_is_refused_not_widened(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert any("invalid_date" in note for note in result.result.notes)
