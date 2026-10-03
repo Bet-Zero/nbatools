@@ -22,7 +22,8 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, TypeVar
 
-from nbatools.commands._seasons import LATEST_REGULAR_SEASON, season_to_int
+from nbatools.commands import _seasons
+from nbatools.commands._seasons import season_to_int
 from nbatools.public_errors import REQUEST_ID_HEADER, new_request_id
 
 NATURAL_QUERY_BODY_MAX_BYTES = 4 * 1024
@@ -31,6 +32,8 @@ QUERY_FEEDBACK_BODY_MAX_BYTES = 8 * 1024
 MAX_JSON_DEPTH = 4
 MAX_JSON_OBJECT_MEMBERS = 64
 MAX_JSON_ARRAY_ELEMENTS = 20
+# The supported range is 1996-97 through the current season, which was 30
+# seasons in 2025-26 and grows by one each season; see max_resolved_seasons().
 MAX_RESOLVED_SEASONS = 30
 MAX_CONCURRENT_QUERIES = 3
 QUERY_REQUESTS_PER_MINUTE = 10
@@ -119,7 +122,7 @@ def validate_json_budget(payload: Any) -> None:
 
 
 def validate_season_span(path: str, payload: Mapping[str, Any]) -> None:
-    """Reject requests resolving more than the 30-season supported surface."""
+    """Reject requests resolving more seasons than the supported range holds."""
     spans: list[int] = []
     if path == "/structured-query":
         kwargs = payload.get("kwargs")
@@ -139,12 +142,24 @@ def validate_season_span(path: str, payload: Mapping[str, Any]) -> None:
             if span is not None:
                 spans.append(span)
 
-    if spans and max(spans) > MAX_RESOLVED_SEASONS:
+    limit = max_resolved_seasons()
+    if spans and max(spans) > limit:
         raise AdmissionRejected(
             HTTPStatus.UNPROCESSABLE_ENTITY,
             "season_span_exceeded",
-            "Request resolves more than the supported 30-season range.",
+            f"Request resolves more than the supported {limit}-season range.",
         )
+
+
+def max_resolved_seasons() -> int:
+    """Seasons from 1996-97 through the season today's date belongs to.
+
+    Computed from the calendar rather than the served data so admission stays
+    free of data reads; it never falls below the 30 seasons through 2025-26.
+    """
+    current = season_to_int(_seasons.season_for_date(_seasons.today()))
+    span = current - season_to_int(_seasons.EARLIEST_SEASON) + 1
+    return max(MAX_RESOLVED_SEASONS, span)
 
 
 def admission_controls_enabled(env: Mapping[str, str] | None = None) -> bool:
@@ -419,7 +434,7 @@ def _natural_query_season_span(query: str) -> int | None:
         return _season_range_size(explicit.group(1), explicit.group(2))
     since = re.search(r"\bsince\s+((?:19|20)\d{2})(?:-\d{2})?\b", query, flags=re.IGNORECASE)
     if since:
-        return season_to_int(LATEST_REGULAR_SEASON) - int(since.group(1)) + 1
+        return season_to_int(_seasons.season_for_date(_seasons.today())) - int(since.group(1)) + 1
     last_n = re.search(r"\blast\s+(\d+)\s+seasons?\b", query, flags=re.IGNORECASE)
     if last_n:
         return int(last_n.group(1))

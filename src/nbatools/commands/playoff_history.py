@@ -25,6 +25,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import (
     EARLIEST_SEASON,
+    default_end_season,
     int_to_season,
     resolve_seasons,
     season_to_int,
@@ -133,13 +134,13 @@ def decade_season_range(decade_label: str) -> tuple[str, str]:
     """Given a decade label like '2000s', return (start_season, end_season).
 
     '2000s' → ('2000-01', '2009-10')
-    Clamped to EARLIEST_SEASON / LATEST_PLAYOFF_SEASON bounds.
+    Clamped to EARLIEST_SEASON and the latest served season.
     """
     decade_start = int(decade_label.rstrip("s"))
     decade_end = decade_start + 9
     earliest = season_to_int(EARLIEST_SEASON)
     start = max(decade_start, earliest)
-    end = min(decade_end, 2025)  # Don't exceed available data
+    end = min(decade_end, season_to_int(default_end_season("Regular Season")))
     return int_to_season(start), int_to_season(end)
 
 

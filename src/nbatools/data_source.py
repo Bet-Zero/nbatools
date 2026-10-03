@@ -24,6 +24,11 @@ LOCAL_DATA_ROOT_ENV = "NBATOOLS_DATA_ROOT"
 R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
 DATA_GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
 ACTIVE_GENERATION_PATH = Path("metadata/active_generation.json")
+GENERATION_MANIFEST_PATH = Path("metadata/generation_manifest.json")
+# Every distinct (player_id, player_name, season) in raw/player_game_stats, in
+# season order, derived at publication so a cold process can build its player
+# name and id indexes from one small file.
+PLAYER_NAMES_PATH = Path("metadata/player_names.csv")
 GENERATIONS_DIR = "generations"
 LEGACY_GENERATION = "legacy"
 REQUIRED_R2_ENV_VARS = (
@@ -238,16 +243,56 @@ class _R2DataSource:
         self.client = client or create_r2_client(config)
         self.cache_root = _r2_cache_root(config)
         self._downloaded_keys: set[str] = set()
+        # Published generations are immutable, so what exists in one never
+        # changes. Answer from its file manifest (one GET) and remember HEAD
+        # results, instead of a network round trip on every check.
+        self._generation_files: dict[str, frozenset[str] | None] = {}
+        self._known_keys: dict[str, bool] = {}
 
     def exists(self, path: str | Path) -> bool:
-        key = self._generation_key(path)
+        generation = current_data_generation()
+        rel_path = _logical_relative_path(path).as_posix()
+        key = self._generation_key(rel_path, generation=generation)
+        immutable = generation != LEGACY_GENERATION
+        if immutable:
+            files = self._manifest_files(generation)
+            if files is not None and rel_path in files:
+                return True
+            if key in self._known_keys:
+                return self._known_keys[key]
         try:
             self.client.head_object(Bucket=self.config.bucket_name, Key=key)
-            return True
+            found = True
         except Exception as exc:
-            if is_not_found(exc):
-                return False
-            raise DataSourceError(f"Could not inspect R2 object {key}: {format_client_error(exc)}")
+            if not is_not_found(exc):
+                raise DataSourceError(
+                    f"Could not inspect R2 object {key}: {format_client_error(exc)}"
+                )
+            found = False
+        if immutable:
+            self._known_keys[key] = found
+        return found
+
+    def _manifest_files(self, generation: str) -> frozenset[str] | None:
+        """Paths listed in a generation's manifest, or None when it has none."""
+        if generation in self._generation_files:
+            return self._generation_files[generation]
+        key = self._generation_key(GENERATION_MANIFEST_PATH, generation=generation)
+        try:
+            response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
+            document = json.loads(response["Body"].read().decode("utf-8"))
+            files = frozenset(
+                str(record["path"]) for record in document["files"] if record.get("path")
+            )
+        except Exception as exc:
+            if not is_not_found(exc) and not isinstance(
+                exc, (ValueError, KeyError, TypeError, AttributeError)
+            ):
+                # Transient failure: fall back to HEAD now, try the manifest again later.
+                return None
+            files = None
+        self._generation_files[generation] = files
+        return files
 
     def resolve_path(self, path: str | Path) -> Path:
         rel_path = _logical_relative_path(path)
@@ -266,7 +311,16 @@ class _R2DataSource:
             raise DataSourceError(f"Could not read R2 object {key}: {format_client_error(exc)}")
 
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_bytes(body)
+        # Write then rename: another process or thread sharing the cache may be
+        # reading this path, and must never see a truncated file.
+        fd, temp_name = tempfile.mkstemp(dir=cache_path.parent, prefix=f".{cache_path.name}.")
+        try:
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(body)
+            os.replace(temp_name, cache_path)
+        except BaseException:
+            Path(temp_name).unlink(missing_ok=True)
+            raise
         self._downloaded_keys.add(key)
         return cache_path
 

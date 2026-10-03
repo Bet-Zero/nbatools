@@ -122,6 +122,53 @@ def test_local_publication_validates_snapshot_and_atomically_switches_pointer(
     assert not (generation_dir / ACTIVE_GENERATION_PATH).exists()
 
 
+def test_publication_derives_the_player_name_list(tmp_path: Path) -> None:
+    data_dir = tmp_path / "data"
+    _write_valid_source(data_dir, "one")
+    stats = data_dir / "raw" / "player_game_stats"
+    stats.mkdir(parents=True)
+    (stats / "2024-25_regular_season.csv").write_text(
+        "game_id,player_id,player_name,pts\n1,203999,Nikola Jokić,30\n"
+        "1,1626168,Bobby Portis,12\n1,1627750,Jamal Murray,20\n"
+    )
+    (stats / "2024-25_playoffs.csv").write_text(
+        "game_id,player_id,player_name,pts\n9,203999,Nikola Jokić,33\n"
+    )
+    (stats / "2025-26_regular_season.csv").write_text(
+        "game_id,player_id,player_name,pts\n2,203999,Nikola Jokić,28\n"
+        '2,1626168,"Bobby Portis Jr.",4\n'
+    )
+    # A stale copy in the source is replaced by the derived list.
+    (data_dir / "metadata" / "player_names.csv").write_text("player_name\nStale\n")
+
+    publish_local_generation("local-one", source_dir=data_dir, data_root=data_dir)
+
+    generation_dir = data_dir / "generations" / "local-one"
+    names = (generation_dir / data_source.PLAYER_NAMES_PATH).read_text(encoding="utf-8")
+    assert names.splitlines() == [
+        "player_id,player_name,season",
+        "1626168,Bobby Portis,2024-25",
+        "1627750,Jamal Murray,2024-25",
+        "203999,Nikola Jokić,2024-25",
+        "1626168,Bobby Portis Jr.,2025-26",
+        "203999,Nikola Jokić,2025-26",
+    ]
+    manifest = _read_json(generation_dir / GENERATION_MANIFEST_PATH)
+    assert "metadata/player_names.csv" in {item["path"] for item in manifest["files"]}
+
+
+def test_publication_refuses_player_stats_without_ids(tmp_path: Path) -> None:
+    data_dir = tmp_path / "data"
+    _write_valid_source(data_dir, "one")
+    stats = data_dir / "raw" / "player_game_stats"
+    stats.mkdir(parents=True)
+    (stats / "2024-25_regular_season.csv").write_text("game_id,player_name\n1,Nikola Jokić\n")
+
+    with pytest.raises(GenerationValidationError, match="player_id"):
+        publish_local_generation("local-one", source_dir=data_dir, data_root=data_dir)
+    assert not (data_dir / "generations" / "local-one").exists()
+
+
 def test_local_validation_failure_never_creates_generation_or_pointer(tmp_path: Path) -> None:
     data_dir = tmp_path / "data"
     _write_valid_source(data_dir, "broken")
