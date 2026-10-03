@@ -393,7 +393,9 @@ def wants_team_leaderboard(text: str) -> bool:
 
 
 def extract_season(text: str) -> str | None:
-    m = re.search(r"\b(?:19|20)\d{2}-\d{2}\b", text)
+    # The lookahead keeps an ISO date ("2025-11-01") from reading as the
+    # nonexistent season "2025-11".
+    m = re.search(r"\b(?:19|20)\d{2}-\d{2}\b(?!-\d)", text)
     return m.group(0) if m else None
 
 
@@ -407,7 +409,7 @@ def extract_relative_season(text: str, season_type: str) -> str | None:
 
 
 def extract_season_range(text: str) -> tuple[str | None, str | None]:
-    m = re.search(r"\bfrom\s+((?:19|20)\d{2}-\d{2})\s+to\s+((?:19|20)\d{2}-\d{2})\b", text)
+    m = re.search(r"\bfrom\s+((?:19|20)\d{2}-\d{2})\s+to\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
     if m:
         return m.group(1), m.group(2)
     return None, None
@@ -431,11 +433,11 @@ def extract_since_season(text: str) -> str | None:
     'since 2020'    -> '2020-21'  (the season starting in that year)
     """
     # Explicit season format first
-    m = re.search(r"\bsince\s+((?:19|20)\d{2}-\d{2})\b", text)
+    m = re.search(r"\bsince\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
     if m:
         return m.group(1)
     # Bare year
-    m = re.search(r"\bsince\s+((?:19|20)\d{2})\b", text)
+    m = re.search(r"\bsince\s+((?:19|20)\d{2})\b(?!-\d)", text)
     if m:
         from nbatools.commands._seasons import int_to_season
 

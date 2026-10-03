@@ -22,7 +22,7 @@ from nbatools.commands._date_utils import (
     MONTH_NAME_TO_NUM,
     extract_date_range,
     has_explicit_calendar_date,
-    season_for_explicit_month_year,
+    seasons_for_explicit_dates,
     uses_fuzzy_date_term,
 )
 from nbatools.commands._default_rules import (
@@ -1248,11 +1248,15 @@ def _build_parse_state(query: str) -> dict:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None
         if season is None:
-            # An explicit "<month> <year>" pins the season as well as the date
+            # An explicit "<month> <year>" or ISO date pins the season as well as the date
             # window. This has to run before the default_season_for_context
             # fallbacks below, or the season stays on the current one while the
             # date window points at a year that season never covers.
-            season = season_for_explicit_month_year(q)
+            first_date_season, last_date_season = seasons_for_explicit_dates(q)
+            if first_date_season != last_date_season:
+                start_season, end_season = first_date_season, last_date_season
+            else:
+                season = first_date_season
 
     stat = detect_stat(q)
     last_n = extract_last_n(q)
