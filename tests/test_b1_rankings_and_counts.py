@@ -346,3 +346,65 @@ def test_games_played_minimum_is_still_a_qualifier():
     assert result.route == "season_leaders"
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert "fg_pct" in rows[0]
+
+
+@pytest.mark.fixture_data
+def test_team_games_played_ranking_has_one_column_and_name_ties():
+    teams = pd.read_csv(
+        Path("qa/fixtures/query_engine_sample/data/raw/team_game_stats")
+        / f"{SEASON}_regular_season.csv"
+    )
+    played = teams.groupby("team_name")["game_id"].nunique().reset_index()
+    expected = played.sort_values(["game_id", "team_name"], ascending=[False, True])
+    rows = _sections("which team played the most games")["leaderboard"]
+    assert [r["team_name"] for r in rows] == list(expected["team_name"].head(10))
+    assert [r["games_played"] for r in rows] == list(expected["game_id"].head(10))
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("at most 1 turnover", {"stat": "tov", "max_value": 1.0}),
+        ("no more than 2 turnovers", {"stat": "tov", "max_value": 2.0}),
+        ("2 turnovers or fewer", {"stat": "tov", "max_value": 2.0}),
+        ("fewer than 2 turnovers", {"stat": "tov", "max_value": 2 - 0.0001}),
+        ("under 2 turnovers", {"stat": "tov", "max_value": 2 - 0.0001}),
+    ],
+)
+def test_upper_bound_wording_is_not_a_lower_bound(text, expected):
+    from nbatools.commands._occurrence_route_utils import _parse_single_threshold
+
+    assert _parse_single_threshold(text) == expected
+
+
+@pytest.mark.fixture_data
+@pytest.mark.parametrize(
+    ("query", "column", "mask"),
+    [
+        (
+            "most games with 20+ points and at most 1 turnover",
+            "games_pts_20+_tov_1_or_fewer",
+            lambda g: (g["pts"] >= 20) & (g["tov"] <= 1),
+        ),
+        (
+            "most games with 10+ rebounds and fewer than 2 turnovers",
+            "games_reb_10+_tov_under_2",
+            lambda g: (g["reb"] >= 10) & (g["tov"] < 2),
+        ),
+    ],
+)
+def test_upper_bound_condition_leaders_match_raw_rows(query, column, mask):
+    games = _games(SEASON)
+    counts = _event_counts(games, mask(games))
+    rows = _sections(query)["leaderboard"]
+    assert [r[column] for r in rows] == sorted(counts.values, reverse=True)[: len(rows)]
+    for row in rows:
+        assert counts[row["player_name"]] == row[column], row
+
+
+@pytest.mark.fixture_data
+def test_at_most_count_is_a_league_count_not_a_ranking():
+    games = _games(SEASON)
+    expected = int(((games["pts"] >= 20) & (games["tov"] <= 1)).sum())
+    (row,) = _sections("how many games with 20+ points and at most 1 turnover this season")["count"]
+    assert row["count"] == expected

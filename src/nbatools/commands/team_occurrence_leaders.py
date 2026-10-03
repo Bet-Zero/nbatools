@@ -204,12 +204,14 @@ def _flag_compound_conditions(df: pd.DataFrame, conditions: list[OccurrenceCondi
 
 
 def _max_label(stat_name: str, max_value: float) -> str:
-    """Label an upper bound: exactly zero, or "under N" for a strict bound.
+    """Label an upper bound: exactly zero, "N or fewer", or "under N" (strict).
 
     A strict "under 10" executes as 9.9999; truncating that printed "under_9".
     """
     if max_value == 0:
         return f"{stat_name}_0"
+    if float(max_value).is_integer():
+        return f"{stat_name}_{int(max_value)}_or_fewer"
     return f"{stat_name}_under_{math.ceil(max_value)}"
 
 

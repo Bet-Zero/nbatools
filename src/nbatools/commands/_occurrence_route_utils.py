@@ -198,18 +198,27 @@ def _parse_single_threshold(text: str) -> dict | None:
     # Pattern: "NUMBER+ STAT" or "NUMBER STAT" or "under NUMBER STAT"
     # Examples: "30+ points", "10 rebounds", "5+ threes", "under 10 turnovers"
 
-    # "under X stat" → max_value
-    under_match = re.search(
-        r"\bunder\s+(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
-        text,
-    )
-    if under_match:
-        value = float(under_match.group(1))
-        stat_text = under_match.group(2)  # already lowercase from pipeline normalization
-        stat = _COMPOUND_STAT_MAP.get(stat_text)
-        if stat:
-            return {"stat": stat, "max_value": value - 0.0001}  # "under 10" means < 10
+    # Upper bounds. "under 2 turnovers" / "fewer than 2" are strict; "at most 1
+    # turnover" / "1 or fewer turnovers" include the number. Read as a bare
+    # number they became lower bounds ("at most 1 turnover" counted tov >= 1).
+    stat_words = _COMPOUND_STAT_WORDS
+    for pattern, strict in (
+        (rf"\b(?:under|fewer\s+than|less\s+than)\s+(\d+)\+?\s+({stat_words})\b", True),
+        (
+            rf"\b(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of|max(?:imum)?(?:\s+of)?)"
+            rf"\s+(\d+)\s+({stat_words})\b",
+            False,
+        ),
+        (rf"\b(\d+)\s+or\s+(?:fewer|less)\s+({stat_words})\b", False),
+        (rf"\b(\d+)\s+({stat_words})\s+or\s+(?:fewer|less)\b", False),
+    ):
+        bound_match = re.search(pattern, text)
+        if bound_match:
+            stat = _COMPOUND_STAT_MAP.get(bound_match.group(2))
+            if stat:
+                value = float(bound_match.group(1))
+                # "under 10" means < 10
+                return {"stat": stat, "max_value": value - 0.0001 if strict else value}
 
     # Standard patterns: "30+ points", "10 rebounds", "0 turnovers", "no turnovers"
     standard_match = re.search(
@@ -334,7 +343,9 @@ def wants_occurrence_leaderboard(text: str) -> bool:
 
     return bool(
         re.search(
-            r"\b(most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking|who\s+has\s+the\s+most|who\s+leads?)\b",
+            # "at most 1 turnover" is a bound, not a ranking.
+            r"\b((?<!\bat )(?<!\bno )most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking"
+            r"|who\s+leads?)\b",
             text,
         )
     )
