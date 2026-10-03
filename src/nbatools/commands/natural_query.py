@@ -509,6 +509,8 @@ def _multi_player_availability_boundary(q: str) -> bool:
 _WITH_PLAYER_SUPPORTED_ROUTES = {"team_record"}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
+    "player_split_summary",
+    "team_split_summary",
     "team_record_leaderboard",
     "game_finder",
     "game_summary",
@@ -587,7 +589,9 @@ _LAST_N_WINDOW_ROUTES = {
     "game_summary",
     "player_game_finder",
     "player_game_summary",
+    "player_split_summary",
     "team_record",
+    "team_split_summary",
 }
 
 
@@ -2700,19 +2704,31 @@ def _finalize_route(parsed: dict) -> dict:
         }
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
+        # The split divides the same sample the player summary describes, so
+        # every summary filter travels with it (the split axis is dropped by
+        # the route itself).
         route_kwargs = {
             "split": split_type,
             "season": season,
             "start_season": start_season,
             "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
             "season_type": season_type,
             "player": player,
             "team": team,
             "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
             "last_n": last_n,
+            "special_event": special_event,
         }
     elif split_type and team and not team_a and not team_b:
         route = "team_split_summary"
@@ -2721,9 +2737,16 @@ def _finalize_route(parsed: dict) -> dict:
             "season": season,
             "start_season": start_season,
             "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
@@ -2748,6 +2771,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
             "ambiguous_intent": "bare_player_vs_player",
             "clarification_options": [
                 {
@@ -2788,6 +2814,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
         }
     # ---------------------------------------------------------------------------
     # ---------------------------------------------------------------------------
@@ -2838,6 +2867,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
         }
     elif player and streak_request and not player_a and not player_b:
         route = "player_streak_finder"

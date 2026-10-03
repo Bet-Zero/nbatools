@@ -86,6 +86,19 @@ def stat_conditions_cover(conditions: Any, expected: Any) -> bool:
     return expected_keys.issubset(condition_keys)
 
 
+def combined_stat_conditions(
+    stat: str | None,
+    min_value: float | None,
+    max_value: float | None,
+    conditions: Any,
+) -> list[dict[str, Any]]:
+    """The scalar threshold plus any condition set, as one AND list."""
+    primary = primary_condition_from_kwargs(
+        {"stat": stat, "min_value": min_value, "max_value": max_value}
+    )
+    return normalize_stat_conditions(([primary] if primary else []) + list(conditions or []))
+
+
 def apply_stat_conditions(
     df: pd.DataFrame,
     conditions: Any,

@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import (
+    apply_stat_conditions,
+    combined_stat_conditions,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import load_team_games_for_seasons
@@ -29,6 +33,7 @@ def filter_team_games(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    conditions: list[dict] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -68,6 +73,13 @@ def filter_team_games(
 
     if losses_only:
         out = out[out["wl"] == "L"].copy()
+
+    if conditions:
+        from nbatools.commands.game_summary import ALLOWED_STATS, _prepare_condition_column
+
+        out = apply_stat_conditions(
+            out, conditions, ALLOWED_STATS, prepare_stat_column=_prepare_condition_column
+        )
 
     out = out.sort_values(["game_date", "game_id"], ascending=[False, False]).copy()
 
@@ -226,7 +238,23 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     head_to_head: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    conditions: list[dict] | None = None,
 ) -> ComparisonResult | NoResult:
+    conditions = combined_stat_conditions(stat, min_value, max_value, conditions)
+    if conditions and head_to_head:
+        return NoResult(
+            query_class="comparison",
+            reason="unsupported",
+            result_status="no_result",
+            notes=[
+                "A stat condition in a head-to-head comparison does not say which "
+                "team it applies to; ask for one team's games against the other."
+            ],
+        )
+
     if home_only and away_only:
         return NoResult(
             query_class="comparison",
@@ -279,6 +307,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            conditions=conditions,
         )
         b_df = filter_team_games(
             df,
@@ -291,6 +320,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            conditions=conditions,
         )
 
     if a_df.empty and b_df.empty:
