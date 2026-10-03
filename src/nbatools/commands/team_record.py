@@ -39,6 +39,7 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
     period_coverage_failure,
     period_window_label,
+    sample_season_span,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
@@ -524,9 +525,11 @@ def build_team_record_result(
     game_log = _build_game_log_section(df) if without_player or with_player or last_n else None
 
     caveats: list[str] = []
-    if len(seasons) > 1:
+    used_seasons = sample_season_span(df, seasons, last_n)
+    if len(used_seasons) > 1:
         caveats.append(
-            f"multi-season record aggregated from game logs across {seasons[0]} to {seasons[-1]}"
+            f"multi-season record aggregated from game logs across "
+            f"{used_seasons[0]} to {used_seasons[-1]}"
         )
     if opponent:
         caveats.append(f"record filtered to games vs {describe_opponent_filter(opponent)}")

@@ -16,6 +16,7 @@ from nbatools.commands.data_utils import (
     last_n_window_game_ids,
     load_player_games_for_seasons,
     load_team_games_for_seasons,
+    sample_season_span,
     select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -478,9 +479,11 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
-    if len(seasons) > 1:
+    used_seasons = sample_season_span(df, seasons, last_n)
+    if len(used_seasons) > 1:
         caveats.append(
-            f"multi-season summary aggregated from game logs across {seasons[0]} to {seasons[-1]}"
+            f"multi-season summary aggregated from game logs across "
+            f"{used_seasons[0]} to {used_seasons[-1]}"
         )
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")

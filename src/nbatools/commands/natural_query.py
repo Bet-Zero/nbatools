@@ -287,7 +287,13 @@ from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
 )
 from nbatools.commands._parse_helpers import (
+    last_n_reach_back_seasons as last_n_reach_back_seasons,
+)
+from nbatools.commands._parse_helpers import (
     merge_opponent_points_allowed_conditions as merge_opponent_points_allowed_conditions,
+)
+from nbatools.commands._parse_helpers import (
+    names_current_season as names_current_season,
 )
 from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
@@ -1395,6 +1401,7 @@ def _build_parse_state(query: str) -> dict:
     range_intent = bool(start_season and end_season)
     split_intent = wants_split_summary(q)
 
+    season_defaulted = False
     if season is None and start_season is None and end_season is None:
         if (
             last_n is not None
@@ -1409,6 +1416,7 @@ def _build_parse_state(query: str) -> dict:
             or window_size is not None
         ) and not historical_route_intent:
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     player_a, player_b = extract_player_comparison(q)
     bare_player_vs_player = False
@@ -1556,6 +1564,7 @@ def _build_parse_state(query: str) -> dict:
             and not historical_route_intent
         ):
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     # Anchor rolling date windows to the data end date when data is stale.
     # Without this, a 14-day window ("last couple weeks") computed from
@@ -1599,6 +1608,7 @@ def _build_parse_state(query: str) -> dict:
         "start_season": start_season,
         "end_season": end_season,
         "explicit_relative_season": explicit_relative_season,
+        "season_defaulted": season_defaulted and not names_current_season(q),
         "start_date": start_date,
         "end_date": end_date,
         "season_type": season_type,
@@ -3871,6 +3881,16 @@ def _finalize_route(parsed: dict) -> dict:
         # "30 point games in his last 10" measures conditions inside the time
         # window; "last 10 games where he scored 30" counts qualifying games.
         route_kwargs["last_n_scope"] = parsed.get("last_n_scope") or "qualifying"
+        if (
+            parsed.get("season_defaulted")
+            and route_kwargs.get("season") == parsed.get("season")
+            and not route_kwargs.get("start_season")
+            and not route_kwargs.get("start_date")
+            and not route_kwargs.get("end_date")
+        ):
+            # No season was named, so "last 10 games" means the 10 most
+            # recent games even when the current season has fewer.
+            route_kwargs.update(last_n_reach_back_seasons(route_kwargs["season"]))
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:

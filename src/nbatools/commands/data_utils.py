@@ -347,6 +347,17 @@ def apply_last_n_sample(
     return select_most_recent_games(df, last_n)
 
 
+def sample_season_span(df: pd.DataFrame, seasons: list[str], last_n: int | None) -> list[str]:
+    """Seasons a caveat should name: the ones a last-N sample actually used.
+
+    A last-N window may load the prior season to fill itself; when every
+    selected game is from the current season, the answer is single-season.
+    """
+    if last_n is None or "season" not in df.columns or df.empty:
+        return seasons
+    return sorted(df["season"].astype(str).unique())
+
+
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
 

@@ -608,6 +608,32 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
     return "qualifying"
 
 
+def last_n_reach_back_seasons(season: str) -> dict:
+    """Season kwargs letting a last-N window reach into the prior season.
+
+    With no season named, "Warriors last 10 games" is the ten most recent
+    games, even when the current season has only played a few. The window
+    is still the N most recent games; the earlier season only fills it.
+    """
+    from nbatools.commands._seasons import EARLIEST_SEASON, int_to_season, season_to_int
+
+    if season_to_int(season) <= season_to_int(EARLIEST_SEASON):
+        return {}
+    return {
+        "season": None,
+        "start_season": int_to_season(season_to_int(season) - 1),
+        "end_season": season,
+    }
+
+
+_CURRENT_SEASON_WORDS = re.compile(r"\b(?:this|current)\s+(?:season|year)\b")
+
+
+def names_current_season(text: str) -> bool:
+    """True when the query pins the sample to the current season in words."""
+    return bool(_CURRENT_SEASON_WORDS.search(text))
+
+
 def extract_last_n(text: str) -> int | None:
     # Fuzzy time words → fixed last-N values (glossary / spec §18.1)
     for term, last_n in FUZZY_LAST_N_TERMS.items():

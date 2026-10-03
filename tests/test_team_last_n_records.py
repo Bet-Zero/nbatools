@@ -80,8 +80,9 @@ def _answer(query_result) -> dict:
             "Lakers playoff record last 3 games",
             lambda: _team_games("LAL", season_type="playoffs")[:3],
         ),
-        # More games requested than played: the whole season, labelled as such.
-        ("Knicks record last 500 games", lambda: _team_games("NYK")),
+        # More games requested than played this season: the whole season,
+        # labelled as such.
+        ("Knicks record last 500 games this season", lambda: _team_games("NYK")),
     ],
 )
 def test_team_record_counts_the_selected_recent_games(query, expected_rows):
@@ -97,7 +98,7 @@ def test_team_record_counts_the_selected_recent_games(query, expected_rows):
 def test_window_larger_than_the_season_says_how_many_games_were_played():
     from nbatools.query_service import execute_natural_query
 
-    result = execute_natural_query("Knicks record last 500 games")
+    result = execute_natural_query("Knicks record last 500 games this season")
 
     assert "last 500 games (played 60)" in result.result.to_dict()["caveats"]
 

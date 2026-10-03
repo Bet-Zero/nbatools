@@ -244,3 +244,43 @@ def test_record_window_caveat_counts_games_in_the_window():
 
     assert _game_ids(result) == _ids(expected)
     assert "last 10 games (played 10)" in result.result.to_dict()["caveats"]
+
+
+# -- no season named: the window reaches back into last season --------------
+
+
+def _team_both_seasons(abbr: str) -> list[dict[str, str]]:
+    return _team(abbr) + _team(abbr, season="2024-25")
+
+
+def test_last_n_without_a_season_fills_from_the_prior_season():
+    result = _run("Knicks record last 70 games")
+    expected = _team_both_seasons("NYK")[:70]
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+
+    assert len(_team("NYK")) < 70
+    assert summary["games"] == 70
+    assert _game_ids(result) == _ids(expected)
+    assert (
+        "multi-season record aggregated from game logs across 2024-25 to 2025-26"
+        in result.result.to_dict()["caveats"]
+    )
+
+
+def test_window_inside_the_current_season_has_no_multi_season_caveat():
+    result = _run("Knicks record last 10 games")
+    caveats = result.result.to_dict()["caveats"]
+
+    assert _game_ids(result) == _ids(_team("NYK")[:10])
+    assert not any(c.startswith("multi-season") for c in caveats)
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["Knicks record last 70 games this season", "Knicks record last 70 games 2025-26"],
+)
+def test_named_season_keeps_the_window_inside_it(query):
+    result = _run(query)
+
+    assert _game_ids(result) == _ids(_team("NYK"))
+    assert "last 70 games (played 60)" in result.result.to_dict()["caveats"]
