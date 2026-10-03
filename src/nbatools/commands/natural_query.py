@@ -1599,6 +1599,9 @@ def _build_parse_state(query: str) -> dict:
     explicit_single_season = extract_season(q)
     explicit_range_start, explicit_range_end = extract_season_range(q)
 
+    if player and team_streak_request and team_streak_request.get("team_condition_only"):
+        # A bare stat condition is a team streak only without a player subject.
+        team_streak_request = None
     if (
         (streak_request or team_streak_request)
         # "this season" / "last season" name a season too.
@@ -1611,6 +1614,7 @@ def _build_parse_state(query: str) -> dict:
         and start_date is None
         and end_date is None
     ):
+        pre_streak_scope = (season, start_season, end_season)
         default_end = default_season_for_context(season_type)
         end_year = int(default_end.split("-")[0])
         start_year = end_year - 2
@@ -1620,6 +1624,7 @@ def _build_parse_state(query: str) -> dict:
         streak_default_window = True
     else:
         streak_default_window = False
+        pre_streak_scope = None
 
     return {
         "normalized_query": q,
@@ -1703,6 +1708,7 @@ def _build_parse_state(query: str) -> dict:
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
         "streak_default_window": streak_default_window,
+        "pre_streak_scope": pre_streak_scope,
         "season_high_intent": season_high_intent,
         "top_team_game_intent": top_team_game_intent,
         "distinct_player_count": distinct_player_count,
@@ -4020,6 +4026,17 @@ def _finalize_route(parsed: dict) -> dict:
     ):
         route_kwargs["unsupported_filters"] = ["unsupported_concept"]
         notes.append(boundary_note)
+
+    if (
+        parsed.get("pre_streak_scope")
+        and route not in ("player_streak_finder", "team_streak_finder")
+        and "season" in route_kwargs
+    ):
+        # The three-season window is a streak default; a question that ends up
+        # on another route keeps the scope it would have had without it.
+        pre_season, pre_start, pre_end = parsed["pre_streak_scope"]
+        route_kwargs.update(season=pre_season, start_season=pre_start, end_season=pre_end)
+        notes = [note for note in notes if "three-season window" not in note]
 
     if career_intent and route is not None:
         from nbatools.commands._seasons import EARLIEST_SEASON

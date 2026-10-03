@@ -780,6 +780,7 @@ def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
         "away_only": parsed["away_only"],
         "start_date": parsed.get("start_date"),
         "end_date": parsed.get("end_date"),
+        "last_n": parsed.get("last_n"),
         "stat": request.get("stat"),
         "min_value": request.get("min_value"),
         "max_value": request.get("max_value"),

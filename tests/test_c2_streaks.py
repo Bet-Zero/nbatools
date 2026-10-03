@@ -188,3 +188,67 @@ def test_home_winning_streak_counts_home_games_only():
 def test_unread_subject_does_not_become_a_league_ranking():
     result = execute_natural_query("Jokc longest 30 point streak")
     assert result.metadata.get("route") not in {"player_streak_finder", "team_streak_finder"}
+
+
+def test_current_streak_with_a_length_reports_the_live_run():
+    games = _games("player_game_stats", SEASON)
+    jokic = games[games["player_name"] == "Nikola Jokić"]
+    _, current = _runs(list(jokic["pts"] >= 20))
+    assert 0 < current < 5
+
+    result = execute_natural_query(f"Jokic current 5 straight games with 20 points in {SEASON}")
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert [(row["streak_length"], row["is_active"]) for row in rows] == [(current, 1)]
+    assert "the current streak is shorter than 5 games" in result.result.caveats
+
+
+def test_league_streaks_respect_each_players_last_n_games():
+    games = _games("player_game_stats", SEASON)
+    last5 = games.groupby("player_name").tail(5)
+    runs = _per_entity(last5, "player_name", lambda r: r.pts >= 20)
+
+    rows, _ = _streaks("longest 20 point streak in the last 5 games this season")
+    assert [row["streak_length"] for row in rows] == sorted(
+        (longest for longest, _ in runs.values()), reverse=True
+    )[:10]
+    assert max(row["streak_length"] for row in rows) <= 5
+
+
+@pytest.mark.parametrize(
+    ("query", "flag", "label"),
+    [
+        (
+            f"Jokic consecutive games with under 20 points in {SEASON}",
+            lambda g: g["pts"] < 20,
+            "pts<20",
+        ),
+        (
+            f"Jokic consecutive games with at most 2 turnovers in {SEASON}",
+            lambda g: g["tov"] <= 2,
+            "tov<=2",
+        ),
+    ],
+)
+def test_upper_bound_streaks(query, flag, label):
+    games = _games("player_game_stats", SEASON)
+    jokic = games[games["player_name"] == "Nikola Jokić"]
+    rows, _ = _streaks(query)
+    assert rows[0]["streak_length"] == _runs(list(flag(jokic)))[0]
+    assert rows[0]["condition"] == label
+
+
+def test_team_stat_streak_ranking():
+    teams = _games("team_game_stats", SEASON)
+    runs = _per_entity(teams, "team_name", lambda r: r.pts >= 120)
+    rows, metadata = _streaks(f"which team has the longest streak of 120 point games in {SEASON}")
+    assert metadata["route"] == "team_streak_finder"
+    assert [row["streak_length"] for row in rows] == sorted(
+        (longest for longest, _ in runs.values() if longest), reverse=True
+    )
+
+
+def test_three_season_streak_window_stays_on_streak_routes():
+    result = execute_natural_query("Jokic win streak")
+    assert result.metadata["route"] != "player_streak_finder"
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert summary["season_start"] == summary["season_end"] == SEASON

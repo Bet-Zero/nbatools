@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
 from nbatools.commands._streak_runs import best_runs_per_entity
@@ -40,6 +42,9 @@ def _condition_label(
     if min_value is not None:
         return f"{stat}>={_format_value(min_value)}"
     if max_value is not None:
+        if not float(max_value).is_integer():
+            # A strict "under N" bound executes as N - 0.0001.
+            return f"{stat}<{math.ceil(max_value)}"
         return f"{stat}<={_format_value(max_value)}"
     return stat
 
@@ -262,13 +267,23 @@ def build_result(
         stat=None,
         min_value=None,
         max_value=None,
-        last_n=last_n,
+        last_n=last_n if team is not None else None,
         start_date=start_date,
         end_date=end_date,
     )
 
     if filtered.empty:
         return NoResult(query_class="streak")
+
+    if team is None and last_n:
+        # League ranking: "last N games" is each team's own last N games.
+        filtered = (
+            filtered.assign(_date=pd.to_datetime(filtered["game_date"]))
+            .sort_values(["_date", "game_id"])
+            .groupby("team_id", group_keys=False)
+            .tail(last_n)
+            .drop(columns="_date")
+        )
 
     mask = _build_condition_mask(
         filtered,
@@ -296,7 +311,13 @@ def build_result(
         if current:
             rows = [row for row in rows if row["is_active"]]
 
-    if min_streak_length is not None:
+    # A current streak is reported whatever its length; "current 5 straight"
+    # asks how long the live run is, so a shorter one is said, not dropped.
+    current_short_of = None
+    if current and min_streak_length is not None:
+        if rows and rows[0]["streak_length"] < min_streak_length:
+            current_short_of = min_streak_length
+    elif min_streak_length is not None:
         rows = [row for row in rows if row["streak_length"] >= min_streak_length]
 
     no_active_streak = current and not rows and team is not None
@@ -357,6 +378,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if current_short_of is not None:
+        caveats.append(f"the current streak is shorter than {current_short_of} games")
     if no_active_streak:
         caveats.append(f"no active streak: the latest game in range did not meet {condition}")
     if team is None:

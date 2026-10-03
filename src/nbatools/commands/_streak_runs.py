@@ -7,6 +7,8 @@ that fails the condition, or a missing stat, ends the run.
 
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
 
@@ -38,6 +40,8 @@ def compound_condition_label(conditions: list[dict]) -> str:
             parts.append(f"{stat}:{_fmt(low)}-{_fmt(high)}")
         elif low is not None:
             parts.append(f"{stat}>={_fmt(low)}")
+        elif high is not None and not float(high).is_integer():
+            parts.append(f"{stat}<{math.ceil(high)}")
         elif high is not None:
             parts.append(f"{stat}<={_fmt(high)}")
     return " and ".join(parts)

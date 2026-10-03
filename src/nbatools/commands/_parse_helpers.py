@@ -501,11 +501,13 @@ STREAK_SPECIAL_PATTERNS = {
 }
 
 
-_STREAK_WORD = re.compile(r"\b(streak|straight|consecutive)\b")
+_STREAK_WORD = re.compile(r"\b(streak|straight|consecutive|in\s+a\s+row)\b")
 # "current"/"active" asks for the streak alive at the latest game, not a
 # season-scope word ("current season").
 _CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
-_STREAK_LENGTH = re.compile(r"\b(\d+)\s+(?:straight|consecutive)\s+games?\b")
+_STREAK_LENGTH = re.compile(
+    r"\b(\d+)\s+(?:straight|consecutive)\s+games?\b|\b(\d+)\s+games?\s+in\s+a\s+row\b"
+)
 
 
 def _with_streak_mode(request: dict | None, normalized: str) -> dict | None:
@@ -538,6 +540,7 @@ def _generic_streak_request(normalized: str, compound_only: bool = False) -> dic
     rebound games", "consecutive double doubles".
     """
     from nbatools.commands._occurrence_route_utils import (
+        _parse_single_threshold,
         extract_compound_occurrence_event,
         extract_occurrence_event,
     )
@@ -552,7 +555,7 @@ def _generic_streak_request(normalized: str, compound_only: bool = False) -> dic
     }
     length = _STREAK_LENGTH.search(normalized)
     if length:
-        request["min_streak_length"] = int(length.group(1))
+        request["min_streak_length"] = int(length.group(1) or length.group(2))
     # The streak length is not a game condition ("5 straight games with 30").
     condition_text = _STREAK_LENGTH.sub(" games ", normalized) if length else normalized
 
@@ -561,7 +564,10 @@ def _generic_streak_request(normalized: str, compound_only: bool = False) -> dic
         return {**request, "conditions": [dict(c) for c in compound]}
     if compound_only:
         return None
-    event = extract_occurrence_event(condition_text)
+    # An upper bound alone ("games with under 20 points", "at most 2
+    # turnovers") is read by the threshold parser; the event parser only
+    # knows lower bounds.
+    event = extract_occurrence_event(condition_text) or _parse_single_threshold(condition_text)
     if not event:
         return None
     if event.get("special_event") in ("triple_double", "double_double"):
@@ -731,6 +737,12 @@ def extract_team_streak_request(text: str) -> dict | None:
     if not _STREAK_WORD.search(normalized):
         return None
     request = _extract_team_streak_request_patterns(normalized)
+    if request is None and not _OUTCOME_STREAK.search(normalized):
+        # One team stat condition ("120 point games", "games with 15+
+        # threes"); the team finder takes a single stat bound.
+        generic = _generic_streak_request(normalized)
+        if generic and generic.get("stat") and not generic.get("conditions"):
+            request = {**generic, "team_condition_only": True}
     if request is None and (outcome := _OUTCOME_STREAK.search(normalized)):
         # "Lakers current winning streak", "Celtics winning streak at home"
         request = {
