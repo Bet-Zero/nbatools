@@ -533,6 +533,12 @@ def canonicalize_sample_phrases(text: str) -> str:
         r"last \1 ",
         text,
     )
+    # "past N games" too; "past N seasons" already has its own season reading.
+    text = re.sub(
+        r"\bpast\s+(\d+)\s+(?=(?:games?|contests?|outings?|matchups?|meetings?|starts?)\b)",
+        r"last \1 ",
+        text,
+    )
     # A single latest meeting is a one-game window against that opponent.
     text = re.sub(
         r"\b(?:last|latest|most\s+recent|previous)\s+(?:meeting|matchup)\s+"
@@ -567,6 +573,7 @@ _LAST_N_GAMES = (
     r"\blast\s+\d+(?!\s+(?:seasons?|weeks?|days?|months?|minutes?))"
     r"(?:\s+(?:games?|contests?|outings?))?\b"
 )
+_POSSESSIVE_WINDOW = r"\bof\s+(?:the\s+)?(?:[\w.-]+\s+){0,2}[\w.-]+(?:'s|s'|')\s*$"
 _PERFORMANCE_WORDS = (
     r"\b(?:triple[- ]doubles?|double[- ]doubles?|wins?|won|losses|lost)\b"
     r"|\b\d+\+?\s*[- ]?\s*(?:points?|pts?|rebounds?|rebs?|assists?|asts?|"
@@ -597,6 +604,14 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
         return "qualifying"
     before = text[: match.start()]
     if re.search(rf"\b{_WINDOW_PREPOSITION}$", before):
+        return "window"
+    # "how many of LeBron's last 10 games ...", "of the Lakers' last 10 ...":
+    # the possessive names whose window it is.
+    if re.search(_POSSESSIVE_WINDOW, before):
+        return "window"
+    # "LeBron's last 10 games, how many 30 point games": the question about
+    # the games comes after the window.
+    if re.search(r"\bhow\s+many\b", after):
         return "window"
     # A condition stated before a bare last-N phrase ("LeBron 30 point games
     # last 10") is measured over that window.

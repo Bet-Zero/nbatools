@@ -61,3 +61,10 @@ def test_canonical_phrases_reach_the_existing_extractors():
 )
 def test_detect_last_n_scope(text, scope):
     assert detect_last_n_scope(text, extract_threshold_conditions(text)) == scope
+
+
+def test_past_n_games_reads_as_last_n_and_leaves_past_seasons():
+    from nbatools.commands._parse_helpers import canonicalize_sample_phrases
+
+    assert canonicalize_sample_phrases("lebron past ten games") == "lebron last 10 games"
+    assert canonicalize_sample_phrases("lebron past 5 seasons") == "lebron past 5 seasons"

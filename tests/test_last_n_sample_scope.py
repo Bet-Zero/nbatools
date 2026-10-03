@@ -284,3 +284,43 @@ def test_named_season_keeps_the_window_inside_it(query):
 
     assert _game_ids(result) == _ids(_team("NYK"))
     assert "last 70 games (played 60)" in result.result.to_dict()["caveats"]
+
+
+# -- review findings: more window wordings ----------------------------------
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "how many 30 point games did LeBron have in the past ten games",
+        "how many of LeBron's last 10 games did he score 30",
+        "of LeBron's last 10 games how many did he score 30",
+        "LeBron's last ten games how many 30 point games",
+    ],
+)
+def test_window_wordings_count_inside_the_window(query):
+    result = _run(query)
+    expected = [r for r in _player("LeBron James")[:10] if int(r["pts"]) >= 30]
+
+    assert _count(result) == len(expected)
+    assert _game_ids(result) == _ids(expected)
+
+
+def test_possessive_team_window_counts_wins_inside_it():
+    result = _run("how many of the Lakers' last 10 games were wins")
+    expected = [r for r in _team("LAL")[:10] if r["wl"] == "W"]
+
+    assert _count(result) == len(expected)
+    assert _game_ids(result) == _ids(expected)
+
+
+def test_qualifying_count_wording_does_not_claim_a_window():
+    from nbatools.query_service import _count_context
+
+    assert (
+        _count_context({}, player=True, last_n=5, last_n_scope="qualifying")
+        == "(limited to the 5 most recent)"
+    )
+    assert _count_context({}, player=True, last_n=5, last_n_scope="window") == (
+        "in his last 5 games"
+    )

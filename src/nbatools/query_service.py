@@ -817,13 +817,23 @@ def _build_count_phrase(
     if parsed.get("boolean_query_used"):
         game_word = "matching game" if count == 1 else "matching games"
         verb = "have had" if team_subject else "has had"
-        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         threshold = _count_threshold_text(metadata.get("max_value"))
         entity = _team_subject(metadata, games)
-        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         times = "time" if count == 1 else "times"
         record = _record_suffix(games)
         return (
@@ -845,7 +855,12 @@ def _build_count_phrase(
             "pts": "has scored",
         }.get(stat, "has recorded")
         verb = singular_verb.replace("has ", "have ", 1) if team_subject else singular_verb
-        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         return f"{entity} {verb} {count} {stat_name} {context}."
 
     conditions = normalize_stat_conditions(
@@ -861,7 +876,12 @@ def _build_count_phrase(
     else:
         occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
-    context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
+    context = _count_context(
+        metadata,
+        player=bool(player),
+        last_n=parsed.get("last_n"),
+        last_n_scope=parsed.get("last_n_scope"),
+    )
     if count_noun.startswith("games with "):
         verb = "have had" if team_subject else "has had"
     else:
@@ -891,9 +911,19 @@ def _team_subject(metadata: dict, games: Any = None) -> str | None:
     return f"The {team}" if team else None
 
 
-def _count_context(metadata: dict, *, player: bool, last_n: int | None = None) -> str:
+def _count_context(
+    metadata: dict,
+    *,
+    player: bool,
+    last_n: int | None = None,
+    last_n_scope: str | None = None,
+) -> str:
     query_text = (_clean_text(metadata.get("query_text")) or "").lower()
     if last_n:
+        if last_n_scope != "window":
+            # "last 10 games where he scored 30": the count is capped at N,
+            # so say so rather than claiming a 10-game window.
+            return f"(limited to the {last_n} most recent)"
         owner = "his" if player else "their"
         noun = "game" if last_n == 1 else f"{last_n} games"
         return f"in {owner} last {noun}"
