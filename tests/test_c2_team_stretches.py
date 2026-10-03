@@ -181,4 +181,53 @@ def test_two_named_teams_are_both_ranked():
     assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
         abbr: (w[0], w[1]) for abbr, w in best.items()
     }
-    assert "among the 2 teams" in metadata["answer_phrase"]
+    assert "by either team in" in metadata["answer_phrase"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"what was the Lakers best 10 game stretch in {SEASON}",
+        f"Lakers best 5 game stretch with min points allowed in {SEASON}",
+    ],
+)
+def test_alias_words_do_not_add_teams(query):
+    rows, metadata = _rows(query)
+    assert {row["team_abbr"] for row in rows} == {"LAL"}
+    assert "their" in metadata["answer_phrase"]
+
+
+def test_two_opponents_stay_opponents():
+    games = _team_games().query("team_abbr == 'BOS' and opponent_team_abbr in ['LAL', 'NYK']")
+    best = max(_windows(games, 5, _wins), key=lambda w: (w[0], w[1]))
+    rows, _ = _rows(f"Celtics best 5 game stretch vs Lakers and Knicks in {SEASON}")
+    assert {row["team_abbr"] for row in rows} == {"BOS"}
+    assert (rows[0]["wins"], rows[0]["net_per_game"]) == (best[0], best[1])
+
+
+@pytest.mark.parametrize(
+    ("query", "lowest"),
+    [
+        (f"top 5 team 5 game stretches with the most points allowed in {SEASON}", False),
+        (f"Lakers most defensive 5 game stretch in {SEASON}", True),
+    ],
+)
+def test_count_and_quality_words_keep_direction(query, lowest):
+    games = _team_games()
+    if query.startswith("Lakers"):
+        games = games.query("team_abbr == 'LAL'")
+    values = [
+        w[0]
+        for _, team in games.groupby("team_abbr")
+        for w in _windows(team, 5, lambda chunk: sum(r.pts - r.plus_minus for r in chunk) / 5)
+    ]
+    rows, _ = _rows(query)
+    assert rows[0]["stretch_value"] == pytest.approx(
+        min(values) if lowest else max(values), abs=1e-3
+    )
+
+
+def test_most_wins_over_a_stretch_is_the_record_ranking():
+    rows, metadata = _rows(f"which team had the most wins over a 10 game stretch in {SEASON}")
+    assert rows[0]["stretch_metric"] == "wins"
+    assert not metadata.get("unsupported_filters")

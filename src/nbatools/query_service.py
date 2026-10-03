@@ -1077,7 +1077,8 @@ def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> 
             detail = f"averaged {_format_one_decimal(value)} {label} {span}, going {record}"
     teams = result.metadata.get("teams")
     if teams:
-        scope = f"the {direction} {size}-game stretch among the {len(teams)} teams"
+        either = "either team" if len(teams) == 2 else f"the {len(teams)} teams"
+        scope = f"the {direction} {size}-game stretch by {either}"
     elif result.metadata.get("team"):
         scope = f"their {direction} {size}-game stretch"
     else:
@@ -1087,7 +1088,8 @@ def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         if metadata.get("season_type") == "Playoffs"
         else str(row["season"])
     )
-    metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} of {when}."
+    connector = "in" if teams else "of"
+    metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} {connector} {when}."
 
 
 def _indefinite_article(number_text: str) -> str:

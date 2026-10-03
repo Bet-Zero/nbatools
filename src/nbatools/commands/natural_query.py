@@ -1111,21 +1111,32 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 )
 
 
-_TEAM_ALIAS_PATTERN = re.compile(
-    r"(?<![\w'])("
-    + "|".join(re.escape(name) for name in sorted(TEAM_ALIASES, key=len, reverse=True))
-    + r")(?![\w'])"
+_TEAM_PAIR_ALIASES = "|".join(
+    re.escape(name)
+    for name in sorted(TEAM_ALIASES, key=len, reverse=True)
+    # Short codes double as words ("was", "min", "den"): only full names pair.
+    if len(name) > 3
 )
+_TEAM_PAIR_PATTERN = re.compile(
+    rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})\s+(?:and|&)\s+(?:the\s+)?"
+    rf"({_TEAM_PAIR_ALIASES})(?![\w'])"
+)
+_OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
 
 
-def _named_team_abbrs(q: str) -> list[str]:
-    """Distinct teams named in the query, in order ("lakers and celtics")."""
-    seen: list[str] = []
-    for match in _TEAM_ALIAS_PATTERN.finditer(q):
-        abbr = TEAM_ALIASES[match.group(1)]
-        if abbr not in seen:
-            seen.append(abbr)
-    return seen
+def _named_team_pairs(q: str) -> dict[str, list[str]]:
+    """Teams joined by "and": two subjects ("lakers and celtics best stretch")
+    or, after "vs"/"against", two opponents ("vs lakers and knicks").
+    """
+    found: dict[str, list[str]] = {"subjects": [], "opponents": []}
+    for match in _TEAM_PAIR_PATTERN.finditer(q):
+        pair = [TEAM_ALIASES[match.group(1)], TEAM_ALIASES[match.group(2)]]
+        if pair[0] == pair[1]:
+            continue
+        role = "opponents" if _OPPONENT_LEAD.search(q[: match.start()]) else "subjects"
+        if not found[role]:
+            found[role] = pair
+    return found
 
 
 def _stretch_display_mode(q: str, player: str | None) -> str | None:
@@ -1370,7 +1381,7 @@ def _build_parse_state(query: str) -> dict:
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
     team_stretch_request = detect_team_stretch_request(q)
     if team_stretch_request is not None:
-        team_stretch_request["named_teams"] = _named_team_abbrs(q)
+        team_stretch_request.update(_named_team_pairs(q))
     stretch_names_players = bool(stretch_request and re.search(r"\b(?:players?|who)\b", q))
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
@@ -1582,6 +1593,9 @@ def _build_parse_state(query: str) -> dict:
                 player = player_without_absence.resolved
 
     wins_only, losses_only = detect_wins_losses(q)
+    if stretch_request and re.search(r"\b(?:most|fewest|least)\s+(?:wins|losses)\b", q):
+        # "most wins over a 10 game stretch" ranks windows by record.
+        wins_only = losses_only = False
 
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
@@ -2399,9 +2413,12 @@ def _finalize_route(parsed: dict) -> dict:
         and (team_rolling_stretch_boundary or (team and not stretch_names_players))
     ):
         route = "team_stretch_leaderboard"
-        opponents = {opponent} if isinstance(opponent, str) else set(opponent or [])
+        stretch_opponent = team_stretch_request.get("opponents") or opponent
+        opponents = (
+            {stretch_opponent} if isinstance(stretch_opponent, str) else set(stretch_opponent or [])
+        )
         subject_teams = [
-            abbr for abbr in team_stretch_request.get("named_teams", []) if abbr not in opponents
+            abbr for abbr in team_stretch_request.get("subjects", []) if abbr not in opponents
         ]
         route_kwargs = {
             "season": season,
@@ -2413,7 +2430,7 @@ def _finalize_route(parsed: dict) -> dict:
             # "Lakers and Celtics best 5 game stretch" ranks both teams' best runs.
             "team": team if len(subject_teams) < 2 else None,
             "teams": subject_teams if len(subject_teams) >= 2 else None,
-            "opponent": opponent,
+            "opponent": stretch_opponent,
             "home_only": home_only,
             "away_only": away_only,
             "last_n": last_n,

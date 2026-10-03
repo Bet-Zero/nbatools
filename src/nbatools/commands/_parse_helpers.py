@@ -2072,10 +2072,16 @@ _TEAM_STRETCH_METRIC_PATTERNS = (
     (r"\bblocks?\b", "blk"),
 )
 _TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|bad|ugliest)\b")
-_TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest|top)\b")
+_TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest)\b")
 # "lowest"/"most" name the end of the raw number, not good or bad.
 _TEAM_STRETCH_LOW = re.compile(r"\b(?:lowest|fewest|least|min(?:imum)?)\b")
-_TEAM_STRETCH_HIGH = re.compile(r"\b(?:highest|most|max(?:imum)?)\b(?!\s+(?:efficient|efficiency))")
+# "most defensive"/"least efficient" grade the team, not the raw number.
+_TEAM_STRETCH_QUALITY = re.compile(
+    r"\b(most|least)\s+(?:efficient|efficiency|defensive|offensive|dominant)\b"
+)
+_TEAM_STRETCH_HIGH = re.compile(
+    r"\b(?:highest|most|max(?:imum)?)\b(?!\s+(?:efficient|efficiency|defensive|offensive))"
+)
 _TEAM_STRETCH_LOWER_IS_BETTER = {"opp_pts", "tov", "def_rating"}
 
 
@@ -2096,8 +2102,11 @@ def detect_team_stretch_request(text: str) -> dict | None:
             (key for pattern, key in _TEAM_STRETCH_METRIC_PATTERNS if re.search(pattern, text)),
             detect_stat(text) or "wins",
         )
+    quality = _TEAM_STRETCH_QUALITY.search(text)
     if _TEAM_STRETCH_WORST.search(text):
         worst = True
+    elif quality:
+        worst = quality.group(1) == "least"
     elif _TEAM_STRETCH_BEST.search(text):
         worst = False
     elif _TEAM_STRETCH_LOW.search(text):
