@@ -529,9 +529,12 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         route="player_streak_finder",
         implementation_module="nbatools.commands.player_streak_finder",
         implementation_function="build_result",
-        description="Find player streaks for stat thresholds or special streak conditions.",
-        required_kwargs=("player",),
+        description=(
+            "Find player streaks for stat thresholds or special streak conditions; "
+            "without a player, rank players by their longest or current streak."
+        ),
         optional_kwargs=(
+            "player",
             "season",
             "start_season",
             "end_season",
@@ -548,10 +551,12 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "special_condition",
             "min_streak_length",
             "longest",
+            "current",
             "start_date",
             "end_date",
             "last_n",
             "limit",
+            "conditions",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=(
@@ -563,9 +568,12 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         route="team_streak_finder",
         implementation_module="nbatools.commands.team_streak_finder",
         implementation_function="build_result",
-        description="Find team streaks for wins/losses or stat thresholds.",
-        required_kwargs=("team",),
+        description=(
+            "Find team streaks for wins/losses or stat thresholds; without a team, "
+            "rank teams by their longest or current streak."
+        ),
         optional_kwargs=(
+            "team",
             "season",
             "start_season",
             "end_season",
@@ -581,6 +589,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "special_condition",
             "min_streak_length",
             "longest",
+            "current",
             "start_date",
             "end_date",
             "last_n",
