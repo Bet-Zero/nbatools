@@ -1225,6 +1225,37 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     return matches
 
 
+_JOINED_STAT_THRESHOLD_RE = re.compile(
+    rf"\s*(?:,\s*)?(?:and\s+)?(\d{{1,3}})(?!\d)(?:\s*\+)?\s+{STAT_PATTERN}\b"
+)
+
+
+def _joined_stat_thresholds(text: str, end: int) -> list[dict]:
+    """Thresholds joined onto a scoring verb: "scoring 30 points and 5 assists".
+
+    The verb carries over to each joined "N <stat>", so the bare "5 assists"
+    is a 5+ assists condition rather than leftover text.
+    """
+    joined = []
+    while True:
+        m = _JOINED_STAT_THRESHOLD_RE.match(text, end)
+        if not m or m.start(1) == m.start():
+            break
+        stat = detect_stat(m.group(2)) or "pts"
+        joined.append(
+            {
+                "start": m.start(1),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": None,
+                "text": text[m.start(1) : m.end()],
+            }
+        )
+        end = m.end()
+    return joined
+
+
 def extract_threshold_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
@@ -1412,6 +1443,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 "text": m.group(0).rstrip(" +"),
             }
         )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
     for m in re.finditer(verb_pattern, text):
         stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
         stat = (detect_stat(stat_text) if stat_text else None) or "pts"
@@ -1429,6 +1461,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 "text": m.group(0).rstrip(" +"),
             }
         )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
     # games" = 20+ points and 10+ rebounds.

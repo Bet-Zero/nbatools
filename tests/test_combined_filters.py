@@ -330,3 +330,42 @@ def test_points_allowed_threshold_skips_other_stats():
     from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
 
     assert extract_opponent_points_allowed_conditions("allowing under 110 rebounds") == []
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("games scoring 30 points and 5 assists", [("pts", 30.0), ("ast", 5.0)]),
+        ("when scoring 120 and 30 assists", [("pts", 120.0), ("ast", 30.0)]),
+        (
+            "scores 30 points, 10 rebounds and 5 assists",
+            [("pts", 30.0), ("reb", 10.0), ("ast", 5.0)],
+        ),
+    ],
+)
+def test_bare_stat_joined_to_a_scoring_verb_is_another_threshold(text, expected):
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+
+    conditions = extract_threshold_conditions(text)
+    assert [(c["stat"], c["min_value"]) for c in conditions] == expected
+
+
+def test_summary_keeps_a_bare_stat_joined_to_scoring():
+    result = _run("Curry averages in games scoring 30 points and 5 assists")
+    rows = [
+        r
+        for r in _rows("player_game_stats", player_name="Stephen Curry")
+        if int(r["pts"]) >= 30 and int(r["ast"]) >= 5
+    ]
+
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert summary["games"] == len(rows)
+    assert summary["wins"] == sum(_won(r) for r in rows)
+
+
+def test_team_record_keeps_a_bare_stat_joined_to_scoring():
+    result = _run("Lakers record when scoring 120 and 30 assists")
+    rows = [r for r in _lakers() if int(r["pts"]) >= 120 and int(r["ast"]) >= 30]
+
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert summary["games"] == len(rows)

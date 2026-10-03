@@ -124,3 +124,12 @@ def test_team_comparison_with_two_conditions():
         games = _team(abbr)
         games = games[(games["pts"] >= 120) & (games["opp_pts"] < 110)]
         _assert_rows(side, games)
+
+
+def test_bare_stat_joined_to_scoring_is_kept():
+    games = _curry()
+    games = games[(games["pts"] >= 30) & (games["ast"] >= 5)]
+    (summary,) = _sections(
+        _run(f"Curry averages in games scoring 30 points and 5 assists {SEASON}")
+    )["summary"]
+    _assert_rows(summary, games)
