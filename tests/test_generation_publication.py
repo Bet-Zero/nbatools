@@ -131,7 +131,7 @@ def test_publication_derives_the_player_name_list(tmp_path: Path) -> None:
         "game_id,player_name,pts\n1,Nikola Jokić,30\n1,Jamal Murray,20\n"
     )
     (stats / "2025-26_regular_season.csv").write_text(
-        "game_id,player_name,pts\n2,Nikola Jokić,28\n2,\"Brown, Jr.\",4\n"
+        'game_id,player_name,pts\n2,Nikola Jokić,28\n2,"Brown, Jr.",4\n'
     )
     # A stale copy in the source is replaced by the derived list.
     (data_dir / "metadata" / "player_names.csv").write_text("player_name\nStale\n")
