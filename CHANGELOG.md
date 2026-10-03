@@ -15,8 +15,8 @@ https://keepachangelog.com/en/1.0.0/
   contains. "karl anthony towns" answered with Carmelo Anthony, and
   "Tim Hardaway Jr" / "Jaren Jackson Jr" without the period answered with the
   father; names now match regardless of hyphens and suffix or initial periods.
-  When the loaded data does not cover a player, a short alias ("anthony",
-  "nikola") no longer claims a span that names someone else. Names typed with
+  Curated full names such as Karl-Anthony Towns now win over the shorter alias
+  inside them even when the loaded data does not cover that player. Names typed with
   their diacritics no longer break comparisons ("Luka Dončić vs Nikola Jokić
   last 10 games" lost its second player), and "X vs Y 2025-26" no longer reads
   the season as a misspelled name.

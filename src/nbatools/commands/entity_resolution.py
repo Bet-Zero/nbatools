@@ -946,13 +946,14 @@ def _player_reference_candidate_words(q: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Name-specificity guards
+# Name-specificity
 #
 # A short alias can sit inside another player's name: "anthony" (Carmelo
-# Anthony) inside "Karl-Anthony Towns" or "Anthony Black", "nikola" (Nikola
-# Jokić) inside "Nikola Jović". The data-backed full-name index wins those
-# spans when the other player is covered, but a short alias must not claim a
-# span the surrounding words show belongs to someone else.
+# Anthony) inside "Karl-Anthony Towns". Full names are matched first, from the
+# data-backed index and from the curated canonical names, so the longer name
+# wins its span. Neighbouring words alone are deliberately NOT used to veto an
+# alias: ordinary words are also surnames (Day, May, Free, Christmas), so
+# "lebron christmas day games" must stay LeBron.
 # ---------------------------------------------------------------------------
 
 
@@ -984,75 +985,12 @@ for _canonical in sorted(
     if len(_canonical.split()) >= 2:
         _CURATED_PLAYER_NAMES.setdefault(_normalize_for_matching(_canonical), _canonical)
 
-_CURATED_FIRST_NAMES: set[str] = {key.split()[0] for key in _CURATED_PLAYER_NAMES}
-_CURATED_LAST_NAMES: set[str] = {key.split()[-1] for key in _CURATED_PLAYER_NAMES}
 
-_NAME_SUFFIX_TOKENS = {"jr", "sr", "ii", "iii", "iv", "v"}
-
-
-def _is_known_first_name(word: str) -> bool:
-    return word in _CURATED_FIRST_NAMES or word in _get_player_first_name_index()
-
-
-def _is_known_last_name(word: str) -> bool:
-    return word in _CURATED_LAST_NAMES or word in _get_player_index()
-
-
-def _is_name_neighbor_candidate(word: str) -> bool:
-    return (
-        len(word) >= 2
-        and word not in _PLAYER_REFERENCE_STOPWORDS
-        and word not in _TEAM_ALIAS_WORDS
-        and word not in _NAME_SUFFIX_TOKENS
-        and not word[0].isdigit()
-    )
-
-
-def _alias_span_belongs_to_other_name(q: str, start: int, end: int, resolved: str) -> bool:
-    """True when a one-word alias match is part of a different player's name.
-
-    "nikola jovic": "nikola" is a first name and the next word is another
-    player's surname. "karl anthony towns" / "cole anthony": "anthony" is a
-    surname and the previous word is another player's first name. Words the
-    resolved player legitimately uses ("anthony davis" is never at stake here:
-    its full name wins first) and ordinary query vocabulary never trigger it.
-    """
-    key = q[start:end]
-    if " " in key:
-        return False
-    allowed = allowed_player_reference_tokens(resolved)
-
-    next_match = re.match(r" ([a-z']+)", q[end:])
-    if next_match:
-        following = next_match.group(1)
-        if (
-            following not in allowed
-            and _is_name_neighbor_candidate(following)
-            and _is_known_first_name(key)
-            and _is_known_last_name(following)
-        ):
-            return True
-
-    prev_match = re.search(r"([a-z']+) $", q[:start])
-    if prev_match:
-        preceding = prev_match.group(1)
-        if (
-            preceding not in allowed
-            and _is_name_neighbor_candidate(preceding)
-            and _is_known_last_name(key)
-            and _is_known_first_name(preceding)
-        ):
-            return True
-    return False
-
-
-def _first_unguarded_alias(q: str, alias_map: dict[str, str]) -> tuple[str, str] | None:
-    """Longest alias found in ``q`` that is not part of another player's name."""
+def _first_alias_match(q: str, alias_map: dict[str, str]) -> str | None:
+    """Canonical name for the longest alias found in ``q``."""
     for key in sorted(alias_map.keys(), key=len, reverse=True):
-        for match in re.finditer(rf"(?<!\w){re.escape(key)}(?!\w)", q):
-            resolved = alias_map[key]
-            if not _alias_span_belongs_to_other_name(q, match.start(), match.end(), resolved):
-                return key, resolved
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return alias_map[key]
     return None
 
 
@@ -1105,14 +1043,14 @@ def resolve_player(text: str) -> ResolutionResult:
         return _confident(_CURATED_PLAYER_NAMES[q], source="full_name_alias")
 
     # 3. Curated common-name aliases (longest match first)
-    alias_match = _first_unguarded_alias(q, _NORMALIZED_CURATED_ALIASES)
+    alias_match = _first_alias_match(q, _NORMALIZED_CURATED_ALIASES)
     if alias_match:
-        return _confident(alias_match[1], source="alias")
+        return _confident(alias_match, source="alias")
 
     # 4. Curated nickname / acronym aliases (longest match first)
-    nickname_match = _first_unguarded_alias(q, _NORMALIZED_NICKNAME_ALIASES)
+    nickname_match = _first_alias_match(q, _NORMALIZED_NICKNAME_ALIASES)
     if nickname_match:
-        return _confident(nickname_match[1], source="nickname")
+        return _confident(nickname_match, source="nickname")
 
     # 5. Data-driven last-name lookup
     # Only attempt for single words or clear last-name patterns
@@ -1201,19 +1139,14 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
     matches: list[tuple[int, int, int, str, str]] = []
     candidate_words = _player_reference_candidate_words(q)
 
-    def add_matches(
-        alias_map: dict[str, str], source: str, priority: int, *, guard: bool = False
-    ) -> None:
+    def add_matches(alias_map: dict[str, str], source: str, priority: int) -> None:
         for key, resolved in alias_map.items():
-            for match in re.finditer(rf"(?<!\w){re.escape(key)}(?!\w)", q):
-                if guard and _alias_span_belongs_to_other_name(
-                    q, match.start(), match.end(), resolved
-                ):
-                    continue
-                matches.append(
-                    (match.start(), priority, -(match.end() - match.start()), resolved, source)
-                )
-                break
+            match = re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q)
+            if not match:
+                continue
+            matches.append(
+                (match.start(), priority, -(match.end() - match.start()), resolved, source)
+            )
 
     def add_full_name_matches(full_name_index: dict[str, str]) -> None:
         for key in _get_player_full_name_keys():
@@ -1238,15 +1171,14 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
         full_name_index = _get_player_full_name_index()
         add_full_name_matches(full_name_index)
         add_matches(_CURATED_PLAYER_NAMES, "full_name_alias", 0)
-    add_matches(_NORMALIZED_CURATED_ALIASES, "alias", 1, guard=True)
-    add_matches(_NORMALIZED_NICKNAME_ALIASES, "nickname", 1, guard=True)
+    add_matches(_NORMALIZED_CURATED_ALIASES, "alias", 1)
+    add_matches(_NORMALIZED_NICKNAME_ALIASES, "nickname", 1)
     if matches:
         _, _, _, resolved, source = sorted(matches)[0]
         return _confident(resolved, source=source)
 
     # 5. Try data-driven last-name on each word (skip common stopwords)
     for word in candidate_words:
-        word_match = re.search(rf"(?<!\w){re.escape(word)}(?!\w)", q)
         if word in NEVER_AUTO_RESOLVE_LAST_NAMES:
             # Check the curated aliases first (they ARE allowed)
             # Already checked above, so this is a true ambiguity
@@ -1259,12 +1191,6 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
         index = _get_player_index()
         candidates = index.get(word, [])
         if len(candidates) == 1:
-            # "anthony black" with no Anthony Black in the data: "anthony" is a
-            # first name here, not Carmelo Anthony's surname.
-            if word_match and _alias_span_belongs_to_other_name(
-                q, word_match.start(), word_match.end(), candidates[0]
-            ):
-                continue
             return _confident(candidates[0], source="last_name")
         if len(candidates) > 1:
             return _ambiguous(candidates, source="last_name")

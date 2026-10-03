@@ -195,10 +195,12 @@ comparisons, API) inherits it:
   Anthony, and "Tim Hardaway Jr" / "Gary Trent Jr" / "Jaren Jackson Jr"
   without the period answered with the father. Names now match regardless of
   hyphens and suffix/initial periods.
-- Without the player in the loaded data, "Karl-Anthony Towns" and
-  "Anthony Black" answered with Carmelo Anthony; a short alias no longer claims
-  a span whose neighbouring word is another known player's first/last name,
-  and curated canonical names match in full.
+- Without the player in the loaded data, "Karl-Anthony Towns" answered with
+  Carmelo Anthony; curated canonical names now match in full before shorter
+  aliases. An earlier candidate also vetoed an alias whose neighbouring word
+  was a known name; the independent checker showed that broke ordinary
+  queries ("lebron christmas day games" became Todd Day), so it was removed
+  and those cases are now regression tests.
 - Names typed with their real diacritics broke comparisons ("Luka Dončić vs
   Nikola Jokić last 10 games" lost its second player); parser input now folds
   accents. "X vs Y 2025-26" no longer reads the season as a name typo.
@@ -210,9 +212,10 @@ data-free, fixture natural/structured/HTTP with values computed from the
 fixture CSVs) and `tests/test_player_identity_real_data.py` (`needs_data`,
 values from raw rows of the pinned generation). Remaining in A1b: select
 players by `player_id` so identical-name players are not merged; route the
-lineup/legacy alias scans through the resolver; a first-name alias followed by
-a surname absent from all known names (for example "nikola <unknown>") still
-falls back to the alias. Original scope:
+lineup/legacy alias scans through the resolver. A player absent from the
+loaded data whose name starts with another player's alias (for example
+"Anthony Black" with no Anthony Black rows) still falls back to that alias;
+with 1996-97+ data present the full name wins. Original scope:
 
 
 Reproduce the #304 Towns/Carmelo and Jovic/Jokic findings in their actual data
