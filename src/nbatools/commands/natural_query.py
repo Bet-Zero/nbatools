@@ -523,6 +523,7 @@ _LAST_N_SUPPORTED_ROUTES = {
     "season_leaders",
     "season_team_leaders",
     "team_compare",
+    "team_record",
     "team_split_summary",
     "team_streak_finder",
     "top_player_games",
@@ -3792,6 +3793,11 @@ def _finalize_route(parsed: dict) -> dict:
             "is only execution-backed for team records; no unfiltered fallback "
             "was returned for this route"
         )
+
+    if route == "team_record" and last_n is not None and route_kwargs.get("last_n") is None:
+        # Every team_record branch selects the same game log, so the last-N
+        # window applies to all of them rather than to each kwargs literal.
+        route_kwargs["last_n"] = last_n
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:

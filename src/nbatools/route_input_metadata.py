@@ -407,6 +407,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "rest_days",
             "one_possession",
             "nationally_televised",
+            "last_n",
             "opponent_quality",
             "opponent_conference",
             "opponent_division",

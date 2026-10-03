@@ -288,6 +288,23 @@ PERIOD_DESCRIPTOR_LOOKUP = {
 }
 
 
+def select_most_recent_games(df: pd.DataFrame, last_n: int | None) -> pd.DataFrame:
+    """Keep the ``last_n`` most recent games of an already-filtered game log.
+
+    "Last N games" means the N latest qualifying rows, newest first by
+    ``game_date`` and then ``game_id`` so same-date rows order
+    deterministically. Callers apply their other filters first, so
+    "home record last 10 games" is the last ten home games. Shared by the
+    player summary, team summary and team record routes so one request
+    selects the same games on each.
+    """
+    if last_n is None:
+        return df
+    if last_n <= 0:
+        raise ValueError("last_n must be greater than 0")
+    return df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
+
+
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
 

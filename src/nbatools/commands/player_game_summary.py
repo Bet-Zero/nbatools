@@ -21,6 +21,7 @@ from nbatools.commands.data_utils import (
     filter_by_opponent_player,
     filter_without_player,
     load_player_games_for_seasons,
+    select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
@@ -198,14 +199,7 @@ def _apply_filters(
     if out.empty:
         return out
 
-    if last_n is not None:
-        if last_n <= 0:
-            raise ValueError("last_n must be greater than 0")
-        out = (
-            out.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
-        )
-
-    return out
+    return select_most_recent_games(out, last_n)
 
 
 def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:

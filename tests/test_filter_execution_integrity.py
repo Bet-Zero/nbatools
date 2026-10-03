@@ -57,7 +57,8 @@ FILTER_PAIRS = [
         "team points leaders in 2023-24",
         "Position",
     ),
-    # last-N windows: the record / decade / playoff family has no last_n parameter
+    # last-N windows: team_record applies last_n; the matchup-record, record
+    # leaderboard, decade and playoff-history routes still have no parameter
     ("Lakers record last 10 games in 2023-24", "Lakers record in 2023-24", "Last N games"),
     ("Lakers vs Celtics record last 10 games", "Lakers vs Celtics record", "Last N games"),
     ("best record last 10 games in 2023-24", "best record in 2023-24", "Last N games"),
