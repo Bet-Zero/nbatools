@@ -9057,3 +9057,111 @@ cases:
       tags:
         - streak
       notes: "Review that every game in each streak has 20+ points and 10+ rebounds."
+
+  - id: lebron_30_in_last_10_window_a2
+    query: "how many times did LeBron score 30 in his last 10 games 2017-18"
+    category: finder_count
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - count
+      - finder
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2017-18
+    review_notes: >-
+      Window scope (issue #314, package A2): the 10 most recent games first,
+      then the 30 point games among them. It used to return his 10 most recent
+      30 point games of the season and report "10". The count and game ids are
+      checked against raw rows by tests/test_last_n_sample_scope_real_data.py.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: curry_last_5_with_30_qualifying_a2
+    query: "Curry last 5 games with 30 points 2015-16"
+    category: player_game_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: window
+        value: "5"
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 5
+    review_notes: >-
+      Qualifying scope (issue #314, package A2): his 5 most recent 30 point
+      games, not the 30 point games among his last 5. Game ids are checked
+      against raw rows by tests/test_last_n_sample_scope_real_data.py.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: celtics_last_3_meetings_knicks_a2
+    query: "Celtics last 3 meetings with the Knicks 2023-24"
+    category: team_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_filters:
+      - kind: window
+        value: "3"
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 3
+    hard_assertions:
+      - path: result.metadata.opponent
+        equals: NYK
+    review_notes: >-
+      Last N meetings (issue #314, package A2): "meetings with the Knicks" is
+      the last 3 games against New York. It used to drop the opponent and list
+      Boston's last 3 games against anyone.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: celtics_record_last_ten_words_a2
+    query: "Celtics record over their last ten games 2023-24"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 10
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 10
+    review_notes: >-
+      Spelled-out window (issue #314, package A2). "last ten games",
+      "previous 8 games" and "5 most recent games" used to drop the window and
+      return the whole season's record.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."

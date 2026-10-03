@@ -169,6 +169,23 @@ def select_player_rows(
     return groups[chosen].copy()
 
 
+def player_rows_prefilter(frames: list[pd.DataFrame], player: str) -> list[pd.DataFrame]:
+    """Each season frame cut to the rows ``select_player_rows`` could keep.
+
+    A career query loads every season; concatenating whole league frames
+    before selecting one player held ~700 MB. The kept ids are the same
+    union ``select_player_rows`` uses (any id stored under a matching name in
+    any season, plus the index's ids for the name), so selecting from the
+    cut frames gives identical rows, shared-name notes included.
+    """
+    ids = set(player_ids_for_name(player))
+    for frame in frames:
+        if "player_id" not in frame.columns or "player_name" not in frame.columns:
+            return frames
+        ids |= set(_id_text(frame["player_id"])[player_name_mask(frame, player)].unique())
+    return [frame[_id_text(frame["player_id"]).isin(ids)] for frame in frames]
+
+
 def player_game_ids(df: pd.DataFrame, player: str, *, team: str | None = None) -> pd.DataFrame:
     """``game_id``/``team_abbr`` pairs for the one player ``player`` names."""
     rows = select_player_rows(df, player, team=team)

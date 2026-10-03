@@ -14,10 +14,12 @@ Tests cover:
 
 from __future__ import annotations
 
+from datetime import date
 from unittest.mock import patch
 
 import pytest
 
+from nbatools.commands import _seasons
 from nbatools.commands.pipeline.orchestrator import (
     PipelineResult,
     SeasonResult,
@@ -26,6 +28,7 @@ from nbatools.commands.pipeline.orchestrator import (
     _raw_pull_stages,
     _run_stage,
     backfill_seasons,
+    current_refresh_season,
     pipeline_status,
     rebuild_season,
     refresh_current_season,
@@ -318,12 +321,27 @@ class TestRefreshSeason:
 
 
 class TestRefreshCurrentSeason:
-    def test_dry_run_regular_only(self):
+    def test_dry_run_regular_only(self, monkeypatch):
+        monkeypatch.setattr(_seasons, "today", lambda: date(2026, 3, 1))
         result = refresh_current_season(dry_run=True)
         assert result.mode == "current_season_refresh"
         assert len(result.seasons) == 1
         assert result.seasons[0].season == "2025-26"
         assert result.seasons[0].season_type == "Regular Season"
+
+    def test_refresh_starts_the_new_season_from_the_calendar(self, monkeypatch):
+        # The newest loaded season is not the refresh target once the
+        # calendar has moved on; otherwise 2026-27 would never be pulled.
+        monkeypatch.setattr(_seasons, "today", lambda: date(2026, 10, 3))
+        result = refresh_current_season(include_playoffs=True, dry_run=True)
+        assert [(s.season, s.season_type) for s in result.seasons] == [
+            ("2026-27", "Regular Season"),
+            ("2026-27", "Playoffs"),
+        ]
+
+    def test_july_still_refreshes_the_season_that_just_ended(self):
+        assert current_refresh_season(date(2026, 7, 15)) == "2025-26"
+        assert current_refresh_season(date(2026, 8, 1)) == "2026-27"
 
     def test_dry_run_with_playoffs(self):
         result = refresh_current_season(include_playoffs=True, dry_run=True)

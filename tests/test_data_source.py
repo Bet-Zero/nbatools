@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -46,8 +47,10 @@ class FakeR2Client:
         self.objects = objects
         self.fail_reads = fail_reads
         self.get_calls: list[str] = []
+        self.head_calls: list[str] = []
 
     def head_object(self, *, Bucket: str, Key: str):
+        self.head_calls.append(Key)
         if self.fail_reads:
             raise FakeClientError("500", "network unavailable", 500)
         if Key not in self.objects:
@@ -143,6 +146,128 @@ def test_r2_generation_switch_reloads_same_logical_key(
         pointer_key,
         "generations/generation-two/raw/sample.csv",
     ]
+
+
+def _generation_objects(generation: str, files: dict[str, bytes], *, manifest: bool = True):
+    prefix = f"generations/{generation}/"
+    objects = {ACTIVE_GENERATION_PATH.as_posix(): f'{{"generation_id":"{generation}"}}'.encode()}
+    objects.update({prefix + path: body for path, body in files.items()})
+    if manifest:
+        document = {"generation_id": generation, "files": [{"path": path} for path in files]}
+        objects[prefix + "metadata/generation_manifest.json"] = json.dumps(document).encode()
+    return objects
+
+
+def test_r2_exists_answers_from_the_generation_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = FakeR2Client(_generation_objects("gen-a", {"raw/games/2025-26_playoffs.csv": b"x"}))
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        for _ in range(5):
+            assert data_exists("data/raw/games/2025-26_playoffs.csv")
+            assert not data_exists("raw/pbp/2025-26_playoffs.csv")
+
+    # One HEAD for the unlisted path, none for the listed one, one manifest GET.
+    assert client.head_calls == ["generations/gen-a/raw/pbp/2025-26_playoffs.csv"]
+    assert client.get_calls.count("generations/gen-a/metadata/generation_manifest.json") == 1
+
+
+def test_r2_exists_without_manifest_remembers_head_results(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = FakeR2Client(_generation_objects("gen-a", {"raw/sample.csv": b"x"}, manifest=False))
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        for _ in range(3):
+            assert data_exists("raw/sample.csv")
+            assert not data_exists("raw/missing.csv")
+
+    assert sorted(client.head_calls) == [
+        "generations/gen-a/raw/missing.csv",
+        "generations/gen-a/raw/sample.csv",
+    ]
+
+
+def test_r2_exists_follows_a_generation_switch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    objects = _generation_objects("gen-a", {"raw/old.csv": b"x"})
+    objects.update(_generation_objects("gen-b", {"raw/new.csv": b"y"}))
+    objects[ACTIVE_GENERATION_PATH.as_posix()] = b'{"generation_id":"gen-a"}'
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        assert data_exists("raw/old.csv")
+        assert not data_exists("raw/new.csv")
+    client.objects[ACTIVE_GENERATION_PATH.as_posix()] = b'{"generation_id":"gen-b"}'
+    with data_generation_context():
+        assert data_exists("raw/new.csv")
+        assert not data_exists("raw/old.csv")
+
+
+def test_r2_legacy_layout_is_not_cached(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    client = FakeR2Client({})
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    assert not data_exists("raw/sample.csv")
+    client.objects["raw/sample.csv"] = b"x"
+    assert data_exists("raw/sample.csv")
+
+
+def test_r2_exists_reads_a_malformed_manifest_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    objects = _generation_objects("gen-a", {"raw/sample.csv": b"x"}, manifest=False)
+    manifest_key = "generations/gen-a/metadata/generation_manifest.json"
+    objects[manifest_key] = b'{"files": ["raw/sample.csv"]}'
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        for _ in range(3):
+            assert data_exists("raw/sample.csv")
+
+    assert client.get_calls.count(manifest_key) == 1
+    assert client.head_calls == ["generations/gen-a/raw/sample.csv"]
+
+
+def test_r2_exists_does_not_remember_a_failed_manifest_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = FakeR2Client(_generation_objects("gen-a", {"raw/sample.csv": b"x"}))
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        client.fail_reads = True
+        with pytest.raises(DataSourceError):
+            data_exists("raw/sample.csv")
+        client.fail_reads = False
+        assert data_exists("raw/sample.csv")
+        assert data_exists("raw/sample.csv")
+
+    assert client.get_calls.count("generations/gen-a/metadata/generation_manifest.json") == 1
+
+
+def test_r2_download_never_exposes_a_partial_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    client = FakeR2Client({"raw/sample.csv": b"name,value\nJokic,1\n"})
+    _configure_r2(monkeypatch, tmp_path, client)
+    cache_file = tmp_path / "cache" / "nbatools-data" / "legacy" / "raw" / "sample.csv"
+    cache_file.parent.mkdir(parents=True)
+    cache_file.write_bytes(b"name,value\nJokic,1\n")
+    replaced: list[tuple[str, str]] = []
+    real_replace = data_source.os.replace
+
+    def spy_replace(src, dst):
+        # At the moment of the swap the reader-visible file is still complete.
+        assert cache_file.read_bytes() == b"name,value\nJokic,1\n"
+        replaced.append((str(src), str(dst)))
+        real_replace(src, dst)
+
+    monkeypatch.setattr(data_source.os, "replace", spy_replace)
+
+    assert data_read_csv("raw/sample.csv")["value"].tolist() == [1]
+    assert replaced and replaced[0][1] == str(cache_file)
+    assert [p.name for p in cache_file.parent.iterdir()] == ["sample.csv"]
 
 
 def test_frame_cache_key_changes_with_generation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

@@ -124,6 +124,9 @@ from nbatools.commands._parse_helpers import (
     build_role_filter_note as build_role_filter_note,
 )
 from nbatools.commands._parse_helpers import (
+    canonicalize_sample_phrases as canonicalize_sample_phrases,
+)
+from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
 )
 from nbatools.commands._parse_helpers import (
@@ -152,6 +155,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_last_n_scope as detect_last_n_scope,
 )
 from nbatools.commands._parse_helpers import (
     detect_lineup_query as detect_lineup_query,
@@ -287,7 +293,13 @@ from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
 )
 from nbatools.commands._parse_helpers import (
+    last_n_reach_back_seasons as last_n_reach_back_seasons,
+)
+from nbatools.commands._parse_helpers import (
     merge_opponent_points_allowed_conditions as merge_opponent_points_allowed_conditions,
+)
+from nbatools.commands._parse_helpers import (
+    names_current_season as names_current_season,
 )
 from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
@@ -567,6 +579,16 @@ _LAST_N_SUPPORTED_ROUTES = {
     "team_streak_finder",
     "top_player_games",
     "top_team_games",
+}
+
+# Game-log routes that can choose a last-N time window before applying game
+# results and stat conditions (see detect_last_n_scope).
+_LAST_N_WINDOW_ROUTES = {
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+    "team_record",
 }
 
 
@@ -1242,7 +1264,7 @@ __all__ = [
 
 
 def _build_parse_state(query: str) -> dict:
-    q = normalize_text(query)
+    q = canonicalize_sample_phrases(normalize_text(query))
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
@@ -1419,6 +1441,7 @@ def _build_parse_state(query: str) -> dict:
     range_intent = bool(start_season and end_season)
     split_intent = wants_split_summary(q)
 
+    season_defaulted = False
     if season is None and start_season is None and end_season is None:
         if (
             last_n is not None
@@ -1433,6 +1456,7 @@ def _build_parse_state(query: str) -> dict:
             or window_size is not None
         ) and not historical_route_intent:
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     player_a, player_b = extract_player_comparison(q)
     bare_player_vs_player = False
@@ -1580,6 +1604,7 @@ def _build_parse_state(query: str) -> dict:
             and not historical_route_intent
         ):
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     # Anchor rolling date windows to the data end date when data is stale.
     # Without this, a 14-day window ("last couple weeks") computed from
@@ -1632,6 +1657,7 @@ def _build_parse_state(query: str) -> dict:
         "start_season": start_season,
         "end_season": end_season,
         "explicit_relative_season": explicit_relative_season,
+        "season_defaulted": season_defaulted and not names_current_season(q),
         "start_date": start_date,
         "end_date": end_date,
         "season_type": season_type,
@@ -1675,6 +1701,7 @@ def _build_parse_state(query: str) -> dict:
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
+        "last_n_scope": detect_last_n_scope(q, threshold_conditions) if last_n else None,
         "min_games": min_games,
         "min_attempts": min_attempts,
         "top_n": top_n,
@@ -3915,6 +3942,21 @@ def _finalize_route(parsed: dict) -> dict:
         # Every team_record branch selects the same game log, so the last-N
         # window applies to all of them rather than to each kwargs literal.
         route_kwargs["last_n"] = last_n
+
+    if route_kwargs.get("last_n") is not None and route in _LAST_N_WINDOW_ROUTES:
+        # "30 point games in his last 10" measures conditions inside the time
+        # window; "last 10 games where he scored 30" counts qualifying games.
+        route_kwargs["last_n_scope"] = parsed.get("last_n_scope") or "qualifying"
+        if (
+            parsed.get("season_defaulted")
+            and route_kwargs.get("season") == parsed.get("season")
+            and not route_kwargs.get("start_season")
+            and not route_kwargs.get("start_date")
+            and not route_kwargs.get("end_date")
+        ):
+            # No season was named, so "last 10 games" means the 10 most
+            # recent games even when the current season has fewer.
+            route_kwargs.update(last_n_reach_back_seasons(route_kwargs["season"]))
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:
