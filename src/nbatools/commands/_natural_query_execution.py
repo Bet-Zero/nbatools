@@ -169,6 +169,8 @@ _SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(TEAM_ALIASES.keys(), key=len, rever
 
 _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
     "player_game_summary",
+    "player_split_summary",
+    "team_split_summary",
     "player_game_finder",
     "player_stretch_leaderboard",
     "game_summary",
@@ -178,6 +180,7 @@ _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
 
 _PHASE_G_CLUTCH_TRANSPORT_ROUTES = {
     "player_game_summary",
+    "player_split_summary",
     "player_game_finder",
     "team_record",
     "season_leaders",
@@ -190,12 +193,14 @@ _PHASE_G_PERIOD_TRANSPORT_ROUTES = {
 
 _PHASE_G_ROLE_TRANSPORT_ROUTES = {
     "player_game_summary",
+    "player_split_summary",
     "player_game_finder",
     "season_leaders",
 }
 
 _PHASE_H_SCHEDULE_CONTEXT_ROUTES = {
     "player_game_summary",
+    "player_split_summary",
     "team_record",
 }
 
@@ -566,6 +571,22 @@ def _normalize_unsupported_filters(value) -> list[str]:
     return [str(value)]
 
 
+# Routes that apply an AND set of game conditions to game rows before they
+# aggregate, so "averages in games with 10+ rebounds and 5+ assists" counts
+# games meeting both rather than post-filtering an aggregate table.
+_CONDITION_ROUTES = {
+    "player_game_finder",
+    "game_finder",
+    "player_game_summary",
+    "game_summary",
+    "team_record",
+    "player_split_summary",
+    "team_split_summary",
+    "player_compare",
+    "team_compare",
+}
+
+
 def _prepare_route_conditions(
     route: str,
     kwargs: dict,
@@ -579,7 +600,7 @@ def _prepare_route_conditions(
     if route_conditions and stat_conditions_cover(route_conditions, extra_conditions):
         return kwargs, []
 
-    if route not in {"player_game_finder", "game_finder"}:
+    if route not in _CONDITION_ROUTES:
         return kwargs, extra_conditions
 
     primary = primary_condition_from_kwargs(kwargs)

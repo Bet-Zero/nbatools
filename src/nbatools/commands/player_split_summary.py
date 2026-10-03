@@ -5,15 +5,13 @@ import pandas as pd
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
-from nbatools.commands.data_utils import (
-    load_player_games_for_seasons,
-)
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
     compute_grouped_sample_advanced_metrics,
     load_team_games_for_seasons,
 )
+from nbatools.commands.player_game_summary import select_player_summary_sample
 from nbatools.commands.structured_results import NoResult, SplitSummaryResult
 
 ALLOWED_STATS = {
@@ -45,6 +43,10 @@ ALLOWED_STATS = {
 }
 
 ALLOWED_SPLITS = {"home_away", "wins_losses"}
+_SPLIT_AXIS_FIELDS = {
+    "home_away": ("home_only", "away_only"),
+    "wins_losses": ("wins_only", "losses_only"),
+}
 
 
 def apply_base_filters(
@@ -153,62 +155,57 @@ def build_result(
     season_type: str = "Regular Season",
     player: str | None = None,
     team: str | None = None,
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     last_n: int | None = None,
     df: pd.DataFrame | None = None,
+    last_n_scope: str = "qualifying",
+    **sample_filters,
 ) -> SplitSummaryResult | NoResult:
+    """Split one player's sample by home/away or wins/losses.
+
+    The sample is exactly what the player summary would describe: dates,
+    opponent, the other location/outcome flag, stat conditions, teammate
+    availability, role, schedule context and the last-N window all apply
+    first, then the split divides those games.
+    """
     split = split.lower()
     if split not in ALLOWED_SPLITS:
         raise ValueError(f"Unsupported split: {split}. Allowed: {sorted(ALLOWED_SPLITS)}")
 
+    # The split's own axis divides the sample; it is not a filter on it.
+    for axis_field in _SPLIT_AXIS_FIELDS[split]:
+        sample_filters.pop(axis_field, None)
+
     seasons = resolve_seasons(season, start_season, end_season)
-    identity_notes: list[str] = []
-
-    if df is None:
-        try:
-            df = load_player_games_for_seasons(seasons, season_type)
-        except FileNotFoundError:
-            return NoResult(query_class="split_summary", reason="no_data")
-
-        required = [
-            "game_id",
-            "game_date",
-            "season",
-            "season_type",
-            "player_id",
-            "player_name",
-            "team_id",
-            "team_abbr",
-            "team_name",
-            "opponent_team_id",
-            "opponent_team_abbr",
-            "opponent_team_name",
-            "is_home",
-            "is_away",
-            "wl",
-        ]
-        missing = [c for c in required if c not in df.columns]
-        if missing:
-            raise ValueError(f"Missing required columns: {missing}")
-
-        df = apply_base_filters(
-            df=df,
-            identity_notes=identity_notes,
-            player=player,
-            team=team,
-            opponent=opponent,
-            stat=stat,
-            min_value=min_value,
-            max_value=max_value,
-            last_n=last_n,
+    sample = select_player_summary_sample(
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        player=player,
+        team=team,
+        opponent=opponent,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        conditions=conditions,
+        last_n=last_n,
+        df=df,
+        last_n_scope=last_n_scope,
+        **sample_filters,
+    )
+    if isinstance(sample, NoResult):
+        return NoResult(
+            query_class="split_summary",
+            reason=sample.reason,
+            notes=list(sample.notes or []),
         )
-    else:
-        df = df.copy()
-        if "game_date" in df.columns:
-            df["game_date"] = pd.to_datetime(df["game_date"])
+    df = sample.df
+    identity_notes = sample.notes
 
     if df.empty:
         return NoResult(query_class="split_summary")
@@ -218,7 +215,8 @@ def build_result(
     season_max = df["season"].max()
 
     if split == "home_away":
-        df["bucket"] = df["is_home"].map({1: "home"}).fillna("away")
+        # is_home is 0/1 in some sources and bool in others; compare numerically.
+        df["bucket"] = df["is_home"].astype(int).eq(1).map({True: "home", False: "away"})
     else:
         df["bucket"] = df["wl"].map({"W": "wins", "L": "losses"})
 
