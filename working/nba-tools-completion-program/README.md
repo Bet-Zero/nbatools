@@ -215,7 +215,8 @@ him twice).
 
 Evidence: `tests/test_player_identity_selection.py` (data-free, controlled
 frames with the real ids) and the A1b block of
-`tests/test_player_identity_real_data.py` (values from raw rows by id).
+`tests/test_player_identity_real_data.py` (values from raw rows by id), all
+16 real-data identity tests passing in targeted R2 run 37118187291.
 
 
 **Result of the first slice (branch `claude/issue-314-q0tbff`).** Reproduced,
@@ -521,7 +522,7 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`; see section 4 for its R2 runs | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
+| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) on `claude/names-stream-791238`, real-data tests passed (R2 run 37118187291) | Deployed check for A1/A1b after merge; lineup answers themselves wait on D2 lineup data |
 | A2 | Team last-N records merged (#316). Explicit date windows in #317: from/to, between/and, since/after (spans every season through today), before/until/through (open start within the date's season), lone ISO dates, cross-season ranges; impossible dates refuse. Real-data tests passed in targeted R2 run 37106273170 | "In the last N" vs "last N with a condition"; last N meetings vs last N overall; team last-N summaries beyond the record |
 | B1 | Totals vs per-game leaderboards in #317 (`<stat>_total` / `<stat>_per_game` siblings; rates still refuse). Real-data Raw QA 5/5 and boundary tests passed (R2 runs 37105803231, 37106273170) | Compound occurrence leaderboards ("most 30 point 10 rebound games"), "10+ assists and 0 turnovers", qualified rate leaders ("best three point percentage minimum 100 attempts"), "most games played"; totals still use the 20-game floor |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
