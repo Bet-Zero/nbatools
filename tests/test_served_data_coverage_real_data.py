@@ -145,3 +145,13 @@ def test_report_dates_are_inside_their_season(coverage):
         last = pd.Timestamp(item.last_game_date)
         assert first.year in {start, start + 1}, item.to_dict()
         assert last.year in {start, start + 1}, item.to_dict()
+
+
+def test_latest_served_season_is_read_from_the_generation():
+    from nbatools.commands import _seasons
+
+    _seasons.reset_latest_served_season_cache()
+    # 2025-26 is the newest season with final games in this generation; once
+    # 2026-27 games are published this becomes 2026-27 with no code change.
+    assert _seasons.latest_served_season("Regular Season") == _season(LAST_SEASON)
+    assert _seasons.latest_served_season("Playoffs") == _season(LAST_SEASON)
