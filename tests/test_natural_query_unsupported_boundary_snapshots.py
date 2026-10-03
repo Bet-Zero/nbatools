@@ -13,12 +13,6 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
     "case",
     [
         {
-            "query": "best 5-game team scoring stretch this season",
-            "route": "player_stretch_leaderboard",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["team_rolling_stretch"],
-        },
-        {
             "query": "Celtics bench points this season",
             "route": "game_finder",
             "reason": "filter_not_supported",

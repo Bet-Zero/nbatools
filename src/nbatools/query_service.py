@@ -1023,6 +1023,63 @@ def _add_team_advanced_scalar_answer_metadata(metadata: dict[str, Any], result: 
     )
 
 
+_TEAM_STRETCH_PHRASES = {
+    "pts": "points per game",
+    "opp_pts": "points allowed per game",
+    "plus_minus": "point differential per game",
+    "reb": "rebounds per game",
+    "ast": "assists per game",
+    "stl": "steals per game",
+    "blk": "blocks per game",
+    "fg3m": "threes per game",
+    "tov": "turnovers per game",
+    "fg_pct": "FG%",
+    "fg3_pct": "3P%",
+    "ft_pct": "FT%",
+    "efg_pct": "eFG%",
+    "ts_pct": "TS%",
+    "off_rating": "offensive rating",
+    "def_rating": "defensive rating",
+    "net_rating": "net rating",
+}
+
+
+def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "Celtics best 10 game stretch": record, dates and margin."""
+    if metadata.get("route") != "team_stretch_leaderboard":
+        return
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    row = result.leaders.iloc[0]
+    size = int(row["window_size"])
+    metric = str(row["stretch_metric"])
+    direction = "worst" if result.metadata.get("worst") else "best"
+    net = float(row["net_per_game"])
+    margin = f"{'+' if net > 0 else ''}{_format_one_decimal(net)} per game"
+    record = f"{int(row['wins'])}-{int(row['losses'])}"
+    span = f"from {row['window_start_date']} to {row['window_end_date']}"
+    if metric == "wins":
+        detail = f"went {record} {span} ({margin})"
+    else:
+        value = float(row["stretch_value"])
+        label = _TEAM_STRETCH_PHRASES.get(metric, metric)
+        if metric.endswith("_pct"):
+            detail = f"posted a {value:.1%} {label} {span}, going {record}"
+        elif metric == "plus_minus":
+            verb = "outscored opponents" if value >= 0 else "were outscored"
+            margin_text = _format_one_decimal(abs(value))
+            detail = f"{verb} by {margin_text} points per game {span}, going {record}"
+        elif metric.endswith("_rating"):
+            detail = f"posted a {_format_one_decimal(value)} {label} {span}, going {record}"
+        else:
+            detail = f"averaged {_format_one_decimal(value)} {label} {span}, going {record}"
+    scope = "their" if metadata.get("team") else "the league's"
+    metadata["answer_phrase"] = (
+        f"The {row['team_name']} {detail}, {scope} {direction} {size}-game stretch "
+        f"of {row['season']}."
+    )
+
+
 def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     if not isinstance(result, SummaryResult) or metadata.get("route") != "game_summary":
         return
@@ -1474,6 +1531,7 @@ def _finalize_natural_query_result(
         )
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
+    _add_team_stretch_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -1754,6 +1812,7 @@ VALID_ROUTES = frozenset(
         "lineup_summary",
         "lineup_leaderboard",
         "player_stretch_leaderboard",
+        "team_stretch_leaderboard",
         "playoff_history",
         "playoff_appearances",
         "playoff_matchup_history",
@@ -1945,6 +2004,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         )
 
     _add_game_summary_answer_metadata(metadata, result)
+    _add_team_stretch_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

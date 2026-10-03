@@ -60,6 +60,7 @@ export type RouteName =
   | "team_occurrence_leaders"
   | "player_on_off"
   | "player_stretch_leaderboard"
+  | "team_stretch_leaderboard"
   | "playoff_history"
   | "playoff_appearances"
   | "playoff_matchup_history"

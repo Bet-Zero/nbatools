@@ -244,6 +244,9 @@ from nbatools.commands._parse_helpers import (
     detect_team_rolling_stretch_boundary as detect_team_rolling_stretch_boundary,
 )
 from nbatools.commands._parse_helpers import (
+    detect_team_stretch_request as detect_team_stretch_request,
+)
+from nbatools.commands._parse_helpers import (
     detect_wins_losses as detect_wins_losses,
 )
 from nbatools.commands._parse_helpers import (
@@ -573,6 +576,7 @@ _LAST_N_SUPPORTED_ROUTES = {
     "player_stretch_leaderboard",
     "season_leaders",
     "season_team_leaders",
+    "team_stretch_leaderboard",
     "team_compare",
     "team_record",
     "team_split_summary",
@@ -1222,6 +1226,7 @@ __all__ = [
     "detect_role",
     "detect_stretch_query",
     "detect_team_rolling_stretch_boundary",
+    "detect_team_stretch_request",
     "detect_opponent_conference",
     "detect_opponent_conference_boundary",
     "detect_opponent_conference_geography_boundary",
@@ -1338,6 +1343,8 @@ def _build_parse_state(query: str) -> dict:
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
+    team_stretch_request = detect_team_stretch_request(q)
+    stretch_names_players = bool(stretch_request and re.search(r"\b(?:players?|who)\b", q))
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
     team_leader_stat = detect_team_leader_stat(q)
@@ -1680,6 +1687,8 @@ def _build_parse_state(query: str) -> dict:
         "stretch_metric": stretch_metric,
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
+        "team_stretch_request": team_stretch_request,
+        "stretch_names_players": stretch_names_players,
         "rookie_leaderboard_boundary": rookie_leaderboard_boundary,
         "sophomore_leaderboard_boundary": sophomore_leaderboard_boundary,
         # Only meaningful for a team-scoped leader; a league-wide "top scorers"
@@ -1908,6 +1917,8 @@ def _finalize_route(parsed: dict) -> dict:
     stretch_metric = parsed.get("stretch_metric")
     stretch_display_mode = parsed.get("stretch_display_mode")
     team_rolling_stretch_boundary = parsed.get("team_rolling_stretch_boundary", False)
+    team_stretch_request = parsed.get("team_stretch_request")
+    stretch_names_players = parsed.get("stretch_names_players", False)
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)
     team_leader_stat = parsed.get("team_leader_stat")
@@ -2351,18 +2362,16 @@ def _finalize_route(parsed: dict) -> dict:
     elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
         route, route_kwargs = lineup_route
     elif (
-        team_rolling_stretch_boundary
+        team_stretch_request is not None
         and window_size is not None
-        and stretch_metric is not None
         and not player
         and not player_a
         and not player_b
+        and not team_a
+        and not team_b
+        and (team_rolling_stretch_boundary or (team and not stretch_names_players))
     ):
-        route = "player_stretch_leaderboard"
-        notes.append(
-            "unsupported_boundary: team rolling-stretch leaderboards are not "
-            "supported with current routes"
-        )
+        route = "team_stretch_leaderboard"
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -2370,21 +2379,15 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "season_type": season_type,
-            "player": None,
             "team": team,
             "opponent": opponent,
-            "opponent_player": opponent_player,
-            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
             "last_n": last_n,
             "window_size": window_size,
-            "stretch_metric": stretch_metric,
-            "dedupe_players": False,
+            "stretch_metric": team_stretch_request["metric"],
+            "worst": team_stretch_request["worst"],
             "limit": top_n or 10,
-            "unsupported_filters": ["team_rolling_stretch"],
         }
     elif (
         window_size is not None
@@ -2393,7 +2396,7 @@ def _finalize_route(parsed: dict) -> dict:
         and not player_b
         and not team_a
         and not team_b
-        and not (team and player is None)
+        and not (team and player is None and not stretch_names_players)
     ):
         route = "player_stretch_leaderboard"
         route_kwargs = {

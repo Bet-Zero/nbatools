@@ -2208,22 +2208,24 @@ cases:
       family: rolling_stretches
       variant: inverse_sibling
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
-    expected_route: player_stretch_leaderboard
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: team_rolling_stretch
-    review_notes: "Team rolling-stretch leaderboards are intentionally unsupported until a team route/result contract exists."
+      - path: result.sections.leaderboard.0.window_size
+        equals: 5
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: pts
+    review_notes: "Team rolling stretch: each team's best 5-game scoring average. It refused before the team stretch route (C2, agent change)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - rolling_stretch
         - team_scope
-      notes: "Wave 6 fixed this boundary so team-scoped rolling-stretch wording no longer returns player windows."
+      notes: "Review that rows are teams (not player windows) ranked by points per game over 5 straight games."
 
   - id: lakers_finals_appearances
     query: "Lakers Finals appearances"
@@ -4039,29 +4041,106 @@ cases:
     priority: p2
     acceptance:
       family: rolling_stretches
-      variant: nearby_unsupported
-      concept: team_advanced_metric_stretch_boundary
+      variant: synonym
+      concept: team_advanced_metric_stretch
       public_surface: true
-      review_role: boundary
+      review_role: supporting
       no_broad_fallback: true
       sibling_of: hottest_3_game_scoring_stretch
-      intent_model: player_stretch_leaderboard
+      intent_model: team_stretch_leaderboard
       qualifier_model:
         - team_scope
         - net_rating
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
-    expected_route: player_stretch_leaderboard
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
-    review_notes: "Team advanced-metric rolling stretch remains outside current support."
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: net_rating
+    review_notes: "Team net rating over 5 straight games, per 100 estimated possessions. It refused before the team stretch route (C2, agent change); the id is kept for history."
     manual_review:
       status: unreviewed
       tags:
         - rolling_stretch
+        - team_scope
+      notes: "Review the net rating against the box-score possession estimate."
+
+  - id: team_game_score_stretch_unsupported
+    query: "best 5-game team stretch by Game Score"
+    category: rolling_stretch
+    priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: nearby_unsupported
+      concept: team_game_score_stretch_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: pqa_stretch_sentence_game_score
+      intent_model: team_stretch_leaderboard
+      qualifier_model:
+        - team_scope
+        - game_score
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_stretch_leaderboard
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Game Score is a player measure; a team stretch by Game Score is refused rather than ranked by record (C2, agent change)."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - rolling_stretch
         - unsupported_boundary
-      notes: "Review unsupported boundary for team rolling stretches beyond scoring phrasing."
+      notes: "Review that no team or player rows are returned."
+
+  - id: c2_team_best_10_game_stretch
+    query: "best 10 game stretch for the Celtics"
+    category: rolling_stretch
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: BOS
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "A named team's best 10-game record window. It listed Celtics games (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review that the record and dates match ten straight Celtics games."
+
+  - id: c2_league_best_team_stretch
+    query: "which team had the best 10 game stretch this season"
+    category: rolling_stretch
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "Each team's best 10-game record window, ranked (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review that each team appears once and the leader's record is right."
 
   - id: warriors_conference_finals_appearances
     query: "Warriors conference finals appearances"

@@ -1979,6 +1979,50 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
 
 
+_TEAM_STRETCH_METRIC_PATTERNS = (
+    (r"\bnet\s+rating\b", "net_rating"),
+    (r"\b(?:offensive|off)\s+rating\b", "off_rating"),
+    (r"\b(?:defensive|def)\s+rating\b", "def_rating"),
+    (r"\b(?:points?\s+allowed|allow(?:ed|ing)?|defen[cs]e|defensive)\b", "opp_pts"),
+    (
+        r"\b(?:point\s+differential|differential|margin|plus[\s-]?minus|\+/-)\b",
+        "plus_minus",
+    ),
+    (r"\b(?:3|three)[\s-]?(?:point|pt)?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
+    (r"\bthrees\b|\b3s\b|\b(?:3|three)[\s-]?pointers\b", "fg3m"),
+    (r"\bfree[\s-]?throw\b", "ft_pct"),
+    (r"\b(?:efficient|efficiency|true\s+shooting)\b", "ts_pct"),
+    (r"\bshooting\b", "fg_pct"),
+    (r"\b(?:scoring|offensive|offense|points?)\b", "pts"),
+    (r"\brebound(?:ing|s)?\b", "reb"),
+    (r"\bassists?\b", "ast"),
+    (r"\bturnovers?\b", "tov"),
+    (r"\bsteals?\b", "stl"),
+    (r"\bblocks?\b", "blk"),
+)
+_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|lowest|poorest|bad|ugliest)\b")
+
+
+def detect_team_stretch_request(text: str) -> dict | None:
+    """Metric and direction of a team rolling stretch ("Celtics best 10 game stretch").
+
+    A team's "best stretch" with no stat named means its best record over the
+    window. A named stat the team route cannot rank (Game Score, minutes) is
+    passed through so the route refuses it rather than ranking by record.
+    ``None`` when the text is not a rolling-stretch query.
+    """
+    if detect_stretch_query(text) is None:
+        return None
+    if re.search(r"\bgame\s+score\b", text):
+        metric = "game_score"
+    else:
+        metric = next(
+            (key for pattern, key in _TEAM_STRETCH_METRIC_PATTERNS if re.search(pattern, text)),
+            detect_stat(text) or "wins",
+        )
+    return {"metric": metric, "worst": bool(_TEAM_STRETCH_WORST.search(text))}
+
+
 _LINEUP_MEMBER_SPAN_RE = re.compile(
     r"\b(?:with|featuring|including)\s+(.+?)"
     r"(?=\s+(?:in|during|for|since|this|last|over|at|on|from|who|that|together"

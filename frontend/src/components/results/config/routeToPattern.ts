@@ -210,6 +210,14 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "player_occurrence_leaders":
     case "team_occurrence_leaders":
       return [{ type: "leaderboard", sectionKey: "leaderboard" }];
+    case "team_stretch_leaderboard":
+      return [
+        {
+          type: "leaderboard",
+          sectionKey: "leaderboard",
+          metricKey: "stretch_value",
+        },
+      ];
     case "player_stretch_leaderboard":
       return [
         {
