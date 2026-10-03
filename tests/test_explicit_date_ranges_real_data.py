@@ -56,6 +56,10 @@ def _team_rows(team: str, seasons: tuple[str, ...], start: str, end: str) -> pd.
             "2024-03-01",
             "2024-11-15",
         ),
+        # A since-date in an earlier season runs through every later season.
+        ("Knicks record since 2025-03-01", "NYK", ("2024-25", "2025-26"), "2025-03-01", "9999"),
+        # An open start: the date's season, up to and including the day.
+        ("Knicks record until 2024-12-15", "NYK", ("2024-25",), "", "2024-12-15"),
     ],
 )
 def test_team_record_over_explicit_range_matches_raw_rows(query, team, seasons, start, end):
