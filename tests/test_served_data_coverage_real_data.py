@@ -155,3 +155,43 @@ def test_latest_served_season_is_read_from_the_generation():
     # 2026-27 games are published this becomes 2026-27 with no code change.
     assert _seasons.latest_served_season("Regular Season") == _season(LAST_SEASON)
     assert _seasons.latest_served_season("Playoffs") == _season(LAST_SEASON)
+
+
+class NameSourceReport(UserWarning):
+    """Carries the name-source comparison into the warnings summary."""
+
+
+def test_report_whether_small_files_carry_every_player_name():
+    # The player-name index reads all 60 player-game files (about 145 MB) on a
+    # cold start just for names. Report whether the much smaller roster and
+    # season-advanced files carry exactly the same names, which would let the
+    # index read them instead. Informational: this records evidence only.
+    game_names: set[str] = set()
+    roster_names: set[str] = set()
+    advanced_names: set[str] = set()
+    advanced_has_names = True
+    for year in range(FIRST_SEASON, LAST_SEASON + 1):
+        season = _season(year)
+        roster = data_read_csv(f"raw/rosters/{season}.csv", dtype=str)
+        roster_names.update(roster.get("player_name", pd.Series(dtype=str)).dropna())
+        for kind in ("regular_season", "playoffs"):
+            game = data_read_csv(
+                f"raw/player_game_stats/{season}_{kind}.csv", usecols=["player_name"], dtype=str
+            )
+            game_names.update(game["player_name"].dropna())
+            advanced = data_read_csv(f"raw/player_season_advanced/{season}_{kind}.csv", dtype=str)
+            if "player_name" in advanced.columns:
+                advanced_names.update(advanced["player_name"].dropna())
+            else:
+                advanced_has_names = False
+    lines = [
+        f"player_game_stats names: {len(game_names)}",
+        f"roster names: {len(roster_names)}; in games but not rosters: "
+        f"{len(game_names - roster_names)} {sorted(game_names - roster_names)[:15]}; "
+        f"in rosters but not games: {len(roster_names - game_names)}",
+        f"season-advanced has player_name: {advanced_has_names}; names: {len(advanced_names)}; "
+        f"in games but not advanced: {len(game_names - advanced_names)} "
+        f"{sorted(game_names - advanced_names)[:15]}",
+    ]
+    warnings.warn(NameSourceReport("\n" + "\n".join(lines)), stacklevel=1)
+    assert game_names
