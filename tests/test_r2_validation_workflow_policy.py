@@ -366,7 +366,13 @@ def test_the_validation_gates_cannot_be_made_advisory(job_name: str) -> None:
         f"{job_name} must fail the workflow. It exists to answer whether the "
         f"answers are correct, and an advisory answer to that is not an answer."
     )
-    assert "if" not in job, f"{job_name} must stay unconditional"
+    # The only allowed condition is the targeted scope: a full run executes
+    # every gate, and only a targeted run that names nothing for a gate skips it.
+    condition = job.get("if")
+    if condition is not None:
+        assert condition.startswith("inputs.scope == 'full'"), (
+            f"{job_name} may be skipped only outside the full scope; it has {condition!r}"
+        )
 
     for step in _steps(job_name):
         run = step.get("run", "")
@@ -471,3 +477,12 @@ def test_the_workflow_does_not_expose_the_credential_to_pull_requests() -> None:
 def test_the_workflow_only_reads() -> None:
     """A validation run must not be able to publish a generation."""
     assert _workflow()["permissions"] == {"contents": "read"}
+
+
+def test_a_targeted_run_is_labelled_as_one() -> None:
+    """A green targeted run is not a full validation, and must not read as one."""
+    workflow = _workflow()
+    inputs = workflow["on"]["workflow_dispatch"]["inputs"]
+    assert inputs["scope"]["default"] == "full"
+    assert inputs["scope"]["options"] == ["full", "targeted"]
+    assert "${{ inputs.scope }}" in workflow["run-name"]

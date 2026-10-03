@@ -1,4 +1,5 @@
 name: R2 Real-Data Validation
+run-name: "R2 ${{ inputs.scope }} validation of ${{ inputs.target_ref }}"
 
 # Manual-only by design. This workflow is the only GitHub Actions path that
 # should receive the temporary, bucket-scoped read-only NBA data credential.
@@ -16,6 +17,11 @@ name: R2 Real-Data Validation
 # Sequencing also buried the sweep - the highest-value trust check here - behind
 # 43 minutes of Raw QA, so a sweep failure took most of an hour to surface.
 # In parallel it reports in under ten minutes.
+#
+# Two scopes. `full` runs every gate and is for batch and merge points of
+# query/data work: the whole Raw QA corpus is the long pole at roughly 30-40
+# minutes. `targeted` is the per-change check: only the Raw QA cases and the
+# needs_data tests a change names, which takes minutes, and no filter sweep.
 on:
   workflow_dispatch:
     inputs:
@@ -24,12 +30,33 @@ on:
         required: true
         default: "main"
         type: string
+      scope:
+        description: "full: every gate. targeted: only the cases and tests named below"
+        required: true
+        default: "full"
+        type: choice
+        options:
+          - full
+          - targeted
+      raw_qa_cases:
+        description: "targeted: space-separated Raw QA case ids (empty skips Raw QA)"
+        required: false
+        default: ""
+        type: string
+      tests:
+        description: "targeted: space-separated needs_data test files or node ids (empty skips them)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
 
+# Full runs queue behind each other; a targeted run only waits for an earlier
+# targeted run of the same ref, so a per-change check never sits behind a
+# 40-minute replay.
 concurrency:
-  group: r2-real-data-validation
+  group: ${{ inputs.scope == 'targeted' && format('r2-targeted-{0}', inputs.target_ref) || 'r2-real-data-validation' }}
   cancel-in-progress: false
 
 env:
@@ -121,6 +148,7 @@ jobs:
   raw-qa:
     name: Raw QA corpus against real R2 data
     needs: preflight
+    if: inputs.scope == 'full' || inputs.raw_qa_cases != ''
     runs-on: ubuntu-latest
     # 42m30s observed on run 1 for 361 cases. Headroom for a growing corpus and
     # a slow runner, since a timeout here reports nothing at all.
@@ -141,10 +169,31 @@ jobs:
           cache: pip
       - run: pip install -e ".[dev,api]"
 
-      - name: Run full Raw QA corpus
+      - name: Run Raw QA (full corpus, or the named cases when targeted)
+        env:
+          SCOPE: ${{ inputs.scope }}
+          RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
         run: |
+          selection=""
+          if [ "$SCOPE" = "targeted" ]; then
+            for case_id in $RAW_QA_CASES; do
+              if ! [[ "$case_id" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+                echo "Invalid Raw QA case id: $case_id" >&2
+                exit 1
+              fi
+              selection="$selection --case $case_id"
+            done
+          fi
           make raw-query-answer-qa \
-            RAW_QA_ARGS="--run-id r2_validation --overwrite-run-id"
+            RAW_QA_ARGS="--run-id r2_validation --overwrite-run-id$selection"
+
+      # A targeted run is a handful of cases, so print their report rows: the
+      # evidence is then readable from the log without downloading the artifact.
+      - name: Print targeted Raw QA report rows
+        if: always() && inputs.scope == 'targeted'
+        run: |
+          report=outputs/raw_query_answer_qa/r2_validation/report.jsonl
+          if [ -f "$report" ]; then cat "$report"; fi
 
       - name: Upload Raw QA evidence
         if: always()
@@ -163,6 +212,7 @@ jobs:
   filter-sweep:
     name: Filter execution sweep against real R2 data
     needs: preflight
+    if: inputs.scope == 'full'
     runs-on: ubuntu-latest
     # 521 pairs at roughly 0.75s each on run 1, so well inside this.
     timeout-minutes: 30
@@ -207,6 +257,7 @@ jobs:
   data-backed-tests:
     name: Tests marked needs_data (informational)
     needs: preflight
+    if: inputs.scope == 'full' || inputs.tests != ''
     runs-on: ubuntu-latest
     timeout-minutes: 60
     continue-on-error: true
@@ -227,4 +278,18 @@ jobs:
       - run: pip install -e ".[dev,api]"
 
       - name: Tests marked needs_data, against the pinned generation
-        run: python -m pytest -m needs_data -rf --no-header -q
+        env:
+          SCOPE: ${{ inputs.scope }}
+          TESTS: ${{ inputs.tests }}
+        run: |
+          selection=()
+          if [ "$SCOPE" = "targeted" ]; then
+            for test_id in $TESTS; do
+              if ! [[ "$test_id" =~ ^tests/[A-Za-z0-9_./:\[\]-]+$ ]]; then
+                echo "Invalid test path or node id: $test_id" >&2
+                exit 1
+              fi
+              selection+=("$test_id")
+            done
+          fi
+          python -m pytest -m needs_data -rf --no-header -q "${selection[@]}"
