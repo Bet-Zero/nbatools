@@ -26,6 +26,11 @@ _LEADERBOARD_ONLY: dict[str, str] = {
     "10 assist games": "games_10a",
     "10-rebound games": "games_10r",
     "10 rebound games": "games_10r",
+    # Appearance counts
+    "games played": "games_played",
+    "played the most games": "games_played",
+    "played in the most games": "games_played",
+    "played the fewest games": "games_played",
     # Noun-agent forms
     "scorer": "pts",
     "scorers": "pts",
@@ -239,12 +244,22 @@ def _detect_leaderboard_stat(text: str, aliases: dict[str, str]) -> str | None:
     return None
 
 
+# A games-played minimum ("minimum 50 games played") qualifies the ranking;
+# it must not read as a request to rank by games played.
+_MIN_GAMES_QUALIFIER = re.compile(
+    r"\b(?:at\s+least|min(?:imum)?\.?(?:\s+of)?|with)\s+\d+\+?\s+games?(?:\s+played)?\b"
+    r"|\b\d+\+?\s+(?:or\s+more\s+)?games?\s+played\b"
+)
+
+
 def detect_player_leaderboard_stat(text: str) -> str | None:
-    return _detect_leaderboard_stat(text, LEADERBOARD_STAT_ALIASES)
+    return _detect_leaderboard_stat(_MIN_GAMES_QUALIFIER.sub(" ", text), LEADERBOARD_STAT_ALIASES)
 
 
 def detect_team_leaderboard_stat(text: str) -> str | None:
-    return _detect_leaderboard_stat(text, TEAM_LEADERBOARD_STAT_ALIASES)
+    return _detect_leaderboard_stat(
+        _MIN_GAMES_QUALIFIER.sub(" ", text), TEAM_LEADERBOARD_STAT_ALIASES
+    )
 
 
 def wants_ascending_leaderboard(text: str) -> bool:

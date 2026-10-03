@@ -8784,6 +8784,184 @@ cases:
         - no_broad_fallback
       notes: "Expected boundary: whole-game teammate absence is execution-backed only on team records."
 
+  - id: b1_most_30_point_10_rebound_games
+    query: "most 30 point 10 rebound games this season"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.conditions.0.stat
+        equals: pts
+      - path: result.metadata.conditions.0.min_value
+        equals: 30.0
+      - path: result.metadata.conditions.1.stat
+        equals: reb
+      - path: result.metadata.conditions.1.min_value
+        equals: 10.0
+      - path: result.metadata.ranking_key
+        equals: occurrence_count
+    review_notes: "Adjective form of a two-condition game count. It used to refuse; both conditions now count in the same game (B1, agent change; counts checked against the game logs in tests/test_b1_rankings_and_counts*.py)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - compound_occurrence
+      notes: "Review that each player's count is games with 30+ points and 10+ rebounds together."
+
+  - id: b1_most_10_assist_0_turnover_games
+    query: "most games with 10+ assists and 0 turnovers this season"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.conditions.0.stat
+        equals: ast
+      - path: result.metadata.conditions.0.min_value
+        equals: 10.0
+      - path: result.metadata.conditions.1.stat
+        equals: tov
+      - path: result.metadata.conditions.1.max_value
+        equals: 0.0
+      - path: result.metadata.conditions.1.min_value
+        equals: null
+    review_notes: "Zero turnovers is an exact zero. It was a blocked phrase, and the 'games with ...' form read 0 as a lower bound and counted every 10-assist game (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - compound_occurrence
+        - zero_bound
+      notes: "Review that only games with no turnovers count."
+
+  - id: b1_games_with_10_assists_0_turnovers_list
+    query: "games with 10+ assists and 0 turnovers this season"
+    category: finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.player
+        equals: null
+      - path: result.metadata.conditions.1.stat
+        equals: tov
+      - path: result.metadata.conditions.1.max_value
+        equals: 0.0
+    review_notes: "League-wide list of player games meeting both conditions, newest first. It was a blocked phrase (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - league_game_finder
+        - zero_bound
+      notes: "Review that every listed game has 10+ assists and zero turnovers."
+
+  - id: b1_how_often_player_10_assists_0_turnovers
+    query: "How often has a player had 10+ assists and 0 turnovers this season?"
+    category: finder_count
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - count
+      - finder
+    hard_assertions:
+      - path: result.metadata.player
+        equals: null
+      - path: result.metadata.conditions.1.max_value
+        equals: 0.0
+    review_notes: "A league-wide count of games, the docs/architecture/parser/examples.md question 5. Counting rows of a top-10 board would have answered 0 (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - league_game_finder
+        - count
+      notes: "Review that the count equals the number of league games with 10+ assists and no turnovers."
+
+  - id: b1_best_three_point_pct_minimum_attempts
+    query: "best three point percentage this season minimum 300 attempts"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3_pct
+    review_notes: "A stated attempt minimum replaces the default 100-attempt floor and is shown as 'qualified: at least 300 three-point attempts'. It was a blocked phrase (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - qualified_rate
+      notes: "Review that every listed player has 300+ three-point attempts and percentages come from season makes over attempts."
+
+  - id: b1_best_free_throw_pct_minimum_attempts
+    query: "best free throw percentage minimum 200 attempts"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ft_pct
+    review_notes: "'attempts' with no shot type qualifies by the ranked rate's own attempts, free throws here (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - qualified_rate
+      notes: "Review that every listed player has 200+ free-throw attempts."
+
+  - id: b1_most_games_played
+    query: "most games played this season"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: games_played
+    review_notes: "Games-played leaderboard. It matched no route (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - games_played
+      notes: "Review that games played equals each player's distinct games this season."
+
+  - id: b1_who_played_most_games
+    query: "who has played the most games this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: games_played
+    review_notes: "Question form of the games-played leaderboard (B1, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - games_played
+      notes: "Same board as b1_most_games_played."
+
   - id: lebron_30_in_last_10_window_a2
     query: "how many times did LeBron score 30 in his last 10 games 2017-18"
     category: finder_count
