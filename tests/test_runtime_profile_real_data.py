@@ -23,10 +23,10 @@ class RuntimeProfileReport(UserWarning):
     """Carries the profile into the pytest warnings summary."""
 
 
-def test_cold_start_profile(tmp_path):
-    env = dict(os.environ, NBATOOLS_R2_CACHE_DIR=str(tmp_path / "r2-cache"))
+def _profile(tmp_path, *queries: str, **env_overrides: str) -> dict:
+    env = dict(os.environ, NBATOOLS_R2_CACHE_DIR=str(tmp_path / "r2-cache"), **env_overrides)
     completed = subprocess.run(
-        [sys.executable, "-m", "nbatools.commands.ops.runtime_profile"],
+        [sys.executable, "-m", "nbatools.commands.ops.runtime_profile", *queries],
         capture_output=True,
         text=True,
         env=env,
@@ -37,3 +37,20 @@ def test_cold_start_profile(tmp_path):
     report = json.loads(completed.stdout)
     warnings.warn(RuntimeProfileReport("\n" + json.dumps(report, indent=1)), stacklevel=1)
     assert all(item.get("status", "ok") == "ok" for item in report["stages"]), report
+    return report
+
+
+def test_cold_start_profile(tmp_path):
+    _profile(tmp_path)
+
+
+def test_career_query_with_a_frame_cache_that_holds_every_season(tmp_path):
+    # Sizing evidence: the default frame cache (16 frames) cannot hold a
+    # 30-season career, so every career query re-parses every season. Report
+    # the time and memory with room for all of them.
+    _profile(
+        tmp_path,
+        "LeBron James career stats",
+        NBATOOLS_FRAME_CACHE_MAX_ENTRIES="256",
+        NBATOOLS_FRAME_CACHE_MAX_BYTES=str(2 * 1024**3),
+    )

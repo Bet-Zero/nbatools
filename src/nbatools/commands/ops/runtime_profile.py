@@ -81,9 +81,24 @@ def profile(queries: tuple[str, ...] = DEFAULT_QUERIES) -> dict[str, Any]:
                 stages[-1]["route"] = result.route
             stages[-1]["hotspots"] = _hotspots(lambda q=query: execute_natural_query(q))
     import re
+    import resource
 
+    from nbatools.dataframe_cache import frame_cache_info
+
+    cache = frame_cache_info()
     return {
         "regex_cache_entries": len(getattr(re, "_cache", {})),
+        "frame_cache": {
+            "max_entries": cache.max_entries,
+            "max_mb": round(cache.max_bytes / 1e6, 1),
+            "entries": cache.current_entries,
+            "mb": round(cache.current_bytes / 1e6, 1),
+            "hits": cache.hits,
+            "misses": cache.misses,
+            "evictions": cache.evictions,
+        },
+        # Linux reports ru_maxrss in KiB.
+        "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
         "generation": generation,
         "data_source": os.environ.get("DATA_SOURCE", "local"),
         "total_seconds": round(sum(item["seconds"] for item in stages), 3),
