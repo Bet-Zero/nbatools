@@ -8,6 +8,11 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._player_identity import (
+    canonicalize_player_names,
+    player_game_ids,
+    select_player_rows,
+)
 from nbatools.commands.source_invariants import validate_play_by_play_trust_decisions
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
 from nbatools.dataframe_cache import FRAME_CACHE
@@ -909,7 +914,7 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
     def load() -> pd.DataFrame:
         safe = normalize_season_type(season_type)
         path = f"data/raw/player_game_stats/{season}_{safe}.csv"
-        df = data_read_csv(path)
+        df = canonicalize_player_names(data_read_csv(path))
 
         team_stats_path = f"data/raw/team_game_stats/{season}_{safe}.csv"
         if not data_exists(team_stats_path):
@@ -2194,8 +2199,7 @@ def apply_player_role_filter(
 def get_game_ids_for_player(player_name: str, seasons: list[str], season_type: str) -> set:
     """Return the set of game_ids where a given player appears in box scores."""
     df = load_player_games_for_seasons(seasons, season_type)
-    mask = df["player_name"].astype(str).str.upper() == player_name.upper()
-    return set(df.loc[mask, "game_id"].unique())
+    return set(select_player_rows(df, player_name)["game_id"].unique())
 
 
 def filter_by_opponent_player(
@@ -2210,8 +2214,7 @@ def filter_by_opponent_player(
     opponent_player's game logs AND opponent_player was on a different team.
     """
     opp_df = load_player_games_for_seasons(seasons, season_type)
-    opp_mask = opp_df["player_name"].astype(str).str.upper() == opponent_player.upper()
-    opp_rows = opp_df.loc[opp_mask, ["game_id", "team_abbr"]].drop_duplicates()
+    opp_rows = player_game_ids(opp_df, opponent_player)
 
     if opp_rows.empty:
         return df.iloc[0:0].copy()
@@ -2248,8 +2251,7 @@ def filter_without_player(
     same team (or at all, if no team context).
     """
     player_df = load_player_games_for_seasons(seasons, season_type)
-    p_mask = player_df["player_name"].astype(str).str.upper() == without_player.upper()
-    p_rows = player_df.loc[p_mask, ["game_id", "team_abbr"]].drop_duplicates()
+    p_rows = player_game_ids(player_df, without_player, team=team)
 
     if p_rows.empty:
         return df.iloc[0:0].copy() if strict_team_match else df.copy()
@@ -2275,8 +2277,7 @@ def filter_with_player(
 ) -> pd.DataFrame:
     """Filter df to games where with_player DID play for the same team."""
     player_df = load_player_games_for_seasons(seasons, season_type)
-    p_mask = player_df["player_name"].astype(str).str.upper() == with_player.upper()
-    p_rows = player_df.loc[p_mask, ["game_id", "team_abbr"]].drop_duplicates()
+    p_rows = player_game_ids(player_df, with_player, team=team)
 
     if p_rows.empty:
         return df.iloc[0:0].copy() if strict_team_match else df.copy()

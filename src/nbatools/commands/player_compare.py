@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import (
@@ -37,6 +38,7 @@ def filter_player_games(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -52,7 +54,7 @@ def filter_player_games(
     if end_ts is not None:
         out = out[out["game_date"] <= end_ts].copy()
 
-    out = out[out["player_name"].astype(str).str.upper() == player.upper()].copy()
+    out = select_player_rows(out, player, team=team, notes=identity_notes)
 
     if team:
         team_upper = team.upper()
@@ -166,6 +168,7 @@ def _build_player_head_to_head_frames(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    identity_notes: list[str] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     a_df = filter_player_games(
         df,
@@ -179,6 +182,7 @@ def _build_player_head_to_head_frames(
         last_n=None,
         start_date=start_date,
         end_date=end_date,
+        identity_notes=identity_notes,
     )
     b_df = filter_player_games(
         df,
@@ -192,6 +196,7 @@ def _build_player_head_to_head_frames(
         last_n=None,
         start_date=start_date,
         end_date=end_date,
+        identity_notes=identity_notes,
     )
 
     if a_df.empty or b_df.empty:
@@ -275,6 +280,7 @@ def build_result(
         )
 
     seasons = resolve_seasons(season, start_season, end_season)
+    identity_notes: list[str] = []
     try:
         df = load_player_games_for_seasons(seasons, season_type)
         team_df = load_team_games_for_seasons(seasons, season_type)
@@ -300,6 +306,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            identity_notes=identity_notes,
         )
     else:
         a_df = filter_player_games(
@@ -314,6 +321,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            identity_notes=identity_notes,
         )
         b_df = filter_player_games(
             df,
@@ -327,6 +335,7 @@ def build_result(
             last_n=last_n,
             start_date=start_date,
             end_date=end_date,
+            identity_notes=identity_notes,
         )
 
     a_context = build_player_team_context(a_df, team_df) if not a_df.empty else a_df.copy()
@@ -386,6 +395,7 @@ def build_result(
         comparison=comp,
         current_through=current_through,
         caveats=caveats,
+        notes=identity_notes,
     )
 
 
