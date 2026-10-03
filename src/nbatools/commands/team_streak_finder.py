@@ -172,6 +172,27 @@ def _extract_streak_rows(
     return rows
 
 
+def _no_active_streak_row(df: pd.DataFrame, name: str, condition: str) -> dict:
+    last = (
+        df.assign(game_date=pd.to_datetime(df["game_date"]))
+        .sort_values(["game_date", "game_id"])
+        .iloc[-1]
+    )
+    return {
+        "team_name": name,
+        "condition": condition,
+        "streak_length": 0,
+        "games": 0,
+        "start_date": None,
+        "end_date": last["game_date"].date().isoformat(),
+        "start_game_id": None,
+        "end_game_id": last["game_id"],
+        "wins": 0,
+        "losses": 0,
+        "is_active": 0,
+    }
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -278,6 +299,11 @@ def build_result(
     if min_streak_length is not None:
         rows = [row for row in rows if row["streak_length"] >= min_streak_length]
 
+    no_active_streak = current and not rows and team is not None
+    if no_active_streak:
+        # The answer to "current streak" when the latest game missed is zero,
+        # anchored on that game, not "no matching games".
+        rows = [_no_active_streak_row(filtered, team, condition)]
     if current and not rows:
         return NoResult(
             query_class="streak",
@@ -331,6 +357,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if no_active_streak:
+        caveats.append(f"no active streak: the latest game in range did not meet {condition}")
     if team is None:
         caveats.append("each team's best streak in range, ranked by length")
     if len(seasons) > 1:

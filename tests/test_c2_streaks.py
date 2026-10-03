@@ -66,10 +66,13 @@ def test_league_player_streak_ranking_matches_raw_rows():
     assert {row["start_date"][:4] for row in rows} <= {"2025", "2026"}
 
 
-def test_this_season_is_not_widened_to_three_seasons():
-    _, metadata = _streaks("longest 30 point streak this season")
-    assert metadata["season"] == SEASON
-    assert not metadata["start_season"]
+@pytest.mark.parametrize(
+    "query", ["longest 30 point streak this season", "longest winning streak this season"]
+)
+def test_this_season_is_not_widened_to_three_seasons(query):
+    opening_night = _games("team_game_stats", SEASON)["game_date"].min()
+    rows, _ = _streaks(query)
+    assert all(row["start_date"] >= opening_night for row in rows)
 
 
 def test_compound_condition_streak_for_a_player():
@@ -119,14 +122,23 @@ def test_current_player_streak_is_the_live_one():
     longest, current = _runs(list(jokic["pts"] >= 20))
     assert current != longest  # the fixture separates the two answers
 
-    result = execute_natural_query(f"Jokic current streak of 20 point games in {SEASON}")
-    if current == 0:
-        assert result.result_status == "no_result"
-    else:
-        rows = result.result.to_dict()["sections"]["streak"]
-        assert [row["streak_length"] for row in rows] == [current]
-        assert rows[0]["is_active"] == 1
-        assert rows[0]["end_date"] == jokic["game_date"].iloc[-1]
+    rows, _ = _streaks(f"Jokic current streak of 20 point games in {SEASON}")
+    assert [row["streak_length"] for row in rows] == [current]
+    assert rows[0]["is_active"] == int(current > 0)
+    assert rows[0]["end_date"] == jokic["game_date"].iloc[-1]
+
+
+def test_no_live_streak_is_a_zero_streak_not_no_answer():
+    games = _games("player_game_stats", SEASON)
+    jokic = games[games["player_name"] == "Nikola Jokić"]
+    _, current = _runs(list(jokic["pts"] >= 30))
+    assert current == 0  # his latest fixture game was under 30
+
+    result = execute_natural_query(f"Jokic current streak of 30 point games in {SEASON}")
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert [(row["streak_length"], row["is_active"]) for row in rows] == [(0, 0)]
+    assert rows[0]["end_date"] == jokic["game_date"].iloc[-1]
+    assert any("no active streak" in c for c in result.result.caveats)
 
 
 @pytest.mark.parametrize(
@@ -159,11 +171,8 @@ def test_current_team_streaks():
     lakers = runs["Los Angeles Lakers"][1]
     result = execute_natural_query(f"Lakers current winning streak in {SEASON}")
     assert result.metadata["route"] == "team_streak_finder"
-    if lakers:
-        rows = result.result.to_dict()["sections"]["streak"]
-        assert [row["streak_length"] for row in rows] == [lakers]
-    else:
-        assert result.result_status == "no_result"
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert [row["streak_length"] for row in rows] == [lakers]
 
 
 def test_home_winning_streak_counts_home_games_only():

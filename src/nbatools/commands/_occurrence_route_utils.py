@@ -765,8 +765,12 @@ def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
         # ranking would silently drop that subject.
         return None
 
+    season = parsed["season"]
+    if not season and not parsed["start_season"] and not parsed["end_season"]:
+        # "this season" carries no explicit season of its own.
+        season = default_end_season(parsed["season_type"])
     kwargs = {
-        "season": parsed["season"],
+        "season": season,
         "start_season": parsed["start_season"],
         "end_season": parsed["end_season"],
         "season_type": parsed["season_type"],
