@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._player_identity import canonicalize_player_names
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     build_role_filter_coverage_note,
@@ -338,6 +339,7 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         if col in basic.columns:
             agg_spec[f"{col}_total"] = (col, "sum")
 
+    basic = canonicalize_player_names(basic)
     grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(**agg_spec)
 
     grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
@@ -365,6 +367,7 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_from_clutch_rows(clutch: pd.DataFrame) -> pd.DataFrame:
+    clutch = canonicalize_player_names(clutch)
     grouped = (
         clutch.groupby(["player_id", "player_name"], as_index=False)
         .agg(
