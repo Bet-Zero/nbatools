@@ -501,6 +501,24 @@ run IDs and numerical evidence belong in the PR/queue.
 
 Update these rows as work lands. Keep this one queue; no new phase tracker.
 
+Parallel workstreams. The remaining queue splits into four streams that can
+run as separate threads. Each owns its modules; a shared file has one owner,
+and other streams send changes to that owner rather than editing it.
+
+| Stream | Packages | Owns | Starts |
+| --- | --- | --- | --- |
+| 1. Identity | A1b (`player_id` selection for identical names, lineup "with X and Y" and legacy alias scans through the resolver) | `entity_resolution.py`, `_matchup_utils.py`, lineup scans | Now |
+| 2. Samples and combinations | A2 rest (explicit dates, "in the last N" vs "last N with a condition", last N meetings), then C1 | `_date_utils.py`, `_parse_helpers.py` season/date helpers, `data_utils.select_most_recent_games`, `team_record.py`, summaries/splits | Now; C1 after B1's operation contract |
+| 3. Operations and rankings | B1 (totals vs per game, compound occurrence rankings, "10+ assists and 0 turnovers", qualified rate leaders, games played), then C2 | `_leaderboard_eligibility.py`, `season_leaders.py`, `season_team_leaders.py`, occurrence leaders, `_compound_event_authorization.py`, finders | Now |
+| 4. Data and runtime | O1 (generation manifest, data view in section 2a, deployed checks), O2 (calendar/refresh, performance), then D1/D2 source slices | `data_source.py`, pipelines, workflows, deployment docs | Now; D after O1 |
+
+Shared files and owners: `natural_query.py` routing (stream 3; others keep
+their edits to small, separate hunks and rebase often), the Raw QA corpus and
+frontend-copy fixtures (append or edit only your own case ids), this queue
+(each stream updates only its own rows), and the full R2 run (one at a time;
+streams use targeted runs per change). E (integrated acceptance) starts once
+streams 2 and 3 land their contracts.
+
 Validation cadence: a full R2 run (Raw QA replay about 30 minutes, serialized) is
 not a per-fix wait. Keep building the next fix while one runs, verify each fix
 with its focused needs_data tests and relevant Raw QA cases, and run the full
