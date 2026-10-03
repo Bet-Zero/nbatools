@@ -393,10 +393,10 @@ def build_freshness_info(
     """
     from datetime import datetime
 
-    from nbatools.commands._seasons import LATEST_REGULAR_SEASON
+    from nbatools.commands._seasons import default_end_season
 
     if seasons is None:
-        seasons = [LATEST_REGULAR_SEASON]
+        seasons = [default_end_season("Regular Season")]
 
     season_details: list[SeasonFreshness] = []
     overall_ct: str | None = None

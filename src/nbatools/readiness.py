@@ -10,14 +10,14 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from nbatools.commands._seasons import LATEST_REGULAR_SEASON
+from nbatools.commands import _seasons
 from nbatools.commands.data_utils import normalize_season_type
 from nbatools.commands.freshness import manifest_entry, read_refresh_log
 from nbatools.data_source import (
@@ -30,6 +30,10 @@ from nbatools.data_source import (
 )
 
 MAX_ACTIVE_LAG_HOURS = 24
+NEW_SEASON_NOT_LOADED = "new_season_not_loaded"
+_LAG_CODES = frozenset({"active_season_lag", NEW_SEASON_NOT_LOADED})
+# (month, day) by which a new season's games are expected to be published.
+_NEW_SEASON_DUE = (11, 1)
 RELEASE_EXCEPTION_OWNER = "John Matthew, project owner"
 READINESS_EXCEPTION_REASON_ENV = "NBATOOLS_READINESS_EXCEPTION_REASON"
 READINESS_EXCEPTION_CREATED_AT_ENV = "NBATOOLS_READINESS_EXCEPTION_CREATED_AT"
@@ -91,6 +95,8 @@ class ReadinessSnapshot:
     playoffs: SliceEvidence | None
     last_refresh_ok: bool | None = None
     last_refresh_error: str | None = None
+    # The season today's date belongs to, when it is overdue and not loaded.
+    missing_current_season: str | None = None
 
 
 @dataclass(frozen=True)
@@ -213,6 +219,15 @@ def evaluate_readiness(
                 )
             )
 
+    if snapshot.missing_current_season is not None:
+        blockers.append(
+            ReadinessBlocker(
+                NEW_SEASON_NOT_LOADED,
+                f"The {snapshot.missing_current_season} season should have started, but the "
+                f"runtime still serves {regular.season} as its latest season.",
+            )
+        )
+
     if snapshot.last_refresh_ok is False:
         blockers.append(
             ReadinessBlocker(
@@ -223,8 +238,11 @@ def evaluate_readiness(
 
     exception = _read_exception(checked_at, env or dict(os.environ))
     if exception.applied:
-        non_lag = [item for item in blockers if item.code != "active_season_lag"]
-        if season_state is SeasonState.ACTIVE and len(non_lag) < len(blockers):
+        non_lag = [item for item in blockers if item.code not in _LAG_CODES]
+        lag_waivable = season_state is SeasonState.ACTIVE or (
+            snapshot.missing_current_season is not None
+        )
+        if lag_waivable and len(non_lag) < len(blockers):
             blockers = non_lag
         else:
             exception = ReadinessException(
@@ -256,7 +274,7 @@ def evaluate_readiness(
 
 def build_readiness_info(
     *,
-    season: str = LATEST_REGULAR_SEASON,
+    season: str | None = None,
     data_root: Path = Path("data"),
     checked_at: datetime | None = None,
     env: dict[str, str] | None = None,
@@ -265,6 +283,9 @@ def build_readiness_info(
     now = _as_utc(checked_at or datetime.now(UTC))
     try:
         with data_generation_context() as generation:
+            missing_current = None
+            if season is None:
+                season, missing_current = _readiness_season(now, data_root)
             immutable, generation_error = _inspect_runtime_generation(generation)
             regular = _collect_slice(season, "Regular Season", data_root, now)
             playoffs = None
@@ -279,10 +300,11 @@ def build_readiness_info(
                 playoffs=playoffs,
                 last_refresh_ok=refresh.get("success"),
                 last_refresh_error=refresh.get("error"),
+                missing_current_season=missing_current,
             )
     except Exception as exc:
         unknown = SliceEvidence(
-            season=season,
+            season=season or _seasons.LATEST_REGULAR_SEASON,
             season_type="Regular Season",
             trusted=False,
             validation_state="unknown",
@@ -300,6 +322,25 @@ def build_readiness_info(
             playoffs=None,
         )
     return evaluate_readiness(snapshot, checked_at=now, env=env)
+
+
+def _readiness_season(checked_at: datetime, data_root: Path) -> tuple[str, str | None]:
+    """Return the season to judge and, if overdue, the calendar season not loaded.
+
+    Normally the latest served season. Once the calendar enters a new season
+    whose schedule or games are published, that season is judged instead, so
+    its lag counts. A new season with nothing published is reported missing
+    from November 1: every non-lockout season since 1996-97 opened in October,
+    and a lockout is what the readiness exception is for.
+    """
+    served = _seasons.default_end_season("Regular Season")
+    calendar = _seasons.season_for_date(checked_at.date())
+    if _seasons.season_to_int(calendar) <= _seasons.season_to_int(served):
+        return served, None
+    if _slice_files_exist(calendar, "Regular Season", data_root):
+        return calendar, None
+    due = date(_seasons.season_to_int(calendar), *_NEW_SEASON_DUE)
+    return served, calendar if checked_at.date() >= due else None
 
 
 def _collect_slice(

@@ -24,13 +24,14 @@ Rebuild order follows ``docs/operations/pipeline_runbook.md``:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 
+from nbatools.commands import _seasons
 from nbatools.commands._seasons import (
-    LATEST_PLAYOFF_SEASON,
-    LATEST_REGULAR_SEASON,
+    default_end_season,
     int_to_season,
+    season_for_date,
     season_to_int,
 )
 from nbatools.commands.freshness import compute_current_through, manifest_entry
@@ -404,6 +405,11 @@ def refresh_season(
 # ---------------------------------------------------------------------------
 
 
+def current_refresh_season(day: date | None = None) -> str:
+    """Return the season a current-season refresh should pull."""
+    return season_for_date(day or _seasons.today())
+
+
 def refresh_current_season(
     *,
     include_playoffs: bool = False,
@@ -424,23 +430,23 @@ def refresh_current_season(
         started_at=datetime.now().isoformat(timespec="seconds"),
     )
 
-    # Regular season
-    season = LATEST_REGULAR_SEASON
+    # The season today's date belongs to, not the newest season already
+    # loaded: otherwise a refresh never starts a new season. Before that
+    # season's first game the pull legitimately returns nothing.
+    season = current_refresh_season()
+    not_started = season_to_int(season) > season_to_int(default_end_season("Regular Season"))
     sr = refresh_season(
         season,
         "Regular Season",
-        allow_no_data_skip=False,
+        allow_no_data_skip=not_started,
         dry_run=dry_run,
     )
     pipeline.seasons.append(sr)
 
-    # Playoffs if requested
+    # Playoffs if requested: the same season's postseason, skipped until it exists.
     if include_playoffs:
-        playoff_season = LATEST_PLAYOFF_SEASON
-        # If the playoff season matches the regular season, refresh it.
-        # Otherwise, refresh the latest known playoff season.
         sr_playoffs = refresh_season(
-            playoff_season,
+            season,
             "Playoffs",
             allow_no_data_skip=True,
             dry_run=dry_run,
@@ -582,7 +588,7 @@ def pipeline_status(
     )
 
     if season is None:
-        season = LATEST_REGULAR_SEASON
+        season = default_end_season("Regular Season")
 
     manifest_row = manifest_entry(season, season_type)
 
