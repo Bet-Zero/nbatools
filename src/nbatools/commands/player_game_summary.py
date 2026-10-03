@@ -241,7 +241,7 @@ def build_result(
 
     if df is None:
         try:
-            df = load_player_games_for_seasons(seasons, season_type)
+            df = load_player_games_for_seasons(seasons, season_type, player=player)
         except FileNotFoundError:
             if clutch:
                 notes.append(build_clutch_filter_coverage_note("missing player game dataset"))

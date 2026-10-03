@@ -245,7 +245,7 @@ def build_result(
     period_filter_requested = quarter is not None or half is not None
 
     try:
-        base_df = load_player_games_for_seasons(seasons, season_type)
+        base_df = load_player_games_for_seasons(seasons, season_type, player=player)
     except FileNotFoundError:
         if clutch:
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))

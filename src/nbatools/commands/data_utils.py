@@ -986,8 +986,15 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
     )
 
 
-def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
+def load_player_games_for_seasons(
+    seasons: list[str], season_type: str, *, player: str | None = None
+) -> pd.DataFrame:
+    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns.
+
+    ``player`` keeps only the rows that player's selection could use from each
+    season before combining, so a career query never concatenates every
+    league-wide season frame. Callers still select the player afterwards.
+    """
     data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
     frames = [
@@ -998,6 +1005,12 @@ def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.Da
     if not frames:
         joined = ", ".join(seasons)
         raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
+    if player:
+        from nbatools.commands._player_identity import player_rows_prefilter
+
+        frames = player_rows_prefilter(frames, player)
+        if len(frames) > 1:
+            return pd.concat(frames, ignore_index=True)
     return _combine_cached_frames(frames)
 
 
