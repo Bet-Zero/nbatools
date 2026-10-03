@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import fcntl
 import hashlib
 import json
@@ -21,6 +22,7 @@ from nbatools.data_source import (
     ACTIVE_GENERATION_PATH,
     GENERATIONS_DIR,
     LEGACY_GENERATION,
+    PLAYER_NAMES_PATH,
     DataSourceError,
     validate_data_generation_id,
 )
@@ -351,7 +353,32 @@ def _build_staged_generation(source: Path, staged: Path, generation: str) -> Non
         destination = staged / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_path, destination)
+    _write_player_names(staged)
     _write_generation_manifest(staged, generation)
+
+
+def _write_player_names(stage: Path) -> Path | None:
+    """Derive the distinct player names from the staged player game stats."""
+    stats_dir = stage / "raw" / "player_game_stats"
+    paths = sorted(stats_dir.glob("*.csv")) if stats_dir.is_dir() else []
+    if not paths:
+        return None
+    names: set[str] = set()
+    for path in paths:
+        with path.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            if reader.fieldnames is None or "player_name" not in reader.fieldnames:
+                raise GenerationValidationError(
+                    f"Player game stats lack player_name: {path.relative_to(stage)}"
+                )
+            names.update(row["player_name"] for row in reader if row.get("player_name"))
+    destination = stage / PLAYER_NAMES_PATH
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["player_name"])
+        writer.writerows([name] for name in sorted(names))
+    return destination
 
 
 def _iter_source_files(source: Path) -> list[Path]:
@@ -360,7 +387,7 @@ def _iter_source_files(source: Path) -> list[Path]:
         relative = path.relative_to(source)
         if relative.parts and relative.parts[0] == GENERATIONS_DIR:
             continue
-        if relative in {ACTIVE_GENERATION_PATH, GENERATION_MANIFEST_PATH}:
+        if relative in {ACTIVE_GENERATION_PATH, GENERATION_MANIFEST_PATH, PLAYER_NAMES_PATH}:
             continue
         if any(part.startswith(".") or part == "__pycache__" for part in relative.parts):
             continue
