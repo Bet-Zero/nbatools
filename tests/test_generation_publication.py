@@ -136,7 +136,12 @@ def test_publication_derives_the_player_name_list(tmp_path: Path) -> None:
     )
     (stats / "2025-26_regular_season.csv").write_text(
         "game_id,player_id,player_name,pts\n2,203999,Nikola Jokić,28\n"
-        '2,1626168,"Bobby Portis Jr.",4\n'
+        '2,1626168,"Bobby Portis Jr.",4\n3,1628386,Jarrett Allen,9\n'
+    )
+    # Rows follow game order, not alphabetical order: the playoff file sorts
+    # before the regular season by name but is played after it.
+    (stats / "2025-26_playoffs.csv").write_text(
+        "game_id,player_id,player_name,pts\n8,1628386,Allen Jarrett,10\n"
     )
     # A stale copy in the source is replaced by the derived list.
     (data_dir / "metadata" / "player_names.csv").write_text("player_name\nStale\n")
@@ -146,12 +151,14 @@ def test_publication_derives_the_player_name_list(tmp_path: Path) -> None:
     generation_dir = data_dir / "generations" / "local-one"
     names = (generation_dir / data_source.PLAYER_NAMES_PATH).read_text(encoding="utf-8")
     assert names.splitlines() == [
-        "player_id,player_name,season",
-        "1626168,Bobby Portis,2024-25",
-        "1627750,Jamal Murray,2024-25",
-        "203999,Nikola Jokić,2024-25",
-        "1626168,Bobby Portis Jr.,2025-26",
-        "203999,Nikola Jokić,2025-26",
+        "player_id,player_name,season,first_seen",
+        "203999,Nikola Jokić,2024-25,0",
+        "1626168,Bobby Portis,2024-25,1",
+        "1627750,Jamal Murray,2024-25,2",
+        "203999,Nikola Jokić,2025-26,3",
+        "1626168,Bobby Portis Jr.,2025-26,4",
+        "1628386,Jarrett Allen,2025-26,5",
+        "1628386,Allen Jarrett,2025-26,6",
     ]
     manifest = _read_json(generation_dir / GENERATION_MANIFEST_PATH)
     assert "metadata/player_names.csv" in {item["path"] for item in manifest["files"]}
