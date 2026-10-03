@@ -20,8 +20,18 @@ SEASON = "2023-24"
 def _games(kind: str, column: str, value: str) -> pd.DataFrame:
     frame = data_read_csv(f"raw/{kind}/{SEASON}_regular_season.csv", dtype={"game_id": str})
     frame = frame[frame[column] == value].copy()
+    if kind == "player_game_stats":
+        # Player rows may omit the game result and venue; take them from the
+        # player's team row for the same game.
+        teams = data_read_csv(
+            f"raw/team_game_stats/{SEASON}_regular_season.csv", dtype={"game_id": str}
+        )[["game_id", "team_id", "wl", "is_home"]]
+        frame = frame.drop(columns=["wl", "is_home"], errors="ignore").merge(
+            teams, on=["game_id", "team_id"], how="left"
+        )
     for stat in ("pts", "reb", "ast", "plus_minus"):
-        frame[stat] = pd.to_numeric(frame[stat], errors="coerce")
+        if stat in frame.columns:
+            frame[stat] = pd.to_numeric(frame[stat], errors="coerce")
     frame["home"] = frame["is_home"].astype(str).str.lower().isin({"1", "true", "1.0"})
     frame["won"] = frame["wl"].eq("W")
     return frame
