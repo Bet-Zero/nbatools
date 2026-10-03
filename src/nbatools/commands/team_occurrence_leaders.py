@@ -21,6 +21,7 @@ to be true in a single game for it to count as a qualifying occurrence.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -187,7 +188,9 @@ def _flag_compound_conditions(df: pd.DataFrame, conditions: list[OccurrenceCondi
             # If stat doesn't exist, no rows can qualify for this condition
             return pd.Series(False, index=df.index)
 
-        values = pd.to_numeric(df[stat_col], errors="coerce").fillna(0)
+        # A missing value meets no bound: filling it with 0 made an unrecorded
+        # stat satisfy "0 turnovers".
+        values = pd.to_numeric(df[stat_col], errors="coerce")
 
         cond_mask = pd.Series(True, index=df.index)
         if cond.min_value is not None:
@@ -198,6 +201,18 @@ def _flag_compound_conditions(df: pd.DataFrame, conditions: list[OccurrenceCondi
         combined_mask &= cond_mask
 
     return combined_mask
+
+
+def _max_label(stat_name: str, max_value: float) -> str:
+    """Label an upper bound: exactly zero, "N or fewer", or "under N" (strict).
+
+    A strict "under 10" executes as 9.9999; truncating that printed "under_9".
+    """
+    if max_value == 0:
+        return f"{stat_name}_0"
+    if float(max_value).is_integer():
+        return f"{stat_name}_{int(max_value)}_or_fewer"
+    return f"{stat_name}_under_{math.ceil(max_value)}"
 
 
 def _build_event_label(
@@ -221,7 +236,7 @@ def _build_event_label(
             elif cond.min_value is not None:
                 parts.append(f"{stat_name}_{int(cond.min_value)}+")
             elif cond.max_value is not None:
-                parts.append(f"{stat_name}_under_{int(cond.max_value)}")
+                parts.append(_max_label(stat_name, cond.max_value))
         return "games_" + "_".join(parts)
 
     if stat and min_value is not None:

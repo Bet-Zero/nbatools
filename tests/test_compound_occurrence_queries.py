@@ -248,9 +248,11 @@ class TestBuildEventLabel:
         assert label == "triple doubles"
 
     def test_max_value_label(self):
+        # max_value=5 executes as tov <= 5; "under 5" (strict) arrives as 4.9999.
         conds = [OccurrenceCondition(stat="tov", max_value=5)]
-        label = _build_event_label(conditions=conds)
-        assert label == "games_tov_under_5"
+        assert _build_event_label(conditions=conds) == "games_tov_5_or_fewer"
+        conds = [OccurrenceCondition(stat="tov", max_value=5 - 0.0001)]
+        assert _build_event_label(conditions=conds) == "games_tov_under_5"
 
 
 # ===================================================================

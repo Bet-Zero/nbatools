@@ -1624,12 +1624,21 @@ def test_total_three_point_attempts_still_answers():
         "best 3pt percentage last month min 5 attempts",
     ],
 )
-def test_minimum_attempts_qualifier_still_refuses_generically(query):
-    """Narrowing the phrase must not let a min-attempts qualifier through."""
-    parsed = parse_query(query)
+def test_minimum_attempts_qualifier_is_executed_not_dropped(query):
+    """A min-attempts qualifier is executed on the rate board, never dropped.
 
-    assert parsed["route"] is None, query
-    assert "unsupported_concept" in (parsed["route_kwargs"].get("unsupported_filters") or []), query
+    These refused before the player shooting-rate leaderboard could apply an
+    attempt minimum (B1). They now rank three-point percentage among players
+    who meet it; routes that cannot apply it still refuse
+    (``test_attempt_minimum_outside_player_rates_still_refuses``).
+    """
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+
+    assert parsed["route"] == "season_leaders", query
+    assert not kwargs.get("unsupported_filters"), query
+    assert kwargs["stat"] == "fg3_pct", query
+    assert kwargs["min_attempts"] in (4.0, 5.0), query
 
 
 # ---------------------------------------------------------------------------
