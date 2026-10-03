@@ -505,9 +505,23 @@ _STREAK_WORD = re.compile(r"\b(streak|straight|consecutive|in\s+a\s+row)\b")
 # "current"/"active" asks for the streak alive at the latest game, not a
 # season-scope word ("current season").
 _CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
+# The streak length, never a game condition: "5 straight games with 30",
+# "3 straight 30 point games", "5 games in a row", "a 3 game winning streak".
+# Each match spans only the length words, so removing it keeps the condition.
 _STREAK_LENGTH = re.compile(
-    r"\b(\d+)\s+(?:straight|consecutive)\s+games?\b|\b(\d+)\s+games?\s+in\s+a\s+row\b"
+    r"\b(\d+)\s+(?:straight|consecutive)\b(?=\s+(?:[\w+-]+\s+){0,3}?games?\b)"
+    r"|\b(\d+)\s+games?\s+in\s+a\s+row\b"
+    r"|\b(\d+)[- ]games?\b(?=\s+(?:[\w+-]+\s+){0,3}?streak)"
 )
+
+
+def _streak_length(normalized: str) -> tuple[int | None, str]:
+    """The stated streak length and the text with the length words removed."""
+    match = _STREAK_LENGTH.search(normalized)
+    if match is None:
+        return None, normalized
+    length = int(next(group for group in match.groups() if group))
+    return length, normalized[: match.start()] + " " + normalized[match.end() :]
 
 
 def _with_streak_mode(request: dict | None, normalized: str) -> dict | None:
@@ -527,6 +541,15 @@ def extract_streak_request(text: str) -> dict | None:
     request = _generic_streak_request(normalized, compound_only=True)
     if request is None:
         request = _extract_streak_request_patterns(normalized)
+        length, without_length = _streak_length(normalized)
+        if request is not None and length and request.get("min_streak_length") is None:
+            # A fixed pattern read the condition but not a length stated before
+            # it ("3 consecutive 30 point games", "a 3 game 20 point streak").
+            request = _extract_streak_request_patterns(without_length) or _generic_streak_request(
+                normalized
+            )
+            if request is not None:
+                request = {**request, "min_streak_length": length, "longest": False}
     if request is None:
         request = _generic_streak_request(normalized)
     return _with_streak_mode(request, normalized)
@@ -553,11 +576,9 @@ def _generic_streak_request(normalized: str, compound_only: bool = False) -> dic
         "min_streak_length": None,
         "longest": bool(re.search(r"\b(?:longest|most\s+consecutive)\b", normalized)),
     }
-    length = _STREAK_LENGTH.search(normalized)
-    if length:
-        request["min_streak_length"] = int(length.group(1) or length.group(2))
-    # The streak length is not a game condition ("5 straight games with 30").
-    condition_text = _STREAK_LENGTH.sub(" games ", normalized) if length else normalized
+    request["min_streak_length"], condition_text = _streak_length(normalized)
+    if "in a row" in normalized and condition_text != normalized:
+        condition_text += " games"
 
     compound = extract_compound_occurrence_event(condition_text)
     if compound and len(compound) >= 2:
@@ -750,7 +771,7 @@ def extract_team_streak_request(text: str) -> dict | None:
             "stat": None,
             "min_value": None,
             "max_value": None,
-            "min_streak_length": None,
+            "min_streak_length": _streak_length(normalized)[0],
             "longest": True,
         }
     return _with_streak_mode(request, normalized)

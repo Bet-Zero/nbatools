@@ -252,3 +252,40 @@ def test_three_season_streak_window_stays_on_streak_routes():
     assert result.metadata["route"] != "player_streak_finder"
     (summary,) = result.result.to_dict()["sections"]["summary"]
     assert summary["season_start"] == summary["season_end"] == SEASON
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "who has a current 3 straight games with 20 points this season",
+        "who is on a current 3 game 20 point streak this season",
+    ],
+)
+def test_league_current_streaks_keep_the_stated_length(query):
+    runs = _per_entity(_games("player_game_stats", SEASON), "player_name", lambda r: r.pts >= 20)
+    expected = sorted((current for _, current in runs.values() if current >= 3), reverse=True)
+    rows, _ = _streaks(query)
+    assert [row["streak_length"] for row in rows] == expected
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "players with 3 straight 30 point games this season",
+        "who had 3 consecutive 30 point games this season",
+        "who has 3 straight games with 30 points this season",
+    ],
+)
+def test_length_before_the_condition_is_the_streak_length(query):
+    runs = _per_entity(_games("player_game_stats", SEASON), "player_name", lambda r: r.pts >= 30)
+    expected = sorted((longest for longest, _ in runs.values() if longest >= 3), reverse=True)
+    rows, _ = _streaks(query)
+    assert [row["streak_length"] for row in rows] == expected[:10]
+    assert all(row["condition"] == "pts>=30" for row in rows)
+
+
+def test_team_game_count_in_a_winning_streak_is_its_length():
+    runs = _per_entity(_games("team_game_stats", SEASON), "team_name", lambda r: r.wl == "W")
+    expected = sorted((current for _, current in runs.values() if current >= 3), reverse=True)
+    rows, _ = _streaks(f"which teams have a current 3 game winning streak in {SEASON}")
+    assert [row["streak_length"] for row in rows] == expected

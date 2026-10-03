@@ -332,7 +332,8 @@ def build_result(
     # A current streak is reported whatever its length; "current 5 straight"
     # asks how long the live run is, so a shorter one is said, not dropped.
     current_short_of = None
-    if current and min_streak_length is not None:
+    if current and min_streak_length is not None and player is not None:
+        # One player's live run: say how long it is even when it is short.
         if rows and rows[0]["streak_length"] < min_streak_length:
             current_short_of = min_streak_length
     elif min_streak_length is not None:
