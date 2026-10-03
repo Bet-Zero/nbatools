@@ -216,6 +216,21 @@ def test_r2_legacy_layout_is_not_cached(tmp_path: Path, monkeypatch: pytest.Monk
     assert data_exists("raw/sample.csv")
 
 
+def test_r2_exists_reads_a_malformed_manifest_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    objects = _generation_objects("gen-a", {"raw/sample.csv": b"x"}, manifest=False)
+    manifest_key = "generations/gen-a/metadata/generation_manifest.json"
+    objects[manifest_key] = b'{"files": ["raw/sample.csv"]}'
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    with data_generation_context():
+        for _ in range(3):
+            assert data_exists("raw/sample.csv")
+
+    assert client.get_calls.count(manifest_key) == 1
+    assert client.head_calls == ["generations/gen-a/raw/sample.csv"]
+
+
 def test_r2_exists_does_not_remember_a_failed_manifest_read(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
