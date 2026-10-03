@@ -72,6 +72,10 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "fixture_data: run against the committed synthetic query fixture",
     )
+    config.addinivalue_line(
+        "markers",
+        "served_seasons: read the latest season from the data under test",
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -79,6 +83,24 @@ def _skip_needs_data(request: pytest.FixtureRequest) -> None:
     marker = request.node.get_closest_marker("needs_data")
     if marker is not None and not _has_local_data():
         pytest.skip("Local CSV data files not available")
+
+
+@pytest.fixture(autouse=True)
+def _pin_latest_season_for_data_free_tests(request: pytest.FixtureRequest, monkeypatch) -> None:
+    """Keep data-free tests on the fallback latest season.
+
+    The latest season follows whatever games the data root serves, so a local
+    ``data/`` holding a newer season would otherwise move "this season" under
+    tests that assert the fallback constants.
+    """
+    if any(
+        request.node.get_closest_marker(name)
+        for name in ("needs_data", "fixture_data", "served_seasons")
+    ):
+        return
+    from nbatools.commands import _seasons
+
+    monkeypatch.setattr(_seasons, "latest_served_season", lambda season_type: None)
 
 
 # ---------------------------------------------------------------------------

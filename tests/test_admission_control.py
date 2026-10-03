@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+from datetime import date
 from http import HTTPStatus
 
 import pytest
@@ -16,6 +17,7 @@ from nbatools.admission_control import (
     validate_season_span,
 )
 from nbatools.api import app
+from nbatools.commands import _seasons
 from nbatools.commands.structured_results import NoResult
 from nbatools.query_service import QueryResult
 
@@ -85,11 +87,35 @@ def test_full_supported_30_season_range_is_allowed() -> None:
         ("/query", {"query": "top scorers over the last 31 seasons"}),
     ],
 )
-def test_more_than_30_resolved_seasons_is_rejected(path, payload) -> None:
+def test_more_than_30_resolved_seasons_is_rejected(path, payload, monkeypatch) -> None:
+    # During 2025-26 the supported range is 1996-97..2025-26, 30 seasons.
+    monkeypatch.setattr(_seasons, "today", lambda: date(2026, 3, 1))
     with pytest.raises(AdmissionRejected) as caught:
         validate_season_span(path, payload)
     assert caught.value.status == HTTPStatus.UNPROCESSABLE_ENTITY
     assert caught.value.error == "season_span_exceeded"
+
+
+@pytest.mark.parametrize(
+    ("path", "payload"),
+    [
+        (
+            "/structured-query",
+            {
+                "route": "season_leaders",
+                "kwargs": {"start_season": "1996-97", "end_season": "2026-27"},
+            },
+        ),
+        ("/query", {"query": "top scorers since 1996"}),
+        ("/query", {"query": "top scorers over the last 31 seasons"}),
+    ],
+)
+def test_supported_range_grows_when_a_new_season_starts(path, payload, monkeypatch) -> None:
+    # In 2026-27 the full range 1996-97..2026-27 is 31 seasons and stays admitted.
+    monkeypatch.setattr(_seasons, "today", lambda: date(2026, 11, 1))
+    validate_season_span(path, payload)
+    with pytest.raises(AdmissionRejected):
+        validate_season_span("/query", {"query": "top scorers over the last 32 seasons"})
 
 
 def test_shared_query_rate_limit_returns_retry_after() -> None:
