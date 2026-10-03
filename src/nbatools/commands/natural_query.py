@@ -48,6 +48,7 @@ from nbatools.commands._leaderboard_eligibility import (
     anchored_leaderboard_metric,
     assess_leaderboard_request,
     requested_leaderboard_metrics,
+    season_leaderboard_stat,
     unrouted_ranking_reason,
 )
 from nbatools.commands._leaderboard_eligibility import (
@@ -1740,6 +1741,25 @@ def _apply_route_conditions(parsed: dict, route: str, route_kwargs: dict) -> Non
     parsed["max_value"] = primary.get("max_value")
 
 
+def _ranks_lower_is_better(stat: str | None) -> bool:
+    """True for a lower-is-better metric, in either total or per-game form.
+
+    "best total turnover teams" ranks ``tov_total``; it is still turnovers, so
+    "best" still means fewest.
+    """
+    if not stat:
+        return False
+    base = stat.removesuffix("_total").removesuffix("_per_game")
+    return bool({stat, base, f"{base}_per_game"} & LOWER_IS_BETTER_STATS)
+
+
+def _is_aggregation_sibling(ranked: str | None, detected: str | None) -> bool:
+    """True when *ranked* is *detected* in an explicit total/per-game form."""
+    if not ranked or not detected or ranked == detected:
+        return False
+    return ranked in (f"{detected}_total", f"{detected}_per_game")
+
+
 def _finalize_route(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     season = parsed["season"]
@@ -2922,7 +2942,7 @@ def _finalize_route(parsed: dict) -> dict:
         )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": anchored_leaderboard_metric(parsed),
+            "stat": season_leaderboard_stat(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -2971,7 +2991,7 @@ def _finalize_route(parsed: dict) -> dict:
         )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": anchored_leaderboard_metric(parsed),
+            "stat": season_leaderboard_stat(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -3016,7 +3036,7 @@ def _finalize_route(parsed: dict) -> dict:
         route = "season_leaders"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": anchored_leaderboard_metric(parsed),
+            "stat": season_leaderboard_stat(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -3286,10 +3306,10 @@ def _finalize_route(parsed: dict) -> dict:
         # But "worst defensive teams" → def_rating descending (higher = worse)
         if team_leaderboard_intent:
             # Non-None: the eligibility gate above refuses an unanchored request.
-            leaderboard_stat = anchored_leaderboard_metric(parsed)
+            leaderboard_stat = season_leaderboard_stat(parsed)
 
             # Semantic ascending for lower-is-better stats
-            if leaderboard_stat in LOWER_IS_BETTER_STATS:
+            if _ranks_lower_is_better(leaderboard_stat):
                 if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
                     lb_ascending = True
                 elif re.search(r"\b(worst|most|highest)\b", q):
@@ -3316,7 +3336,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "last_n": last_n,
             }
         elif "team" in q or "teams" in q:
-            leaderboard_stat = anchored_leaderboard_metric(parsed)
+            leaderboard_stat = season_leaderboard_stat(parsed)
             route = "season_team_leaders"
             route_kwargs = {
                 "season": lb_season,
@@ -3337,10 +3357,10 @@ def _finalize_route(parsed: dict) -> dict:
                 "last_n": last_n,
             }
         else:
-            leaderboard_stat = anchored_leaderboard_metric(parsed)
+            leaderboard_stat = season_leaderboard_stat(parsed)
 
             # Semantic ascending for lower-is-better stats
-            if leaderboard_stat in LOWER_IS_BETTER_STATS:
+            if _ranks_lower_is_better(leaderboard_stat):
                 if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
                     lb_ascending = True
                 elif re.search(r"\b(worst|most|highest)\b", q):
@@ -3855,6 +3875,12 @@ def _finalize_route(parsed: dict) -> dict:
     }:
         out["season_type"] = "Playoffs"
     if route == "season_team_leaders" and route_kwargs.get("stat"):
+        out["stat"] = route_kwargs["stat"]
+    elif route == "season_leaders" and _is_aggregation_sibling(
+        route_kwargs.get("stat"), out.get("stat")
+    ):
+        # "total rebounds leaders" ranks `reb_total`; publishing the detector's
+        # `reb` would name the per-game board that did not run.
         out["stat"] = route_kwargs["stat"]
     out["intent"] = route_to_intent(route, count_intent=count_intent)
 

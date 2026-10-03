@@ -127,6 +127,32 @@ ALLOWED_STATS = {
     "losses": "losses",
 }
 
+# The other aggregation of each additive count, by its column name, so a
+# question that asks for it ("total rebounds leaders", "personal fouls per game
+# leaders") ranks that column rather than being refused. Percentages and rates
+# have no such sibling: a season total of a percentage is not a statistic.
+_ADDITIVE_COLUMNS = {
+    column
+    for column in ALLOWED_STATS.values()
+    if column.endswith(("_per_game", "_total")) and not column.startswith("games")
+}
+for _column in sorted(_ADDITIVE_COLUMNS):
+    _base = _column.removesuffix("_per_game").removesuffix("_total")
+    for _sibling in (f"{_base}_per_game", f"{_base}_total"):
+        ALLOWED_STATS.setdefault(_sibling, _sibling)
+del _column, _base, _sibling
+
+
+def _fill_aggregation_siblings(df: pd.DataFrame) -> pd.DataFrame:
+    """Derive the missing per-game or total column of each additive count."""
+    for column in sorted(_ADDITIVE_COLUMNS):
+        base = column.removesuffix("_per_game").removesuffix("_total")
+        total, per_game = f"{base}_total", f"{base}_per_game"
+        if total in df.columns and per_game not in df.columns:
+            df[per_game] = df[total] / df["games_played"]
+    return df
+
+
 DEFAULT_MIN_GAMES = 1
 PERCENTAGE_STATS = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
 RECORD_STATS = {"wins", "losses", "win_pct"}
@@ -504,7 +530,7 @@ def build_result(
             notes=["No games matched the specified filters"],
         )
 
-    df = _build_from_game_logs(basic)
+    df = _fill_aggregation_siblings(_build_from_game_logs(basic))
 
     game_filter_active = home_only or away_only or wins_only or losses_only or last_n is not None
     if not multi_season and not date_window_active and not opponent and not game_filter_active:
