@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unicodedata
+from functools import lru_cache
 
 import pandas as pd
 
@@ -114,11 +115,23 @@ _DASH_TRANSLATION = str.maketrans(
 )
 
 
+@lru_cache(maxsize=8192)
 def _player_name_key(value: object) -> str:
     text = str(value).translate(_DASH_TRANSLATION)
     normalized = unicodedata.normalize("NFKD", text)
     stripped = "".join(ch for ch in normalized if not unicodedata.combining(ch))
     return " ".join(stripped.casefold().split())
+
+
+def _player_name_mask(names: pd.Series, player: str) -> pd.Series:
+    """Rows whose player name normalizes to ``player``'s key.
+
+    Normalizes each distinct name once (a career scan has ~1.5M rows but
+    only a few thousand names) instead of once per row.
+    """
+    key = _player_name_key(player)
+    matches = [name for name in names.unique() if _player_name_key(name) == key]
+    return names.isin(matches)
 
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
@@ -161,8 +174,7 @@ def _apply_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if player:
-        player_key = _player_name_key(player)
-        out = out[out["player_name"].map(_player_name_key) == player_key].copy()
+        out = out[_player_name_mask(out["player_name"], player)].copy()
 
     if team:
         team_upper = team.upper()
@@ -301,9 +313,8 @@ def build_result(
         # some seasons have zero matching filtered games.
         _player_arc_seasons: list[str] | None = None
         if career_intent and player:
-            _pk = _player_name_key(player)
             _player_arc_seasons = sorted(
-                df[df["player_name"].map(_player_name_key) == _pk]["season"].unique().tolist()
+                df[_player_name_mask(df["player_name"], player)]["season"].unique().tolist()
             )
 
         if last_n is not None and last_n_scope == "window":
