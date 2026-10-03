@@ -79,7 +79,7 @@ card, and the frontend suppresses any note that names one.
 | --- | --- |
 | `leaderboard_metric_required` | a ranking was requested and named no metric |
 | `leaderboard_multiple_metrics_unsupported` | more than one distinct metric was named |
-| `leaderboard_aggregation_unsupported` | a season total was asked for a metric ranked per game |
+| `leaderboard_aggregation_unsupported` | a total or per-game figure was asked for a rate or other metric that has no such form |
 | `leaderboard_metric_unavailable_for_scope` | the named metric cannot be computed for the requested window |
 | `leaderboard_request_unclear` | part of the question is outside the stat-shaped grammar |
 
@@ -115,8 +115,10 @@ representation is on offer; the wording decides which one was asked for.
 Compatibility is symmetric, metric-specific **and route-specific**. Two things
 are decided independently - what the question asked for, and what the selected
 *route* would actually produce for that metric - and an explicit request must
-match. Asking for a total of a per-game column and asking for a per-game figure
-of a total column are the same mistake pointing opposite ways, and both refuse.
+match. Answering a total request with a per-game column, or a per-game request
+with a total column, is the same mistake pointing opposite ways. Where the
+season leaderboard has the asked-for column - every additive count has both -
+it ranks that column instead; where it does not, the request refuses.
 
 ### The backing representation belongs to the route, not the metric name
 
@@ -165,8 +167,8 @@ per-game signal and stays a season average.
 
 | Backing | Columns | `total X` | `X per game` | `average X` | rate wording | `in a game` |
 | --- | --- | --- | --- | --- | --- | --- |
-| `total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers | **refuses** | **refuses** | refuses | refuses |
-| `per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m`, `oreb`, `dreb`, `plus_minus`, `opponent_pts` | **refuses** | answers | answers | refuses | refuses |
+| `total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers | answers (`<x>_per_game`) | answers (`<x>_per_game`) | refuses | refuses |
+| `per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m`, `oreb`, `dreb`, `plus_minus`, `opponent_pts` | answers (`<x>_total`) | answers | answers | refuses | refuses |
 | `rate` | `*_pct`, `*_rating`, `pace` | refuses | **refuses** | answers | answers | refuses |
 | `count` | `games_played`, occurrence counts, `wins`, `losses` | refuses | refuses | refuses | refuses | refuses |
 
@@ -183,8 +185,17 @@ and `highest scoring game` still ranks a raw game. A column with no
 classification would silently pass every check, so every column in both season
 leaderboard tables is classified and a test fails if a new one is not.
 
-Team season leaderboards rank no season totals at all, so every team total
-refuses.
+An additive count asked for in the aggregation its board does not rank by
+default ranks its sibling column: `total rebounds leaders` ranks `reb_total`,
+`minutes per game leaders` and `average minutes leaders` rank
+`minutes_per_game`, and `team total rebounds leaders` ranks the team
+`reb_total`. Both season leaderboards carry `<x>_total` and `<x>_per_game` for
+every additive count, deriving the per-game figure from the total over games
+played, and the published `stat` is the column that ran. Rates and
+percentages have neither form, so `total true shooting percentage leaders` and
+`true shooting percentage per game leaders` still refuse. A lower-is-better
+count stays lower-is-better in either form: `best total turnover teams` ranks
+the fewest.
 
 Because the metric decides which column is selected, the route vocabulary and
 the detector vocabulary have to agree on every form. A form the route documents but the detector cannot

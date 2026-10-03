@@ -514,7 +514,8 @@ def build_team_record_result(
             parts.append(f"<= {max_value}")
         caveats.append(" ".join(parts))
     if last_n is not None:
-        caveats.append(f"last {last_n} games (played {len(df)})")
+        noun = "game" if last_n == 1 else "games"
+        caveats.append(f"last {last_n} {noun} (played {len(df)})")
     if start_date or end_date:
         dp = []
         if start_date:

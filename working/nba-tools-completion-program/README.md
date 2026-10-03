@@ -491,8 +491,8 @@ run IDs and numerical evidence belong in the PR/queue.
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
 | A1 | First slice merged (#315); R2 runs 37098675951 and 37099947680 passed, deployed check open; A1b open | A1b: `player_id` selection for identical names, resolver for lineup/legacy alias scans |
-| A2 | Team last-N records in PR #316 (draft); rest open | #316: refresh the `warriors_last_10_record_wave5` frontend-copy row from its R2 Raw QA artifact, independent check, merge. Then the remaining A2 acceptance (team last-N summaries, explicit date ranges, last N meetings vs overall) |
-| B1 | Open | Reuse A sample contract; complete operation/basis and compound counts |
+| A2 | Team last-N records merged (#316). Explicit date windows in #317: from/to, between/and, since/after (spans every season through today), before/until/through (open start within the date's season), lone ISO dates, cross-season ranges; impossible dates refuse. Real-data tests passed in targeted R2 run 37106273170 | "In the last N" vs "last N with a condition"; last N meetings vs last N overall; team last-N summaries beyond the record |
+| B1 | Totals vs per-game leaderboards in #317 (`<stat>_total` / `<stat>_per_game` siblings; rates still refuse). Real-data Raw QA 5/5 and boundary tests passed (R2 runs 37105803231, 37106273170) | Compound occurrence leaderboards ("most 30 point 10 rebound games"), "10+ assists and 0 turnovers", qualified rate leaders ("best three point percentage minimum 100 attempts"), "most games played"; totals still use the 20-game floor |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
 | D1 / D2 | Open | O1 feasibility first; each source-backed slice then delivers independently |
 | O1 | Open; parallel | #311 confirmation passed in the R2 runs above. Read the active generation manifest for the section 2a data view |
@@ -508,8 +508,8 @@ and other streams send changes to that owner rather than editing it.
 | Stream | Packages | Owns | Starts |
 | --- | --- | --- | --- |
 | 1. Identity | A1b (`player_id` selection for identical names, lineup "with X and Y" and legacy alias scans through the resolver) | `entity_resolution.py`, `_matchup_utils.py`, lineup scans | Now |
-| 2. Samples and combinations | A2 rest (explicit dates, "in the last N" vs "last N with a condition", last N meetings), then C1 | `_date_utils.py`, `_parse_helpers.py` season/date helpers, `data_utils.select_most_recent_games`, `team_record.py`, summaries/splits | Now; C1 after B1's operation contract |
-| 3. Operations and rankings | B1 (totals vs per game, compound occurrence rankings, "10+ assists and 0 turnovers", qualified rate leaders, games played), then C2 | `_leaderboard_eligibility.py`, `season_leaders.py`, `season_team_leaders.py`, occurrence leaders, `_compound_event_authorization.py`, finders | Now |
+| 2. Samples and combinations | A2 rest ("in the last N" vs "last N with a condition", last N meetings), then C1 | `_date_utils.py`, `_parse_helpers.py` season/date helpers, `data_utils.select_most_recent_games`, `team_record.py`, summaries/splits | Now; C1 after B1's operation contract |
+| 3. Operations and rankings | B1 (compound occurrence rankings, "10+ assists and 0 turnovers", qualified rate leaders, games played), then C2 | `_leaderboard_eligibility.py`, `season_leaders.py`, `season_team_leaders.py`, occurrence leaders, `_compound_event_authorization.py`, finders | Now |
 | 4. Data and runtime | O1 (generation manifest, data view in section 2a, deployed checks), O2 (calendar/refresh, performance), then D1/D2 source slices | `data_source.py`, pipelines, workflows, deployment docs | Now; D after O1 |
 
 Shared files and owners: `natural_query.py` routing (stream 3; others keep

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from calendar import monthcalendar, monthrange
+from datetime import date, timedelta
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -146,31 +147,157 @@ def _extract_since_explicit_calendar_date(
     return start, end
 
 
-def season_for_explicit_month_year(text: str) -> str | None:
-    """Return the NBA season containing an explicit ``<month> <year>`` phrase.
+_ISO_DATE = r"(?:19|20)\d{2}-\d{2}-\d{2}"
 
-    "in January 2024" names a calendar window, not a season, but that window
-    only exists inside the 2023-24 season. Callers use this so an explicit year
-    moves the season off its default; otherwise the default (current) season
-    gets filtered by a window it does not overlap and returns nothing.
 
-    Returns None when the text names no explicit four-digit year.
-    """
+def _date_token_pattern() -> str:
+    """One explicit calendar date: ISO ``2025-11-01`` or ``November 1[, 2025]``."""
     month_pattern = _month_name_pattern()
-    m = re.search(
-        rf"\b({month_pattern})\.?(?:\s+\d{{1,2}}(?:st|nd|rd|th)?)?"
-        rf"(?:,?\s+((?:19|20)\d{{2}}))\b",
-        text,
+    return (
+        rf"(?:{_ISO_DATE}"
+        rf"|(?:{month_pattern})\.?\s+\d{{1,2}}(?:st|nd|rd|th)?(?:,?\s+(?:19|20)\d{{2}})?)"
+    )
+
+
+def _parse_date_token(token: str, season: str | None) -> str | None:
+    """Return the ISO date a ``_date_token_pattern`` match names, or None if invalid."""
+    token = token.strip()
+    if re.fullmatch(_ISO_DATE, token):
+        try:
+            return date.fromisoformat(token).isoformat()
+        except ValueError:
+            return None
+    m = re.fullmatch(
+        rf"({_month_name_pattern()})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?(?:,?\s+((?:19|20)\d{{2}}))?",
+        token,
     )
     if not m:
         return None
-
     month_num = MONTH_NAME_TO_NUM[m.group(1)]
-    year = int(m.group(2))
+    year = int(m.group(3)) if m.group(3) else _resolve_year_for_month_in_season(season, month_num)
+    try:
+        return date(year, month_num, int(m.group(2))).isoformat()
+    except ValueError:
+        return None
+
+
+def _extract_explicit_date_range(
+    text: str,
+    season: str | None,
+    anchor_date: pd.Timestamp,
+) -> tuple[str | None, str | None]:
+    """Explicit two-ended ranges, ``since <date>`` and lone ISO dates.
+
+    "from November 1 to December 15" must bound both ends; the single-date
+    matcher alone read it as November 1 only.
+    """
+    token = _date_token_pattern()
+    m = re.search(
+        rf"\b(?:from\s+({token})\s+(?:to|through|thru|until|till)"
+        rf"|between\s+({token})\s+and)\s+({token})(?!\d)",
+        text,
+    )
+    if m:
+        start = _parse_date_token(m.group(1) or m.group(2), season)
+        end = _parse_date_token(m.group(3), season)
+        if start and end:
+            return start, end
+        return None, None
+
+    m = re.search(rf"\b(?:since|after|post)\s+({token})(?!\d)", text)
+    if m and (re.fullmatch(_ISO_DATE, m.group(1)) or re.search(r"\d{4}$", m.group(1))):
+        start = _parse_date_token(m.group(1), season)
+        return (start, anchor_date.date().isoformat()) if start else (None, None)
+
+    # An open start: "before" excludes the named day, "until"/"through" keep it.
+    # Without these the lone-date fallbacks answered about that single day.
+    m = re.search(rf"\b(before|prior\s+to|until|till|through|thru|up\s+to)\s+({token})(?!\d)", text)
+    if m:
+        end = _parse_date_token(m.group(2), season)
+        if end is None:
+            return None, None
+        if m.group(1) == "before" or m.group(1).startswith("prior"):
+            end = (date.fromisoformat(end) - timedelta(days=1)).isoformat()
+        return None, end
+
+    m = re.search(rf"\b({_ISO_DATE})\b", text)
+    if m:
+        value = _parse_date_token(m.group(1), season)
+        return value, value
+
+    return None, None
+
+
+def _season_for_date(year: int, month_num: int) -> str:
     # NBA seasons span two calendar years: October onward opens the season
     # named for that year, January-September closes the previous one.
     start_year = year if month_num >= 10 else year - 1
     return f"{start_year}-{str(start_year + 1)[-2:]}"
+
+
+def seasons_for_explicit_dates(text: str) -> tuple[str | None, str | None]:
+    """Return the first and last NBA seasons named by year-bearing dates.
+
+    Covers ISO dates and ``<month> [day] <year>`` phrases. Callers pin the
+    season (or a season span, when the dates cross a season boundary) from
+    these so the date window is not applied to a default season it misses.
+    """
+    month_pattern = _month_name_pattern()
+    seasons: list[str] = []
+    for m in re.finditer(
+        rf"\b(?:((?:19|20)\d{{2}})-(\d{{2}})-\d{{2}}"
+        rf"|({month_pattern})\.?(?:\s+\d{{1,2}}(?:st|nd|rd|th)?)?,?\s+((?:19|20)\d{{2}}))\b",
+        text,
+    ):
+        if m.group(1):
+            month_num = int(m.group(2))
+            if not 1 <= month_num <= 12:
+                continue
+            seasons.append(_season_for_date(int(m.group(1)), month_num))
+        else:
+            seasons.append(_season_for_date(int(m.group(4)), MONTH_NAME_TO_NUM[m.group(3)]))
+    if not seasons:
+        return None, None
+    return min(seasons), max(seasons)
+
+
+def explicit_date_is_open_ended(text: str) -> bool:
+    """True when a year-bearing date opens a window that runs to today.
+
+    "since 2025-03-01" or "since March 2025" must load every season from that
+    date's season to the latest one, not only the season the date falls in.
+    """
+    month_pattern = _month_name_pattern()
+    return bool(
+        re.search(
+            rf"\b(?:since|after|post)\s+(?:(?:19|20)\d{{2}}-\d{{2}}-\d{{2}}"
+            rf"|(?:{month_pattern})\.?\s+(?:\d{{1,2}}(?:st|nd|rd|th)?,?\s+)?(?:19|20)\d{{2}})\b",
+            text,
+        )
+    )
+
+
+def invalid_explicit_date(text: str) -> str | None:
+    """Return a named calendar date that does not exist, such as "2025-02-30".
+
+    An impossible date must not silently fall back to the whole season.
+    """
+    for m in re.finditer(rf"\b({_ISO_DATE})\b", text):
+        try:
+            date.fromisoformat(m.group(1))
+        except ValueError:
+            return m.group(1)
+    month_pattern = _month_name_pattern()
+    for m in re.finditer(
+        rf"\b({month_pattern})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?(?:,?\s+((?:19|20)\d{{2}}))?\b",
+        text,
+    ):
+        month_num = MONTH_NAME_TO_NUM[m.group(1)]
+        # Without a year, judge against a leap year so "February 29" stands.
+        year = int(m.group(3)) if m.group(3) else 2024
+        if not 1 <= int(m.group(2)) <= monthrange(year, month_num)[1]:
+            return m.group(0).strip()
+    return None
 
 
 def uses_fuzzy_date_term(text: str) -> bool:
@@ -216,6 +343,10 @@ def extract_date_range(
             return start, end
 
     month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
+
+    range_start, range_end = _extract_explicit_date_range(text, season, anchor)
+    if range_start or range_end:
+        return range_start, range_end
 
     since_explicit_start, since_explicit_end = _extract_since_explicit_calendar_date(
         text,

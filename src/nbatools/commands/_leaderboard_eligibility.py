@@ -405,6 +405,38 @@ def _aggregation_supported(
     return resolve_requested_aggregation(requested, backing) == backing
 
 
+def aggregation_variant(text: str, metric: str | None, *, team_scope: bool) -> str | None:
+    """The season-leaderboard key that ranks *metric* in the asked aggregation.
+
+    "total rebounds leaders" names rebounds, whose leaderboard column is
+    ``reb_per_game``; the season total is ``reb_total``. Returns that sibling
+    key when the question explicitly asks for the other of total/per-game and
+    the leaderboard has it, else ``None`` (the metric is ranked as it is, or the
+    mismatch is refused). Rates never have a sibling.
+    """
+    if not metric:
+        return None
+    requested = detect_requested_aggregation(text)
+    backing_column = _leaderboard_column(metric, team_scope=team_scope)
+    backing = column_aggregation(backing_column)
+    if backing not in (TOTAL, PER_GAME) or requested not in (TOTAL, PER_GAME, SOFT_AVERAGE):
+        return None
+    wanted = resolve_requested_aggregation(requested, backing)
+    if wanted == backing or wanted not in (TOTAL, PER_GAME):
+        return None
+    base = backing_column.removesuffix("_per_game").removesuffix("_total")
+    sibling = f"{base}_{'total' if wanted == TOTAL else 'per_game'}"
+    return sibling if _leaderboard_column(sibling, team_scope=team_scope) == sibling else None
+
+
+def season_leaderboard_stat(parsed: dict) -> str | None:
+    """The stat a season leaderboard ranks: the anchored metric, in the asked aggregation."""
+    metric = anchored_leaderboard_metric(parsed)
+    text = parsed.get("normalized_query") or ""
+    team_scope = bool(parsed.get("team_leaderboard_intent")) or "team" in text
+    return aggregation_variant(text, metric, team_scope=team_scope) or metric
+
+
 def ranks_a_season_total(metric: str, *, team_scope: bool) -> bool:
     """True when this metric's leaderboard column already is a season total."""
     return metric_aggregation(metric, team_scope=team_scope) == TOTAL
@@ -800,6 +832,8 @@ def assess_leaderboard_request(
             authorized=False, reason=MULTIPLE_METRICS, requested_metrics=requested
         )
 
+    if metric is None and ranking_mode == SEASON_LEADERBOARD:
+        metric = season_leaderboard_stat(parsed)
     metric = metric or anchored_leaderboard_metric(parsed)
     if metric is None:
         return LeaderboardEligibility(

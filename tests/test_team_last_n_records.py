@@ -102,6 +102,15 @@ def test_window_larger_than_the_season_says_how_many_games_were_played():
     assert "last 500 games (played 60)" in result.result.to_dict()["caveats"]
 
 
+def test_single_game_window_caveat_is_singular():
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query("Knicks record last 1 game")
+    assert result.result_status == "ok", result.result_reason
+    assert _answer(result)["game_ids"] == _record(_team_games("NYK")[:1])["game_ids"]
+    assert "last 1 game (played 1)" in result.result.to_dict()["caveats"]
+
+
 def test_record_summary_and_structured_request_select_the_same_games():
     from nbatools.query_service import execute_natural_query, execute_structured_query
 

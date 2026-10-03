@@ -9,6 +9,15 @@ These tests pin the replacement policy: the metric comes from the query or the
 question is refused, the aggregation the user asked for is the one that runs,
 and wording outside the stat-shaped grammar is refused rather than dropped.
 
+"The aggregation the user asked for is the one that runs" is an answer, not a
+refusal, wherever the leaderboard has it. Every additive count has both season
+figures - `reb_total` and `reb_per_game`, `pf_total` and `pf_per_game` - so
+"total rebounds leaders" ranks `reb_total` and "minutes per game leaders" ranks
+`minutes_per_game`, and those leaderboards' values are checked here against an
+independent sum over the raw game logs. Rates and percentages have no total or
+per-game form, so total/per-game wording on them still refuses with
+`leaderboard_aggregation_unsupported`; single-game boards are unaffected.
+
 Aggregation compatibility is route-specific. The same metric name has different
 backings on different boards - `pf` is a season total on the leaderboard and a
 raw box-score number on the top-game board - so sections 20 and 21 cross the
@@ -32,6 +41,7 @@ See ``docs/architecture/parser/leaderboard_metric_boundary.md``.
 from __future__ import annotations
 
 import pathlib
+from functools import cache
 
 import pytest
 
@@ -58,6 +68,7 @@ from nbatools.commands._leaderboard_eligibility import (
     resolve_requested_aggregation,
 )
 from nbatools.commands.natural_query import _build_parse_state, parse_query
+from nbatools.data_source import data_read_csv
 from nbatools.query_service import execute_natural_query
 
 pytestmark = [pytest.mark.query, pytest.mark.needs_data]
@@ -68,6 +79,59 @@ BROAD_LEADERBOARD_ROUTES = {"season_leaders", "season_team_leaders"}
 
 def _blockers(metadata: dict) -> list[str]:
     return list(metadata.get("unsupported_filters") or [])
+
+
+#: The season leaderboards' default qualifiers, by season type.
+_SEASON_MIN_GAMES = {"Regular Season": 20, "Playoffs": 4}
+
+
+@cache
+def _season_game_logs(kind: str, season: str, season_type: str):
+    """The raw game logs the data source serves, read without the engine."""
+    slug = season_type.lower().replace(" ", "_")
+    return data_read_csv(f"data/raw/{kind}_game_stats/{season}_{slug}.csv")
+
+
+def _assert_ranks_aggregation(executed, column: str, *, team: bool = False) -> None:
+    """Answered on the season board, ranked by *column*, with verified values.
+
+    *column* is the sibling the question asked for (`reb_total`,
+    `pf_per_game`). Its values are recomputed here from the raw game logs - the
+    sum per player or team for a total, that sum over distinct games for a
+    per-game figure - and the board must be exactly the qualified top of that
+    independent computation.
+    """
+    route = "season_team_leaders" if team else "season_leaders"
+    key = "team_id" if team else "player_id"
+    metadata = executed.metadata
+
+    assert executed.route == route, executed.route
+    assert executed.result_status == "ok", executed.result_reason
+    assert UNSUPPORTED_AGGREGATION not in _blockers(metadata)
+    assert not _blockers(metadata)
+    assert metadata.get("stat") == column
+    assert metadata.get("requested_aggregation") is None
+    leaders = executed.result.leaders
+    assert column in leaders.columns
+    assert len(leaders) > 0
+
+    season_type = metadata["season_type"]
+    logs = _season_game_logs("team" if team else "player", metadata["season"], season_type)
+    base = column.removesuffix("_total").removesuffix("_per_game")
+    grouped = logs.groupby(key).agg(total=(base, "sum"), games=("game_id", "nunique"))
+    if column.endswith("_total"):
+        grouped["figure"] = grouped["total"]
+    else:
+        grouped["figure"] = grouped["total"] / grouped["games"]
+
+    for _, row in leaders.iterrows():
+        expected = grouped.loc[int(row[key])]
+        assert float(row[column]) == pytest.approx(float(expected["figure"]))
+        assert int(row["games_played"]) == int(expected["games"])
+
+    qualified = grouped[grouped["games"] >= _SEASON_MIN_GAMES.get(season_type, 20)]
+    expected_top = sorted(qualified["figure"].astype(float), reverse=True)[: len(leaders)]
+    assert leaders[column].astype(float).tolist() == pytest.approx(expected_top)
 
 
 def _no_substituted_answer(executed) -> None:
@@ -181,15 +245,16 @@ def test_no_query_silently_becomes_a_points_ranking(query):
 # 3. Aggregation words are content, not grammar
 # ---------------------------------------------------------------------------
 
-# League leaderboards rank per-game figures. A season-total request is a
-# different question, and answering it with a per-game board is wrong rather
-# than approximate.
+# Points and rebounds leaderboards rank per-game figures by default. A
+# season-total request is a different question, and answering it with the
+# per-game board would be wrong rather than approximate - so it ranks the
+# season total instead, whichever word asks for it.
 TOTAL_AGGREGATION_REQUESTS = [
-    ("total_prefix", "total points leaders this season"),
-    ("total_noun", "players with the most total rebounds"),
-    ("total_suffix", "most points total this season"),
-    ("combined", "combined scoring leaders"),
-    ("cumulative", "cumulative points leaders this season"),
+    ("total_prefix", "total points leaders this season", "pts_total"),
+    ("total_noun", "players with the most total rebounds", "reb_total"),
+    ("total_suffix", "most points total this season", "pts_total"),
+    ("combined", "combined scoring leaders", "pts_total"),
+    ("cumulative", "cumulative points leaders this season", "pts_total"),
 ]
 
 PER_GAME_REQUESTS = [
@@ -201,26 +266,28 @@ PER_GAME_REQUESTS = [
 
 @pytest.mark.parser
 @pytest.mark.parametrize(
-    "category, query",
+    "category, query, total_column",
     TOTAL_AGGREGATION_REQUESTS,
     ids=[r[0] for r in TOTAL_AGGREGATION_REQUESTS],
 )
-def test_total_aggregation_refuses_instead_of_returning_per_game(category, query):
+def test_total_aggregation_routes_the_season_total_not_per_game(category, query, total_column):
     parsed = parse_query(query)
 
-    assert UNSUPPORTED_AGGREGATION in (parsed["route_kwargs"].get("unsupported_filters") or []), (
-        category
-    )
-    assert "stat" not in parsed["route_kwargs"], category
+    assert not (parsed["route_kwargs"].get("unsupported_filters") or []), category
+    assert parsed["route"] == "season_leaders", category
+    assert parsed["route_kwargs"]["stat"] == total_column, category
 
 
 @pytest.mark.parametrize(
-    "category, query",
+    "category, query, total_column",
     TOTAL_AGGREGATION_REQUESTS,
     ids=[r[0] for r in TOTAL_AGGREGATION_REQUESTS],
 )
-def test_total_aggregation_returns_no_per_game_leaderboard(category, query):
-    _no_substituted_answer(execute_natural_query(query))
+def test_total_aggregation_returns_the_season_total_leaderboard(category, query, total_column):
+    executed = execute_natural_query(query)
+
+    _assert_ranks_aggregation(executed, total_column)
+    assert not any("per_game" in str(c) for c in executed.result.leaders.columns), category
 
 
 @pytest.mark.parametrize("query, expected_metric", PER_GAME_REQUESTS)
@@ -234,11 +301,17 @@ def test_per_game_aggregation_is_what_the_leaderboard_computes(query, expected_m
 
 @pytest.mark.parser
 def test_aggregation_words_are_not_treated_as_grammar():
-    """`total` must survive as content; grammar words are dropped by design."""
+    """`total` must survive as content; grammar words are dropped by design.
+
+    Surviving as content is what makes the ranked column `pts_total` rather
+    than the default `pts_per_game`.
+    """
     eligibility = assess_leaderboard_request(_build_parse_state("total points leaders"))
 
-    assert eligibility.reason == UNSUPPORTED_AGGREGATION
-    assert eligibility.metric == "pts"
+    assert detect_requested_aggregation("total points leaders") == TOTAL
+    assert eligibility.authorized
+    assert eligibility.reason != UNSUPPORTED_AGGREGATION
+    assert eligibility.metric == "pts_total"
 
 
 # ---------------------------------------------------------------------------
@@ -897,8 +970,9 @@ def test_specialized_route_refuses_a_narrative_clause(category, query):
 # ---------------------------------------------------------------------------
 
 # The leaderboards are not uniformly per-game. `pf` ranks `pf_total`, so "total
-# personal fouls leaders" is exactly what runs; `pts` ranks `pts_per_game`, so
-# "total points leaders" would be answered with a different figure entirely.
+# personal fouls leaders" is exactly what runs by default; `pts` ranks
+# `pts_per_game`, so "total points leaders" has to switch to the `pts_total`
+# sibling rather than answer with the per-game figure.
 TOTAL_BACKED_METRICS = [
     ("personal fouls leaders", "pf"),
     ("total personal fouls leaders", "pf"),
@@ -909,11 +983,11 @@ TOTAL_BACKED_METRICS = [
 ]
 
 PER_GAME_BACKED_TOTAL_REQUESTS = [
-    "total points leaders this season",
-    "players with the most total rebounds",
-    "most points total this season",
-    "combined scoring leaders",
-    "cumulative points leaders this season",
+    ("total points leaders this season", "pts_total"),
+    ("players with the most total rebounds", "reb_total"),
+    ("most points total this season", "pts_total"),
+    ("combined scoring leaders", "pts_total"),
+    ("cumulative points leaders this season", "pts_total"),
 ]
 
 RATE_AND_PER_GAME_REQUESTS = [
@@ -943,12 +1017,9 @@ def test_total_backed_metrics_rank_a_total_column(query, expected_metric):
     )
 
 
-@pytest.mark.parametrize("query", PER_GAME_BACKED_TOTAL_REQUESTS)
-def test_per_game_backed_metrics_refuse_total_wording(query):
-    executed = execute_natural_query(query)
-
-    _no_substituted_answer(executed)
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
+@pytest.mark.parametrize("query, total_column", PER_GAME_BACKED_TOTAL_REQUESTS)
+def test_per_game_backed_metrics_answer_total_wording_with_the_total(query, total_column):
+    _assert_ranks_aggregation(execute_natural_query(query), total_column)
 
 
 @pytest.mark.parametrize("query, expected_metric", RATE_AND_PER_GAME_REQUESTS)
@@ -1009,7 +1080,8 @@ def test_team_scoped_leaders_still_answer(query, expected_route, expected_metric
 # three-point forms published `stat=pts`. A reader - or anything reading the
 # envelope - saw a refusal that had apparently settled on a metric.
 #
-# The contract these pin:
+# The contract these pin (an aggregation refusal is now one a rate gets - a
+# count asked for in its other aggregation is answered, sections 17 and 18):
 #   * `stat` is absent on every boundary refusal, because no ranking ran;
 #   * `requested_stat` names the one explicit metric a refusal is *about*,
 #     which only the aggregation and scope refusals have;
@@ -1035,7 +1107,7 @@ REFUSAL_METADATA_CONTRACT = [
     ("field goals made and attempted leaders", UNCLEAR_REQUEST, None, None),
     ("NBA three point leaders this season", UNCLEAR_REQUEST, None, None),
     ("top three point shooters this season", UNCLEAR_REQUEST, None, None),
-    ("total points leaders this season", UNSUPPORTED_AGGREGATION, "pts", None),
+    ("true shooting percentage per game leaders", UNSUPPORTED_AGGREGATION, "ts_pct", None),
     (
         "best offensive teams from 2022-23 to 2024-25",
         METRIC_SCOPE_UNSUPPORTED,
@@ -1081,6 +1153,28 @@ def test_refusal_route_kwargs_carry_no_selected_stat(
     assert "metric" not in route_kwargs["leaderboard_eligibility"], query
 
 
+@pytest.mark.parametrize(
+    "query, column",
+    [
+        ("total points leaders this season", "pts_total"),
+        ("minutes per game leaders", "minutes_per_game"),
+    ],
+)
+def test_answered_aggregation_publishes_the_column_it_ranked(query, column):
+    """Once answered, the published stat is the sibling that ran, not the default.
+
+    Publishing `pts` beside a `pts_total` board would name the per-game figure
+    the question did not ask for.
+    """
+    parsed = parse_query(query)
+    executed = execute_natural_query(query)
+
+    assert parsed["route_kwargs"]["stat"] == column, query
+    assert executed.metadata.get("stat") == column, query
+    assert executed.metadata.get("requested_stat") is None, query
+    assert executed.to_dict()["metadata"].get("stat") == column, query
+
+
 @pytest.mark.parser
 def test_several_requested_metrics_are_published_whole_or_not_at_all():
     """A one-entry list beside a "more than one stat" refusal is the bug."""
@@ -1091,9 +1185,12 @@ def test_several_requested_metrics_are_published_whole_or_not_at_all():
     assert eligibility.published_requested_metrics == ("pts", "reb")
     assert eligibility.published_requested_stat is None
 
-    single = assess_leaderboard_request(_build_parse_state("total points leaders"))
+    single = assess_leaderboard_request(
+        _build_parse_state("true shooting percentage per game leaders")
+    )
+    assert single.reason == UNSUPPORTED_AGGREGATION
     assert single.published_requested_metrics == ()
-    assert single.published_requested_stat == "pts"
+    assert single.published_requested_stat == "ts_pct"
 
 
 @pytest.mark.parser
@@ -1147,6 +1244,9 @@ def test_total_backed_metric_answers(query, expected_metric):
     assert len(executed.result.leaders) > 0
 
 
+# The per-game-backed counts answer a total request with their `_total`
+# sibling. Their default board stays per-game; only the asked-for aggregation
+# changes.
 PER_GAME_BACKED_TOTALS = [
     ("total points leaders", "pts"),
     ("total rebounds leaders", "reb"),
@@ -1160,15 +1260,12 @@ PER_GAME_BACKED_TOTALS = [
 @pytest.mark.parametrize(
     "query, metric", PER_GAME_BACKED_TOTALS, ids=[r[0] for r in PER_GAME_BACKED_TOTALS]
 )
-def test_per_game_backed_total_still_refuses(query, metric):
+def test_per_game_backed_total_ranks_the_season_total(query, metric):
     executed = execute_natural_query(query)
 
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    # The default board is still per game; the question asked for the total.
     assert not ranks_a_season_total(metric, team_scope=False), metric
-    # The metric is what the user asked for, not what ran.
-    assert executed.metadata.get("stat") is None, query
-    assert executed.metadata.get("requested_stat") == metric, query
-    _no_substituted_answer(executed)
+    _assert_ranks_aggregation(executed, f"{metric}_total")
 
 
 @pytest.mark.parser
@@ -1217,6 +1314,11 @@ def test_deferred_route_families_name_real_routes():
 # executed `fg3a_total`. The user asked for a per-game ranking and got a season
 # total. It is the same defect as `total points leaders` pointing the other way.
 #
+# Both directions are now answered rather than refused: a count asked for in
+# the aggregation its board does not rank by default ranks its sibling column
+# (`minutes_per_game`, `pts_total`), verified against the raw game logs. Only
+# rates, which have no total or per-game form, still refuse.
+#
 # A cross-product, not a handful of examples: every metric crossed with every
 # explicit aggregation wording, so a metric that changes its backing column
 # fails here rather than silently answering the opposite question.
@@ -1255,22 +1357,14 @@ def _ids(rows):
     return [r[0] for r in rows]
 
 
-def _refused_without_executing(query, metric):
-    """Refused, nothing populated, and no ranking on the wrong column.
-
-    Some wordings are stopped by an earlier, broader boundary than this one.
-    That is a safe refusal and is allowed; what is never allowed is a populated
-    answer computed from the aggregation the question did not ask for.
-    """
+def _answers_with_the_sibling(query, metric, aggregation):
+    """Answered with *metric*'s other aggregation, never its default column."""
+    column = f"{metric}_{aggregation}"
     executed = execute_natural_query(query)
 
-    assert executed.result_status != "ok", f"{query!r} answered with the wrong aggregation"
-    assert executed.to_dict()["sections"] == {}, query
-    assert getattr(executed.result, "leaders", None) is None, query
-    if UNSUPPORTED_AGGREGATION in _blockers(executed.metadata):
-        # The aggregation boundary owns this refusal, so its contract applies.
-        assert executed.metadata.get("stat") is None, query
-        assert executed.metadata.get("requested_stat") == metric, query
+    _assert_ranks_aggregation(executed, column)
+    other = f"{metric}_{'per_game' if aggregation == 'total' else 'total'}"
+    assert other not in executed.result.leaders.columns, query
     return executed
 
 
@@ -1304,9 +1398,12 @@ def test_total_backed_total_request_answers(metric, phrase):
 
 @pytest.mark.parametrize("wording", PER_GAME_WORDINGS)
 @pytest.mark.parametrize("metric, phrase", TOTAL_BACKED_MATRIX, ids=_ids(TOTAL_BACKED_MATRIX))
-def test_total_backed_per_game_request_never_returns_the_total(metric, phrase, wording):
-    """The reverse-direction bug: a per-game request served a season total."""
-    _refused_without_executing(wording.format(phrase=phrase), metric)
+def test_total_backed_per_game_request_ranks_the_per_game_figure(metric, phrase, wording):
+    """The reverse-direction bug: a per-game request served a season total.
+
+    It now ranks the per-game figure it asked for.
+    """
+    _answers_with_the_sibling(wording.format(phrase=phrase), metric, "per_game")
 
 
 # --- per-game-backed metrics ----------------------------------------------
@@ -1338,8 +1435,8 @@ def test_per_game_backed_per_game_request_answers(metric, phrase, wording):
 
 
 @pytest.mark.parametrize("metric, phrase", PER_GAME_BACKED_MATRIX, ids=_ids(PER_GAME_BACKED_MATRIX))
-def test_per_game_backed_total_request_never_returns_the_per_game_board(metric, phrase):
-    _refused_without_executing(f"total {phrase} leaders", metric)
+def test_per_game_backed_total_request_ranks_the_season_total(metric, phrase):
+    _answers_with_the_sibling(f"total {phrase} leaders", metric, "total")
 
 
 # --- rates -----------------------------------------------------------------
@@ -1412,12 +1509,9 @@ def test_every_leaderboard_column_is_classified():
         "most points total this season",
     ],
 )
-def test_combined_and_cumulative_wording_still_refuses_for_a_per_game_metric(query):
-    """Preserved as-is; this repair does not broaden what they support."""
-    executed = execute_natural_query(query)
-
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
-    _no_substituted_answer(executed)
+def test_combined_and_cumulative_wording_ranks_the_season_total(query):
+    """Every total wording reaches the same `pts_total` board."""
+    _assert_ranks_aggregation(execute_natural_query(query), "pts_total")
 
 
 def test_average_three_point_attempts_never_returns_the_total_board():
@@ -1425,18 +1519,13 @@ def test_average_three_point_attempts_never_returns_the_total_board():
 
     At `a87fedd` this returned a populated `fg3a_total` leaderboard: the alias
     repair made `fg3a` resolvable, and the one-directional aggregation check
-    let an "average" request through to the season-total column.
+    let an "average" request through to the season-total column. It was then
+    refused; it now ranks the per-game figure it asked for.
     """
     executed = execute_natural_query("average three-point attempts leaders")
 
-    assert executed.result_status == "no_result"
-    assert executed.result_reason == "filter_not_supported"
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
-    assert executed.metadata.get("stat") is None
-    assert executed.metadata.get("requested_stat") == "fg3a"
-    assert executed.metadata.get("requested_aggregation") == PER_GAME
-    assert executed.metadata.get("available_aggregation") == TOTAL
-    _no_substituted_answer(executed)
+    _assert_ranks_aggregation(executed, "fg3a_per_game")
+    assert "fg3a_total" not in executed.result.leaders.columns
 
 
 @pytest.mark.parametrize(
@@ -1444,8 +1533,8 @@ def test_average_three_point_attempts_never_returns_the_total_board():
     [
         "best players this season",
         "points and rebounds leaders this season",
-        "total points leaders this season",
-        "minutes per game leaders",
+        "total true shooting percentage leaders",
+        "true shooting percentage per game leaders",
         "best offensive teams from 2022-23 to 2024-25",
         "top three point shooters this season",
     ],
@@ -1477,12 +1566,12 @@ def test_serialized_refusal_never_publishes_an_executed_stat(query):
 # product understands perfectly well.
 #
 # The refusal was safe, but it told the reader the question was unrecognizable
-# and published `stat=fg3a` as though something had run. The accurate answer is
-# that only the season total exists for this metric.
+# and published `stat=fg3a` as though something had run.
 #
 # The fix is a classification one: a number is what makes "attempts per game" a
 # qualifier, the same test the metric boundary already applies to a metric
-# sitting next to a number.
+# sitting next to a number. Past that boundary the question is an ordinary
+# per-game request, and it ranks `fg3a_per_game`.
 
 FG3A_PER_GAME_FORMS = [
     "three-point attempts per game leaders",
@@ -1495,28 +1584,23 @@ FG3A_PER_GAME_FORMS = [
 
 
 @pytest.mark.parametrize("query", FG3A_PER_GAME_FORMS)
-def test_fg3a_per_game_form_gets_the_typed_aggregation_refusal(query):
+def test_fg3a_per_game_form_ranks_attempts_per_game(query):
     executed = execute_natural_query(query)
 
-    assert executed.result_status == "no_result", query
-    assert executed.result_reason == "filter_not_supported", query
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
     # The metric and the aggregation were both recognized, so the generic
     # "unrecognizable phrase" answer is the wrong one to give.
     assert "unsupported_concept" not in _blockers(executed.metadata), query
-    assert executed.metadata.get("stat") is None, query
-    assert executed.metadata.get("requested_stat") == "fg3a", query
-    assert executed.metadata.get("requested_aggregation") == PER_GAME, query
-    assert executed.metadata.get("available_aggregation") == TOTAL, query
-    _no_substituted_answer(executed)
+    _assert_ranks_aggregation(executed, "fg3a_per_game")
+    assert "fg3a_total" not in executed.result.leaders.columns, query
 
 
 @pytest.mark.parser
 @pytest.mark.parametrize("query", FG3A_PER_GAME_FORMS)
-def test_fg3a_per_game_form_never_reaches_the_route_with_a_stat(query):
+def test_fg3a_per_game_form_reaches_the_route_with_the_per_game_stat(query):
     route_kwargs = parse_query(query)["route_kwargs"]
 
-    assert "stat" not in route_kwargs or route_kwargs["stat"] is None, query
+    assert route_kwargs.get("stat") == "fg3a_per_game", query
+    assert not (route_kwargs.get("unsupported_filters") or []), query
 
 
 def test_total_three_point_attempts_still_answers():
@@ -1649,42 +1733,52 @@ def test_top_game_shorthands_still_answer(query, expected_metric):
 # must not force per-game, or `average pace leaders` refuses a rate metric that
 # was answering correctly.
 #
-# (wording, metric phrase, backing, answers?)
+# A count asked for in the aggregation its board does not default to answers
+# with the sibling column; only a rate refuses an explicit total or per-game.
+#
+# (wording, metric phrase, backing, ranked column - or None when it refuses)
 WORDING_STRENGTH_MATRIX = [
     # explicit total
-    ("total {}", "minutes", TOTAL, True),
-    ("total {}", "points", PER_GAME, False),
-    ("total {}", "true shooting percentage", RATE, False),
+    ("total {}", "minutes", TOTAL, "minutes_total"),
+    ("total {}", "points", PER_GAME, "pts_total"),
+    ("total {}", "true shooting percentage", RATE, None),
     # explicit per-game
-    ("{} per game", "minutes", TOTAL, False),
-    ("{} per game", "points", PER_GAME, True),
-    ("{} per game", "true shooting percentage", RATE, False),
-    ("{} per game", "usage rate", RATE, False),
+    ("{} per game", "minutes", TOTAL, "minutes_per_game"),
+    ("{} per game", "points", PER_GAME, "pts_per_game"),
+    ("{} per game", "true shooting percentage", RATE, None),
+    ("{} per game", "usage rate", RATE, None),
     # explicit rate
-    ("{}", "three point percentage", RATE, True),
-    ("{}", "usage rate", RATE, True),
+    ("{}", "three point percentage", RATE, "fg3_pct"),
+    ("{}", "usage rate", RATE, "usg_pct"),
     # soft average, settled against the metric
-    ("average {}", "minutes", TOTAL, False),
-    ("average {}", "points", PER_GAME, True),
-    ("average {}", "true shooting percentage", RATE, True),
+    ("average {}", "minutes", TOTAL, "minutes_per_game"),
+    ("average {}", "points", PER_GAME, "pts_per_game"),
+    ("average {}", "true shooting percentage", RATE, "ts_pct"),
     # unspecified
-    ("{}", "minutes", TOTAL, True),
-    ("{}", "points", PER_GAME, True),
+    ("{}", "minutes", TOTAL, "minutes_total"),
+    ("{}", "points", PER_GAME, "pts_per_game"),
 ]
 
 
 @pytest.mark.parametrize(
-    "wording, phrase, backing, answers",
+    "wording, phrase, backing, ranked",
     WORDING_STRENGTH_MATRIX,
-    ids=[f"{w.format(p)}" for w, p, _b, _a in WORDING_STRENGTH_MATRIX],
+    ids=[f"{w.format(p)}" for w, p, _b, _r in WORDING_STRENGTH_MATRIX],
 )
-def test_wording_strength_decides_against_the_backing(wording, phrase, backing, answers):
+def test_wording_strength_decides_against_the_backing(wording, phrase, backing, ranked):
     query = f"{wording.format(phrase)} leaders"
     executed = execute_natural_query(query)
 
-    if answers:
+    if ranked:
         assert executed.result_status == "ok", f"{query!r} stopped answering"
         assert not _blockers(executed.metadata), query
+        assert ranked in executed.result.leaders.columns, query
+        if (
+            column_aggregation(ranked) in (TOTAL, PER_GAME)
+            and column_aggregation(ranked) != backing
+        ):
+            # Answered in the sibling aggregation: verify it against the logs.
+            _assert_ranks_aggregation(executed, ranked)
         return
     assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
     assert executed.metadata.get("stat") is None, query
@@ -1795,17 +1889,16 @@ def test_most_minutes_in_a_game_is_a_top_game_ranking():
     assert not _blockers(executed.metadata)
 
 
-def test_minutes_a_game_is_a_season_request_and_refuses():
-    """Only season-total minutes exist, so the per-game reading has no board."""
+def test_minutes_a_game_is_a_season_per_game_request():
+    """`minutes a game` is the season per-game figure, not a top game.
+
+    The default minutes board ranks the season total, so this ranks the
+    `minutes_per_game` sibling.
+    """
     executed = execute_natural_query("minutes a game leaders")
 
     assert executed.route == "season_leaders"
-    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
-    assert executed.metadata.get("stat") is None
-    assert executed.metadata.get("requested_stat") == "minutes"
-    assert executed.metadata.get("requested_aggregation") == PER_GAME
-    assert executed.metadata.get("available_aggregation") == TOTAL
-    _no_substituted_answer(executed)
+    _assert_ranks_aggregation(executed, "minutes_per_game")
 
 
 def test_average_pace_leaders_is_not_a_per_game_request():
