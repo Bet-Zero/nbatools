@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
+from nbatools.commands._streak_runs import (
+    best_runs_per_entity,
+    compound_condition_label,
+    compound_condition_mask,
+)
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_game_finder import (
     ALLOWED_STATS,
@@ -9,6 +16,7 @@ from nbatools.commands.player_game_finder import (
     load_player_games_for_seasons,
     resolve_seasons,
 )
+from nbatools.commands.player_occurrence_leaders import _flag_special_event
 from nbatools.commands.structured_results import NoResult, StreakResult
 
 
@@ -25,9 +33,12 @@ def _condition_label(
     min_value: float | None = None,
     max_value: float | None = None,
     special_condition: str | None = None,
+    conditions: list[dict] | None = None,
 ) -> str:
-    if special_condition == "triple_double":
-        return "triple_double"
+    if conditions:
+        return compound_condition_label(conditions)
+    if special_condition in ("triple_double", "double_double"):
+        return special_condition
     if special_condition == "made_three":
         return "made_three"
 
@@ -39,6 +50,9 @@ def _condition_label(
     if min_value is not None:
         return f"{stat}>={_format_value(min_value)}"
     if max_value is not None:
+        if not float(max_value).is_integer():
+            # A strict "under N" bound executes as N - 0.0001.
+            return f"{stat}<{math.ceil(max_value)}"
         return f"{stat}<={_format_value(max_value)}"
     return stat
 
@@ -49,7 +63,12 @@ def _build_condition_mask(
     min_value: float | None = None,
     max_value: float | None = None,
     special_condition: str | None = None,
+    conditions: list[dict] | None = None,
 ) -> pd.Series:
+    if conditions:
+        return compound_condition_mask(df, conditions)
+    if special_condition == "double_double":
+        return _flag_special_event(df, "double_double")
     if special_condition == "triple_double":
         categories = []
         for col in ["pts", "reb", "ast", "stl", "blk"]:
@@ -169,6 +188,27 @@ def _extract_streak_rows(
     return rows
 
 
+def _no_active_streak_row(df: pd.DataFrame, name: str, condition: str) -> dict:
+    last = (
+        df.assign(game_date=pd.to_datetime(df["game_date"]))
+        .sort_values(["game_date", "game_id"])
+        .iloc[-1]
+    )
+    return {
+        "player_name": name,
+        "condition": condition,
+        "streak_length": 0,
+        "games": 0,
+        "start_date": None,
+        "end_date": last["game_date"].date().isoformat(),
+        "start_game_id": None,
+        "end_game_id": last["game_id"],
+        "wins": 0,
+        "losses": 0,
+        "is_active": 0,
+    }
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -191,9 +231,15 @@ def build_result(
     end_date: str | None = None,
     last_n: int | None = None,
     limit: int = 25,
+    conditions: list[dict] | None = None,
+    current: bool = False,
 ) -> StreakResult | NoResult:
-    if player is None:
-        raise ValueError("player is required for player streak queries")
+    """Streaks of consecutive player appearances meeting a condition.
+
+    With ``player`` set, list that player's streaks (``longest`` keeps the
+    longest, ``current`` the one alive at their latest game). Without it, rank
+    every player by their longest (or current) streak.
+    """
 
     if min_streak_length is not None and min_streak_length <= 0:
         raise ValueError("min_streak_length must be greater than 0")
@@ -237,7 +283,7 @@ def build_result(
         stat=None,
         min_value=None,
         max_value=None,
-        last_n=last_n,
+        last_n=last_n if player is not None else None,
         start_date=start_date,
         end_date=end_date,
     )
@@ -245,26 +291,65 @@ def build_result(
     if filtered.empty:
         return NoResult(query_class="streak")
 
+    if player is None and last_n:
+        # League ranking: "last N games" is each player's own last N games.
+        filtered = (
+            filtered.assign(_date=pd.to_datetime(filtered["game_date"]))
+            .sort_values(["_date", "game_id"])
+            .groupby("player_id", group_keys=False)
+            .tail(last_n)
+            .drop(columns="_date")
+        )
+
     mask = _build_condition_mask(
         filtered,
         stat=stat,
         min_value=min_value,
         max_value=max_value,
         special_condition=special_condition,
+        conditions=conditions,
     )
     condition = _condition_label(
         stat=stat,
         min_value=min_value,
         max_value=max_value,
         special_condition=special_condition,
+        conditions=conditions,
     )
 
-    rows = _extract_streak_rows(filtered, mask, player_name=player, condition=condition)
+    if player is None:
+        rows = [
+            _finalize_streak(games, games["player_name"].iloc[-1], condition, active)
+            for games, active in best_runs_per_entity(
+                filtered, mask, "player_id", current=current, limit=limit
+            )
+        ]
+    else:
+        rows = _extract_streak_rows(filtered, mask, player_name=player, condition=condition)
+        if current:
+            rows = [row for row in rows if row["is_active"]]
 
-    if min_streak_length is not None:
+    # A current streak is reported whatever its length; "current 5 straight"
+    # asks how long the live run is, so a shorter one is said, not dropped.
+    current_short_of = None
+    if current and min_streak_length is not None:
+        if rows and rows[0]["streak_length"] < min_streak_length:
+            current_short_of = min_streak_length
+    elif min_streak_length is not None:
         rows = [row for row in rows if row["streak_length"] >= min_streak_length]
 
-    if longest and rows:
+    no_active_streak = current and not rows and player is not None
+    if no_active_streak:
+        # The answer to "current streak" when the latest game missed is zero,
+        # anchored on that game, not "no matching games".
+        rows = [_no_active_streak_row(filtered, player, condition)]
+    if current and not rows:
+        return NoResult(
+            query_class="streak",
+            caveats=[f"no active streak: the latest game in range did not meet {condition}"],
+        )
+
+    if longest and rows and player is not None:
         max_len = max(row["streak_length"] for row in rows)
         rows = [row for row in rows if row["streak_length"] == max_len]
 
@@ -309,9 +394,22 @@ def build_result(
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
+    caveats = ["streaks count consecutive games the player played; missed games are skipped"]
+    if current_short_of is not None:
+        caveats.append(f"the current streak is shorter than {current_short_of} games")
+    if no_active_streak:
+        caveats.append(f"no active streak: the latest game in range did not meet {condition}")
+    if player is None:
+        caveats.append("each player's best streak in range, ranked by length")
+    if len(seasons) > 1:
+        caveats.append(
+            f"streaks computed across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})"
+        )
+
     return StreakResult(
         streaks=out[output_cols].copy(),
         current_through=current_through,
+        caveats=caveats,
     )
 
 
@@ -337,6 +435,8 @@ def run(
     end_date: str | None = None,
     last_n: int | None = None,
     limit: int = 25,
+    conditions: list[dict] | None = None,
+    current: bool = False,
 ) -> None:
     result = build_result(
         season=season,
@@ -360,6 +460,8 @@ def run(
         end_date=end_date,
         last_n=last_n,
         limit=limit,
+        conditions=conditions,
+        current=current,
     )
     if isinstance(result, NoResult):
         print("no matching games")

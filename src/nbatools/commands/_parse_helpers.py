@@ -501,13 +501,88 @@ STREAK_SPECIAL_PATTERNS = {
 }
 
 
+_STREAK_WORD = re.compile(r"\b(streak|straight|consecutive|in\s+a\s+row)\b")
+# "current"/"active" asks for the streak alive at the latest game, not a
+# season-scope word ("current season").
+_CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
+_STREAK_LENGTH = re.compile(
+    r"\b(\d+)\s+(?:straight|consecutive)\s+games?\b|\b(\d+)\s+games?\s+in\s+a\s+row\b"
+)
+
+
+def _with_streak_mode(request: dict | None, normalized: str) -> dict | None:
+    if request is not None and _CURRENT_STREAK.search(normalized):
+        request = {**request, "current": True, "longest": False}
+    return request
+
+
 def extract_streak_request(text: str) -> dict | None:
     # Receives pre-normalized text from _build_parse_state; no per-detector
     # normalization needed.
     normalized = re.sub(r"[?.!,]+$", "", text)
-
-    if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
+    if not _STREAK_WORD.search(normalized):
         return None
+    # Several game conditions ("30 point 10 rebound games") go to the generic
+    # reader first: the fixed patterns would keep only one of them.
+    request = _generic_streak_request(normalized, compound_only=True)
+    if request is None:
+        request = _extract_streak_request_patterns(normalized)
+    if request is None:
+        request = _generic_streak_request(normalized)
+    return _with_streak_mode(request, normalized)
+
+
+def _generic_streak_request(normalized: str, compound_only: bool = False) -> dict | None:
+    """Read the streak's game condition with the occurrence-event parser.
+
+    Covers wording the fixed patterns miss: "longest streak of games with 5+
+    threes", "consecutive games with 10+ rebounds", "streak of 30 point 10
+    rebound games", "consecutive double doubles".
+    """
+    from nbatools.commands._occurrence_route_utils import (
+        _parse_single_threshold,
+        extract_compound_occurrence_event,
+        extract_occurrence_event,
+    )
+
+    request: dict = {
+        "special_condition": None,
+        "stat": None,
+        "min_value": None,
+        "max_value": None,
+        "min_streak_length": None,
+        "longest": bool(re.search(r"\b(?:longest|most\s+consecutive)\b", normalized)),
+    }
+    length = _STREAK_LENGTH.search(normalized)
+    if length:
+        request["min_streak_length"] = int(length.group(1) or length.group(2))
+    # The streak length is not a game condition ("5 straight games with 30").
+    condition_text = _STREAK_LENGTH.sub(" games ", normalized) if length else normalized
+
+    compound = extract_compound_occurrence_event(condition_text)
+    if compound and len(compound) >= 2:
+        return {**request, "conditions": [dict(c) for c in compound]}
+    if compound_only:
+        return None
+    # An upper bound alone ("games with under 20 points", "at most 2
+    # turnovers") is read by the threshold parser; the event parser only
+    # knows lower bounds.
+    event = extract_occurrence_event(condition_text) or _parse_single_threshold(condition_text)
+    if not event:
+        return None
+    if event.get("special_event") in ("triple_double", "double_double"):
+        return {**request, "special_condition": event["special_event"]}
+    if event.get("stat") and event["stat"] in STAT_ALIASES.values():
+        return {
+            **request,
+            "stat": event["stat"],
+            "min_value": event.get("min_value"),
+            "max_value": event.get("max_value"),
+        }
+    return None
+
+
+def _extract_streak_request_patterns(normalized: str) -> dict | None:
 
     for pattern in STREAK_SPECIAL_PATTERNS["triple_double"]:
         if re.search(pattern, normalized):
@@ -652,13 +727,36 @@ TEAM_STREAK_SPECIAL_PATTERNS = {
 }
 
 
+_OUTCOME_STREAK = re.compile(r"\b(win(?:ning)?|los(?:ing|s))\s+streaks?\b")
+
+
 def extract_team_streak_request(text: str) -> dict | None:
     # Receives pre-normalized text from _build_parse_state; no per-detector
     # normalization needed.
-    normalized = text
-
-    if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
+    normalized = re.sub(r"[?.!,]+$", "", text)
+    if not _STREAK_WORD.search(normalized):
         return None
+    request = _extract_team_streak_request_patterns(normalized)
+    if request is None and not _OUTCOME_STREAK.search(normalized):
+        # One team stat condition ("120 point games", "games with 15+
+        # threes"); the team finder takes a single stat bound.
+        generic = _generic_streak_request(normalized)
+        if generic and generic.get("stat") and not generic.get("conditions"):
+            request = {**generic, "team_condition_only": True}
+    if request is None and (outcome := _OUTCOME_STREAK.search(normalized)):
+        # "Lakers current winning streak", "Celtics winning streak at home"
+        request = {
+            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "stat": None,
+            "min_value": None,
+            "max_value": None,
+            "min_streak_length": None,
+            "longest": True,
+        }
+    return _with_streak_mode(request, normalized)
+
+
+def _extract_team_streak_request_patterns(normalized: str) -> dict | None:
 
     m = re.search(
         r"\b(?:[a-z0-9 .&'\-]+?)\s+(\d+)\s+straight\s+games?\s+scoring\s+(\d+)\+(?:\s+(?:points?|pts))?(?=\s|$)",  # noqa: E501
@@ -1922,7 +2020,7 @@ def detect_season_high_intent(text: str) -> bool:
     scan = re.sub(r"\s+", " ", scan).strip()
 
     if re.search(
-        r"\bseason[- ]?high\b"
+        r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
         rf"|\b(?:top|best|highest)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
