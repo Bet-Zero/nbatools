@@ -55,7 +55,7 @@ def extract_occurrence_event(text: str) -> dict | None:
     for pattern, stat in stat_event_patterns:
         m = re.search(pattern, text)
         if m:
-            return {"stat": stat, "min_value": float(m.group(1))}
+            return _threshold_condition(stat, m.group(1), m.group(0))
 
     # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"
     games_with_patterns = [
@@ -74,9 +74,23 @@ def extract_occurrence_event(text: str) -> dict | None:
     for pattern, stat in games_with_patterns:
         m = re.search(pattern, text)
         if m:
-            return {"stat": stat, "min_value": float(m.group(1))}
+            return _threshold_condition(stat, m.group(1), m.group(0))
 
     return None
+
+
+def _threshold_condition(stat: str, number: str, phrase: str) -> dict:
+    """One "N stat" game condition: at least N, except a bare zero.
+
+    "10 assist games" means ten or more, but "0 turnover games" means none at
+    all. Reading zero as a lower bound made every game qualify, so "10+
+    assists and 0 turnovers" silently counted every 10-assist game. "0+"
+    keeps its literal at-least reading.
+    """
+    value = float(number)
+    if value == 0 and "+" not in phrase and "or more" not in phrase:
+        return {"stat": stat, "min_value": None, "max_value": 0.0}
+    return {"stat": stat, "min_value": value}
 
 
 # ---------------------------------------------------------------------------
@@ -111,6 +125,56 @@ _COMPOUND_STAT_MAP = {
     "turnover": "tov",
     "tov": "tov",
 }
+
+_COMPOUND_STAT_WORDS = (
+    r"points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+    r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov"
+)
+
+#: "0", "zero" and "no" all state an exact zero ("a 10-assist, no-turnover game").
+_CONDITION_NUMBER = r"(\d+\+?|zero|no)"
+
+# A run of two or more "N stat" adjectives describing one game: "30 point 10
+# rebound games", "30-point, 10-rebound games", "25 point 10 rebound 5 assist
+# games", "10 assist 0 turnover games". Every adjective is a condition on the
+# same game, exactly as "games with 30+ points and 10+ rebounds" states them.
+_ADJECTIVE_CHAIN = re.compile(
+    rf"(?:(?<=\s)|^){_CONDITION_NUMBER}\s*[- ]?\s*({_COMPOUND_STAT_WORDS})"
+    rf"(?:(?:\s*,\s*|\s+(?:and|&)\s+|\s+){_CONDITION_NUMBER}\s*[- ]?\s*({_COMPOUND_STAT_WORDS}))+"
+    r"\s+(?:games?|performances?|nights?|outings?|stat\s*lines?)\b"
+)
+_CHAIN_PART = re.compile(rf"{_CONDITION_NUMBER}\s*[- ]?\s*({_COMPOUND_STAT_WORDS})\b")
+
+# Fan shorthand for points and rebounds, "30 and 10 games" / "30/10 games".
+# The same reading and bounds the finder threshold parser already applies.
+_FAN_COMBO = re.compile(r"(?<!\bbetween )\b(\d{1,2})\s*(?:and\s+|/\s*)?(\d{1,2})\s+games?\b")
+
+
+def _chain_conditions(text: str) -> list[dict] | None:
+    match = _ADJECTIVE_CHAIN.search(text)
+    if match is None:
+        return None
+    conditions: list[dict] = []
+    seen: set[str] = set()
+    for number, stat_word in _CHAIN_PART.findall(match.group(0)):
+        stat = _COMPOUND_STAT_MAP.get(stat_word)
+        if stat is None or stat in seen:
+            return None
+        seen.add(stat)
+        digits = "0" if number in ("zero", "no") else number.rstrip("+")
+        conditions.append(_threshold_condition(stat, digits, number))
+    return conditions if len(conditions) >= 2 else None
+
+
+def _fan_combo_conditions(text: str) -> list[dict] | None:
+    for match in _FAN_COMBO.finditer(text):
+        pts_value, reb_value = int(match.group(1)), int(match.group(2))
+        if 10 <= pts_value <= 60 and 5 <= reb_value <= 30 and pts_value >= reb_value:
+            return [
+                {"stat": "pts", "min_value": float(pts_value)},
+                {"stat": "reb", "min_value": float(reb_value)},
+            ]
+    return None
 
 
 # A verb can carry the stat the number belongs to, with the stat noun left out:
@@ -147,18 +211,19 @@ def _parse_single_threshold(text: str) -> dict | None:
         if stat:
             return {"stat": stat, "max_value": value - 0.0001}  # "under 10" means < 10
 
-    # Standard patterns: "30+ points", "10 rebounds"
+    # Standard patterns: "30+ points", "10 rebounds", "0 turnovers", "no turnovers"
     standard_match = re.search(
-        r"\b(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
+        r"\b(\d+\+?|zero|no)\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b(\s+or\s+more)?",
         text,
     )
     if standard_match:
-        value = float(standard_match.group(1))
+        number = standard_match.group(1)
         stat_text = standard_match.group(2)  # already lowercase from pipeline normalization
         stat = _COMPOUND_STAT_MAP.get(stat_text)
         if stat:
-            return {"stat": stat, "min_value": value}
+            digits = "0" if number in ("zero", "no") else number.rstrip("+")
+            return _threshold_condition(stat, digits, standard_match.group(0))
 
     # Verb-carried stat with the noun elided ("scoring 120+"). Tried last so an
     # explicit stat noun always wins: "scoring 30+ rebounds" stays rebounds.
@@ -191,6 +256,13 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     # Receives pre-normalized (lowercased) text from _build_parse_state.
     text_lower = text
 
+    chain = _chain_conditions(text_lower)
+    if chain:
+        return chain
+    combo = _fan_combo_conditions(text_lower)
+    if combo:
+        return combo
+
     # Must have "and" in the text for compound detection
     if " and " not in text_lower:
         return None
@@ -210,25 +282,21 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
 
     # Check for pattern like "NUMBER+ STAT and NUMBER+ STAT"
     compound_pattern = (
-        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\s+"
-        r"(?:and|&)\s+"
-        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
+        rf"(\d+\+?)\s*({_COMPOUND_STAT_WORDS})\s+(?:and|&)\s+(\d+\+?)\s*({_COMPOUND_STAT_WORDS})"
     )
 
     compound_match = re.search(compound_pattern, text_lower)
     if compound_match:
-        # Extract both conditions
-        val1 = float(compound_match.group(1))
         stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2))  # already lowercase
-        val2 = float(compound_match.group(3))
-        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4))  # already lowercase
-
+        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4))
         if stat1 and stat2 and stat1 != stat2:
             return [
-                {"stat": stat1, "min_value": val1},
-                {"stat": stat2, "min_value": val2},
+                _threshold_condition(
+                    stat1, compound_match.group(1).rstrip("+"), compound_match.group(1)
+                ),
+                _threshold_condition(
+                    stat2, compound_match.group(3).rstrip("+"), compound_match.group(3)
+                ),
             ]
 
     # Try more flexible parsing: look at " and " separated parts
@@ -260,7 +328,7 @@ def wants_occurrence_leaderboard(text: str) -> bool:
     - "leaders in triple doubles since 2020"
     - "who has the most 5+ three games"
     """
-    event = extract_occurrence_event(text)
+    event = extract_occurrence_event(text) or extract_compound_occurrence_event(text)
     if event is None:
         return False
 
@@ -444,6 +512,10 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
                 "end_date": end_date,
                 "limit": top_n or 10,
             }
+        # A league-wide count ("how often has a player had ...") counts games,
+        # not one row of a top-10 board; the league game finder answers it.
+        if count_intent and not occurrence_leaderboard_intent and not player:
+            return None
         # Player compound occurrence leaderboard (no specific player)
         return "player_occurrence_leaders", {
             "conditions": compound_occurrence_conditions,
@@ -470,7 +542,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and not player
         and not player_a
         and not player_b
-        and not (detect_player_leaderboard_stat(q) or "").startswith("games_")
+        and not re.match(r"games_\d", detect_player_leaderboard_stat(q) or "")
     ):
         occ_season = season
         occ_start = start_season
@@ -492,6 +564,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             return "team_occurrence_leaders", {
                 "stat": occ_stat,
                 "min_value": occ_min,
+                "max_value": occurrence_event.get("max_value"),
                 "season": occ_season,
                 "start_season": occ_start,
                 "end_season": occ_end,
@@ -524,6 +597,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         return "player_occurrence_leaders", {
             "stat": occurrence_event.get("stat"),
             "min_value": occurrence_event.get("min_value"),
+            "max_value": occurrence_event.get("max_value"),
             "season": occ_season,
             "start_season": occ_start,
             "end_season": occ_end,
@@ -549,3 +623,95 @@ def try_occurrence_count_route(parsed: dict) -> tuple[str, dict] | None:
     leaderboard rows.
     """
     return None
+
+
+# A league-wide list of matching player games: "games with 10+ assists and 0
+# turnovers", "show me 30 point 10 rebound games this season", "who had a
+# triple double last night". The question names game conditions and asks to
+# see the games, with no player or team as the subject.
+_GAME_LIST_WORDING = re.compile(
+    r"^(?:(?:show|list|find|give)\s+(?:me\s+)?(?:all\s+|every\s+)?)?(?:the\s+|any\s+)?"
+    r"(?:player\s+)?games?\s+(?:with|where|in\s+which|that)\b"
+    r"|\b(?:who|which\s+players?|what\s+players?|any\s+players?|anyone)\s+(?:had|has|have|got|posted|recorded)\b"
+    r"|\b(?:show|list|find|give)\s+(?:me\s+)?(?:all\s+|every\s+)?(?:the\s+)?[\w\s+/-]*\bgames?\b"
+)
+
+
+# Wording a league game list or count is allowed to contain besides its
+# conditions and the scope the parser resolved.
+_GAME_LIST_GRAMMAR = (
+    r"\b\d+(?:\.\d+)?\+?",
+    rf"\b(?:{_COMPOUND_STAT_WORDS})\b",
+    r"\b(?:zero|no|under|over|at\s+least|or\s+more|more\s+than|fewer\s+than|less\s+than)\b",
+    r"\btriple[- ]?doubles?\b|\bdouble[- ]?doubles?\b",
+    r"\b(?:games?|performances?|nights?|outings?|times?|stat\s*lines?|occasions?)\b",
+    r"\b(?:how\s+many|how\s+often|count|number\s+of|total)\b",
+    r"\b(?:show|list|find|give|me|all|every|there|been|anyone|any|player)\b",
+    r"\b(?:with|where|which|that|had|has|have|got|posted|recorded|put\s+up|did)\b",
+    r"\b(?:this|current|so\s+far|seasons?|years?)\b",
+)
+
+
+def _unaccounted_words(q: str, parsed: dict) -> list[str]:
+    from nbatools.commands._leaderboard_eligibility import _claimed_ranges, _residual_tokens
+
+    ranges = _claimed_ranges(q, parsed, None)
+    for pattern in _GAME_LIST_GRAMMAR:
+        ranges.extend(m.span() for m in re.finditer(pattern, q))
+    return _residual_tokens(q, ranges)
+
+
+def try_league_game_finder_route(parsed: dict) -> tuple[str, dict] | None:
+    """Route a subjectless list of player games that meet game conditions."""
+    q = parsed["normalized_query"]
+    if any(
+        parsed.get(key) for key in ("player", "player_a", "player_b", "team", "team_a", "team_b")
+    ):
+        return None
+    if parsed.get("occurrence_leaderboard_intent"):
+        return None
+    count_intent = bool(parsed.get("count_intent"))
+    if re.search(r"\bteams?\b", q) or not (count_intent or _GAME_LIST_WORDING.search(q)):
+        return None
+
+    if _unaccounted_words(q, parsed):
+        # An unread word may be a misspelled player or team; a league-wide
+        # answer would silently drop that subject.
+        return None
+
+    compound = parsed.get("compound_occurrence_conditions") or []
+    event = parsed.get("occurrence_event") or {}
+    kwargs: dict = {}
+    if len(compound) >= 2:
+        kwargs["conditions"] = [dict(c) for c in compound]
+    elif event.get("special_event"):
+        kwargs["special_event"] = event["special_event"]
+    elif event.get("stat"):
+        kwargs.update(
+            stat=event["stat"],
+            min_value=event.get("min_value"),
+            max_value=event.get("max_value"),
+        )
+    else:
+        return None
+
+    season = parsed["season"]
+    if not season and not parsed["start_season"] and not parsed["end_season"]:
+        season = default_end_season(parsed["season_type"])
+    return "player_game_finder", {
+        "season": season,
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "season_type": parsed["season_type"],
+        "opponent": parsed["opponent"],
+        "home_only": parsed["home_only"],
+        "away_only": parsed["away_only"],
+        "wins_only": parsed["wins_only"],
+        "losses_only": parsed["losses_only"],
+        "limit": None if count_intent else 25,
+        "sort_by": "game_date",
+        "ascending": False,
+        **kwargs,
+    }

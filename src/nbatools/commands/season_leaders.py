@@ -630,6 +630,48 @@ def _merge_advanced_if_available(grouped: pd.DataFrame, adv_path: Path) -> pd.Da
     return merged
 
 
+#: The attempt column each shooting rate is qualified by when the question
+#: says only "attempts".
+_RATE_ATTEMPT_COLUMN = {
+    "fg_pct": "fga_total",
+    "efg_pct": "fga_total",
+    "ts_pct": "fga_total",
+    "fg3_pct": "fg3a_total",
+    "ft_pct": "fta_total",
+}
+_ATTEMPT_STAT_COLUMN = {"fga": "fga_total", "fg3a": "fg3a_total", "fta": "fta_total"}
+_ATTEMPT_LABEL = {
+    "fga_total": "field-goal attempts",
+    "fg3a_total": "three-point attempts",
+    "fta_total": "free-throw attempts",
+}
+
+
+def attempt_qualifier_column(target_col: str, attempt_stat: str | None) -> str | None:
+    """The attempt column a stated shot-attempt minimum applies to."""
+    if attempt_stat:
+        return _ATTEMPT_STAT_COLUMN.get(attempt_stat)
+    return _RATE_ATTEMPT_COLUMN.get(target_col)
+
+
+def _apply_attempt_qualifier(
+    df: pd.DataFrame,
+    attempt_col: str,
+    min_attempts: float,
+    per_game: bool,
+) -> pd.DataFrame:
+    """Keep players who reached the stated attempt minimum.
+
+    A stated minimum is the qualification rule: it replaces the default
+    attempt floor and the default games floor, so "minimum 100 attempts"
+    admits a 100-attempt shooter however few games he played.
+    """
+    attempts = pd.to_numeric(df[attempt_col], errors="coerce").fillna(0)
+    if per_game:
+        attempts = attempts / df["games_played"].where(df["games_played"] > 0)
+    return df[attempts >= min_attempts].copy()
+
+
 def _apply_default_guardrails(
     df: pd.DataFrame,
     target_col: str,
@@ -777,6 +819,9 @@ def build_result(
     sophomores_only: bool = False,
     role: str | None = None,
     team: str | None = None,
+    min_attempts: float | None = None,
+    min_attempts_per_game: bool = False,
+    attempt_stat: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -796,6 +841,21 @@ def build_result(
         raise ValueError("min_games must be at least 1")
 
     target_col = _normalize_stat(stat)
+    attempt_col: str | None = None
+    if min_attempts is not None:
+        if min_attempts <= 0:
+            raise ValueError("min_attempts must be greater than 0")
+        attempt_col = attempt_qualifier_column(target_col, attempt_stat)
+        if target_col not in PERCENTAGE_STATS or attempt_col is None:
+            return NoResult(
+                query_class="leaderboard",
+                reason="unsupported",
+                result_status="no_result",
+                notes=[
+                    "a shot-attempt minimum qualifies shooting-percentage leaderboards only; "
+                    f"'{target_col}' is not one"
+                ],
+            )
     start_ts = _normalize_date_value(start_date)
     end_ts = _normalize_date_value(end_date)
     if start_ts is not None and end_ts is not None and start_ts > end_ts:
@@ -1102,6 +1162,11 @@ def build_result(
 
     if clutch_executed:
         df = df[df["games_played"] >= min_games].copy()
+    elif attempt_col is not None:
+        if attempt_col not in df.columns:
+            raise ValueError(f"Column '{attempt_col}' not available for the attempt minimum")
+        df = df[df["games_played"] >= min_games].copy()
+        df = _apply_attempt_qualifier(df, attempt_col, min_attempts, min_attempts_per_game)
     else:
         df = _apply_default_guardrails(
             df,
@@ -1123,12 +1188,14 @@ def build_result(
     out_cols = ["player_name", "player_id"]
     if "team_abbr" in df.columns:
         out_cols.append("team_abbr")
-    out_cols.extend(["games_played", target_col])
+    out_cols.extend(dict.fromkeys(["games_played", target_col]))
     out_cols.extend(
         col
         for col in _leaderboard_context_columns(target_col)
         if col in df.columns and col not in out_cols
     )
+    if attempt_col is not None and attempt_col not in out_cols:
+        out_cols.append(attempt_col)
     if clutch_executed:
         out_cols.extend(
             [c for c in ["pts_total", "clutch_events", "clutch_seconds"] if c != target_col]
@@ -1137,8 +1204,10 @@ def build_result(
     result = (
         df[out_cols]
         .sort_values(
-            by=[target_col, "games_played", "player_name"],
-            ascending=[ascending, False, True],
+            by=list(dict.fromkeys([target_col, "games_played", "player_name"])),
+            ascending=[ascending, True]
+            if target_col == "games_played"
+            else [ascending, False, True],
         )
         .head(limit)
         .reset_index(drop=True)
@@ -1159,6 +1228,11 @@ def build_result(
         current_through = compute_current_through(seasons[0], season_type)
 
     caveats: list[str] = []
+    if attempt_col is not None:
+        amount = f"{min_attempts:g}"
+        unit = _ATTEMPT_LABEL[attempt_col] + (" per game" if min_attempts_per_game else "")
+        games_rule = f" and {min_games}+ games" if min_games > 1 else ""
+        caveats.append(f"qualified: at least {amount} {unit}{games_rule}")
     if date_window_active:
         caveats.append("leaderboard computed from game-log window; season-advanced stats excluded")
     if multi_season:
