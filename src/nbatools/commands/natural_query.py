@@ -98,6 +98,7 @@ from nbatools.commands._occurrence_route_utils import (
     extract_occurrence_event,
     try_compound_occurrence_route,
     try_league_game_finder_route,
+    try_league_streak_route,
     try_occurrence_count_route,
     wants_occurrence_leaderboard,
 )
@@ -1600,6 +1601,10 @@ def _build_parse_state(query: str) -> dict:
 
     if (
         (streak_request or team_streak_request)
+        # "this season" / "last season" name a season too.
+        and not explicit_relative_season
+        and not re.search(r"\b(?:this|current)\s+(?:season|year)\b", q)
+        and not career_intent
         and explicit_single_season is None
         and explicit_range_start is None
         and explicit_range_end is None
@@ -2568,6 +2573,7 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": team_streak_request.get("special_condition"),
             "min_streak_length": team_streak_request.get("min_streak_length"),
             "longest": team_streak_request.get("longest", False),
+            "current": bool(team_streak_request.get("current")),
             "limit": 25,
         }
         _fires, _note = streak_default_window(parsed)
@@ -2835,11 +2841,19 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": streak_request.get("special_condition"),
             "min_streak_length": streak_request.get("min_streak_length"),
             "longest": streak_request.get("longest", False),
+            "current": bool(streak_request.get("current")),
             "limit": 25,
         }
+        if streak_request.get("conditions"):
+            route_kwargs["conditions"] = streak_request["conditions"]
         _fires, _note = streak_default_window(parsed)
         if _fires:
             notes.append(_note)
+    elif (league_streak := try_league_streak_route(parsed)) is not None:
+        route, route_kwargs = league_streak
+        _fires, _note = streak_default_window(parsed)
+        if _fires:
+            notes.append(_note.replace("team streak", "league streak ranking"))
     elif (
         "top" in q
         and "games" in q

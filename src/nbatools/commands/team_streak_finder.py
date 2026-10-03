@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._streak_runs import best_runs_per_entity
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import (
     ALLOWED_STATS,
@@ -192,9 +193,14 @@ def build_result(
     end_date: str | None = None,
     last_n: int | None = None,
     limit: int = 25,
+    current: bool = False,
 ) -> StreakResult | NoResult:
-    if team is None:
-        raise ValueError("team is required for team streak queries")
+    """Streaks of consecutive team games meeting a condition.
+
+    With ``team`` set, list that team's streaks (``longest`` keeps the longest,
+    ``current`` the one alive at its latest game). Without it, rank every team
+    by its longest (or current) streak.
+    """
 
     if min_streak_length is not None and min_streak_length <= 0:
         raise ValueError("min_streak_length must be greater than 0")
@@ -257,12 +263,28 @@ def build_result(
         special_condition=special_condition,
     )
 
-    rows = _extract_streak_rows(filtered, mask, team_name=team, condition=condition)
+    if team is None:
+        rows = [
+            _finalize_streak(games, games["team_name"].iloc[-1], condition, active)
+            for games, active in best_runs_per_entity(
+                filtered, mask, "team_id", current=current, limit=limit
+            )
+        ]
+    else:
+        rows = _extract_streak_rows(filtered, mask, team_name=team, condition=condition)
+        if current:
+            rows = [row for row in rows if row["is_active"]]
 
     if min_streak_length is not None:
         rows = [row for row in rows if row["streak_length"] >= min_streak_length]
 
-    if longest and rows:
+    if current and not rows:
+        return NoResult(
+            query_class="streak",
+            caveats=[f"no active streak: the latest game in range did not meet {condition}"],
+        )
+
+    if longest and rows and team is not None:
         max_len = max(row["streak_length"] for row in rows)
         rows = [row for row in rows if row["streak_length"] == max_len]
 
@@ -309,6 +331,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if team is None:
+        caveats.append("each team's best streak in range, ranked by length")
     if len(seasons) > 1:
         caveats.append(
             f"streaks computed across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})"
@@ -348,6 +372,7 @@ def run(
     end_date: str | None = None,
     last_n: int | None = None,
     limit: int = 25,
+    current: bool = False,
 ) -> None:
     result = build_result(
         season=season,
@@ -370,6 +395,7 @@ def run(
         end_date=end_date,
         last_n=last_n,
         limit=limit,
+        current=current,
     )
     if isinstance(result, NoResult):
         print("no matching games")
