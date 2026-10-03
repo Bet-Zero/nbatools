@@ -150,6 +150,7 @@ def test_every_player_game_row_has_a_trusted_starter_role() -> None:
     assert not missing, f"{len(missing)} player-games lack a trusted role, e.g. {missing[:3]}"
 
 
+@pytest.mark.fixture_data
 def test_no_fixture_player_name_resolves_to_a_different_player() -> None:
     """A fixture name must not hand its rows to another player's question.
 
@@ -157,23 +158,32 @@ def test_no_fixture_player_name_resolves_to_a_different_player() -> None:
     resolution produced, so a name that resolves elsewhere silently answers
     about someone else — the wrong-answer class this repository refuses to ship.
 
-    Two real collisions were found while building this fixture and removed:
-    `Karl-Anthony Towns` resolves to `Carmelo Anthony`, and `Nikola Jovic`
-    resolves to `Nikola Jokić`. Resolving to *nothing* is fine — such a player
-    is only ever reached through a leaderboard, never by name.
+    Names are resolved against the fixture itself, the data condition in which
+    their rows exist. `Karl-Anthony Towns` and `Nikola Jović` are seeded on
+    purpose: they once resolved to `Carmelo Anthony` and `Nikola Jokić`, and
+    were removed from the fixture rather than fixed. Both the bare name and the
+    name inside a question must now reach the player's own rows.
 
     This lives here rather than in the generator because the generator must stay
     importable without project dependencies: `--check` runs in the
     docs-governance job, which installs none.
     """
-    from nbatools.commands.entity_resolution import resolve_player
+    from nbatools.commands.entity_resolution import (
+        reset_player_index,
+        resolve_player,
+        resolve_player_in_query,
+    )
 
+    reset_player_index()
     problems: list[str] = []
     for row in _rows("raw/rosters/2023-24.csv"):
         name = row["player_name"]
-        resolved = resolve_player(name).resolved
-        if resolved is not None and resolved != name:
-            problems.append(f"{name!r} resolves to {resolved!r}")
+        for text, resolved in (
+            (name, resolve_player(name).resolved),
+            (f"{name} last 10 games", resolve_player_in_query(f"{name} last 10 games").resolved),
+        ):
+            if resolved != name:
+                problems.append(f"{text!r} resolves to {resolved!r}")
 
     assert problems == [], (
         "fixture player names that resolve to a different player: "

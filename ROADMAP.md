@@ -14,6 +14,11 @@ People should not need to learn the parser's preferred sentences. Answers must
 preserve the requested meaning, expose the actual sample and statistical basis,
 and use complete enough, current enough data for the claim being made.
 
+Working historical scope is 1996-97 onward, with priority on the 21st century
+(owner clarification, issue #314). Earlier history is optional, never a
+completion requirement or a blocker; answers about careers that began earlier
+label the covered span instead of claiming the full career.
+
 The long-term destination includes legitimate missing statistical capabilities
 and richer guided tools already described in
 `docs/reference/natural_search_and_deep_tools_boundary.md`. A delivery milestone

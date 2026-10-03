@@ -12,6 +12,10 @@ sample selection. Start O1, data/runtime verification, alongside A1 when a
 second execution environment is available, otherwise interleave it.** Recent
 team records remain an early deliverable within A2, not an isolated strategy.
 
+Issue #314 (2026-10-03) launched execution and is folded in here rather than
+tracked separately: the working scope below, the foundation map in section 2a,
+the A1 result in section 4 and the continuation record in section 7.
+
 Preserve existing work and inspect live main/open PRs before branching. At the
 review boundary, main was `6a02fccb729206dd381653769f8a59adc90bdb26`, PR #312
 was merged, and no PRs were open. No product implementation is claimed by this
@@ -42,6 +46,20 @@ A passing phrase does not prove its siblings or the numeric answer.
 
 ## 2. Capability map and scope
 
+**Working historical scope: 1996-97 onward, with priority on the 21st
+century** (owner clarification, issue #314). Earlier history is optional, not a
+completion requirement, and pre-1996-97 backfill must not block any package.
+Do not delete older data that exists. Never present a partial span as a full
+career: label the covered span instead (for example "since 1996-97") when a
+player's career started earlier.
+
+Plan data families from the capabilities they serve (section 2a), not one
+failed phrase at a time. Stored facts, facts derivable from qualified stored
+rows, and genuinely missing source data are different: when existing rows can
+produce a statistic, record the formula/join and implement it rather than
+planning another scrape. The owner's recollection of past scraping is a lead to
+verify, not evidence of complete coverage.
+
 This is a seeded plan, not a measured answer-rate report. "Present" below means
 source implementations exist, not that all combinations or data are verified.
 Update the evidence/status cells here as the work runs. Reuse the generated
@@ -58,7 +76,7 @@ route inventory and Raw QA families; do not create another route registry.
 | Streaks and rolling stretches | Present, with route-specific eligibility/window behavior | Defined sequence, continuity, per-entity windows and correct thresholds/ranking; C2 |
 | Opponent/context/availability | Partial; transport sets differ; conference/division reference covers only 2024-25/2025-26 | Season-aware joins and meaningful combinations, not cross-season union unless explicitly requested; C1/C2/D1 |
 | Advanced metrics | Shared ratio formulas and sample-aware helpers present | Reuse correct formula/denominator at the requested sample grain; no average-of-percentages or invented rating substitutes; B1/D2 |
-| Playoff/history/career | Present within the configured 1996-97 onward span | Distinguish games/series/appearances/rounds/franchises; partial coverage is not a full-career claim; C2/D1 |
+| Playoff/history/career | Present within the configured 1996-97 onward span (the working scope) | Distinguish games/series/appearances/rounds/franchises; label the covered span for careers that began earlier; C2 (pre-1996-97 backfill optional) |
 | Bench/role and period/clutch | Contracts and some implementations exist; publication/coverage must be inspected | Actual source-backed answers at team/player/period grain; D1/D2 |
 | Lineups and on/off | Routes/specs exist; prior sweep controls unsupported | Qualify exact source coverage and meaning, activate/complete rather than rebuild blindly; D2 |
 | Calendar/factual reference questions | Schedule data path exists; championship/award questions currently bounded | Source-backed schedule and historical-reference answers in the extended queue; D1/D2 as appropriate |
@@ -91,6 +109,44 @@ parallel source reconnaissance. No exhaustive cross-product, arbitrary quota of
 owner-written questions, new test runner, or baseline-only multi-session project.
 Unknown cases stay unknown. Use a bounded corpus-wide run at integration, not
 before every local edit.
+
+## 2a. Foundation map (issue #314, 2026-10-03)
+
+Compact and evidence-labelled. "Doc" means a repository contract or catalog
+statement; "verified" names the check. The served R2 generation was not
+inspected in the #314 session: its egress policy blocked the deployed app, and
+R2 is reachable only through the manual `r2-real-data-validation.yml`
+workflow, which is the exact access step for every "unverified" cell.
+
+**Data view**
+
+| Family | Serves | One row is | Declared coverage | Evidence | Stored / derivable / missing | Next gap |
+| --- | --- | --- | --- | --- | --- | --- |
+| `player_game_stats`, `team_game_stats`, `games` | Summaries, finders, records, leaders, comparisons, streaks | Player-game / team-game / game | 1996-97 to 2025-26, regular season and playoffs | Doc: local Queue D baseline (`system_conventions.md` section 11); served generation unverified | Stored | O1: read the active generation manifest for the same span |
+| Player identity | Every named-player answer | Name and `player_id` on each player-game row | Follows game data | Verified: controlled names, fixture and data-free paths (A1 tests); real names await the R2 run | Stored; queries filter by exact name | Same-name different players (e.g. two Mike James) merge under a name filter; derivable by selecting on `player_id` (A1b) |
+| `rosters`, `player_game_starter_roles` | Team membership, starter/bench | Player-season-team / player-game role | Coverage-gated per slice | Doc only | Stored where trusted | D1: probe served seasons |
+| `team_conference_membership` | Conference/division opponents | Team-season | 2024-25 and 2025-26 trusted only | Doc (`data_catalog.md`) | Older seasons missing as rows; historical alignment is reference data, not box-score derivable | D1 |
+| `schedule`, `standings_snapshots`, `schedule_context_features` | Calendar, rest/back-to-back, standings | Game / team-date / team-game | Standings regular season only | Doc only | Rest/back-to-back derivable from game dates; standings stored | O1/O2 calendar work |
+| Playoff series context | Series, rounds, appearances | Derived from playoff team-game rows | Follows playoff game data | Doc; round labelling unverified | Derivable from game rows | C2 |
+| `player_season_advanced`, `team_season_advanced` | Advanced metrics | Player/team season snapshot | Unverified | Doc; sample-aware recomputation exists for filtered samples | Stored snapshot plus derivable sample metrics | B1/D2 |
+| Period, play-by-play/clutch, on/off, lineups | Quarter/half, clutch, on/off, lineup answers | Period window / event / presence split / lineup unit | Coverage-gated; contracts exist | Doc only; served coverage unknown | Stored where published | D2 after an O1 manifest probe |
+| Awards, championships | Factual reference answers | Reference row | None | Not in game data | Team champions derivable from final-series results; player rings and awards need a qualified reference source | D1 |
+
+**Operations view**
+
+| Operation | Existing implementation | State | Next |
+| --- | --- | --- | --- |
+| Subject selection (players) | `entity_resolution.py`, called by `_matchup_utils.detect_player*` and comparison extractors | Sound after the A1 slice for spelling/alias collisions (verified, section 4). Duplicated: `_parse_helpers._extract_player_mentions` (lineup "with X and Y") and legacy alias fallbacks scan aliases without the data index | A1b: route those scans through the resolver; select by `player_id` |
+| Subject selection (teams, populations) | `resolve_team*`, opponent quality/conference helpers | Unverified this session | C1 |
+| Time/sample selection | `_seasons.py`, `_date_utils.py`, per-route `last_n`/date handling | Inconsistent. Verified on the fixture: "Knicks record last 10 games" refuses (`team_record` parses `last_n` with no execution path) while player last-N summaries answer | A2 |
+| Predicates and joins | Condition utilities, finders, opponent/context filters | Parser allowlists and transport sets duplicate declarations (doc) | B1/C1 |
+| Group / aggregate / count / rank | `aggregate_metrics.py`, leaderboards, occurrence counts | Present; basis and eligibility differ by route (doc) | B1 |
+| Comparison | `player_compare`, team comparisons | Verified on the fixture for named-player pairs, including accented spellings and seasons | C1 parity of filters |
+| Sequences | Streak and stretch modules | Present; per-route semantics (doc) | C2 |
+| Output | `query_service` metadata/sections, React renderers | Verified for the A1 summaries through `/query` | E |
+
+The map is complete enough for A1 and A2. Unknown cells stay unknown until a
+package needs them; they are not a prerequisite for continuing.
 
 ## 3. Architecture decisions for implementation
 
@@ -129,7 +185,35 @@ schema-valid request can still express the wrong question.
 Each package may contain small coherent PRs; it is not a demand for a giant PR.
 All packages use the common acceptance rules in section 6.
 
-### A1 - Identity integrity (open; first implementation)
+### A1 - Identity integrity (first slice implemented; A1b open)
+
+**Result of the first slice (branch `claude/issue-314-q0tbff`).** Reproduced,
+then fixed in shared resolution, so every consumer (summaries, finders,
+comparisons, API) inherits it:
+
+- With covered data, "karl anthony towns" (no hyphen) answered with Carmelo
+  Anthony, and "Tim Hardaway Jr" / "Gary Trent Jr" / "Jaren Jackson Jr"
+  without the period answered with the father. Names now match regardless of
+  hyphens and suffix/initial periods.
+- Without the player in the loaded data, "Karl-Anthony Towns" and
+  "Anthony Black" answered with Carmelo Anthony; a short alias no longer claims
+  a span whose neighbouring word is another known player's first/last name,
+  and curated canonical names match in full.
+- Names typed with their real diacritics broke comparisons ("Luka Dončić vs
+  Nikola Jokić last 10 games" lost its second player); parser input now folds
+  accents. "X vs Y 2025-26" no longer reads the season as a name typo.
+- The fixture now seeds Karl-Anthony Towns and Nikola Jović instead of avoiding
+  them; fixture names must resolve to themselves.
+
+Evidence: `tests/test_player_identity_collisions.py` (controlled names,
+data-free, fixture natural/structured/HTTP with values computed from the
+fixture CSVs) and `tests/test_player_identity_real_data.py` (`needs_data`,
+values from raw rows of the pinned generation). Remaining in A1b: select
+players by `player_id` so identical-name players are not merged; route the
+lineup/legacy alias scans through the resolver; a first-name alias followed by
+a surname absent from all known names (for example "nikola <unknown>") still
+falls back to the alias. Original scope:
+
 
 Reproduce the #304 Towns/Carmelo and Jovic/Jokic findings in their actual data
 conditions. Full-name precedence already exists with a populated index; do not
@@ -228,8 +312,9 @@ a streak, nor change a documented sequence meaning without explicit evidence.
 
 Differentiate playoff games, series, rounds and appearances. Preserve historical
 franchise identity. A configured 1996-97 start is not proof of complete careers
-for players who played earlier; link missing coverage to D1 rather than declaring
-full-career completion from a partial answer.
+for players who played earlier; label the covered span ("since 1996-97") rather
+than claiming a full career. Pre-1996-97 backfill is optional under the working
+scope and does not block C2.
 
 Acceptance: boundary/continuity examples, traded players and franchise changes,
 regular/playoff separation, explicit coverage, and independent sequences/counts.
@@ -238,7 +323,8 @@ regular/playoff separation, explicit coverage, and independent sequences/counts.
 
 Default order: extend needed roster/role/conference/division coverage and team
 bench scoring; historical team/playoff/championship reference; player championship
-membership and older career coverage. These are different datasets/claims, not
+membership. Pre-1996-97 career coverage is optional under the working scope
+(section 2) and is last in this order. These are different datasets/claims, not
 one generic "rings" calculation. Retain factual awards/schedule requests in the
 extended map where existing examples seek them; subjective opinion is separate.
 
@@ -401,12 +487,12 @@ run IDs and numerical evidence belong in the PR/queue.
 
 | Package | Status at plan revision | Dependency / next action |
 | --- | --- | --- |
-| A1 | Open; next | Reproduce identity cases and implement the smallest general correction |
-| A2 | Open | Inspect sample semantics; recent records plus related summary parity |
+| A1 | First slice implemented on `claude/issue-314-q0tbff` (PR pending review/merge); A1b open | Merge after CI and an independent check; R2 run for `test_player_identity_real_data.py`; then A1b (`player_id` selection, resolver for lineup/legacy alias scans) |
+| A2 | Open; next | Reproduced on the fixture: "Knicks record last 10 games" refuses because `team_record` has no `last_n` execution. Implement team last-N records sharing the player summary's game selection |
 | B1 | Open | Reuse A sample contract; complete operation/basis and compound counts |
 | C1 / C2 | Open | Apply A/B behavior to combinations, splits/comparisons and sequences/history |
 | D1 / D2 | Open | O1 feasibility first; each source-backed slice then delivers independently |
-| O1 | Open; parallel | Existing R2 validation, actual coverage and deployed measurements |
+| O1 | Open; parallel | Dispatch `r2-real-data-validation.yml` on the A1 branch (also the pending #311 confirmation); read the active generation manifest for the section 2a data view |
 | O2 | Open | Act on O1; calendar/refresh and measured performance repairs |
 | E | Open | Integrated acceptance, without replacing per-feature delivery checks |
 

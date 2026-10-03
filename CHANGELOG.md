@@ -11,6 +11,15 @@ https://keepachangelog.com/en/1.0.0/
 
 ### Fixed
 
+- A player's name now reaches that player instead of one whose alias it
+  contains. "karl anthony towns" answered with Carmelo Anthony, and
+  "Tim Hardaway Jr" / "Jaren Jackson Jr" without the period answered with the
+  father; names now match regardless of hyphens and suffix or initial periods.
+  When the loaded data does not cover a player, a short alias ("anthony",
+  "nikola") no longer claims a span that names someone else. Names typed with
+  their diacritics no longer break comparisons ("Luka Dončić vs Nikola Jokić
+  last 10 games" lost its second player), and "X vs Y 2025-26" no longer reads
+  the season as a misspelled name.
 - Removed `.github/workflows/data-backed-validation.yml`, which duplicated the
   pre-existing `r2-real-data-validation.yml` against repository secrets that
   were never created. The R2 credential is held as secrets on the

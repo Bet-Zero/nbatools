@@ -18,7 +18,7 @@ player_id,team_id,season,stint,player_name,jersey_number,position,height,weight,
 203935,1610612738,2024-25,1,Kristaps Porziņģis,26,C,6-7,220,1995-01-01,7,Fixture University
 1629057,1610612738,2024-25,1,Robert Williams,27,C-F,6-7,220,1995-01-01,5,Fixture University
 1628973,1610612752,2024-25,1,Jalen Brunson,28,G,6-7,220,1995-01-01,5,Fixture University
-1626164,1610612752,2024-25,1,Isaiah Hartenstein,29,C,6-7,220,1995-01-01,9,Fixture University
+1626157,1610612752,2024-25,1,Karl-Anthony Towns,29,C,6-7,220,1995-01-01,9,Fixture University
 1629628,1610612752,2024-25,1,RJ Barrett,30,G-F,6-7,220,1995-01-01,4,Fixture University
 1630193,1610612752,2024-25,1,Immanuel Quickley,31,G,6-7,220,1995-01-01,3,Fixture University
 203944,1610612752,2024-25,1,Julius Randle,32,F-C,6-7,220,1995-01-01,9,Fixture University
@@ -32,6 +32,6 @@ player_id,team_id,season,stint,player_name,jersey_number,position,height,weight,
 202710,1610612748,2024-25,1,Jimmy Butler,40,F-G,6-7,220,1995-01-01,13,Fixture University
 1629639,1610612748,2024-25,1,Tyler Herro,41,G,6-7,220,1995-01-01,5,Fixture University
 202355,1610612748,2024-25,1,Bam Adebayo,42,C,6-7,220,1995-01-01,7,Fixture University
-1631107,1610612748,2024-25,1,Jaime Jaquez,43,G-F,6-7,220,1995-01-01,1,Fixture University
+1631170,1610612748,2024-25,1,Jaime Jaquez,43,G-F,6-7,220,1995-01-01,1,Fixture University
 203482,1610612748,2024-25,1,Kelly Olynyk,44,C-F,6-7,220,1995-01-01,11,Fixture University
-1630217,1610612748,2024-25,1,Caleb Martin,45,F,6-7,220,1995-01-01,2,Fixture University
+1631107,1610612748,2024-25,1,Nikola Jović,45,F,6-7,220,1995-01-01,2,Fixture University
