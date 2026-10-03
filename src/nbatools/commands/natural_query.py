@@ -98,6 +98,7 @@ from nbatools.commands._occurrence_route_utils import (
     extract_occurrence_event,
     try_compound_occurrence_route,
     try_league_game_finder_route,
+    try_league_streak_route,
     try_occurrence_count_route,
     wants_occurrence_leaderboard,
 )
@@ -1623,14 +1624,22 @@ def _build_parse_state(query: str) -> dict:
     explicit_single_season = extract_season(q)
     explicit_range_start, explicit_range_end = extract_season_range(q)
 
+    if player and team_streak_request and team_streak_request.get("team_condition_only"):
+        # A bare stat condition is a team streak only without a player subject.
+        team_streak_request = None
     if (
         (streak_request or team_streak_request)
+        # "this season" / "last season" name a season too.
+        and not explicit_relative_season
+        and not re.search(r"\b(?:this|current)\s+(?:season|year)\b", q)
+        and not career_intent
         and explicit_single_season is None
         and explicit_range_start is None
         and explicit_range_end is None
         and start_date is None
         and end_date is None
     ):
+        pre_streak_scope = (season, start_season, end_season)
         default_end = default_season_for_context(season_type)
         end_year = int(default_end.split("-")[0])
         start_year = end_year - 2
@@ -1640,6 +1649,7 @@ def _build_parse_state(query: str) -> dict:
         streak_default_window = True
     else:
         streak_default_window = False
+        pre_streak_scope = None
 
     return {
         "normalized_query": q,
@@ -1725,6 +1735,7 @@ def _build_parse_state(query: str) -> dict:
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
         "streak_default_window": streak_default_window,
+        "pre_streak_scope": pre_streak_scope,
         "season_high_intent": season_high_intent,
         "top_team_game_intent": top_team_game_intent,
         "distinct_player_count": distinct_player_count,
@@ -2595,6 +2606,7 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": team_streak_request.get("special_condition"),
             "min_streak_length": team_streak_request.get("min_streak_length"),
             "longest": team_streak_request.get("longest", False),
+            "current": bool(team_streak_request.get("current")),
             "limit": 25,
         }
         _fires, _note = streak_default_window(parsed)
@@ -2862,11 +2874,19 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": streak_request.get("special_condition"),
             "min_streak_length": streak_request.get("min_streak_length"),
             "longest": streak_request.get("longest", False),
+            "current": bool(streak_request.get("current")),
             "limit": 25,
         }
+        if streak_request.get("conditions"):
+            route_kwargs["conditions"] = streak_request["conditions"]
         _fires, _note = streak_default_window(parsed)
         if _fires:
             notes.append(_note)
+    elif (league_streak := try_league_streak_route(parsed)) is not None:
+        route, route_kwargs = league_streak
+        _fires, _note = streak_default_window(parsed)
+        if _fires:
+            notes.append(_note.replace("team streak", "league streak ranking"))
     elif (
         "top" in q
         and "games" in q
@@ -4048,6 +4068,27 @@ def _finalize_route(parsed: dict) -> dict:
     ):
         route_kwargs["unsupported_filters"] = ["unsupported_concept"]
         notes.append(boundary_note)
+
+    if (
+        parsed.get("pre_streak_scope")
+        and route not in ("player_streak_finder", "team_streak_finder")
+        and "season" in route_kwargs
+    ):
+        # The three-season window is a streak default; a question that ends up
+        # on another route keeps the scope it would have had without it.
+        pre_season, pre_start, pre_end = parsed["pre_streak_scope"]
+        route_kwargs.update(season=pre_season, start_season=pre_start, end_season=pre_end)
+        notes = [note for note in notes if "three-season window" not in note]
+
+    if career_intent and route is not None:
+        from nbatools.commands._seasons import EARLIEST_SEASON
+
+        if route_kwargs.get("start_season") == EARLIEST_SEASON:
+            # The data starts in 1996-97, so a career that began earlier is
+            # only partly covered; say so rather than claim the full career.
+            notes.append(
+                f"career_span: covers {EARLIEST_SEASON} onward; earlier seasons are not in the data"
+            )
 
     if notes:
         out["notes"] = notes

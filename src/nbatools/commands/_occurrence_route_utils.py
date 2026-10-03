@@ -726,3 +726,70 @@ def try_league_game_finder_route(parsed: dict) -> tuple[str, dict] | None:
         "ascending": False,
         **kwargs,
     }
+
+
+# Wording a league streak ranking may contain besides its condition and scope:
+# "who has the longest 30 point streak this season", "longest winning streak".
+_STREAK_GRAMMAR = (
+    r"\b(?:streaks?|straight|consecutive|longest|most|current|active|ongoing|running)\b",
+    r"\b(?:win(?:ning)?|los(?:ing|s))\b",
+    r"\b(?:who|which|what|players?|teams?|of|the|a|an|in|is|are|league|nba)\b",
+)
+
+
+def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
+    """Rank every player (or team) by their longest or current streak."""
+    q = parsed["normalized_query"]
+    if any(
+        parsed.get(key) for key in ("player", "player_a", "player_b", "team", "team_a", "team_b")
+    ):
+        return None
+    player_request = parsed.get("streak_request")
+    team_request = parsed.get("team_streak_request")
+    if team_request and (
+        team_request.get("special_condition") in ("wins", "losses") or re.search(r"\bteams?\b", q)
+    ):
+        route, request, subject_key = "team_streak_finder", team_request, "team"
+    elif player_request:
+        route, request, subject_key = "player_streak_finder", player_request, "player"
+    else:
+        return None
+
+    from nbatools.commands._leaderboard_eligibility import _claimed_ranges, _residual_tokens
+
+    ranges = _claimed_ranges(q, parsed, None)
+    for pattern in (*_GAME_LIST_GRAMMAR, *_STREAK_GRAMMAR):
+        ranges.extend(m.span() for m in re.finditer(pattern, q))
+    if _residual_tokens(q, ranges):
+        # An unread word may be a misspelled player or team; a league-wide
+        # ranking would silently drop that subject.
+        return None
+
+    season = parsed["season"]
+    if not season and not parsed["start_season"] and not parsed["end_season"]:
+        # "this season" carries no explicit season of its own.
+        season = default_end_season(parsed["season_type"])
+    kwargs = {
+        "season": season,
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": parsed["season_type"],
+        subject_key: None,
+        "opponent": parsed["opponent"],
+        "home_only": parsed["home_only"],
+        "away_only": parsed["away_only"],
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "last_n": parsed.get("last_n"),
+        "stat": request.get("stat"),
+        "min_value": request.get("min_value"),
+        "max_value": request.get("max_value"),
+        "special_condition": request.get("special_condition"),
+        "min_streak_length": request.get("min_streak_length"),
+        "longest": True,
+        "current": bool(request.get("current")),
+        "limit": 10,
+    }
+    if request.get("conditions"):
+        kwargs["conditions"] = request["conditions"]
+    return route, kwargs
