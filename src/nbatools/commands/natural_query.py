@@ -122,6 +122,9 @@ from nbatools.commands._parse_helpers import (
     build_role_filter_note as build_role_filter_note,
 )
 from nbatools.commands._parse_helpers import (
+    canonicalize_sample_phrases as canonicalize_sample_phrases,
+)
+from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
 )
 from nbatools.commands._parse_helpers import (
@@ -150,6 +153,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_last_n_scope as detect_last_n_scope,
 )
 from nbatools.commands._parse_helpers import (
     detect_lineup_query as detect_lineup_query,
@@ -531,6 +537,16 @@ _LAST_N_SUPPORTED_ROUTES = {
     "team_streak_finder",
     "top_player_games",
     "top_team_games",
+}
+
+# Game-log routes that can choose a last-N time window before applying game
+# results and stat conditions (see detect_last_n_scope).
+_LAST_N_WINDOW_ROUTES = {
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+    "team_record",
 }
 
 
@@ -1206,7 +1222,7 @@ __all__ = [
 
 
 def _build_parse_state(query: str) -> dict:
-    q = normalize_text(query)
+    q = canonicalize_sample_phrases(normalize_text(query))
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
@@ -1626,6 +1642,7 @@ def _build_parse_state(query: str) -> dict:
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
+        "last_n_scope": detect_last_n_scope(q, threshold_conditions) if last_n else None,
         "min_games": min_games,
         "top_n": top_n,
         "split_type": split_type,
@@ -3849,6 +3866,11 @@ def _finalize_route(parsed: dict) -> dict:
         # Every team_record branch selects the same game log, so the last-N
         # window applies to all of them rather than to each kwargs literal.
         route_kwargs["last_n"] = last_n
+
+    if route_kwargs.get("last_n") is not None and route in _LAST_N_WINDOW_ROUTES:
+        # "30 point games in his last 10" measures conditions inside the time
+        # window; "last 10 games where he scored 30" counts qualifying games.
+        route_kwargs["last_n_scope"] = parsed.get("last_n_scope") or "qualifying"
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:

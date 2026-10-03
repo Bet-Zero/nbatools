@@ -23,6 +23,7 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    apply_last_n_sample,
     apply_schedule_context_filters,
     apply_team_clutch_filter,
     build_clutch_filter_coverage_note,
@@ -33,11 +34,11 @@ from nbatools.commands.data_utils import (
     filter_period_rows,
     filter_with_player,
     filter_without_player,
+    last_n_window_game_ids,
     load_team_game_period_stats_for_seasons,
     load_team_games_for_seasons,
     period_coverage_failure,
     period_window_label,
-    select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
@@ -230,6 +231,7 @@ def build_team_record_result(
     one_possession: bool = False,
     nationally_televised: bool = False,
     last_n: int | None = None,
+    last_n_scope: str = "qualifying",
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -356,6 +358,39 @@ def build_team_record_result(
     else:
         df = base_df
 
+    window_game_ids = None
+    if last_n is not None and last_n_scope == "window":
+        # "how many games over 120 in their last 10": the window is the
+        # team's N most recent games in play; results and stat conditions
+        # are then counted inside it.
+        sample = _apply_game_filters(
+            base_df,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if with_player and not sample.empty:
+            sample = filter_with_player(
+                sample, with_player, seasons, season_type, team=team, strict_team_match=True
+            )
+        if without_player and not sample.empty:
+            sample = filter_without_player(
+                sample, without_player, seasons, season_type, team=team, strict_team_match=True
+            )
+        sample, _ = apply_schedule_context_filters(
+            sample,
+            seasons,
+            season_type,
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+        window_game_ids = last_n_window_game_ids(sample, last_n)
+
     df = _apply_game_filters(
         df,
         team=team,
@@ -437,7 +472,8 @@ def build_team_record_result(
         if tied_period_rows:
             df = df[df["wl"].astype(str).str.upper().isin({"W", "L"})].copy()
 
-    df = select_most_recent_games(df, last_n)
+    if last_n is not None and not df.empty:
+        df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
         if tied_period_rows:
@@ -515,7 +551,8 @@ def build_team_record_result(
         caveats.append(" ".join(parts))
     if last_n is not None:
         noun = "game" if last_n == 1 else "games"
-        caveats.append(f"last {last_n} {noun} (played {len(df)})")
+        played = len(window_game_ids) if window_game_ids is not None else len(df)
+        caveats.append(f"last {last_n} {noun} (played {played})")
     if start_date or end_date:
         dp = []
         if start_date:

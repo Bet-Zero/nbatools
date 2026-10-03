@@ -810,19 +810,19 @@ def _build_count_phrase(
     """
     player = metadata.get("player")
     team = metadata.get("team")
-    entity = player or _team_subject(metadata) or "Result"
+    entity = player or _team_subject(metadata, games) or "Result"
     team_subject = bool(team and not player)
 
     if parsed.get("boolean_query_used"):
         game_word = "matching game" if count == 1 else "matching games"
         verb = "have had" if team_subject else "has had"
-        context = _count_context(metadata, player=bool(player))
+        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         threshold = _count_threshold_text(metadata.get("max_value"))
-        entity = _team_subject(metadata)
-        context = _count_context(metadata, player=bool(player))
+        entity = _team_subject(metadata, games)
+        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
         times = "time" if count == 1 else "times"
         record = _record_suffix(games)
         return (
@@ -844,7 +844,7 @@ def _build_count_phrase(
             "pts": "has scored",
         }.get(stat, "has recorded")
         verb = singular_verb.replace("has ", "have ", 1) if team_subject else singular_verb
-        context = _count_context(metadata, player=bool(player))
+        context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
         return f"{entity} {verb} {count} {stat_name} {context}."
 
     conditions = normalize_stat_conditions(
@@ -860,7 +860,7 @@ def _build_count_phrase(
     else:
         occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
-    context = _count_context(metadata, player=bool(player))
+    context = _count_context(metadata, player=bool(player), last_n=parsed.get("last_n"))
     if count_noun.startswith("games with "):
         verb = "have had" if team_subject else "has had"
     else:
@@ -868,18 +868,34 @@ def _build_count_phrase(
     return f"{entity} {verb} {count} {count_noun} {context}."
 
 
-def _team_subject(metadata: dict) -> str | None:
+def _team_subject(metadata: dict, games: Any = None) -> str | None:
     team_context = metadata.get("team_context")
     if isinstance(team_context, dict):
         team_name = _clean_text(team_context.get("team_name"))
+        if team_name:
+            return f"The {team_name}"
+    # Team finders carry only the abbreviation; name the team from its rows
+    # ("The Los Angeles Lakers", not "The LAL").
+    if (
+        metadata.get("team")
+        and games is not None
+        and hasattr(games, "columns")
+        and "team_name" in games.columns
+        and not games.empty
+    ):
+        team_name = _clean_text(games["team_name"].mode().iloc[0])
         if team_name:
             return f"The {team_name}"
     team = _clean_text(metadata.get("team"))
     return f"The {team}" if team else None
 
 
-def _count_context(metadata: dict, *, player: bool) -> str:
+def _count_context(metadata: dict, *, player: bool, last_n: int | None = None) -> str:
     query_text = (_clean_text(metadata.get("query_text")) or "").lower()
+    if last_n:
+        owner = "his" if player else "their"
+        noun = "game" if last_n == 1 else f"{last_n} games"
+        return f"in {owner} last {noun}"
     season = metadata.get("season")
     start_s = metadata.get("start_season")
     end_s = metadata.get("end_season")

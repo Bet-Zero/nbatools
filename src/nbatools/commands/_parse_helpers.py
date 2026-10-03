@@ -460,6 +460,149 @@ def extract_last_n_seasons(text: str) -> int | None:
     return None
 
 
+_NUMBER_WORDS = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+    "twenty": 20,
+    "twenty five": 25,
+    "twenty-five": 25,
+    "thirty": 30,
+    "forty": 40,
+    "fifty": 50,
+}
+_NUMBER_WORD_PATTERN = "|".join(
+    re.escape(word) for word in sorted(_NUMBER_WORDS, key=len, reverse=True)
+)
+_RECENT_WORD = r"(?:last|past|previous|prior|latest|most\s+recent)"
+_SAMPLE_UNIT = r"(?:games?|contests?|outings?|matchups?|meetings?|seasons?|starts?|wins?|losses)"
+
+
+def canonicalize_sample_phrases(text: str) -> str:
+    """Rewrite recent-sample wording into the one form the detectors read.
+
+    Every detector downstream reads "last N games" (or "last N seasons"), so
+    "last ten games", "previous 5 games", "his 5 most recent games" and
+    "past five seasons" used to drop their window silently and answer for
+    the whole season. Meetings read as matchups against the named opponent:
+    "last 3 meetings with the Warriors" is the last 3 games vs the Warriors.
+    Only phrases with an explicit sample unit are rewritten, so "the last
+    five minutes" and "previous season" are left alone.
+    """
+    # Number words to digits, only inside a recent-sample phrase.
+    text = re.sub(
+        rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+(?={_SAMPLE_UNIT}\b)",
+        lambda m: f"{m.group(1)} {_NUMBER_WORDS[m.group(2)]} ",
+        text,
+    )
+    # "his 5 most recent games" / "LeBron's five latest games" -> "his last 5 games".
+    # A determiner is required so "30 points most recent game" keeps its threshold.
+    text = re.sub(
+        rf"((?:\b(?:his|her|their|its|the|my|your)|'s)\s+)(\d+|{_NUMBER_WORD_PATTERN})\s+"
+        rf"(?:most\s+recent|latest)\s+(?={_SAMPLE_UNIT}\b)",
+        lambda m: f"{m.group(1)}last {_NUMBER_WORDS.get(m.group(2), m.group(2))} ",
+        text,
+    )
+    # "previous/prior/latest/most recent N games" -> "last N games"
+    text = re.sub(
+        rf"\b(?:previous|prior|latest|most\s+recent)\s+(\d+)\s+(?={_SAMPLE_UNIT}\b)",
+        r"last \1 ",
+        text,
+    )
+    # A single latest meeting is a one-game window against that opponent.
+    text = re.sub(
+        r"\b(?:last|latest|most\s+recent|previous)\s+(?:meeting|matchup)\s+"
+        r"(?:with|against|vs\.?|versus)\b",
+        "last game vs",
+        text,
+    )
+    # "meetings/matchups with X" -> "matchups vs X": "with" names the opponent.
+    text = re.sub(
+        r"\b(?:meetings?|matchups?)\s+(?:with|against|vs\.?|versus)\b",
+        "matchups vs",
+        text,
+    )
+    text = re.sub(r"\bmeetings?\b", "matchups", text)
+    return " ".join(text.split())
+
+
+# A last-N phrase introduced by one of these words names the time window the
+# rest of the question is measured over ("30 point games in his last 10").
+_WINDOW_PREPOSITION = (
+    r"(?:in|over|during|across|within|through|throughout|of|from|for)\s+"
+    r"(?:(?:his|her|their|its|the|my|your|them|those)\s+)?"
+)
+# Words that attach a condition to the games themselves ("last 10 games where
+# he scored 30"), so the condition picks which games count toward N.
+_QUALIFYING_CLAUSE = (
+    r"\s+(?:where|when|whenever|with|in\s+which|that|which|scoring|shooting|"
+    r"grabbing|dishing|recording|having|posting|putting\s+up|making|he|she|they|"
+    r"the\s+\w+\s+(?:scored|had|made|won|lost))\b"
+)
+_LAST_N_GAMES = (
+    r"\blast\s+\d+(?!\s+(?:seasons?|weeks?|days?|months?|minutes?))"
+    r"(?:\s+(?:games?|contests?|outings?))?\b"
+)
+_PERFORMANCE_WORDS = (
+    r"\b(?:triple[- ]doubles?|double[- ]doubles?|wins?|won|losses|lost)\b"
+    r"|\b\d+\+?\s*[- ]?\s*(?:points?|pts?|rebounds?|rebs?|assists?|asts?|"
+    r"steals?|blocks?|threes?|3s|3pm)\b"
+)
+
+
+def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = None) -> str:
+    """Say whether a last-N phrase is a time window or a qualifying count.
+
+    ``window``: "how many 30 point games in his last 10 games" takes the 10
+    most recent games, then counts the ones that meet the condition.
+    ``qualifying``: "his last 10 games where he scored 30" (and "last 10
+    wins", "last 5 home games") keeps the games that meet the condition,
+    then the 10 most recent of them. Context such as opponent, home/away,
+    season and teammate availability always picks the sample first; only
+    game results and stat conditions differ between the two.
+    """
+    match = re.search(_LAST_N_GAMES, text)
+    if not match:
+        return "qualifying"
+    # Without a game result or stat condition both readings select the same
+    # games, so equivalent phrasings keep one parse state.
+    if not threshold_conditions and not re.search(_PERFORMANCE_WORDS, text):
+        return "qualifying"
+    after = text[match.end() :]
+    if re.match(_QUALIFYING_CLAUSE, after):
+        return "qualifying"
+    before = text[: match.start()]
+    if re.search(rf"\b{_WINDOW_PREPOSITION}$", before):
+        return "window"
+    # A condition stated before a bare last-N phrase ("LeBron 30 point games
+    # last 10") is measured over that window.
+    condition_starts = [
+        text.find(condition["text"])
+        for condition in threshold_conditions or []
+        if condition.get("text") and condition["text"] in text
+    ]
+    condition_starts.extend(m.start() for m in re.finditer(_PERFORMANCE_WORDS, before))
+    if condition_starts and min(condition_starts) < match.start():
+        return "window"
+    return "qualifying"
+
+
 def extract_last_n(text: str) -> int | None:
     # Fuzzy time words → fixed last-N values (glossary / spec §18.1)
     for term, last_n in FUZZY_LAST_N_TERMS.items():

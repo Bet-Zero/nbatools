@@ -9,9 +9,11 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    apply_last_n_sample,
     build_opponent_mask,
     describe_opponent_filter,
     filter_without_player,
+    last_n_window_game_ids,
     load_player_games_for_seasons,
     load_team_games_for_seasons,
     select_most_recent_games,
@@ -300,6 +302,7 @@ def build_result(
     end_date: str | None = None,
     df: pd.DataFrame | None = None,
     player_df: pd.DataFrame | None = None,
+    last_n_scope: str = "qualifying",
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     df_was_supplied = df is not None
@@ -335,6 +338,23 @@ def build_result(
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
 
+        window_game_ids = None
+        if last_n is not None and last_n_scope == "window":
+            sample = _apply_filters(
+                df=df,
+                team=team,
+                opponent=opponent,
+                home_only=home_only,
+                away_only=away_only,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            if without_player and not sample.empty:
+                sample = filter_without_player(
+                    sample, without_player, seasons, season_type, team=team
+                )
+            window_game_ids = last_n_window_game_ids(sample, last_n)
+
         df = _apply_filters(
             df=df,
             team=team,
@@ -346,13 +366,17 @@ def build_result(
             stat=stat,
             min_value=min_value,
             max_value=max_value,
-            last_n=last_n,
             start_date=start_date,
             end_date=end_date,
         )
 
         if without_player and not df.empty:
             df = filter_without_player(df, without_player, seasons, season_type, team=team)
+
+        # Last N runs after every filter: on the qualifying games, or (window
+        # scope) on the N most recent games in play.
+        if last_n is not None and not df.empty:
+            df = apply_last_n_sample(df, last_n, window_game_ids)
     else:
         df = df.copy()
         if "game_date" in df.columns:

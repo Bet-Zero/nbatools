@@ -305,6 +305,43 @@ def select_most_recent_games(df: pd.DataFrame, last_n: int | None) -> pd.DataFra
     return df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
 
 
+LAST_N_SCOPES = ("qualifying", "window")
+
+
+def _game_key(series: pd.Series) -> pd.Series:
+    return series.astype(str).str.lstrip("0")
+
+
+def last_n_window_game_ids(sample: pd.DataFrame, last_n: int) -> set[str]:
+    """Game ids of the ``last_n`` most recent games in a sample.
+
+    ``sample`` carries only the filters that define which games are in play
+    (entity, season, dates, opponent, home/away, teammate availability,
+    role); game results and stat conditions are applied afterwards, inside
+    the window, by :func:`apply_last_n_sample`.
+    """
+    window = select_most_recent_games(sample, last_n)
+    return set(_game_key(window["game_id"])) if "game_id" in window.columns else set()
+
+
+def apply_last_n_sample(
+    df: pd.DataFrame,
+    last_n: int | None,
+    window_game_ids: set[str] | None = None,
+) -> pd.DataFrame:
+    """Finish a last-N request on a fully filtered game log.
+
+    - window scope ("30 point games in his last 10 games"): ``window_game_ids``
+      are the 10 most recent games in play, and the filtered rows are kept
+      only inside that window.
+    - qualifying scope ("his last 10 games where he scored 30", "last 10
+      wins"): every filter has already run, so keep the N most recent rows.
+    """
+    if window_game_ids is not None:
+        return df[_game_key(df["game_id"]).isin(window_game_ids)].copy()
+    return select_most_recent_games(df, last_n)
+
+
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
 
