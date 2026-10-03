@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -94,6 +95,16 @@ def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     return pd.Timestamp(ts).normalize()
 
 
+def _prepare_condition_column(out: pd.DataFrame, stat_col: str) -> pd.DataFrame:
+    if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
+        if {"pts", "plus_minus"}.issubset(out.columns):
+            out = out.copy()
+            out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+                out["plus_minus"], errors="coerce"
+            )
+    return out
+
+
 def _apply_game_filters(
     df: pd.DataFrame,
     *,
@@ -106,6 +117,7 @@ def _apply_game_filters(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     season_type: str | None = None,
@@ -169,6 +181,11 @@ def _apply_game_filters(
             mask &= values <= max_value
         out = out[mask].copy()
 
+    if conditions:
+        out = apply_stat_conditions(
+            out, conditions, TEAM_RECORD_FILTER_STATS, prepare_stat_column=_prepare_condition_column
+        )
+
     return out
 
 
@@ -224,6 +241,7 @@ def build_team_record_result(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     clutch: bool = False,
@@ -406,6 +424,7 @@ def build_team_record_result(
         losses_only=losses_only,
         stat=stat,
         min_value=min_value,
+        conditions=conditions,
         max_value=max_value,
         start_date=start_date,
         end_date=end_date,

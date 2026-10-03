@@ -1225,6 +1225,37 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     return matches
 
 
+_JOINED_STAT_THRESHOLD_RE = re.compile(
+    rf"\s*(?:,\s*)?(?:and\s+)?(\d{{1,3}})(?!\d)(?:\s*\+)?\s+{STAT_PATTERN}\b"
+)
+
+
+def _joined_stat_thresholds(text: str, end: int) -> list[dict]:
+    """Thresholds joined onto a scoring verb: "scoring 30 points and 5 assists".
+
+    The verb carries over to each joined "N <stat>", so the bare "5 assists"
+    is a 5+ assists condition rather than leftover text.
+    """
+    joined = []
+    while True:
+        m = _JOINED_STAT_THRESHOLD_RE.match(text, end)
+        if not m or m.start(1) == m.start():
+            break
+        stat = detect_stat(m.group(2)) or "pts"
+        joined.append(
+            {
+                "start": m.start(1),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": None,
+                "text": text[m.start(1) : m.end()],
+            }
+        )
+        end = m.end()
+    return joined
+
+
 def extract_threshold_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
@@ -1385,8 +1416,34 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     # the number ("drops 12 assists") keeps that stat instead of points.
     verb_pattern = (
         rf"\b(?:scores?|scored|drops?|dropped|puts?\s+up|put\s+up)\s+"
-        rf"(\d{{1,3}})\s*\+?(?:\s+{STAT_PATTERN})?"
+        rf"(\d{{1,3}})(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
     )
+    # "Lakers record when scoring 120", "LeBron splits scoring 30+": the
+    # participle reads the same way, except as a ranking adjective ("top
+    # scoring 5 games", "highest scoring 10 game stretch").
+    scoring_pattern = (
+        rf"\bscoring\s+(\d{{1,3}})(?!\d)(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
+        r"(?!\s*(?:-|\s)?(?:games?|players?|teams?|stretch(?:es)?|seasons?|nights?)\b)"
+    )
+    for m in re.finditer(scoring_pattern, text):
+        if re.search(
+            r"\b(?:top|highest|best|most|lowest|leading|worst|biggest)\s+$",
+            text[: m.start()],
+        ):
+            continue
+        stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
+        stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        matches.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": None,
+                "text": m.group(0).rstrip(" +"),
+            }
+        )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
     for m in re.finditer(verb_pattern, text):
         stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
         stat = (detect_stat(stat_text) if stat_text else None) or "pts"
@@ -1404,6 +1461,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 "text": m.group(0).rstrip(" +"),
             }
         )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
     # games" = 20+ points and 10+ rebounds.
@@ -1431,12 +1489,19 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     matches.sort(key=lambda x: x["start"])
 
     deduped = []
-    seen = set()
     for item in matches:
-        key = (item["start"], item["end"], item["stat"], item["min_value"], item["max_value"])
-        if key not in seen:
-            seen.add(key)
-            deduped.append(item)
+        # "scores 25+ points" also matches "25+ points" on its own; keep one
+        # copy of a condition when two readings of the same words agree.
+        if any(
+            kept["stat"] == item["stat"]
+            and kept["min_value"] == item["min_value"]
+            and kept["max_value"] == item["max_value"]
+            and item["start"] < kept["end"]
+            and kept["start"] < item["end"]
+            for kept in deduped
+        ):
+            continue
+        deduped.append(item)
 
     return deduped
 
@@ -1451,7 +1516,11 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
     _POINT_SUFFIX = (
         r"(?:\s+(?:points?|pts))?"
-        r"(?=\s*(?:[?.!,]|$|\b(?:this|that|in|during|last|season|year|record|when|and|or)\b))"
+        # Followed by the end of the clause: punctuation, a joining word, a
+        # filter phrase ("at home", "vs Boston", "since March") or a season.
+        r"(?=\s*(?:[?.!,]|$|\d{4}(?:-\d{2})?\b|\b(?:this|that|in|during|last|"
+        r"season|year|record|when|and|or|at|on|vs|versus|against|since|over|from|"
+        r"for|with|without|while|but|after|before|home|away|road|games?)\b))"
     )
     patterns = [
         rf"\bheld\s+(?:opponents?|teams?|them)\s+(?:to\s+)?(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",

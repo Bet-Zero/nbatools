@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import (
+    apply_stat_conditions,
+    combined_stat_conditions,
+)
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
@@ -39,6 +43,7 @@ def filter_player_games(
     start_date: str | None = None,
     end_date: str | None = None,
     identity_notes: list[str] | None = None,
+    conditions: list[dict] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -81,6 +86,11 @@ def filter_player_games(
 
     if losses_only:
         out = out[out["wl"] == "L"].copy()
+
+    if conditions:
+        from nbatools.commands.player_game_summary import ALLOWED_STATS
+
+        out = apply_stat_conditions(out, conditions, ALLOWED_STATS)
 
     out = out.sort_values(["game_date", "game_id"], ascending=[False, False]).copy()
 
@@ -262,7 +272,23 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     head_to_head: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    conditions: list[dict] | None = None,
 ) -> ComparisonResult | NoResult:
+    conditions = combined_stat_conditions(stat, min_value, max_value, conditions)
+    if conditions and head_to_head:
+        return NoResult(
+            query_class="comparison",
+            reason="unsupported",
+            result_status="no_result",
+            notes=[
+                "A stat condition in a head-to-head comparison does not say which "
+                "player it applies to; ask for one player's games against the other."
+            ],
+        )
+
     if home_only and away_only:
         return NoResult(
             query_class="comparison",
@@ -322,6 +348,7 @@ def build_result(
             start_date=start_date,
             end_date=end_date,
             identity_notes=identity_notes,
+            conditions=conditions,
         )
         b_df = filter_player_games(
             df,
@@ -336,6 +363,7 @@ def build_result(
             start_date=start_date,
             end_date=end_date,
             identity_notes=identity_notes,
+            conditions=conditions,
         )
 
     a_context = build_player_team_context(a_df, team_df) if not a_df.empty else a_df.copy()
