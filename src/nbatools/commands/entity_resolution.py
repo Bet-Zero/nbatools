@@ -652,7 +652,7 @@ def canonical_player_names_by_id() -> dict[str, str]:
 
     A spelling that only drops diacritics ("Jonas Valanciunas") keeps the
     accented form. Several players changed spelling inside a season ("Bobby
-    Portis" -> "Bobby Portis Jr." in 2024-25), so grouping by name split them.
+    Portis" -> "Bobby Portis Jr." during 2024-25), so grouping by name split them.
     """
     _read_player_names()
     return dict(_player_name_by_id_cache or {})

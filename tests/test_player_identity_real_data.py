@@ -88,7 +88,8 @@ def test_comparison_matches_raw_rows_for_each_player(query, names, season):
 # 1628455 (2017-18..2020-21, 58 games); "Marcus Williams" is 200766 (NJN, ...)
 # and 201173 (LAC, SAS), both in 2007-08; "Patrick Ewing" is 121 (1996-97..
 # 2001-02) and 201607 (2010-11). Player 1626171 is stored as "Bobby Portis"
-# and, from part of 2024-25 on, "Bobby Portis Jr."; 202685 is "Jonas
+# through some 2024-25 rows and "Bobby Portis Jr." in every 2024-25
+# regular-season row; 202685 is "Jonas
 # Valančiūnas" until 2023-24 and "Jonas Valanciunas" after.
 # Expected values are selected from raw rows by player_id here.
 # ---------------------------------------------------------------------------
@@ -139,8 +140,8 @@ def test_shared_name_career_is_one_player_not_two_careers_added():
 
 
 def test_shared_name_season_of_one_player_answers_about_him():
-    row, notes = _single_summary("mike james stats 2018-19")
-    _assert_row_is(row, _raw_regular_rows(1628455, ["2018-19"]))
+    row, notes = _single_summary("mike james stats 2017-18")
+    _assert_row_is(row, _raw_regular_rows(1628455, ["2017-18"]))
     assert not any("More than one player" in note for note in notes)
 
 
@@ -158,7 +159,9 @@ def test_hall_of_famer_is_the_default_for_his_shared_name():
 def test_renamed_player_keeps_every_game_of_the_season():
     row, notes = _single_summary("bobby portis stats 2024-25")
     raw = _raw_regular_rows(1626171, ["2024-25"])
-    assert raw["player_name"].nunique() == 2, "both spellings are present in 2024-25"
+    # The typed spelling is the old one; every 2024-25 regular-season row is
+    # stored as "Bobby Portis Jr.", so a name filter found none of them.
+    assert set(raw["player_name"]) == {"Bobby Portis Jr."}
     _assert_row_is(row, raw)
     assert not any("More than one player" in note for note in notes)
 
@@ -175,10 +178,12 @@ def test_season_leaderboard_lists_a_renamed_player_once():
     from nbatools.commands.season_leaders import _build_from_game_logs
 
     entity_resolution.reset_player_index()
-    basic = load_player_games_for_seasons(["2024-25"], "Regular Season")
+    seasons = ["2023-24", "2024-25"]
+    basic = load_player_games_for_seasons(seasons, "Regular Season")
     grouped = _build_from_game_logs(basic)
     portis = grouped[grouped["player_id"] == 1626171]
-    raw = _raw_regular_rows(1626171, ["2024-25"])
+    raw = _raw_regular_rows(1626171, seasons)
+    assert raw["player_name"].nunique() == 2, "the spelling changes across these seasons"
     assert len(portis) == 1
     assert portis.iloc[0]["player_name"] == "Bobby Portis Jr."
     assert portis.iloc[0]["pts_total"] == pytest.approx(float(raw["pts"].sum()))
