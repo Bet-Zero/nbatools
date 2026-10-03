@@ -49,6 +49,7 @@ from nbatools.commands._natural_query_execution import (
     _extract_grouped_condition_text,
     _unsupported_filter_note,
 )
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands.entity_resolution import ALL_TEAM_ABBRS, resolve_team
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -1310,9 +1311,7 @@ def _apply_count_intent(
         if "player_name" not in result.leaders.columns:
             missing_entity_reason = "filter_not_supported"
         else:
-            match = result.leaders[
-                result.leaders["player_name"].astype(str).str.upper() == player_name.upper()
-            ]
+            match = select_player_rows(result.leaders, player_name)
             if match.empty:
                 missing_entity_reason = "no_match"
             else:

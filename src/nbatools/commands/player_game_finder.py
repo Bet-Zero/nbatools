@@ -1,6 +1,7 @@
 import pandas as pd
 
 from nbatools.commands._condition_utils import apply_stat_conditions
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_last_n_sample,
@@ -77,6 +78,7 @@ def _apply_filters(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -93,7 +95,7 @@ def _apply_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if player:
-        out = out[out["player_name"].astype(str).str.upper() == player.upper()].copy()
+        out = select_player_rows(out, player, team=team, notes=identity_notes)
 
     if team:
         team_upper = team.upper()
@@ -385,6 +387,7 @@ def build_result(
         conditions=conditions,
         start_date=start_date,
         end_date=end_date,
+        identity_notes=notes,
     )
 
     # Cross-reference filters: opponent_player and without_player

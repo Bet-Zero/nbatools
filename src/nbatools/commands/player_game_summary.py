@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import unicodedata
-from functools import lru_cache
-
 import pandas as pd
 
+from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -102,37 +100,6 @@ GAME_LOG_COLUMNS = [
     "ts_pct",
 ]
 
-_DASH_TRANSLATION = str.maketrans(
-    {
-        "\u2010": "-",
-        "\u2011": "-",
-        "\u2012": "-",
-        "\u2013": "-",
-        "\u2014": "-",
-        "\u2015": "-",
-        "\u2212": "-",
-    }
-)
-
-
-@lru_cache(maxsize=8192)
-def _player_name_key(value: object) -> str:
-    text = str(value).translate(_DASH_TRANSLATION)
-    normalized = unicodedata.normalize("NFKD", text)
-    stripped = "".join(ch for ch in normalized if not unicodedata.combining(ch))
-    return " ".join(stripped.casefold().split())
-
-
-def _player_name_mask(names: pd.Series, player: str) -> pd.Series:
-    """Rows whose player name normalizes to ``player``'s key.
-
-    Normalizes each distinct name once (a career scan has ~1.5M rows but
-    only a few thousand names) instead of once per row.
-    """
-    key = _player_name_key(player)
-    matches = [name for name in names.unique() if _player_name_key(name) == key]
-    return names.isin(matches)
-
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -158,6 +125,7 @@ def _apply_filters(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -174,7 +142,7 @@ def _apply_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if player:
-        out = out[_player_name_mask(out["player_name"], player)].copy()
+        out = select_player_rows(out, player, team=team, notes=identity_notes)
 
     if team:
         team_upper = team.upper()
@@ -314,7 +282,7 @@ def build_result(
         _player_arc_seasons: list[str] | None = None
         if career_intent and player:
             _player_arc_seasons = sorted(
-                df[_player_name_mask(df["player_name"], player)]["season"].unique().tolist()
+                select_player_rows(df, player, team=team)["season"].unique().tolist()
             )
 
         if last_n is not None and last_n_scope == "window":
@@ -362,6 +330,7 @@ def build_result(
             max_value=max_value,
             start_date=start_date,
             end_date=end_date,
+            identity_notes=notes,
         )
 
         # Cross-reference filters: opponent_player and without_player
