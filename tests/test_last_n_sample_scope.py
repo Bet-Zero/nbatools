@@ -124,8 +124,7 @@ def test_window_count_phrase_names_the_window_and_the_team():
     expected = sum(int(r["pts"]) >= 120 for r in _team("LAL")[:10])
 
     assert result.metadata["count_phrase"] == (
-        f"The Los Angeles Lakers have had {expected} games with 120+ points "
-        "in their last 10 games."
+        f"The Los Angeles Lakers have had {expected} games with 120+ points in their last 10 games."
     )
 
 
@@ -183,7 +182,10 @@ def test_last_n_qualifying_games(query, expected):
 @pytest.mark.parametrize(
     ("query", "expected"),
     [
-        ("LeBron last 3 meetings with the Warriors", lambda: _player("LeBron James", opponent="GSW")[:3]),
+        (
+            "LeBron last 3 meetings with the Warriors",
+            lambda: _player("LeBron James", opponent="GSW")[:3],
+        ),
         ("LeBron last 3 games vs Warriors", lambda: _player("LeBron James", opponent="GSW")[:3]),
         ("Lakers last 3 meetings with the Warriors", lambda: _team("LAL", opponent="GSW")[:3]),
         ("Lakers last meeting with the Celtics", lambda: _team("LAL", opponent="BOS")[:1]),
@@ -193,9 +195,7 @@ def test_last_n_qualifying_games(query, expected):
         ),
         (
             "how many times has LeBron scored 25 in his last 5 games against the Celtics",
-            lambda: [
-                r for r in _player("LeBron James", opponent="BOS")[:5] if int(r["pts"]) >= 25
-            ],
+            lambda: [r for r in _player("LeBron James", opponent="BOS")[:5] if int(r["pts"]) >= 25],
         ),
     ],
 )
