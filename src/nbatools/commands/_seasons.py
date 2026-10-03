@@ -53,10 +53,12 @@ _LATEST_SERVED_CACHE: dict[tuple[str, str], str | None] = {}
 def latest_served_season(season_type: str) -> str | None:
     """Return the newest season with final games in the served data, if any.
 
-    Cached per data source and generation, so it is read once per published
-    generation rather than per query.
+    Cached per published generation, so it is read once per generation rather
+    than per query. The unversioned legacy layout is written in place (the
+    local refresh loop), so it is read fresh every time.
     """
     from nbatools.data_source import (
+        LEGACY_GENERATION,
         DataSourceError,
         data_glob,
         data_read_csv,
@@ -92,7 +94,8 @@ def latest_served_season(season_type: str) -> str | None:
         # Unreadable now; fall back without caching so a transient failure
         # does not pin the fallback for the life of the process.
         return None
-    _LATEST_SERVED_CACHE[cache_key] = latest
+    if not cache_key[0].endswith(f":{LEGACY_GENERATION}"):
+        _LATEST_SERVED_CACHE[cache_key] = latest
     return latest
 
 
@@ -115,8 +118,14 @@ def default_end_season(season_type: str) -> str:
 
 
 def previous_season(season_type: str) -> str:
-    """Return the season immediately before the latest season for context."""
-    latest = default_end_season(season_type)
+    """Return the season before the current one, for "last season".
+
+    The current season is the latest one with regular-season games for both
+    season types: in January 2027 "last season's playoffs" are the 2025-26
+    playoffs, not the season before the latest finished postseason.
+    """
+    del season_type
+    latest = default_end_season("Regular Season")
     return int_to_season(season_to_int(latest) - 1)
 
 

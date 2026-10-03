@@ -327,18 +327,18 @@ def build_readiness_info(
 def _readiness_season(checked_at: datetime, data_root: Path) -> tuple[str, str | None]:
     """Return the season to judge and, if overdue, the calendar season not loaded.
 
-    Normally the latest served season. Once the calendar enters a new season
-    whose schedule or games are published, that season is judged instead, so
-    its lag counts. A new season with nothing published is reported missing
-    from November 1: every non-lockout season since 1996-97 opened in October,
-    and a lockout is what the readiness exception is for.
+    The latest served season, which becomes the new season once its first
+    final game is published (a schedule published before tip-off does not
+    count, so the finished season stays judged until then). A new season with
+    no final games is reported missing from November 1: every non-lockout
+    season since 1996-97 opened in October, and a lockout is what the
+    readiness exception is for.
     """
+    del data_root
     served = _seasons.default_end_season("Regular Season")
     calendar = _seasons.season_for_date(checked_at.date())
     if _seasons.season_to_int(calendar) <= _seasons.season_to_int(served):
         return served, None
-    if _slice_files_exist(calendar, "Regular Season", data_root):
-        return calendar, None
     due = date(_seasons.season_to_int(calendar), *_NEW_SEASON_DUE)
     return served, calendar if checked_at.date() >= due else None
 

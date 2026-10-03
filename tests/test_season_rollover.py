@@ -22,7 +22,7 @@ from nbatools.data_source import reset_data_source_cache
 from nbatools.readiness import NEW_SEASON_NOT_LOADED, evaluate_readiness
 from tests.test_readiness import _slice, _snapshot
 
-pytestmark = pytest.mark.engine
+pytestmark = [pytest.mark.engine, pytest.mark.served_seasons]
 
 _GAMES_HEADER = "game_id,season,season_type,game_date,is_final\n"
 
@@ -77,9 +77,21 @@ def test_latest_season_follows_published_games(data_root):
     assert _seasons.default_end_season("Regular Season") == "2026-27"
     assert default_season_for_context("Regular Season") == "2026-27"
     assert _seasons.previous_season("Regular Season") == "2025-26"
-    # The new season's playoffs do not exist yet.
+    # The new season's playoffs do not exist yet, and "last season's playoffs"
+    # are the 2025-26 playoffs, not the season before them.
     assert _seasons.default_end_season("Playoffs") == "2025-26"
+    assert _seasons.previous_season("Playoffs") == "2025-26"
     assert _seasons.resolve_career("Regular Season") == ("1996-97", "2026-27")
+
+
+def test_a_season_written_in_place_is_seen_by_the_same_process(data_root):
+    # The local refresh loop writes the legacy (unversioned) layout in place.
+    _write_games(data_root, "2025-26", "regular_season", [("0022500001", "2025-10-21", 1)])
+    assert _seasons.default_end_season("Regular Season") == "2025-26"
+
+    _write_games(data_root, "2026-27", "regular_season", [("0022600001", "2026-10-20", 1)])
+
+    assert _seasons.default_end_season("Regular Season") == "2026-27"
 
 
 def test_without_game_data_the_fallback_constants_apply(data_root):
@@ -125,9 +137,14 @@ def test_readiness_keeps_judging_the_finished_season_in_the_offseason(served_202
     assert readiness._readiness_season(_at(2026, 10, 3), Path("data")) == ("2025-26", None)
 
 
-def test_readiness_judges_the_new_season_once_it_is_published(served_2025_26):
+def test_a_schedule_published_before_tip_off_keeps_the_finished_season(served_2025_26):
     served_2025_26.add("2026-27")
-    assert readiness._readiness_season(_at(2026, 10, 3), Path("data")) == ("2026-27", None)
+    assert readiness._readiness_season(_at(2026, 10, 3), Path("data")) == ("2025-26", None)
+
+
+def test_readiness_judges_the_new_season_once_its_games_are_served(monkeypatch):
+    monkeypatch.setattr(_seasons, "default_end_season", lambda season_type: "2026-27")
+    assert readiness._readiness_season(_at(2026, 10, 22), Path("data")) == ("2026-27", None)
 
 
 def test_readiness_reports_a_new_season_that_is_overdue(served_2025_26):
