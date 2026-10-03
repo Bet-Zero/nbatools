@@ -7,7 +7,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_team_leaderboard_stat,
 )
 from nbatools.commands._matchup_utils import detect_player
-from nbatools.commands.entity_resolution import PLAYER_ALIASES
+from nbatools.commands.entity_resolution import resolve_players_in_query
 
 
 def extract_top_n(text: str) -> int | None:
@@ -1598,30 +1598,7 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
 
 
 def _extract_player_mentions(text: str) -> list[str]:
-    matched_spans: list[tuple[int, int]] = []
-    ordered_matches: list[tuple[int, str]] = []
-    sorted_aliases = sorted(
-        PLAYER_ALIASES.items(),
-        key=lambda item: len(item[0]),
-        reverse=True,
-    )
-    for alias, canonical in sorted_aliases:
-        for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
-            span = match.span()
-            if any(not (span[1] <= start or span[0] >= end) for start, end in matched_spans):
-                continue
-            matched_spans.append(span)
-            ordered_matches.append((span[0], canonical))
-            break
-
-    players: list[str] = []
-    seen: set[str] = set()
-    for _, canonical in sorted(ordered_matches, key=lambda item: item[0]):
-        if canonical in seen:
-            continue
-        players.append(canonical)
-        seen.add(canonical)
-    return players
+    return resolve_players_in_query(text)
 
 
 def detect_lineup_query(text: str) -> dict | None:

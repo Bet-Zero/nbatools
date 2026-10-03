@@ -29,32 +29,17 @@ from nbatools.commands.entity_resolution import (
 
 def detect_player(text: str) -> str | None:
     result = resolve_player_in_query(text)
-    if result.is_confident:
-        return result.resolved
-    # Fall back to the legacy merged alias map for any compatibility-only alias
-    # not covered by the resolver.
-    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return PLAYER_ALIASES[key]
-    return None
+    return result.resolved if result.is_confident else None
 
 
 def detect_player_resolved(text: str) -> ResolutionResult:
-    """Like detect_player but returns full resolution result including ambiguity."""
-    result = resolve_player_in_query(text)
-    if result.is_confident or result.is_ambiguous:
-        return result
-    # Fall back to the legacy merged alias map for any compatibility-only alias
-    # not covered by the resolver.
-    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return ResolutionResult(
-                resolved=PLAYER_ALIASES[key],
-                candidates=[PLAYER_ALIASES[key]],
-                confidence="confident",
-                source="alias",
-            )
-    return result
+    """Like detect_player but returns full resolution result including ambiguity.
+
+    The resolver already scans every curated alias (normalized), so there is
+    no second raw-alias scan: that fallback could only bypass full-name
+    precedence or turn an ambiguous last name into one arbitrary player.
+    """
+    return resolve_player_in_query(text)
 
 
 def detect_team_in_text(text: str) -> str | None:

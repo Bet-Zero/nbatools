@@ -78,3 +78,107 @@ def test_comparison_matches_raw_rows_for_each_player(query, names, season):
     assert set(summaries) == set(names)
     for name in names:
         _assert_matches(summaries[name], _expected(name, season))
+
+
+# ---------------------------------------------------------------------------
+# Identity by player_id: shared names and renamed players (A1b)
+#
+# Facts of the pinned generation (raw player_game_stats, all season types):
+# "Mike James" is player 2229 (2001-02..2013-14, 628 games) and player
+# 1628455 (2017-18..2020-21, 58 games); "Marcus Williams" is 200766 (NJN, ...)
+# and 201173 (LAC, SAS), both in 2007-08; "Patrick Ewing" is 121 (1996-97..
+# 2001-02) and 201607 (2010-11). Player 1626171 is stored as "Bobby Portis"
+# and, from part of 2024-25 on, "Bobby Portis Jr."; 202685 is "Jonas
+# Valančiūnas" until 2023-24 and "Jonas Valanciunas" after.
+# Expected values are selected from raw rows by player_id here.
+# ---------------------------------------------------------------------------
+
+_SEASONS = [f"{year}-{str(year + 1)[-2:]}" for year in range(1996, 2026)]
+
+
+def _raw_regular_rows(player_id: int, seasons: list[str]):
+    import pandas as pd
+
+    from nbatools.data_source import data_exists
+
+    frames = []
+    for season in seasons:
+        path = f"raw/player_game_stats/{season}_regular_season.csv"
+        if not data_exists(path):
+            continue
+        frame = data_read_csv(path)
+        frames.append(frame[frame["player_id"] == player_id])
+    rows = pd.concat(frames, ignore_index=True)
+    assert not rows.empty, f"player {player_id} has no rows in {seasons[0]}..{seasons[-1]}"
+    return rows
+
+
+def _single_summary(query: str):
+    from nbatools.query_service import execute_natural_query
+
+    entity_resolution.reset_player_index()
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", (query, result.result_reason, result.metadata)
+    payload = result.result.to_dict()
+    rows = payload["sections"]["summary"]
+    assert len(rows) == 1, rows
+    return rows[0], payload.get("notes") or []
+
+
+def _assert_row_is(row: dict, raw) -> None:
+    assert row["games"] == len(raw)
+    assert row["pts_sum"] == pytest.approx(float(raw["pts"].sum()))
+    assert row["reb_sum"] == pytest.approx(float(raw["reb"].sum()))
+
+
+def test_shared_name_career_is_one_player_not_two_careers_added():
+    row, notes = _single_summary("mike james career stats")
+    raw = _raw_regular_rows(2229, _SEASONS)
+    _assert_row_is(row, raw)
+    assert any("More than one player is named Mike James" in note for note in notes), notes
+
+
+def test_shared_name_season_of_one_player_answers_about_him():
+    row, notes = _single_summary("mike james stats 2018-19")
+    _assert_row_is(row, _raw_regular_rows(1628455, ["2018-19"]))
+    assert not any("More than one player" in note for note in notes)
+
+
+def test_shared_name_with_a_team_picks_that_teams_player():
+    row, _ = _single_summary("marcus williams spurs stats 2007-08")
+    raw = _raw_regular_rows(201173, ["2007-08"])
+    _assert_row_is(row, raw[raw["team_abbr"] == "SAS"])
+
+
+def test_hall_of_famer_is_the_default_for_his_shared_name():
+    row, _ = _single_summary("patrick ewing career stats")
+    _assert_row_is(row, _raw_regular_rows(121, _SEASONS))
+
+
+def test_renamed_player_keeps_every_game_of_the_season():
+    row, notes = _single_summary("bobby portis stats 2024-25")
+    raw = _raw_regular_rows(1626171, ["2024-25"])
+    assert raw["player_name"].nunique() == 2, "both spellings are present in 2024-25"
+    _assert_row_is(row, raw)
+    assert not any("More than one player" in note for note in notes)
+
+
+def test_accent_dropping_rename_keeps_the_whole_career():
+    row, _ = _single_summary("jonas valanciunas career stats")
+    raw = _raw_regular_rows(202685, _SEASONS)
+    assert raw["player_name"].nunique() == 2
+    _assert_row_is(row, raw)
+
+
+def test_season_leaderboard_lists_a_renamed_player_once():
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+    from nbatools.commands.season_leaders import _build_from_game_logs
+
+    entity_resolution.reset_player_index()
+    basic = load_player_games_for_seasons(["2024-25"], "Regular Season")
+    grouped = _build_from_game_logs(basic)
+    portis = grouped[grouped["player_id"] == 1626171]
+    raw = _raw_regular_rows(1626171, ["2024-25"])
+    assert len(portis) == 1
+    assert portis.iloc[0]["player_name"] == "Bobby Portis Jr."
+    assert portis.iloc[0]["pts_total"] == pytest.approx(float(raw["pts"].sum()))

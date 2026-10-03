@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -592,8 +593,8 @@ _FALLBACK_PLAYER_NAMES: set[str] = {
 
 
 def _read_player_names(data_dir: Path | None = None) -> set[str]:
-    """Read canonical player names from player game stats CSVs."""
-    global _player_names_cache
+    """Read canonical player names (and their ids) from player game stats CSVs."""
+    global _player_names_cache, _player_ids_by_name_cache, _player_name_by_id_cache
     if data_dir is None:
         _ensure_player_index_generation()
     if data_dir is None and _player_names_cache is not None:
@@ -601,7 +602,7 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
 
     names: set[str] = set(_FALLBACK_PLAYER_NAMES)
     if data_dir is None:
-        csv_paths = data_glob("raw/player_game_stats/*.csv")
+        csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=str)
         read_csv = data_read_csv
     else:
         stats_dir = data_dir / "raw" / "player_game_stats"
@@ -610,15 +611,66 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
         csv_paths = sorted(stats_dir.glob("*.csv"))
         read_csv = pd.read_csv
 
+    ids_by_name: dict[str, set[str]] = {}
+    # Files sort by season, so the last spelling seen is the most recent one.
+    name_by_id: dict[str, str] = {}
     for csv_path in csv_paths:
         try:
-            df = read_csv(csv_path, usecols=["player_name"], dtype=str)
-            names.update(df["player_name"].dropna().unique())
+            df = read_csv(
+                csv_path,
+                usecols=lambda column: column in {"player_id", "player_name"},
+                dtype=str,
+            )
         except Exception:
             continue
+        if "player_name" not in df.columns:
+            continue
+        names.update(df["player_name"].dropna().unique())
+        if "player_id" in df.columns:
+            pairs = df[["player_name", "player_id"]].dropna().drop_duplicates()
+            for name, player_id in pairs.itertuples(index=False):
+                ids_by_name.setdefault(_normalize_for_matching(name), set()).add(player_id)
+                name_by_id[player_id] = _preferred_spelling(name_by_id.get(player_id), name)
     if data_dir is None:
         _player_names_cache = set(names)
+        _player_ids_by_name_cache = {key: frozenset(ids) for key, ids in ids_by_name.items()}
+        _player_name_by_id_cache = name_by_id
     return names
+
+
+def _preferred_spelling(previous: str | None, current: str) -> str:
+    """The later spelling, unless it only drops the earlier one's accents."""
+    if previous is None or previous == current:
+        return current
+    if _strip_accents(previous) == current:
+        return previous
+    return current
+
+
+def canonical_player_names_by_id() -> dict[str, str]:
+    """One display name per ``player_id``: the most recent spelling in the data.
+
+    A spelling that only drops diacritics ("Jonas Valanciunas") keeps the
+    accented form. Several players changed spelling inside a season ("Bobby
+    Portis" -> "Bobby Portis Jr." in 2024-25), so grouping by name split them.
+    """
+    _read_player_names()
+    return dict(_player_name_by_id_cache or {})
+
+
+def player_ids_for_name(name: str) -> frozenset[str]:
+    """Every ``player_id`` the loaded data records under ``name``.
+
+    Keys use the same normalization as name matching, so "Bobby Portis" also
+    finds the rows later stored as "Bobby Portis Jr." once both spellings share
+    an id, and "Jonas Valanciunas" finds the accented rows. A name shared by
+    two different players returns both ids; callers pick one with
+    ``_player_identity.select_player_rows``. IDs are strings, as read.
+    """
+    _read_player_names()
+    if _player_ids_by_name_cache is None:
+        return frozenset()
+    return _player_ids_by_name_cache.get(_normalize_for_matching(name), frozenset())
 
 
 def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
@@ -660,6 +712,8 @@ _player_full_name_index: dict[str, str] | None = None
 _player_full_name_keys: tuple[str, ...] | None = None
 _player_first_name_index: dict[str, list[str]] | None = None
 _player_names_cache: set[str] | None = None
+_player_ids_by_name_cache: dict[str, frozenset[str]] | None = None
+_player_name_by_id_cache: dict[str, str] | None = None
 _player_index_generation_key: str | None = None
 
 
@@ -744,7 +798,10 @@ def reset_player_index() -> None:
     """Force rebuild of the player index (for testing)."""
     global _player_last_name_index, _player_full_name_index, _player_full_name_keys
     global _player_names_cache, _player_first_name_index, _player_index_generation_key
+    global _player_ids_by_name_cache, _player_name_by_id_cache
     _player_last_name_index = None
+    _player_ids_by_name_cache = None
+    _player_name_by_id_cache = None
     _player_full_name_index = None
     _player_full_name_keys = None
     _player_names_cache = None
@@ -1196,6 +1253,88 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
             return _ambiguous(candidates, source="last_name")
 
     return _no_match()
+
+
+_LINEUP_SCAN_STOPWORDS: set[str] = {
+    "combo",
+    "combos",
+    "lineup",
+    "lineups",
+    "man",
+    "minute",
+    "minutes",
+    "net",
+    "plus",
+    "minus",
+    "together",
+    "unit",
+    "units",
+}
+
+
+def resolve_players_in_query(text: str) -> list[str]:
+    """Every player named in ``text``, in order, each resolved like a single name.
+
+    Used where a question names several players at once ("lineups with Jalen
+    Brunson and Josh Hart"). Full names from the data index and the curated
+    canonical names beat shorter aliases on the same words, exactly as in
+    ``resolve_player_in_query``; a word not covered by a name or alias resolves
+    through a unique data last name. Shared last names never auto-resolve.
+    """
+    q = _normalize_for_matching(text)
+    if not q:
+        return []
+
+    matches: list[tuple[int, int, int, int, str]] = []
+
+    def add_matches(keys: Iterable[str], lookup: dict[str, str], priority: int) -> None:
+        for key in keys:
+            for match in re.finditer(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+                start, end = match.span()
+                matches.append((start, priority, -(end - start), end, lookup[key]))
+
+    add_matches(_NORMALIZED_FULL_NAME_ALIASES, _NORMALIZED_FULL_NAME_ALIASES, 0)
+    full_name_index = _get_player_full_name_index()
+    add_matches(
+        (key for key in _get_player_full_name_keys() if " " in key and key in q),
+        full_name_index,
+        0,
+    )
+    add_matches(_CURATED_PLAYER_NAMES, _CURATED_PLAYER_NAMES, 0)
+    add_matches(_NORMALIZED_CURATED_ALIASES, _NORMALIZED_CURATED_ALIASES, 1)
+    add_matches(_NORMALIZED_NICKNAME_ALIASES, _NORMALIZED_NICKNAME_ALIASES, 1)
+
+    taken: list[tuple[int, int, str]] = []
+    for start, _priority, _neg_len, end, resolved in sorted(matches):
+        if any(start < t_end and end > t_start for t_start, t_end, _ in taken):
+            continue
+        taken.append((start, end, resolved))
+
+    last_name_index = _get_player_index()
+    for word_match in re.finditer(r"[a-z][a-z']+", q):
+        start, end = word_match.span()
+        if any(start < t_end and end > t_start for t_start, t_end, _ in taken):
+            continue
+        word = word_match.group(0)
+        if word.endswith("'s"):
+            word = word[:-2]
+        if (
+            len(word) < 4
+            or word in _PLAYER_REFERENCE_STOPWORDS
+            or word in _LINEUP_SCAN_STOPWORDS
+            or word in _TEAM_ALIAS_WORDS
+            or word in NEVER_AUTO_RESOLVE_LAST_NAMES
+        ):
+            continue
+        candidates = last_name_index.get(word, [])
+        if len(candidates) == 1:
+            taken.append((start, end, candidates[0]))
+
+    players: list[str] = []
+    for _start, _end, resolved in sorted(taken):
+        if resolved not in players:
+            players.append(resolved)
+    return players
 
 
 def resolve_team(text: str) -> ResolutionResult:
