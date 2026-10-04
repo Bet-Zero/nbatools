@@ -8,6 +8,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._nba_alignment import historical_alignment
 from nbatools.commands._player_identity import (
     canonicalize_player_names,
     player_game_ids,
@@ -628,6 +629,27 @@ def build_period_filter_coverage_note(
     return None
 
 
+class OpponentGroup(list):
+    """Season-scoped opponents, such as "Western Conference teams".
+
+    Items are ``"<season>#<team_id>"`` tokens, so a team counts only in the
+    seasons it belonged to the group (New Orleans was in the East through
+    2003-04 and in the West since). ``label`` names the group in captions.
+    It stays a plain list for anything that serializes route arguments.
+    """
+
+    def __init__(self, tokens, label: str, also=None):
+        super().__init__(tokens)
+        self.label = label
+        # Another opponent filter the rows must also meet ("vs the Lakers"
+        # inside "vs West teams").
+        self.also = also
+
+
+def season_opponent_token(season: str, team_id: int) -> str:
+    return f"{season}#{int(team_id)}"
+
+
 def _normalize_opponent_values(
     opponent: str | list[str] | tuple[str, ...] | set[str] | None,
 ) -> set[str]:
@@ -644,8 +666,21 @@ def build_opponent_mask(
     df: pd.DataFrame,
     opponent: str | list[str] | tuple[str, ...] | set[str] | None,
 ) -> pd.Series:
+    also = getattr(opponent, "also", None)
+    if also:
+        return build_opponent_mask(df, list(opponent)) & build_opponent_mask(df, also)
     values = _normalize_opponent_values(opponent)
     mask = pd.Series(False, index=df.index)
+    if not values:
+        return mask
+    season_tokens = {value for value in values if "#" in value}
+    values -= season_tokens
+    if season_tokens and {"season", "opponent_team_id"}.issubset(df.columns):
+        opponent_ids = pd.to_numeric(df["opponent_team_id"], errors="coerce")
+        row_tokens = (
+            df["season"].astype(str) + "#" + opponent_ids.fillna(-1).astype("int64").astype(str)
+        )
+        mask = mask | row_tokens.isin(season_tokens)
     if not values:
         return mask
     if "opponent_team_abbr" in df.columns:
@@ -658,6 +693,10 @@ def build_opponent_mask(
 def describe_opponent_filter(
     opponent: str | list[str] | tuple[str, ...] | set[str] | None,
 ) -> str:
+    label = getattr(opponent, "label", None)
+    if label:
+        also = getattr(opponent, "also", None)
+        return f"{describe_opponent_filter(also)} ({label})" if also else label
     values = sorted(_normalize_opponent_values(opponent))
     if not values:
         return ""
@@ -889,10 +928,97 @@ def get_teams_by_division(
     return sorted(division_trusted["team_abbr"].astype(str).str.upper().tolist())
 
 
+def season_alignment(season: str) -> dict[int, tuple[str, str]]:
+    """``team_id -> (conference, division)`` for one season.
+
+    The served membership table wins when it fully covers the season (30
+    trusted teams); otherwise the historical alignment applies (1996-97
+    onward). Empty when neither covers the season.
+    """
+    try:
+        df = load_team_conference_membership()
+    except (FileNotFoundError, ValueError):
+        df = None
+    if df is not None:
+        rows = df.loc[df["season"].eq(season) & df["coverage_trusted"].eq(1)]
+        if len(rows) == 30 and rows["team_id"].nunique() == 30:
+            return {int(row.team_id): (row.conference, row.division) for row in rows.itertuples()}
+    return historical_alignment(season)
+
+
+def opponent_group_tokens(
+    seasons: list[str],
+    *,
+    conference: str | None = None,
+    division: str | None = None,
+) -> dict[str, list[str]]:
+    """Season-scoped opponent tokens for a conference or division.
+
+    Raises ``ValueError`` when a season has no alignment or the group is
+    empty in it (for example the Southeast division before 2004-05).
+    """
+    by_season: dict[str, list[str]] = {}
+    for season in seasons:
+        alignment = season_alignment(season)
+        if not alignment:
+            raise ValueError(f"No conference alignment for {season}")
+        team_ids = sorted(
+            team_id
+            for team_id, (team_conference, team_division) in alignment.items()
+            if (conference is None or team_conference == conference)
+            and (division is None or team_division == division)
+        )
+        if not team_ids:
+            raise ValueError(f"No {division or conference} teams in {season}")
+        by_season[season] = [season_opponent_token(season, team_id) for team_id in team_ids]
+    return by_season
+
+
+def season_team_abbrs(season: str) -> dict[int, str]:
+    """``team_id -> team_abbr`` as the team was known in ``season``.
+
+    That season's team game rows win, then the served membership table, then
+    the current franchise abbreviations.
+    """
+    from nbatools.commands import _nba_alignment
+
+    names = {
+        value: name
+        for name, value in vars(_nba_alignment).items()
+        if name.isupper() and len(name) == 3 and isinstance(value, int)
+    }
+    try:
+        df = load_team_conference_membership()
+    except (FileNotFoundError, ValueError):
+        df = None
+    if df is not None:
+        for row in df.loc[df["season"].eq(season)].itertuples():
+            names[int(row.team_id)] = str(row.team_abbr).upper()
+    path = f"data/raw/team_game_stats/{season}_regular_season.csv"
+    if data_exists(path):
+        games = data_read_csv(path, usecols=["team_id", "team_abbr"]).drop_duplicates("team_id")
+        for row in games.itertuples():
+            names[int(row.team_id)] = str(row.team_abbr).upper()
+    return names
+
+
+def opponent_group_abbrs(by_season: dict[str, list[str]]) -> list[str]:
+    """Sorted abbreviations of the teams behind season-scoped group tokens."""
+    abbrs: set[str] = set()
+    for season, tokens in by_season.items():
+        names = season_team_abbrs(season)
+        for token in tokens:
+            team_id = int(token.split("#", 1)[1])
+            abbrs.add(names.get(team_id, str(team_id)))
+    return sorted(abbrs)
+
+
 def resolve_opponent_quality_teams(
     opponent_quality: dict,
     seasons: list[str],
     season_type: str,
+    *,
+    tokens_out: list[str] | None = None,
 ) -> list[str]:
     del season_type  # policy currently resolves via regular-season standings/ratings only
 
@@ -959,9 +1085,25 @@ def resolve_opponent_quality_teams(
         else:
             raise ValueError(f"Unsupported opponent_quality metric: {metric}")
 
+        if tokens_out is not None:
+            if "team_id" not in df.columns:
+                raise ValueError("opponent_quality season tokens need team_id")
+            ids = pd.to_numeric(df.loc[teams.index, "team_id"], errors="coerce").dropna()
+            tokens_out.extend(season_opponent_token(season, team_id) for team_id in ids)
         resolved.update(teams.astype(str).str.upper())
 
     return sorted(resolved)
+
+
+def resolve_opponent_quality_tokens(
+    opponent_quality: dict,
+    seasons: list[str],
+    season_type: str,
+) -> list[str]:
+    """Season-scoped tokens for teams meeting a quality bar in each season."""
+    tokens: list[str] = []
+    resolve_opponent_quality_teams(opponent_quality, seasons, season_type, tokens_out=tokens)
+    return tokens
 
 
 def _load_team_games_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:

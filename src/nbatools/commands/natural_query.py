@@ -643,6 +643,41 @@ _SPLIT_AXIS_FIELDS = {
 }
 _SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
 
+# Routes that take an opponent conference or division (mirrors
+# _natural_query_execution._OPPONENT_GROUP_ROUTES).
+_OPPONENT_GROUP_ROUTES = {
+    "team_record",
+    "team_record_leaderboard",
+    "player_game_summary",
+    "player_game_finder",
+    "player_split_summary",
+    "game_summary",
+    "game_finder",
+    "team_split_summary",
+    "player_compare",
+    "team_compare",
+}
+
+
+def _team_vs_team_meetings(parsed: dict) -> bool:
+    """ "Lakers vs Warriors last 10 games" means their last 10 meetings.
+
+    Two teams joined by "vs" with a last-N window and nothing else to measure
+    read as the games between them; "compare the Lakers and Warriors last 10
+    games" (or a stat threshold) still compares each team's own last 10.
+    """
+    text = parsed.get("normalized_query") or ""
+    return bool(
+        parsed.get("last_n")
+        and re.search(r"\b(?:vs\.?|versus|against)\b", text)
+        and not re.search(r"\bcompar", text)
+        and parsed.get("min_value") is None
+        and parsed.get("max_value") is None
+        and not parsed.get("opponent_conference")
+        and not parsed.get("opponent_division")
+        and not parsed.get("opponent_quality")
+    )
+
 
 def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: dict) -> list[str]:
     """Return unsupported_filters markers for filters this route parses but never applies.
@@ -900,6 +935,25 @@ def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
     if operand in _VS_NON_PLAYER_OPERANDS:
         return None
     return operand
+
+
+def _player_team_comparison(parsed: dict) -> bool:
+    """ "compare LeBron and the Lakers": one player and one team.
+
+    Read as LeBron's games for the Lakers it silently drops the comparison;
+    read as games against them it guesses. Either way the answer would not
+    be the comparison asked for, so it refuses with both readings to pick.
+    """
+    if parsed.get("player_a") or parsed.get("team_a") or parsed.get("opponent"):
+        return False
+    if not (parsed.get("player") and parsed.get("team")):
+        return False
+    return bool(
+        re.search(
+            r"^\s*compar(?:e|ing)\s+.+?\s+(?:and|with|to)\s+",
+            parsed.get("normalized_query") or "",
+        )
+    )
 
 
 def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
@@ -2155,17 +2209,13 @@ def _finalize_route(parsed: dict) -> dict:
     )
     opponent_division = parsed.get("opponent_division")
     opponent_division_boundary = parsed.get("opponent_division_boundary", False)
-    supported_opponent_division_record_scope = (
-        bool(opponent_division)
-        and season_type == "Regular Season"
-        and not any(
-            [
-                with_player,
-                without_player,
-                unresolved_with_player,
-                unresolved_without_player,
-            ]
-        )
+    supported_opponent_division_record_scope = bool(opponent_division) and not any(
+        [
+            with_player,
+            without_player,
+            unresolved_with_player,
+            unresolved_without_player,
+        ]
     )
 
     notes: list[str] = []
@@ -2724,6 +2774,21 @@ def _finalize_route(parsed: dict) -> dict:
             season_type=season_type,
         )
         route_kwargs["unresolved_player_fragment"] = unresolved_compare_operand
+    elif _player_team_comparison(parsed):
+        route = "player_compare"
+        notes.append(
+            "unsupported_boundary: comparing a player with a team is ambiguous; "
+            "no single-player answer was substituted"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "player_team_comparison",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
     elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
         route, route_kwargs = lineup_route
     elif window_size is not None and parsed.get("stretch_opponent_description"):
@@ -3368,7 +3433,7 @@ def _finalize_route(parsed: dict) -> dict:
             "wins_only": wins_only,
             "losses_only": losses_only,
             "last_n": last_n,
-            "head_to_head": head_to_head,
+            "head_to_head": head_to_head or _team_vs_team_meetings(parsed),
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
@@ -4479,6 +4544,44 @@ def _finalize_route(parsed: dict) -> dict:
             # No season was named, so "last 10 games" means the 10 most
             # recent games even when the current season has fewer.
             route_kwargs.update(last_n_reach_back_seasons(route_kwargs["season"]))
+
+    if (
+        route == "team_compare"
+        and route_kwargs.get("head_to_head")
+        and route_kwargs.get("last_n")
+        and parsed.get("season_defaulted")
+        and route_kwargs.get("season") == parsed.get("season")
+        and not route_kwargs.get("start_season")
+        and not route_kwargs.get("start_date")
+        and not route_kwargs.get("end_date")
+    ):
+        # "Lakers vs Warriors last 10 games" means their 10 most recent
+        # meetings. Regular-season teams meet at least twice a season (bar the
+        # 1998-99 and 2011-12 lockouts), so reach back that far plus a margin;
+        # playoff meetings are rare, so search every season.
+        if route_kwargs.get("season_type") == "Playoffs":
+            seasons_back = 100
+        else:
+            seasons_back = -(-int(route_kwargs["last_n"]) // 2) + 2
+        route_kwargs.update(
+            last_n_reach_back_seasons(route_kwargs["season"], seasons_back=seasons_back)
+        )
+
+    if route in _OPPONENT_GROUP_ROUTES:
+        # Conference/division opponents resolve season by season at
+        # execution, on every route that filters games through the shared
+        # opponent mask (see _natural_query_execution._OPPONENT_GROUP_ROUTES).
+        already_blocked = set(route_kwargs.get("unsupported_filters") or [])
+        for field in ("opponent_conference", "opponent_division"):
+            if parsed.get(field) and field not in already_blocked:
+                route_kwargs.setdefault(field, parsed[field])
+
+    if parsed.get("opponent_conference_geography_boundary"):
+        # "vs the West coast" / "vs the Pacific Northwest" is geography, not a
+        # conference; refuse rather than answer for every opponent.
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "opponent_conference" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "opponent_conference"]
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:

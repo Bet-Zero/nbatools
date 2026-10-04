@@ -10,6 +10,8 @@ from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import (
+    build_opponent_mask,
+    describe_opponent_filter,
     load_player_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -69,11 +71,7 @@ def filter_player_games(
         ].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        out = out[
-            out["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-            | out["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
-        ].copy()
+        out = out[build_opponent_mask(out, opponent)].copy()
 
     if home_only:
         out = out[out["is_home"] == 1].copy()
@@ -416,7 +414,7 @@ def build_result(
     if head_to_head:
         caveats.append("head-to-head: only games where both players faced each other")
     if opponent:
-        caveats.append(f"filtered to games vs {opponent.upper()}")
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
 
     return ComparisonResult(
         summary=summary,

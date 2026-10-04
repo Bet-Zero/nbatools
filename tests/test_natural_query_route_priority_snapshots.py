@@ -161,9 +161,8 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "route_kwargs": {
                 "team": "BOS",
                 "season_type": "Playoffs",
-                "unsupported_filters": ["opponent_division"],
+                "opponent_division": "Atlantic",
             },
-            "note_contains": "unsupported_boundary",
         },
         {
             "query": "most conference finals appearances",

@@ -142,8 +142,41 @@ class BoundedDataFrameCache:
         self._current_bytes += frame_bytes
 
 
+# Rows measured exactly when estimating a frame's string bytes.
+_SIZE_SAMPLE_ROWS = 1024
+
+
 def _frame_bytes(frame: pd.DataFrame) -> int:
-    return int(frame.memory_usage(index=True, deep=True).sum())
+    """Retained bytes, with string bytes estimated from evenly spaced rows.
+
+    An exact deep count visits every string, about 45 ms for one season of
+    player games, paid on every load of a frame the cache keeps cycling.
+    """
+    rows = len(frame)
+    step = rows // _SIZE_SAMPLE_ROWS
+    if step < 2:
+        return int(frame.memory_usage(index=True, deep=True).sum())
+    # Only per-row Python strings are sampled; categoricals and the index
+    # share their values across rows, so scaling a sample would overcount them.
+    sampled = [
+        position
+        for position, dtype in enumerate(frame.dtypes)
+        if pd.api.types.is_object_dtype(dtype) or isinstance(dtype, pd.StringDtype)
+    ]
+    sampled_set = set(sampled)
+    exact = [position for position in range(frame.shape[1]) if position not in sampled_set]
+    total = frame.index.memory_usage(deep=True)
+    total += frame.iloc[:, exact].memory_usage(index=False, deep=True).sum()
+    if sampled:
+        columns = frame.iloc[:, sampled]
+        sample = columns.iloc[::step]
+        string_bytes = (
+            sample.memory_usage(index=False, deep=True)
+            - sample.memory_usage(index=False, deep=False)
+        ).sum()
+        total += columns.memory_usage(index=False, deep=False).sum()
+        total += string_bytes * rows / len(sample)
+    return int(total)
 
 
 def _env_nonnegative_int(name: str, default: int) -> int:
