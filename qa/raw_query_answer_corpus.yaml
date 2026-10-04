@@ -9532,3 +9532,25 @@ cases:
       tags:
         - rolling_stretch
       notes: "Review Curry's best 5-game 3P% stretch this season."
+
+  - id: c2_lone_year_team_record
+    query: "Warriors record in 2016"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.sections.summary.0.wins
+        equals: 73
+      - path: result.sections.summary.0.losses
+        equals: 9
+    review_notes: "A lone year names the season that ended in it (2015-16). It used to answer the current season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+      notes: "Review the Warriors 2015-16 record."
