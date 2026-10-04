@@ -33,6 +33,7 @@ type TeamDisplay = {
 const HISTORY_DETAIL_TITLES: Record<string, string> = {
   summary: "Postseason Summary Detail",
   by_season: "Season Breakdown Detail",
+  series: "Series Detail",
 };
 
 const MATCHUP_DETAIL_TITLES: Record<string, string> = {
@@ -82,12 +83,28 @@ function PlayoffTeamHistoryResult({
   if (!summary) return null;
 
   const team = teamDisplay(data.result?.metadata, summary);
-  const rows = seasonRows.length > 0 ? seasonRows : summaryRows;
+  const seriesRows = sections.series ?? [];
+  // A short run or one round reads best series by series; a long span reads
+  // best season by season, with every series one toggle away.
+  const showSeries =
+    variant === "history" &&
+    seriesRows.length > 0 &&
+    (seasonRows.length <= 3 || hasValue(summary.playoff_round));
+  const rowsKey = showSeries
+    ? "series"
+    : seasonRows.length > 0
+      ? "by_season"
+      : "summary";
+  const rows = showSeries
+    ? seriesRows
+    : seasonRows.length > 0
+      ? seasonRows
+      : summaryRows;
   const columns =
     variant === "appearances" ? appearanceColumns(rows) : historyColumns(rows);
   const visibleDetailKeys: Record<string, Iterable<string>> = {};
-  visibleDetailKeys[seasonRows.length > 0 ? "by_season" : "summary"] =
-    resultTableSourceKeys(columns);
+  visibleDetailKeys[rowsKey] = resultTableSourceKeys(columns);
+  const answerPhrase = data.result?.metadata?.answer_phrase;
 
   return (
     <section className={styles.pattern} aria-label="Playoff history result">
@@ -95,7 +112,9 @@ function PlayoffTeamHistoryResult({
         sentence={
           variant === "appearances"
             ? appearanceSentence(team.name, data.result?.metadata, summary)
-            : historySentence(team.name, data.result?.metadata, summary)
+            : typeof answerPhrase === "string" && answerPhrase.trim()
+              ? answerPhrase.trim()
+              : historySentence(team.name, data.result?.metadata, summary)
         }
         subjectIllustration={teamIdentity(team)}
         tone="team"
@@ -105,7 +124,7 @@ function PlayoffTeamHistoryResult({
       <ResultTable
         rows={rows}
         columns={columns}
-        ariaLabel="Playoff season breakdown"
+        ariaLabel={showSeries ? "Playoff series" : "Playoff season breakdown"}
         getRowKey={rowKey}
       />
       {detailToggles(sections, HISTORY_DETAIL_TITLES, visibleDetailKeys)}
@@ -388,7 +407,11 @@ function historyColumns(
     {
       key: "round",
       sourceKeys: ["round_reached", "deepest_round", "playoff_round", "round"],
-      header: "Round Reached",
+      header: rows.some((row) => hasValue(row.deepest_round))
+        ? "Round Reached"
+        : rows.some((row) => hasValue(row.playoff_round) && hasValue(row.result))
+          ? "Round"
+          : "Round Reached",
       render: (row) => roundCell(row),
     },
     {

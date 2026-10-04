@@ -1044,6 +1044,122 @@ _TEAM_STRETCH_PHRASES = {
 }
 
 
+_ROUND_PROSE = {
+    "First Round": "first round",
+    "Second Round": "second round",
+    "Conference Finals": "conference finals",
+    "Finals": "Finals",
+}
+
+
+def _series_line(row: Any) -> str:
+    verb = {"Won": "beat", "Lost": "lost to"}.get(str(row["result"]), "are playing")
+    stage = _ROUND_PROSE.get(row["playoff_round"], str(row["playoff_round"]).lower())
+    return (
+        f"{verb} the {row['opponent_team_name']} {int(row['wins'])}-{int(row['losses'])} "
+        f"in the {stage}"
+    )
+
+
+def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for a team's playoff run, series record or round record."""
+    if metadata.get("route") != "playoff_history" or not isinstance(result, SummaryResult):
+        return
+    series = result.series
+    if result.summary.empty or series is None or series.empty:
+        return
+    row = result.summary.iloc[0]
+    team = row["team_name"]
+    games = f"{int(row['wins'])}-{int(row['losses'])}"
+    won, lost = int(row.get("series_won", 0)), int(row.get("series_lost", 0))
+    first, last = row["season_start"], row["season_end"]
+    round_label = row.get("playoff_round")
+    # An opponent filter narrows every count to the series against that team.
+    vs = ""
+    if metadata.get("opponent") and "opponent_team_name" in series:
+        vs = f" against the {series['opponent_team_name'].iloc[0]}"
+    if isinstance(round_label, str) and round_label:
+        span = f"from {first} to {last}" if first != last else f"in {first}"
+        stage = _ROUND_PROSE.get(round_label, round_label.lower())
+        metadata["answer_phrase"] = (
+            f"The {team} won {won} of {won + lost} {stage} series{vs} {span}, "
+            f"going {games} in those games."
+        )
+        return
+    query_text = str(metadata.get("query_text") or "").lower()
+    if re.search(r"\b(?:titles?|championships?)\b", query_text) and not vs:
+        metadata["answer_phrase"] = _team_titles_phrase(team, series, metadata)
+        return
+    if first == last:
+        runs = "; ".join(_series_line(r) for _, r in series.iterrows())
+        title = " and won the title" if int(row.get("titles", 0) or 0) and not vs else ""
+        metadata["answer_phrase"] = (
+            f"The {team} went {games}{vs} in the {first} playoffs{title}: {runs}."
+        )
+        return
+    titles = int(row.get("titles", 0) or 0)
+    title_text = (
+        f", with {titles} {'title' if titles == 1 else 'titles'}" if titles and not vs else ""
+    )
+    metadata["answer_phrase"] = (
+        f"From {first} to {last}, the {team} won {won} of {won + lost} playoff series{vs} "
+        f"({games} in games){title_text}."
+    )
+
+
+_PLAYOFF_DATA_START = "1996-97"
+
+
+def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str:
+    """ "Lakers titles since 2000": Finals series won, with the seasons."""
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        # Earlier titles are not in the data, so never count from before it.
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+        start = _PLAYOFF_DATA_START
+    finals = series[series["playoff_round"] == "Finals"]
+    won = finals[finals["result"] == "Won"]
+    reached = len(finals)
+    # A run is still going when its last series is unfinished, or won short of the Finals.
+    last = series.sort_values(["season", "start_date"]).iloc[-1] if not series.empty else None
+    still_going = last is not None and (
+        last["result"] == "In progress"
+        or (last["result"] == "Won" and last["playoff_round"] != "Finals")
+    )
+    if won.empty and still_going:
+        season = last["season"]
+        return (
+            f"The {team} have not won a title {span}; "
+            f"their {season} playoff run is still in progress."
+        )
+    if start == end and reached:
+        # One season: name the Finals opponent and the series score.
+        final = finals.iloc[-1]
+        score = f"{int(final['wins'])}-{int(final['losses'])}"
+        opponent = final["opponent_team_name"]
+        if final["result"] == "Won":
+            won_text = f"won the {start} title, beating the {opponent} {score} in the Finals"
+            return f"The {team} {won_text}."
+        return (
+            f"The {team} did not win the {start} title; "
+            f"they lost to the {opponent} {score} in the Finals."
+        )
+    if won.empty:
+        if not reached:
+            return f"The {team} did not win a title {span}; they did not reach the Finals."
+        times = "once" if reached == 1 else f"{reached} times"
+        return f"The {team} did not win a title {span}; they reached the Finals {times}."
+    titles = "title" if len(won) == 1 else "titles"
+    seasons = ", ".join(str(season) for season in won["season"])
+    appearances = "appearance" if reached == 1 else "appearances"
+    return (
+        f"The {team} won {len(won)} {titles} {span} ({seasons}), in {reached} Finals {appearances}."
+    )
+
+
 def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """Headline for "Celtics best 10 game stretch": record, dates and margin."""
     if metadata.get("route") != "team_stretch_leaderboard":
@@ -1560,6 +1676,7 @@ def _finalize_natural_query_result(
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
+    _add_playoff_history_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -2033,6 +2150,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
 
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
+    _add_playoff_history_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

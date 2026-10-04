@@ -1506,17 +1506,15 @@ def test_best_performances_routes_like_best_games():
         ("Celtics conference finals record", "BOS", "03"),
     ],
 )
-def test_single_team_playoff_round_records_are_unsupported_boundary(query, team, playoff_round):
+def test_single_team_playoff_round_records_route_to_playoff_history(query, team, playoff_round):
     parsed = parse_query(query)
     assert parsed["route"] == "playoff_history"
     assert parsed["season_type"] == "Playoffs"
     assert parsed["team"] == team
     assert parsed["route_kwargs"]["team"] == team
     assert parsed["route_kwargs"]["playoff_round"] == playoff_round
-    assert parsed["route_kwargs"]["unsupported_filters"] == ["single_team_playoff_round_record"]
+    assert not parsed["route_kwargs"].get("unsupported_filters")
     assert parsed["opponent_conference"] is None
-    assert parsed["route"] != "team_record"
-    assert any("single-team playoff round records" in note for note in parsed.get("notes", []))
 
 
 def test_single_team_playoff_round_record_since_preserves_start_season():

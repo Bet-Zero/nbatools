@@ -328,6 +328,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._playoff_record_route_utils import (
     detect_by_decade_intent,
     detect_by_round_intent,
+    detect_how_did_playoffs,
     detect_playoff_appearance_intent,
     detect_playoff_history_intent,
     detect_playoff_round_filter,
@@ -1124,6 +1125,34 @@ _TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?!
 _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
 
 
+# Title questions that ask more than a count: never answer them with one.
+_TITLE_EXTRA_CONDITION = re.compile(
+    r"back[- ]to[- ]back|repeat|three[- ]?peat|clinch|\bstats?\b|\bgames?\b|\broster\b"
+    r"|\bwithout\b|\bwith(?:out)?\s+[a-z]"
+)
+_BARE_YEAR = re.compile(r"(?<![\d-])(?:19|20)\d{2}(?!-\d{2}\b)(?!\d)")
+
+
+def _title_year_left_unused(q: str) -> bool:
+    """A year the title route would not apply ("titles from 1990 to 2010",
+    "titles 2014"): refuse rather than count every season."""
+    years = _BARE_YEAR.findall(q)
+    if not years:
+        return False
+    if len(years) > 1:
+        # "since 2010 until 2020": only one year is ever applied.
+        return True
+    return not (extract_season(q) or extract_since_season(q) or re.search(r"\b(?:19|20)\d0s\b", q))
+
+
+_TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|titles?)\b")
+# Rings belong to players; division and conference titles are not Finals wins.
+_NON_LEAGUE_TITLE = re.compile(
+    r"\brings?\b|\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
+    r"(?:titles?|championships?)\b|\bscoring\s+titles?\b"
+)
+
+
 def _named_team_pairs(q: str) -> dict[str, list[str]]:
     """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
     best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
@@ -1611,6 +1640,14 @@ def _build_parse_state(query: str) -> dict:
                 player = player_without_absence.resolved
 
     wins_only, losses_only = detect_wins_losses(q)
+    if (
+        re.search(r"\bseries\b", q)
+        and not re.search(r"\bgames?\b", q)
+        and re.search(r"\b(?:playoffs?|postseason)\b", q)
+    ):
+        # "how many playoff series have the Lakers won": series won and lost
+        # come from the playoff history, not a filter to winning games.
+        wins_only = losses_only = False
     if stretch_request and re.search(r"\b(?:most|fewest|least)\s+(?:wins|losses)\b", q):
         # "most wins over a 10 game stretch" ranks windows by record.
         wins_only = losses_only = False
@@ -1819,7 +1856,8 @@ def _build_parse_state(query: str) -> dict:
         "stat_context_only": stat_context_only,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
-        "playoff_history_intent": playoff_history_intent,
+        "playoff_history_intent": playoff_history_intent
+        or bool(team and not player and not player_a and detect_how_did_playoffs(q)),
         "playoff_round_filter": playoff_round_filter,
         "by_round_intent": by_round_intent,
         "threshold_conditions": [
@@ -2198,6 +2236,83 @@ def _finalize_route(parsed: dict) -> dict:
             "unsupported_boundary: NBA awards and award winners are not supported "
             "by the current stats query contract"
         ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
+        (player or player_a or player_b)
+        and detect_playoff_round_filter(q)
+        # Player appearance counts have their own typed boundary.
+        and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
+    ):
+        # Player rows carry no playoff round, so "LeBron 2016 finals" must not
+        # answer with the whole postseason.
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["player_playoff_round"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: player stats by playoff round (Finals, conference "
+            "finals, first or second round) are not supported yet; ask for the whole "
+            "playoffs instead"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
+        championship_count_boundary
+        and team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and _TEAM_TITLE_COUNT.search(q)
+        and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not (unresolved_with_player or unresolved_without_player)
+    ):
+        # A team title is a Finals series won: "Lakers titles since 2000".
+        last_years = re.search(r"\b(?:last|past)\s+(\d+)\s+years?\b", q)
+        if last_years and not start_season and int(last_years.group(1)) > 0:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season = None
+            start_season, end_season = resolve_last_n_seasons(int(last_years.group(1)), "Playoffs")
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        if not start_season and not end_season and not named_season:
+            # "Lakers titles" counts every season, not the default one.
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        out["route"] = "playoff_history"
+        out["route_kwargs"] = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+        }
+        out["intent"] = "summary"
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out
@@ -2721,11 +2836,6 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ppr := try_playoff_record_route(parsed)) is not None:
         route, route_kwargs = ppr
-        if route_kwargs.get("unsupported_filters") == ["single_team_playoff_round_record"]:
-            notes.append(
-                "unsupported_boundary: single-team playoff round records are not supported "
-                "until the route and round-data contract is approved"
-            )
     elif (
         opponent_division_boundary
         and record_intent
