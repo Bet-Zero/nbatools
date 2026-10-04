@@ -133,3 +133,19 @@ def test_lowest_single_games_are_not_season_totals(query):
     # A bottom-N single-game list is not built: refuse rather than rank seasons.
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "lowest 5 turnovers per game",
+        "lowest 10 turnovers min 20 games",
+        "worst 5 field goal percentage minimum 10 games",
+        "lowest 5 scorers over the last 10 games",
+    ],
+)
+def test_lowest_n_player_rankings_still_answer(query):
+    # "per game", "min 20 games" and "last 10 games" are not a single-game list.
+    result = execute_natural_query(query)
+    assert result.metadata["route"] == "season_leaders"
+    assert result.result_status == "ok", result.result_reason

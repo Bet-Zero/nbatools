@@ -693,8 +693,10 @@ _TOP_N = (
     r"\b\d{1,3}\s+(?:best|highest|biggest|greatest)\b",
     r"\b(?:best|highest)\s+\d{1,3}\b",
     # "lowest 5 turnovers" ranks players; "lowest 5 scoring games" is no list here.
-    r"\b\d{1,3}\s+(?:worst|lowest)\b(?![^.?!]*\bgames?\b)",
-    r"\b(?:worst|lowest)\s+\d{1,3}\b(?![^.?!]*\bgames?\b)",
+    # Only "games" right after the stat words is the single-game list shape;
+    # "per game", "min 20 games" and "last 10 games" still rank players.
+    r"\b\d{1,3}\s+(?:worst|lowest)\b(?!(?:\s+(?!per\b|min\b|minimum\b|last\b)[a-z%-]+){0,3}\s+games?\b)",
+    r"\b(?:worst|lowest)\s+\d{1,3}\b(?!(?:\s+(?!per\b|min\b|minimum\b|last\b)[a-z%-]+){0,3}\s+games?\b)",
     r"\bfirst\s+\d+\b",
 )
 _THRESHOLD = (
