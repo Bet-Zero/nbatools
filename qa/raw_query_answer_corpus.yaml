@@ -9461,3 +9461,26 @@ cases:
         - playoff
         - playoff_series
       notes: "Review the 2015-16 champion and Finals score."
+
+  - id: c2_versus_pair_team_stretch
+    query: "Lakers vs Celtics best 10 game stretch since 2020"
+    category: rolling_stretch
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: wins
+    review_notes: "Two teams joined by vs are both ranked on their own best stretch. It listed head-to-head games before (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review that the rows are the Lakers and Celtics best 10-game records since 2020-21."

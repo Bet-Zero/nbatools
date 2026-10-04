@@ -306,3 +306,96 @@ def test_leading_opponent_list_stops_at_its_last_team():
     rows, _ = _rows(f"against the Celtics and Knicks, Lakers best 5 game stretch in {SEASON}")
     assert {row["team_abbr"] for row in rows} == {"LAL"}
     assert (rows[0]["wins"], rows[0]["net_per_game"]) == (best[0], best[1])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"Lakers vs Celtics best 5 game stretch in {SEASON}",
+        f"Lakers versus Celtics best 5 game stretch in {SEASON}",
+    ],
+)
+def test_versus_pair_ranks_both_teams_on_their_own_games(query):
+    games = _team_games()
+    best = {
+        abbr: max(_windows(games.query("team_abbr == @abbr"), 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr in ("LAL", "BOS")
+    }
+    rows, metadata = _rows(query)
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+    assert "by either team in" in metadata["answer_phrase"]
+
+
+def test_head_to_head_stretch_is_refused_not_widened():
+    result = execute_natural_query(
+        f"Lakers vs Celtics head to head best 5 game stretch in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+def test_versus_pair_player_stretch_is_refused_not_narrowed():
+    result = execute_natural_query(
+        f"which Lakers vs Celtics player had the best 5 game scoring stretch in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+def test_versus_chain_of_three_ranks_every_team():
+    games = _team_games()
+    best = {
+        abbr: max(_windows(games.query("team_abbr == @abbr"), 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr in ("LAL", "BOS", "NYK")
+    }
+    rows, _ = _rows(f"Lakers vs Celtics vs Knicks best 5 game stretch in {SEASON}")
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+
+
+def test_versus_pair_keeps_a_trailing_opponent():
+    games = _team_games().query("opponent_team_abbr == 'NYK'")
+    best = {
+        abbr: max(_windows(games.query("team_abbr == @abbr"), 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr in ("LAL", "BOS")
+    }
+    rows, _ = _rows(f"Lakers vs Celtics best 5 game stretch vs Knicks in {SEASON}")
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"best 5 game stretch in Lakers vs Celtics games in {SEASON}",
+        f"Lakers vs Celtics best 5 game stretch in games between them in {SEASON}",
+        f"Lakers vs Celtics best 5 game stretch when playing each other in {SEASON}",
+    ],
+)
+def test_meeting_wording_is_a_head_to_head_stretch(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+def test_team_count_after_vs_is_not_a_meeting():
+    rows, _ = _rows(f"Lakers vs Celtics 5 games stretch in {SEASON}")
+    assert {row["team_abbr"] for row in rows} == {"LAL", "BOS"}
+
+
+def test_versus_team_also_in_an_opponent_list_is_not_a_pair():
+    result = execute_natural_query(f"Lakers vs Celtics and Knicks best 5 game stretch in {SEASON}")
+    assert result.metadata["route"] != "team_stretch_leaderboard"
+
+
+@pytest.mark.parametrize("quality", ["playoff teams", "winning teams"])
+def test_versus_pair_never_drops_an_opponent_quality_filter(quality):
+    result = execute_natural_query(
+        f"Lakers vs Celtics best 5 game stretch vs {quality} in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
