@@ -147,8 +147,8 @@ def prune_r2_generations(
     its first objects, so an upload in progress is the newest and is kept.
     The active and retained-previous generations are always kept, and the
     pointer is re-read before every deletion: if it moved, pruning stops.
-    A prefix with no manifest (left by an interrupted deletion, or not a
-    generation) is reported and left alone.
+    A prefix with no manifest is not a generation; it is reported and left
+    alone.
     """
     if keep < 2:
         raise GenerationPublicationError("Keep at least 2 generations (active and previous)")
@@ -218,9 +218,9 @@ def _list_generation_ids(client: Any, bucket: str) -> list[str]:
 def _delete_generation(client: Any, bucket: str, generation: str) -> int:
     """Delete one generation's objects, its manifest last.
 
-    The manifest is what marks a prefix as a generation, so an interrupted
-    deletion leaves a reported, manifest-less prefix rather than a
-    half-deleted generation that still looks complete.
+    An interrupted deletion therefore leaves the manifest in place, so the
+    prefix still counts as an old generation and the next prune finishes it
+    instead of leaving unlisted objects behind.
     """
     prefix = f"{GENERATIONS_DIR}/{generation}/"
     manifest_key = f"{prefix}{GENERATION_MANIFEST_PATH}"
