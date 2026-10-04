@@ -1074,31 +1074,40 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
     won, lost = int(row.get("series_won", 0)), int(row.get("series_lost", 0))
     first, last = row["season_start"], row["season_end"]
     round_label = row.get("playoff_round")
+    # An opponent filter narrows every count to the series against that team.
+    vs = ""
+    if metadata.get("opponent") and "opponent_team_name" in series:
+        vs = f" against the {series['opponent_team_name'].iloc[0]}"
     if isinstance(round_label, str) and round_label:
         span = f"from {first} to {last}" if first != last else f"in {first}"
         stage = _ROUND_PROSE.get(round_label, round_label.lower())
         metadata["answer_phrase"] = (
-            f"The {team} won {won} of {won + lost} {stage} series {span}, "
+            f"The {team} won {won} of {won + lost} {stage} series{vs} {span}, "
             f"going {games} in those games."
         )
         return
     query_text = str(metadata.get("query_text") or "").lower()
-    if re.search(r"\b(?:titles?|championships?)\b", query_text) and "titles" in row:
+    if re.search(r"\b(?:titles?|championships?)\b", query_text) and not vs:
         metadata["answer_phrase"] = _team_titles_phrase(team, series, metadata)
         return
     if first == last:
         runs = "; ".join(_series_line(r) for _, r in series.iterrows())
-        title = " and won the title" if int(row.get("titles", 0) or 0) else ""
+        title = " and won the title" if int(row.get("titles", 0) or 0) and not vs else ""
         metadata["answer_phrase"] = (
-            f"The {team} went {games} in the {first} playoffs{title}: {runs}."
+            f"The {team} went {games}{vs} in the {first} playoffs{title}: {runs}."
         )
         return
     titles = int(row.get("titles", 0) or 0)
-    title_text = f", with {titles} {'title' if titles == 1 else 'titles'}" if titles else ""
+    title_text = (
+        f", with {titles} {'title' if titles == 1 else 'titles'}" if titles and not vs else ""
+    )
     metadata["answer_phrase"] = (
-        f"From {first} to {last}, the {team} won {won} of {won + lost} playoff series "
+        f"From {first} to {last}, the {team} won {won} of {won + lost} playoff series{vs} "
         f"({games} in games){title_text}."
     )
+
+
+_PLAYOFF_DATA_START = "1996-97"
 
 
 def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str:
@@ -1107,6 +1116,10 @@ def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str
     if not (start and end):
         start = end = metadata.get("season")
     span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        # Earlier titles are not in the data, so never count from before it.
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+        start = _PLAYOFF_DATA_START
     finals = series[series["playoff_round"] == "Finals"]
     won = finals[finals["result"] == "Won"]
     reached = len(finals)

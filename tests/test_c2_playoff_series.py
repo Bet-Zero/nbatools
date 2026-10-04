@@ -252,3 +252,147 @@ def test_single_season_title_names_the_finals_opponent():
     series.loc[0, ["result", "wins", "losses"]] = ["Lost", 1, 4]
     phrase = _team_titles_phrase("Golden State Warriors", series, {"season": "2016-17"})
     assert phrase.endswith("they lost to the Cleveland Cavaliers 1-4 in the Finals.")
+
+
+def _summary_result(series_rows, **summary):
+    from nbatools.commands.structured_results import SummaryResult
+
+    row = {"team_name": "Los Angeles Lakers", "season_type": "Playoffs", **summary}
+    return SummaryResult(summary=pd.DataFrame([row]), series=pd.DataFrame(series_rows))
+
+
+def _nuggets_series(season, wins, losses, result, round_label="Conference Finals"):
+    return {
+        "season": season,
+        "playoff_round": round_label,
+        "opponent_team_name": "Denver Nuggets",
+        "opponent_team_abbr": "DEN",
+        "wins": wins,
+        "losses": losses,
+        "result": result,
+        "start_date": f"{season[:4]}-05-20",
+    }
+
+
+def test_opponent_filtered_headlines_name_the_opponent():
+    from nbatools.query_service import _add_playoff_history_answer_metadata
+
+    one = _summary_result(
+        [_nuggets_series("2019-20", 4, 1, "Won")],
+        season_start="2019-20",
+        season_end="2019-20",
+        wins=4,
+        losses=1,
+        series_won=1,
+        series_lost=0,
+    )
+    metadata = {"route": "playoff_history", "opponent": "DEN", "query_text": "x"}
+    _add_playoff_history_answer_metadata(metadata, one)
+    assert metadata["answer_phrase"].startswith(
+        "The Los Angeles Lakers went 4-1 against the Denver Nuggets in the 2019-20 playoffs"
+    )
+
+    many = _summary_result(
+        [_nuggets_series("2008-09", 4, 2, "Won"), _nuggets_series("2022-23", 0, 4, "Lost")],
+        season_start="2008-09",
+        season_end="2022-23",
+        wins=4,
+        losses=6,
+        series_won=1,
+        series_lost=1,
+        titles=1,
+    )
+    metadata = {
+        "route": "playoff_history",
+        "opponent": "DEN",
+        "query_text": "Lakers titles vs Nuggets",
+    }
+    _add_playoff_history_answer_metadata(metadata, many)
+    assert metadata["answer_phrase"] == (
+        "From 2008-09 to 2022-23, the Los Angeles Lakers won 1 of 2 playoff series "
+        "against the Denver Nuggets (4-6 in games)."
+    )
+
+
+def test_title_span_never_starts_before_the_data():
+    from nbatools.query_service import _team_titles_phrase
+
+    series = pd.DataFrame(
+        [
+            {
+                "season": "2007-08",
+                "playoff_round": "Finals",
+                "result": "Won",
+                "start_date": "a",
+                "opponent_team_name": "Los Angeles Lakers",
+                "wins": 4,
+                "losses": 2,
+            }
+        ]
+    )
+    phrase = _team_titles_phrase(
+        "Boston Celtics", series, {"start_season": "1980-81", "end_season": "2025-26"}
+    )
+    assert phrase.startswith(
+        "The Boston Celtics won 1 title from 1996-97 (where the data starts) to 2025-26"
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers titles without LeBron",
+        "Lakers back to back titles",
+        "Lakers title-clinching games",
+        "Lakers 2020 title team stats",
+    ],
+)
+def test_title_questions_with_more_than_a_count_are_refused(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["championship_count"]
+
+
+def test_title_count_over_last_years_uses_those_seasons():
+    from nbatools.commands._seasons import resolve_last_n_seasons
+
+    kwargs = parse_query("Lakers titles last 10 years")["route_kwargs"]
+    expected = resolve_last_n_seasons(10, "Playoffs")
+    assert (kwargs["start_season"], kwargs["end_season"]) == tuple(expected)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "warriors record since the 2016 playoffs",
+        "lakers record after the 2016 playoffs",
+        "lakers record from 2010 to 2020 playoffs",
+    ],
+)
+def test_range_bound_years_are_not_one_season(text):
+    from nbatools.commands._parse_helpers import extract_season
+
+    assert extract_season(text) is None
+
+
+def test_since_the_year_playoffs_starts_that_season():
+    from nbatools.commands._parse_helpers import extract_since_season
+
+    assert extract_since_season("warriors record since the 2016 playoffs") == "2015-16"
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["Curry 2016 finals", "LeBron stats in the 2016 finals", "LeBron career finals averages"],
+)
+def test_player_stats_by_playoff_round_are_refused(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["player_playoff_round"]
+
+
+def test_how_did_a_team_do_in_the_playoffs_means_the_latest_run():
+    from nbatools.commands._seasons import default_end_season
+
+    kwargs = parse_query("how did the Lakers do in the playoffs")["route_kwargs"]
+    assert kwargs["season"] == default_end_season("Playoffs")

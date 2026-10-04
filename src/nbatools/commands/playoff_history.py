@@ -82,6 +82,8 @@ ROUND_ALIASES: dict[str, str] = {
 # Minimum season for round-level data
 ROUND_DATA_START_SEASON = "2001-02"
 ROUND_DATA_START_YEAR = 2001
+# Playoff game rows start with the 1996-97 season.
+DATA_START_YEAR = 1996
 
 # ---------------------------------------------------------------------------
 # Helpers: round extraction
@@ -274,7 +276,7 @@ def _has_round_data(seasons: list[str]) -> bool:
 
 def _round_data_caveat(seasons: list[str]) -> str | None:
     """Caveat for seasons whose rounds come from series order, not game ids."""
-    early = [s for s in seasons if season_to_int(s) < ROUND_DATA_START_YEAR]
+    early = [s for s in seasons if DATA_START_YEAR <= season_to_int(s) < ROUND_DATA_START_YEAR]
     if early:
         return (
             f"round data for {early[0]} to {early[-1]} is read from the order of each "
@@ -353,6 +355,8 @@ def build_playoff_history_result(
     round_caveat = _round_data_caveat(seasons)
     if round_caveat:
         caveats.append(round_caveat)
+    if season_to_int(seasons[0]) < DATA_START_YEAR:
+        caveats.append("playoff data starts in 1996-97; earlier seasons are not counted")
 
     # Filter by round if requested
     if playoff_round:

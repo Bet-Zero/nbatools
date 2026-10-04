@@ -407,23 +407,26 @@ def extract_season(text: str) -> str | None:
     if m:
         return m.group(0)
     # "the 2024 playoffs" / "2016 finals": playoffs are played in the spring,
-    # so the year names the season that ends in it (2023-24).
-    m = re.search(
-        r"(?<!since )(?<!after )(?<!before )\b((?:19|20)\d{2})\s+(?:nba\s+)?"
+    # so the year names the season that ends in it (2023-24). "the 2017 title" /
+    # "won the championship in 2016" name the same season. A year that opens or
+    # closes a range ("since the 2016 playoffs", "from 2010 to 2020 playoffs")
+    # is not one season.
+    patterns = (
+        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?"
         r"(?:play-?offs?|postseason|finals|conference\s+finals|(?:first|second)\s+round)\b",
-        text,
+        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?(?:titles?|championships?)\b",
+        r"\b(?:titles?|championships?)\s+in\s+((?:19|20)\d{2})\b",
     )
-    # "the 2017 title" / "won the championship in 2016" name the same season.
-    m = m or re.search(
-        r"(?<!since )(?<!after )(?<!before )\b((?:19|20)\d{2})\s+(?:nba\s+)?"
-        r"(?:titles?|championships?)\b",
-        text,
-    )
-    m = m or re.search(r"\b(?:titles?|championships?)\s+in\s+((?:19|20)\d{2})\b", text)
-    if m:
-        from nbatools.commands._seasons import int_to_season
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            before = text[: m.start(1)]
+            if re.search(
+                r"\b(?:since|after|before|from|to|until|through|thru)\s+(?:the\s+)?$", before
+            ):
+                continue
+            from nbatools.commands._seasons import int_to_season
 
-        return int_to_season(int(m.group(1)) - 1)
+            return int_to_season(int(m.group(1)) - 1)
     return None
 
 
@@ -464,6 +467,16 @@ def extract_since_season(text: str) -> str | None:
     m = re.search(r"\bsince\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
     if m:
         return m.group(1)
+    # "since the 2016 playoffs": the playoffs that end the 2015-16 season
+    m = re.search(
+        r"\bsince\s+(?:the\s+)?((?:19|20)\d{2})\s+(?:nba\s+)?"
+        r"(?:play-?offs?|postseason|finals|conference\s+finals|title|championship)\b",
+        text,
+    )
+    if m:
+        from nbatools.commands._seasons import int_to_season
+
+        return int_to_season(int(m.group(1)) - 1)
     # Bare year
     m = re.search(r"\bsince\s+((?:19|20)\d{2})\b(?!-\d)", text)
     if m:

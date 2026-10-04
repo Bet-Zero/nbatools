@@ -276,6 +276,9 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
 
     # -- Playoff history: single team --
     if playoff_history_intent and team and not team_a and not team_b:
+        if not (season or start_season or end_season) and re.search(r"\bhow(?:'d|\s+did)\b", q):
+            # "how did the Lakers do in the playoffs" asks about the latest run.
+            season = default_end_season("Playoffs")
         ph_season, ph_start, ph_end = _resolve_season_defaults(
             season, start_season, end_season, "Playoffs"
         )

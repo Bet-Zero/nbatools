@@ -1124,6 +1124,11 @@ _TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?!
 _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
 
 
+# Title questions that ask more than a count: never answer them with one.
+_TITLE_EXTRA_CONDITION = re.compile(
+    r"back[- ]to[- ]back|repeat|three[- ]?peat|clinch|\bstats?\b|\bgames?\b|\broster\b"
+    r"|\bwithout\b|\bwith(?:out)?\s+[a-z]"
+)
 _TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|titles?)\b")
 # Rings belong to players; division and conference titles are not Finals wins.
 _NON_LEAGUE_TITLE = re.compile(
@@ -2219,6 +2224,35 @@ def _finalize_route(parsed: dict) -> dict:
         return out
 
     if (
+        (player or player_a or player_b)
+        and detect_playoff_round_filter(q)
+        # Player appearance counts have their own typed boundary.
+        and not re.search(r"\bappearances?\b", q)
+    ):
+        # Player rows carry no playoff round, so "LeBron 2016 finals" must not
+        # answer with the whole postseason.
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["player_playoff_round"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: player stats by playoff round (Finals, conference "
+            "finals, first or second round) are not supported yet; ask for the whole "
+            "playoffs instead"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
         championship_count_boundary
         and team
         and not player
@@ -2228,8 +2262,17 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_b
         and _TEAM_TITLE_COUNT.search(q)
         and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not (with_player or without_player)
+        and not (unresolved_with_player or unresolved_without_player)
     ):
         # A team title is a Finals series won: "Lakers titles since 2000".
+        last_years = re.search(r"\b(?:last|past)\s+(\d+)\s+years?\b", q)
+        if last_years and not start_season and int(last_years.group(1)) > 0:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season = None
+            start_season, end_season = resolve_last_n_seasons(int(last_years.group(1)), "Playoffs")
         named_season = (
             extract_season(q)
             or parsed.get("explicit_relative_season")
