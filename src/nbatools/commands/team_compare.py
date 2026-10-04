@@ -385,9 +385,15 @@ def build_result(
         caveats.append(f"date window: {' '.join(date_parts)}")
     if last_n:
         caveats.append(f"limited to last {last_n} games")
-        found = min(len(a_df), len(b_df)) if head_to_head else None
-        if found is not None and found < last_n:
+        if head_to_head and min(len(a_df), len(b_df)) < last_n:
+            found = min(len(a_df), len(b_df))
             caveats.append(f"only {found} meetings found in the searched seasons")
+        elif not head_to_head:
+            for team, frame in ((team_a, a_df), (team_b, b_df)):
+                if len(frame) < last_n:
+                    caveats.append(
+                        f"only {len(frame)} qualifying {team} games found in the searched seasons"
+                    )
 
     return ComparisonResult(
         summary=summary,
