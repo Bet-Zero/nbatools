@@ -1114,8 +1114,8 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 _TEAM_PAIR_ALIASES = "|".join(
     re.escape(name)
     for name in sorted(TEAM_ALIASES, key=len, reverse=True)
-    # Short codes that double as words ("what was", "min points") never list.
-    if name not in {"was", "min", "cs", "c's"}
+    # "cs" doubles as a word; "was"/"min" only count inside a list of teams.
+    if name not in {"cs", "c's"}
 )
 _TEAM_ONE = rf"(?:the\s+)?(?:{_TEAM_PAIR_ALIASES})(?![\w'])"
 _TEAM_LIST_SEP = r"(?:\s*,\s*(?:(?:and|&)\s+)?|\s+(?:and|&)\s+)"
@@ -1128,7 +1128,7 @@ def _named_team_pairs(q: str) -> dict[str, list[str]]:
     """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
     best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
     """
-    found: dict[str, list[str]] = {"subjects": [], "opponents": []}
+    found: dict[str, list[str]] = {"subjects": [], "opponents": [], "lead": []}
     for match in _TEAM_LIST_PATTERN.finditer(q):
         teams: list[str] = []
         for one in _TEAM_ONE_PATTERN.finditer(match.group(0)):
@@ -1140,6 +1140,11 @@ def _named_team_pairs(q: str) -> dict[str, list[str]]:
         role = "opponents" if _OPPONENT_LEAD.search(q[: match.start()]) else "subjects"
         if not found[role]:
             found[role] = teams
+            if role == "opponents":
+                found["lead"] = [
+                    TEAM_ALIASES[one.group(1)]
+                    for one in _TEAM_ONE_PATTERN.finditer(q[: match.start()])
+                ]
     return found
 
 
@@ -2430,6 +2435,12 @@ def _finalize_route(parsed: dict) -> dict:
         subject_teams = [
             abbr for abbr in team_stretch_request.get("subjects", []) if abbr not in opponents
         ]
+        stretch_team = team
+        if team in opponents:
+            # "Lakers best stretch vs Celtics, Knicks and Heat": the subject is the
+            # team named before the opponent list, else the whole league.
+            leads = [abbr for abbr in team_stretch_request.get("lead", []) if abbr not in opponents]
+            stretch_team = leads[0] if leads else None
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -2438,7 +2449,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_date": end_date,
             "season_type": season_type,
             # "Lakers and Celtics best 5 game stretch" ranks both teams' best runs.
-            "team": team if len(subject_teams) < 2 else None,
+            "team": stretch_team if len(subject_teams) < 2 else None,
             "teams": subject_teams if len(subject_teams) >= 2 else None,
             "opponent": stretch_opponent,
             "home_only": home_only,
@@ -2449,6 +2460,27 @@ def _finalize_route(parsed: dict) -> dict:
             "worst": team_stretch_request["worst"],
             "limit": top_n or 10,
         }
+    elif (
+        window_size is not None
+        and stretch_names_players
+        and not player
+        and len((team_stretch_request or {}).get("subjects", [])) >= 2
+    ):
+        # "which Lakers and Celtics player": one team per player ranking, so refuse
+        # rather than rank one team's players.
+        route = "player_stretch_leaderboard"
+        route_kwargs = _unsupported_route_kwargs(
+            "multi_team_player_stretch",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            window_size=window_size,
+            stretch_metric=stretch_metric,
+            limit=top_n or 10,
+        )
     elif (
         window_size is not None
         and stretch_metric is not None

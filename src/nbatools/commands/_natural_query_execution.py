@@ -628,6 +628,12 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "route has team-grain data only; ask for a team or league leaderboard "
             f"instead (blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "multi_team_player_stretch":
+        return (
+            "player stretches can be limited to one team at a time; ask for each "
+            "team separately, such as 'which Lakers player had the best 5 game "
+            f"scoring stretch' (blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "invalid_date":
         return (
             "a requested date does not exist on the calendar; check the day and "

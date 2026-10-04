@@ -1090,9 +1090,15 @@ def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     )
     connector = "in" if teams else "of"
     seasons = sorted({str(season) for season in result.leaders["season"]})
-    if teams and len(seasons) > 1:
-        # Each team's best window can fall in a different season.
-        connector, when = "from", f"{seasons[0]} to {seasons[-1]}"
+    first = metadata.get("start_season") or seasons[0]
+    last = metadata.get("end_season") or seasons[-1]
+    if teams and first != last:
+        # Each team's best window can fall in any season searched.
+        playoffs = " playoffs" if metadata.get("season_type") == "Playoffs" else ""
+        connector, when = (
+            "from",
+            f"the {first} to {last}{playoffs}" if playoffs else f"{first} to {last}",
+        )
     metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} {connector} {when}."
 
 

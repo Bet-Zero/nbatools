@@ -259,3 +259,42 @@ def test_multi_season_pair_headline_names_the_season_range():
     # Each team's best window falls in a different season in the fixture.
     assert sorted(row["season"] for row in rows) == ["2023-24", "2025-26"]
     assert metadata["answer_phrase"].endswith("from 2023-24 to 2025-26.")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"Lakers best 5 game stretch vs Celtics, Knicks and Heat in {SEASON}",
+        f"Lakers best 5 game stretch over the Celtics, Knicks and Heat in {SEASON}",
+        f"Lakers best 5 game stretch facing the Celtics, the Knicks and the Heat in {SEASON}",
+    ],
+)
+def test_opponent_list_never_replaces_the_named_team(query):
+    games = _team_games().query(
+        "team_abbr == 'LAL' and opponent_team_abbr in ['BOS', 'NYK', 'MIA']"
+    )
+    best = max(_windows(games, 5, _wins), key=lambda w: (w[0], w[1]))
+    rows, _ = _rows(query)
+    assert {row["team_abbr"] for row in rows} == {"LAL"}
+    assert (rows[0]["wins"], rows[0]["net_per_game"]) == (best[0], best[1])
+
+
+def test_league_question_with_opponent_list_ranks_every_team():
+    games = _team_games().query("opponent_team_abbr in ['BOS', 'NYK']")
+    best = {
+        abbr: max(_windows(team, 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr, team in games.groupby("team_abbr")
+        if len(team) >= 5
+    }
+    rows, _ = _rows(f"which team had the best 5 game stretch vs Celtics and Knicks in {SEASON}")
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+
+
+def test_two_team_player_stretch_is_refused_not_narrowed():
+    result = execute_natural_query(
+        f"which Lakers and Celtics player had the best 5 game scoring stretch in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
