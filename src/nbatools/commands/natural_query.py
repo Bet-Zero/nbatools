@@ -1311,20 +1311,37 @@ _NOT_A_RING = re.compile(
     r"|\b(?:mvp|dpoy|roy|awards?)\b"
 )
 # "players with the most rings", "who has the most rings": the players board.
-# Every word a plain ring question can use. Anything else (a second player, an
-# opponent, "in a row", "at age 27", "by a center", "in the East") is a qualifier
-# the ring count cannot honour, so the question refuses instead of answering the
+# Every word a plain ring question can use once the spans the parser resolves are
+# removed. Anything else (a second player, an opponent, "in a row", "at age 27",
+# "by a center", "in the East", a bare number, "last year") is a qualifier the
+# ring count cannot honour, so the question refuses instead of answering the
 # whole total.
 _RING_QUESTION_WORDS = frozenset(
     """
     how many much rings ring championships championship titles title does did do has
-    have had got gotten won win wins the a an most who which what player players top
-    leaders leader is are of in by nba all time ever total career his her their overall
-    since from between and to through thru until over during last past this previous
-    current season seasons year years playoffs postseason with
+    have had got gotten won win wins winning the a an most who which what whats player
+    players leaders leader is are of in by nba all time ever total overall with
+    playoffs postseason career times count number so far currently now for owns own
+    any single
     """.split()
 )
-_RING_YEAR_TOKEN = re.compile(r"^(?:\d+|(?:19|20)\d0s)$")
+_RING_SPAN_PHRASES = (
+    # "over the last 5 seasons", "in the past 20 years"
+    r"\b(?:(?:over|in|during|for)\s+)?(?:the\s+)?(?:last|past)\s+\d{1,2}\s+"
+    r"(?:seasons?|years?|playoffs|postseasons?)\b",
+    # "this season", "last season"
+    r"\b(?:in\s+|during\s+)?(?:this|last|previous|current)\s+season\b",
+    # "over his career", "in his whole career"
+    r"\b(?:over|in|during|for|throughout)\s+(?:his|her|their)\s+(?:whole\s+|entire\s+)?career\b",
+    # "in the 2010s"
+    r"\b(?:in|during)\s+the\s+(?:19|20)\d0s\b",
+    # "since 2015", "from 2012 to 2016", "between 2012 and 2016", "in 2012-13",
+    # "in the 2020 playoffs"
+    r"\b(?:since|from|between|through|thru|until|to|and|in|during)\s+(?:the\s+)?"
+    r"(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?(?:\s+(?:playoffs|postseason|season))?\b",
+    # "top 5"
+    r"\btop\s+\d{1,2}\b",
+)
 
 
 def _ring_question_has_qualifier(q: str, player: str | None) -> bool:
@@ -1334,15 +1351,14 @@ def _ring_question_has_qualifier(q: str, player: str | None) -> bool:
         allowed_player_reference_tokens,
     )
 
-    text = _normalize_for_matching(re.sub(r"'s\b", "", q))
-    if re.search(r"\bhis\s+(?:last|first)\b", text):
-        return True
+    text = _normalize_for_matching(re.sub(r"'s\b", "", q)).replace("'", "")
+    for phrase in _RING_SPAN_PHRASES:
+        text = re.sub(phrase, " ", text)
     allowed = allowed_player_reference_tokens(player) if player else set()
-    for token in re.findall(r"[\w.]+", text):
-        if token in _RING_QUESTION_WORDS or token in allowed or _RING_YEAR_TOKEN.match(token):
-            continue
-        return True
-    return False
+    return any(
+        token not in _RING_QUESTION_WORDS and token not in allowed
+        for token in re.findall(r"[\w.]+", text)
+    )
 
 
 _PLAYER_RING_BOARD = re.compile(

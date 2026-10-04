@@ -78,6 +78,10 @@ def test_ring_boards_rank_players(query, start):
         ("most titles by a player since 2000", "2000-01", "2025-26"),
         ("LeBron's rings", "1996-97", "2025-26"),
         ("King James rings", "1996-97", "2025-26"),
+        ("how many times has LeBron won the title", "1996-97", "2025-26"),
+        ("number of rings LeBron has", "1996-97", "2025-26"),
+        ("who owns the most rings", "1996-97", "2025-26"),
+        ("LeBron rings in the 2020 playoffs", None, None),
     ],
 )
 def test_span_wording_still_answers(query, start, end):
@@ -124,6 +128,14 @@ def test_named_span_is_kept():
         "LeBron rings in the East",
         "LeBron rings not counting the bubble",
         "who has the most rings over the past decade",
+        # Span words the parser does not resolve, and bare numbers.
+        "LeBron rings this year",
+        "who has the most rings last year",
+        "LeBron rings over 30",
+        "most rings in 5 years",
+        "LeBron rings in 3",
+        "LeBron rings since the 2010s",
+        "Tim Duncan rings in the last 3 seasons of his career",
     ],
 )
 def test_other_title_questions_stay_refused(query):
