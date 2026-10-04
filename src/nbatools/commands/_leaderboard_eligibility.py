@@ -70,6 +70,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
 )
+from nbatools.commands._parse_helpers import SERIES_SITUATION_PATTERNS
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 # Stable ids reported in ``unsupported_filters``. Each one needs different
@@ -719,6 +720,7 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("top_n",), _TOP_N),
     (("min_value", "max_value"), _THRESHOLD),
     (("team",), _SUBJECT),
+    (("series_situation",), SERIES_SITUATION_PATTERNS),
 )
 
 

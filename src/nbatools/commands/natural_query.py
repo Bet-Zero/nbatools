@@ -220,6 +220,12 @@ from nbatools.commands._parse_helpers import (
     detect_season_type as detect_season_type,
 )
 from nbatools.commands._parse_helpers import (
+    detect_series_comeback as detect_series_comeback,
+)
+from nbatools.commands._parse_helpers import (
+    detect_series_situation as detect_series_situation,
+)
+from nbatools.commands._parse_helpers import (
     detect_sophomore_leaderboard_boundary as detect_sophomore_leaderboard_boundary,
 )
 from nbatools.commands._parse_helpers import (
@@ -1446,6 +1452,8 @@ __all__ = [
     "extract_position_filter",
     "extract_relative_season",
     "extract_bare_year_pair",
+    "detect_series_situation",
+    "detect_series_comeback",
     "extract_bare_year_season",
     "extract_season",
     "extract_season_range",
@@ -1639,6 +1647,30 @@ def _build_parse_state(query: str) -> dict:
         season_type = "Playoffs"
         if start_season and end_season == regular_default_end:
             end_season = default_end_season("Playoffs")
+    # "Celtics record in game 7s": a playoff series situation filters playoff
+    # games, every season since 1996-97 unless a season is named.
+    series_situation = detect_series_situation(q)
+    series_comeback = detect_series_comeback(q)
+    series_situation_career = False
+    if (series_situation or series_comeback) and season_type != "Playoffs":
+        from nbatools.commands._seasons import default_end_season
+
+        regular_default_end = default_end_season(season_type)
+        season_type = "Playoffs"
+        if start_season and end_season == regular_default_end:
+            end_season = default_end_season("Playoffs")
+    if (
+        (series_situation or series_comeback)
+        and not (season or start_season or end_season)
+        and not explicit_relative_season
+        and not re.search(
+            r"\b(?:this|current|last|previous)\s+(?:season|year|postseason|playoffs)\b", q
+        )
+    ):
+        from nbatools.commands._seasons import resolve_career
+
+        start_season, end_season = resolve_career("Playoffs")
+        series_situation_career = True
     historical_route_intent = bool(
         by_decade_intent
         or playoff_appearance_intent
@@ -1936,6 +1968,9 @@ def _build_parse_state(query: str) -> dict:
         "window_size": window_size,
         "window_defaulted": window_defaulted,
         "bare_year_season": bare_year_season,
+        "series_situation": series_situation,
+        "series_comeback": series_comeback,
+        "series_situation_career": series_situation_career,
         "stretch_worst": stretch_worst,
         "stretch_player_group": stretch_player_group,
         "stretch_opponent_description": stretch_opponent_description,
@@ -2109,7 +2144,7 @@ def _is_aggregation_sibling(ranked: str | None, detected: str | None) -> bool:
     return ranked in (f"{detected}_total", f"{detected}_per_game")
 
 
-def _finalize_route(parsed: dict) -> dict:
+def _route_parsed_query(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     season = parsed["season"]
     start_season = parsed["start_season"]
@@ -4734,6 +4769,156 @@ def _finalize_route(parsed: dict) -> dict:
     out["confidence"] = compute_parse_confidence(out)
     out["alternates"] = generate_alternates(out)
 
+    return out
+
+
+_SITUATION_BOARD_WORDS = re.compile(
+    r"\b(?:who|which|what)\b|\bteams?\b|\bfranchises?\b|\bmost\b|\bbest\b|\bworst\b|"
+    r"\bfewest\b|\bleast\b|\bleaders?\b|\branks?\b|\branking\b|\btop\s+\d+\b"
+)
+_SITUATION_BOARD_PLAYER = re.compile(r"\bplayers?\b|\bscor(?:e|ed|er|ers|ing)\b")
+
+
+def _series_situation_board_stat(q: str) -> tuple[str, bool]:
+    """Stat and sort order for "who has won the most game 7s"-style boards."""
+    if re.search(r"\b(?:worst|lowest)\s+(?:record|win)", q):
+        return "win_pct", True
+    if re.search(
+        r"\b(?:best|highest|top)\s+(?:record|win)|\bwin\s*(?:pct|percentage|%)|\brecord\b", q
+    ):
+        return "win_pct", False
+    if re.search(r"\b(?:lost|loss(?:es)?|losing)\b", q):
+        return "losses", bool(re.search(r"\b(?:fewest|least)\b", q))
+    if re.search(r"\b(?:won|wins?|winning)\b", q):
+        return "wins", bool(re.search(r"\b(?:fewest|least)\b", q))
+    # "who is the best team in game 7s" ranks by record, not games played.
+    if re.search(r"\b(?:worst|lowest)\b", q):
+        return "win_pct", True
+    if re.search(r"\b(?:best|highest)\b", q):
+        return "win_pct", False
+    return "games_played", bool(re.search(r"\b(?:fewest|least)\b", q))
+
+
+def _series_situation_board(parsed: dict) -> dict | None:
+    """Route "who has won the most game 7s" to the team playoff record board."""
+    q = parsed["normalized_query"]
+    if any(
+        parsed.get(key)
+        for key in ("player", "player_a", "player_b", "team", "team_a", "team_b", "opponent")
+    ):
+        return None
+    if parsed.get("stat") not in (None, "win_pct", "wins", "losses"):
+        return None
+    if not _SITUATION_BOARD_WORDS.search(q) or _SITUATION_BOARD_PLAYER.search(q):
+        return None
+    stat, ascending = _series_situation_board_stat(q)
+    out = dict(parsed)
+    out["route"] = "playoff_round_record"
+    out["route_kwargs"] = {
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "playoff_round": parsed.get("playoff_round_filter"),
+        "stat": stat,
+        "ascending": ascending,
+        "limit": parsed.get("top_n") or 10,
+    }
+    out["intent"] = "leaderboard"
+    out["notes"] = []
+    return out
+
+
+def _series_refusal_route(parsed: dict, unsupported: str, note: str) -> dict:
+    """Refuse a series question the data cannot answer rather than answer another."""
+    out = dict(parsed)
+    out["route"] = None
+    out["route_kwargs"] = {
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": "Playoffs",
+        "unsupported_filters": [unsupported],
+    }
+    out["intent"] = "unsupported"
+    out["notes"] = [f"unsupported_boundary: {note}"]
+    return out
+
+
+def _series_comeback_route(parsed: dict) -> dict:
+    """ "teams that came back from 3-1 down": refuse rather than answer a game record."""
+    return _series_refusal_route(
+        parsed,
+        "series_comeback",
+        "series comebacks and blown series leads (came back from 3-1, blew a 3-1 lead) "
+        "are not supported yet; ask for a team's record when down 1-3 instead",
+    )
+
+
+# Counting stats whose total is the natural "most points in game 7s" answer.
+_SITUATION_TOTAL_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov", "oreb", "dreb"}
+_PER_GAME_WORDS = re.compile(
+    r"\bper\s+game\b|\bpg\b|\baverag(?:e|es|ed|ing)\b|\bavg\b|\b[prab]pg\b|\bmean\b"
+)
+
+
+def _series_situation_totals(out: dict, q: str) -> None:
+    """ "who scored the most points in game 7s": a total over those few games."""
+    route_kwargs = out.get("route_kwargs") or {}
+    if out.get("route") != "season_leaders" or _PER_GAME_WORDS.search(q):
+        return
+    if route_kwargs.get("stat") not in _SITUATION_TOTAL_STATS:
+        return
+    out["route_kwargs"] = {**route_kwargs, "stat": f"{route_kwargs['stat']}_total"}
+    out["notes"] = [
+        *(out.get("notes") or []),
+        "default: totals over those games; ask per game for averages",
+    ]
+
+
+def _finalize_route(parsed: dict) -> dict:
+    """Route a parse state; playoff series situations ride on every route."""
+    situation = parsed.get("series_situation")
+    q = parsed["normalized_query"]
+    refused = True
+    if parsed.get("series_comeback"):
+        out = _series_comeback_route(parsed)
+    elif situation and re.search(r"\bregular[\s-]season\b", q):
+        out = _series_refusal_route(
+            parsed,
+            "series_situation",
+            "series situations (game 7s, closeout games, up 3-1) are playoff games; "
+            "the regular season has none",
+        )
+    elif situation and re.search(r"\bcoach(?:es|ed|ing)?\b", q):
+        out = _series_refusal_route(
+            parsed, "coach", "coaches are not in the data, so coach records are not supported"
+        )
+    else:
+        refused = False
+        board = _series_situation_board(parsed) if situation else None
+        out = board if board is not None else _route_parsed_query(parsed)
+        if situation and board is None:
+            _series_situation_totals(out, q)
+    if refused or not situation:
+        if refused:
+            out["confidence"] = compute_parse_confidence(out)
+            out["alternates"] = generate_alternates(out)
+        return out
+    notes = list(out.get("notes") or [])
+    if situation and out.get("route"):
+        from nbatools.commands.playoff_history import series_situation_label
+
+        route_kwargs = dict(out.get("route_kwargs") or {})
+        route_kwargs["series_situation"] = situation
+        out["route_kwargs"] = route_kwargs
+        notes.append(f"series_situation: {series_situation_label(situation)}")
+    if parsed.get("series_situation_career"):
+        from nbatools.commands._seasons import EARLIEST_SEASON
+
+        notes.append(f"default: every playoff season since {EARLIEST_SEASON}")
+    out["notes"] = notes
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
     return out
 
 

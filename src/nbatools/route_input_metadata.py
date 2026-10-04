@@ -221,7 +221,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "min_attempts",
             "min_attempts_per_game",
             "attempt_stat",
-        ),
+        )
+        + ("series_situation",),
         aliases={"limit": ("top_n is a natural-parser slot; direct route calls use limit",)},
         allowed_values={"season_type": SEASON_TYPE_VALUES, "stat": SEASON_LEADER_STAT_VALUES},
         examples=(
@@ -282,7 +283,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "nationally_televised",
             "career_intent",
             "opponent_quality",
-        ),
+        )
+        + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "role": ("starter", "bench")},
         examples=(
@@ -297,7 +299,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Summarize a filtered team game sample.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
-        + ("stat", "min_value", "max_value", "opponent_quality"),
+        + ("stat", "min_value", "max_value", "opponent_quality")
+        + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=(
@@ -325,7 +328,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "half",
             "role",
             "opponent_quality",
-        ),
+        )
+        + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
@@ -344,7 +348,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Return team game rows matching stat and context filters.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
-        + ("stat", "min_value", "max_value", "conditions", "limit", "sort_by", "ascending"),
+        + ("stat", "min_value", "max_value", "conditions", "limit", "sort_by", "ascending")
+        + ("series_situation",),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "sort_by": SORT_BY_VALUES},
         examples=(
             {"team": "BOS", "season": "2025-26", "home_only": True, "wins_only": True},
@@ -434,7 +439,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "opponent_quality",
             "opponent_conference",
             "opponent_division",
-        ),
+        )
+        + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality", "opponent_conference", "opponent_division"),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=(
@@ -868,7 +874,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "stat",
             "limit",
             "ascending",
-        ),
+        )
+        + ("series_situation",),
         allowed_values={"stat": RECORD_STAT_VALUES},
         examples=({"playoff_round": "Finals", "start_season": "1980-81", "stat": "win_pct"},),
         notes=("Default stat is win_pct.",),

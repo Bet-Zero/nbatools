@@ -23,6 +23,10 @@ from nbatools.commands.data_utils import (
     select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import NoResult, SummaryResult
 
 ALLOWED_STATS = {
@@ -323,6 +327,7 @@ def select_team_summary_sample(
     end_date: str | None = None,
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> pd.DataFrame | NoResult:
     """Select one team's games in play: every filter, condition and last-N window.
 
@@ -361,6 +366,7 @@ def select_team_summary_sample(
         missing = [c for c in required if c not in df.columns]
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
+        df = apply_series_situation_filter(df, seasons, series_situation)
 
         window_game_ids = None
         if last_n is not None and last_n_scope in WINDOW_SCOPES:
@@ -405,7 +411,7 @@ def select_team_summary_sample(
         if last_n is not None and not df.empty:
             df = apply_last_n_sample(df, last_n, window_game_ids)
     else:
-        df = df.copy()
+        df = apply_series_situation_filter(df, seasons, series_situation)
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
 
@@ -434,6 +440,7 @@ def build_result(
     df: pd.DataFrame | None = None,
     player_df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     df_was_supplied = df is not None
@@ -458,6 +465,7 @@ def build_result(
         end_date=end_date,
         df=df,
         last_n_scope=last_n_scope,
+        series_situation=series_situation,
     )
     if isinstance(df, NoResult):
         return df
@@ -558,6 +566,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     used_seasons = sample_season_span(df, seasons, last_n)
     if len(used_seasons) > 1:
         caveats.append(
