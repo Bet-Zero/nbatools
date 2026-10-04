@@ -23,6 +23,10 @@ from nbatools.commands.data_utils import (
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_occurrence_leaders import _flag_special_event
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import FinderResult, NoResult
 
 ALLOWED_STATS = {
@@ -217,6 +221,7 @@ def build_result(
     half: str | None = None,
     role: str | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
@@ -253,6 +258,7 @@ def build_result(
         if clutch:
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
         return NoResult(query_class="finder", reason="no_data", notes=notes)
+    base_df = apply_series_situation_filter(base_df, seasons, series_situation)
 
     if period_filter_requested:
         try:
@@ -271,6 +277,7 @@ def build_result(
                 reason="filter_not_supported",
                 notes=[coverage_note] if coverage_note else [],
             )
+        period_df = apply_series_situation_filter(period_df, seasons, series_situation)
         df = filter_period_rows(period_df, quarter=quarter, half=half)
     else:
         df = base_df
@@ -495,6 +502,11 @@ def build_result(
         games=df[output_cols].copy(),
         current_through=current_through,
         notes=notes,
+        caveats=(
+            [f"playoff series situation: {series_situation_label(series_situation)}"]
+            if series_situation
+            else []
+        ),
     )
 
 

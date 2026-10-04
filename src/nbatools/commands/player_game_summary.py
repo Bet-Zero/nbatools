@@ -38,6 +38,10 @@ from nbatools.commands.player_advanced_metrics import (
     load_team_games_for_seasons,
 )
 from nbatools.commands.player_occurrence_leaders import _flag_special_event
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import NoResult, SummaryResult
 
 ALLOWED_STATS = {
@@ -249,6 +253,7 @@ def select_player_summary_sample(
     career_intent: bool = False,
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> PlayerSample | NoResult:
     """Select the games in play: every filter, condition and last-N window.
 
@@ -313,6 +318,9 @@ def select_player_summary_sample(
                 select_player_rows(df, player, team=team)["season"].unique().tolist()
             )
 
+        # "LeBron in game 7s": windows and filters start from those games.
+        df = apply_series_situation_filter(df, seasons, series_situation)
+
         if last_n is not None and last_n_scope in WINDOW_SCOPES:
             # The window is the player's N most recent games in play; game
             # results and stat conditions then apply inside it.
@@ -372,7 +380,7 @@ def select_player_summary_sample(
             df = filter_without_player(df, without_player, seasons, season_type, team=team)
     else:
         _player_arc_seasons = None
-        df = df.copy()
+        df = apply_series_situation_filter(df, seasons, series_situation)
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
 
@@ -458,6 +466,7 @@ def build_result(
     career_intent: bool = False,
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> SummaryResult | NoResult:
     sample = select_player_summary_sample(
         season=season,
@@ -490,6 +499,7 @@ def build_result(
         career_intent=career_intent,
         df=df,
         last_n_scope=last_n_scope,
+        series_situation=series_situation,
     )
     if isinstance(sample, NoResult):
         return sample
@@ -612,6 +622,8 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     if clutch_executed:
         caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
     note_text = "\n".join(notes)

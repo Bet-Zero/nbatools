@@ -9554,3 +9554,45 @@ cases:
       tags:
         - split
       notes: "Review the Warriors 2015-16 record."
+  - id: c2_series_game_7_team_record
+    query: "Warriors record in game 7s in 2016"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.sections.summary.0.wins
+        equals: 1
+      - path: result.sections.summary.0.losses
+        equals: 1
+    review_notes: "Game 7s of the 2015-16 playoffs: won the conference finals game 7, lost the Finals game 7. It used to answer the regular season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+      notes: "Review the Warriors 2016 game 7 record."
+  - id: c2_series_up_3_1_team_record
+    query: "Warriors record when up 3-1 in 2016"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.sections.summary.0.wins
+        equals: 2
+      - path: result.sections.summary.0.losses
+        equals: 1
+    review_notes: "Games played with the series at 3-1: first round and second round game 5s won, Finals game 5 lost (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+      notes: "Review the Warriors 2016 record when up 3-1."

@@ -211,6 +211,17 @@ _PHASE_H_SCHEDULE_CONTEXT_ROUTES = {
     "team_record",
 }
 
+# Playoff series situations (game 7s, elimination games, up 3-1) filter game rows.
+_SERIES_SITUATION_ROUTES = {
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+    "playoff_round_record",
+    "season_leaders",
+    "team_record",
+}
+
 
 def _get_build_result_map() -> dict[str, Callable]:
     if not _BUILD_RESULT_MAP:
@@ -360,6 +371,9 @@ def _route_context_filters_for_execution(
             blocked_filters.append("one_possession")
         if nationally_televised:
             blocked_filters.append("nationally_televised")
+
+    if route not in _SERIES_SITUATION_ROUTES and routed.pop("series_situation", None):
+        blocked_filters.append("series_situation")
 
     return routed, notes, blocked_filters
 

@@ -251,6 +251,109 @@ def _build_series_table(df: pd.DataFrame) -> pd.DataFrame:
     ]
 
 
+# ---------------------------------------------------------------------------
+# Series situations: game 7s, elimination and closeout games, series scores
+# ---------------------------------------------------------------------------
+
+_SERIES_STATE_COLUMNS = [
+    "_series_game_number",
+    "_series_wins_before",
+    "_series_losses_before",
+    "_series_wins_needed",
+]
+
+
+def series_situation_label(situation: str) -> str:
+    """Plain words for a series situation code."""
+    if situation.startswith("game_"):
+        numbers = situation.removeprefix("game_").split("_")
+        if len(numbers) == 1:
+            return f"game {numbers[0]}s"
+        return "games " + ", ".join(numbers[:-1]) + f" and {numbers[-1]}"
+    if situation.startswith("score_"):
+        wins, losses = situation.removeprefix("score_").split("_")
+        return f"games played with the series at {wins}-{losses}"
+    return {
+        "elimination": "elimination games (one loss from going home)",
+        "closeout": "closeout games (one win from taking the series)",
+        "deciding": "deciding games (winner takes the series)",
+    }.get(situation, situation)
+
+
+def _series_game_key(game_ids: pd.Series) -> pd.Series:
+    """Game id without leading zeros: loaders read ids as numbers or as text."""
+    return _game_id_text(game_ids).str.lstrip("0")
+
+
+def _series_state(seasons: list[str]) -> pd.DataFrame:
+    """Series state before each team's playoff game.
+
+    One row per (game, team): the game's number in its series and the team's
+    series wins and losses before it, from every playoff game of the seasons.
+    """
+    games = _load_playoff_games(seasons)
+    if games.empty:
+        return pd.DataFrame(columns=["_game_key", "team_id", *_SERIES_STATE_COLUMNS])
+    work = games.copy()
+    work["_game_key"] = _series_game_key(work["game_id"])
+    work["_date"] = pd.to_datetime(work["game_date"], errors="coerce")
+    work = work.drop_duplicates(["_game_key", "team_id"]).sort_values(["_date", "_game_key"])
+    key = [work["season"], work["team_id"], work["opponent_team_id"]]
+    win = work["wl"].astype(str).eq("W").astype(int)
+    loss = work["wl"].astype(str).eq("L").astype(int)
+    work["_series_game_number"] = work.groupby(key).cumcount() + 1
+    work["_series_wins_before"] = win.groupby(key).cumsum() - win
+    work["_series_losses_before"] = loss.groupby(key).cumsum() - loss
+    work["_series_wins_needed"] = [
+        _series_wins_needed(season, code)
+        for season, code in zip(work["season"], work["playoff_round_code"], strict=True)
+    ]
+    return work[["_game_key", "team_id", *_SERIES_STATE_COLUMNS]]
+
+
+def _situation_mask(state: pd.DataFrame, situation: str) -> pd.Series:
+    number = state["_series_game_number"]
+    wins = state["_series_wins_before"]
+    losses = state["_series_losses_before"]
+    needed = state["_series_wins_needed"]
+    if situation.startswith("game_"):
+        return number.isin([int(n) for n in situation.removeprefix("game_").split("_")])
+    if situation.startswith("score_"):
+        want_wins, want_losses = (int(n) for n in situation.removeprefix("score_").split("_"))
+        return wins.eq(want_wins) & losses.eq(want_losses)
+    live = wins.lt(needed) & losses.lt(needed)
+    if situation == "elimination":
+        return live & losses.eq(needed - 1)
+    if situation == "closeout":
+        return live & wins.eq(needed - 1)
+    if situation == "deciding":
+        return wins.eq(needed - 1) & losses.eq(needed - 1)
+    raise ValueError(f"Unknown series situation: {situation}")
+
+
+def apply_series_situation_filter(
+    df: pd.DataFrame, seasons: list[str], situation: str | None
+) -> pd.DataFrame:
+    """Keep the playoff game rows (team or player) played in ``situation``.
+
+    Rows need ``game_id`` and ``team_id``; the series state is the row's team's.
+    """
+    if not situation or df.empty:
+        return df.copy()
+    try:
+        state = _series_state(seasons)
+    except FileNotFoundError:
+        return df.iloc[0:0].copy()
+    state = state[_situation_mask(state, situation)]
+    keys = pd.MultiIndex.from_arrays(
+        [state["_game_key"], pd.to_numeric(state["team_id"], errors="coerce")]
+    )
+    row_keys = pd.MultiIndex.from_arrays(
+        [_series_game_key(df["game_id"]), pd.to_numeric(df["team_id"], errors="coerce")]
+    )
+    return df[row_keys.isin(keys)].copy()
+
+
 def _add_decade_column(df: pd.DataFrame) -> pd.DataFrame:
     """Add a 'decade' column from the season column."""
     out = df.copy()
@@ -1158,8 +1261,9 @@ def build_playoff_round_record_result(
     stat: str = "win_pct",
     limit: int = 10,
     ascending: bool = False,
+    series_situation: str | None = None,
 ) -> LeaderboardResult | NoResult:
-    """Rank teams by playoff record in a specific round.
+    """Rank teams by playoff record in a specific round or series situation.
 
     E.g., "best finals record since 1980", "most conference finals wins".
     """
@@ -1171,11 +1275,14 @@ def build_playoff_round_record_result(
         return NoResult(query_class="leaderboard", reason="no_data")
 
     df = _add_round_column(df)
+    df = apply_series_situation_filter(df, seasons, series_situation)
 
     caveats: list[str] = []
     round_caveat = _round_data_caveat(seasons)
     if round_caveat:
         caveats.append(round_caveat)
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
 
     round_label = "Playoffs"
     if playoff_round:
@@ -1198,14 +1305,21 @@ def build_playoff_round_record_result(
     agg["losses"] = agg["games_played"] - agg["wins"]
     agg["win_pct"] = (agg["wins"] / agg["games_played"]).round(3)
 
-    # Minimum games guardrail
-    min_games = max(1, len(seasons) // 5)
+    target_col = stat if stat in ("wins", "losses", "win_pct", "games_played") else "win_pct"
+
+    # Minimum games guardrail. Series situations are rare (a team plays a
+    # handful of game 7s a decade): counts need no floor, rates over a span
+    # of seasons need three.
+    if series_situation:
+        min_games = 3 if target_col == "win_pct" and len(seasons) > 1 else 1
+    else:
+        min_games = max(1, len(seasons) // 5)
     agg = agg[agg["games_played"] >= min_games].copy()
+    if series_situation and min_games > 1:
+        caveats.append(f"teams with at least {min_games} such games")
 
     if agg.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
-
-    target_col = stat if stat in ("wins", "losses", "win_pct") else "win_pct"
 
     result = (
         agg[["team_name", "team_abbr", "team_id", "games_played", "wins", "losses", "win_pct"]]

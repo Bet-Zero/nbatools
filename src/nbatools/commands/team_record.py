@@ -46,6 +46,10 @@ from nbatools.commands.data_utils import (
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import (
     ComparisonResult,
     LeaderboardResult,
@@ -253,6 +257,7 @@ def build_team_record_result(
     nationally_televised: bool = False,
     last_n: int | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -285,6 +290,8 @@ def build_team_record_result(
             )
         )
         return NoResult(query_class="summary", reason="no_data", notes=notes)
+    # "Celtics record in game 7s": every later filter starts from those games.
+    base_df = apply_series_situation_filter(base_df, seasons, series_situation)
 
     if period_filter_requested:
         try:
@@ -303,6 +310,7 @@ def build_team_record_result(
                 reason="filter_not_supported",
                 notes=[coverage_note] if coverage_note else [],
             )
+        period_df = apply_series_situation_filter(period_df, seasons, series_situation)
         df = filter_period_rows(period_df, quarter=quarter, half=half)
         coverage_base = _apply_game_filters(
             base_df,
@@ -589,6 +597,8 @@ def build_team_record_result(
     if period_execution_backed:
         descriptor = quarter if quarter is not None else half
         caveats.append(f"period record computed from {descriptor} windows")
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     if clutch_executed:
         caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
     if tied_period_rows:

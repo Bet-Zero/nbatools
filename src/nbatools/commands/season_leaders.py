@@ -14,6 +14,10 @@ from nbatools.commands.data_utils import (
     select_player_clutch_stats_for_base,
 )
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 from nbatools.data_source import data_exists, data_read_csv
 
@@ -683,7 +687,13 @@ def _apply_default_guardrails(
     date_window_active: bool = False,
     opponent_active: bool = False,
     num_seasons: int = 1,
+    series_situation: bool = False,
 ) -> pd.DataFrame:
+    if series_situation:
+        # A team plays at most a few game 7s or closeout games a season: one
+        # season needs one game, a span three; shooting floors are absolute.
+        df = df[df["games_played"] >= max(min_games, 1 if num_seasons == 1 else 3)].copy()
+        return _apply_attempt_floors(df, target_col, fga_floor=20, fg3a_floor=10, fta_floor=10)
     effective_min_games = max(
         min_games,
         _recommended_min_games(
@@ -703,7 +713,14 @@ def _apply_default_guardrails(
         fga_floor = 200 * num_seasons
         fg3a_floor = 100 * num_seasons
         fta_floor = 50 * num_seasons
+    return _apply_attempt_floors(
+        df, target_col, fga_floor=fga_floor, fg3a_floor=fg3a_floor, fta_floor=fta_floor
+    )
 
+
+def _apply_attempt_floors(
+    df: pd.DataFrame, target_col: str, *, fga_floor: int, fg3a_floor: int, fta_floor: int
+) -> pd.DataFrame:
     if target_col in {"fg_pct", "efg_pct", "ts_pct"} and "fga_total" in df.columns:
         df = df[df["fga_total"] >= fga_floor].copy()
 
@@ -825,6 +842,7 @@ def build_result(
     min_attempts: float | None = None,
     min_attempts_per_game: bool = False,
     attempt_stat: str | None = None,
+    series_situation: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -884,7 +902,7 @@ def build_result(
             "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
         )
     if (
-        home_only or away_only or wins_only or losses_only
+        home_only or away_only or wins_only or losses_only or series_situation
     ) and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
         raise ValueError(
             f"Game-filtered leaderboard not supported for '{target_col}'. "
@@ -935,6 +953,9 @@ def build_result(
         if "opponent_team_name" in basic.columns:
             opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
         basic = basic[opp_mask].copy()
+
+    # "most points in game 7s": the player's games in that series situation.
+    basic = apply_series_situation_filter(basic, seasons, series_situation)
 
     if home_only and "is_home" in basic.columns:
         basic = basic[basic["is_home"] == 1].copy()
@@ -1123,7 +1144,12 @@ def build_result(
 
         adv_path = Path(f"data/raw/player_season_advanced/{the_season}_{safe}.csv")
         game_filter_active = (
-            home_only or away_only or wins_only or losses_only or last_n is not None
+            home_only
+            or away_only
+            or wins_only
+            or losses_only
+            or last_n is not None
+            or bool(series_situation)
         )
         if not date_window_active and not opponent and not game_filter_active:
             df = _merge_advanced_if_available(df, adv_path)
@@ -1161,9 +1187,21 @@ def build_result(
     if target_col not in df.columns:
         raise ValueError(f"Column '{target_col}' not available for season leaders output")
 
-    game_filter_active = home_only or away_only or wins_only or losses_only or last_n is not None
+    game_filter_active = (
+        home_only
+        or away_only
+        or wins_only
+        or losses_only
+        or last_n is not None
+        or bool(series_situation)
+    )
 
     if clutch_executed:
+        df = df[df["games_played"] >= min_games].copy()
+    elif series_situation and (
+        target_col.endswith("_total") or target_col in COUNT_LEADERBOARD_STATS
+    ):
+        # A total over a handful of game 7s needs no games floor.
         df = df[df["games_played"] >= min_games].copy()
     elif attempt_col is not None:
         if attempt_col not in df.columns:
@@ -1179,6 +1217,7 @@ def build_result(
             date_window_active=date_window_active or game_filter_active,
             opponent_active=bool(opponent),
             num_seasons=len(seasons),
+            series_situation=bool(series_situation),
         )
 
     if df.empty:
@@ -1254,10 +1293,9 @@ def build_result(
         caveats.append("filtered to losses only")
     if last_n is not None:
         caveats.append(f"filtered to each player's last {last_n} games")
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     if target_col in GAME_LOG_DERIVED_ADVANCED:
-        game_filter_active = (
-            home_only or away_only or wins_only or losses_only or last_n is not None
-        )
         if date_window_active or multi_season or opponent or game_filter_active:
             caveats.append(f"{target_col} recomputed from filtered game-log sample")
     if position_filtered:

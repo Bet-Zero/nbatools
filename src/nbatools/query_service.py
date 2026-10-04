@@ -369,6 +369,16 @@ def _build_applied_filters(
         applied_filters.append({"label": "Outcome", "value": "Losses", "kind": "outcome"})
     if source.get("clutch"):
         applied_filters.append({"label": "Clutch", "value": "True", "kind": "situation"})
+    if source.get("series_situation"):
+        from nbatools.commands.playoff_history import series_situation_label
+
+        applied_filters.append(
+            {
+                "label": "Series situation",
+                "value": series_situation_label(source["series_situation"]),
+                "kind": "situation",
+            }
+        )
     if source.get("back_to_back"):
         applied_filters.append({"label": "Back-to-back", "value": "True", "kind": "schedule"})
     if source.get("rest_days") is not None:
@@ -652,6 +662,7 @@ def _build_query_metadata(
         "split_type": parsed.get("split_type"),
         "clutch": parsed.get("clutch"),
         "back_to_back": parsed.get("back_to_back"),
+        "series_situation": parsed.get("series_situation"),
         "rest_days": parsed.get("rest_days"),
         "one_possession": parsed.get("one_possession"),
         "nationally_televised": parsed.get("nationally_televised"),
@@ -2190,6 +2201,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "split_type": kwargs.get("split"),
         "clutch": kwargs.get("clutch"),
         "back_to_back": kwargs.get("back_to_back"),
+        "series_situation": kwargs.get("series_situation"),
         "rest_days": kwargs.get("rest_days"),
         "one_possession": kwargs.get("one_possession"),
         "nationally_televised": kwargs.get("nationally_televised"),

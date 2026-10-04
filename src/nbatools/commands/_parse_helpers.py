@@ -668,7 +668,8 @@ def extract_last_n_seasons(text: str) -> int | None:
     Returns N or None.
     """
     m = re.search(
-        r"\b(?:(?:over|in)\s+the\s+)?(?:last|past)\s+(\d+)\s+seasons?\b",
+        r"\b(?:(?:over|in)\s+the\s+)?(?:last|past)\s+(\d+)\s+"
+        r"(?:seasons?|years?|playoffs|postseasons?)\b",
         text,
     )
     if m:
@@ -881,9 +882,9 @@ def extract_last_n(text: str) -> int | None:
         r"\blast\s+(\d+)\s+games?\b",
         r"\bpast\s+(\d+)\s+games?\b",
         r"\brecent\s+(\d+)\s+games?\b",
-        r"\blast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
-        r"\bpast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
-        r"\brecent\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
+        r"\blast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
+        r"\bpast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
+        r"\brecent\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)
@@ -1338,7 +1339,7 @@ def _has_explicit_playoff_competition_context(text: str) -> bool:
 
 
 def detect_season_type(text: str) -> str:
-    if re.search(r"\b(playoff|playoffs|postseason)\b", text):
+    if re.search(r"\b(playoff|playoffs|postseasons?)\b", text):
         if detects_playoff_team_opponent_quality(
             text
         ) and not _has_explicit_playoff_competition_context(text):
@@ -2761,3 +2762,165 @@ def wants_recent_form(text: str) -> bool:
 
 def wants_split_summary(text: str) -> bool:
     return "split" in text or detect_split_type(text) is not None
+
+
+# -- Playoff series situations --------------------------------------------
+
+_SERIES_GAME_WORDS = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+}
+_SERIES_GAME_TOKEN = r"(?:[1-7]|one|two|three|four|five|six|seven)"
+# What follows a game number when it is a count or a stat, not a series game:
+# "game 5 3 pointers", "games 2 and 3 steals", "game 3 times". A year
+# ("game 7s 2016") or "2 seasons ago" is not a count.
+_NOT_A_SERIES_GAME_TAIL = (
+    r"(?!\s*(?:\+|-|\.\d|\d(?!\d{3}\b|\d{3}-|\s+(?:seasons?|years?|postseasons?)\s+ago\b)|"
+    r"or\s+(?:more|fewer|less)|times?\b|straight\b|in\s+a\s+row\b|made\b|from\s+(?:three|3)\b|"
+    rf"games?\b|days?\b|seasons?\b|{STAT_PATTERN}))"
+)
+# "game 7", "game sevens", "a game 6". "games 5 3 pointers" and "last 10
+# games 3 pointers" are counts, so a lone number takes the singular "game".
+_SERIES_GAME_NUMBER = re.compile(
+    rf"\bgame\s*(?:#\s*)?({_SERIES_GAME_TOKEN})(?:s|es)?\b" + _NOT_A_SERIES_GAME_TAIL
+)
+# "games 2 and 3", "game 6 or game 7", "games 1 through 5", "games 5-7".
+_SERIES_GAME_SET = re.compile(
+    rf"\bgames?\s*({_SERIES_GAME_TOKEN})(?:s|es)?\s*"
+    r"(?:(,|and|&|or)\s*(?:game\s*)?|(through|thru|to|-|–)\s*(?:game\s*)?)"
+    rf"({_SERIES_GAME_TOKEN})(?:s|es)?\b" + _NOT_A_SERIES_GAME_TAIL
+)
+_SERIES_ELIMINATION = re.compile(
+    r"\b(?:elimination\s+games?|facing\s+elimination|faced\s+elimination|"
+    r"on\s+the\s+brink\s+of\s+elimination|do[\s-]or[\s-]die|must[\s-]win\s+games?|"
+    r"with\s+(?:their|his|the)\s+season\s+on\s+the\s+line)\b"
+)
+_SERIES_CLOSEOUT = re.compile(
+    r"\b(?:close[\s-]?out\s+games?|closeout\s+opportunit(?:y|ies)|"
+    r"(?:series[\s-])?clinching\s+games?|chances?\s+to\s+(?:close\s+out|clinch)(?:\s+a\s+series)?)\b"
+)
+_SERIES_DECIDING = re.compile(
+    r"\b(?:winner[\s-]take[\s-]all(?:\s+games?)?|deciding\s+games?|decisive\s+games?)\b"
+)
+_SERIES_SCORE = re.compile(
+    r"\b(?:(leading|up|ahead)|(trailing|down|behind)|(tied))"
+    r"(?:\s+in\s+(?:the|a)\s+series)?\s+([0-3])\s*[-–]\s*([0-3])\b"
+    r"(?!\s*(?:in\s+(?:the\s+)?(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+quarter|run\b))"
+)
+# "game 2 of a back to back", "game 3 of the road trip" are not series games.
+_NOT_A_SERIES_GAME = re.compile(
+    r"\s+(?:of|in)\s+(?:a|an|the|this|their|his)?\s*"
+    r"(?:back[\s-]to[\s-]backs?|b2bs?|road\s+trips?|homestands?|home\s+stands?|trips?|seasons?)\b"
+    r"|\s+of\s+(?:the|their|his|its)\s+(?:last|past)\b"
+)
+# "up 2-0 in the season series" or "on the season" is not a playoff series;
+# "tied 2-2 after the first quarter" and "down 0-3 in their last 3" are not either.
+_NOT_A_SERIES_SCORE = re.compile(
+    r"\s+(?:(?:in|on|for)\s+(?:the|their|a)\s+season\b"
+    r"|(?:in|after|through|at)\s+(?:the\s+)?(?:first|second|third|fourth|1st|2nd|3rd|4th)\b"
+    r"|(?:at|by)\s+(?:the\s+)?half(?:time)?\b"
+    r"|in\s+(?:the|their|his|its)\s+(?:last|past|first)\b"
+    r"|(?:in|on|over)\s+(?:the|their|this|a)\s+(?:road\s+trip|homestand|stretch|month|week)\b)"
+)
+# Series-level outcomes: "came back from 3-1 down", "blew a 3-1 lead".
+_SERIES_SCORE_TEXT = r"([0-3])\s*[-–]\s*([0-3])"
+_SERIES_COMEBACK = re.compile(
+    r"\b(?:came\s+back\s+from|come\s+back\s+from|comebacks?\s+from|overc[ao]me|"
+    r"rallied\s+from|rally\s+from)\b[^.?!]{0,25}?\b" + _SERIES_SCORE_TEXT + r"\b"
+    r"|\b" + _SERIES_SCORE_TEXT + r"\s+(?:series\s+)?comebacks?\b"
+)
+_SERIES_BLOWN = re.compile(
+    r"\b(?:blew|blown|blow|blowing|squandered|collapsed?\s+(?:from|after))\b"
+    r"[^.?!]{0,25}?\b" + _SERIES_SCORE_TEXT + r"\b"
+    r"|\b" + _SERIES_SCORE_TEXT + r"\s+(?:series\s+)?(?:collapses?|leads?\s+blown)\b"
+)
+
+
+#: Wording a resolved series situation accounts for (leaderboard residual check).
+SERIES_SITUATION_PATTERNS: tuple[str, ...] = (
+    _SERIES_GAME_SET.pattern,
+    r"\bgames?\s*(?:#\s*)?(?:[1-7]|one|two|three|four|five|six|seven)(?:s|es)?\b",
+    _SERIES_ELIMINATION.pattern,
+    _SERIES_CLOSEOUT.pattern,
+    _SERIES_DECIDING.pattern,
+    r"\b(?:leading|up|ahead|trailing|down|behind|tied)(?:\s+in\s+(?:the|a)\s+series)?"
+    r"\s+[0-3]\s*[-–]\s*[0-3]\b",
+    r"\b(?:when|while|with|of\s+(?:a|the)\s+series|in\s+(?:a|the)\s+series)\b",
+)
+
+
+def detect_series_comeback(text: str) -> dict | None:
+    """Series comeback or collapse wording, with the series score it turned on.
+
+    "came back from 3-1 down" is ``{"wins": 1, "losses": 3, "blown": False}``
+    (the team trailed 1-3 and won the series); "blew a 3-1 lead" is
+    ``{"wins": 3, "losses": 1, "blown": True}`` (led 3-1 and lost it).
+    """
+    lowered = text.lower()
+    for pattern, blown in ((_SERIES_BLOWN, True), (_SERIES_COMEBACK, False)):
+        match = pattern.search(lowered)
+        if not match:
+            continue
+        a, b = (int(n) for n in match.groups() if n is not None)
+        if a == b:
+            return None
+        high, low = max(a, b), min(a, b)
+        if blown:
+            return {"wins": high, "losses": low, "blown": True}
+        return {"wins": low, "losses": high, "blown": False}
+    return None
+
+
+def detect_series_situation(text: str) -> str | None:
+    """Playoff series situation named in ``text``, as a code.
+
+    ``game_N`` (game N of a series; ``game_2_3`` for games 2 and 3),
+    ``elimination`` (one loss from going home), ``closeout`` (one win from
+    taking the series), ``deciding`` (both teams one win away), or
+    ``score_W_L`` (the team's series wins and losses before the game: "up 3-1"
+    is ``score_3_1``, "down 3-1" and "trailing 1-3" ``score_1_3``).
+    """
+    lowered = text.lower()
+    if detect_series_comeback(lowered):
+        return None
+    if _SERIES_DECIDING.search(lowered):
+        return "deciding"
+    if _SERIES_ELIMINATION.search(lowered):
+        return "elimination"
+    if _SERIES_CLOSEOUT.search(lowered):
+        return "closeout"
+    score = _SERIES_SCORE.search(lowered)
+    if score and not _NOT_A_SERIES_SCORE.match(lowered, score.end()):
+        a, b = int(score.group(4)), int(score.group(5))
+        if score.group(3):
+            if a != b:
+                return None
+            wins = losses = a
+        elif score.group(1):
+            wins, losses = max(a, b), min(a, b)
+        else:
+            wins, losses = min(a, b), max(a, b)
+        if score.group(3) is None and wins == losses:
+            return None
+        return f"score_{wins}_{losses}"
+    games = _SERIES_GAME_SET.search(lowered)
+    if games and not _NOT_A_SERIES_GAME.match(lowered, games.end()):
+        first, last = (_series_game_value(games.group(n)) for n in (1, 4))
+        if games.group(3):
+            numbers = list(range(min(first, last), max(first, last) + 1))
+        else:
+            numbers = sorted({first, last})
+        return "game_" + "_".join(str(n) for n in numbers)
+    number = _SERIES_GAME_NUMBER.search(lowered)
+    if number and not _NOT_A_SERIES_GAME.match(lowered, number.end()):
+        return f"game_{_series_game_value(number.group(1))}"
+    return None
+
+
+def _series_game_value(token: str) -> int:
+    return int(token) if token.isdigit() else _SERIES_GAME_WORDS[token]

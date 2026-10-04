@@ -12,6 +12,10 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import FinderResult, NoResult
 
 ALLOWED_STATS = {
@@ -173,6 +177,7 @@ def build_result(
     ascending: bool = False,
     last_n: int | None = None,
     last_n_scope: str = "qualifying",
+    series_situation: str | None = None,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
 
@@ -204,6 +209,7 @@ def build_result(
         df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
         return NoResult(query_class="finder", reason="no_data")
+    df = apply_series_situation_filter(df, seasons, series_situation)
 
     required = [
         "game_id",
@@ -327,6 +333,11 @@ def build_result(
     return FinderResult(
         games=df[output_cols].copy(),
         current_through=current_through,
+        caveats=(
+            [f"playoff series situation: {series_situation_label(series_situation)}"]
+            if series_situation
+            else []
+        ),
     )
 
 
