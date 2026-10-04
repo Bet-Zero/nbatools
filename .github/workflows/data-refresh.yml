@@ -34,6 +34,7 @@ jobs:
     environment: r2-publication
     env:
       PYTHONUNBUFFERED: "1"
+      R2_BUCKET_NAME: nbatools-data
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -49,8 +50,9 @@ jobs:
           R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
-          R2_BUCKET_NAME: nbatools-data
+        # The checkout tracks one reference file under data/; start empty.
         run: >-
+          rm -rf data &&
           nbatools-cli pipeline download-generation
           --data-dir data
           --manifest-out "$RUNNER_TEMP/active_manifest.json"
@@ -58,13 +60,17 @@ jobs:
       - name: Refresh the current season
         run: nbatools-cli pipeline refresh
 
+      - name: List changed data files
+        run: >-
+          nbatools-cli pipeline changed-files
+          --manifest "$RUNNER_TEMP/active_manifest.json"
+
       - name: Validate the refreshed data locally
         if: ${{ inputs.mode == 'check' }}
         run: >-
           nbatools-cli pipeline publish-generation
           --target local
           --generation-id "check-${GITHUB_RUN_ID}"
-          --only-if-changed-from "$RUNNER_TEMP/active_manifest.json"
 
       - name: Publish a new generation if game data changed
         if: ${{ inputs.mode == 'publish' }}
@@ -72,11 +78,10 @@ jobs:
           R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
-          R2_BUCKET_NAME: nbatools-data
         run: >-
           nbatools-cli pipeline publish-generation
           --target r2
-          --generation-id "refresh-$(date -u +%Y%m%d)-${GITHUB_RUN_ID}"
+          --generation-id "refresh-$(date -u +%Y%m%d)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           --only-if-changed-from "$RUNNER_TEMP/active_manifest.json"
 
       - name: Prune superseded generations
@@ -85,5 +90,4 @@ jobs:
           R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
-          R2_BUCKET_NAME: nbatools-data
         run: nbatools-cli pipeline prune-generations --keep 4

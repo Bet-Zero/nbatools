@@ -309,6 +309,7 @@ def publish_generation(
     ),
 ):
     """Validate, publish, and atomically activate one immutable generation."""
+    expected_base = None
     if only_if_changed_from is not None:
         manifest = json.loads(only_if_changed_from.read_text(encoding="utf-8"))
         changed = changed_data_files(data_dir, manifest)
@@ -316,6 +317,8 @@ def publish_generation(
             print("No data file changed since the active generation; nothing to publish.")
             return
         print(f"{len(changed)} data file(s) changed, e.g. {', '.join(changed[:5])}")
+        # Only publish over the generation this data was built from.
+        expected_base = str(manifest.get("generation_id") or "")
     try:
         if target is PublicationTarget.LOCAL:
             result = publish_local_generation(
@@ -324,7 +327,9 @@ def publish_generation(
                 data_root=data_dir,
             )
         else:
-            result = publish_r2_generation(generation_id, source_dir=data_dir)
+            result = publish_r2_generation(
+                generation_id, source_dir=data_dir, expected_base=expected_base
+            )
     except GenerationPublicationError as exc:
         print(f"Generation publication failed: {exc}")
         raise typer.Exit(code=1)
@@ -355,6 +360,22 @@ def download_generation(
     print(f"Downloaded generation: {result.generation_id}")
     print(f"Files: {result.file_count}")
     print(f"Bytes: {result.total_bytes}")
+
+
+@app.command("changed-files")
+def changed_files(
+    manifest: Path = typer.Option(
+        ...,
+        "--manifest",
+        help="Generation manifest JSON saved by download-generation.",
+    ),
+    data_dir: Path = typer.Option(Path("data"), "--data-dir", help="Local data directory."),
+):
+    """List raw/processed data files that differ from a generation manifest."""
+    changed = changed_data_files(data_dir, json.loads(manifest.read_text(encoding="utf-8")))
+    print(f"{len(changed)} data file(s) changed since the downloaded generation")
+    for path in changed:
+        print(f"  {path}")
 
 
 @app.command("prune-generations")

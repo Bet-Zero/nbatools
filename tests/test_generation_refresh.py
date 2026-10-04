@@ -10,8 +10,10 @@ import pytest
 
 from nbatools.commands.pipeline.generation_publication import (
     GENERATION_MANIFEST_PATH,
+    GenerationConflictError,
     GenerationPublicationError,
     GenerationValidationError,
+    publish_r2_generation,
 )
 from nbatools.commands.pipeline.generation_refresh import (
     changed_data_files,
@@ -49,6 +51,8 @@ class FakeR2Client:
         self.objects: dict[str, bytes] = {}
         self.modified: dict[str, datetime] = {}
         self.deleted: list[str] = []
+        self.fail_delete_keys: set[str] = set()
+        self.on_delete = None
 
     def put(self, key: str, payload: bytes, modified: datetime | None = None) -> None:
         self.objects[key] = payload
@@ -77,10 +81,16 @@ class FakeR2Client:
         return {"Contents": [{"Key": key} for key in keys[:2]], "IsTruncated": len(keys) > 2}
 
     def delete_objects(self, *, Bucket: str, Delete: dict[str, Any]) -> dict[str, Any]:
+        errors = []
         for item in Delete["Objects"]:
+            if item["Key"] in self.fail_delete_keys:
+                errors.append({"Key": item["Key"], "Code": "InternalError"})
+                continue
             self.objects.pop(item["Key"])
             self.deleted.append(item["Key"])
-        return {}
+        if self.on_delete is not None:
+            self.on_delete()
+        return {"Errors": errors} if errors else {}
 
 
 def _publish(
@@ -261,3 +271,93 @@ def test_refresh_workflow_is_manual_and_keeps_r2_writes_behind_publish_mode() ->
             assert step["env"]["R2_SECRET_ACCESS_KEY"] == (
                 "${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}"
             )
+
+
+def _three_generations(client: FakeR2Client) -> None:
+    start = datetime(2026, 10, 1, tzinfo=UTC)
+    for day, name in enumerate(["a", "b", "c"]):
+        _publish(
+            client,
+            name,
+            {"raw/a.csv": b"a\n", "raw/b.csv": b"b\n", "raw/c.csv": b"c\n"},
+            modified=start + timedelta(days=day),
+        )
+
+
+def test_prune_deletes_the_manifest_last() -> None:
+    client = FakeR2Client()
+    _three_generations(client)
+
+    prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+
+    a_keys = [key for key in client.deleted if key.startswith("generations/a/")]
+    assert a_keys[-1] == f"generations/a/{GENERATION_MANIFEST_PATH}"
+    assert len(a_keys) == 4
+
+
+def test_an_interrupted_prune_keeps_the_manifest_and_reports_failure() -> None:
+    client = FakeR2Client()
+    _three_generations(client)
+    client.fail_delete_keys = {"generations/a/raw/c.csv"}
+
+    with pytest.raises(GenerationPublicationError, match="refused to delete"):
+        prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+
+    assert f"generations/a/{GENERATION_MANIFEST_PATH}" in client.objects
+
+
+def test_prune_stops_when_the_pointer_moves() -> None:
+    client = FakeR2Client()
+    start = datetime(2026, 10, 1, tzinfo=UTC)
+    for day, name in enumerate(["a", "b", "c", "d"]):
+        _publish(client, name, {"raw/a.csv": b"a\n"}, modified=start + timedelta(days=day))
+
+    def publish_elsewhere() -> None:
+        # Another publisher re-activates "a" while "b" is being deleted.
+        client.on_delete = None
+        pointer = json.loads(client.objects[ACTIVE_GENERATION_PATH.as_posix()])
+        pointer.update(generation_id="a", previous_generation_id="d")
+        client.put(ACTIVE_GENERATION_PATH.as_posix(), json.dumps(pointer).encode())
+
+    client.on_delete = publish_elsewhere
+
+    with pytest.raises(GenerationConflictError, match="changed during pruning"):
+        prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+
+    assert f"generations/a/{GENERATION_MANIFEST_PATH}" in client.objects
+    assert "generations/a/raw/a.csv" in client.objects
+
+
+def test_prune_refuses_without_an_active_pointer() -> None:
+    client = FakeR2Client()
+    client.put(f"generations/a/{GENERATION_MANIFEST_PATH}", b"{}")
+
+    with pytest.raises(GenerationPublicationError, match="refusing to prune"):
+        prune_r2_generations(keep=2, client=client, bucket_name=BUCKET)
+
+
+def test_publication_refuses_a_base_the_pointer_has_moved_away_from(tmp_path: Path) -> None:
+    client = FakeR2Client()
+    _publish(client, "gen-a", SAMPLE)
+    dest = tmp_path / "data"
+    downloaded = download_active_generation(dest, client=client, bucket_name=BUCKET)
+    _publish(client, "gen-b", SAMPLE)  # someone published or rolled back meanwhile
+
+    with pytest.raises(GenerationConflictError, match="not gen-a"):
+        publish_r2_generation(
+            "gen-c",
+            source_dir=dest,
+            client=client,
+            bucket_name=BUCKET,
+            expected_base=downloaded.generation_id,
+        )
+    assert not any(key.startswith("generations/gen-c/") for key in client.objects)
+
+
+def test_changed_files_ignores_hidden_parents_of_the_data_dir(tmp_path: Path) -> None:
+    client = FakeR2Client()
+    manifest = _publish(client, "gen-a", SAMPLE)
+    dest = tmp_path / ".cache" / "data"
+    download_active_generation(dest, client=client, bucket_name=BUCKET)
+
+    assert changed_data_files(dest, manifest) == []

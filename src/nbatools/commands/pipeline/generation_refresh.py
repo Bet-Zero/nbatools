@@ -19,6 +19,7 @@ from typing import Any
 
 from nbatools.commands.pipeline.generation_publication import (
     GENERATION_MANIFEST_PATH,
+    GenerationConflictError,
     GenerationPublicationError,
     GenerationValidationError,
     _file_sha256,
@@ -117,8 +118,11 @@ def changed_data_files(source: Path, manifest: Mapping[str, Any]) -> list[str]:
         root = source / layer
         if root.is_dir():
             for path in root.rglob("*"):
-                if path.is_file() and not any(p.startswith(".") for p in path.parts):
-                    local[path.relative_to(source).as_posix()] = path
+                relative = path.relative_to(source)
+                if path.is_file() and not any(
+                    part.startswith(".") or part == "__pycache__" for part in relative.parts
+                ):
+                    local[relative.as_posix()] = path
     changed = [
         relative
         for relative, path in local.items()
@@ -139,9 +143,12 @@ def prune_r2_generations(
 ) -> PruneResult:
     """Delete superseded generations, keeping the newest ``keep`` of them.
 
-    The active and retained-previous generations are always kept. A prefix
-    without a generation manifest (an upload in progress, or not a generation)
-    is never touched.
+    Age comes from each generation's manifest, which publication uploads among
+    its first objects, so an upload in progress is the newest and is kept.
+    The active and retained-previous generations are always kept, and the
+    pointer is re-read before every deletion: if it moved, pruning stops.
+    A prefix with no manifest (left by an interrupted deletion, or not a
+    generation) is reported and left alone.
     """
     if keep < 2:
         raise GenerationPublicationError("Keep at least 2 generations (active and previous)")
@@ -149,6 +156,8 @@ def prune_r2_generations(
         client=client, bucket_name=bucket_name, env=env, env_file=env_file
     )
     pointer = _read_r2_pointer(s3_client, bucket)
+    if pointer.generation_id == LEGACY_GENERATION:
+        raise GenerationPublicationError("No active generation pointer; refusing to prune")
     protected = {pointer.generation_id, pointer.previous_generation_id}
 
     published: list[tuple[Any, str]] = []
@@ -169,10 +178,14 @@ def prune_r2_generations(
             result.kept.append(generation)
             continue
         result.deleted.append(generation)
-        if not dry_run:
-            result.deleted_objects += _delete_prefix(
-                s3_client, bucket, f"{GENERATIONS_DIR}/{generation}/"
+        if dry_run:
+            continue
+        if _read_r2_pointer(s3_client, bucket).etag != pointer.etag:
+            raise GenerationConflictError(
+                "Active generation pointer changed during pruning; stopped before "
+                f"deleting {generation}"
             )
+        result.deleted_objects += _delete_generation(s3_client, bucket, generation)
     return result
 
 
@@ -202,26 +215,53 @@ def _list_generation_ids(client: Any, bucket: str) -> list[str]:
         token = response.get("NextContinuationToken")
 
 
-def _delete_prefix(client: Any, bucket: str, prefix: str) -> int:
+def _delete_generation(client: Any, bucket: str, generation: str) -> int:
+    """Delete one generation's objects, its manifest last.
+
+    The manifest is what marks a prefix as a generation, so an interrupted
+    deletion leaves a reported, manifest-less prefix rather than a
+    half-deleted generation that still looks complete.
+    """
+    prefix = f"{GENERATIONS_DIR}/{generation}/"
+    manifest_key = f"{prefix}{GENERATION_MANIFEST_PATH}"
+    deleted = 0
     # Re-list from the start each round: deleting while paging with a
     # continuation token can skip keys.
-    deleted = 0
     while True:
         try:
             response = client.list_objects_v2(Bucket=bucket, Prefix=prefix)
-            keys = [{"Key": item["Key"]} for item in response.get("Contents") or []]
-            if not keys:
-                return deleted
-            outcome = client.delete_objects(Bucket=bucket, Delete={"Objects": keys, "Quiet": True})
         except Exception as exc:
             raise GenerationPublicationError(
-                f"Could not delete R2 generation {prefix}: {format_client_error(exc)}"
+                f"Could not list R2 generation {prefix}: {format_client_error(exc)}"
             ) from exc
-        if outcome.get("Errors"):
-            raise GenerationPublicationError(
-                f"R2 refused to delete {len(outcome['Errors'])} object(s) under {prefix}"
-            )
-        deleted += len(keys)
+        keys = [
+            str(item["Key"])
+            for item in response.get("Contents") or []
+            if item["Key"] != manifest_key
+        ]
+        if not keys:
+            break
+        deleted += _delete_keys(client, bucket, keys)
+    if _head_r2_object(client, bucket, manifest_key) is not None:
+        deleted += _delete_keys(client, bucket, [manifest_key])
+    return deleted
+
+
+def _delete_keys(client: Any, bucket: str, keys: list[str]) -> int:
+    try:
+        outcome = client.delete_objects(
+            Bucket=bucket,
+            Delete={"Objects": [{"Key": key} for key in keys], "Quiet": True},
+        )
+    except Exception as exc:
+        raise GenerationPublicationError(
+            f"Could not delete R2 objects: {format_client_error(exc)}"
+        ) from exc
+    if outcome.get("Errors"):
+        raise GenerationPublicationError(
+            f"R2 refused to delete {len(outcome['Errors'])} object(s), e.g. {keys[0]}"
+        )
+    return len(keys)
 
 
 def _get_bytes(client: Any, bucket: str, key: str) -> bytes:
