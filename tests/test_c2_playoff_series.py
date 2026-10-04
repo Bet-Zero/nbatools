@@ -226,3 +226,29 @@ def test_numeric_game_ids_keep_their_round_code():
     labelled = playoff_history._add_round_column(pd.DataFrame(rows))
     assert labelled["playoff_round"].tolist() == ["Finals", "First Round"]
     assert playoff_history._game_id_text(pd.Series([52300101])).str.startswith("005").all()
+
+
+def test_single_season_title_names_the_finals_opponent():
+    from nbatools.query_service import _team_titles_phrase
+
+    series = pd.DataFrame(
+        [
+            {
+                "season": "2016-17",
+                "playoff_round": "Finals",
+                "opponent_team_name": "Cleveland Cavaliers",
+                "wins": 4,
+                "losses": 1,
+                "result": "Won",
+                "start_date": "2017-06-01",
+            }
+        ]
+    )
+    phrase = _team_titles_phrase("Golden State Warriors", series, {"season": "2016-17"})
+    assert phrase == (
+        "The Golden State Warriors won the 2016-17 title, "
+        "beating the Cleveland Cavaliers 4-1 in the Finals."
+    )
+    series.loc[0, ["result", "wins", "losses"]] = ["Lost", 1, 4]
+    phrase = _team_titles_phrase("Golden State Warriors", series, {"season": "2016-17"})
+    assert phrase.endswith("they lost to the Cleveland Cavaliers 1-4 in the Finals.")

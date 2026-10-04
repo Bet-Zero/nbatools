@@ -1122,6 +1122,18 @@ def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str
             f"The {team} have not won a title {span}; "
             f"their {season} playoff run is still in progress."
         )
+    if start == end and reached:
+        # One season: name the Finals opponent and the series score.
+        final = finals.iloc[-1]
+        score = f"{int(final['wins'])}-{int(final['losses'])}"
+        opponent = final["opponent_team_name"]
+        if final["result"] == "Won":
+            won_text = f"won the {start} title, beating the {opponent} {score} in the Finals"
+            return f"The {team} {won_text}."
+        return (
+            f"The {team} did not win the {start} title; "
+            f"they lost to the {opponent} {score} in the Finals."
+        )
     if won.empty:
         if not reached:
             return f"The {team} did not win a title {span}; they did not reach the Finals."
