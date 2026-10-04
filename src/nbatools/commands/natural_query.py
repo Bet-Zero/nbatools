@@ -2640,12 +2640,17 @@ def _finalize_route(parsed: dict) -> dict:
         and not player
         and not player_a
         and not player_b
-        # "compare the Lakers and Celtics 10 game stretches" names both teams.
-        and (not (team_a or team_b) or len(team_stretch_request.get("subjects", [])) >= 2)
+        # "compare the Lakers and Celtics 10 game stretches" names both teams, and
+        # so does "Lakers vs Celtics best 10 game stretch".
+        and (
+            not (team_a or team_b)
+            or len(team_stretch_request.get("subjects", [])) >= 2
+            or (team_a and team_b and not head_to_head)
+        )
         and (
             team_rolling_stretch_boundary
             or (
-                (team or len(team_stretch_request.get("subjects", [])) >= 2)
+                (team or len(team_stretch_request.get("subjects", [])) >= 2 or (team_a and team_b))
                 and not stretch_names_players
             )
         )
@@ -2658,6 +2663,8 @@ def _finalize_route(parsed: dict) -> dict:
         subject_teams = [
             abbr for abbr in team_stretch_request.get("subjects", []) if abbr not in opponents
         ]
+        if len(subject_teams) < 2 and team_a and team_b:
+            subject_teams = [team_a, team_b]
         stretch_team = team
         if team in opponents:
             # "Lakers best stretch vs Celtics, Knicks and Heat": the subject is the
@@ -2684,10 +2691,34 @@ def _finalize_route(parsed: dict) -> dict:
             "limit": top_n or 10,
         }
     elif (
+        team_stretch_request is not None
+        and window_size is not None
+        and team_a
+        and team_b
+        and head_to_head
+        and not player
+    ):
+        # "Lakers vs Celtics head to head best 10 game stretch": a stretch inside
+        # their meetings is not built; refuse rather than compare whole seasons.
+        route = "team_stretch_leaderboard"
+        notes.append(
+            "unsupported_boundary: rolling stretches within head-to-head games are not "
+            "supported yet; ask for each team's best stretch or their head-to-head record"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "head_to_head_stretch",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+    elif (
         window_size is not None
         and stretch_names_players
         and not player
-        and len((team_stretch_request or {}).get("subjects", [])) >= 2
+        and (len((team_stretch_request or {}).get("subjects", [])) >= 2 or (team_a and team_b))
     ):
         # "which Lakers and Celtics player": one team per player ranking, so refuse
         # rather than rank one team's players.
