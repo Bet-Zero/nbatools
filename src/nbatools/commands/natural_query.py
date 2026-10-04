@@ -1181,7 +1181,7 @@ _TITLE_NOT_A_COUNT = re.compile(
 _TEAM_MEETING_WORDS = re.compile(
     r"\b(?:between\s+them|each\s+other|one\s+another|meetings?|matchups?|h2h"
     r"|head[\s-]+to[\s-]+head)\b"
-    r"|\b(?:vs\.?|versus|v\.?)\s+(?:the\s+)?[a-z0-9]+(?:\s+[a-z0-9]+)?\s+games\b"
+    rf"|\b(?:vs\.?|versus|v\.?)\s+{_TEAM_ONE}\s+games\b"
 )
 
 
@@ -2093,6 +2093,9 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_stretch_request.get("meeting")
         and set(team_stretch_request.get("versus_others", []))
         <= set(team_stretch_request.get("versus_opponents", []))
+        # "Lakers vs Celtics and Knicks": the Celtics are also in an opponent
+        # list, so the wording does not say who is ranked.
+        and not set(versus_teams) & set(team_stretch_request.get("opponents", []))
     )
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)

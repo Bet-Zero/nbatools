@@ -380,3 +380,13 @@ def test_meeting_wording_is_a_head_to_head_stretch(query):
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+def test_team_count_after_vs_is_not_a_meeting():
+    rows, _ = _rows(f"Lakers vs Celtics 5 games stretch in {SEASON}")
+    assert {row["team_abbr"] for row in rows} == {"LAL", "BOS"}
+
+
+def test_versus_team_also_in_an_opponent_list_is_not_a_pair():
+    result = execute_natural_query(f"Lakers vs Celtics and Knicks best 5 game stretch in {SEASON}")
+    assert result.metadata["route"] != "team_stretch_leaderboard"
