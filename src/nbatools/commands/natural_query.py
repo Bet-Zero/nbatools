@@ -1384,6 +1384,10 @@ def _build_parse_state(query: str) -> dict:
             end_season = latest
         if season_to_int(start_season) > season_to_int(end_season):
             start_season = end_season
+    # "2019-2020" is one season written out, not a span.
+    written_out_season = start_season if start_season and start_season == end_season else None
+    if written_out_season:
+        start_season = end_season = None
     career_intent = False
 
     if not (start_season and end_season):
@@ -1419,7 +1423,7 @@ def _build_parse_state(query: str) -> dict:
     explicit_relative_season = False
     season = None
     if not (start_season and end_season):
-        season = extract_season(q)
+        season = extract_season(q) or written_out_season
         if season is None:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None

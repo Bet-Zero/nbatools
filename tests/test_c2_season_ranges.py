@@ -2,7 +2,8 @@
 
 "from 2010 to 2015", "between 2000-01 and 2009-10", "2015-2017" used to fall
 back to the default season, answering a different question. A bare year names
-the season starting in it, as "since 2010" and "the 2010s" do.
+the season starting in it, as "since 2010" and "the 2010s" do; for playoffs and
+titles it names the season ending in it, as "the 2016 playoffs" does.
 """
 
 from __future__ import annotations
@@ -29,8 +30,16 @@ pytestmark = pytest.mark.engine
         ("curry 2016 to 2018", "2016-17", "2018-19"),
         ("lakers record since 2010 until 2020", "2010-11", "2020-21"),
         ("from the 2015-16 season to 2018", "2015-16", "2018-19"),
+        ("lebron points 2003 - 2010", "2003-04", "2010-11"),
         # Written backwards: the same seasons.
         ("lakers record from 2010 to 2005", "2005-06", "2010-11"),
+        # Playoffs and titles: the year a postseason ends in.
+        ("how many titles did the bulls win from 1991 to 1998", "1990-91", "1997-98"),
+        ("lebron playoffs from 2016 to 2018", "2015-16", "2017-18"),
+        ("lakers playoff record from 2008 to 2012", "2007-08", "2011-12"),
+        # Two consecutive years with a hyphen are one season written out.
+        ("lebron 2019-2020 season stats", "2019-20", "2019-20"),
+        ("2019-2020 playoffs", "2019-20", "2019-20"),
     ],
 )
 def test_year_and_season_ranges(text, start, end):
@@ -46,6 +55,7 @@ def test_year_and_season_ranges(text, start, end):
         "lebron games from 2024-01-05 to 2024-02-01",
         "lakers record since 2010",
         "lakers record in the 2010s",
+        "jokic triple doubles since 2020 and 2021",
     ],
 )
 def test_not_a_season_range(text):
@@ -66,6 +76,15 @@ def test_ranges_reach_the_route_instead_of_the_default_season(query, route):
     assert parsed["route"] == route
     assert kwargs["season"] is None
     assert kwargs["start_season"] is not None and kwargs["end_season"] is not None
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [("LeBron 2019-2020 season stats", "2019-20"), ("Lakers record 2015-2016", "2015-16")],
+)
+def test_written_out_season_is_one_season(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["season"], kwargs["start_season"], kwargs["end_season"]) == (season, None, None)
 
 
 def test_future_end_year_stops_at_the_latest_season():

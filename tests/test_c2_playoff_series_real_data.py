@@ -153,3 +153,14 @@ def test_bare_year_range_record_counts_raw_games():
     summary = result.result.to_dict()["sections"]["summary"][0]
     assert (summary["season_start"], summary["season_end"]) == ("2000-01", "2002-03")
     assert (summary["wins"], summary["losses"]) == (wins, losses)
+
+
+def test_title_year_range_counts_the_titles_won_in_those_years():
+    from nbatools.query_service import execute_natural_query
+
+    # The 2000, 2001 and 2002 titles end the 1999-00 to 2001-02 seasons.
+    expected = [s for s in ("1999-00", "2000-01", "2001-02") if _finals_winners()[s] == "LAL"]
+    result = execute_natural_query("Lakers titles from 2000 to 2002")
+    assert result.metadata["route"] == "playoff_history"
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert summary["titles"] == len(expected) == 3
