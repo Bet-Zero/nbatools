@@ -740,7 +740,7 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             f"this opponent {scope} filter could not be applied: it takes the NBA's "
             f"Eastern or Western Conference or a named division (e.g. 'Lakers record "
             f"against the East', 'LeBron stats vs Pacific Division teams') on game "
-            f"summaries, game lists, records, splits and comparisons; no unfiltered "
+            f"summaries, game lists, records, splits, comparisons and streaks; no unfiltered "
             f"answer was substituted (blocked: {', '.join(all_filters)})"
         )
     if filter_id in ("wins_only", "losses_only"):
