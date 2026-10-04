@@ -1123,6 +1123,11 @@ _TEAM_LIST_SEP = r"(?:\s*,\s*(?:(?:and|&)\s+)?|\s+(?:and|&)\s+)"
 _TEAM_LIST_PATTERN = re.compile(rf"(?<![\w']){_TEAM_ONE}(?:{_TEAM_LIST_SEP}{_TEAM_ONE})+")
 _TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?![\w'])")
 _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
+_TEAM_VERSUS_CHAIN = re.compile(
+    rf"(?<![\w']){_TEAM_ONE}(?:\s+(?:vs\.?|versus|v\.?)\s+{_TEAM_ONE})+"
+)
+# Aliases that are also everyday words count as teams only inside a list.
+_WORD_TEAM_ALIASES = frozenset({"was", "min"})
 
 
 # Title questions that ask more than a count: never answer them with one.
@@ -1171,7 +1176,16 @@ _TITLE_NOT_A_COUNT = re.compile(
 )
 
 
-def _named_team_pairs(q: str) -> dict[str, list[str]]:
+# "games between them", "each other", "in Lakers vs Celtics games": the
+# games the two teams played against each other.
+_TEAM_MEETING_WORDS = re.compile(
+    r"\b(?:between\s+them|each\s+other|one\s+another|meetings?|matchups?|h2h"
+    r"|head[\s-]+to[\s-]+head)\b"
+    r"|\b(?:vs\.?|versus|v\.?)\s+(?:the\s+)?[a-z0-9]+(?:\s+[a-z0-9]+)?\s+games\b"
+)
+
+
+def _named_team_pairs(q: str) -> dict:
     """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
     best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
     """
@@ -1201,6 +1215,27 @@ def _named_team_pairs(q: str) -> dict[str, list[str]]:
                 found["lead"] = [
                     TEAM_ALIASES[one.group(1)] for one in _TEAM_ONE_PATTERN.finditer(outside)
                 ]
+    # "Lakers vs Celtics best stretch": the teams joined by vs, and any other
+    # team named, which counts only as an opponent ("... vs the Knicks").
+    chain = _TEAM_VERSUS_CHAIN.search(q)
+    found["versus"] = []
+    found["versus_others"] = []
+    found["versus_opponents"] = []
+    if chain:
+        found["versus"] = list(
+            dict.fromkeys(
+                TEAM_ALIASES[one.group(1)] for one in _TEAM_ONE_PATTERN.finditer(chain.group(0))
+            )
+        )
+        rest = q[: chain.start()] + " " * len(chain.group(0)) + q[chain.end() :]
+        for one in _TEAM_ONE_PATTERN.finditer(rest):
+            if one.group(1) in _WORD_TEAM_ALIASES:
+                continue
+            abbr = TEAM_ALIASES[one.group(1)]
+            found["versus_others"].append(abbr)
+            if _OPPONENT_LEAD.search(rest[: one.start()]) or abbr in found["opponents"]:
+                found["versus_opponents"].append(abbr)
+    found["meeting"] = bool(_TEAM_MEETING_WORDS.search(q))
     return found
 
 
@@ -2047,6 +2082,18 @@ def _finalize_route(parsed: dict) -> dict:
     team_rolling_stretch_boundary = parsed.get("team_rolling_stretch_boundary", False)
     team_stretch_request = parsed.get("team_stretch_request")
     stretch_names_players = parsed.get("stretch_names_players", False)
+    # "Lakers vs Celtics best 10 game stretch": the teams joined by vs, each on
+    # its own games. Any other team named must be an opponent, and wording about
+    # the games they played each other is a head-to-head stretch instead.
+    versus_teams = (team_stretch_request or {}).get("versus", [])
+    versus_pair = bool(
+        team_stretch_request is not None
+        and len(versus_teams) >= 2
+        and not head_to_head
+        and not team_stretch_request.get("meeting")
+        and set(team_stretch_request.get("versus_others", []))
+        <= set(team_stretch_request.get("versus_opponents", []))
+    )
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)
     team_leader_stat = parsed.get("team_leader_stat")
@@ -2645,26 +2692,32 @@ def _finalize_route(parsed: dict) -> dict:
         and (
             not (team_a or team_b)
             or len(team_stretch_request.get("subjects", [])) >= 2
-            or (team_a and team_b and not head_to_head)
+            or versus_pair
         )
         and (
             team_rolling_stretch_boundary
             or (
-                (team or len(team_stretch_request.get("subjects", [])) >= 2 or (team_a and team_b))
+                (team or len(team_stretch_request.get("subjects", [])) >= 2 or versus_pair)
                 and not stretch_names_players
             )
         )
     ):
         route = "team_stretch_leaderboard"
         stretch_opponent = team_stretch_request.get("opponents") or opponent
+        if versus_pair and team_stretch_request.get("versus_opponents"):
+            # "Lakers vs Celtics best stretch vs Knicks": the Knicks are the opponent.
+            versus_opponents = team_stretch_request["versus_opponents"]
+            stretch_opponent = (
+                versus_opponents[0] if len(versus_opponents) == 1 else versus_opponents
+            )
         opponents = (
             {stretch_opponent} if isinstance(stretch_opponent, str) else set(stretch_opponent or [])
         )
         subject_teams = [
             abbr for abbr in team_stretch_request.get("subjects", []) if abbr not in opponents
         ]
-        if len(subject_teams) < 2 and team_a and team_b:
-            subject_teams = [team_a, team_b]
+        if len(subject_teams) < 2 and versus_pair:
+            subject_teams = list(versus_teams)
         stretch_team = team
         if team in opponents:
             # "Lakers best stretch vs Celtics, Knicks and Heat": the subject is the
@@ -2695,7 +2748,7 @@ def _finalize_route(parsed: dict) -> dict:
         and window_size is not None
         and team_a
         and team_b
-        and head_to_head
+        and (head_to_head or team_stretch_request.get("meeting"))
         and not player
     ):
         # "Lakers vs Celtics head to head best 10 game stretch": a stretch inside
