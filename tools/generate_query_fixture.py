@@ -697,6 +697,7 @@ def emit(games: list[Game]) -> dict[str, str]:
             standings_rows.append(
                 {
                     "team_id": team.team_id,
+                    "team_abbr": team.abbr,
                     "snapshot_date": snapshot_day.isoformat(),
                     "season": season,
                     "season_type": season_type,
@@ -705,6 +706,13 @@ def emit(games: list[Game]) -> dict[str, str]:
                     "win_pct": round(wins / played, 3) if played else 0.0,
                 }
             )
+        conference_of = {team.team_id: team.conference for team in TEAMS}
+        for conference in sorted(set(conference_of.values())):
+            members = [r for r in standings_rows if conference_of[r["team_id"]] == conference]
+            members.sort(key=lambda r: (-r["win_pct"], -r["wins"], r["team_abbr"]))
+            for rank, row in enumerate(members, start=1):
+                row["conference"] = conference
+                row["conference_rank"] = rank
         _write(files, f"raw/standings_snapshots/{tag}.csv", list(standings_rows[0]), standings_rows)
 
         # raw/team_season_advanced

@@ -181,6 +181,8 @@ _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
     "game_summary",
     "game_finder",
     "team_record",
+    "player_compare",
+    "team_compare",
 }
 
 _PHASE_G_CLUTCH_TRANSPORT_ROUTES = {
@@ -388,7 +390,10 @@ def _resolve_opponent_quality_kwargs(
     if opponent_quality is None:
         return sanitized, [], []
 
-    if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES:
+    head_to_head_compare = route in {"player_compare", "team_compare"} and sanitized.get(
+        "head_to_head"
+    )
+    if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES or head_to_head_compare:
         _mark_original_unsupported_filter(original_kwargs, "opponent_quality")
         return sanitized, [], ["opponent_quality"]
 

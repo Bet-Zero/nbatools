@@ -146,3 +146,33 @@ def test_lakers_vs_warriors_last_10_are_their_ten_latest_meetings():
     assert lakers["games"] == warriors["games"] == 10
     assert lakers["wins"] == int((meetings["wl"] == "W").sum())
     assert warriors["wins"] == 10 - lakers["wins"]
+
+
+def test_pair_last_10_vs_a_third_team():
+    games = pd.concat([_team_games(season) for season in SEASONS[-8:]])
+    result = _run("Lakers and Warriors last 10 games vs the Celtics")
+    lakers, warriors = result.result.to_dict()["sections"]["summary"]
+    for side, abbr in ((lakers, "LAL"), (warriors, "GSW")):
+        rows = games[(games["team_abbr"] == abbr) & (games["opponent_team_abbr"] == "BOS")]
+        rows = rows.sort_values(["game_date", "game_id"], ascending=False).head(10)
+        assert side["games"] == 10
+        assert side["wins"] == int((rows["wl"] == "W").sum())
+
+
+def test_division_and_winning_teams_both_apply():
+    games = _team_games("2024-25")
+    records = games.groupby("team_id")["wl"].apply(lambda wl: (wl == "W").mean())
+    winning = set(records[records >= 0.5].index)
+    atlantic = {
+        team_id
+        for team_id, (_, division) in historical_alignment("2024-25").items()
+        if division == "Atlantic"
+    }
+    celtics = games[
+        (games["team_abbr"] == "BOS") & games["opponent_team_id"].isin(atlantic & winning)
+    ]
+
+    result = _run("Celtics record vs Atlantic Division winning teams 2024-25")
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert summary["games"] == len(celtics)
+    assert summary["wins"] == int((celtics["wl"] == "W").sum())

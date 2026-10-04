@@ -1,7 +1,7 @@
-team_id,snapshot_date,season,season_type,wins,losses,win_pct
-1610612747,2026-10-14,2025-26,Regular Season,47,13,0.783
-1610612744,2026-10-14,2025-26,Regular Season,18,42,0.3
-1610612743,2026-10-14,2025-26,Regular Season,15,45,0.25
-1610612738,2026-10-14,2025-26,Regular Season,43,17,0.717
-1610612752,2026-10-14,2025-26,Regular Season,40,20,0.667
-1610612748,2026-10-14,2025-26,Regular Season,17,43,0.283
+team_id,team_abbr,snapshot_date,season,season_type,wins,losses,win_pct,conference,conference_rank
+1610612747,LAL,2026-10-14,2025-26,Regular Season,47,13,0.783,West,1
+1610612744,GSW,2026-10-14,2025-26,Regular Season,18,42,0.3,West,2
+1610612743,DEN,2026-10-14,2025-26,Regular Season,15,45,0.25,West,3
+1610612738,BOS,2026-10-14,2025-26,Regular Season,43,17,0.717,East,1
+1610612752,NYK,2026-10-14,2025-26,Regular Season,40,20,0.667,East,2
+1610612748,MIA,2026-10-14,2025-26,Regular Season,17,43,0.283,East,3

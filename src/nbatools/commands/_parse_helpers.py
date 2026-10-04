@@ -1303,7 +1303,8 @@ def detect_player_summary_stat_context(text: str) -> str | None:
 
 _OPPONENT_QUALITY_PREFIX_PATTERN = (
     r"(?:against|vs\.?|versus)\s+(?:the\s+)?"
-    r"(?:(?:east|west|eastern|western)(?:\s+conference)?\s+)?"
+    r"(?:(?:east|west|eastern|western)(?:\s+conference)?\s+"
+    r"|(?:atlantic|central|southeast|northwest|pacific|southwest|midwest)\s+division\s+)?"
 )
 
 _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
