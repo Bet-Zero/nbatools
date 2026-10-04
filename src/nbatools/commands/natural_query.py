@@ -965,7 +965,16 @@ def _unresolved_player_typo_boundary(parsed: dict) -> str | None:
     if parsed.get("player_a") and parsed.get("player_b"):
         return detect_unresolved_player_typo(q, comparison=True)
     if parsed.get("player") and not parsed.get("player_a") and not parsed.get("player_b"):
-        return detect_unresolved_player_typo(q, summary=True)
+        # "lebron vs cury against winning teams": the typoed second player
+        # must not silently fall away behind the opponent filter.
+        typo = detect_unresolved_player_typo(q, summary=True)
+        if typo:
+            return typo
+        # "lebron vs curry's warriors" names a team after "vs", not a typo.
+        match = _VS_SECOND_OPERAND_RE.search(q)
+        if match and _vs_clause_is_opponent_group(q, match):
+            return None
+        return detect_unresolved_player_typo(q, comparison=True)
     return None
 
 
@@ -974,6 +983,50 @@ _VS_SECOND_OPERAND_RE = re.compile(r"\b(?:vs\.?|versus)\s+(?:the\s+)?([a-z][a-z'
 _VS_NON_PLAYER_OPERANDS = frozenset(
     {"home", "away", "road", "wins", "win", "losses", "loss", "last", "past", "recent"}
 )
+
+
+# Words that open an opponent group after "vs" ("vs the West", "vs Pacific").
+_VS_GROUP_OPERANDS = frozenset(
+    {
+        "east",
+        "eastern",
+        "west",
+        "western",
+        "atlantic",
+        "central",
+        "southeast",
+        "northwest",
+        "pacific",
+        "southwest",
+        "midwest",
+        "winning",
+        "losing",
+        "top",
+        "best",
+        "good",
+        "bad",
+        "playoff",
+        "non",
+        "contenders",
+        "teams",
+    }
+)
+
+
+def _detect_team_in_text(text: str):
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    return detect_team_in_text(text)
+
+
+def _vs_clause_is_opponent_group(q: str, match: re.Match) -> bool:
+    """The clause after "vs" names a team, quality bar or conference/division."""
+    clause = re.split(r"\s+(?:against|vs\.?|versus)\s+", q[match.start(1) :])[0]
+    return bool(
+        _detect_team_in_text(clause)
+        or detect_opponent_quality("vs " + clause)
+        or clause.split()[0] in _VS_GROUP_OPERANDS
+    )
 
 
 def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
@@ -992,11 +1045,7 @@ def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
     if any(
         parsed.get(key)
         for key in (
-            "opponent",
             "opponent_player",
-            "opponent_quality",
-            "opponent_conference",
-            "opponent_division",
             "split_type",
             "head_to_head",
             "presence_state",
@@ -1004,12 +1053,24 @@ def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
         )
     ):
         return None
-    match = _VS_SECOND_OPERAND_RE.search(parsed["normalized_query"])
+    q = parsed["normalized_query"]
+    match = _VS_SECOND_OPERAND_RE.search(q)
     if not match:
         return None
     operand = match.group(1)
     if operand in _VS_NON_PLAYER_OPERANDS:
         return None
+    if any(
+        parsed.get(key)
+        for key in ("opponent", "opponent_quality", "opponent_conference", "opponent_division")
+    ):
+        # The opponent filter explains this "vs" unless another clause
+        # ("... against winning teams") carries it: "lebron vs cury against
+        # winning teams" still has an unidentified second player.
+        if _vs_clause_is_opponent_group(q, match):
+            return None
+        if not re.search(r"\s+(?:against|vs\.?|versus)\s+", q[match.end(1) :]):
+            return None
     return operand
 
 
@@ -4809,6 +4870,18 @@ def _route_parsed_query(parsed: dict) -> dict:
             last_n_reach_back_seasons(route_kwargs["season"], seasons_back=seasons_back)
         )
         _start_reach_back_at_served_data(route_kwargs)
+
+    if route == "season_leaders" and route_kwargs.get("team"):
+        # "Lakers and Celtics leading scorers": rank both rosters, not just
+        # the last team named.
+        from nbatools.commands._matchup_utils import (
+            _extract_compare_and_teams,
+            strip_matchup_noise,
+        )
+
+        pair = _extract_compare_and_teams(strip_matchup_noise(parsed["normalized_query"]))
+        if all(pair) and route_kwargs["team"] in pair:
+            route_kwargs["team"] = list(pair)
 
     if route in _OPPONENT_GROUP_ROUTES:
         # Conference/division opponents resolve season by season at

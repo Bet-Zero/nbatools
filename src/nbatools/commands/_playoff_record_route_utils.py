@@ -97,6 +97,9 @@ def detect_playoff_history_intent(text: str) -> bool:
         text,
     ):
         return True
+    # "Lakers and Nuggets series history": only playoff series have one
+    if re.search(r"\bseries\s+(?:history|results)\b", text):
+        return True
     # "series results in the 2024 playoffs"
     if not re.search(r"\b(?:playoffs?|postseason)\b", text):
         return False

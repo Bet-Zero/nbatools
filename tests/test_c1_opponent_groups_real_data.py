@@ -176,3 +176,27 @@ def test_division_and_winning_teams_both_apply():
     (summary,) = result.result.to_dict()["sections"]["summary"]
     assert summary["games"] == len(celtics)
     assert summary["wins"] == int((celtics["wl"] == "W").sum())
+
+
+def test_pair_series_history_matches_the_adjacent_playoff_history():
+    expected = _run("Lakers Nuggets playoff history")
+    result = _run("Lakers and Nuggets series history")
+    assert result.route == "playoff_matchup_history"
+    assert result.result.to_dict()["sections"] == expected.result.to_dict()["sections"]
+
+
+def test_player_pair_against_a_team():
+    season = SEASONS[-1]
+    rows = data_read_csv(f"raw/player_game_stats/{season}_regular_season.csv")
+    result = _run(f"LeBron vs Curry against the Celtics {season}")
+    lebron, curry = result.result.to_dict()["sections"]["summary"]
+    for side, name in ((lebron, "LeBron James"), (curry, "Stephen Curry")):
+        games = rows[(rows["player_name"] == name) & (rows["opponent_team_abbr"] == "BOS")]
+        assert side["games"] == len(games)
+
+
+def test_pair_leading_scorers_rank_both_rosters():
+    season = SEASONS[-1]
+    result = _run(f"Lakers and Celtics leading scorers {season}")
+    teams = {row["team_abbr"] for row in result.result.to_dict()["sections"]["leaderboard"]}
+    assert teams == {"LAL", "BOS"}

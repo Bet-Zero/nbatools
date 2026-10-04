@@ -972,13 +972,16 @@ def build_result(
     # Team-scoped leaders ("Lakers leading scorer"): restrict to games the
     # player logged for that team. A mid-season trade keeps only the games
     # played for the requested team, which is the correct scope.
+    # A list ("Lakers and Celtics leading scorers") ranks both rosters together.
     if team is not None and "team_abbr" in basic.columns:
-        basic = basic[basic["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        teams = [team] if isinstance(team, str) else list(team)
+        wanted = {str(value).upper() for value in teams}
+        basic = basic[basic["team_abbr"].astype(str).str.upper().isin(wanted)].copy()
         if basic.empty:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
-                notes=[f"No games found for {team} in the requested scope"],
+                notes=[f"No games found for {' / '.join(teams)} in the requested scope"],
             )
 
     if last_n is not None and last_n > 0 and "game_date" in basic.columns:
