@@ -66,3 +66,59 @@ def test_ranges_seasons_and_dates_are_unchanged(query, expected):
 def test_stat_values_are_not_years(query):
     parsed = parse_query(query)
     assert not any("read 2019" in note for note in parsed.get("notes") or [])
+
+
+def _notes(query: str) -> list[str]:
+    return parse_query(query).get("notes") or []
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers 2024 and 2025 record",
+        "LeBron 2024 and 2025 stats",
+        "LeBron in 2024 and in 2025",
+        "Jokic in 2024 & 2025",
+        "Jokic in 2024, 2025",
+    ],
+)
+def test_two_consecutive_years_in_any_join_are_a_span(query):
+    assert _span(query) == (None, "2023-24", "2024-25")
+    assert not any("read 202" in note for note in _notes(query))
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron since the 2019 season",
+        "LeBron after the 2024 season",
+        "LeBron before the 2025 season",
+        "LeBron through the 2025 season",
+        "Lakers in 2024 and 2025 and 2026",
+        "LeBron in 2019 or 2020",
+        "Jokic in 2023 and 2025",
+        "LeBron averages in 2025 vs 2024",
+        "LeBron scored 30 points in 2000 games",
+    ],
+)
+def test_years_a_lone_year_cannot_own_are_not_read_as_one_season(query):
+    # A range word, a third year, a gap or a count: never one season with a note.
+    assert not any("as the" in note for note in _notes(query))
+    season, start, end = _span(query)
+    assert not (start is not None and start == end)
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("Lakers win streak in 2024", "2023-24"),
+        ("Jokic longest streak of triple doubles in 2025", "2024-25"),
+    ],
+)
+def test_streaks_use_the_named_year(query, season):
+    assert _span(query) == (season, None, None)
+
+
+def test_years_outside_the_data_say_so():
+    notes = _notes("LeBron in 1990")
+    assert any(note.startswith("coverage: the data covers 1996-97") for note in notes)
