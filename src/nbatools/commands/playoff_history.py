@@ -800,20 +800,27 @@ def build_playoff_appearances_result(
     limit: int = 10,
     ascending: bool = False,
     titles: bool = False,
+    player_titles: bool = False,
 ) -> LeaderboardResult | SummaryResult | NoResult:
     """Count playoff appearances, optionally filtered by round stage.
 
-    With ``titles`` (and no team), rank teams by Finals series won instead.
+    With ``titles`` (and no team), rank teams by Finals series won instead;
+    with ``titles`` and ``player`` or ``player_titles``, count a player's
+    rings (titles won with a team he played for in those playoffs).
 
-    If *player* is given, returns an explicit unsupported result because the
-    dataset and calculation are team-grain. If *team* is given, returns a
+    A *player* without ``titles`` returns an explicit unsupported result
+    because appearances are team-grain. If *team* is given, returns a
     SummaryResult for that team.
     If no team, returns a LeaderboardResult ranking all teams.
 
     An "appearance" = the team played at least one game in that
     season at the specified round (or any playoff game if no round).
     """
-    if player:
+    seasons = resolve_seasons(season, start_season, end_season)
+
+    if titles and (player or player_titles):
+        return _player_titles_result(seasons, player=player, limit=limit)
+    if player or player_titles:
         return NoResult(
             query_class="leaderboard",
             reason="filter_not_supported",
@@ -822,8 +829,6 @@ def build_playoff_appearances_result(
                 "the current route has team-grain data only"
             ],
         )
-
-    seasons = resolve_seasons(season, start_season, end_season)
 
     try:
         df = _load_playoff_games(seasons)
@@ -932,6 +937,105 @@ def build_playoff_appearances_result(
         leaders=result,
         current_through=current_through,
         caveats=caveats,
+    )
+
+
+def _champions(df: pd.DataFrame) -> pd.DataFrame:
+    """The team that won each completed Finals in ``df``: season, team id and names."""
+    finals = df[df["playoff_round_code"] == "04"]
+    if finals.empty:
+        return pd.DataFrame(columns=["season", "_team_key", "team_abbr", "team_name"])
+    work = finals.assign(
+        _team_key=finals["team_id"].astype(str).str.removesuffix(".0"),
+        _win=finals["wl"].astype(str).eq("W").astype(int),
+    )
+    # A repeated game row must not count as a second win.
+    work = work.assign(_game_key=_series_game_key(work["game_id"])).drop_duplicates(
+        ["season", "_game_key", "_team_key"]
+    )
+    wins = work.groupby(["season", "_team_key"], as_index=False).agg(
+        team_abbr=("team_abbr", "last"), team_name=("team_name", "last"), wins=("_win", "sum")
+    )
+    needed = wins["season"].map(lambda value: _series_wins_needed(value, "04"))
+    return wins[wins["wins"] >= needed].drop(columns="wins").reset_index(drop=True)
+
+
+def _player_titles_result(
+    seasons: list[str], *, player: str | None, limit: int
+) -> LeaderboardResult | NoResult:
+    """Rings: titles won by a team the player played for in those playoffs.
+
+    A player counts a title when he played at least one playoff game that
+    season for the team that won the Finals.
+    """
+    from nbatools.commands._player_identity import player_ids_for_name, select_player_rows
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    caveats = ["rings are titles won while playing at least one playoff game for the champion"]
+    notes: list[str] = []
+    if player and not player_ids_for_name(player):
+        return NoResult(
+            query_class="leaderboard", reason="no_match", notes=[f"No player named {player}"]
+        )
+    try:
+        champions = _champions(_load_playoff_games(seasons))
+    except FileNotFoundError:
+        return NoResult(query_class="leaderboard", reason="no_data")
+    if champions.empty:
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No completed Finals found in the specified span"],
+        )
+    games = load_player_games_for_seasons(
+        sorted(champions["season"].unique()), "Playoffs", player=player
+    )
+    if player:
+        games = select_player_rows(games, player, notes=notes)
+    games = games.assign(_team_key=games["team_id"].astype(str).str.removesuffix(".0"))
+    won = games.merge(champions, on=["season", "_team_key"], suffixes=("", "_champion"))
+    won = won.drop_duplicates(["player_id", "season"]).sort_values("season")
+    rows = []
+    for player_id, titles in won.groupby("player_id"):
+        rows.append(
+            {
+                "player_id": player_id,
+                "player_name": str(titles["player_name"].mode().iloc[0]),
+                "titles": len(titles),
+                "title_seasons": ", ".join(titles["season"]),
+                "title_teams": ", ".join(titles["team_abbr_champion"]),
+            }
+        )
+    board = pd.DataFrame(rows)
+    if player and board.empty:
+        from nbatools.commands._player_identity import canonical_player_names_by_id
+
+        canonical = canonical_player_names_by_id()
+        ids = list(player_ids_for_name(player))
+        name = canonical.get(ids[0], player) if ids else player
+        board = pd.DataFrame(
+            [{"player_name": name, "titles": 0, "title_seasons": "", "title_teams": ""}]
+        )
+    if board.empty:
+        return NoResult(query_class="leaderboard", reason="no_match")
+    ranked = board.sort_values(["titles", "player_name"], ascending=[False, True])
+    if not player and len(ranked) > limit:
+        # Never cut a tie: every player level with the last one kept stays.
+        cutoff = ranked["titles"].iloc[limit - 1]
+        ranked = ranked[ranked["titles"] >= cutoff]
+    result = ranked.drop(columns=["player_id"], errors="ignore").reset_index(drop=True)
+    result.insert(0, "rank", range(1, len(result) + 1))
+    if season_to_int(seasons[0]) < DATA_START_YEAR:
+        caveats.append("playoff data starts in 1996-97; earlier titles are not counted")
+    if len(seasons) > 1:
+        result["seasons"] = f"{seasons[0]} to {seasons[-1]}"
+        caveats.append(f"across {seasons[0]} to {seasons[-1]}")
+    else:
+        result["season"] = seasons[0]
+    return LeaderboardResult(
+        leaders=result,
+        current_through=compute_current_through_for_seasons(seasons, "Playoffs"),
+        caveats=caveats + notes,
     )
 
 

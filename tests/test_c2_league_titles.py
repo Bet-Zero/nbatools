@@ -86,9 +86,7 @@ def test_league_title_questions_route_to_titles_leaderboard(query, season, start
 @pytest.mark.parametrize(
     "query",
     [
-        "who has the most rings",
         "who won the most titles",
-        "which player has the most titles",
         "which team has the most titles with kobe",
         "conference champions since 2010",
         "eastern conference champions",
