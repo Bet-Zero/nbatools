@@ -265,3 +265,16 @@ def test_team_120_point_games_vs_the_west_2023_24():
 def test_league_win_streak_vs_the_west_is_not_a_player_named_west():
     result = _run("longest winning streak vs the West in 2023-24")
     assert result.route == "team_streak_finder"
+
+
+def test_distinct_40_point_scorers_vs_the_warriors_2023_24():
+    season = "2023-24"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    rows = rows[(rows["opponent_team_abbr"] == "GSW") & (pd.to_numeric(rows["pts"]) >= 40)]
+
+    result = _run(f"how many players scored 40 vs the Warriors in {season}")
+    assert result.route == "player_occurrence_leaders"
+    count = result.result.to_dict()["sections"]["count"][0]["count"]
+    assert count == rows["player_id"].nunique()
