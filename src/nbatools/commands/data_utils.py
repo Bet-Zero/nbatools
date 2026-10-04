@@ -1174,7 +1174,7 @@ def load_player_games_for_seasons(
     data_prefetch(
         f"data/raw/{kind}/{season}_{safe}.csv"
         for season in available
-        for kind in ("player_game_stats", "team_game_stats")
+        for kind in ("player_game_stats", "team_game_stats", "player_season_advanced")
     )
     frames = [_load_player_games_cached(season, season_type, data_root) for season in available]
     if not frames:

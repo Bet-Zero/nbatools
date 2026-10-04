@@ -337,3 +337,33 @@ class TestBuildFreshnessInfo:
         assert parsed["status"] == "unknown"
         assert parsed["current_through"] == "2026-04-13"
         assert parsed["seasons"][0]["validation_state"] == "legacy_unverified"
+
+
+def test_published_generation_current_through_is_computed_once(tmp_path, monkeypatch):
+    from nbatools.commands.freshness import compute_current_through
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.delenv("DATA_SOURCE", raising=False)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    published = tmp_path / "data" / "generations" / "gen-a"
+    _setup_manifest(published, "2025-26", "Regular Season")
+    _setup_games(published, "2025-26", "Regular Season", "2026-04-13")
+    _setup_manifest(tmp_path / "data", "2025-26", "Regular Season")
+    _setup_games(tmp_path / "data", "2025-26", "Regular Season", "2026-04-13")
+    reset_data_source_cache()
+    try:
+        # Legacy layout: rewritten in place by the pipeline, so always re-read.
+        assert compute_current_through("2025-26") == "2026-04-13"
+        _setup_games(tmp_path / "data", "2025-26", "Regular Season", "2026-04-14")
+        assert compute_current_through("2025-26") == "2026-04-14"
+
+        pointer = tmp_path / "data" / "metadata" / "active_generation.json"
+        pointer.write_text(json.dumps({"generation_id": "gen-a"}))
+        reset_data_source_cache()
+        assert compute_current_through("2025-26") == "2026-04-13"
+        # A published generation never changes, so the answer is not re-read.
+        (published / "raw" / "games" / "2025-26_regular_season.csv").unlink()
+        assert compute_current_through("2025-26") == "2026-04-13"
+    finally:
+        reset_data_source_cache()
