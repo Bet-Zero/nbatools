@@ -253,6 +253,9 @@ def _build_stages(season: str, season_type: str) -> list[StageResult]:
     from nbatools.commands.pipeline.build_schedule_context_features import (
         run as build_schedule_context_features,
     )
+    from nbatools.commands.pipeline.build_team_conference_membership import (
+        run as build_team_conference_membership,
+    )
     from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features
 
     results: list[StageResult] = []
@@ -273,6 +276,14 @@ def _build_stages(season: str, season_type: str) -> list[StageResult]:
     )
     results.append(
         _run_stage("build_league_season_stats", build_league_season_stats, season, season_type)
+    )
+    results.append(
+        _run_stage(
+            "build_team_conference_membership",
+            build_team_conference_membership,
+            season,
+            season_type,
+        )
     )
     return results
 
@@ -353,6 +364,7 @@ def refresh_season(
             "build_schedule_context_features",
             "build_player_game_features",
             "build_league_season_stats",
+            "build_team_conference_membership",
             "update_manifest",
         ]
         result.stages = [

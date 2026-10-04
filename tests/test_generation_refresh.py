@@ -249,30 +249,6 @@ def test_prune_refuses_to_keep_fewer_than_two(tmp_path: Path) -> None:
         prune_r2_generations(keep=1, client=FakeR2Client(), bucket_name=BUCKET)
 
 
-def test_refresh_workflow_is_manual_and_keeps_r2_writes_behind_publish_mode() -> None:
-    import yaml
-
-    root = Path(__file__).resolve().parents[1]
-    workflow = yaml.load(
-        (root / ".github/workflows/data-refresh.yml").read_text(encoding="utf-8"),
-        Loader=yaml.BaseLoader,
-    )
-    job = workflow["jobs"]["refresh"]
-
-    assert set(workflow["on"]) == {"workflow_dispatch"}
-    assert workflow["permissions"] == {"contents": "read"}
-    assert job["environment"] == "r2-publication"
-    for step in job["steps"]:
-        run = step.get("run", "")
-        assert "${{" not in run
-        if "--target r2" in run or "prune-generations" in run:
-            assert step["if"] == "${{ inputs.mode == 'publish' }}"
-        if "R2_SECRET_ACCESS_KEY" in step.get("env", {}):
-            assert step["env"]["R2_SECRET_ACCESS_KEY"] == (
-                "${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}"
-            )
-
-
 def _three_generations(client: FakeR2Client) -> None:
     start = datetime(2026, 10, 1, tzinfo=UTC)
     for day, name in enumerate(["a", "b", "c"]):

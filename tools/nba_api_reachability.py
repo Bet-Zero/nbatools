@@ -35,6 +35,38 @@ def _game_finder(season: str, kind: str) -> Any:
     )
 
 
+_CDN = "https://cdn.nba.com/static/json"
+# nba.com's CDN refuses requests that do not look like they come from its site.
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/129.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Origin": "https://www.nba.com",
+    "Referer": "https://www.nba.com/",
+}
+
+
+class _CdnJson:
+    """Fetch one CDN JSON document and expose it like an nba_api endpoint."""
+
+    def __init__(self, url: str, key: str):
+        import pandas as pd
+        import requests
+
+        response = requests.get(url, timeout=REQUEST_TIMEOUT, headers=_BROWSER_HEADERS)
+        response.raise_for_status()
+        if key not in response.json():
+            raise ValueError(f"CDN document has no {key!r}")
+        self.document = response.json()
+        self._frame = pd.DataFrame([{"bytes": len(response.content)}])
+
+    def get_data_frames(self) -> list[Any]:
+        return [self._frame]
+
+
 class Skipped(Exception):
     """A check that could not be attempted because an earlier one failed."""
 
@@ -65,6 +97,22 @@ def _checks(season: str) -> list[Check]:
         if not game_ids:
             raise Skipped("no game id: the team game log failed or returned no games")
         return game_ids[0]
+
+    cdn_game_ids: list[str] = []
+
+    def cdn_schedule() -> Any:
+        endpoint = _CdnJson(f"{_CDN}/staticData/scheduleLeagueV2.json", "leagueSchedule")
+        for day in endpoint.document["leagueSchedule"].get("gameDates") or []:
+            for item in day.get("games") or []:
+                if item.get("gameStatus") == 3 and not cdn_game_ids:
+                    cdn_game_ids.append(str(item["gameId"]))
+        return endpoint
+
+    def cdn_box_score() -> Any:
+        game_id = (cdn_game_ids or game_ids or [None])[0]
+        if game_id is None:
+            raise Skipped("no game id from the CDN schedule or the team game log")
+        return _CdnJson(f"{_CDN}/liveData/boxscore/boxscore_{game_id}.json", "game")
 
     return [
         ("team_game_log", True, team_game_log),
@@ -123,6 +171,10 @@ def _checks(season: str) -> list[Check]:
                 timeout=REQUEST_TIMEOUT,
             ),
         ),
+        # The public NBA CDN, a possible alternative source when stats.nba.com
+        # refuses this network. Not used by the pipeline yet.
+        ("cdn_schedule", False, cdn_schedule),
+        ("cdn_box_score", False, cdn_box_score),
     ]
 
 
