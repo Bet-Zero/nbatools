@@ -430,6 +430,52 @@ def extract_season(text: str) -> str | None:
     return None
 
 
+# "LeBron points per game in 2019", "the 2016 season": a lone year names the
+# season that ended in it, as the 2016 playoffs and the 2016 title do.
+_BARE_YEAR = re.compile(
+    r"\b(?:in|during|for)\s+(?:the\s+)?((?:19|20)\d{2})(?:\s+(?:nba\s+)?season)?\b"
+    r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b))"
+    r"|\b(?:the\s+)?((?:19|20)\d{2})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
+)
+# "in 2024 and 2025": both seasons, as a span.
+_BARE_YEAR_PAIR = re.compile(
+    r"\b(?:in|during)\s+((?:19|20)\d{2})\s+and\s+((?:19|20)\d{2})\b(?![-/]\d)"
+)
+# Years that name something other than a season.
+_BARE_YEAR_NOT_A_SEASON = re.compile(
+    r"\b(?:drafted|draft(?:\s+class)?|born|class\s+of|picked|signed|traded|hired|retired)"
+    r"\s+(?:in\s+)?(?:the\s+)?(?:19|20)\d{2}\b"
+)
+
+
+def extract_bare_year_season(text: str) -> tuple[int, str] | None:
+    """``(year, season)`` for a lone year such as "in 2019" (2018-19), else None."""
+    if _BARE_YEAR_NOT_A_SEASON.search(text):
+        return None
+    match = _BARE_YEAR.search(text)
+    if not match:
+        return None
+    from nbatools.commands._seasons import int_to_season
+
+    year = int(match.group(1) or match.group(2))
+    return year, int_to_season(year - 1)
+
+
+def extract_bare_year_pair(text: str) -> tuple[str, str] | None:
+    """First and last season of "in 2024 and 2025" (2023-24 to 2024-25), else None."""
+    if _BARE_YEAR_NOT_A_SEASON.search(text):
+        return None
+    match = _BARE_YEAR_PAIR.search(text)
+    if not match:
+        return None
+    from nbatools.commands._seasons import int_to_season
+
+    first, last = sorted((int(match.group(1)), int(match.group(2))))
+    if last - first != 1:
+        return None
+    return int_to_season(first - 1), int_to_season(last - 1)
+
+
 def extract_relative_season(text: str, season_type: str) -> str | None:
     """Extract singular relative season phrases such as ``last season``."""
     if re.search(r"\b(?:last|previous)\s+season\b", text):
