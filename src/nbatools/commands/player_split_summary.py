@@ -5,6 +5,7 @@ import pandas as pd
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
+from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
@@ -271,6 +272,8 @@ def build_result(
             "multi-season split summary aggregated from game logs across "
             f"{seasons[0]} to {seasons[-1]}"
         )
+    if opponent:
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
 
     return SplitSummaryResult(
         summary=summary,

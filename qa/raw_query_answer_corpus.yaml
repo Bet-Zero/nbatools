@@ -7221,36 +7221,39 @@ cases:
 
   - id: playoff_record_against_northwest_division_teams_guard
     query: "playoff record against Northwest Division teams"
-    category: unsupported_boundary
+    category: team_records
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record_leaderboard
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
     acceptance:
       family: team_records
-      variant: nearby_unsupported
+      variant: inverse_sibling
       no_broad_fallback: true
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
       - path: result.metadata.opponent_division
         equals: Northwest
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_division
-    review_notes: "Playoff no-subject division record leaderboards remain unsupported and must not broaden to a regular-season or unfiltered leaderboard."
+      - path: result.metadata.opponent_team_abbrs.0
+        equals: DEN
+      - path: result.metadata.unsupported_filters
+        equals:
+    review_notes: "Playoff division record leaderboards rank teams by their playoff record against that season's Northwest Division teams (C1, season-scoped opponent groups)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
-        - unsupported_boundary
-        - division_guard
+        - context_filter
+        - opponent_division
+        - leaderboard
         - no_broad_fallback
-      notes: "Expected unsupported because opponent-division promotion is limited to regular-season record leaderboards."
+      notes: "Promoted from guard: division membership resolves for every season, so playoff records answer."
 
   - id: celtics_atlantic_division_coverage_guard
-    query: "Celtics record vs Atlantic Division in 2023-24"
+    query: "Celtics record vs Midwest Division in 2023-24"
     category: unsupported_boundary
     priority: p2
     answer_text_policy: no_answer_text_expected
@@ -7265,10 +7268,10 @@ cases:
       - path: result.metadata.season
         equals: 2023-24
       - path: result.metadata.opponent_division
-        equals: Atlantic
+        equals: Midwest
       - path: result.metadata.unsupported_filters.0
         equals: division_coverage
-    review_notes: "Historical division filters require trusted team-division coverage and must not broaden to a full team record."
+    review_notes: "A division that did not exist in the season (the Midwest ran through 2003-04) refuses and must not broaden to a full team record."
     manual_review:
       status: expected_unsupported
       tags:
@@ -7306,31 +7309,35 @@ cases:
       notes: "Mixed conference-plus-division wording remains unsupported after regular-season opponent-division promotion."
 
   - id: celtics_playoff_atlantic_division_guard
-    query: "Celtics playoff record vs Atlantic Division"
-    category: unsupported_boundary
+    query: "Celtics playoff record vs Atlantic Division 2024-25"
+    category: team_records
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: team_record
+    expected_sections:
+      - summary
     hard_assertions:
       - path: result.metadata.team
         equals: BOS
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_division
-    review_notes: "Playoff division record phrasing should keep playoff context but return an unsupported division boundary."
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.wins
+        equals: 2
+      - path: result.sections.summary.0.losses
+        equals: 4
+    review_notes: "Boston's 2025 playoff games against Atlantic Division teams are the six-game second-round loss to New York."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
-        - unsupported_boundary
-        - division_guard
+        - context_filter
+        - opponent_division
         - playoff_record
         - no_broad_fallback
-      notes: "Playoff division record phrasing remains unsupported after regular-season opponent-division promotion."
+      notes: "Promoted from guard: playoff records take season-scoped division opponents."
 
   - id: celtics_conference_finals_atlantic_division_guard
     query: "Celtics conference finals record vs Atlantic Division"
