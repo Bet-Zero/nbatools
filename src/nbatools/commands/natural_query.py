@@ -1144,6 +1144,9 @@ def _title_year_left_unused(q: str) -> bool:
     years = _BARE_YEAR.findall(q)
     if not years:
         return False
+    if all(extract_season_range(q)):
+        # "titles from 2000 to 2010": both years bound the span.
+        return False
     if len(years) > 1:
         # "since 2010 until 2020": only one year is ever applied.
         return True
@@ -1372,6 +1375,15 @@ def _build_parse_state(query: str) -> dict:
 
     # -- Historical span detection (must run before single-season extraction) --
     start_season, end_season = extract_season_range(q)
+    if start_season and end_season:
+        from nbatools.commands._seasons import default_end_season, season_to_int
+
+        # "from 2020 to 2030": the span ends with the latest season played.
+        latest = default_end_season(season_type)
+        if season_to_int(end_season) > season_to_int(latest):
+            end_season = latest
+        if season_to_int(start_season) > season_to_int(end_season):
+            start_season = end_season
     career_intent = False
 
     if not (start_season and end_season):

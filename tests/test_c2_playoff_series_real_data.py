@@ -134,3 +134,22 @@ def test_single_season_title_names_champion_and_finals_opponent():
         "The Cleveland Cavaliers won the 2015-16 title, beating the "
         "Golden State Warriors 4-3 in the Finals."
     )
+
+
+def test_bare_year_range_record_counts_raw_games():
+    from nbatools.query_service import execute_natural_query
+
+    wins = losses = 0
+    for season in ("2000-01", "2001-02", "2002-03"):
+        rows = data_read_csv(
+            f"raw/team_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+        )
+        lal = rows[rows["team_abbr"] == "LAL"]
+        wins += int((lal["wl"] == "W").sum())
+        losses += int((lal["wl"] == "L").sum())
+
+    result = execute_natural_query("Lakers record from 2000 to 2002")
+    assert result.metadata["route"] == "team_record"
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert (summary["season_start"], summary["season_end"]) == ("2000-01", "2002-03")
+    assert (summary["wins"], summary["losses"]) == (wins, losses)

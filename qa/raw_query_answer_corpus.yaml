@@ -9367,6 +9367,55 @@ cases:
         - playoff_series
       notes: "Review that the four Spurs series are labelled first round through Finals."
 
+  - id: c2_bare_year_range_team_record
+    query: "Lakers record from 2000 to 2002"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+      - by_season
+    hard_assertions:
+      - path: result.sections.summary.0.season_start
+        equals: 2000-01
+      - path: result.sections.summary.0.season_end
+        equals: 2002-03
+    review_notes: "A bare-year range names the seasons starting in those years. It used to fall back to the default season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review the Lakers record across 2000-01 to 2002-03."
+
+  - id: c2_bare_year_range_player_summary
+    query: "LeBron James points per game from 2010 to 2013"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - by_season
+      - game_log
+    hard_assertions:
+      - path: result.sections.summary.0.season_start
+        equals: 2010-11
+      - path: result.sections.summary.0.season_end
+        equals: 2013-14
+    review_notes: "A bare-year range reaches player summaries instead of the default season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review LeBron's per-game line across 2010-11 to 2013-14."
+
   - id: c2_league_most_titles_since_year
     query: "which team has won the most titles since 1997"
     category: playoff_history

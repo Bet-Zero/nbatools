@@ -439,10 +439,61 @@ def extract_relative_season(text: str, season_type: str) -> str | None:
     return None
 
 
+_RANGE_POINT = r"((?:19|20)\d{2}(?:-\d{2})?)(?![-\d])"
+_RANGE_JOIN = r"(?:\s+season)?\s*(?:-|\bto\b|\bthrough\b|\bthru\b|\buntil\b|\btill\b|\band\b)\s*"
+# "between 2000 and 2050 points" is a stat bound, not seasons.
+_RANGE_NOT_A_STAT = (
+    r"(?!\s*(?:points?|pts|rebounds?|assists?|minutes?|mins?|yards?|steals?|blocks?|"
+    r"turnovers?|threes?|3s|fg|games?)\b)"
+)
+_SEASON_RANGES = (
+    # "from 2010 to 2015", "between 2000-01 and 2009-10", "from 1999 through 2003"
+    re.compile(
+        r"\b(?:from|between|since)\s+(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_JOIN
+        + r"(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_NOT_A_STAT
+    ),
+    # "2015-2017", "2010-11 to 2014-15", "2010 through 2015"
+    re.compile(r"(?<![\w-])((?:19|20)\d{2})-((?:19|20)\d{2})(?![-\d])" + _RANGE_NOT_A_STAT),
+    re.compile(
+        r"(?<![\w-])"
+        + _RANGE_POINT
+        + r"\s+(?:to|through|thru|until|till)\s+(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_NOT_A_STAT
+    ),
+)
+
+
+def _range_point_season(point: str) -> str:
+    from nbatools.commands._seasons import int_to_season
+
+    return point if "-" in point else int_to_season(int(point))
+
+
 def extract_season_range(text: str) -> tuple[str | None, str | None]:
-    m = re.search(r"\bfrom\s+((?:19|20)\d{2}-\d{2})\s+to\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
-    if m:
-        return m.group(1), m.group(2)
+    """Two seasons or years that bound a span, inclusive.
+
+    "from 2010-11 to 2014-15" -> 2010-11..2014-15. A bare year names the season
+    starting in it, as "since 2010" and "the 2010s" do ("from 2010 to 2015" ->
+    2010-11..2015-16). A span written backwards ("from 2010 to 2005") covers
+    the same seasons.
+    """
+    from nbatools.commands._seasons import season_to_int
+
+    for pattern in _SEASON_RANGES:
+        m = pattern.search(text)
+        if not m:
+            continue
+        first, last = m.group(1), m.group(2)
+        start = _range_point_season(first)
+        end = _range_point_season(last)
+        if season_to_int(start) > season_to_int(end):
+            start, end = end, start
+        return start, end
     return None, None
 
 
