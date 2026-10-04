@@ -260,3 +260,8 @@ def test_team_120_point_games_vs_the_west_2023_24():
     assert result.route == "team_occurrence_leaders"
     board = result.result.to_dict()["sections"]["leaderboard"]
     assert board[0]["games_pts_120+"] == int(counts.max())
+
+
+def test_league_win_streak_vs_the_west_is_not_a_player_named_west():
+    result = _run("longest winning streak vs the West in 2023-24")
+    assert result.route == "team_streak_finder"
