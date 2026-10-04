@@ -26,6 +26,7 @@ from nbatools.data_source import (
     PLAYER_NAMES_PATH,
     data_exists,
     data_glob,
+    data_prefetch,
     data_read_csv,
     data_source_cache_key,
     season_file_order,
@@ -627,6 +628,7 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
     else:
         if data_dir is None:
             csv_paths = sorted(data_glob("raw/player_game_stats/*.csv"), key=season_file_order)
+            data_prefetch(csv_paths)
             read_csv = data_read_csv
         else:
             stats_dir = data_dir / "raw" / "player_game_stats"
