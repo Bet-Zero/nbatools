@@ -294,8 +294,7 @@ def test_r2_prefetch_fetches_in_the_pinned_generation_once(
         values = [data_read_csv(path)["v"].tolist() for path in paths[:3]]
 
     assert fetched == [
-        f"generations/gen-a/raw/player_game_stats/{season}_regular_season.csv"
-        for season in "abc"
+        f"generations/gen-a/raw/player_game_stats/{season}_regular_season.csv" for season in "abc"
     ]
     assert values == [[1], [1], [1]]
     # The reads came from the prefetched files; the missing one was skipped.
