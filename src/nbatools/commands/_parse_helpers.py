@@ -338,19 +338,28 @@ def detect_opponent_conference_geography_boundary(text: str) -> bool:
     """Detect unsupported geography wording that resembles a conference filter."""
     return bool(
         re.search(
-            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:east|west)\s+coast\s+teams?\b",
+            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:east|west)\s+coast\b",
             text,
         )
     )
 
 
 _DIVISION_NAMES_PATTERN = r"atlantic|central|southeast|northwest|pacific|southwest|midwest"
+# "vs Pacific Division teams", "vs Pacific teams" and "vs the Pacific" all
+# name the division; a bare "vs Pacific" is left alone.
 _OPPONENT_DIVISION_PATTERN = re.compile(
-    rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+    rf"\b(?:against|vs\.?|versus)\s+(?P<article>the\s+)?"
     rf"(?P<conference_prefix>(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
-    rf"(?P<division>{_DIVISION_NAMES_PATTERN})\s+division"
-    rf"(?:\s+(?:teams?|opponents?))?\b"
+    rf"(?P<division>{_DIVISION_NAMES_PATTERN})"
+    rf"(?P<suffix>\s+division(?:\s+(?:teams?|opponents?))?|\s+(?:teams?|opponents?))?\b"
 )
+
+
+def _opponent_division_match(text: str):
+    for match in _OPPONENT_DIVISION_PATTERN.finditer(text):
+        if match.group("suffix") or match.group("article"):
+            return match
+    return None
 
 
 def _normalize_division_name(value: str) -> str:
@@ -367,7 +376,7 @@ def _normalize_division_name(value: str) -> str:
 
 def detect_opponent_division(text: str) -> str | None:
     """Extract a normalized opponent-division filter for accepted phrasing."""
-    match = _OPPONENT_DIVISION_PATTERN.search(text)
+    match = _opponent_division_match(text)
     if not match:
         return None
     if match.group("conference_prefix"):
@@ -377,7 +386,7 @@ def detect_opponent_division(text: str) -> str | None:
 
 def detect_opponent_division_boundary(text: str) -> bool:
     """Detect explicit NBA opponent-division record filters."""
-    return bool(_OPPONENT_DIVISION_PATTERN.search(text))
+    return _opponent_division_match(text) is not None
 
 
 def wants_team_leaderboard(text: str) -> bool:
@@ -755,7 +764,7 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
     return "qualifying"
 
 
-def last_n_reach_back_seasons(season: str) -> dict:
+def last_n_reach_back_seasons(season: str, *, seasons_back: int = 1) -> dict:
     """Season kwargs letting a last-N window reach into the prior season.
 
     With no season named, "Warriors last 10 games" is the ten most recent
@@ -766,9 +775,10 @@ def last_n_reach_back_seasons(season: str) -> dict:
 
     if season_to_int(season) <= season_to_int(EARLIEST_SEASON):
         return {}
+    start = max(season_to_int(season) - seasons_back, season_to_int(EARLIEST_SEASON))
     return {
         "season": None,
-        "start_season": int_to_season(season_to_int(season) - 1),
+        "start_season": int_to_season(start),
         "end_season": season,
     }
 

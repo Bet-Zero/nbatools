@@ -2173,17 +2173,13 @@ def _finalize_route(parsed: dict) -> dict:
     )
     opponent_division = parsed.get("opponent_division")
     opponent_division_boundary = parsed.get("opponent_division_boundary", False)
-    supported_opponent_division_record_scope = (
-        bool(opponent_division)
-        and season_type == "Regular Season"
-        and not any(
-            [
-                with_player,
-                without_player,
-                unresolved_with_player,
-                unresolved_without_player,
-            ]
-        )
+    supported_opponent_division_record_scope = bool(opponent_division) and not any(
+        [
+            with_player,
+            without_player,
+            unresolved_with_player,
+            unresolved_without_player,
+        ]
     )
 
     notes: list[str] = []
@@ -4459,6 +4455,25 @@ def _finalize_route(parsed: dict) -> dict:
             # No season was named, so "last 10 games" means the 10 most
             # recent games even when the current season has fewer.
             route_kwargs.update(last_n_reach_back_seasons(route_kwargs["season"]))
+
+    if (
+        route == "team_compare"
+        and route_kwargs.get("head_to_head")
+        and route_kwargs.get("last_n")
+        and parsed.get("season_defaulted")
+        and route_kwargs.get("season") == parsed.get("season")
+        and not route_kwargs.get("start_season")
+        and not route_kwargs.get("start_date")
+        and not route_kwargs.get("end_date")
+    ):
+        # "Lakers vs Warriors last 10 games" means their 10 most recent
+        # meetings. Teams meet at least twice a season, so reach back far
+        # enough to fill the window.
+        route_kwargs.update(
+            last_n_reach_back_seasons(
+                route_kwargs["season"], seasons_back=-(-int(route_kwargs["last_n"]) // 2)
+            )
+        )
 
     if route in _OPPONENT_GROUP_ROUTES:
         # Conference/division opponents resolve season by season at

@@ -115,3 +115,34 @@ def test_pacific_division_before_2004_has_seven_teams():
     (summary,) = result.result.to_dict()["sections"]["summary"]
     assert summary["games"] == len(lakers)
     assert summary["wins"] == int((lakers["wl"] == "W").sum())
+
+
+def test_celtics_playoff_record_vs_atlantic_2024_25():
+    path = "raw/team_game_stats/2024-25_playoffs.csv"
+    if not data_exists(path):
+        pytest.skip("2024-25 playoffs not served")
+    games = data_read_csv(path, dtype={"game_id": str})
+    atlantic = {
+        team_id
+        for team_id, (_, division) in historical_alignment("2024-25").items()
+        if division == "Atlantic"
+    }
+    celtics = games[(games["team_abbr"] == "BOS") & games["opponent_team_id"].isin(atlantic)]
+
+    result = _run("Celtics playoff record vs Atlantic Division 2024-25")
+    (summary,) = result.result.to_dict()["sections"]["summary"]
+    assert summary["games"] == len(celtics)
+    assert summary["wins"] == int((celtics["wl"] == "W").sum())
+
+
+def test_lakers_vs_warriors_last_10_are_their_ten_latest_meetings():
+    frames = [_team_games(season) for season in SEASONS[-6:]]
+    games = pd.concat(frames)
+    meetings = games[(games["team_abbr"] == "LAL") & (games["opponent_team_abbr"] == "GSW")]
+    meetings = meetings.sort_values(["game_date", "game_id"], ascending=False).head(10)
+
+    result = _run("Lakers vs Warriors last 10 games")
+    lakers, warriors = result.result.to_dict()["sections"]["summary"]
+    assert lakers["games"] == warriors["games"] == 10
+    assert lakers["wins"] == int((meetings["wl"] == "W").sum())
+    assert warriors["wins"] == 10 - lakers["wins"]

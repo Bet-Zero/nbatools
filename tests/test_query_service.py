@@ -1779,8 +1779,16 @@ class TestOpponentConferenceTeamRecords:
         assert qr.metadata["unsupported_filters"] == ["opponent_conference"]
         assert qr.to_dict()["sections"] == {}
 
-    def test_missing_conference_coverage_returns_no_result_without_broad_record(self):
+    def test_season_without_membership_table_uses_historical_alignment(self):
         qr = execute_natural_query("Celtics record against the East in 2023-24")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert len(qr.metadata["opponent_team_abbrs"]) == 15
+        assert 0 < qr.to_dict()["sections"]["summary"][0]["games"] < 82
+
+    def test_missing_conference_coverage_returns_no_result_without_broad_record(self):
+        qr = execute_natural_query("Celtics record against the East in 1995-96")
 
         assert qr.route == "team_record"
         assert qr.result.result_status == "no_result"
@@ -1789,8 +1797,8 @@ class TestOpponentConferenceTeamRecords:
         assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
         assert qr.to_dict()["sections"] == {}
 
-    def test_missing_conference_membership_file_uses_coverage_guardrail(self, monkeypatch):
-        import nbatools.commands._natural_query_execution as execution
+    def test_missing_membership_file_falls_back_to_historical_alignment(self, monkeypatch):
+        import nbatools.commands.data_utils as data_utils
 
         def missing_membership_file(*args, **kwargs):
             raise FileNotFoundError(
@@ -1798,16 +1806,15 @@ class TestOpponentConferenceTeamRecords:
                 "data/raw/teams/team_conference_membership.csv"
             )
 
-        monkeypatch.setattr(execution, "get_teams_by_conference", missing_membership_file)
+        expected = execute_natural_query("Celtics record against the East this season")
+        monkeypatch.setattr(data_utils, "load_team_conference_membership", missing_membership_file)
 
         qr = execute_natural_query("Celtics record against the East this season")
 
         assert qr.route == "team_record"
-        assert qr.result.result_status == "no_result"
-        assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["opponent_conference"] == "East"
-        assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
-        assert qr.to_dict()["sections"] == {}
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["opponent_team_abbrs"] == expected.metadata["opponent_team_abbrs"]
+        assert qr.to_dict()["sections"]["summary"] == expected.to_dict()["sections"]["summary"]
 
     def test_conference_record_matches_explicit_opponent_list(self):
         natural = execute_natural_query("Celtics record against the East this season")
@@ -1872,13 +1879,20 @@ class TestOpponentDivisionTeamRecords:
             == explicit.to_dict()["sections"]["by_season"]
         )
 
-    def test_missing_division_coverage_returns_no_result_without_broad_record(self):
+    def test_season_without_membership_table_uses_historical_divisions(self):
         qr = execute_natural_query("Celtics record vs Atlantic Division in 2023-24")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["opponent_team_abbrs"] == ["BKN", "BOS", "NYK", "PHI", "TOR"]
+
+    def test_missing_division_coverage_returns_no_result_without_broad_record(self):
+        qr = execute_natural_query("Celtics record vs Midwest Division in 2023-24")
 
         assert qr.route == "team_record"
         assert qr.result.result_status == "no_result"
         assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["opponent_division"] == "Atlantic"
+        assert qr.metadata["opponent_division"] == "Midwest"
         assert qr.metadata["unsupported_filters"] == ["division_coverage"]
         assert qr.to_dict()["sections"] == {}
 

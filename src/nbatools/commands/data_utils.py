@@ -961,6 +961,45 @@ def opponent_group_tokens(
     return by_season
 
 
+def season_team_abbrs(season: str) -> dict[int, str]:
+    """``team_id -> team_abbr`` as the team was known in ``season``.
+
+    That season's team game rows win, then the served membership table, then
+    the current franchise abbreviations.
+    """
+    from nbatools.commands import _nba_alignment
+
+    names = {
+        value: name
+        for name, value in vars(_nba_alignment).items()
+        if name.isupper() and len(name) == 3 and isinstance(value, int)
+    }
+    try:
+        df = load_team_conference_membership()
+    except (FileNotFoundError, ValueError):
+        df = None
+    if df is not None:
+        for row in df.loc[df["season"].eq(season)].itertuples():
+            names[int(row.team_id)] = str(row.team_abbr).upper()
+    path = f"data/raw/team_game_stats/{season}_regular_season.csv"
+    if data_exists(path):
+        games = data_read_csv(path, usecols=["team_id", "team_abbr"]).drop_duplicates("team_id")
+        for row in games.itertuples():
+            names[int(row.team_id)] = str(row.team_abbr).upper()
+    return names
+
+
+def opponent_group_abbrs(by_season: dict[str, list[str]]) -> list[str]:
+    """Sorted abbreviations of the teams behind season-scoped group tokens."""
+    abbrs: set[str] = set()
+    for season, tokens in by_season.items():
+        names = season_team_abbrs(season)
+        for token in tokens:
+            team_id = int(token.split("#", 1)[1])
+            abbrs.add(names.get(team_id, str(team_id)))
+    return sorted(abbrs)
+
+
 def resolve_opponent_quality_teams(
     opponent_quality: dict,
     seasons: list[str],

@@ -263,3 +263,56 @@ def test_comparing_a_player_with_a_team_asks_which_reading(query):
     assert result.result_status == "no_result"
     notes = " ".join(result.result.to_dict()["notes"])
     assert "LeBron stats vs the Celtics" in notes
+
+
+def test_team_vs_team_last_n_reaches_back_for_meetings():
+    meetings = _games("team_game_stats", team_abbr="LAL", opponent_team_abbr="GSW")
+    meetings += _games("team_game_stats", "2024-25", team_abbr="LAL", opponent_team_abbr="GSW")
+    meetings += _games("team_game_stats", "2023-24", team_abbr="LAL", opponent_team_abbr="GSW")
+    meetings = sorted(meetings, key=lambda r: (r["game_date"], int(r["game_id"])), reverse=True)
+
+    a, _ = _sections(_run("Lakers vs Warriors last 20 games"))["summary"]
+    assert a["games"] == 20
+    assert a["wins"] == sum(_won(r) for r in meetings[:20])
+
+    home = [r for r in meetings if _home(r)][:10]
+    a, _ = _sections(_run("Lakers vs Warriors last 10 home games"))["summary"]
+    assert a["games"] == 10
+    assert a["wins"] == sum(_won(r) for r in home)
+
+
+@pytest.mark.parametrize("query", ["LeBron stats vs the Pacific", "LeBron stats vs Pacific teams"])
+def test_division_named_without_the_word_division(query):
+    rows = _vs(_games("player_game_stats", player_name="LeBron James"), division="Pacific")
+    (summary,) = _sections(_run(query))["summary"]
+    assert summary["games"] == len(rows)
+
+
+def test_west_coast_wording_refuses_instead_of_ignoring():
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query("Lakers record vs the West coast")
+    assert result.result_status == "no_result"
+
+
+def test_player_split_carries_the_opponent_caveat():
+    caveats = _run("LeBron home away splits vs West teams").result.to_dict()["caveats"]
+    assert "filtered to games vs Western Conference teams" in caveats
+
+
+def test_playoff_record_vs_a_division():
+    playoff = _csv(RAW / "team_game_stats" / "2025-26_playoffs.csv")
+    lakers = [r for r in playoff if r["team_abbr"] == "LAL"]
+    expected = _vs(lakers, division="Northwest")
+    (summary,) = _sections(_run("Lakers playoff record vs Northwest Division teams"))["summary"]
+    assert summary["games"] == len(expected)
+    assert summary["wins"] == sum(_won(r) for r in expected)
+
+
+def test_conference_answers_report_the_member_abbreviations():
+    result = _run("Celtics record against the East in 2023-24")
+    rows = _csv(RAW / "teams" / "team_conference_membership.csv")
+    expected = sorted(
+        r["team_abbr"] for r in rows if r["season"] == "2024-25" and r["conference"] == "East"
+    )
+    assert result.metadata["opponent_team_abbrs"] == expected

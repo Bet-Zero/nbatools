@@ -36,6 +36,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     OpponentGroup,
+    opponent_group_abbrs,
     opponent_group_tokens,
     resolve_opponent_quality_teams,
     resolve_opponent_quality_tokens,
@@ -506,6 +507,22 @@ def _resolve_opponent_group_kwargs(
     sanitized["opponent"] = OpponentGroup(tokens, label, also=existing_opponent or None)
     if original_kwargs is not None:
         original_kwargs[f"{filter_id}_seasons"] = seasons
+        abbr_tokens = by_season
+        if isinstance(existing_opponent, OpponentGroup):
+            kept = set(existing_opponent)
+            abbr_tokens = {
+                season: [token for token in season_tokens if token in kept]
+                for season, season_tokens in by_season.items()
+            }
+        abbrs = opponent_group_abbrs(abbr_tokens)
+        if isinstance(existing_opponent, str):
+            abbrs = [abbr for abbr in abbrs if abbr == existing_opponent.upper()]
+        elif isinstance(existing_opponent, list | tuple | set) and not isinstance(
+            existing_opponent, OpponentGroup
+        ):
+            wanted = {str(value).upper() for value in existing_opponent}
+            abbrs = [abbr for abbr in abbrs if abbr in wanted]
+        original_kwargs["opponent_team_abbrs"] = abbrs
 
     season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
     sizes = sorted({len(by_season[season]) for season in seasons})
@@ -697,10 +714,11 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
     if filter_id in ("opponent_conference", "opponent_division"):
         scope = "conference" if filter_id == "opponent_conference" else "division"
         return (
-            f"filtering by opponent {scope} is supported for player and team game "
-            f"summaries, game lists, records, splits and comparisons (e.g. 'Lakers "
-            f"record against the East'), not on this route; no unfiltered answer was "
-            f"substituted (blocked: {', '.join(all_filters)})"
+            f"this opponent {scope} filter could not be applied: it takes the NBA's "
+            f"Eastern or Western Conference or a named division (e.g. 'Lakers record "
+            f"against the East', 'LeBron stats vs Pacific Division teams') on game "
+            f"summaries, game lists, records, splits and comparisons; no unfiltered "
+            f"answer was substituted (blocked: {', '.join(all_filters)})"
         )
     if filter_id in ("wins_only", "losses_only"):
         outcome = "wins" if filter_id == "wins_only" else "losses"
