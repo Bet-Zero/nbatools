@@ -687,7 +687,18 @@ def _min_attempt_patterns() -> tuple[str, ...]:
 
 
 _MIN_ATTEMPTS = _min_attempt_patterns()
-_TOP_N = (r"\btop\s+\d+\b", r"\bbottom\s+\d+\b", r"\b\d+\s+best\b", r"\bfirst\s+\d+\b")
+_TOP_N = (
+    r"\btop\s+\d+\b",
+    r"\bbottom\s+\d+\b",
+    r"\b\d{1,3}\s+(?:best|highest|biggest|greatest)\b",
+    r"\b(?:best|highest)\s+\d{1,3}\b",
+    # "lowest 5 turnovers" ranks players; "lowest 5 scoring games" is no list here.
+    # Only "games" right after the stat words is the single-game list shape;
+    # "per game", "min 20 games" and "last 10 games" still rank players.
+    r"\b\d{1,3}\s+(?:worst|lowest)\b(?!(?:\s+(?!per\b|min\b|minimum\b|last\b)[a-z%-]+){0,3}\s+games?\b)",
+    r"\b(?:worst|lowest)\s+\d{1,3}\b(?!(?:\s+(?!per\b|min\b|minimum\b|last\b)[a-z%-]+){0,3}\s+games?\b)",
+    r"\bfirst\s+\d+\b",
+)
 _THRESHOLD = (
     r"\b\d+\+",
     r"\b(?:at\s+least|over|more\s+than|above|under|less\s+than|below|fewer\s+than)\s+\d+\b",
