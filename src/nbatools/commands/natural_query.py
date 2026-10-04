@@ -1311,12 +1311,40 @@ _NOT_A_RING = re.compile(
     r"|\b(?:mvp|dpoy|roy|awards?)\b"
 )
 # "players with the most rings", "who has the most rings": the players board.
-# Qualifiers a ring count cannot honour: refuse rather than answer the whole total.
-_RING_QUALIFIER = re.compile(
-    r"\b(?:vs\.?|versus|against|compared|than|over|and|or|as\s+an?|while|when|if)\b"
-    r"|\b(?:home|road|away|active|retired|bench|starters?|rookies?|among)\b"
-    r"|\bcurrent\s+players?\b"
+# Every word a plain ring question can use. Anything else (a second player, an
+# opponent, "in a row", "at age 27", "by a center", "in the East") is a qualifier
+# the ring count cannot honour, so the question refuses instead of answering the
+# whole total.
+_RING_QUESTION_WORDS = frozenset(
+    """
+    how many much rings ring championships championship titles title does did do has
+    have had got gotten won win wins the a an most who which what player players top
+    leaders leader is are of in by nba all time ever total career his her their overall
+    since from between and to through thru until over during last past this previous
+    current season seasons year years playoffs postseason with
+    """.split()
 )
+_RING_YEAR_TOKEN = re.compile(r"^(?:\d+|(?:19|20)\d0s)$")
+
+
+def _ring_question_has_qualifier(q: str, player: str | None) -> bool:
+    """True when ``q`` says more than "how many rings [player] [span]"."""
+    from nbatools.commands.entity_resolution import (
+        _normalize_for_matching,
+        allowed_player_reference_tokens,
+    )
+
+    text = _normalize_for_matching(re.sub(r"'s\b", "", q))
+    if re.search(r"\bhis\s+(?:last|first)\b", text):
+        return True
+    allowed = allowed_player_reference_tokens(player) if player else set()
+    for token in re.findall(r"[\w.]+", text):
+        if token in _RING_QUESTION_WORDS or token in allowed or _RING_YEAR_TOKEN.match(token):
+            continue
+        return True
+    return False
+
+
 _PLAYER_RING_BOARD = re.compile(
     r"\brings?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\brings?\b"
     r"|\bplayers?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\bplayers?\b"
@@ -2556,7 +2584,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         and not _TITLE_EXTRA_CONDITION.search(q)
         and not _title_year_left_unused(q)
         and not (with_player or without_player)
-        and not _RING_QUALIFIER.search(q)
+        and not _ring_question_has_qualifier(q, player)
         and not any(
             parsed.get(key)
             for key in (

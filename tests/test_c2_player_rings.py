@@ -68,6 +68,25 @@ def test_ring_boards_rank_players(query, start):
     assert kwargs["start_season"] == start
 
 
+@pytest.mark.parametrize(
+    ("query", "start", "end"),
+    [
+        ("how many rings does LeBron have over the last 5 seasons", "2021-22", "2025-26"),
+        ("players with the most rings over the last 20 years", "2006-07", "2025-26"),
+        ("LeBron rings between 2012 and 2016", "2011-12", "2015-16"),
+        ("how many rings does LeBron have over his career", "1996-97", "2025-26"),
+        ("most titles by a player since 2000", "2000-01", "2025-26"),
+        ("LeBron's rings", "1996-97", "2025-26"),
+        ("King James rings", "1996-97", "2025-26"),
+    ],
+)
+def test_span_wording_still_answers(query, start, end):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "playoff_appearances"
+    assert (kwargs["start_season"], kwargs["end_season"]) == (start, end)
+
+
 def test_named_span_is_kept():
     kwargs = parse_query("LeBron titles since 2015")["route_kwargs"]
     assert kwargs["start_season"] == "2015-16"
@@ -94,6 +113,17 @@ def test_named_span_is_kept():
         "LeBron rings as a Laker",
         "most rings among active players",
         "who has the most rings as a bench player",
+        "most rings in a row",
+        "most consecutive rings",
+        "most rings by a center",
+        "most rings by a player under 25",
+        "LeBron rings at age 27",
+        "LeBron rings in his 30s",
+        "LeBron rings in his first 10 seasons",
+        "LeBron rings in his last 3 seasons",
+        "LeBron rings in the East",
+        "LeBron rings not counting the bubble",
+        "who has the most rings over the past decade",
     ],
 )
 def test_other_title_questions_stay_refused(query):
@@ -189,3 +219,15 @@ def test_repeated_finals_rows_do_not_crown_a_champion(monkeypatch):
 
     monkeypatch.setattr(playoff_history, "_load_playoff_games", doubled)
     assert playoff_history._champions(doubled(["2025-26"])).empty
+
+
+def test_finals_rows_with_padded_ids_are_one_game(monkeypatch):
+    load = playoff_history._load_playoff_games
+
+    def mixed(seasons):
+        games = load(seasons).assign(playoff_round_code="04")
+        games = games[games["game_id"].astype(int) <= 543]
+        padded = games.assign(game_id=games["game_id"].astype(int).map(lambda g: f"{g:010d}"))
+        return pd.concat([games, padded], ignore_index=True)
+
+    assert playoff_history._champions(mixed(["2025-26"])).empty
