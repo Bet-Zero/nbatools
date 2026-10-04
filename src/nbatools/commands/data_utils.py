@@ -14,7 +14,12 @@ from nbatools.commands._player_identity import (
     select_player_rows,
 )
 from nbatools.commands.source_invariants import validate_play_by_play_trust_decisions
-from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
+from nbatools.data_source import (
+    data_exists,
+    data_prefetch,
+    data_read_csv,
+    data_source_cache_key,
+)
 from nbatools.dataframe_cache import FRAME_CACHE
 
 CLUTCH_TIME_REMAINING_START = 300
@@ -975,11 +980,9 @@ def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.Data
     """Load and concatenate team_game_stats CSVs for the given seasons."""
     data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
-    frames = [
-        _load_team_games_cached(season, season_type, data_root)
-        for season in seasons
-        if data_exists(f"data/raw/team_game_stats/{season}_{safe}.csv")
-    ]
+    available = [s for s in seasons if data_exists(f"data/raw/team_game_stats/{s}_{safe}.csv")]
+    data_prefetch(f"data/raw/team_game_stats/{season}_{safe}.csv" for season in available)
+    frames = [_load_team_games_cached(season, season_type, data_root) for season in available]
     if not frames:
         joined = ", ".join(seasons)
         raise FileNotFoundError(f"No team_game_stats files found for seasons: {joined}")
@@ -1025,11 +1028,13 @@ def load_player_games_for_seasons(
     """
     data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
-    frames = [
-        _load_player_games_cached(season, season_type, data_root)
-        for season in seasons
-        if data_exists(f"data/raw/player_game_stats/{season}_{safe}.csv")
-    ]
+    available = [s for s in seasons if data_exists(f"data/raw/player_game_stats/{s}_{safe}.csv")]
+    data_prefetch(
+        f"data/raw/{kind}/{season}_{safe}.csv"
+        for season in available
+        for kind in ("player_game_stats", "team_game_stats")
+    )
+    frames = [_load_player_games_cached(season, season_type, data_root) for season in available]
     if not frames:
         joined = ", ".join(seasons)
         raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")

@@ -17,6 +17,7 @@ from nbatools.data_source import (
     data_generation_context,
     data_glob,
     data_path,
+    data_prefetch,
     data_read_csv,
     data_source_cache_key,
     reset_data_source_cache,
@@ -268,6 +269,38 @@ def test_r2_download_never_exposes_a_partial_file(tmp_path: Path, monkeypatch: p
     assert data_read_csv("raw/sample.csv")["value"].tolist() == [1]
     assert replaced and replaced[0][1] == str(cache_file)
     assert [p.name for p in cache_file.parent.iterdir()] == ["sample.csv"]
+
+
+def test_r2_prefetch_fetches_in_the_pinned_generation_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    pointer_key = ACTIVE_GENERATION_PATH.as_posix()
+    objects = _generation_objects(
+        "gen-a",
+        {f"raw/player_game_stats/{season}_regular_season.csv": b"v\n1\n" for season in "abc"},
+    )
+    objects[pointer_key] = b'{"generation_id":"gen-a"}'
+    objects["generations/gen-b/raw/player_game_stats/a_regular_season.csv"] = b"v\n2\n"
+    client = FakeR2Client(objects)
+    _configure_r2(monkeypatch, tmp_path, client)
+    paths = [f"data/raw/player_game_stats/{season}_regular_season.csv" for season in "abcz"]
+
+    with data_generation_context():
+        # The pointer moves mid-request; the prefetch still reads gen-a.
+        client.objects[pointer_key] = b'{"generation_id":"gen-b"}'
+        client.get_calls.clear()
+        data_prefetch(paths)
+        fetched = sorted(client.get_calls)
+        values = [data_read_csv(path)["v"].tolist() for path in paths[:3]]
+
+    assert fetched == [
+        f"generations/gen-a/raw/player_game_stats/{season}_regular_season.csv" for season in "abc"
+    ]
+    assert values == [[1], [1], [1]]
+    # The reads came from the prefetched files; the missing one was skipped.
+    assert sorted(client.get_calls) == fetched
+    with data_generation_context(), pytest.raises(FileNotFoundError):
+        data_read_csv(paths[3])
 
 
 def test_frame_cache_key_changes_with_generation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
