@@ -967,9 +967,14 @@ def _unresolved_player_typo_boundary(parsed: dict) -> str | None:
     if parsed.get("player") and not parsed.get("player_a") and not parsed.get("player_b"):
         # "lebron vs cury against winning teams": the typoed second player
         # must not silently fall away behind the opponent filter.
-        return detect_unresolved_player_typo(q, summary=True) or detect_unresolved_player_typo(
-            q, comparison=True
-        )
+        typo = detect_unresolved_player_typo(q, summary=True)
+        if typo:
+            return typo
+        # "lebron vs curry's warriors" names a team after "vs", not a typo.
+        match = _VS_SECOND_OPERAND_RE.search(q)
+        if match and _vs_clause_is_opponent_group(q, match):
+            return None
+        return detect_unresolved_player_typo(q, comparison=True)
     return None
 
 
@@ -1014,6 +1019,16 @@ def _detect_team_in_text(text: str):
     return detect_team_in_text(text)
 
 
+def _vs_clause_is_opponent_group(q: str, match: re.Match) -> bool:
+    """The clause after "vs" names a team, quality bar or conference/division."""
+    clause = re.split(r"\s+(?:against|vs\.?|versus)\s+", q[match.start(1) :])[0]
+    return bool(
+        _detect_team_in_text(clause)
+        or detect_opponent_quality("vs " + clause)
+        or clause.split()[0] in _VS_GROUP_OPERANDS
+    )
+
+
 def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
     """Detect a "<player> vs <name>" comparison whose second name did not resolve.
 
@@ -1052,12 +1067,7 @@ def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
         # The opponent filter explains this "vs" unless another clause
         # ("... against winning teams") carries it: "lebron vs cury against
         # winning teams" still has an unidentified second player.
-        clause = re.split(r"\s+(?:against|vs\.?|versus)\s+", q[match.start(1) :])[0]
-        if (
-            _detect_team_in_text(clause)
-            or detect_opponent_quality("vs " + clause)
-            or clause.split()[0] in _VS_GROUP_OPERANDS
-        ):
+        if _vs_clause_is_opponent_group(q, match):
             return None
         if not re.search(r"\s+(?:against|vs\.?|versus)\s+", q[match.end(1) :]):
             return None

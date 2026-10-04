@@ -107,3 +107,18 @@ def test_player_pair_typo_still_refuses():
 
     result = execute_natural_query("lebron vs cury against winning teams")
     assert result.result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "opponent"),
+    [
+        ("LeBron vs Curry's Warriors", "GSW"),
+        ("LeBron vs Steph's Warriors", "GSW"),
+        ("Curry vs LeBron's Lakers", "LAL"),
+    ],
+)
+def test_possessive_team_after_vs_is_the_opponent(query, opponent):
+    result = _run(query)
+    assert result.route == "player_game_finder"
+    assert result.result_status == "ok"
+    assert opponent in str(result.metadata.get("opponent_team_abbrs") or result.metadata)
