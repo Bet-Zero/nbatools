@@ -298,3 +298,11 @@ def test_two_team_player_stretch_is_refused_not_narrowed():
     )
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+def test_leading_opponent_list_stops_at_its_last_team():
+    games = _team_games().query("team_abbr == 'LAL' and opponent_team_abbr in ['BOS', 'NYK']")
+    best = max(_windows(games, 5, _wins), key=lambda w: (w[0], w[1]))
+    rows, _ = _rows(f"against the Celtics and Knicks, Lakers best 5 game stretch in {SEASON}")
+    assert {row["team_abbr"] for row in rows} == {"LAL"}
+    assert (rows[0]["wins"], rows[0]["net_per_game"]) == (best[0], best[1])

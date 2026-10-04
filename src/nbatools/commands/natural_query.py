@@ -1131,19 +1131,28 @@ def _named_team_pairs(q: str) -> dict[str, list[str]]:
     found: dict[str, list[str]] = {"subjects": [], "opponents": [], "lead": []}
     for match in _TEAM_LIST_PATTERN.finditer(q):
         teams: list[str] = []
-        for one in _TEAM_ONE_PATTERN.finditer(match.group(0)):
+        list_end = match.start()
+        closed = False
+        for one in _TEAM_ONE_PATTERN.finditer(q, match.start(), match.end()):
+            if closed:
+                break
+            # "and" joins the last item: "vs celtics and knicks, lakers best..."
+            # ends the list at the knicks.
+            closed = bool(re.search(r"(?:\band|&)\s+(?:the\s+)?$", q[list_end : one.start()]))
             abbr = TEAM_ALIASES[one.group(1)]
             if abbr not in teams:
                 teams.append(abbr)
+            list_end = one.end()
         if len(teams) < 2:
             continue
         role = "opponents" if _OPPONENT_LEAD.search(q[: match.start()]) else "subjects"
         if not found[role]:
             found[role] = teams
             if role == "opponents":
+                # The subject is a team named outside the opponent list.
+                outside = q[: match.start()] + " " + q[list_end:]
                 found["lead"] = [
-                    TEAM_ALIASES[one.group(1)]
-                    for one in _TEAM_ONE_PATTERN.finditer(q[: match.start()])
+                    TEAM_ALIASES[one.group(1)] for one in _TEAM_ONE_PATTERN.finditer(outside)
                 ]
     return found
 
