@@ -337,3 +337,75 @@ class TestBuildFreshnessInfo:
         assert parsed["status"] == "unknown"
         assert parsed["current_through"] == "2026-04-13"
         assert parsed["seasons"][0]["validation_state"] == "legacy_unverified"
+
+
+def test_published_generation_current_through_is_computed_once(tmp_path, monkeypatch):
+    from nbatools.commands.freshness import compute_current_through
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.delenv("DATA_SOURCE", raising=False)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    published = tmp_path / "data" / "generations" / "gen-a"
+    _setup_manifest(published, "2025-26", "Regular Season")
+    _setup_games(published, "2025-26", "Regular Season", "2026-04-13")
+    _setup_manifest(tmp_path / "data", "2025-26", "Regular Season")
+    _setup_games(tmp_path / "data", "2025-26", "Regular Season", "2026-04-13")
+    reset_data_source_cache()
+    try:
+        # Legacy layout: rewritten in place by the pipeline, so always re-read.
+        assert compute_current_through("2025-26") == "2026-04-13"
+        _setup_games(tmp_path / "data", "2025-26", "Regular Season", "2026-04-14")
+        assert compute_current_through("2025-26") == "2026-04-14"
+
+        pointer = tmp_path / "data" / "metadata" / "active_generation.json"
+        pointer.write_text(json.dumps({"generation_id": "gen-a"}))
+        reset_data_source_cache()
+        assert compute_current_through("2025-26") == "2026-04-13"
+        # A published generation never changes, so the answer is not re-read.
+        (published / "raw" / "games" / "2025-26_regular_season.csv").unlink()
+        assert compute_current_through("2025-26") == "2026-04-13"
+    finally:
+        reset_data_source_cache()
+
+
+def test_published_generation_manifest_entry_is_inspected_once_when_passed(tmp_path, monkeypatch):
+    from nbatools.commands import freshness
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.delenv("DATA_SOURCE", raising=False)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    (tmp_path / "data" / "generations" / "gen-a").mkdir(parents=True)
+    states = {"2025-26": "passed", "2024-25": "failed"}
+    calls = []
+
+    def fake_entry(season, season_type, data_root):
+        calls.append(season)
+        return {"validation_state": states[season], "validation_errors": []}
+
+    monkeypatch.setattr(freshness, "_manifest_entry", fake_entry)
+    reset_data_source_cache()
+    try:
+        # Legacy layout: always inspected.
+        freshness.manifest_entry("2025-26", "Regular Season")
+        freshness.manifest_entry("2025-26", "Regular Season")
+        assert calls == ["2025-26", "2025-26"]
+
+        pointer = tmp_path / "data" / "metadata" / "active_generation.json"
+        pointer.parent.mkdir(parents=True, exist_ok=True)
+        pointer.write_text(json.dumps({"generation_id": "gen-a"}))
+        reset_data_source_cache()
+        calls.clear()
+        first = freshness.manifest_entry("2025-26", "Regular Season")
+        first["validation_errors"].append("caller edit")
+        second = freshness.manifest_entry("2025-26", "Regular Season")
+        assert calls == ["2025-26"]
+        assert second["validation_errors"] == []
+
+        # A failed inspection can come from a failed download: checked again.
+        freshness.manifest_entry("2024-25", "Regular Season")
+        freshness.manifest_entry("2024-25", "Regular Season")
+        assert calls == ["2025-26", "2024-25", "2024-25"]
+    finally:
+        reset_data_source_cache()

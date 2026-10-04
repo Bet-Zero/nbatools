@@ -445,6 +445,81 @@ def extract_season(text: str) -> str | None:
     return None
 
 
+# "LeBron points per game in 2019", "the 2016 season": a lone year names the
+# season that ended in it, as the 2016 playoffs and the 2016 title do.
+_YEAR = r"(?:19|20)\d{2}"
+# "scored 30 points in 2000 games" is a count, not a year: a stat value
+# earlier in the question and "games"/"times" right after the number.
+_YEAR_COUNT_NOUN = re.compile(r"\s+(?:games?|times)\b")
+_YEAR_COUNT_CONTEXT = re.compile(
+    r"\b\d+\+?\s*(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes?)\b|\bscored\b"
+)
+_BARE_YEAR = re.compile(
+    rf"\b(?:in|during|for)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b"
+    r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b))"
+    rf"|\b(?:the\s+)?({_YEAR})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
+)
+# "since the 2019 season", "before 2025": a range word owns the year.
+_BARE_YEAR_RANGE_WORD = re.compile(
+    r"\b(?:since|after|before|until|till|through|thru|starting|from|by|prior\s+to)"
+    r"(?:\s+the)?\s*$"
+)
+# Years in a list: "2024 and 2025", "2024 & 2025", "2024, 2025", "2024 and in 2025".
+_YEAR_LIST = re.compile(
+    rf"\b{_YEAR}(?:\s*(?:,|&|\band\b|\bor\b|\bvs\.?|\bversus\b)\s*(?:and\s+)?(?:in\s+)?{_YEAR})+\b"
+    r"(?![-/]\d)"
+)
+_YEAR_LIST_JOIN = re.compile(r"\s*(?:,|&|\band\b)\s*(?:and\s+)?(?:in\s+)?")
+# Years that name something other than a season.
+_BARE_YEAR_NOT_A_SEASON = re.compile(
+    r"\b(?:drafted|draft(?:\s+class)?|born|class\s+of|picked|signed|traded|hired|retired)"
+    rf"\s+(?:in\s+)?(?:the\s+)?{_YEAR}\b"
+)
+
+
+def extract_bare_year_season(text: str) -> tuple[int, str] | None:
+    """``(year, season)`` for a lone year such as "in 2019" (2018-19), else None.
+
+    None when the year is one of several ("2024 and 2025", "2019 or 2020"), or
+    a range word owns it ("since the 2019 season").
+    """
+    if _BARE_YEAR_NOT_A_SEASON.search(text) or _YEAR_LIST.search(text):
+        return None
+    match = _BARE_YEAR.search(text)
+    if not match or _BARE_YEAR_RANGE_WORD.search(text[: match.start()]):
+        return None
+    if _YEAR_COUNT_NOUN.match(text, match.end()) and _YEAR_COUNT_CONTEXT.search(
+        text[: match.start()]
+    ):
+        return None
+    from nbatools.commands._seasons import int_to_season
+
+    year = int(match.group(1) or match.group(2))
+    return year, int_to_season(year - 1)
+
+
+def extract_bare_year_pair(text: str) -> tuple[str, str] | None:
+    """First and last season of "in 2024 and 2025" (2023-24 to 2024-25), else None.
+
+    Only two consecutive years joined by "and", "&" or a comma make a span.
+    """
+    if _BARE_YEAR_NOT_A_SEASON.search(text):
+        return None
+    match = _YEAR_LIST.search(text)
+    if not match or _BARE_YEAR_RANGE_WORD.search(text[: match.start()]):
+        return None
+    years = [int(y) for y in re.findall(_YEAR, match.group(0))]
+    joins = re.split(_YEAR, match.group(0))[1:-1]
+    if len(years) != 2 or not all(_YEAR_LIST_JOIN.fullmatch(j) for j in joins):
+        return None
+    from nbatools.commands._seasons import int_to_season
+
+    first, last = sorted(years)
+    if last - first != 1:
+        return None
+    return int_to_season(first - 1), int_to_season(last - 1)
+
+
 def extract_relative_season(text: str, season_type: str) -> str | None:
     """Extract singular relative season phrases such as ``last season``."""
     if re.search(r"\b(?:last|previous)\s+season\b", text):

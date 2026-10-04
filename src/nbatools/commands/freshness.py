@@ -22,6 +22,7 @@ Status semantics
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from enum import StrEnum
@@ -31,7 +32,14 @@ import pandas as pd
 
 from nbatools.commands import validation_control
 from nbatools.commands.data_utils import normalize_season_type
-from nbatools.data_source import data_exists, data_read_csv, data_read_text
+from nbatools.data_source import (
+    LEGACY_GENERATION,
+    data_exists,
+    data_generation_context,
+    data_read_csv,
+    data_read_text,
+    data_source_cache_key,
+)
 
 # ---------------------------------------------------------------------------
 # Status semantics
@@ -173,6 +181,33 @@ def _manifest_complete(
     return bool(row.get("raw_complete") == 1 and row.get("processed_complete") == 1)
 
 
+# Answers for published generations, which never change once published:
+# (source and generation, season, season_type) -> answer.
+_IMMUTABLE_CURRENT_THROUGH: dict[tuple[str, str, str], str] = {}
+_IMMUTABLE_MANIFEST_ENTRIES: dict[tuple[str, str, str], dict] = {}
+
+
+def _published_once(store, season, season_type, data_root, compute, keep):
+    """Return ``compute()``, remembered per published generation when ``keep``.
+
+    The legacy layout, rewritten in place by the pipeline, and an explicit
+    ``data_root`` are always recomputed. Only answers ``keep`` accepts are
+    remembered, so one caused by a failed download is checked again.
+    """
+    # Pin one generation so the check, the key and the computation agree even
+    # when an unpinned caller (CLI, pipeline) races a pointer flip.
+    with data_generation_context() as generation:
+        if data_root != _DATA_ROOT or generation == LEGACY_GENERATION:
+            return compute()
+        key = (data_source_cache_key(), season, season_type)
+        if key in store:
+            return store[key]
+        result = compute()
+    if keep(result):
+        store[key] = result
+    return result
+
+
 def compute_current_through(
     season: str,
     season_type: str = "Regular Season",
@@ -184,7 +219,21 @@ def compute_current_through(
     - the games CSV does not exist
     - the manifest does not confirm completeness
     - the file has no rows with ``is_final == 1``
+
+    Checking the manifest hashes every file it lists, so a published
+    generation's answer is computed once per process.
     """
+    return _published_once(
+        _IMMUTABLE_CURRENT_THROUGH,
+        season,
+        season_type,
+        data_root,
+        lambda: _compute_current_through(season, season_type, data_root),
+        lambda result: result is not None,
+    )
+
+
+def _compute_current_through(season: str, season_type: str, data_root: Path) -> str | None:
     if not _manifest_complete(season, season_type, data_root):
         return None
 
@@ -249,7 +298,23 @@ def manifest_entry(
     season_type: str,
     data_root: Path = _DATA_ROOT,
 ) -> dict | None:
-    """Return the manifest row for a season/type as a dict, or None."""
+    """Return the manifest row for a season/type as a dict, or None.
+
+    A passed slice of a published generation is inspected (every manifested
+    file hashed) once per process; callers get their own copy.
+    """
+    entry = _published_once(
+        _IMMUTABLE_MANIFEST_ENTRIES,
+        season,
+        season_type,
+        data_root,
+        lambda: _manifest_entry(season, season_type, data_root),
+        lambda result: result is not None and result["validation_state"] == "passed",
+    )
+    return copy.deepcopy(entry)
+
+
+def _manifest_entry(season: str, season_type: str, data_root: Path) -> dict | None:
     versioned_path = validation_control.manifest_path(data_root, season, season_type)
     if data_exists(versioned_path):
         inspection = validation_control.inspect_slice_manifest(

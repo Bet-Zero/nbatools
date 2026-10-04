@@ -250,6 +250,12 @@ from nbatools.commands._parse_helpers import (
     detect_wins_losses as detect_wins_losses,
 )
 from nbatools.commands._parse_helpers import (
+    extract_bare_year_pair as extract_bare_year_pair,
+)
+from nbatools.commands._parse_helpers import (
+    extract_bare_year_season as extract_bare_year_season,
+)
+from nbatools.commands._parse_helpers import (
     extract_last_n as extract_last_n,
 )
 from nbatools.commands._parse_helpers import (
@@ -1505,6 +1511,8 @@ __all__ = [
     "extract_opponent_points_allowed_conditions",
     "extract_position_filter",
     "extract_relative_season",
+    "extract_bare_year_pair",
+    "extract_bare_year_season",
     "extract_season",
     "extract_season_range",
     "extract_since_season",
@@ -1578,6 +1586,8 @@ def _build_parse_state(query: str) -> dict:
             start_season, end_season = resolve_career(season_type)
 
     explicit_relative_season = False
+    bare_year_season = None
+    bare_year_span = False
     season = None
     if not (start_season and end_season):
         season = extract_season(q) or written_out_season
@@ -1598,6 +1608,16 @@ def _build_parse_state(query: str) -> dict:
                 start_season, end_season = first_date_season, last_date_season
             else:
                 season = first_date_season
+        if season is None and not (start_season and end_season):
+            bare_pair = extract_bare_year_pair(q)
+            if bare_pair is not None:
+                start_season, end_season = bare_pair
+                bare_year_span = True
+        if season is None and not (start_season and end_season):
+            bare_year = extract_bare_year_season(q)
+            if bare_year is not None:
+                bare_year_season = bare_year
+                season = bare_year[1]
 
     min_attempts = extract_min_attempts(q)
     # Metric and threshold detection skip the attempt qualifier: "minimum 150
@@ -1938,6 +1958,9 @@ def _build_parse_state(query: str) -> dict:
         and not explicit_relative_season
         and not re.search(r"\b(?:this|current)\s+(?:season|year)\b", q)
         and not career_intent
+        # "Lakers win streak in 2024" names its season.
+        and bare_year_season is None
+        and not bare_year_span
         and explicit_single_season is None
         and explicit_range_start is None
         and explicit_range_end is None
@@ -1983,6 +2006,7 @@ def _build_parse_state(query: str) -> dict:
         "lineup_query_mode": lineup_query_mode,
         "window_size": window_size,
         "window_defaulted": window_defaulted,
+        "bare_year_season": bare_year_season,
         "stretch_worst": stretch_worst,
         "stretch_player_group": stretch_player_group,
         "stretch_opponent_description": stretch_opponent_description,
@@ -2292,6 +2316,7 @@ def _finalize_route(parsed: dict) -> dict:
         and season == default_season_for_context("Playoffs")
         and extract_season(q) is None
         and not parsed.get("explicit_relative_season")
+        and not parsed.get("bare_year_season")
     ):
         if re.search(r"\bthis\s+(?:year|season)\b|\bcurrent\s+season\b", q):
             season = default_season_for_context("Regular Season")
@@ -4760,6 +4785,14 @@ def _finalize_route(parsed: dict) -> dict:
                 f"career_span: covers {EARLIEST_SEASON} onward; earlier seasons are not in the data"
             )
 
+    if parsed.get("bare_year_season"):
+        year, named = parsed["bare_year_season"]
+        notes.append(f"default: read {year} as the {named} season, the one that ended in {year}")
+        from nbatools.commands._seasons import EARLIEST_SEASON, default_end_season
+
+        latest = default_end_season(parsed.get("season_type") or "Regular Season")
+        if named < EARLIEST_SEASON or named > latest:
+            notes.append(f"coverage: the data covers {EARLIEST_SEASON} to {latest}")
     if parsed.get("window_defaulted") and route in {
         "player_stretch_leaderboard",
         "team_stretch_leaderboard",
