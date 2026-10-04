@@ -104,9 +104,10 @@ describe("routeToPattern", () => {
     for (const route of BACKEND_VALID_ROUTES) {
       const patterns = routeToPattern(makeResponse(route));
       expect(patterns, route).not.toHaveLength(0);
-      expect(patterns.map((pattern) => pattern.type), route).not.toContain(
-        "fallback_table",
-      );
+      expect(
+        patterns.map((pattern) => pattern.type),
+        route,
+      ).not.toContain("fallback_table");
     }
   });
 
@@ -114,9 +115,10 @@ describe("routeToPattern", () => {
     for (const route of WAVE_1_ROUTES) {
       const patterns = routeToPattern(makeResponse(route));
       expect(patterns, route).not.toHaveLength(0);
-      expect(patterns.map((pattern) => pattern.type), route).not.toContain(
-        "fallback_table",
-      );
+      expect(
+        patterns.map((pattern) => pattern.type),
+        route,
+      ).not.toContain("fallback_table");
     }
   });
 
@@ -140,7 +142,11 @@ describe("routeToPattern", () => {
           query: "Tatum against good teams this season",
           metadata: {
             applied_filters: [
-              { label: "Opponent quality", value: "good teams", kind: "quality" },
+              {
+                label: "Opponent quality",
+                value: "good teams",
+                kind: "quality",
+              },
             ],
           },
           sections: {
@@ -231,7 +237,9 @@ describe("routeToPattern", () => {
       "player_occurrence_leaders",
       "team_occurrence_leaders",
     ]) {
-      expectPattern(route, [{ type: "leaderboard", sectionKey: "leaderboard" }]);
+      expectPattern(route, [
+        { type: "leaderboard", sectionKey: "leaderboard" },
+      ]);
     }
   });
 
@@ -265,14 +273,17 @@ describe("routeToPattern", () => {
     for (const route of WAVE_2_ROUTES) {
       const patterns = routeToPattern(makeResponse(route));
       expect(patterns, route).not.toHaveLength(0);
-      expect(patterns.map((pattern) => pattern.type), route).not.toContain(
-        "fallback_table",
-      );
+      expect(
+        patterns.map((pattern) => pattern.type),
+        route,
+      ).not.toContain("fallback_table");
     }
   });
 
   it("routes Wave 2 split routes to split patterns", () => {
-    expectPattern("player_split_summary", [{ type: "split", subject: "player" }]);
+    expectPattern("player_split_summary", [
+      { type: "split", subject: "player" },
+    ]);
     expectPattern("team_split_summary", [{ type: "split", subject: "team" }]);
     expectPattern("player_on_off", [
       {
@@ -333,6 +344,32 @@ describe("routeToPattern", () => {
         sectionKey: "leaderboard",
         metricKey: "appearances",
         sentenceMetricLabel: "playoff appearances",
+      },
+    ]);
+  });
+
+  it("ranks title boards by titles", () => {
+    expect(
+      routeToPattern(
+        makeResponse("playoff_appearances", {
+          sections: {
+            leaderboard: [
+              {
+                rank: 1,
+                player_name: "LeBron James",
+                titles: 4,
+                title_seasons: "2011-12, 2012-13, 2015-16, 2019-20",
+              },
+            ],
+          },
+        }),
+      ),
+    ).toEqual([
+      {
+        type: "leaderboard",
+        sectionKey: "leaderboard",
+        metricKey: "titles",
+        sentenceMetricLabel: "titles",
       },
     ]);
   });

@@ -347,12 +347,12 @@ class TestRouteSelection:
         parsed = parse_query("Who has the best 3 point percentage this season?")
         assert parsed["route"] == "season_leaders"
 
-    def test_rings_question_refuses(self):
-        # Championship counts are not in the game-stats data; never answer
-        # with a count of games.
+    def test_rings_question_counts_titles(self):
+        # Rings are Finals titles won with the champion, never a count of games.
         parsed = parse_query("how many rings does lebron have")
-        assert parsed["route"] is None
-        assert parsed["intent"] == "unsupported"
+        assert parsed["route"] == "playoff_appearances"
+        assert parsed["route_kwargs"]["titles"] is True
+        assert parsed["route_kwargs"]["player"] == "LeBron James"
 
     def test_schedule_question_refuses(self):
         parsed = parse_query("when do the lakers play next")

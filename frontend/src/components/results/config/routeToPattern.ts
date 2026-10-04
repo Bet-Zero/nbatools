@@ -235,7 +235,19 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           metricKey: "net_rating",
         },
       ];
-    case "playoff_appearances":
+    case "playoff_appearances": {
+      const firstRow = data.result?.sections?.leaderboard?.[0];
+      if (firstRow && "titles" in firstRow) {
+        // Title boards: teams by Finals won, players by rings.
+        return [
+          {
+            type: "leaderboard",
+            sectionKey: "leaderboard",
+            metricKey: "titles",
+            sentenceMetricLabel: "titles",
+          },
+        ];
+      }
       if ((data.result?.sections?.leaderboard?.length ?? 0) > 0) {
         return [
           {
@@ -260,6 +272,7 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           sentenceMetricLabel: "playoff appearances",
         },
       ];
+    }
     default:
       return [{ type: "fallback_table" }];
   }

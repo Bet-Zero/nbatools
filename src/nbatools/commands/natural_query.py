@@ -1303,6 +1303,19 @@ _NON_LEAGUE_TITLE = re.compile(
     r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
 )
 
+# A player's rings: "how many rings does LeBron have", "LeBron championships".
+_PLAYER_RING_WORDS = re.compile(r"\brings?\b|\bchampionships?\b|\btitles?\b")
+_NOT_A_RING = re.compile(
+    r"\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
+    r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
+    r"|\b(?:mvp|dpoy|roy|awards?)\b"
+)
+# "players with the most rings", "who has the most rings": the players board.
+_PLAYER_RING_BOARD = re.compile(
+    r"\brings?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\brings?\b"
+    r"|\bplayers?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\bplayers?\b"
+)
+
 # Title words that qualify another question rather than ask for a title count:
 # "record vs the defending champions", "best record by a title winner".
 _TITLE_NOT_A_COUNT = re.compile(
@@ -2523,6 +2536,56 @@ def _route_parsed_query(parsed: dict) -> dict:
             "unsupported_boundary: NBA awards and award winners are not supported "
             "by the current stats query contract"
         ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    player_ring_question = (
+        championship_count_boundary
+        and _PLAYER_RING_WORDS.search(q)
+        and not team
+        and not (player_a or player_b or team_a or team_b)
+        and not _NOT_A_RING.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not unresolved_without_player
+        and not (
+            unresolved_with_player
+            and not re.match(r"(?:the\s+)?most\b", str(unresolved_with_player))
+        )
+    )
+    if player_ring_question and (player or _PLAYER_RING_BOARD.search(q)):
+        # "how many rings does LeBron have": titles won with the team he played for.
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        notes = []
+        if not start_season and not end_season and not named_season:
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+            notes.append("default: every playoff season since 1996-97")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        # The ring board already answers "how many": keep its title seasons.
+        out["count_intent"] = False
+        out["route"] = "playoff_appearances"
+        out["route_kwargs"] = {
+            "player": player,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "titles": True,
+            "player_titles": not player,
+            "limit": top_n or 10,
+        }
+        out["intent"] = "summary" if player else "leaderboard"
+        out["notes"] = notes
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

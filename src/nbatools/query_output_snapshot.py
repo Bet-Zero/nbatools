@@ -466,7 +466,18 @@ def route_to_snapshot_patterns(
     if route_key == "lineup_leaderboard":
         return [{"type": "leaderboard", "section_key": "leaderboard", "metric_key": "net_rating"}]
     if route_key == "playoff_appearances":
-        if _section_rows(sections, "leaderboard"):
+        board = _section_rows(sections, "leaderboard")
+        if board and "titles" in board[0]:
+            # Title boards: teams by Finals won, players by rings.
+            return [
+                {
+                    "type": "leaderboard",
+                    "section_key": "leaderboard",
+                    "metric_key": "titles",
+                    "sentence_metric_label": "titles",
+                }
+            ]
+        if board:
             return [
                 {
                     "type": "leaderboard",
