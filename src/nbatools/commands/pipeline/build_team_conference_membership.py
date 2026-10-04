@@ -31,8 +31,17 @@ DIVISIONS = {
 }
 
 
+class IncompleteSeasonError(ValueError):
+    """Standings and games don't list the same teams yet (e.g. opening night)."""
+
+
 def derive_membership(season: str, data_dir: Path = Path("data")) -> pd.DataFrame | None:
-    """Return one row per team for ``season``, or None without the columns."""
+    """Return one row per team for ``season``, or None without the columns.
+
+    Raises IncompleteSeasonError while standings list teams that have no games
+    yet, and ValueError for a contradiction (a division in the wrong
+    conference, two teams sharing an abbreviation).
+    """
     standings_path = data_dir / "raw" / "standings_snapshots" / f"{season}_regular_season.csv"
     games_path = data_dir / "raw" / "team_game_stats" / f"{season}_regular_season.csv"
     if not standings_path.exists() or not games_path.exists():
@@ -40,6 +49,9 @@ def derive_membership(season: str, data_dir: Path = Path("data")) -> pd.DataFram
     standings = pd.read_csv(standings_path)
     if not {"conference", "division"} <= set(standings.columns):
         return None
+    for column in ("conference", "division"):
+        text = standings[column].astype("string").str.strip()
+        standings[column] = text.where(~text.str.lower().isin(["", "nan", "none"]))
     standings = standings.dropna(subset=["conference", "division"])
     if standings.empty:
         return None
@@ -57,7 +69,7 @@ def derive_membership(season: str, data_dir: Path = Path("data")) -> pd.DataFram
         conference = _conference(str(record.conference))
         division = str(record.division).strip()
         if team_id not in abbreviations.index:
-            raise ValueError(f"{season}: standings team {team_id} has no games")
+            raise IncompleteSeasonError(f"{season}: standings team {team_id} has no games")
         if division not in DIVISIONS[conference]:
             raise ValueError(f"{season}: {division!r} is not a {conference} division")
         rows.append(
@@ -75,7 +87,7 @@ def derive_membership(season: str, data_dir: Path = Path("data")) -> pd.DataFram
     if frame["team_abbr"].duplicated().any():
         raise ValueError(f"{season}: two standings rows share a team abbreviation")
     if len(frame) != len(abbreviations):
-        raise ValueError(
+        raise IncompleteSeasonError(
             f"{season}: standings list {len(frame)} teams but games list {len(abbreviations)}"
         )
     return frame
@@ -86,7 +98,13 @@ def run(season: str, season_type: str, data_dir: Path = Path("data")) -> None:
     if season_type == "Playoffs":
         print("Skipping conference membership for playoffs (same as regular season)")
         return
-    derived = derive_membership(season, data_dir)
+    try:
+        derived = derive_membership(season, data_dir)
+    except IncompleteSeasonError as error:
+        # Secondary metadata: keep the season's existing rows rather than fail
+        # the refresh before every team has played.
+        print(f"Warning: {error}; membership unchanged")
+        return
     if derived is None:
         print(f"No conference/division in {season} standings; membership unchanged")
         return

@@ -119,3 +119,83 @@ def test_standings_pull_keeps_conference_and_division() -> None:
 
     assert out.loc[0, "conference"] == "East"
     assert out.loc[0, "division"] == "Atlantic"
+
+
+def test_opening_night_keeps_the_seasons_existing_rows(tmp_path: Path) -> None:
+    data = tmp_path / "data"
+    _write_season(data, "2026-27", [(1610612738, "BOS", "East", "Atlantic")])
+    standings = data / "raw" / "standings_snapshots" / "2026-27_regular_season.csv"
+    frame = pd.read_csv(standings)
+    unplayed = frame.assign(team_id=1610612752, division="Atlantic")
+    pd.concat([frame, unplayed]).to_csv(standings, index=False)
+    existing = data / "raw" / "teams" / "team_conference_membership.csv"
+    existing.parent.mkdir(parents=True)
+    before = (
+        "season,team_abbr,team_id,conference,division,source,coverage_trusted\n"
+        "2026-27,BOS,1610612738,East,Atlantic,manual,true\n"
+    )
+    existing.write_text(before)
+
+    membership.run("2026-27", "Regular Season", data_dir=data)
+
+    assert existing.read_text() == before
+
+
+def test_missing_conference_values_stay_missing() -> None:
+    raw = pd.DataFrame(
+        [
+            {
+                "TeamID": 1610612738,
+                "TeamAbbreviation": "BOS",
+                "WINS": 61,
+                "LOSSES": 21,
+                "WinPCT": 0.744,
+                "PlayoffRank": 2,
+                "DivisionRank": 1,
+                "ConferenceGamesBack": 3.0,
+                "strCurrentStreak": "W 2",
+                "Conference": None,
+                "Division": None,
+            }
+        ]
+    )
+
+    out = normalize(raw, season="2024-25", season_type="Regular Season", snapshot_date="2025-04-13")
+
+    assert out[["conference", "division"]].isna().all().all()
+
+
+def test_historical_midwest_rows_do_not_break_modern_division_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from nbatools.commands.data_utils import get_teams_by_division
+    from nbatools.data_source import reset_data_source_cache
+
+    alignment = {
+        ("East", "Atlantic"): ["BOS", "BKN", "NYK", "PHI", "TOR"],
+        ("East", "Central"): ["CHI", "CLE", "DET", "IND", "MIL"],
+        ("East", "Southeast"): ["ATL", "CHA", "MIA", "ORL", "WAS"],
+        ("West", "Northwest"): ["DEN", "MIN", "OKC", "POR", "UTA"],
+        ("West", "Pacific"): ["GSW", "LAC", "LAL", "PHX", "SAC"],
+        ("West", "Southwest"): ["DAL", "HOU", "MEM", "NOP", "SAS"],
+    }
+    lines = ["season,team_abbr,team_id,conference,division,source,coverage_trusted"]
+    team_id = 1
+    for (conference, division), teams in alignment.items():
+        for abbr in teams:
+            lines.append(f"2024-25,{abbr},{team_id},{conference},{division},test,true")
+            team_id += 1
+    lines.append(f"2003-04,MEM,{team_id},West,Midwest,test,true")
+    path = tmp_path / "data" / "raw" / "teams" / "team_conference_membership.csv"
+    path.parent.mkdir(parents=True)
+    path.write_text("\n".join(lines) + "\n")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.delenv("DATA_SOURCE", raising=False)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    reset_data_source_cache()
+    try:
+        teams = get_teams_by_division("2024-25", "Atlantic", require_trusted_coverage=True)
+    finally:
+        reset_data_source_cache()
+
+    assert teams == ["BKN", "BOS", "NYK", "PHI", "TOR"]
