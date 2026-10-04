@@ -1366,6 +1366,69 @@ _NON_LEAGUE_TITLE = re.compile(
     r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
 )
 
+# A player's rings: "how many rings does LeBron have", "LeBron championships".
+_PLAYER_RING_WORDS = re.compile(r"\brings?\b|\bchampionships?\b|\btitles?\b")
+_NOT_A_RING = re.compile(
+    r"\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
+    r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
+    r"|\b(?:mvp|dpoy|roy|awards?)\b"
+)
+# "players with the most rings", "who has the most rings": the players board.
+# Every word a plain ring question can use once the spans the parser resolves are
+# removed. Anything else (a second player, an opponent, "in a row", "at age 27",
+# "by a center", "in the East", a bare number, "last year") is a qualifier the
+# ring count cannot honour, so the question refuses instead of answering the
+# whole total.
+_RING_QUESTION_WORDS = frozenset(
+    """
+    how many much rings ring championships championship titles title does did do has
+    have had got gotten won win wins winning the a an most who which what whats player
+    players leaders leader is are of in by nba all time ever total overall with
+    playoffs postseason career times count number so far currently now for owns own
+    any single
+    """.split()
+)
+_RING_SPAN_PHRASES = (
+    # "over the last 5 seasons", "in the past 20 years"
+    r"\b(?:(?:over|in|during|for)\s+)?(?:the\s+)?(?:last|past)\s+\d{1,2}\s+"
+    r"(?:seasons?|years?|playoffs|postseasons?)\b",
+    # "this season", "last season"
+    r"\b(?:in\s+|during\s+)?(?:this|last|previous|current)\s+season\b",
+    # "over his career", "in his whole career"
+    r"\b(?:over|in|during|for|throughout)\s+(?:his|her|their)\s+(?:whole\s+|entire\s+)?career\b",
+    # "in the 2010s"
+    r"\b(?:in|during)\s+the\s+(?:19|20)\d0s\b",
+    # "since 2015", "from 2012 to 2016", "between 2012 and 2016", "in 2012-13",
+    # "in the 2020 playoffs"
+    r"\b(?:since|from|between|through|thru|until|to|and|in|during)\s+(?:the\s+)?"
+    r"(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?(?:\s+(?:playoffs|postseason|season))?\b",
+    # "top 5"
+    r"\btop\s+\d{1,2}\b",
+)
+
+
+def _ring_question_has_qualifier(q: str, player: str | None) -> bool:
+    """True when ``q`` says more than "how many rings [player] [span]"."""
+    from nbatools.commands.entity_resolution import (
+        _normalize_for_matching,
+        allowed_player_reference_tokens,
+    )
+
+    text = _normalize_for_matching(re.sub(r"'s\b", "", q)).replace("'", "")
+    for phrase in _RING_SPAN_PHRASES:
+        text = re.sub(phrase, " ", text)
+    allowed = allowed_player_reference_tokens(player) if player else set()
+    return any(
+        token not in _RING_QUESTION_WORDS and token not in allowed
+        for token in re.findall(r"[\w.]+", text)
+    )
+
+
+_PLAYER_RING_BOARD = re.compile(
+    r"\brings?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\brings?\b"
+    r"|\bplayers?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\bplayers?\b"
+)
+
 # Title words that qualify another question rather than ask for a title count:
 # "record vs the defending champions", "best record by a title winner".
 _TITLE_NOT_A_COUNT = re.compile(
@@ -2586,6 +2649,73 @@ def _route_parsed_query(parsed: dict) -> dict:
             "unsupported_boundary: NBA awards and award winners are not supported "
             "by the current stats query contract"
         ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    player_ring_question = (
+        championship_count_boundary
+        and _PLAYER_RING_WORDS.search(q)
+        and not team
+        and not (player_a or player_b or team_a or team_b)
+        and not _NOT_A_RING.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not _ring_question_has_qualifier(q, player)
+        and not any(
+            parsed.get(key)
+            for key in (
+                "opponent",
+                "opponent_quality",
+                "opponent_player",
+                "opponent_conference",
+                "opponent_division",
+                "home_only",
+                "away_only",
+                "stat",
+                "min_value",
+                "max_value",
+                "threshold_conditions",
+            )
+        )
+        and not unresolved_without_player
+        and not (
+            unresolved_with_player
+            and not re.match(r"(?:the\s+)?most\b", str(unresolved_with_player))
+        )
+    )
+    if player_ring_question and (player or _PLAYER_RING_BOARD.search(q)):
+        # "how many rings does LeBron have": titles won with the team he played for.
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        notes = []
+        if not start_season and not end_season and not named_season:
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+            notes.append("default: every playoff season since 1996-97")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        # The ring board already answers "how many": keep its title seasons.
+        out["count_intent"] = False
+        out["route"] = "playoff_appearances"
+        out["route_kwargs"] = {
+            "player": player,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "titles": True,
+            "player_titles": not player,
+            "limit": top_n or 10,
+        }
+        out["intent"] = "summary" if player else "leaderboard"
+        out["notes"] = notes
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

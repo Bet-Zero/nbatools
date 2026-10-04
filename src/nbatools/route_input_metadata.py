@@ -840,6 +840,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "limit",
             "ascending",
             "titles",
+            "player",
+            "player_titles",
         ),
         examples=(
             {"team": "LAL", "playoff_round": "Finals"},
@@ -847,6 +849,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         ),
         notes=(
             "Supplying team returns a team history shape; omitting team returns a leaderboard.",
+            "titles with player (or player_titles) counts a player's rings: titles won "
+            "while playing for the champion.",
         ),
     ),
     "playoff_matchup_history": RouteInputMetadata(

@@ -1131,6 +1131,9 @@ def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: An
     board = result.leaders
     if board.empty or "titles" not in board:
         return
+    if "player_name" in board:
+        _add_player_rings_answer_metadata(metadata, board)
+        return
     top = board.iloc[0]
     if "season" in board and "finals_opponent" in board:
         # One season: who won it and whom they beat.
@@ -1156,6 +1159,39 @@ def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: An
     names = [f"the {name}" for name in leaders["team_name"]]
     joined = ", ".join(names[:-1]) + f" and {names[-1]}"
     joined = joined[0].upper() + joined[1:]
+    metadata["answer_phrase"] = f"{joined} tied for the most titles {span}, with {count} each."
+
+
+def _add_player_rings_answer_metadata(metadata: dict[str, Any], board: Any) -> None:
+    """Headline for "how many rings does LeBron have" and "who has the most rings"."""
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+    top = board.iloc[0]
+    most = int(top["titles"])
+    count = f"{most} {'title' if most == 1 else 'titles'}"
+    if (metadata.get("route_kwargs") or {}).get("player") or metadata.get("player"):
+        if most == 0:
+            metadata["answer_phrase"] = f"{top['player_name']} won no titles {span}."
+            return
+        teams = ", ".join(dict.fromkeys(str(top["title_teams"]).split(", ")))
+        detail = teams if start == end else f"{top['title_seasons']}; {teams}"
+        metadata["answer_phrase"] = f"{top['player_name']} won {count} {span} ({detail})."
+        return
+    leaders = board[board["titles"] == most]
+    if len(leaders) == 1:
+        metadata["answer_phrase"] = (
+            f"{top['player_name']} won the most titles {span}: {count} ({top['title_seasons']})."
+        )
+        return
+    names = list(leaders["player_name"])
+    shown = names if len(names) <= 6 else names[:6]
+    joined = ", ".join(shown[:-1]) + f" and {shown[-1]}"
+    if len(names) > len(shown):
+        joined = ", ".join(shown) + f" and {len(names) - len(shown)} others"
     metadata["answer_phrase"] = f"{joined} tied for the most titles {span}, with {count} each."
 
 

@@ -169,7 +169,6 @@ def test_team_title_counts_route_to_playoff_history(query, season, start_season)
 @pytest.mark.parametrize(
     "query",
     [
-        "how many rings does lebron have",
         "Celtics division titles",
         "Heat eastern conference titles",
         "Lakers conference champions",
