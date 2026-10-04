@@ -34,7 +34,28 @@ def extract_top_n(text: str) -> int | None:
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
+    # "5 highest scoring games", "3 best games": the count comes first.
+    m = re.search(
+        r"(?<![\d.+-])\b(\d{1,2})\s+(?:highest|best|biggest|greatest|lowest|worst)\b", text
+    )
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
     return None
+
+
+# "vs top 10 defenses" ranks the opponents, not the games to list.
+_OPPONENT_RANK = re.compile(
+    r"\b(?:top|bottom|best|worst)[- ]\d+\s+(?:[a-z]+\s+)?"
+    r"(?:teams?|defen[cs]es?|offen[cs]es?|opponents?|seeds?|units?)\b"
+    # "top 3 team scoring games" counts games.
+    r"(?!\s+(?:[a-z]+\s+)?games?\b)"
+)
+
+
+def extract_top_n_games(text: str) -> int | None:
+    """How many games a "top 5 scoring games" list asks for."""
+    return extract_top_n(_OPPONENT_RANK.sub(" ", text))
 
 
 def wants_leaderboard(text: str) -> bool:
@@ -1931,11 +1952,21 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
         rf"{_CG}\b(\d+)-{STAT_PATTERN}\b",  # "30-points"
     ]
     for pattern in bare_patterns:
-        m = re.search(pattern, text)
-        if m and detect_stat(m.group(2)) == stat:
+        for m in re.finditer(pattern, text):
+            if detect_stat(m.group(2)) != stat:
+                continue
+            # "best 5 scoring games" counts games; "best 50 point games" is a floor.
+            if _RANKED_BEFORE.search(text[: m.start()]) and _STAT_ACTIVITY.fullmatch(m.group(2)):
+                continue
             return float(m.group(1))
 
     return None
+
+
+_RANKED_BEFORE = re.compile(r"\b(?:best|worst|highest|lowest|biggest|greatest)\s*$")
+_STAT_ACTIVITY = re.compile(
+    r"(?:scoring|rebounding|passing|shooting|assisting|blocking|stealing|playmaking)"
+)
 
 
 def detect_home_away(text: str) -> tuple[bool, bool]:
@@ -2696,8 +2727,10 @@ def detect_season_high_intent(text: str) -> bool:
 
     if re.search(
         r"\b(?:season|career)[- ]?highs?\b"
-        r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
-        rf"|\b(?:top|best|highest)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
+        r"|\b(?:best|highest)\s+(?:\d{1,2}\s+)?(?:single[- ]?)?games?\b"
+        # "best 5 scoring games" is a top-5 list; "best 50 point games" is a floor.
+        rf"|\b(?:top\s+(?:\d{{1,2}}\s+)?|(?:best|highest)\s+(?:\d{{1,2}}\s+(?=[a-z]+ing\b))?)"
+        rf"(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
         r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
         r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"

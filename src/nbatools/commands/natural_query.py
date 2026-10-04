@@ -308,6 +308,9 @@ from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
 )
 from nbatools.commands._parse_helpers import (
+    extract_top_n_games as extract_top_n_games,
+)
+from nbatools.commands._parse_helpers import (
     last_n_reach_back_seasons as last_n_reach_back_seasons,
 )
 from nbatools.commands._parse_helpers import (
@@ -1405,12 +1408,12 @@ def _wants_top_team_games(q: str) -> bool:
     """Detect team single-game performance intent without catching team seasons."""
     return bool(
         re.search(
-            r"\b(?:top|highest|best|biggest)\s+team\s+"
+            r"\b(?:top|highest|best|biggest)\s+(?:\d{1,2}\s+)?team\s+"
             r"(?:(?:points?|scoring)\s+)?(?:games?|performances?|nights?)\b",
             q,
         )
         or re.search(
-            r"\b(?:top|highest|best|biggest)\s+"
+            r"\b(?:top|highest|best|biggest)\s+(?:\d{1,2}\s+)?"
             r"(?:(?:points?|scoring)\s+)?team\s+"
             r"(?:games?|performances?|nights?)\b",
             q,
@@ -1529,6 +1532,7 @@ __all__ = [
     "extract_threshold_conditions",
     "merge_opponent_points_allowed_conditions",
     "extract_top_n",
+    "extract_top_n_games",
     "wants_count",
     "wants_finder",
     "wants_leaderboard",
@@ -2075,6 +2079,7 @@ def _build_parse_state(query: str) -> dict:
         "min_games": min_games,
         "min_attempts": min_attempts,
         "top_n": top_n,
+        "game_top_n": extract_top_n_games(q),
         "split_type": split_type,
         "home_only": home_only,
         "away_only": away_only,
@@ -2238,6 +2243,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     last_n = parsed["last_n"]
     min_games = parsed.get("min_games")
     top_n = parsed.get("top_n")
+    game_top_n = parsed.get("game_top_n")
     split_type = parsed["split_type"]
     home_only = parsed["home_only"]
     away_only = parsed["away_only"]
@@ -3123,7 +3129,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "season": season or default_season_for_context(season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
-            "limit": top_n or 10,
+            "limit": game_top_n or 10,
             "season_type": season_type,
             "ascending": False,
             "start_date": start_date,
@@ -3164,7 +3170,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "stat": stat or SCORING_SHORTHAND,
             "min_value": min_value,
             "max_value": max_value,
-            "limit": top_n or 5,
+            "limit": game_top_n or 5,
             "sort_by": "stat",
             "ascending": False,
             "last_n": last_n,
@@ -3208,7 +3214,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "season": season or default_season_for_context(season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
-            "limit": top_n or 10,
+            "limit": game_top_n or 10,
             "season_type": season_type,
             "ascending": False,
             "start_date": start_date,
@@ -4291,7 +4297,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         route, route_kwargs = oco
     elif (finder_intent or count_intent) and player and not player_a and not player_b:
         # Explicit list/count intent overrides summary/range routing
-        finder_limit = None if count_intent else 25
+        finder_limit = None if count_intent else (game_top_n or 25)
         route = "player_game_finder"
         route_kwargs = {
             "season": season,
@@ -4320,7 +4326,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         }
     elif (finder_intent or count_intent) and team and not team_a and not team_b:
         # Explicit list/count intent overrides summary/range routing
-        finder_limit = None if count_intent else 25
+        finder_limit = None if count_intent else (game_top_n or 25)
         route = "game_finder"
         route_kwargs = {
             "season": season,
@@ -4498,7 +4504,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
-            "limit": 25,
+            "limit": game_top_n or 25,
             "sort_by": "stat" if stat else "game_date",
             "ascending": False,
             "last_n": last_n,
@@ -4522,7 +4528,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
-            "limit": 25,
+            "limit": game_top_n or 25,
             "sort_by": "stat" if stat else "game_date",
             "ascending": False,
             "last_n": last_n,

@@ -15,6 +15,9 @@ from nbatools.commands._seasons import default_end_season
 # ---------------------------------------------------------------------------
 
 
+_RANKED_COUNT = re.compile(r"\b(?:top|best|worst|highest|lowest|biggest|greatest)\s*$")
+
+
 def extract_occurrence_event(text: str) -> dict | None:
     """Detect and extract an occurrence-event definition from natural language.
 
@@ -53,8 +56,10 @@ def extract_occurrence_event(text: str) -> dict | None:
     ]
 
     for pattern, stat in stat_event_patterns:
-        m = re.search(pattern, text)
-        if m:
+        for m in re.finditer(pattern, text):
+            # "top 5 scoring games": a count of games to list, not 5+ points.
+            if _RANKED_COUNT.search(text[: m.start()]):
+                continue
             return _threshold_condition(stat, m.group(1), m.group(0))
 
     # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"
