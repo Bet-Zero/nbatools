@@ -30,7 +30,7 @@ def extract_top_n(text: str) -> int | None:
         value = int(m.group(1))
         return value if value > 0 else None
     # "rank N" / "best N" / "worst N" pattern (e.g. "best 10 scorers")
-    m = re.search(rf"\b(?:best|worst)\s+(\d+)\b{_NOT_A_COUNT}", text)
+    m = re.search(rf"\b(?:best|worst|highest|lowest)\s+(\d{{1,3}})\b{_NOT_A_COUNT}", text)
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
@@ -2729,7 +2729,7 @@ def detect_season_high_intent(text: str) -> bool:
         r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:\d{1,2}\s+)?(?:single[- ]?)?games?\b"
         # "best 5 scoring games" is a top-5 list; "best 50 point games" is a floor.
-        rf"|\b(?:top\s+(?:\d{{1,2}}\s+)?|(?:best|highest)\s+(?:\d{{1,2}}\s+(?=[a-z]+ing\b))?)"
+        rf"|\b(?:top\s+(?:\d{{1,3}}\s+)?|(?:best|highest)\s+(?:\d{{1,2}}\s+(?=[a-z]+ing\b))?)"
         rf"(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
         r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"

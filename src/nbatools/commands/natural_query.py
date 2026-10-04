@@ -13,6 +13,7 @@ from nbatools.commands._confidence import compute_parse_confidence, generate_alt
 from nbatools.commands._constants import (
     LOWER_IS_BETTER_STATS,
     STAT_ALIASES,
+    STAT_PATTERN,
     TEAM_SEASON_ADVANCED_STATS,
     normalize_text,
     route_to_intent,
@@ -1408,13 +1409,13 @@ def _wants_top_team_games(q: str) -> bool:
     """Detect team single-game performance intent without catching team seasons."""
     return bool(
         re.search(
-            r"\b(?:top|highest|best|biggest)\s+(?:\d{1,2}\s+)?team\s+"
-            r"(?:(?:points?|scoring)\s+)?(?:games?|performances?|nights?)\b",
+            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,2}}\s+)?team\s+"
+            rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?(?:games?|performances?|nights?)\b",
             q,
         )
         or re.search(
-            r"\b(?:top|highest|best|biggest)\s+(?:\d{1,2}\s+)?"
-            r"(?:(?:points?|scoring)\s+)?team\s+"
+            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,2}}\s+)?"
+            rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?team\s+"
             r"(?:games?|performances?|nights?)\b",
             q,
         )

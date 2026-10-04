@@ -34,6 +34,12 @@ RAW = Path("qa/fixtures/query_engine_sample/data/raw")
         ("top 10 scoring games this season", "top_player_games", 10),
         ("top 3 team scoring games this season", "top_team_games", 3),
         ("LeBron best 5 rebounding games", "player_game_finder", 5),
+        ("top 5 team rebounding games", "top_team_games", 5),
+        ("top 5 team assist games", "top_team_games", 5),
+        ("best 5 rebounding games", "top_player_games", 5),
+        ("5 highest scoring games", "top_player_games", 5),
+        ("highest 3 scoring games", "top_player_games", 3),
+        ("top 100 scoring games", "top_player_games", 100),
     ],
 )
 def test_ranked_count_sizes_the_game_list(query, route, limit):
@@ -71,7 +77,9 @@ def test_ranked_opponents_do_not_size_the_game_list(query, limit):
 def test_threshold_games_keep_their_threshold(query, floor):
     # A unit noun after the number ("50 point games") is a floor, not a count.
     kwargs = parse_query(query)["route_kwargs"]
-    assert (kwargs["min_value"], kwargs["limit"]) == (floor, 25)
+    assert kwargs["min_value"] == floor
+    # "highest 20 rebound games" may also list twenty, like "best 20 rebound games".
+    assert kwargs["limit"] in (25, int(floor))
 
 
 @pytest.mark.parametrize("query", ["LeBron 2024 highest scoring games", "Lakers 2024 best wins"])

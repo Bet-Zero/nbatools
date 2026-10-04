@@ -687,7 +687,13 @@ def _min_attempt_patterns() -> tuple[str, ...]:
 
 
 _MIN_ATTEMPTS = _min_attempt_patterns()
-_TOP_N = (r"\btop\s+\d+\b", r"\bbottom\s+\d+\b", r"\b\d+\s+best\b", r"\bfirst\s+\d+\b")
+_TOP_N = (
+    r"\btop\s+\d+\b",
+    r"\bbottom\s+\d+\b",
+    r"\b\d{1,2}\s+(?:best|worst|highest|lowest|biggest|greatest)\b",
+    r"\b(?:best|worst|highest|lowest)\s+\d{1,2}\b",
+    r"\bfirst\s+\d+\b",
+)
 _THRESHOLD = (
     r"\b\d+\+",
     r"\b(?:at\s+least|over|more\s+than|above|under|less\s+than|below|fewer\s+than)\s+\d+\b",
