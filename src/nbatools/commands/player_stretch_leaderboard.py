@@ -41,6 +41,15 @@ _SHOOTING_QUALIFIERS: dict[str, tuple[str, float, str]] = {
     "ft_pct": ("ftm", 1.52, "made free throws"),
 }
 
+# Attempts per game a window needs in a "worst" league ranking.
+_SHOOTING_ATTEMPT_QUALIFIERS: dict[str, tuple[str, float, str]] = {
+    "fg_pct": ("fga", 8.0, "field goal attempts"),
+    "efg_pct": ("fga", 8.0, "field goal attempts"),
+    "ts_pct": ("fga", 8.0, "field goal attempts"),
+    "fg3_pct": ("fg3a", 3.0, "three-point attempts"),
+    "ft_pct": ("fta", 2.0, "free throw attempts"),
+}
+
 SUPPORTED_STRETCH_METRICS = {
     *RAW_AVG_METRICS.keys(),
     *PERCENTAGE_COMPONENTS.keys(),
@@ -254,7 +263,11 @@ def build_result(
     df["_pos"] = df.groupby("player_id").cumcount()
 
     notes: list[str] = []
-    qualifier = _SHOOTING_QUALIFIERS.get(stretch_metric)
+    # Best shooting needs made shots; worst needs attempts, since a made-shot
+    # floor would drop the coldest windows being asked for.
+    qualifier = (_SHOOTING_ATTEMPT_QUALIFIERS if worst else _SHOOTING_QUALIFIERS).get(
+        stretch_metric
+    )
     if qualifier is not None and player is None:
         # A league ranking of shooting rates needs volume, or one 3-for-3 window
         # leads; use the NBA's season minimum as a per-game rate.
@@ -262,8 +275,8 @@ def build_result(
         made = _rolling_sum(df, made_column, window_size)
         df.loc[made < per_game * window_size - 1e-9, "stretch_value"] = float("nan")
         notes.append(
-            f"qualifier: windows need {per_game:g}+ {label} per game "
-            "(the NBA's season minimum rate)"
+            f"qualifier: windows need {per_game:g}+ {label} per game"
+            + ("" if worst else " (the NBA's season minimum rate)")
         )
 
     windows = df[df["stretch_value"].notna()].copy()

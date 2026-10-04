@@ -211,3 +211,46 @@ def test_stretch_positions_are_not_rolling_stretches(query):
 def test_team_shooting_stretch_ranks_teams():
     _, metadata = _board(f"best team shooting stretch in {SEASON}")
     assert metadata["route"] == "team_stretch_leaderboard"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"LeBron best 5 game scoring stretch against the worst teams in {SEASON}",
+        f"best 5 game scoring stretch against the worst defenses in {SEASON}",
+        f"Celtics best 5 game stretch against the worst teams in {SEASON}",
+    ],
+)
+def test_unread_opponent_descriptions_refuse_and_never_flip_to_worst(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"best 5 game scoring stretch going forward in {SEASON}",
+        f"best 5 game stretch at the Barclays Center in {SEASON}",
+    ],
+)
+def test_group_words_outside_the_subject_do_not_refuse(query):
+    rows, _ = _board(query)
+    assert rows
+
+
+def test_league_worst_three_point_stretch_qualifies_on_attempts():
+    frame = pd.read_csv(RAW / f"{SEASON}_regular_season.csv", dtype={"game_id": str})
+    worst = None
+    for _, games in frame.sort_values(["game_date", "game_id"]).groupby("player_name"):
+        rows = list(zip(games["fg3m"], games["fg3a"], strict=True))
+        for i in range(len(rows) - 9):
+            made = sum(m for m, _ in rows[i : i + 10])
+            tried = sum(a for _, a in rows[i : i + 10])
+            if tried >= 30:
+                value = round(made / tried, 3)
+                worst = value if worst is None else min(worst, value)
+
+    rows, metadata = _board(f"coldest 3 point shooting stretch in {SEASON}")
+    assert rows[0]["stretch_value"] == pytest.approx(worst)
+    assert "qualifier: windows need 3+ three-point attempts per game" in metadata["notes"]

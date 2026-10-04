@@ -1302,9 +1302,14 @@ def _add_player_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -
             f"{row['player_name']}'s {direction} {size}-game stretch {when} was {shown} {span}."
         )
     else:
+        team_context = metadata.get("team_context")
+        team = (
+            _clean_text(team_context.get("team_name")) if isinstance(team_context, dict) else None
+        ) or _clean_text(metadata.get("team"))
+        whose = f"by any {team} player" if team else "by any player"
         metadata["answer_phrase"] = (
-            f"{row['player_name']} had the {direction} {size}-game stretch {when} by any "
-            f"player: {shown} {span}."
+            f"{row['player_name']} had the {direction} {size}-game stretch {when} {whose}: "
+            f"{shown} {span}."
         )
 
 
