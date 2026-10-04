@@ -200,3 +200,23 @@ def test_pair_leading_scorers_rank_both_rosters():
     result = _run(f"Lakers and Celtics leading scorers {season}")
     teams = {row["team_abbr"] for row in result.result.to_dict()["sections"]["leaderboard"]}
     assert teams == {"LAL", "BOS"}
+
+
+@pytest.mark.parametrize("season", ["2007-08", "2023-24"])
+def test_celtics_win_streak_vs_the_west(season):
+    games = _team_games(season)
+    west = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "West"
+    }
+    games = games[(games["team_abbr"] == "BOS") & games["opponent_team_id"].isin(west)]
+    games = games.sort_values(["game_date", "game_id"])
+    best = run = 0
+    for outcome in games["wl"]:
+        run = run + 1 if outcome == "W" else 0
+        best = max(best, run)
+
+    result = _run(f"Celtics longest winning streak vs the West in {season}")
+    assert result.route == "team_streak_finder"
+    assert result.result.to_dict()["sections"]["streak"][0]["streak_length"] == best
