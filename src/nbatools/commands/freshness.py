@@ -33,8 +33,8 @@ from nbatools.commands import validation_control
 from nbatools.commands.data_utils import normalize_season_type
 from nbatools.data_source import (
     LEGACY_GENERATION,
-    current_data_generation,
     data_exists,
+    data_generation_context,
     data_read_csv,
     data_read_text,
     data_source_cache_key,
@@ -202,13 +202,16 @@ def compute_current_through(
     rewritten in place by the pipeline, and an explicit ``data_root`` are
     always recomputed.
     """
-    if data_root != _DATA_ROOT or current_data_generation() == LEGACY_GENERATION:
-        return _compute_current_through(season, season_type, data_root)
-    key = (data_source_cache_key(), season, season_type)
-    cached = _IMMUTABLE_CURRENT_THROUGH.get(key)
-    if cached is not None:
-        return cached
-    result = _compute_current_through(season, season_type, data_root)
+    # Pin one generation so the check, the key and the computation agree even
+    # when an unpinned caller (CLI, pipeline) races a pointer flip.
+    with data_generation_context() as generation:
+        if data_root != _DATA_ROOT or generation == LEGACY_GENERATION:
+            return _compute_current_through(season, season_type, data_root)
+        key = (data_source_cache_key(), season, season_type)
+        cached = _IMMUTABLE_CURRENT_THROUGH.get(key)
+        if cached is not None:
+            return cached
+        result = _compute_current_through(season, season_type, data_root)
     # None can come from a failed download, so it is checked again next time.
     if result is not None:
         _IMMUTABLE_CURRENT_THROUGH[key] = result
