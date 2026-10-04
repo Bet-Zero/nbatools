@@ -668,7 +668,8 @@ def extract_last_n_seasons(text: str) -> int | None:
     Returns N or None.
     """
     m = re.search(
-        r"\b(?:(?:over|in)\s+the\s+)?(?:last|past)\s+(\d+)\s+seasons?\b",
+        r"\b(?:(?:over|in)\s+the\s+)?(?:last|past)\s+(\d+)\s+"
+        r"(?:seasons?|years?|playoffs|postseasons?)\b",
         text,
     )
     if m:
@@ -881,9 +882,9 @@ def extract_last_n(text: str) -> int | None:
         r"\blast\s+(\d+)\s+games?\b",
         r"\bpast\s+(\d+)\s+games?\b",
         r"\brecent\s+(\d+)\s+games?\b",
-        r"\blast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
-        r"\bpast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
-        r"\brecent\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
+        r"\blast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
+        r"\bpast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
+        r"\brecent\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)
@@ -2774,22 +2775,24 @@ _SERIES_GAME_WORDS = {
     "seven": 7,
 }
 _SERIES_GAME_TOKEN = r"(?:[1-7]|one|two|three|four|five|six|seven)"
-# "game 7", "game sevens", "a game 6": not "game 5 rebounds" or "game 3 times".
-# "games 5 3 pointers" and "last 10 games 3 pointers" are counts, so a lone
-# number takes the singular "game".
+# What follows a game number when it is a count or a stat, not a series game:
+# "game 5 3 pointers", "games 2 and 3 steals", "game 3 times". A year
+# ("game 7s 2016") or "2 seasons ago" is not a count.
+_NOT_A_SERIES_GAME_TAIL = (
+    r"(?!\s*(?:\+|-|\.\d|\d(?!\d{3}\b|\d{3}-|\s+(?:seasons?|years?|postseasons?)\s+ago\b)|"
+    r"or\s+(?:more|fewer|less)|times?\b|straight\b|in\s+a\s+row\b|made\b|from\s+(?:three|3)\b|"
+    rf"games?\b|days?\b|seasons?\b|{STAT_PATTERN}))"
+)
+# "game 7", "game sevens", "a game 6". "games 5 3 pointers" and "last 10
+# games 3 pointers" are counts, so a lone number takes the singular "game".
 _SERIES_GAME_NUMBER = re.compile(
-    rf"\bgame\s*(?:#\s*)?({_SERIES_GAME_TOKEN})(?:s|es)?\b"
-    # A following count ("game 5 3 pointers") is a stat; a year ("game 7s 2016") is not.
-    r"(?!\s*(?:\+|-|\.\d|\d(?!\d{3}\b|\d{3}-)|or\s+(?:more|fewer|less)|times?\b|straight\b|in\s+a\s+row\b|"
-    r"points?\b|pts\b|rebounds?\b|reb\b|rebs\b|assists?\b|ast\b|steals?\b|blocks?\b|"
-    r"threes?\b|3s\b|turnovers?\b|minutes?\b|fouls?\b|games?\b|days?\b|seasons?\b))"
+    rf"\bgame\s*(?:#\s*)?({_SERIES_GAME_TOKEN})(?:s|es)?\b" + _NOT_A_SERIES_GAME_TAIL
 )
 # "games 2 and 3", "game 6 or game 7", "games 1 through 5", "games 5-7".
 _SERIES_GAME_SET = re.compile(
     rf"\bgames?\s*({_SERIES_GAME_TOKEN})(?:s|es)?\s*"
     r"(?:(,|and|&|or)\s*(?:game\s*)?|(through|thru|to|-|–)\s*(?:game\s*)?)"
-    rf"({_SERIES_GAME_TOKEN})(?:s|es)?\b"
-    r"(?!\s*(?:\+|-|\.\d|\d(?!\d{3}\b|\d{3}-)|points?\b|pts\b|rebounds?\b|assists?\b|games?\b))"
+    rf"({_SERIES_GAME_TOKEN})(?:s|es)?\b" + _NOT_A_SERIES_GAME_TAIL
 )
 _SERIES_ELIMINATION = re.compile(
     r"\b(?:elimination\s+games?|facing\s+elimination|faced\s+elimination|"
@@ -2811,7 +2814,7 @@ _SERIES_SCORE = re.compile(
 # "game 2 of a back to back", "game 3 of the road trip" are not series games.
 _NOT_A_SERIES_GAME = re.compile(
     r"\s+(?:of|in)\s+(?:a|an|the|this|their|his)?\s*"
-    r"(?:back[\s-]to[\s-]backs?|b2b|road\s+trip|homestand|home\s+stand|trip|season)\b"
+    r"(?:back[\s-]to[\s-]backs?|b2bs?|road\s+trips?|homestands?|home\s+stands?|trips?|seasons?)\b"
     r"|\s+of\s+(?:the|their|his|its)\s+(?:last|past)\b"
 )
 # "up 2-0 in the season series" or "on the season" is not a playoff series;

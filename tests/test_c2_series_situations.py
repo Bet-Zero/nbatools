@@ -88,6 +88,12 @@ def test_series_situation_wording(text, situation):
         "Lakers record when tied 2-2 after the first quarter",
         "Lakers when up 3-1 in the fourth",
         "Lakers when trailing 0-3 in their last 3",
+        "Jokic games 2 and 3 steals",
+        "Curry games 5 or 6 threes",
+        "Jokic last 5 games 2 or 3 blocks",
+        "Curry games 3 to 5 made threes",
+        "LeBron games 1-3 from three",
+        "Lakers record in game 3 of road trips",
     ],
 )
 def test_not_a_series_situation(text):
@@ -151,6 +157,36 @@ def test_series_situation_reads_playoffs_since_1996_unless_a_season_is_named():
     plain = parse_query("Celtics record")
     assert plain["season_type"] == "Regular Season"
     assert "series_situation" not in plain["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    ("query", "start"),
+    [
+        ("Lakers record in game 7s last 3 playoffs", "2023-24"),
+        ("Lakers record in game 7s last 2 postseasons", "2024-25"),
+        ("Lakers record in game 7s last 3 years", "2023-24"),
+    ],
+)
+def test_last_n_playoffs_is_a_season_window_not_a_game_count(query, start):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["series_situation"] == "game_7"
+    assert (kwargs["start_season"], kwargs["end_season"]) == (start, "2025-26")
+    assert kwargs.get("last_n") is None
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "who has the most triple doubles in game 7s",
+        "best road record in game 5s 2025-26",
+        "best home team in game 7s",
+    ],
+)
+def test_board_never_swaps_in_overall_records(query):
+    # Home/road splits and stats the team board cannot read are not answered
+    # with its overall record board.
+    assert parse_query(query)["route"] != "playoff_round_record"
+    assert execute_natural_query(query).result_status != "ok"
 
 
 def test_player_summary_in_closeout_games_uses_those_games():

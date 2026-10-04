@@ -4777,6 +4777,10 @@ _SITUATION_BOARD_WORDS = re.compile(
     r"\bfewest\b|\bleast\b|\bleaders?\b|\branks?\b|\branking\b|\btop\s+\d+\b"
 )
 _SITUATION_BOARD_PLAYER = re.compile(r"\bplayers?\b|\bscor(?:e|ed|er|ers|ing)\b")
+_SITUATION_BOARD_OTHER = re.compile(
+    r"\b(?:triple|double|quadruple)[\s-]doubles?\b|\bhome\b|\broad\b|\baway\b|"
+    r"\bmargin\b|\bpoints?\b|\brebounds?\b|\bassists?\b|\bthrees?\b"
+)
 
 
 def _series_situation_board_stat(q: str) -> tuple[str, bool]:
@@ -4808,6 +4812,10 @@ def _series_situation_board(parsed: dict) -> dict | None:
     ):
         return None
     if parsed.get("stat") not in (None, "win_pct", "wins", "losses"):
+        return None
+    # The board ranks overall records: a home/road split or a stat it cannot
+    # read ("most triple doubles in game 7s") is another question.
+    if parsed.get("home_only") or parsed.get("away_only") or _SITUATION_BOARD_OTHER.search(q):
         return None
     if not _SITUATION_BOARD_WORDS.search(q) or _SITUATION_BOARD_PLAYER.search(q):
         return None
