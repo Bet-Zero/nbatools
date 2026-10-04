@@ -231,3 +231,31 @@ def test_most_wins_over_a_stretch_is_the_record_ranking():
     rows, metadata = _rows(f"which team had the most wins over a 10 game stretch in {SEASON}")
     assert rows[0]["stretch_metric"] == "wins"
     assert not metadata.get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    ("query", "abbrs"),
+    [
+        (f"compare Lakers and Celtics best 5 game stretch in {SEASON}", ("LAL", "BOS")),
+        (f"compare the Lakers and Celtics 5 game stretches in {SEASON}", ("LAL", "BOS")),
+        (f"Lakers, Celtics and Knicks best 5 game stretch in {SEASON}", ("LAL", "BOS", "NYK")),
+        (f"LAL and BOS best 5 game stretch in {SEASON}", ("LAL", "BOS")),
+    ],
+)
+def test_every_listed_team_is_ranked_on_its_stretch(query, abbrs):
+    games = _team_games()
+    best = {
+        abbr: max(_windows(games.query("team_abbr == @abbr"), 5, _wins), key=lambda w: (w[0], w[1]))
+        for abbr in abbrs
+    }
+    rows, _ = _rows(query)
+    assert {row["team_abbr"]: (row["wins"], row["net_per_game"]) for row in rows} == {
+        abbr: (w[0], w[1]) for abbr, w in best.items()
+    }
+
+
+def test_multi_season_pair_headline_names_the_season_range():
+    rows, metadata = _rows("Warriors and Nuggets best 5 game stretch from 2023-24 to 2025-26")
+    # Each team's best window falls in a different season in the fixture.
+    assert sorted(row["season"] for row in rows) == ["2023-24", "2025-26"]
+    assert metadata["answer_phrase"].endswith("from 2023-24 to 2025-26.")

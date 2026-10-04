@@ -1114,28 +1114,32 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 _TEAM_PAIR_ALIASES = "|".join(
     re.escape(name)
     for name in sorted(TEAM_ALIASES, key=len, reverse=True)
-    # Short codes double as words ("was", "min", "den"): only full names pair.
-    if len(name) > 3
+    # Short codes that double as words ("what was", "min points") never list.
+    if name not in {"was", "min", "cs", "c's"}
 )
-_TEAM_PAIR_PATTERN = re.compile(
-    rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})\s+(?:and|&)\s+(?:the\s+)?"
-    rf"({_TEAM_PAIR_ALIASES})(?![\w'])"
-)
+_TEAM_ONE = rf"(?:the\s+)?(?:{_TEAM_PAIR_ALIASES})(?![\w'])"
+_TEAM_LIST_SEP = r"(?:\s*,\s*(?:(?:and|&)\s+)?|\s+(?:and|&)\s+)"
+_TEAM_LIST_PATTERN = re.compile(rf"(?<![\w']){_TEAM_ONE}(?:{_TEAM_LIST_SEP}{_TEAM_ONE})+")
+_TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?![\w'])")
 _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
 
 
 def _named_team_pairs(q: str) -> dict[str, list[str]]:
-    """Teams joined by "and": two subjects ("lakers and celtics best stretch")
-    or, after "vs"/"against", two opponents ("vs lakers and knicks").
+    """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
+    best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
     """
     found: dict[str, list[str]] = {"subjects": [], "opponents": []}
-    for match in _TEAM_PAIR_PATTERN.finditer(q):
-        pair = [TEAM_ALIASES[match.group(1)], TEAM_ALIASES[match.group(2)]]
-        if pair[0] == pair[1]:
+    for match in _TEAM_LIST_PATTERN.finditer(q):
+        teams: list[str] = []
+        for one in _TEAM_ONE_PATTERN.finditer(match.group(0)):
+            abbr = TEAM_ALIASES[one.group(1)]
+            if abbr not in teams:
+                teams.append(abbr)
+        if len(teams) < 2:
             continue
         role = "opponents" if _OPPONENT_LEAD.search(q[: match.start()]) else "subjects"
         if not found[role]:
-            found[role] = pair
+            found[role] = teams
     return found
 
 
@@ -2408,9 +2412,15 @@ def _finalize_route(parsed: dict) -> dict:
         and not player
         and not player_a
         and not player_b
-        and not team_a
-        and not team_b
-        and (team_rolling_stretch_boundary or (team and not stretch_names_players))
+        # "compare the Lakers and Celtics 10 game stretches" names both teams.
+        and (not (team_a or team_b) or len(team_stretch_request.get("subjects", [])) >= 2)
+        and (
+            team_rolling_stretch_boundary
+            or (
+                (team or len(team_stretch_request.get("subjects", [])) >= 2)
+                and not stretch_names_players
+            )
+        )
     ):
         route = "team_stretch_leaderboard"
         stretch_opponent = team_stretch_request.get("opponents") or opponent
