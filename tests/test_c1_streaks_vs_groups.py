@@ -134,3 +134,21 @@ def test_league_streaks_vs_a_group_route(query):
     result = _run(query)
     assert result.route in {"team_streak_finder", "player_streak_finder"}
     assert not result.metadata.get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "longest winning streak by a West team vs the East",
+        "which East team has the longest winning streak vs the West",
+        "longest 20 point streak vs the Pacific by a West player",
+        "longest winning streak vs the West and East",
+        "longest winning streak vs the Northwest Pacific",
+        "longest winning streak vs the southeast vs the west",
+        "longest winning streak vs the West coast",
+    ],
+)
+def test_league_streak_does_not_drop_a_second_group_word(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status != "ok"

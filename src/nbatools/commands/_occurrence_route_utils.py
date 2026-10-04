@@ -742,11 +742,17 @@ _STREAK_GRAMMAR = (
 )
 
 
-_OPPONENT_GROUP_GRAMMAR = (
-    r"\b(?:against|vs\.?|versus)\b",
-    r"\b(?:east(?:ern)?|west(?:ern)?)(?:\s+conference)?\b",
-    r"\b(?:atlantic|central|southeast|northwest|pacific|southwest|midwest)(?:\s+division)?\b",
-)
+def _opponent_group_span(q: str, parsed: dict) -> tuple[int, int] | None:
+    """Where "vs the West" / "against Pacific teams" names the resolved group."""
+    conference, division = parsed.get("opponent_conference"), parsed.get("opponent_division")
+    if conference:
+        word = r"(?:the\s+)?" + str(conference).lower() + r"(?:ern)?(?:\s+conference)?"
+    elif division:
+        word = r"(?:the\s+)?" + re.escape(str(division).lower()) + r"(?:\s+division)?"
+    else:
+        return None
+    match = re.search(rf"\b(?:against|vs\.?|versus)\s+{word}\b", q)
+    return match.span() if match else None
 
 
 def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
@@ -770,13 +776,13 @@ def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
     from nbatools.commands._leaderboard_eligibility import _claimed_ranges, _residual_tokens
 
     ranges = _claimed_ranges(q, parsed, None)
-    patterns = [*_GAME_LIST_GRAMMAR, *_STREAK_GRAMMAR]
-    if parsed.get("opponent_conference") or parsed.get("opponent_division"):
-        # "longest winning streak vs the East": the group is read upstream and
-        # applied season by season on the streak finders.
-        patterns.extend(_OPPONENT_GROUP_GRAMMAR)
-    for pattern in patterns:
+    for pattern in (*_GAME_LIST_GRAMMAR, *_STREAK_GRAMMAR):
         ranges.extend(m.span() for m in re.finditer(pattern, q))
+    if group_span := _opponent_group_span(q, parsed):
+        # "longest winning streak vs the East": the group is read upstream and
+        # applied season by season on the streak finders. Only that one
+        # phrase is accounted for; a second group word stays unread.
+        ranges.append(group_span)
     if _residual_tokens(q, ranges):
         # An unread word may be a misspelled player or team; a league-wide
         # ranking would silently drop that subject.
