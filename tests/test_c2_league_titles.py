@@ -93,12 +93,29 @@ def test_league_title_questions_route_to_titles_leaderboard(query, season, start
         "conference champions since 2010",
         "eastern conference champions",
         "which team has the most division titles",
+        # Title words that qualify another question are not title counts.
+        "best record among title winners",
+        "best record by a team that won the title",
+        "which team has the best record since winning the title",
+        "best record by a defending champion",
+        "the 2016 champions' record",
+        "Lakers record vs the defending champions",
+        "Warriors vs the champions",
+        "Nuggets as defending champions record",
     ],
 )
 def test_player_and_non_league_titles_still_refuse(query):
     parsed = parse_query(query)
     assert parsed.get("route") is None
     assert "championship_count" in parsed["route_kwargs"]["unsupported_filters"]
+
+
+def test_this_season_names_the_latest_playoffs():
+    from nbatools.commands._seasons import default_end_season
+
+    kwargs = parse_query("who won the title this season")["route_kwargs"]
+    assert kwargs["season"] == default_end_season("Playoffs")
+    assert kwargs["titles"] is True
 
 
 def test_named_team_champions_wording_counts_that_teams_titles():
@@ -135,6 +152,17 @@ def test_titles_leaderboard_drops_finals_losers_without_a_title():
     assert "CLE" not in set(board["team_abbr"])
     # Ties on titles: fewer Finals trips first, then the name.
     assert list(board["team_abbr"]) == ["GSW", "MIA", "SAS"]
+
+
+def test_top_n_never_cuts_a_tie():
+    rows = _finals("2012-13", "MIA", "SAS", 3) + _finals("2013-14", "SAS", "MIA", 1)
+    result = playoff_history._titles_leaderboard(
+        pd.DataFrame(rows), ["2012-13", "2013-14"], limit=1, caveats=[]
+    )
+    assert list(result.leaders["team_abbr"]) == ["MIA", "SAS"]
+    assert "tied for the most titles" in _phrase(
+        result, start_season="2012-13", end_season="2013-14"
+    )
 
 
 def test_unfinished_finals_is_not_a_title():

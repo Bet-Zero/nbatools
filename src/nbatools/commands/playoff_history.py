@@ -862,13 +862,14 @@ def _titles_leaderboard(
             notes=["No completed Finals found in the specified span"],
         )
     board = board[board["titles"] > 0]
-    result = (
-        board.sort_values(
-            by=["titles", "finals_appearances", "team_name"], ascending=[False, True, True]
-        )
-        .head(limit)
-        .reset_index(drop=True)
+    ranked = board.sort_values(
+        by=["titles", "finals_appearances", "team_name"], ascending=[False, True, True]
     )
+    if len(ranked) > limit:
+        # Never cut a tie: every team level with the last one kept stays.
+        cutoff = ranked["titles"].iloc[limit - 1]
+        ranked = ranked[ranked["titles"] >= cutoff]
+    result = ranked.reset_index(drop=True)
     result.insert(0, "rank", range(1, len(result) + 1))
     caveats.append("titles are Finals series won")
     if season_to_int(seasons[0]) < DATA_START_YEAR:

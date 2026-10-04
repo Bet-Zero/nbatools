@@ -1157,6 +1157,14 @@ _NON_LEAGUE_TITLE = re.compile(
     r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
 )
 
+# Title words that qualify another question rather than ask for a title count:
+# "record vs the defending champions", "best record by a title winner".
+_TITLE_NOT_A_COUNT = re.compile(
+    r"\b(?:defending|reigning)\s+champ|\b(?:vs\.?|versus|against|as)\s+(?:the\s+)?champions?\b"
+    r"|\brecords?\b|\bbest\b|\bworst\b|\bsince\s+winning\b|\bhow\s+(?:did|do|does)\b"
+    r"|\bstats?\b|\bpoints?\b|\baverag\w*"
+)
+
 
 def _named_team_pairs(q: str) -> dict[str, list[str]]:
     """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
@@ -2284,6 +2292,7 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_b
         and _TEAM_TITLE_COUNT.search(q)
         and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
         and not _TITLE_EXTRA_CONDITION.search(q)
         and not _title_year_left_unused(q)
         and not (with_player or without_player)
@@ -2301,6 +2310,12 @@ def _finalize_route(parsed: dict) -> dict:
             or parsed.get("explicit_relative_season")
             or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
         )
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+season\b", q
+        ):
+            from nbatools.commands._seasons import default_end_season
+
+            season = default_end_season("Playoffs")
         if not start_season and not end_season and not named_season:
             # "Lakers titles" counts every season, not the default one.
             from nbatools.commands._seasons import resolve_career
@@ -2334,6 +2349,7 @@ def _finalize_route(parsed: dict) -> dict:
         and _LEAGUE_TITLE_WORDING.search(q)
         and not re.search(r"\bplayers?\b", q)
         and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
         and not _TITLE_EXTRA_CONDITION.search(q)
         and not _title_year_left_unused(q)
         and not (with_player or without_player)
@@ -2354,6 +2370,12 @@ def _finalize_route(parsed: dict) -> dict:
             or parsed.get("explicit_relative_season")
             or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
         )
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+season\b", q
+        ):
+            from nbatools.commands._seasons import default_end_season
+
+            season = default_end_season("Playoffs")
         if not start_season and not end_season and not named_season:
             from nbatools.commands._seasons import resolve_career
 
