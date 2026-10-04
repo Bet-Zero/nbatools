@@ -1144,6 +1144,9 @@ def _title_year_left_unused(q: str) -> bool:
     years = _BARE_YEAR.findall(q)
     if not years:
         return False
+    if all(extract_season_range(q)):
+        # "titles from 2000 to 2010": both years bound the span.
+        return False
     if len(years) > 1:
         # "since 2010 until 2020": only one year is ever applied.
         return True
@@ -1371,7 +1374,20 @@ def _build_parse_state(query: str) -> dict:
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
-    start_season, end_season = extract_season_range(q)
+    start_season, end_season = extract_season_range(q, season_type)
+    if start_season and end_season:
+        from nbatools.commands._seasons import default_end_season, season_to_int
+
+        # "from 2020 to 2030": the span ends with the latest season played. A
+        # span that starts after it is left alone, so it finds no games rather
+        # than quietly answering for the latest season.
+        latest = default_end_season(season_type)
+        if season_to_int(start_season) <= season_to_int(latest) < season_to_int(end_season):
+            end_season = latest
+    # "2019-2020" is one season written out, not a span.
+    written_out_season = start_season if start_season and start_season == end_season else None
+    if written_out_season:
+        start_season = end_season = None
     career_intent = False
 
     if not (start_season and end_season):
@@ -1407,7 +1423,7 @@ def _build_parse_state(query: str) -> dict:
     explicit_relative_season = False
     season = None
     if not (start_season and end_season):
-        season = extract_season(q)
+        season = extract_season(q) or written_out_season
         if season is None:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None
@@ -1740,7 +1756,7 @@ def _build_parse_state(query: str) -> dict:
     stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
-    explicit_range_start, explicit_range_end = extract_season_range(q)
+    explicit_range_start, explicit_range_end = extract_season_range(q, season_type)
 
     if player and team_streak_request and team_streak_request.get("team_condition_only"):
         # A bare stat condition is a team streak only without a player subject.

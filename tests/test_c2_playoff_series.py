@@ -399,16 +399,22 @@ def test_how_did_a_team_do_in_the_playoffs_means_the_latest_run():
 
 
 @pytest.mark.parametrize(
-    "query",
+    ("query", "start", "end"),
     [
-        "Celtics titles from 1990 to 2010",
-        "Lakers titles between 2000 and 2010",
-        "Lakers titles 2000-2010",
-        "Lakers titles before 2010",
-        "Spurs titles 2014",
-        "Lakers titles since 2010 until 2020",
+        # A title year names the season ending in it, as "the 2017 title" does.
+        ("Celtics titles from 1990 to 2010", "1989-90", "2009-10"),
+        ("Lakers titles between 2000 and 2010", "1999-00", "2009-10"),
+        ("Lakers titles 2000-2010", "1999-00", "2009-10"),
+        ("Lakers titles since 2010 until 2020", "2009-10", "2019-20"),
+        ("how many titles did the Bulls win from 1991 to 1998", "1990-91", "1997-98"),
     ],
 )
+def test_title_counts_over_a_year_range(query, start, end):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["season"], kwargs["start_season"], kwargs["end_season"]) == (None, start, end)
+
+
+@pytest.mark.parametrize("query", ["Lakers titles before 2010", "Spurs titles 2014"])
 def test_title_counts_never_drop_a_year(query):
     parsed = parse_query(query)
     assert parsed["route"] is None
