@@ -7346,8 +7346,8 @@ cases:
       - path: result.metadata.season_type
         equals: Playoffs
       - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Conference-finals record phrasing should keep the existing playoff-round unsupported boundary even when a division phrase is also present."
+        equals: opponent_division
+    review_notes: "Single-team round records answer (C2, agent change); the opponent-division filter is still not executed by playoff_history, so this refuses on that filter instead of answering without it."
     manual_review:
       status: expected_unsupported
       tags:
@@ -7355,7 +7355,7 @@ cases:
         - unsupported_boundary
         - division_guard
         - product_decision
-      notes: "Single-team conference-finals records remain deferred; division cleanup must not preempt this boundary."
+      notes: "Conference-finals records answer; the division filter must refuse rather than be dropped."
 
   - id: most_clutch_player_wave5
     query: "Who is the most clutch player this season?"
@@ -9366,3 +9366,49 @@ cases:
         - playoff
         - playoff_series
       notes: "Review that the four Spurs series are labelled first round through Finals."
+
+  - id: c2_league_most_titles_since_year
+    query: "which team has won the most titles since 1997"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: LAL
+      - path: result.sections.leaderboard.0.titles
+        equals: 6
+    review_notes: "League titles are Finals series won, ranked by team. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the title counts and seasons for every champion since 1997-98."
+
+  - id: c2_league_title_in_year
+    query: "who won the title in 2016"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: CLE
+      - path: result.sections.leaderboard.0.finals_opponent
+        equals: Golden State Warriors
+    review_notes: "The 2016 title is the 2015-16 Finals. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the 2015-16 champion and Finals score."

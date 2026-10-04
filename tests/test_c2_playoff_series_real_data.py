@@ -104,3 +104,33 @@ def test_team_titles_match_raw_finals_winners(query, team):
     summary = result.result.to_dict()["sections"]["summary"][0]
     assert summary["titles"] == len(expected)
     assert f"({', '.join(expected)})" in result.metadata["answer_phrase"]
+
+
+def test_league_titles_leaderboard_matches_raw_finals_winners():
+    from collections import Counter
+
+    from nbatools.query_service import execute_natural_query
+
+    winners = {s: champ for s, champ in _finals_winners().items() if s >= "1997-98"}
+    expected = Counter(winners.values())
+    result = execute_natural_query("which team has won the most titles from 1997-98 to 2024-25")
+    assert result.metadata["route"] == "playoff_appearances"
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert {row["team_abbr"]: row["titles"] for row in rows} == dict(expected)
+    for row in rows:
+        mine = sorted(s for s, champ in winners.items() if champ == row["team_abbr"])
+        assert row["title_seasons"] == ", ".join(mine)
+    most = max(expected.values())
+    leaders = [abbr for abbr, n in expected.items() if n == most]
+    assert rows[0]["team_abbr"] in leaders
+    assert f"{most} titles" in result.metadata["answer_phrase"]
+
+
+def test_single_season_title_names_champion_and_finals_opponent():
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query("who won the title in 2016")
+    assert result.metadata["answer_phrase"] == (
+        "The Cleveland Cavaliers won the 2015-16 title, beating the "
+        "Golden State Warriors 4-3 in the Finals."
+    )
