@@ -74,6 +74,7 @@ class ServedCoverage:
 
     generation: str
     manifest_file_count: int | None
+    manifest_total_mb: float | None
     dataset_seasons: dict[str, list[str]]
     reference_files: list[str]
     slices: list[SliceCoverage]
@@ -88,21 +89,24 @@ class ServedCoverage:
         return {
             "generation": self.generation,
             "manifest_file_count": self.manifest_file_count,
+            "manifest_total_mb": self.manifest_total_mb,
             "dataset_seasons": self.dataset_seasons,
             "reference_files": self.reference_files,
             "slices": [item.to_dict() for item in self.slices],
         }
 
 
-def _published_paths() -> tuple[list[str], int | None]:
-    """Return every published data path, preferring the immutable manifest."""
+def _published_paths() -> tuple[list[str], int | None, float | None]:
+    """Return every published data path, with the manifest's file count and size."""
     if data_exists(GENERATION_MANIFEST_PATH):
         document = json.loads(data_read_text(GENERATION_MANIFEST_PATH))
-        files = [str(item.get("path", "")) for item in document.get("files") or []]
-        return files, len(files)
+        entries = document.get("files") or []
+        files = [str(item.get("path", "")) for item in entries]
+        total_bytes = sum(int(item.get("size_bytes") or 0) for item in entries)
+        return files, len(files), round(total_bytes / 1_000_000, 1)
     # Legacy or local layouts without a generation manifest: list the tree.
     paths = [p.relative_to("data").as_posix() for p in data_glob("**/*.csv")]
-    return paths, None
+    return paths, None, None
 
 
 def _dataset_seasons(paths: list[str]) -> tuple[dict[str, list[str]], list[str]]:
@@ -177,12 +181,13 @@ def _collect_slice(season: str, season_type: str) -> SliceCoverage:
 
 def collect_served_coverage() -> ServedCoverage:
     """Collect the coverage evidence for the configured generation."""
-    paths, manifest_count = _published_paths()
+    paths, manifest_count, manifest_mb = _published_paths()
     dataset_seasons, reference = _dataset_seasons(paths)
     slices = [_collect_slice(season, kind) for season, kind in _slice_keys(dataset_seasons)]
     return ServedCoverage(
         generation=current_data_generation(),
         manifest_file_count=manifest_count,
+        manifest_total_mb=manifest_mb,
         dataset_seasons=dataset_seasons,
         reference_files=reference,
         slices=slices,
@@ -216,7 +221,8 @@ def _label(year: int) -> str:
 def format_report(coverage: ServedCoverage) -> str:
     lines = [
         f"Generation: {coverage.generation}",
-        f"Files in generation manifest: {coverage.manifest_file_count}",
+        f"Files in generation manifest: {coverage.manifest_file_count}"
+        f" ({coverage.manifest_total_mb} MB)",
         "",
         "Datasets by season (from the published file inventory):",
     ]
