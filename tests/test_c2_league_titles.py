@@ -102,6 +102,12 @@ def test_league_title_questions_route_to_titles_leaderboard(query, season, start
         "Lakers record vs the defending champions",
         "Warriors vs the champions",
         "Nuggets as defending champions record",
+        "champions with the most wins",
+        "which champion had the most wins",
+        "which team has beaten the champions the most",
+        "who were the 2016 champions playing",
+        "Lakers title odds",
+        "Lakers title chances",
     ],
 )
 def test_player_and_non_league_titles_still_refuse(query):

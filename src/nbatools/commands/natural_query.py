@@ -1163,6 +1163,8 @@ _TITLE_NOT_A_COUNT = re.compile(
     r"\b(?:defending|reigning)\s+champ|\b(?:vs\.?|versus|against|as)\s+(?:the\s+)?champions?\b"
     r"|\brecords?\b|\bbest\b|\bworst\b|\bsince\s+winning\b|\bhow\s+(?:did|do|does)\b"
     r"|\bstats?\b|\bpoints?\b|\baverag\w*"
+    r"|(?<!title\s)(?<!championship\s)\bwins\b|\bbeat(?:en|ing|s)?\b|\bplay(?:ing|ed|s)?\b"
+    r"|\bodds\b|\bchances?\b"
 )
 
 
