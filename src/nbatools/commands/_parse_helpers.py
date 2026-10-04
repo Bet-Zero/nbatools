@@ -478,10 +478,9 @@ _SEASON_RANGES = (
 )
 # Playoffs and titles are named by the year they end in, as extract_season
 # reads "the 2016 playoffs" and "the 2017 title": "titles from 1991 to 1998"
-# runs from 1990-91 to 1997-98.
-_ENDING_YEAR_CONTEXT = re.compile(
-    r"\b(?:play-?offs?|postseason|finals|titles?|championships?|champions?|rings?)\b"
-)
+# runs from 1990-91 to 1997-98. "against playoff teams" is a regular-season
+# filter, so only the season type or a title word switches this on.
+_TITLE_YEAR_CONTEXT = re.compile(r"\b(?:finals|titles?|championships?|champions?|rings?)\b")
 
 
 def _range_point_season(point: str, ending_year: bool) -> str:
@@ -492,14 +491,17 @@ def _range_point_season(point: str, ending_year: bool) -> str:
     return int_to_season(int(point) - 1 if ending_year else int(point))
 
 
-def extract_season_range(text: str) -> tuple[str | None, str | None]:
+def extract_season_range(
+    text: str, season_type: str | None = None
+) -> tuple[str | None, str | None]:
     """Two seasons or years that bound a span, inclusive.
 
     "from 2010-11 to 2014-15" -> 2010-11..2014-15. A bare year names the season
     starting in it, as "since 2010" and "the 2010s" do ("from 2010 to 2015" ->
     2010-11..2015-16). For playoffs and titles a year names the season ending
     in it ("titles from 1991 to 1998" -> 1990-91..1997-98). Two consecutive
-    years joined by a hyphen are one season ("2019-2020" -> 2019-20). A span
+    years joined by a hyphen are one season ("2019-2020" -> 2019-20), except
+    for titles, where they are two ("Warriors titles 2017-2018"). A span
     written backwards ("from 2010 to 2005") covers the same seasons.
     """
     from nbatools.commands._seasons import int_to_season, season_to_int
@@ -510,8 +512,10 @@ def extract_season_range(text: str) -> tuple[str | None, str | None]:
             continue
         first, last = m.group(1), m.group(2)
         joined = text[m.start(1) + len(first) : m.start(2)]
+        title_years = bool(_TITLE_YEAR_CONTEXT.search(text))
         if (
-            "-" not in first
+            not title_years
+            and "-" not in first
             and "-" not in last
             and int(last) == int(first) + 1
             and joined.strip() == "-"
@@ -519,7 +523,7 @@ def extract_season_range(text: str) -> tuple[str | None, str | None]:
             # "2019-2020" is the 2019-20 season written out.
             season = int_to_season(int(first))
             return season, season
-        ending_year = bool(_ENDING_YEAR_CONTEXT.search(text))
+        ending_year = title_years or season_type == "Playoffs"
         start = _range_point_season(first, ending_year)
         end = _range_point_season(last, ending_year)
         if season_to_int(start) > season_to_int(end):

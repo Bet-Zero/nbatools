@@ -35,15 +35,35 @@ pytestmark = pytest.mark.engine
         ("lakers record from 2010 to 2005", "2005-06", "2010-11"),
         # Playoffs and titles: the year a postseason ends in.
         ("how many titles did the bulls win from 1991 to 1998", "1990-91", "1997-98"),
-        ("lebron playoffs from 2016 to 2018", "2015-16", "2017-18"),
-        ("lakers playoff record from 2008 to 2012", "2007-08", "2011-12"),
+        ("warriors titles from 2015 to 2018", "2014-15", "2017-18"),
+        # Two hyphenated years in a title question are two titles.
+        ("warriors titles 2017-2018", "2016-17", "2017-18"),
         # Two consecutive years with a hyphen are one season written out.
         ("lebron 2019-2020 season stats", "2019-20", "2019-20"),
-        ("2019-2020 playoffs", "2019-20", "2019-20"),
     ],
 )
 def test_year_and_season_ranges(text, start, end):
     assert extract_season_range(text) == (start, end)
+
+
+@pytest.mark.parametrize(
+    ("text", "season_type", "start", "end"),
+    [
+        # A playoff season type reads years as the postseason they end.
+        ("lebron playoffs from 2016 to 2018", "Playoffs", "2015-16", "2017-18"),
+        ("lakers playoff record from 2008 to 2012", "Playoffs", "2007-08", "2011-12"),
+        ("2019-2020 playoffs", "Playoffs", "2019-20", "2019-20"),
+        # "against playoff teams" is a regular-season filter.
+        (
+            "lakers record from 2010 to 2015 against playoff teams",
+            "Regular Season",
+            "2010-11",
+            "2015-16",
+        ),
+    ],
+)
+def test_season_type_decides_the_year_reading(text, season_type, start, end):
+    assert extract_season_range(text, season_type) == (start, end)
 
 
 @pytest.mark.parametrize(
@@ -85,6 +105,28 @@ def test_ranges_reach_the_route_instead_of_the_default_season(query, route):
 def test_written_out_season_is_one_season(query, season):
     kwargs = parse_query(query)["route_kwargs"]
     assert (kwargs["season"], kwargs["start_season"], kwargs["end_season"]) == (season, None, None)
+
+
+def test_title_count_over_written_out_years_is_not_all_time():
+    kwargs = parse_query("Warriors titles 2017-2018")["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("2016-17", "2017-18")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record from 2010 to 2015 against playoff teams",
+        "LeBron points from 2010 to 2015 against playoff teams",
+    ],
+)
+def test_playoff_teams_filter_keeps_regular_season_years(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("2010-11", "2015-16")
+
+
+def test_span_after_the_latest_season_is_not_moved_onto_it():
+    kwargs = parse_query("LeBron from 2030 to 2035")["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("2030-31", "2035-36")
 
 
 def test_future_end_year_stops_at_the_latest_season():

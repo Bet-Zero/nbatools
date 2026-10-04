@@ -1374,16 +1374,16 @@ def _build_parse_state(query: str) -> dict:
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
-    start_season, end_season = extract_season_range(q)
+    start_season, end_season = extract_season_range(q, season_type)
     if start_season and end_season:
         from nbatools.commands._seasons import default_end_season, season_to_int
 
-        # "from 2020 to 2030": the span ends with the latest season played.
+        # "from 2020 to 2030": the span ends with the latest season played. A
+        # span that starts after it is left alone, so it finds no games rather
+        # than quietly answering for the latest season.
         latest = default_end_season(season_type)
-        if season_to_int(end_season) > season_to_int(latest):
+        if season_to_int(start_season) <= season_to_int(latest) < season_to_int(end_season):
             end_season = latest
-        if season_to_int(start_season) > season_to_int(end_season):
-            start_season = end_season
     # "2019-2020" is one season written out, not a span.
     written_out_season = start_season if start_season and start_season == end_season else None
     if written_out_season:
@@ -1756,7 +1756,7 @@ def _build_parse_state(query: str) -> dict:
     stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
-    explicit_range_start, explicit_range_end = extract_season_range(q)
+    explicit_range_start, explicit_range_end = extract_season_range(q, season_type)
 
     if player and team_streak_request and team_streak_request.get("team_condition_only"):
         # A bare stat condition is a team streak only without a player subject.
