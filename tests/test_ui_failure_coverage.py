@@ -569,29 +569,29 @@ class TestPlayoffRoutingBoundaries:
 
     @pytest.mark.needs_data
     @pytest.mark.parametrize(
-        ("query", "team", "start_season"),
+        ("query", "team", "start_season", "round_label"),
         [
-            ("Warriors Finals record since 2015", "GSW", "2015-16"),
-            ("Celtics conference finals record", "BOS", None),
-            ("Bulls Finals record", "CHI", None),
+            ("Warriors Finals record since 2015", "GSW", "2015-16", "Finals"),
+            ("Celtics conference finals record", "BOS", None, "Conference Finals"),
+            ("Bulls Finals record", "CHI", None, "Finals"),
         ],
     )
-    def test_single_team_round_records_return_unsupported_not_team_record(
-        self, query, team, start_season
+    def test_single_team_round_records_answer_the_round_not_the_team_record(
+        self, query, team, start_season, round_label
     ):
+        # Single-team round records answer from the playoff rows (C2).
         qr = execute_natural_query(query)
 
         assert qr.route == "playoff_history"
-        assert qr.result.result_status == "no_result"
-        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "ok"
         assert qr.metadata["season_type"] == "Playoffs"
         assert qr.metadata["team"] == team
-        assert qr.metadata["unsupported_filters"] == ["single_team_playoff_round_record"]
-        assert qr.to_dict()["sections"] == {}
+        assert not qr.metadata.get("unsupported_filters")
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["playoff_round"] == round_label
+        assert summary["wins"] + summary["losses"] > 0
         if start_season is not None:
             assert qr.metadata["start_season"] == start_season
-        notes = qr.metadata.get("notes", []) + qr.result.notes
-        assert any("single-team playoff round records" in note for note in notes)
 
 
 # ---------------------------------------------------------------------------

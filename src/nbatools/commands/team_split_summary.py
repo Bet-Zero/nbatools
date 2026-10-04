@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
+from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import select_team_summary_sample
 from nbatools.commands.structured_results import NoResult, SplitSummaryResult
@@ -224,7 +225,8 @@ def build_result(
             f"{seasons[0]} to {seasons[-1]}"
         )
     if opponent:
-        caveats.append(f"filtered to games vs {opponent.upper()}")
+        # "against winning teams" passes a list of opponents.
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
 
     return SplitSummaryResult(
         summary=summary,

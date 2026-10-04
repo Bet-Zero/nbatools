@@ -46,10 +46,9 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "Celtics conference finals record vs Atlantic Division",
             "route": "playoff_history",
             "reason": "filter_not_supported",
-            # Two independent reasons this cannot be answered: the single-team
-            # playoff-round record boundary, and opponent-division filtering,
-            # which playoff_history never executes.
-            "unsupported_filters": ["single_team_playoff_round_record", "opponent_division"],
+            # Single-team round records answer (C2); opponent-division filtering
+            # is still never executed by playoff_history.
+            "unsupported_filters": ["opponent_division"],
         },
         {
             "query": "Celtics record vs Atlantic Division in 2023-24",
@@ -68,12 +67,6 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "route": "game_summary",
             "reason": "filter_not_supported",
             "unsupported_filters": ["single_team_advanced_stat_summary"],
-        },
-        {
-            "query": "Celtics conference finals record",
-            "route": "playoff_history",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["single_team_playoff_round_record"],
         },
         {
             "query": "What is the Lakers record when LeBron James and Anthony Davis both play?",

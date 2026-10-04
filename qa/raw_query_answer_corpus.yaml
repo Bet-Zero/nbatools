@@ -7346,8 +7346,8 @@ cases:
       - path: result.metadata.season_type
         equals: Playoffs
       - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Conference-finals record phrasing should keep the existing playoff-round unsupported boundary even when a division phrase is also present."
+        equals: opponent_division
+    review_notes: "Single-team round records answer (C2, agent change); the opponent-division filter is still not executed by playoff_history, so this refuses on that filter instead of answering without it."
     manual_review:
       status: expected_unsupported
       tags:
@@ -7355,7 +7355,7 @@ cases:
         - unsupported_boundary
         - division_guard
         - product_decision
-      notes: "Single-team conference-finals records remain deferred; division cleanup must not preempt this boundary."
+      notes: "Conference-finals records answer; the division filter must refuse rather than be dropped."
 
   - id: most_clutch_player_wave5
     query: "Who is the most clutch player this season?"
