@@ -653,11 +653,56 @@ _OPPONENT_GROUP_ROUTES = {
 }
 
 
+def _start_reach_back_at_served_data(route_kwargs: dict) -> None:
+    """Move a reach-back start up to the first season the filters can read."""
+    from nbatools.commands._seasons import int_to_season, season_to_int
+    from nbatools.data_source import data_exists
+
+    start, end = route_kwargs.get("start_season"), route_kwargs.get("end_season")
+    if not start or not end:
+        return
+    suffix = "playoffs" if route_kwargs.get("season_type") == "Playoffs" else "regular_season"
+    paths = ["data/raw/team_game_stats/{season}_" + suffix + ".csv"]
+    if route_kwargs.get("opponent_quality"):
+        paths.append("data/raw/standings_snapshots/{season}_regular_season.csv")
+    year = season_to_int(start)
+    while year < season_to_int(end) and not all(
+        data_exists(path.format(season=int_to_season(year))) for path in paths
+    ):
+        year += 1
+    route_kwargs["start_season"] = int_to_season(year)
+
+
+def _team_compare_reach_back(route_kwargs: dict, parsed: dict) -> int:
+    """Seasons a team comparison's last-N window may need to fill itself."""
+    if route_kwargs.get("season_type") == "Playoffs":
+        return 100
+    if route_kwargs.get("head_to_head") or route_kwargs.get("opponent"):
+        per_season = 2
+    elif parsed.get("opponent_division"):
+        per_season = 12
+    elif parsed.get("opponent_conference") or route_kwargs.get("opponent_quality"):
+        per_season = 24
+    else:
+        per_season = 60
+    if any(
+        route_kwargs.get(flag) for flag in ("home_only", "away_only", "wins_only", "losses_only")
+    ):
+        per_season = max(1, per_season // 2)
+    return -(-int(route_kwargs["last_n"]) // per_season) + 1 + (per_season <= 2)
+
+
 def _joined_team_pair(parsed: dict) -> bool:
     """ "Lakers and Warriors record" asks about each team, not their meetings."""
     from nbatools.commands._matchup_utils import _extract_compare_and_teams, strip_matchup_noise
 
     text = parsed.get("normalized_query") or ""
+    if re.search(
+        r"\b(?:each\s+other|one\s+another|head[- ]to[- ]head|h2h|meetings?|"
+        r"matchups?|series|between)\b",
+        text,
+    ):
+        return False
     return _extract_compare_and_teams(strip_matchup_noise(text))[0] is not None
 
 
@@ -4558,16 +4603,13 @@ def _finalize_route(parsed: dict) -> dict:
         # meetings. Regular-season teams meet at least twice a season (bar the
         # 1998-99 and 2011-12 lockouts), so reach back that far plus a margin;
         # playoff meetings are rare, so search every season.
-        # Each team's own last N (no opponent) needs one earlier season at most.
-        if route_kwargs.get("season_type") == "Playoffs":
-            seasons_back = 100
-        elif route_kwargs.get("head_to_head") or route_kwargs.get("opponent"):
-            seasons_back = -(-int(route_kwargs["last_n"]) // 2) + 2
-        else:
-            seasons_back = 1
+        # Filters that thin the games (an opponent, a conference or division,
+        # a quality bar, home/away) need proportionally more seasons.
+        seasons_back = _team_compare_reach_back(route_kwargs, parsed)
         route_kwargs.update(
             last_n_reach_back_seasons(route_kwargs["season"], seasons_back=seasons_back)
         )
+        _start_reach_back_at_served_data(route_kwargs)
 
     if route in _OPPONENT_GROUP_ROUTES:
         # Conference/division opponents resolve season by season at

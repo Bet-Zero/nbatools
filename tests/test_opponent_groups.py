@@ -348,7 +348,7 @@ def test_head_to_head_shortfall_is_reported():
 
 
 def test_playoff_head_to_head_searches_every_season():
-    from nbatools.commands.natural_query import parse_query
+    from nbatools.commands.natural_query import _team_compare_reach_back
 
-    kwargs = parse_query("Lakers vs Nuggets last 10 playoff games")["route_kwargs"]
-    assert kwargs["start_season"] == "1996-97"
+    kwargs = {"season_type": "Playoffs", "last_n": 10, "head_to_head": True}
+    assert _team_compare_reach_back(kwargs, {}) >= 29

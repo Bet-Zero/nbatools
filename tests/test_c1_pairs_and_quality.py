@@ -116,3 +116,62 @@ def test_division_and_quality_both_apply():
     (summary,) = _summary("Celtics record vs Atlantic Division winning teams 2024-25")
     assert summary["games"] == len(rows)
     assert summary["wins"] == _wins(rows)
+
+
+def _all_games(abbr: str, **match: str) -> list[dict[str, str]]:
+    rows = [r for s in SEASONS for r in _games(s, team_abbr=abbr, **match)]
+    return sorted(rows, key=lambda r: (r["game_date"], int(r["game_id"])), reverse=True)
+
+
+def test_filtered_pair_last_n_reaches_back_far_enough():
+    atlantic = {
+        r["team_id"]
+        for r in _csv(RAW / "teams" / "team_conference_membership.csv")
+        if r["season"] == "2024-25" and r["division"] == "Atlantic"
+    }
+    lakers, warriors = _summary("Lakers and Warriors last 60 games vs the Atlantic Division")
+    for side, abbr in ((lakers, "LAL"), (warriors, "GSW")):
+        rows = [r for r in _all_games(abbr) if r["opponent_team_id"] in atlantic][:60]
+        assert side["games"] == len(rows) == 60
+        assert side["wins"] == _wins(rows)
+
+
+def test_pair_record_against_each_other_is_their_meetings():
+    result = _run("Lakers and Celtics record against each other")
+    assert result.route == "team_matchup_record"
+    lakers, _ = result.result.to_dict()["sections"]["summary"]
+    assert lakers["games"] == len(_games("2025-26", team_abbr="LAL", opponent_team_abbr="BOS"))
+
+
+def test_compare_pair_record_is_each_teams_record():
+    lakers, celtics = _summary("compare the Lakers and Celtics record")
+    assert lakers["games"] == len(_games("2025-26", team_abbr="LAL"))
+    assert celtics["wins"] == _wins(_games("2025-26", team_abbr="BOS"))
+
+
+@pytest.mark.parametrize(
+    "query", ["Lakers and Celtics leading scorers", "Lakers and Nuggets series history"]
+)
+def test_pair_with_another_intent_is_not_a_season_comparison(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).route != "team_compare"
+
+
+def test_quality_filter_discriminates_winning_from_losing_opponents():
+    pacific = {
+        r["team_id"]
+        for r in _csv(RAW / "teams" / "team_conference_membership.csv")
+        if r["season"] == "2025-26" and r["division"] == "Pacific"
+    }
+    winning = _winning("2025-26")
+    rows = _games("2025-26", team_abbr="BOS")
+    for term, keep in (("winning", True), ("losing", False)):
+        expected = [
+            r
+            for r in rows
+            if r["opponent_team_id"] in pacific and (r["opponent_team_id"] in winning) == keep
+        ]
+        (summary,) = _summary(f"Celtics record vs Pacific Division {term} teams")
+        assert summary["games"] == len(expected)
+        assert summary["wins"] == _wins(expected)
