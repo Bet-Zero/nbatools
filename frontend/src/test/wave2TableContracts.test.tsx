@@ -292,6 +292,50 @@ describe("Wave 2 table pattern contracts", () => {
     expect(screen.getByLabelText("Head-to-head participants")).toBeInTheDocument();
   });
 
+  it("leads a single playoff run with its series and the answer sentence", () => {
+    const data = makeResponse("playoff_history", {
+      metadata: {
+        answer_phrase:
+          "The Boston Celtics went 12-7 in the 2023-24 playoffs: beat the Miami Heat 4-1 in the first round.",
+      },
+      sections: {
+        summary: [
+          {
+            team_name: "Boston Celtics",
+            season_start: "2023-24",
+            season_end: "2023-24",
+            wins: 12,
+            losses: 7,
+            series_won: 1,
+            series_lost: 0,
+          },
+        ],
+        by_season: [
+          { season: "2023-24", wins: 12, losses: 7, deepest_round: "First Round" },
+        ],
+        series: [
+          {
+            season: "2023-24",
+            playoff_round: "First Round",
+            opponent_team_name: "Miami Heat",
+            opponent_team_abbr: "MIA",
+            wins: 4,
+            losses: 1,
+            result: "Won",
+          },
+        ],
+      },
+    });
+    render(<ResultRenderer data={data} displayMode="review" />);
+
+    expect(
+      screen.getByText(/beat the Miami Heat 4-1 in the first round/),
+    ).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Playoff series" });
+    expectHeaders(table, ["Season", "Round", "Record", "Result", "Opponent"]);
+    expect(within(table).getByText("Won")).toBeInTheDocument();
+  });
+
   it("renders playoff history, round record, and matchup history header contracts", () => {
     const historyData = makeResponse("playoff_history", {
       metadata: {

@@ -5085,50 +5085,53 @@ cases:
     priority: p2
     acceptance:
       family: playoff_history
-      variant: nearby_unsupported
+      variant: short
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Single-team Finals-record phrasing is an expected unsupported boundary; Bulls Finals-era round data is not reliable in the current dataset."
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-      notes: "Single-team playoff round records are deferred until the route/round-data contract is approved; Bulls pre-2001 Finals round labels are not reliable."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: warriors_finals_record_since_2015_wave4
     query: "Warriors Finals record since 2015"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.start_season
-        equals: 2015-16
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Finals plus since-year phrasing should not return a broad regular-season team record; single-team round records are deferred."
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - era
-        - unsupported_boundary
-      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: most_conference_finals_appearances_wave4
     query: "most conference finals appearances"
@@ -5152,23 +5155,26 @@ cases:
     query: "Celtics conference finals record"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Single-team conference-finals record phrasing should not fall through to a regular-season record; single-team round records are deferred."
+      - path: result.sections.summary.0.playoff_round
+        equals: Conference Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: spurs_playoff_history_since_2000_wave4
     query: "Spurs playoff history since 2000"
@@ -6479,45 +6485,51 @@ cases:
     query: "What is the Bulls Finals record?"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Question-form Bulls Finals record should remain an explicit unsupported boundary."
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-        - product_decision
-      notes: "Single-team Finals records remain deferred until round-data contract coverage is approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: celtics_record_in_conference_finals_wave5
     query: "What was the Celtics record in conference finals?"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Question-form single-team conference-finals record should remain unsupported."
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.sections.summary.0.playoff_round
+        equals: Conference Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-        - product_decision
-      notes: "Single-team conference-finals record support is out of scope without a round-record entity contract."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: lakers_celtics_playoff_matchup_history_wave5
     query: "Lakers Celtics playoff matchup history"
@@ -9244,3 +9256,113 @@ cases:
       tags:
         - date_filter
       notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: c2_team_playoff_run_by_year
+    query: "how did the Celtics do in the 2024 playoffs"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2023-24
+      - path: result.sections.summary.0.titles
+        equals: 1
+    review_notes: "A year-named playoff run lists each series. '2024 playoffs' read as no season and the run was a game record (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the four Celtics series of 2023-24 and the title."
+
+  - id: c2_team_playoff_series_won
+    query: "how many playoff series have the Lakers won"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "Series won and lost since 1996-97. It was refused as a game-wins filter (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review series won/lost against the Lakers' runs since 1996-97."
+
+  - id: c2_team_titles_since_year
+    query: "Spurs championships since 1997"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "Team titles are Finals series won. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the Spurs title seasons since 1997-98."
+
+  - id: c2_team_title_in_year
+    query: "did the Warriors win the title in 2017"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "The 2017 title is the 2016-17 Finals. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the Warriors' 2016-17 run and Finals result."
+
+  - id: c2_early_playoff_run_rounds
+    query: "Spurs 1999 playoffs series"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    hard_assertions:
+      - path: result.sections.series.3.playoff_round
+        equals: Finals
+      - path: result.sections.series.3.result
+        equals: Won
+    review_notes: "1998-99 game ids carry no round; rounds come from series order (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review that the four Spurs series are labelled first round through Finals."

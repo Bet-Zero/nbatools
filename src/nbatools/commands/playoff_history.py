@@ -11,8 +11,11 @@ Capabilities:
 - Appearance leaderboard (most finals appearances, most playoff appearances, etc.)
 
 Data model:
-- Playoff round is extracted from game_id positions 7-8 (works for 2001-02+)
-- Seasons 1996-97 through 2000-01 have no round info in game_ids ("00")
+- Playoff round is read from game_id positions 7-8 where the id carries it
+  (2001-02+); otherwise it is the order of the team's series that season
+  (first opponent = first round), which also covers 1996-97 through 2000-01
+- A series is every playoff game between two teams in one season; play-in
+  games (game ids starting "005") are not playoff games
 - Era buckets group seasons by decade (e.g., 2000s = 1999-00 through 2008-09)
 
 All functions return structured result objects (SummaryResult,
@@ -144,14 +147,98 @@ def decade_season_range(decade_label: str) -> tuple[str, str]:
     return int_to_season(start), int_to_season(end)
 
 
+def _series_order_codes(df: pd.DataFrame) -> pd.Series:
+    """Round code from the order of each team's series within a season.
+
+    Needs every playoff game of the team that season: the first opponent is
+    the first round, the second the second round, and so on.
+    """
+    key = ["season", "team_id", "opponent_team_id"]
+    first_game = pd.to_datetime(df["game_date"]).groupby([df[k] for k in key]).transform("min")
+    order = first_game.groupby([df["season"], df["team_id"]]).rank(method="dense")
+    return order.map(lambda n: f"{int(n):02d}" if pd.notna(n) and 1 <= n <= 4 else None)
+
+
 def _add_round_column(df: pd.DataFrame) -> pd.DataFrame:
-    """Add a 'playoff_round_code' and 'playoff_round' column from game_id."""
+    """Add 'playoff_round_code' and 'playoff_round' columns.
+
+    Call on the full playoff game log (see ``_load_playoff_games``) before any
+    team or opponent filter, since the series-order fallback counts series.
+    Already-labelled frames are returned unchanged.
+    """
+    if "playoff_round_code" in df.columns:
+        return df
     out = df.copy()
-    out["playoff_round_code"] = out["game_id"].astype(str).str[6:8]
-    out["playoff_round"] = out["playoff_round_code"].map(ROUND_CODES)
-    # Mark rows with unresolvable round
-    out.loc[out["playoff_round"].isna(), "playoff_round"] = "Unknown Round"
+    id_code = out["game_id"].astype(str).str[6:8]
+    id_code = id_code.where(id_code.isin(list(ROUND_CODES)))
+    if out.empty:
+        out["playoff_round_code"] = id_code
+    else:
+        out["playoff_round_code"] = id_code.fillna(_series_order_codes(out))
+    out["playoff_round"] = out["playoff_round_code"].map(ROUND_CODES).fillna("Unknown Round")
     return out
+
+
+def _load_playoff_games(seasons: list[str]) -> pd.DataFrame:
+    """Every playoff game in ``seasons`` with its round, play-in games dropped."""
+    df = load_team_games_for_seasons(seasons, "Playoffs")
+    df = df[~df["game_id"].astype(str).str.startswith("005")].copy()
+    return _add_round_column(df)
+
+
+def _series_wins_needed(season: str, round_code: str | None) -> int:
+    """First rounds were best-of-five through 2001-02, every other series best-of-seven."""
+    if round_code == "01" and season_to_int(season) <= ROUND_DATA_START_YEAR:
+        return 3
+    return 4
+
+
+def _build_series_table(df: pd.DataFrame) -> pd.DataFrame:
+    """One row per series in a team's playoff game log, oldest first."""
+    if df.empty:
+        return pd.DataFrame()
+    work = df.copy()
+    work["_win"] = work["wl"].astype(str).eq("W").astype(int)
+    work["_loss"] = work["wl"].astype(str).eq("L").astype(int)
+    series = (
+        work.groupby(
+            ["season", "team_name", "opponent_team_id", "opponent_team_name"], as_index=False
+        )
+        .agg(
+            opponent_team_abbr=("opponent_team_abbr", "last"),
+            playoff_round_code=("playoff_round_code", "first"),
+            wins=("_win", "sum"),
+            losses=("_loss", "sum"),
+            start_date=("game_date", "min"),
+            end_date=("game_date", "max"),
+        )
+        .sort_values(["season", "start_date"])
+        .reset_index(drop=True)
+    )
+    needed = [
+        _series_wins_needed(season, code)
+        for season, code in zip(series["season"], series["playoff_round_code"], strict=True)
+    ]
+    series["result"] = [
+        "Won" if wins >= need else "Lost" if losses >= need else "In progress"
+        for wins, losses, need in zip(series["wins"], series["losses"], needed, strict=True)
+    ]
+    series["playoff_round"] = series["playoff_round_code"].map(ROUND_CODES).fillna("Unknown Round")
+    series["start_date"] = pd.to_datetime(series["start_date"]).dt.date.astype(str)
+    series["end_date"] = pd.to_datetime(series["end_date"]).dt.date.astype(str)
+    return series[
+        [
+            "season",
+            "playoff_round",
+            "opponent_team_name",
+            "opponent_team_abbr",
+            "wins",
+            "losses",
+            "result",
+            "start_date",
+            "end_date",
+        ]
+    ]
 
 
 def _add_decade_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -178,12 +265,12 @@ def _has_round_data(seasons: list[str]) -> bool:
 
 
 def _round_data_caveat(seasons: list[str]) -> str | None:
-    """Return caveat text if some seasons lack round-level data."""
+    """Caveat for seasons whose rounds come from series order, not game ids."""
     early = [s for s in seasons if season_to_int(s) < ROUND_DATA_START_YEAR]
     if early:
         return (
-            f"playoff round data not available for seasons before {ROUND_DATA_START_SEASON}; "
-            f"seasons {early[0]}–{early[-1]} excluded from round-level breakdowns"
+            f"rounds for {early[0]} to {early[-1]} are read from the order of each team's "
+            "series (game ids before 2001-02 do not carry the round)"
         )
     return None
 
@@ -221,7 +308,7 @@ def build_playoff_history_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, "Playoffs")
+        df = _load_playoff_games(seasons)
     except FileNotFoundError:
         return NoResult(query_class="summary", reason="no_data")
 
@@ -233,7 +320,12 @@ def build_playoff_history_result(
     ].copy()
 
     if df.empty:
-        return NoResult(query_class="summary", reason="no_match")
+        span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
+        return NoResult(
+            query_class="summary",
+            reason="no_match",
+            notes=[f"{t} played no playoff games {span}"],
+        )
 
     if opponent:
         o = opponent.upper()
@@ -281,6 +373,14 @@ def build_playoff_history_result(
     if playoff_round:
         summary_row["playoff_round"] = round_code_to_label(playoff_round)
 
+    series = _build_series_table(df)
+    summary_row["series_won"] = int((series["result"] == "Won").sum())
+    summary_row["series_lost"] = int((series["result"] == "Lost").sum())
+    if not playoff_round and not opponent:
+        finals = series[series["playoff_round"] == "Finals"]
+        summary_row["finals_appearances"] = int(finals["season"].nunique())
+        summary_row["titles"] = int((finals["result"] == "Won").sum())
+
     # Appearances by season
     appearances = df.groupby("season")["game_id"].nunique().reset_index()
     appearances.columns = ["season", "games"]
@@ -305,6 +405,7 @@ def build_playoff_history_result(
     return SummaryResult(
         summary=summary,
         by_season=by_group,
+        series=series,
         current_through=current_through,
         caveats=caveats,
     )
@@ -382,7 +483,11 @@ def build_record_by_decade_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, season_type)
+        df = (
+            _load_playoff_games(seasons)
+            if season_type == "Playoffs"
+            else load_team_games_for_seasons(seasons, season_type)
+        )
     except FileNotFoundError:
         return NoResult(query_class="summary", reason="no_data")
 
@@ -393,7 +498,12 @@ def build_record_by_decade_result(
     ].copy()
 
     if df.empty:
-        return NoResult(query_class="summary", reason="no_match")
+        span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
+        return NoResult(
+            query_class="summary",
+            reason="no_match",
+            notes=[f"{t} played no playoff games {span}"],
+        )
 
     if opponent:
         o = opponent.upper()
@@ -459,7 +569,11 @@ def build_matchup_by_decade_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, season_type)
+        df = (
+            _load_playoff_games(seasons)
+            if season_type == "Playoffs"
+            else load_team_games_for_seasons(seasons, season_type)
+        )
     except FileNotFoundError:
         return NoResult(query_class="comparison", reason="no_data")
 
@@ -594,7 +708,7 @@ def build_playoff_appearances_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, "Playoffs")
+        df = _load_playoff_games(seasons)
     except FileNotFoundError:
         return NoResult(
             query_class="leaderboard" if not team else "summary",
@@ -724,7 +838,11 @@ def build_record_by_decade_leaderboard_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, season_type)
+        df = (
+            _load_playoff_games(seasons)
+            if season_type == "Playoffs"
+            else load_team_games_for_seasons(seasons, season_type)
+        )
     except FileNotFoundError:
         return NoResult(query_class="leaderboard", reason="no_data")
 
@@ -817,7 +935,7 @@ def build_playoff_matchup_history_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, "Playoffs")
+        df = _load_playoff_games(seasons)
     except FileNotFoundError:
         return NoResult(query_class="comparison", reason="no_data")
 
@@ -976,7 +1094,7 @@ def build_playoff_round_record_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
-        df = load_team_games_for_seasons(seasons, "Playoffs")
+        df = _load_playoff_games(seasons)
     except FileNotFoundError:
         return NoResult(query_class="leaderboard", reason="no_data")
 

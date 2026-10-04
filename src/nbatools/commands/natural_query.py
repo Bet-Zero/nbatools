@@ -1124,6 +1124,14 @@ _TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?!
 _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
 
 
+_TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|titles?)\b")
+# Rings belong to players; division and conference titles are not Finals wins.
+_NON_LEAGUE_TITLE = re.compile(
+    r"\brings?\b|\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
+    r"(?:titles?|championships?)\b|\bscoring\s+titles?\b"
+)
+
+
 def _named_team_pairs(q: str) -> dict[str, list[str]]:
     """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
     best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
@@ -1611,6 +1619,14 @@ def _build_parse_state(query: str) -> dict:
                 player = player_without_absence.resolved
 
     wins_only, losses_only = detect_wins_losses(q)
+    if (
+        re.search(r"\bseries\b", q)
+        and not re.search(r"\bgames?\b", q)
+        and re.search(r"\b(?:playoffs?|postseason)\b", q)
+    ):
+        # "how many playoff series have the Lakers won": series won and lost
+        # come from the playoff history, not a filter to winning games.
+        wins_only = losses_only = False
     if stretch_request and re.search(r"\b(?:most|fewest|least)\s+(?:wins|losses)\b", q):
         # "most wins over a 10 game stretch" ranks windows by record.
         wins_only = losses_only = False
@@ -2202,6 +2218,44 @@ def _finalize_route(parsed: dict) -> dict:
         out["alternates"] = generate_alternates(out)
         return out
 
+    if (
+        championship_count_boundary
+        and team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and _TEAM_TITLE_COUNT.search(q)
+        and not _NON_LEAGUE_TITLE.search(q)
+    ):
+        # A team title is a Finals series won: "Lakers titles since 2000".
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        if not start_season and not end_season and not named_season:
+            # "Lakers titles" counts every season, not the default one.
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        out["route"] = "playoff_history"
+        out["route_kwargs"] = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+        }
+        out["intent"] = "summary"
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
     if championship_count_boundary:
         out = dict(parsed)
         out["route"] = None
@@ -2721,11 +2775,6 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ppr := try_playoff_record_route(parsed)) is not None:
         route, route_kwargs = ppr
-        if route_kwargs.get("unsupported_filters") == ["single_team_playoff_round_record"]:
-            notes.append(
-                "unsupported_boundary: single-team playoff round records are not supported "
-                "until the route and round-data contract is approved"
-            )
     elif (
         opponent_division_boundary
         and record_intent

@@ -33,12 +33,8 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "query": "Celtics conference finals record",
             "route": "playoff_history",
             "fields": {"team": "BOS", "season_type": "Playoffs"},
-            "route_kwargs": {
-                "team": "BOS",
-                "playoff_round": "03",
-                "unsupported_filters": ["single_team_playoff_round_record"],
-            },
-            "note_contains": "unsupported_boundary",
+            "route_kwargs": {"team": "BOS", "playoff_round": "03"},
+            "no_unsupported_filters": True,
         },
         {
             "query": "Celtics record against east coast teams",
@@ -149,10 +145,8 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "route_kwargs": {
                 "team": "BOS",
                 "playoff_round": "03",
-                # Two independent reasons: the single-team playoff-round record
-                # boundary, plus opponent-division filtering, which
-                # playoff_history never executes.
-                "unsupported_filters": ["single_team_playoff_round_record", "opponent_division"],
+                # Opponent-division filtering, which playoff_history never executes.
+                "unsupported_filters": ["opponent_division"],
             },
             "note_contains": "unsupported_boundary",
         },

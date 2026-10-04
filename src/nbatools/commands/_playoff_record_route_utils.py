@@ -89,15 +89,18 @@ def detect_playoff_history_intent(text: str) -> bool:
     - "playoff matchup record"
     - "postseason history"
     """
-    return bool(
-        re.search(
-            r"\b(?:playoff|postseason)\s+(?:"
-            r"history|series(?:\s+(?:history|record))?|"
-            r"matchups?\s+(?:history|record|series(?:\s+(?:history|record))?)"
-            r")\b",
-            text,
-        )
-    )
+    if re.search(
+        r"\b(?:playoff|postseason)\s+(?:"
+        r"history|series(?:\s+(?:history|record))?|"
+        r"matchups?\s+(?:history|record|series(?:\s+(?:history|record))?)"
+        r")\b",
+        text,
+    ):
+        return True
+    # "series results in the 2024 playoffs", "how did they do in the playoffs"
+    if not re.search(r"\b(?:playoffs?|postseason)\b", text):
+        return False
+    return bool(re.search(r"\bseries\b", text) or re.search(r"\bhow\s+did\b.*\bdo\b", text))
 
 
 def _normalize_playoff_round_phrase_hyphens(text: str) -> str:
@@ -235,7 +238,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "by_round": by_round_intent,
         }
 
-    # -- Unsupported boundary: single-team playoff round records/history --
+    # -- Single-team playoff round record ("Celtics conference finals record") --
     if (
         team
         and not team_a
@@ -255,7 +258,6 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "playoff_round": playoff_round_filter,
             "by_decade": by_decade_intent,
             "opponent": opponent,
-            "unsupported_filters": ["single_team_playoff_round_record"],
         }
 
     # -- Matchup by decade: team_a vs team_b by decade --
