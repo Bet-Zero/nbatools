@@ -277,3 +277,16 @@ def test_long_worst_wordings_rank_from_the_bottom(query):
 def test_team_rolling_three_point_percentage_is_the_rate():
     rows, _ = _board(f"Lakers coldest rolling 5 game 3 point percentage in {SEASON}")
     assert rows[0]["stretch_metric"] == "fg3_pct"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"LeBron best 5 game stretch with the worst teammates in {SEASON}",
+        f"best 5 game stretch by a player on the worst team in {SEASON}",
+    ],
+)
+def test_grade_nearest_the_stretch_decides(query):
+    _, metadata = _board(query)
+    assert "best" in metadata["answer_phrase"]
+    assert "worst" not in metadata["answer_phrase"]
