@@ -31,7 +31,14 @@ import pandas as pd
 
 from nbatools.commands import validation_control
 from nbatools.commands.data_utils import normalize_season_type
-from nbatools.data_source import data_exists, data_read_csv, data_read_text
+from nbatools.data_source import (
+    LEGACY_GENERATION,
+    current_data_generation,
+    data_exists,
+    data_read_csv,
+    data_read_text,
+    data_source_cache_key,
+)
 
 # ---------------------------------------------------------------------------
 # Status semantics
@@ -173,6 +180,11 @@ def _manifest_complete(
     return bool(row.get("raw_complete") == 1 and row.get("processed_complete") == 1)
 
 
+# Answers for published generations, which never change once published:
+# (source and generation, season, season_type) -> current_through.
+_IMMUTABLE_CURRENT_THROUGH: dict[tuple[str, str, str], str] = {}
+
+
 def compute_current_through(
     season: str,
     season_type: str = "Regular Season",
@@ -184,7 +196,26 @@ def compute_current_through(
     - the games CSV does not exist
     - the manifest does not confirm completeness
     - the file has no rows with ``is_final == 1``
+
+    Checking the manifest hashes every file it lists, so a published
+    generation's answer is computed once per process. The legacy layout,
+    rewritten in place by the pipeline, and an explicit ``data_root`` are
+    always recomputed.
     """
+    if data_root != _DATA_ROOT or current_data_generation() == LEGACY_GENERATION:
+        return _compute_current_through(season, season_type, data_root)
+    key = (data_source_cache_key(), season, season_type)
+    cached = _IMMUTABLE_CURRENT_THROUGH.get(key)
+    if cached is not None:
+        return cached
+    result = _compute_current_through(season, season_type, data_root)
+    # None can come from a failed download, so it is checked again next time.
+    if result is not None:
+        _IMMUTABLE_CURRENT_THROUGH[key] = result
+    return result
+
+
+def _compute_current_through(season: str, season_type: str, data_root: Path) -> str | None:
     if not _manifest_complete(season, season_type, data_root):
         return None
 
