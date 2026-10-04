@@ -2729,7 +2729,7 @@ def detect_season_high_intent(text: str) -> bool:
         r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:\d{1,2}\s+)?(?:single[- ]?)?games?\b"
         # "best 5 scoring games" is a top-5 list; "best 50 point games" is a floor.
-        rf"|\b(?:top\s+(?:\d{{1,3}}\s+)?|(?:best|highest)\s+(?:\d{{1,2}}\s+(?=[a-z]+ing\b))?)"
+        rf"|\b(?:top\s+(?:\d{{1,3}}\s+)?|(?:best|highest)\s+(?:\d{{1,3}}\s+(?!(?:points?|pts?)\b))?)"
         rf"(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
         r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"

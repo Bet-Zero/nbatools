@@ -40,6 +40,10 @@ RAW = Path("qa/fixtures/query_engine_sample/data/raw")
         ("5 highest scoring games", "top_player_games", 5),
         ("highest 3 scoring games", "top_player_games", 3),
         ("top 100 scoring games", "top_player_games", 100),
+        ("top 100 team scoring games", "top_team_games", 100),
+        ("highest 5 assist games", "top_player_games", 5),
+        ("highest 3 rebound games", "top_player_games", 3),
+        ("Lakers top 5 team rebounding games", "game_finder", 5),
     ],
 )
 def test_ranked_count_sizes_the_game_list(query, route, limit):
@@ -117,3 +121,15 @@ def test_team_top_scoring_games_are_its_highest():
     games = result.result.to_dict()["sections"]["finder"]
     assert len(games) == 2
     assert games[0]["pts"] >= games[1]["pts"]
+
+
+def test_a_named_team_keeps_its_own_team_games():
+    kwargs = parse_query("Lakers top 5 team rebounding games")["route_kwargs"]
+    assert kwargs["team"] == "LAL"
+
+
+@pytest.mark.parametrize("query", ["lowest 5 scoring games", "5 lowest scoring games"])
+def test_lowest_single_games_are_not_season_totals(query):
+    # A bottom-N single-game list is not built: refuse rather than rank seasons.
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"

@@ -690,8 +690,11 @@ _MIN_ATTEMPTS = _min_attempt_patterns()
 _TOP_N = (
     r"\btop\s+\d+\b",
     r"\bbottom\s+\d+\b",
-    r"\b\d{1,2}\s+(?:best|worst|highest|lowest|biggest|greatest)\b",
-    r"\b(?:best|worst|highest|lowest)\s+\d{1,2}\b",
+    r"\b\d{1,3}\s+(?:best|highest|biggest|greatest)\b",
+    r"\b(?:best|highest)\s+\d{1,3}\b",
+    # "lowest 5 turnovers" ranks players; "lowest 5 scoring games" is no list here.
+    r"\b\d{1,3}\s+(?:worst|lowest)\b(?![^.?!]*\bgames?\b)",
+    r"\b(?:worst|lowest)\s+\d{1,3}\b(?![^.?!]*\bgames?\b)",
     r"\bfirst\s+\d+\b",
 )
 _THRESHOLD = (

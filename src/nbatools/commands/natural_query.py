@@ -1409,12 +1409,12 @@ def _wants_top_team_games(q: str) -> bool:
     """Detect team single-game performance intent without catching team seasons."""
     return bool(
         re.search(
-            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,2}}\s+)?team\s+"
+            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,3}}\s+)?team\s+"
             rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?(?:games?|performances?|nights?)\b",
             q,
         )
         or re.search(
-            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,2}}\s+)?"
+            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,3}}\s+)?"
             rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?team\s+"
             r"(?:games?|performances?|nights?)\b",
             q,
@@ -2272,7 +2272,8 @@ def _route_parsed_query(parsed: dict) -> dict:
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
     season_high_intent = parsed.get("season_high_intent", False)
-    top_team_game_intent = parsed.get("top_team_game_intent", False)
+    # "Lakers top 5 team rebounding games" lists the Lakers' games.
+    top_team_game_intent = parsed.get("top_team_game_intent", False) and not parsed.get("team")
     distinct_player_count = parsed.get("distinct_player_count", False)
     opponent_player = parsed.get("opponent_player")
     with_player = parsed.get("with_player")
