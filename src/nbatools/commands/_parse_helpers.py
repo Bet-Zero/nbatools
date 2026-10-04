@@ -344,7 +344,7 @@ def detect_opponent_conference_geography_boundary(text: str) -> bool:
     )
 
 
-_DIVISION_NAMES_PATTERN = r"atlantic|central|southeast|northwest|pacific|southwest"
+_DIVISION_NAMES_PATTERN = r"atlantic|central|southeast|northwest|pacific|southwest|midwest"
 _OPPONENT_DIVISION_PATTERN = re.compile(
     rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
     rf"(?P<conference_prefix>(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
@@ -361,6 +361,7 @@ def _normalize_division_name(value: str) -> str:
         "northwest": "Northwest",
         "pacific": "Pacific",
         "southwest": "Southwest",
+        "midwest": "Midwest",
     }[value.strip().lower()]
 
 

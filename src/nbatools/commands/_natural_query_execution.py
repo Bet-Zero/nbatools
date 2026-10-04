@@ -35,9 +35,10 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
-    get_teams_by_conference,
-    get_teams_by_division,
+    OpponentGroup,
+    opponent_group_tokens,
     resolve_opponent_quality_teams,
+    resolve_opponent_quality_tokens,
 )
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
 from nbatools.commands.format_output import (
@@ -382,12 +383,24 @@ def _resolve_opponent_quality_kwargs(
     season_type = sanitized.get("season_type") or "Regular Season"
 
     seasons = resolve_seasons(season, start_season, end_season)
-    resolved_opponents = resolve_opponent_quality_teams(opponent_quality, seasons, season_type)
-    sanitized["opponent"] = resolved_opponents
-
     notes = []
     if opponent_quality_note := build_opponent_quality_note(opponent_quality):
         notes.append(opponent_quality_note)
+    if len(seasons) > 1 and route in _OPPONENT_GROUP_ROUTES:
+        # A team counts only in the seasons it met the bar: "career vs playoff
+        # teams" is not every game against any team that ever made it.
+        try:
+            tokens = resolve_opponent_quality_tokens(opponent_quality, seasons, season_type)
+        except ValueError:
+            tokens = None
+        if tokens is not None:
+            sanitized["opponent"] = OpponentGroup(
+                tokens, "opponents that met the bar in that season"
+            )
+            notes.append("Opponent quality is applied season by season.")
+            return sanitized, notes, []
+    resolved_opponents = resolve_opponent_quality_teams(opponent_quality, seasons, season_type)
+    sanitized["opponent"] = resolved_opponents
     if len(seasons) > 1:
         notes.append(
             "Multi-season opponent-quality filters use the union of qualifying teams "
@@ -419,6 +432,7 @@ def _normalize_opponent_division(value: str | None) -> str | None:
         "northwest": "Northwest",
         "pacific": "Pacific",
         "southwest": "Southwest",
+        "midwest": "Midwest",
     }.get(normalized)
 
 
@@ -431,6 +445,84 @@ def _mark_original_unsupported_filter(kwargs: dict | None, filter_id: str) -> No
     kwargs["unsupported_filters"] = existing
 
 
+# Routes whose game filters go through ``data_utils.build_opponent_mask`` and
+# so honour season-scoped opponent groups (conference and division).
+_OPPONENT_GROUP_ROUTES = {
+    "team_record",
+    "team_record_leaderboard",
+    "player_game_summary",
+    "player_game_finder",
+    "player_split_summary",
+    "game_summary",
+    "game_finder",
+    "team_split_summary",
+    "player_compare",
+    "team_compare",
+}
+
+
+def _resolve_opponent_group_kwargs(
+    route: str,
+    kwargs: dict,
+    *,
+    filter_id: str,
+    coverage_id: str,
+    conference: str | None = None,
+    division: str | None = None,
+    original_kwargs: dict | None = None,
+) -> tuple[dict, list[str], list[str]]:
+    """Turn a conference or division filter into season-scoped opponents.
+
+    Membership is resolved per season (the served table, else the historical
+    alignment), so a multi-season span counts each team only in the seasons
+    it belonged to the group.
+    """
+    sanitized = dict(kwargs)
+    group = conference or division
+    kind = "conference" if conference else "division"
+
+    head_to_head_compare = route in {"player_compare", "team_compare"} and sanitized.get(
+        "head_to_head"
+    )
+    if route not in _OPPONENT_GROUP_ROUTES or head_to_head_compare:
+        _mark_original_unsupported_filter(original_kwargs, filter_id)
+        return sanitized, [], [filter_id]
+
+    seasons = resolve_seasons(
+        sanitized.get("season"), sanitized.get("start_season"), sanitized.get("end_season")
+    )
+    try:
+        by_season = opponent_group_tokens(seasons, conference=conference, division=division)
+    except ValueError:
+        _mark_original_unsupported_filter(original_kwargs, coverage_id)
+        return sanitized, [], [coverage_id]
+
+    if conference:
+        label = f"{'Eastern' if conference == 'East' else 'Western'} Conference teams"
+    else:
+        label = f"{division} Division teams"
+    tokens = [token for season in seasons for token in by_season[season]]
+    existing_opponent = sanitized.get("opponent")
+    sanitized["opponent"] = OpponentGroup(tokens, label, also=existing_opponent or None)
+    if original_kwargs is not None:
+        original_kwargs[f"{filter_id}_seasons"] = seasons
+
+    season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
+    sizes = sorted({len(by_season[season]) for season in seasons})
+    size_label = "/".join(str(size) for size in sizes)
+    if existing_opponent:
+        note = (
+            f"opponent {kind} filter: {group} intersected with the existing opponent "
+            f"filter for {season_label}"
+        )
+    else:
+        note = f"opponent {kind} filter: {group} resolved to {size_label} teams for {season_label}"
+    notes = [note]
+    if len(seasons) > 1:
+        notes.append(f"{kind} membership is applied season by season")
+    return sanitized, notes, []
+
+
 def _resolve_opponent_conference_kwargs(
     route: str,
     kwargs: dict,
@@ -441,71 +533,16 @@ def _resolve_opponent_conference_kwargs(
     conference = _normalize_opponent_conference(sanitized.pop("opponent_conference", None))
     if conference is None:
         return sanitized, [], []
-
     if original_kwargs is not None:
         original_kwargs["opponent_conference"] = conference
-
-    if route != "team_record":
-        _mark_original_unsupported_filter(original_kwargs, "opponent_conference")
-        return sanitized, [], ["opponent_conference"]
-
-    season = sanitized.get("season")
-    start_season = sanitized.get("start_season")
-    end_season = sanitized.get("end_season")
-    season_type = sanitized.get("season_type") or "Regular Season"
-    seasons = resolve_seasons(season, start_season, end_season)
-
-    opponents_by_season: dict[str, list[str]] = {}
-    for resolved_season in seasons:
-        try:
-            teams = get_teams_by_conference(
-                resolved_season,
-                conference,
-                require_trusted_coverage=True,
-            )
-        except (FileNotFoundError, ValueError):
-            _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
-            return sanitized, [], ["conference_coverage"]
-        if len(teams) != 15:
-            _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
-            return sanitized, [], ["conference_coverage"]
-        opponents_by_season[resolved_season] = teams
-
-    opponent_sets = {tuple(teams) for teams in opponents_by_season.values()}
-    if len(opponent_sets) != 1:
-        _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
-        return sanitized, [], ["conference_coverage"]
-
-    resolved_opponents = list(next(iter(opponent_sets)))
-    existing_opponent = sanitized.get("opponent")
-    if existing_opponent:
-        if isinstance(existing_opponent, str):
-            existing_opponents = {existing_opponent.upper()}
-        else:
-            existing_opponents = {str(value).upper() for value in existing_opponent}
-        resolved_opponents = [team for team in resolved_opponents if team in existing_opponents]
-
-    sanitized["opponent"] = resolved_opponents
-    if original_kwargs is not None:
-        original_kwargs["opponent_team_abbrs"] = resolved_opponents
-        original_kwargs["opponent_conference_seasons"] = seasons
-
-    season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
-    if existing_opponent:
-        notes = [
-            "opponent conference filter: "
-            f"{conference} intersected with existing opponent filter to "
-            f"{len(resolved_opponents)} trusted teams for {season_label}"
-        ]
-    else:
-        notes = [
-            "opponent conference filter: "
-            f"{conference} resolved to 15 trusted teams for {season_label}"
-        ]
-    if season_type != "Regular Season":
-        notes.append("opponent conference membership is season-scoped team metadata")
-
-    return sanitized, notes, []
+    return _resolve_opponent_group_kwargs(
+        route,
+        sanitized,
+        filter_id="opponent_conference",
+        coverage_id="conference_coverage",
+        conference=conference,
+        original_kwargs=original_kwargs,
+    )
 
 
 def _resolve_opponent_division_kwargs(
@@ -518,51 +555,16 @@ def _resolve_opponent_division_kwargs(
     division = _normalize_opponent_division(sanitized.pop("opponent_division", None))
     if division is None:
         return sanitized, [], []
-
     if original_kwargs is not None:
         original_kwargs["opponent_division"] = division
-
-    season_type = sanitized.get("season_type") or "Regular Season"
-    if route not in {"team_record", "team_record_leaderboard"} or season_type != "Regular Season":
-        _mark_original_unsupported_filter(original_kwargs, "opponent_division")
-        return sanitized, [], ["opponent_division"]
-
-    season = sanitized.get("season")
-    start_season = sanitized.get("start_season")
-    end_season = sanitized.get("end_season")
-    seasons = resolve_seasons(season, start_season, end_season)
-
-    opponents_by_season: dict[str, list[str]] = {}
-    for resolved_season in seasons:
-        try:
-            teams = get_teams_by_division(
-                resolved_season,
-                division,
-                require_trusted_coverage=True,
-            )
-        except (FileNotFoundError, ValueError):
-            _mark_original_unsupported_filter(original_kwargs, "division_coverage")
-            return sanitized, [], ["division_coverage"]
-        if len(teams) != 5:
-            _mark_original_unsupported_filter(original_kwargs, "division_coverage")
-            return sanitized, [], ["division_coverage"]
-        opponents_by_season[resolved_season] = teams
-
-    opponent_sets = {tuple(teams) for teams in opponents_by_season.values()}
-    if len(opponent_sets) != 1:
-        _mark_original_unsupported_filter(original_kwargs, "division_coverage")
-        return sanitized, [], ["division_coverage"]
-
-    resolved_opponents = list(next(iter(opponent_sets)))
-    sanitized["opponent"] = resolved_opponents
-    if original_kwargs is not None:
-        original_kwargs["opponent_team_abbrs"] = resolved_opponents
-        original_kwargs["opponent_division_seasons"] = seasons
-
-    season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
-    notes = [f"opponent division filter: {division} resolved to 5 trusted teams for {season_label}"]
-
-    return sanitized, notes, []
+    return _resolve_opponent_group_kwargs(
+        route,
+        sanitized,
+        filter_id="opponent_division",
+        coverage_id="division_coverage",
+        division=division,
+        original_kwargs=original_kwargs,
+    )
 
 
 def _normalize_unsupported_filters(value) -> list[str]:
@@ -695,8 +697,9 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
     if filter_id in ("opponent_conference", "opponent_division"):
         scope = "conference" if filter_id == "opponent_conference" else "division"
         return (
-            f"filtering by opponent {scope} is only supported for team record queries "
-            f"(e.g. 'Lakers record against the East'); no unfiltered answer was "
+            f"filtering by opponent {scope} is supported for player and team game "
+            f"summaries, game lists, records, splits and comparisons (e.g. 'Lakers "
+            f"record against the East'), not on this route; no unfiltered answer was "
             f"substituted (blocked: {', '.join(all_filters)})"
         )
     if filter_id in ("wins_only", "losses_only"):
@@ -808,16 +811,24 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "division_coverage":
         return (
-            "opponent-division record filters require trusted team-division "
-            "membership coverage for every requested regular season; no broad team "
-            "record was returned because coverage is missing or incomplete "
+            "opponent-division filters need the division to exist in every requested "
+            "season (divisions are known from 1996-97; the Midwest ran through "
+            "2003-04, and the Southeast, Northwest and Southwest began in 2004-05); no "
+            "broad answer was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "player_team_comparison":
+        return (
+            "comparing a player with a team needs one reading: ask for the player's "
+            "games against that team ('LeBron stats vs the Celtics') or with it "
+            "('LeBron stats with the Lakers'); no single-player answer was substituted "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "conference_coverage":
         return (
-            "opponent-conference record filters require trusted team-conference "
-            "membership coverage for every requested season; no broad team record "
-            "was returned because coverage is missing or incomplete "
+            "opponent-conference filters need conference membership for every "
+            "requested season (known from 1996-97 onward); no broad answer was "
+            "returned "
             f"(blocked: {', '.join(all_filters)})"
         )
     return (
