@@ -310,3 +310,15 @@ def test_large_frame_size_estimate_tracks_the_exact_deep_size() -> None:
     exact = int(frame.memory_usage(index=True, deep=True).sum())
 
     assert abs(_frame_bytes(frame) - exact) / exact < 0.02
+
+
+def test_size_estimate_does_not_scale_up_categoricals() -> None:
+    from nbatools.dataframe_cache import _frame_bytes
+
+    rows = 30_000
+    frame = pd.DataFrame(
+        {"team": pd.Categorical([f"Team {i % 30}" for i in range(rows)]), "pts": range(rows)}
+    )
+    exact = int(frame.memory_usage(index=True, deep=True).sum())
+
+    assert abs(_frame_bytes(frame) - exact) / exact < 0.02
