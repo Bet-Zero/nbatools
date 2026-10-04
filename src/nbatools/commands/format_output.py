@@ -90,6 +90,7 @@ ROUTE_TO_QUERY_CLASS = {
     "playoff_appearances": "leaderboard",
     "playoff_matchup_history": "comparison",
     "playoff_round_record": "leaderboard",
+    "playoff_series_comebacks": "leaderboard",
     "record_by_decade": "summary",
     "record_by_decade_leaderboard": "leaderboard",
     "matchup_by_decade": "comparison",

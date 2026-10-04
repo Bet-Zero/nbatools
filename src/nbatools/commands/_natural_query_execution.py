@@ -111,6 +111,7 @@ from nbatools.commands.playoff_history import (
     build_playoff_round_record_result,
     build_record_by_decade_leaderboard_result,
     build_record_by_decade_result,
+    build_series_comebacks_result,
 )
 from nbatools.commands.query_boolean_parser import (
     evaluate_condition_tree,
@@ -255,6 +256,7 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "playoff_appearances": build_playoff_appearances_result,
                 "playoff_matchup_history": build_playoff_matchup_history_result,
                 "playoff_round_record": build_playoff_round_record_result,
+                "playoff_series_comebacks": build_series_comebacks_result,
                 "record_by_decade": build_record_by_decade_result,
                 "record_by_decade_leaderboard": build_record_by_decade_leaderboard_result,
                 "matchup_by_decade": build_matchup_by_decade_result,

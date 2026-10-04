@@ -241,9 +241,8 @@ def test_team_board_in_series_situation(query, team, stat):
 @pytest.mark.parametrize(
     "query",
     [
-        "teams that came back from 3-1 down",
-        "Celtics came back from 3-1 down",
         "LeBron James came back from 3-1 down",
+        "players who came back from 3-1 down",
         "LeBron James record after blowing a 3-1 lead",
         "Lakers vs Nuggets came back from 3-1",
     ],

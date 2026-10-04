@@ -5143,6 +5143,58 @@ def _series_comeback_route(parsed: dict) -> dict:
     )
 
 
+_COMEBACK_UNSUPPORTED_KEYS = (
+    "player",
+    "player_a",
+    "player_b",
+    "stat",
+    "min_value",
+    "max_value",
+    "threshold_conditions",
+    "home_only",
+    "away_only",
+    "opponent_quality",
+    "opponent_player",
+    "opponent_conference",
+    "opponent_division",
+    "with_player",
+    "without_player",
+    "last_n",
+)
+
+
+def _series_comeback_list_route(parsed: dict) -> dict:
+    """ "teams that came back from 3-1 down": the series they won after trailing."""
+    q = parsed["normalized_query"]
+    if (
+        any(parsed.get(key) for key in _COMEBACK_UNSUPPORTED_KEYS)
+        or re.search(r"\bplayers?\b|\bcoach(?:es|ed|ing)?\b|\bregular[\s-]season\b", q)
+        or parsed.get("team_a")
+        or parsed.get("team_b")
+    ):
+        return _series_comeback_route(parsed)
+    comeback = parsed["series_comeback"]
+    team = parsed.get("team")
+    opponent = parsed.get("opponent")
+    out = dict(parsed)
+    out["route"] = "playoff_series_comebacks"
+    out["route_kwargs"] = {
+        "deficit_wins": comeback["wins"],
+        "deficit_losses": comeback["losses"],
+        "blown": comeback["blown"],
+        "team": team,
+        "opponent": opponent,
+        "season": parsed.get("season"),
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "playoff_round": parsed.get("playoff_round_filter"),
+    }
+    # The series list already answers "how many" and "has ... ever".
+    out["count_intent"] = False
+    out["intent"] = "leaderboard"
+    return out
+
+
 # Counting stats whose total is the natural "most points in game 7s" answer.
 _SITUATION_TOTAL_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov", "oreb", "dreb"}
 _PER_GAME_WORDS = re.compile(
@@ -5170,7 +5222,17 @@ def _finalize_route(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     refused = True
     if parsed.get("series_comeback"):
-        out = _series_comeback_route(parsed)
+        out = _series_comeback_list_route(parsed)
+        if out.get("route") and parsed.get("series_situation_career"):
+            from nbatools.commands._seasons import EARLIEST_SEASON
+
+            out["notes"] = [
+                *(out.get("notes") or []),
+                f"default: every playoff season since {EARLIEST_SEASON}",
+            ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
     elif situation and re.search(r"\bregular[\s-]season\b", q):
         out = _series_refusal_route(
             parsed,

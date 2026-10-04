@@ -34,6 +34,7 @@ MINIMUM_ROUTE_KWARGS: dict[str, dict[str, Any]] = {
     "playoff_matchup_history": {"team_a": "LAL", "team_b": "BOS"},
     "record_by_decade": {"team": "LAL"},
     "matchup_by_decade": {"team_a": "LAL", "team_b": "BOS"},
+    "playoff_series_comebacks": {"deficit_wins": 1, "deficit_losses": 3},
 }
 
 

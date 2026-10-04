@@ -457,6 +457,7 @@ def route_to_snapshot_patterns(
         "player_occurrence_leaders",
         "team_occurrence_leaders",
         "team_stretch_leaderboard",
+        "playoff_series_comebacks",
     }:
         return [{"type": "leaderboard", "section_key": "leaderboard"}]
     if route_key == "player_stretch_leaderboard":

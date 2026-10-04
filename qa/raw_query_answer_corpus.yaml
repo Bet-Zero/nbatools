@@ -8322,6 +8322,23 @@ cases:
         equals: 4
     review_notes: "Rings are Finals titles won while playing for the champion: 2011-12 and 2012-13 MIA, 2015-16 CLE, 2019-20 LAL. Never a count of games."
 
+  - id: c2_finals_3_1_comebacks
+    query: "teams that came back from 3-1 down in the Finals"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_series_comebacks
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: CLE
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+    review_notes: "The only Finals 3-1 comeback since 1996-97 is the 2016 Cavaliers over the Warriors; a series list, never a game record."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary

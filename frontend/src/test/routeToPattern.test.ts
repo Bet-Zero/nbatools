@@ -348,6 +348,25 @@ describe("routeToPattern", () => {
     ]);
   });
 
+  it("renders series comebacks as a leaderboard", () => {
+    expect(
+      routeToPattern(
+        makeResponse("playoff_series_comebacks", {
+          sections: {
+            leaderboard: [
+              {
+                season: "2015-16",
+                team_name: "Cleveland Cavaliers",
+                trailed: "1-3",
+                series: "4-3",
+              },
+            ],
+          },
+        }),
+      ),
+    ).toEqual([{ type: "leaderboard", sectionKey: "leaderboard" }]);
+  });
+
   it("ranks title boards by titles", () => {
     expect(
       routeToPattern(
