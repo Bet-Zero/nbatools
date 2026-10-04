@@ -659,6 +659,8 @@ _OPPONENT_GROUP_ROUTES = {
     "team_record",
     "team_streak_finder",
     "player_streak_finder",
+    "team_occurrence_leaders",
+    "player_occurrence_leaders",
     "team_record_leaderboard",
     "player_game_summary",
     "player_game_finder",

@@ -31,7 +31,11 @@ import pandas as pd
 
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import load_player_games_for_seasons
+from nbatools.commands.data_utils import (
+    build_opponent_mask,
+    describe_opponent_filter,
+    load_player_games_for_seasons,
+)
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
@@ -157,13 +161,7 @@ def _apply_base_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        opp_mask = pd.Series(False, index=out.index)
-        if "opponent_team_abbr" in out.columns:
-            opp_mask = opp_mask | out["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-        if "opponent_team_name" in out.columns:
-            opp_mask = opp_mask | out["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
-        out = out[opp_mask].copy()
+        out = out[build_opponent_mask(out, opponent)].copy()
 
     if home_only and "is_home" in out.columns:
         out = out[out["is_home"] == 1].copy()
@@ -523,7 +521,7 @@ def build_result(
     # Caveats
     caveats: list[str] = []
     if opponent:
-        caveats.append(f"filtered to games vs {opponent.upper()}")
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
     if len(seasons) > 1:
         caveats.append(f"aggregated across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})")
     if special_event:
