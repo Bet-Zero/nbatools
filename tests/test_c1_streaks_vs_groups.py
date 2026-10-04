@@ -60,7 +60,9 @@ def _team_games(team: str, members: set[tuple[str, str]]) -> list[dict[str, str]
     for season in SEASONS:
         rows += _csv(RAW / "team_game_stats" / f"{season}_regular_season.csv")
     games = [
-        r for r in rows if r["team_abbr"] == team and (r["season"], r["opponent_team_abbr"]) in members
+        r
+        for r in rows
+        if r["team_abbr"] == team and (r["season"], r["opponent_team_abbr"]) in members
     ]
     return sorted(games, key=lambda r: (r["game_date"], int(r["game_id"])))
 
