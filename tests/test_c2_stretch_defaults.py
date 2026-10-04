@@ -254,3 +254,26 @@ def test_league_worst_three_point_stretch_qualifies_on_attempts():
     rows, metadata = _board(f"coldest 3 point shooting stretch in {SEASON}")
     assert rows[0]["stretch_value"] == pytest.approx(worst)
     assert "qualifier: windows need 3+ three-point attempts per game" in metadata["notes"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"Celtics worst 5 game 3 point shooting stretch in {SEASON}",
+        f"Celtics worst rolling 10 game net rating in {SEASON}",
+        f"which team had the worst rolling 10 game net rating in {SEASON}",
+        f"Lakers coldest rolling 5 game 3 point percentage in {SEASON}",
+        f"worst 5 game 3 point shooting stretch in {SEASON}",
+        f"LeBron worst 10 game free throw shooting stretch in {SEASON}",
+        f"LeBron worst rolling 5 game scoring average in {SEASON}",
+    ],
+)
+def test_long_worst_wordings_rank_from_the_bottom(query):
+    _, metadata = _board(query)
+    assert "worst" in metadata["answer_phrase"]
+    assert "best" not in metadata["answer_phrase"]
+
+
+def test_team_rolling_three_point_percentage_is_the_rate():
+    rows, _ = _board(f"Lakers coldest rolling 5 game 3 point percentage in {SEASON}")
+    assert rows[0]["stretch_metric"] == "fg3_pct"

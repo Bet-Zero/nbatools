@@ -2161,11 +2161,20 @@ _STRETCH_PLAYER_GROUP = re.compile(
     rf"|^(?:the\s+)?{_STRETCH_GROUP_WORDS}(?:'s)?\s+(?:with\s+the\s+)?"
     r"(?:best|top|hottest|worst|coldest)\b"
 )
-# Worst only when it grades the stretch: "LeBron worst 5 game stretch", not
-# "best stretch against the worst teams".
-_STRETCH_WORST = re.compile(
-    r"\b(?:worst|coldest|poorest|ugliest)\b(?:\s+[a-z0-9%.'/-]+){0,4}?\s+stretch(?:es)?\b"
+# Worst grades the stretch unless it describes the opponent: "LeBron worst 5
+# game 3 point shooting stretch", not "best stretch against the worst teams".
+_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|ugliest)\b")
+_OPPONENT_GRADE = re.compile(
+    r"\b(?:against|vs\.?|versus|facing|over|beating|beat)\s+(?:the\s+)?"
+    r"(?:worst|coldest|poorest|ugliest|bad|best|good|top|bottom|weak|strong|elite|tough)\b"
 )
+
+
+def stretch_text_without_opponent_grades(text: str) -> str:
+    """The question with opponent grades ("against the worst teams") removed."""
+    return _OPPONENT_GRADE.sub(" ", text)
+
+
 # Opponent descriptions no filter understands ("against the worst defenses").
 _STRETCH_OPPONENT_DESCRIPTION = re.compile(
     r"\b(?:against|vs\.?|versus|facing|over)\s+(?:the\s+)?"
@@ -2208,7 +2217,7 @@ def detect_stretch_query(text: str) -> dict | None:
         "window_size": window_size,
         "stretch_metric": stretch_metric,
         "window_defaulted": _extract_explicit_window_size(text) is None,
-        "worst": bool(_STRETCH_WORST.search(text)),
+        "worst": bool(_STRETCH_WORST.search(stretch_text_without_opponent_grades(text))),
         "opponent_description": (
             desc.group(0).strip()
             if (desc := _STRETCH_OPPONENT_DESCRIPTION.search(text))
@@ -2257,7 +2266,10 @@ _TEAM_STRETCH_METRIC_PATTERNS = (
         r"\b(?:point\s+differential|differential|margin|plus[\s-]?minus|\+/-)\b",
         "plus_minus",
     ),
-    (r"\b(?:3|three)[\s-]?(?:point|pt)?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
+    (
+        r"\b(?:3|three)[\s-]?(?:point|pt)?\s+(?:shooting|percentage|pct)\b|\b3p%|\bfg3\s*%",
+        "fg3_pct",
+    ),
     (r"\bthrees\b|\b3s\b|\b(?:3|three)[\s-]?pointers\b", "fg3m"),
     (r"\bfree[\s-]?throw\b", "ft_pct"),
     (r"\b(?:efficient|efficiency|true\s+shooting)\b", "ts_pct"),
@@ -2269,9 +2281,7 @@ _TEAM_STRETCH_METRIC_PATTERNS = (
     (r"\bsteals?\b", "stl"),
     (r"\bblocks?\b", "blk"),
 )
-_TEAM_STRETCH_WORST = re.compile(
-    r"\b(?:worst|coldest|poorest|bad|ugliest)\b(?:\s+[a-z0-9%.'/-]+){0,4}?\s+stretch(?:es)?\b"
-)
+_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|bad|ugliest)\b")
 _TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest)\b")
 # "lowest"/"most" name the end of the raw number, not good or bad.
 _TEAM_STRETCH_LOW = re.compile(r"\b(?:lowest|fewest|least|min(?:imum)?)\b")
@@ -2303,11 +2313,12 @@ def detect_team_stretch_request(text: str) -> dict | None:
             detect_stat(text) or "wins",
         )
     quality = _TEAM_STRETCH_QUALITY.search(text)
-    if _TEAM_STRETCH_WORST.search(text):
+    graded = stretch_text_without_opponent_grades(text)
+    if _TEAM_STRETCH_WORST.search(graded):
         worst = True
     elif quality:
         worst = quality.group(1) == "least"
-    elif _TEAM_STRETCH_BEST.search(text):
+    elif _TEAM_STRETCH_BEST.search(graded):
         worst = False
     elif _TEAM_STRETCH_LOW.search(text):
         worst = metric not in _TEAM_STRETCH_LOWER_IS_BETTER
