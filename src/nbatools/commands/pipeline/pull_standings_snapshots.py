@@ -98,6 +98,18 @@ def normalize(raw: pd.DataFrame, season: str, season_type: str, snapshot_date: s
     ]
     out["streak"] = choose_column(df, streak_candidates, "streak")
 
+    # Each season's official alignment; feeds team_conference_membership.
+    for name, candidates in (
+        ("conference", ["Conference", "CONFERENCE"]),
+        ("division", ["Division", "DIVISION"]),
+    ):
+        column = next((col for col in candidates if col in df.columns), None)
+        if column:
+            values = df[column].where(df[column].notna())
+            out[name] = values.astype("string").str.strip()
+        else:
+            out[name] = pd.NA
+
     out["season"] = season
     out["season_type"] = season_type
     out["snapshot_date"] = snapshot_date
@@ -115,6 +127,8 @@ def normalize(raw: pd.DataFrame, season: str, season_type: str, snapshot_date: s
         "division_rank",
         "games_back",
         "streak",
+        "conference",
+        "division",
     ]
 
     out = out[keep_cols].copy()

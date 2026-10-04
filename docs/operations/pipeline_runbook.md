@@ -249,25 +249,26 @@ Use:
 Use `nbatools-cli pipeline refresh`, or run `backfill-season` explicitly for
 the active season and intended season type.
 
-The `Data Refresh` GitHub workflow (`.github/workflows/data-refresh.yml`) runs
-the same refresh without a laptop. It downloads and verifies the active R2
-generation (`pipeline download-generation`), runs `pipeline refresh`, then:
+Refreshes run from a machine the NBA allows. GitHub-hosted runners cannot
+pull data: every stats.nba.com request times out and cdn.nba.com returns 403,
+even with nba.com browser headers (`NBA API Reachability` workflow runs
+37187347774, 37187608214 and 37187843846). The manual
+`NBA API Reachability` workflow re-checks this.
 
-- `check` mode validates the refreshed data as a local generation; nothing is
-  written to R2.
-- `publish` mode publishes a new generation only when a `raw/` or `processed/`
-  file changed (`publish-generation --only-if-changed-from`), and only if the
-  active generation is still the one it downloaded (a rollback or another
-  publish in the meantime stops it). It then deletes superseded generations
-  beyond the newest four (`pipeline prune-generations --keep 4`): the active
-  and previous generations are always kept, the pointer is re-checked before
-  each deletion, and each generation's manifest is deleted last. A generation
-  is about 400 MB, so pruning keeps nightly copies inside the R2 free storage
-  allowance.
+After a manual refresh, `publish-generation --target r2
+--only-if-changed-from <manifest>` publishes only when a `raw/` or
+`processed/` file changed, and only if the active generation is still the one
+the data came from. `pipeline download-generation` fetches and verifies the
+active generation into an empty directory (saving its manifest), `pipeline
+changed-files` lists what a refresh changed, and `pipeline prune-generations
+--keep 4` deletes superseded generations (active and previous always kept,
+pointer re-checked before each deletion, manifest deleted last). A generation
+is about 400 MB, so pruning keeps copies inside the R2 free allowance.
 
-It reads the `r2-publication` environment's `R2_PUBLISH_*` secrets, a key
-with read and write access to the data bucket only. No other workflow reads
-them.
+Each regular-season refresh also rebuilds that season's rows in
+`raw/teams/team_conference_membership.csv` from the standings' conference
+and division, so a new season gets conference/division membership without a
+hand-edited row.
 
 ## After major runs
 Check:

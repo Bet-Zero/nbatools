@@ -280,7 +280,17 @@ TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS = [
     "coverage_trusted",
 ]
 
-NBA_DIVISIONS = {"Atlantic", "Central", "Southeast", "Northwest", "Pacific", "Southwest"}
+NBA_DIVISIONS = {
+    "Atlantic",
+    "Central",
+    "Southeast",
+    "Northwest",
+    "Pacific",
+    "Southwest",
+}
+# Midwest existed through 2003-04, before the six-division alignment. Membership
+# rows may carry it; division coverage checks use the current six.
+HISTORICAL_NBA_DIVISIONS = NBA_DIVISIONS | {"Midwest"}
 
 PERIOD_DESCRIPTOR_LOOKUP = {
     ("quarter", "1"): (1, 1),
@@ -783,7 +793,7 @@ def _load_team_conference_membership_cached(data_root: str) -> pd.DataFrame:
             raise ValueError("team_conference_membership team_id must be present")
         if not df["conference"].isin(["East", "West"]).all():
             raise ValueError("team_conference_membership conference must be East or West")
-        if not df["division"].isin(NBA_DIVISIONS).all():
+        if not df["division"].isin(HISTORICAL_NBA_DIVISIONS).all():
             raise ValueError(
                 "team_conference_membership division must be a recognized NBA division"
             )
