@@ -222,7 +222,7 @@ def format_report(coverage: ServedCoverage) -> str:
     lines = [
         f"Generation: {coverage.generation}",
         f"Files in generation manifest: {coverage.manifest_file_count}"
-        f" ({coverage.manifest_total_mb} MB)",
+        + (f" ({coverage.manifest_total_mb} MB)" if coverage.manifest_total_mb is not None else ""),
         "",
         "Datasets by season (from the published file inventory):",
     ]

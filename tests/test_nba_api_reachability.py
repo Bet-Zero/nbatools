@@ -68,3 +68,24 @@ def test_workflow_is_manual_read_only_and_secret_free():
     assert workflow["permissions"] == {"contents": "read"}
     assert "secrets." not in text
     assert "environment" not in workflow["jobs"]["probe"]
+
+
+def test_a_check_that_could_not_be_attempted_is_reported_as_skipped():
+    def needs_a_game():
+        raise reachability.Skipped("no game id")
+
+    receipt = reachability.probe("2026-27", [("box_score", True, needs_a_game)])
+
+    assert receipt["endpoints"]["box_score"] == {
+        "required_for_refresh": True,
+        "ok": None,
+        "skipped": "no game id",
+    }
+    assert receipt["refresh_endpoints_reachable"] is False
+
+
+def test_workflow_passes_the_season_through_the_environment_only():
+    workflow = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+
+    for step in workflow["jobs"]["probe"]["steps"]:
+        assert "${{" not in step.get("run", "")

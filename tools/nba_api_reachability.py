@@ -17,6 +17,7 @@ import json
 import sys
 import time
 from collections.abc import Callable
+from importlib import metadata
 from pathlib import Path
 from typing import Any
 
@@ -34,9 +35,8 @@ def _game_finder(season: str, kind: str) -> Any:
     )
 
 
-def _first_game_id(season: str) -> str:
-    frame = _game_finder(season, "T").get_data_frames()[0]
-    return str(frame["GAME_ID"].iloc[0])
+class Skipped(Exception):
+    """A check that could not be attempted because an earlier one failed."""
 
 
 def _checks(season: str) -> list[Check]:
@@ -45,21 +45,41 @@ def _checks(season: str) -> list[Check]:
         BoxScoreTraditionalV3,
         CommonTeamRoster,
         LeagueDashPlayerStats,
+        LeagueLineupViz,
         LeagueStandings,
         PlayByPlayV3,
+        TeamPlayerOnOffSummary,
     )
 
     celtics = 1610612738
-    game_id: dict[str, str] = {}
+    game_ids: list[str] = []
+
+    def team_game_log() -> Any:
+        endpoint = _game_finder(season, "T")
+        frame = endpoint.get_data_frames()[0]
+        if not frame.empty:
+            game_ids.append(str(frame["GAME_ID"].iloc[0]))
+        return endpoint
 
     def game() -> str:
-        if "id" not in game_id:
-            game_id["id"] = _first_game_id(season)
-        return game_id["id"]
+        if not game_ids:
+            raise Skipped("no game id: the team game log failed or returned no games")
+        return game_ids[0]
 
     return [
-        ("team_game_log", True, lambda: _game_finder(season, "T")),
+        ("team_game_log", True, team_game_log),
         ("player_game_log", True, lambda: _game_finder(season, "P")),
+        (
+            "player_season_advanced",
+            True,
+            lambda: LeagueDashPlayerStats(
+                season=season,
+                season_type_all_star="Regular Season",
+                measure_type_detailed_defense="Advanced",
+                per_mode_detailed="PerGame",
+                timeout=REQUEST_TIMEOUT,
+            ),
+        ),
         (
             "standings",
             True,
@@ -75,19 +95,31 @@ def _checks(season: str) -> list[Check]:
             True,
             lambda: BoxScoreTraditionalV3(game_id=game(), timeout=REQUEST_TIMEOUT),
         ),
+        # Sources for data the site does not have yet (play-by-play, from
+        # which clutch stats are built; lineups; on/off).
         (
             "play_by_play",
             False,
             lambda: PlayByPlayV3(game_id=game(), timeout=REQUEST_TIMEOUT),
         ),
         (
-            "clutch_player_stats",
+            "lineups",
             False,
-            lambda: LeagueDashPlayerStats(
+            lambda: LeagueLineupViz(
+                minutes_min=10,
+                group_quantity="5",
                 season=season,
-                clutch_time_nullable="Last 5 Minutes",
-                ahead_behind_nullable="Ahead or Behind",
-                point_diff_nullable=5,
+                season_type_all_star="Regular Season",
+                timeout=REQUEST_TIMEOUT,
+            ),
+        ),
+        (
+            "on_off",
+            False,
+            lambda: TeamPlayerOnOffSummary(
+                team_id=celtics,
+                season=season,
+                season_type_all_star="Regular Season",
                 timeout=REQUEST_TIMEOUT,
             ),
         ),
@@ -98,6 +130,8 @@ def _run_check(request: Callable[[], Any]) -> dict[str, Any]:
     started = time.monotonic()
     try:
         frames = request().get_data_frames()
+    except Skipped as exc:
+        return {"ok": None, "skipped": str(exc)}
     except Exception as exc:  # the receipt records any failure; nothing is retried
         return {
             "ok": False,
@@ -121,11 +155,19 @@ def probe(season: str, checks: list[Check] | None = None) -> dict[str, Any]:
         results[name] = {"required_for_refresh": required, **_run_check(request)}
     return {
         "season": season,
+        "nba_api_version": _nba_api_version(),
         "refresh_endpoints_reachable": all(
-            r["ok"] for r in results.values() if r["required_for_refresh"]
+            r["ok"] is True for r in results.values() if r["required_for_refresh"]
         ),
         "endpoints": results,
     }
+
+
+def _nba_api_version() -> str | None:
+    try:
+        return metadata.version("nba_api")
+    except metadata.PackageNotFoundError:
+        return None
 
 
 def main() -> int:
