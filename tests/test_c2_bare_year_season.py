@@ -122,3 +122,22 @@ def test_streaks_use_the_named_year(query, season):
 def test_years_outside_the_data_say_so():
     notes = _notes("LeBron in 1990")
     assert any(note.startswith("coverage: the data covers 1996-97") for note in notes)
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("LeBron in 2025 points per game", "2024-25"),
+        ("Jokic in 2025 rebounds", "2024-25"),
+        ("Lakers in 2025 wins", "2024-25"),
+        ("Jokic for 2025 games", "2024-25"),
+    ],
+)
+def test_stat_words_after_a_year_keep_the_year(query, season):
+    assert _span(query)[0] == season
+
+
+def test_playoff_year_has_no_default_season_note():
+    notes = _notes("LeBron playoff stats in 2026")
+    assert any("read 2026 as the 2025-26 season" in note for note in notes)
+    assert not any("no season specified" in note for note in notes)

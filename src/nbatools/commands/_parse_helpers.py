@@ -433,13 +433,14 @@ def extract_season(text: str) -> str | None:
 # "LeBron points per game in 2019", "the 2016 season": a lone year names the
 # season that ended in it, as the 2016 playoffs and the 2016 title do.
 _YEAR = r"(?:19|20)\d{2}"
-# "in 2000 games" is a count, not a year.
-_YEAR_NOT_A_COUNT = (
-    r"(?!\s+(?:games?|points?|pts|rebounds?|assists?|minutes?|mins?|shots?|attempts?|"
-    r"threes?|steals?|blocks?|turnovers?|wins?|losses|times)\b)"
+# "scored 30 points in 2000 games" is a count, not a year: a stat value
+# earlier in the question and "games"/"times" right after the number.
+_YEAR_COUNT_NOUN = re.compile(r"\s+(?:games?|times)\b")
+_YEAR_COUNT_CONTEXT = re.compile(
+    r"\b\d+\+?\s*(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes?)\b|\bscored\b"
 )
 _BARE_YEAR = re.compile(
-    rf"\b(?:in|during|for)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b{_YEAR_NOT_A_COUNT}"
+    rf"\b(?:in|during|for)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b"
     r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b))"
     rf"|\b(?:the\s+)?({_YEAR})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
 )
@@ -471,6 +472,10 @@ def extract_bare_year_season(text: str) -> tuple[int, str] | None:
         return None
     match = _BARE_YEAR.search(text)
     if not match or _BARE_YEAR_RANGE_WORD.search(text[: match.start()]):
+        return None
+    if _YEAR_COUNT_NOUN.match(text, match.end()) and _YEAR_COUNT_CONTEXT.search(
+        text[: match.start()]
+    ):
         return None
     from nbatools.commands._seasons import int_to_season
 

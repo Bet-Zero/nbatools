@@ -2195,6 +2195,7 @@ def _finalize_route(parsed: dict) -> dict:
         and season == default_season_for_context("Playoffs")
         and extract_season(q) is None
         and not parsed.get("explicit_relative_season")
+        and not parsed.get("bare_year_season")
     ):
         if re.search(r"\bthis\s+(?:year|season)\b|\bcurrent\s+season\b", q):
             season = default_season_for_context("Regular Season")
