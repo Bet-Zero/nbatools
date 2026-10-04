@@ -36,6 +36,17 @@ def _game_finder(season: str, kind: str) -> Any:
 
 
 _CDN = "https://cdn.nba.com/static/json"
+# nba.com's CDN refuses requests that do not look like they come from its site.
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/129.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Origin": "https://www.nba.com",
+    "Referer": "https://www.nba.com/",
+}
 
 
 class _CdnJson:
@@ -45,7 +56,7 @@ class _CdnJson:
         import pandas as pd
         import requests
 
-        response = requests.get(url, timeout=REQUEST_TIMEOUT, headers={"User-Agent": "Mozilla/5.0"})
+        response = requests.get(url, timeout=REQUEST_TIMEOUT, headers=_BROWSER_HEADERS)
         response.raise_for_status()
         if key not in response.json():
             raise ValueError(f"CDN document has no {key!r}")
