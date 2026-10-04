@@ -113,3 +113,24 @@ def test_team_streak_vs_division_and_quality_applies_the_filter(query):
     assert not result.metadata.get("unsupported_filters")
     kinds = {f["kind"] for f in result.metadata["applied_filters"]}
     assert kinds & {"opponent_division", "quality", "division"}, kinds
+
+
+def test_league_win_streaks_vs_the_west_rank_every_team():
+    west = _members("w")
+    expected = {}
+    for team in ("LAL", "BOS", "NYK", "MIA", "DEN", "GSW"):
+        expected[team] = _longest([g["wl"] == "W" for g in _team_games(team, west)])
+    result = _run("longest winning streak vs the West")
+    assert result.route == "team_streak_finder"
+    rows = result.result.to_dict()["sections"]["streak"]
+    lengths = [row["streak_length"] for row in rows]
+    assert lengths == sorted(expected.values(), reverse=True)[: len(lengths)]
+
+
+@pytest.mark.parametrize(
+    "query", ["longest 25 point streak vs the East", "longest winning streak vs Pacific teams"]
+)
+def test_league_streaks_vs_a_group_route(query):
+    result = _run(query)
+    assert result.route in {"team_streak_finder", "player_streak_finder"}
+    assert not result.metadata.get("unsupported_filters")

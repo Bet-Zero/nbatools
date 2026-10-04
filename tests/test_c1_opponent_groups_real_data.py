@@ -220,3 +220,26 @@ def test_celtics_win_streak_vs_the_west(season):
     result = _run(f"Celtics longest winning streak vs the West in {season}")
     assert result.route == "team_streak_finder"
     assert result.result.to_dict()["sections"]["streak"][0]["streak_length"] == best
+
+
+def test_league_win_streaks_vs_the_east_2023_24():
+    season = "2023-24"
+    games = _team_games(season)
+    east = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "East"
+    }
+    games = games[games["opponent_team_id"].isin(east)].sort_values(["game_date", "game_id"])
+    longest = {}
+    for team, rows in games.groupby("team_abbr"):
+        best = run = 0
+        for outcome in rows["wl"]:
+            run = run + 1 if outcome == "W" else 0
+            best = max(best, run)
+        longest[team] = best
+
+    result = _run(f"longest winning streak vs the East in {season}")
+    assert result.route == "team_streak_finder"
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert rows[0]["streak_length"] == max(longest.values())

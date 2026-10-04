@@ -742,6 +742,13 @@ _STREAK_GRAMMAR = (
 )
 
 
+_OPPONENT_GROUP_GRAMMAR = (
+    r"\b(?:against|vs\.?|versus)\b",
+    r"\b(?:east(?:ern)?|west(?:ern)?)(?:\s+conference)?\b",
+    r"\b(?:atlantic|central|southeast|northwest|pacific|southwest|midwest)(?:\s+division)?\b",
+)
+
+
 def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
     """Rank every player (or team) by their longest or current streak."""
     q = parsed["normalized_query"]
@@ -763,7 +770,12 @@ def try_league_streak_route(parsed: dict) -> tuple[str, dict] | None:
     from nbatools.commands._leaderboard_eligibility import _claimed_ranges, _residual_tokens
 
     ranges = _claimed_ranges(q, parsed, None)
-    for pattern in (*_GAME_LIST_GRAMMAR, *_STREAK_GRAMMAR):
+    patterns = [*_GAME_LIST_GRAMMAR, *_STREAK_GRAMMAR]
+    if parsed.get("opponent_conference") or parsed.get("opponent_division"):
+        # "longest winning streak vs the East": the group is read upstream and
+        # applied season by season on the streak finders.
+        patterns.extend(_OPPONENT_GROUP_GRAMMAR)
+    for pattern in patterns:
         ranges.extend(m.span() for m in re.finditer(pattern, q))
     if _residual_tokens(q, ranges):
         # An unread word may be a misspelled player or team; a league-wide
