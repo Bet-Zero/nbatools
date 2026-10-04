@@ -264,7 +264,9 @@ def test_most_points_in_a_situation_is_a_total_and_rates_are_answered():
     # One season of closeout games is a small sample: a rate board still answers.
     rate = _ok("who has the best fg% in closeout games in 2026").result.to_dict()["sections"]
     assert rate["leaderboard"]
-    assert _ok("most points per game in closeout games in 2026").result.to_dict()["sections"]["leaderboard"]
+    assert _ok("most points per game in closeout games in 2026").result.to_dict()["sections"][
+        "leaderboard"
+    ]
 
 
 @pytest.mark.parametrize(
