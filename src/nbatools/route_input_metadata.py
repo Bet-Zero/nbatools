@@ -84,6 +84,26 @@ RECORD_STAT_VALUES = ("wins", "losses", "win_pct")
 PRESENCE_STATE_VALUES = ("on", "off", "both")
 SPECIAL_EVENT_VALUES = ("double_double", "triple_double")
 STRETCH_METRIC_VALUES = ("game_score", "pts", "reb", "ast", "ts_pct")
+TEAM_STRETCH_METRIC_VALUES = (
+    "wins",
+    "pts",
+    "opp_pts",
+    "plus_minus",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "fg3m",
+    "tov",
+    "fg_pct",
+    "fg3_pct",
+    "ft_pct",
+    "efg_pct",
+    "ts_pct",
+    "off_rating",
+    "def_rating",
+    "net_rating",
+)
 SEASON_LEADER_STAT_VALUES = (
     "pts",
     "reb",
@@ -746,6 +766,39 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             {"window_size": 3, "stretch_metric": "pts", "season": "2025-26"},
             {"player": "Devin Booker", "window_size": 4, "stretch_metric": "pts"},
         ),
+    ),
+    "team_stretch_leaderboard": RouteInputMetadata(
+        route="team_stretch_leaderboard",
+        implementation_module="nbatools.commands.team_stretch_leaderboard",
+        implementation_function="build_result",
+        description="Rank stretches of N consecutive team games by record or a team stat.",
+        required_kwargs=("window_size",),
+        optional_kwargs=(
+            "season",
+            "start_season",
+            "end_season",
+            "season_type",
+            "start_date",
+            "end_date",
+            "home_only",
+            "away_only",
+            "last_n",
+            "team",
+            "teams",
+            "opponent",
+            "stretch_metric",
+            "worst",
+            "limit",
+        ),
+        allowed_values={
+            "season_type": SEASON_TYPE_VALUES,
+            "stretch_metric": TEAM_STRETCH_METRIC_VALUES,
+        },
+        examples=(
+            {"team": "BOS", "window_size": 10, "season": "2025-26"},
+            {"window_size": 10, "stretch_metric": "opp_pts", "season": "2025-26"},
+        ),
+        notes=("Windows stay inside one season; wins is the default metric.",),
     ),
     "playoff_history": RouteInputMetadata(
         route="playoff_history",

@@ -78,6 +78,7 @@ ROUTE_TO_QUERY_CLASS = {
     "season_leaders": "leaderboard",
     "season_team_leaders": "leaderboard",
     "player_stretch_leaderboard": "leaderboard",
+    "team_stretch_leaderboard": "leaderboard",
     "top_player_games": "leaderboard",
     "top_team_games": "leaderboard",
     "player_streak_finder": "streak",

@@ -229,16 +229,14 @@ class TestTopPerformanceAndTeamStretchBoundaries:
         assert "reb_per_game" not in rows[0]
 
     @pytest.mark.needs_data
-    def test_team_scoped_rolling_stretch_returns_unsupported_not_player_rows(self):
+    def test_team_scoped_rolling_stretch_returns_team_rows_not_player_rows(self):
         qr = execute_natural_query("best 5-game team scoring stretch this season")
 
-        assert qr.route == "player_stretch_leaderboard"
-        assert qr.result.result_status == "no_result"
-        assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["unsupported_filters"] == ["team_rolling_stretch"]
-        assert qr.to_dict()["sections"] == {}
-        notes = qr.metadata.get("notes", []) + qr.result.notes
-        assert any("team rolling-stretch leaderboards" in note for note in notes)
+        assert qr.route == "team_stretch_leaderboard"
+        assert qr.result.result_status == "ok"
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows and all("player_name" not in row for row in rows)
+        assert rows[0]["stretch_metric"] == "pts"
 
     @pytest.mark.needs_data
     def test_player_rolling_stretch_still_returns_rows(self):

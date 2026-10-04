@@ -345,14 +345,10 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
         },
         {
             "query": "best 5-game team scoring stretch this season",
-            "route": "player_stretch_leaderboard",
-            "fields": {"window_size": 5, "stretch_metric": "pts"},
-            "route_kwargs": {
-                "window_size": 5,
-                "stretch_metric": "pts",
-                "unsupported_filters": ["team_rolling_stretch"],
-            },
-            "note_contains": "unsupported_boundary",
+            "route": "team_stretch_leaderboard",
+            "fields": {"window_size": 5},
+            "route_kwargs": {"window_size": 5, "stretch_metric": "pts"},
+            "no_unsupported_filters": True,
         },
         {
             "query": "Jokic best 5-game rebounding stretch this season",

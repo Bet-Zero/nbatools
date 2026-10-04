@@ -60,3 +60,26 @@ def test_league_winning_streaks_match_raw_rows():
     assert [row["streak_length"] for row in rows] == sorted(longest.values(), reverse=True)[:10]
     for row in rows:
         assert longest[row["team_name"]] == row["streak_length"], row
+
+
+def test_team_best_10_game_stretches_match_raw_rows():
+    games = _games("team_game_stats")
+    best = {}
+    for name, team in games.groupby("team_name"):
+        wins = (team["wl"] == "W").tolist()
+        net = pd.to_numeric(team["plus_minus"]).tolist()
+        best[name] = max(
+            (sum(wins[i : i + 10]), round(sum(net[i : i + 10]) / 10, 2))
+            for i in range(len(wins) - 9)
+        )
+
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(f"which team had the best 10 game stretch in {SEASON}")
+    assert result.metadata["route"] == "team_stretch_leaderboard"
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert [(row["wins"], row["net_per_game"]) for row in rows] == sorted(
+        best.values(), reverse=True
+    )[:10]
+    for row in rows:
+        assert best[row["team_name"]] == (row["wins"], row["net_per_game"]), row

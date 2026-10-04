@@ -171,6 +171,7 @@ SHAPE_BY_ROUTE = {
     "team_record": "team_record",
     "team_record_leaderboard": "leaderboard_table",
     "team_streak_finder": "streak_table",
+    "team_stretch_leaderboard": "leaderboard_table",
     "top_player_games": "top_performances",
     "top_team_games": "top_performances",
 }

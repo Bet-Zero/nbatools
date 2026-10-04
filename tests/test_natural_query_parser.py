@@ -1920,11 +1920,12 @@ def test_player_specific_stretch_query_preserves_subject():
         "best 5-game offensive stretch by a team",
     ],
 )
-def test_team_scoped_rolling_stretch_sets_unsupported_filter(query):
+def test_team_scoped_rolling_stretch_routes_to_team_stretches(query):
     parsed = parse_query(query)
-    assert parsed["route"] == "player_stretch_leaderboard"
-    assert parsed["route_kwargs"]["unsupported_filters"] == ["team_rolling_stretch"]
-    assert any("team rolling-stretch" in note for note in parsed.get("notes", []))
+    assert parsed["route"] == "team_stretch_leaderboard"
+    assert parsed["route_kwargs"]["window_size"] == 5
+    assert parsed["route_kwargs"]["stretch_metric"] == "pts"
+    assert "unsupported_filters" not in parsed["route_kwargs"]
 
 
 @pytest.mark.parametrize(

@@ -298,6 +298,7 @@ ROUTE_TO_INTENT: dict[str, str] = {
     "season_leaders": QueryIntent.LEADERBOARD,
     "season_team_leaders": QueryIntent.LEADERBOARD,
     "player_stretch_leaderboard": QueryIntent.LEADERBOARD,
+    "team_stretch_leaderboard": QueryIntent.LEADERBOARD,
     "top_player_games": QueryIntent.LEADERBOARD,
     "top_team_games": QueryIntent.LEADERBOARD,
     "team_record_leaderboard": QueryIntent.LEADERBOARD,

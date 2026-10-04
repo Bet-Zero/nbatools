@@ -2044,8 +2044,78 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
         r"\b\d+\s*(?:-\s*|\s+)games?\s+team\b",
         r"\bstretch(?:es)?\s+by\s+(?:a\s+)?team\b",
         r"\bby\s+(?:a\s+)?team\b",
+        r"\bteams?\s+with\b",
+        r"\bteams?\s+(?:best|top|hottest|worst|coldest|longest)\b",
     )
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
+
+
+_TEAM_STRETCH_METRIC_PATTERNS = (
+    (r"\bnet\s+rating\b", "net_rating"),
+    (r"\b(?:offensive|off)\s+rating\b", "off_rating"),
+    (r"\b(?:defensive|def)\s+rating\b", "def_rating"),
+    (r"\b(?:points?\s+allowed|allow(?:ed|ing)?|defen[cs]e|defensive)\b", "opp_pts"),
+    (
+        r"\b(?:point\s+differential|differential|margin|plus[\s-]?minus|\+/-)\b",
+        "plus_minus",
+    ),
+    (r"\b(?:3|three)[\s-]?(?:point|pt)?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
+    (r"\bthrees\b|\b3s\b|\b(?:3|three)[\s-]?pointers\b", "fg3m"),
+    (r"\bfree[\s-]?throw\b", "ft_pct"),
+    (r"\b(?:efficient|efficiency|true\s+shooting)\b", "ts_pct"),
+    (r"\bshooting\b", "fg_pct"),
+    (r"\b(?:scoring|offensive|offense|points?)\b", "pts"),
+    (r"\brebound(?:ing|s)?\b", "reb"),
+    (r"\bassists?\b", "ast"),
+    (r"\bturnovers?\b", "tov"),
+    (r"\bsteals?\b", "stl"),
+    (r"\bblocks?\b", "blk"),
+)
+_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|bad|ugliest)\b")
+_TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest)\b")
+# "lowest"/"most" name the end of the raw number, not good or bad.
+_TEAM_STRETCH_LOW = re.compile(r"\b(?:lowest|fewest|least|min(?:imum)?)\b")
+# "most defensive"/"least efficient" grade the team, not the raw number.
+_TEAM_STRETCH_QUALITY = re.compile(
+    r"\b(most|least)\s+(?:efficient|efficiency|defensive|offensive|dominant)\b"
+)
+_TEAM_STRETCH_HIGH = re.compile(
+    r"\b(?:highest|most|max(?:imum)?)\b(?!\s+(?:efficient|efficiency|defensive|offensive))"
+)
+_TEAM_STRETCH_LOWER_IS_BETTER = {"opp_pts", "tov", "def_rating"}
+
+
+def detect_team_stretch_request(text: str) -> dict | None:
+    """Metric and direction of a team rolling stretch ("Celtics best 10 game stretch").
+
+    A team's "best stretch" with no stat named means its best record over the
+    window. A named stat the team route cannot rank (Game Score, minutes) is
+    passed through so the route refuses it rather than ranking by record.
+    ``None`` when the text is not a rolling-stretch query.
+    """
+    if detect_stretch_query(text) is None:
+        return None
+    if re.search(r"\bgame\s+score\b", text):
+        metric = "game_score"
+    else:
+        metric = next(
+            (key for pattern, key in _TEAM_STRETCH_METRIC_PATTERNS if re.search(pattern, text)),
+            detect_stat(text) or "wins",
+        )
+    quality = _TEAM_STRETCH_QUALITY.search(text)
+    if _TEAM_STRETCH_WORST.search(text):
+        worst = True
+    elif quality:
+        worst = quality.group(1) == "least"
+    elif _TEAM_STRETCH_BEST.search(text):
+        worst = False
+    elif _TEAM_STRETCH_LOW.search(text):
+        worst = metric not in _TEAM_STRETCH_LOWER_IS_BETTER
+    elif _TEAM_STRETCH_HIGH.search(text):
+        worst = metric in _TEAM_STRETCH_LOWER_IS_BETTER
+    else:
+        worst = False
+    return {"metric": metric, "worst": worst}
 
 
 _LINEUP_MEMBER_SPAN_RE = re.compile(
