@@ -174,6 +174,8 @@ _SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(TEAM_ALIASES.keys(), key=len, rever
 
 _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
     "player_game_summary",
+    "team_streak_finder",
+    "player_streak_finder",
     "player_split_summary",
     "team_split_summary",
     "player_game_finder",
@@ -469,6 +471,8 @@ def _mark_original_unsupported_filter(kwargs: dict | None, filter_id: str) -> No
 # so honour season-scoped opponent groups (conference and division).
 _OPPONENT_GROUP_ROUTES = {
     "team_record",
+    "team_streak_finder",
+    "player_streak_finder",
     "team_record_leaderboard",
     "player_game_summary",
     "player_game_finder",

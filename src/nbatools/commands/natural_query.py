@@ -657,6 +657,8 @@ _SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
 # _natural_query_execution._OPPONENT_GROUP_ROUTES).
 _OPPONENT_GROUP_ROUTES = {
     "team_record",
+    "team_streak_finder",
+    "player_streak_finder",
     "team_record_leaderboard",
     "player_game_summary",
     "player_game_finder",
