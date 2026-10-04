@@ -1981,6 +1981,7 @@ def detect_opponent_quality(text: str) -> dict | None:
         (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}good\s+teams\b", "good teams"),
         (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}bad\s+teams\b", "bad teams"),
         (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+teams\b", "top teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}best\s+teams\b", "top teams"),
         (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+teams\b", "top 10 teams"),
         (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]5\s+teams\b", "top 5 teams"),
         (

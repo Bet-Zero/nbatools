@@ -122,7 +122,7 @@ def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
         stop = STOP_WORDS
         pattern = (  # noqa: E501
             rf"\b{re.escape(alias_a)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
-            rf"(?=\s+(?:{stop})\b|$)"
+            rf"(?=\s+(?:{stop}|against|vs\.?|versus)\b|$)"
         )
         m = re.search(pattern, cleaned_text)
         if not m:
@@ -231,7 +231,9 @@ def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | 
     )
     if compare_and:
         player_a = _resolve_comparison_player_phrase(compare_and.group(1))
-        player_b = _resolve_comparison_player_phrase(compare_and.group(2))
+        # "compare lebron and curry vs the celtics": the opponent is a filter.
+        second = re.sub(r"\s+(?:against|vs\.?|versus)\s+.*$", "", compare_and.group(2))
+        player_b = _resolve_comparison_player_phrase(second)
         if player_a and player_b and player_a != player_b:
             return player_a, player_b
 
@@ -342,6 +344,8 @@ def _extract_compare_and_teams(text: str) -> tuple[str | None, str | None]:
 
 
 _ADJACENT_TEAM_SEPARATOR_RE = re.compile(r"^[\s/&,+-]+$")
+# "Lakers and Nuggets playoff history", "Heat vs. Knicks series history"
+_PLAYOFF_PAIR_JOIN_RE = re.compile(r"\s+(?:and|vs\.?|versus)\s+(?:the\s+)?")
 
 
 def _non_overlapping_team_mentions(text: str) -> list[tuple[int, int, str]]:
@@ -369,6 +373,7 @@ def extract_adjacent_playoff_team_comparison(text: str) -> tuple[str | None, str
     cleaned_text = strip_matchup_noise(text)
     has_playoff_context = bool(
         re.search(r"\b(?:playoff|postseason)\s+(?:history|series|matchups?|record)\b", cleaned_text)
+        or re.search(r"\bseries\s+(?:history|results)\b", cleaned_text)
         or re.search(
             r"\b(?:nba\s+finals?|the\s+finals|finals?|conference\s+finals?|conf\s+finals?)"
             r"\s+(?:history|series|matchups?|record)\b",
@@ -385,7 +390,9 @@ def extract_adjacent_playoff_team_comparison(text: str) -> tuple[str | None, str
         if team_a == team_b:
             continue
         separator = cleaned_text[first_end:second_start]
-        if _ADJACENT_TEAM_SEPARATOR_RE.fullmatch(separator):
+        if _ADJACENT_TEAM_SEPARATOR_RE.fullmatch(separator) or _PLAYOFF_PAIR_JOIN_RE.fullmatch(
+            separator
+        ):
             return team_a, team_b
 
     return None, None
@@ -626,7 +633,9 @@ _COMPARISON_TRAILING_CONTEXT = (
     # Stat / metric words that follow the second player in a stat comparison
     # ("curry vs dame 3 point shooting") and must not be read as a name typo.
     r"|\d|points?|pts|rebounds?|reb|rebs|assists?|ast|asts|scoring|shooting"
-    r"|threes?|3pt|blocks?|steals?|turnovers?|efficiency|better|head)"
+    r"|threes?|3pt|blocks?|steals?|turnovers?|efficiency|better|head"
+    # Opponent filters after the pair: "lebron vs curry against winning teams".
+    r"|against|vs\.?|versus)"
 )
 _VS_COMPARISON_PHRASE_RE = re.compile(
     r"(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"

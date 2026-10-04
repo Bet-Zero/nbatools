@@ -551,6 +551,9 @@ def _build_query_metadata(
     route_kwargs = parsed.get("route_kwargs")
     if not isinstance(route_kwargs, dict):
         route_kwargs = {}
+    if isinstance(route_kwargs.get("team"), list):
+        # "Lakers and Celtics leading scorers" ranks both teams.
+        team = ", ".join(route_kwargs["team"])
     unsupported_filters = parsed.get("unsupported_filters") or route_kwargs.get(
         "unsupported_filters"
     )
