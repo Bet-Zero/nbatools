@@ -1273,7 +1273,8 @@ def _add_player_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -
     metric = str(row["stretch_metric"])
     value = float(row["stretch_value"])
     if metric == "game_score":
-        shown = f"a {_format_one_decimal(value)} Game Score average"
+        score = _format_one_decimal(value)
+        shown = f"{_indefinite_article(score)} {score} Game Score average"
     elif metric.endswith("_pct"):
         shown = f"{value:.1%} {_PLAYER_STRETCH_RATE_PHRASES.get(metric, metric)}"
     else:
@@ -1295,14 +1296,15 @@ def _add_player_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -
         when = f"of the {first}{playoffs}" if playoffs else f"of {first}"
     else:
         when = f"from the {first} to {last}{playoffs}" if playoffs else f"from {first} to {last}"
+    direction = "worst" if result.metadata.get("worst") else "best"
     if metadata.get("player"):
         metadata["answer_phrase"] = (
-            f"{row['player_name']}'s best {size}-game stretch {when} was {shown} {span}."
+            f"{row['player_name']}'s {direction} {size}-game stretch {when} was {shown} {span}."
         )
     else:
         metadata["answer_phrase"] = (
-            f"{row['player_name']} had the best {size}-game stretch {when} by any player: "
-            f"{shown} {span}."
+            f"{row['player_name']} had the {direction} {size}-game stretch {when} by any "
+            f"player: {shown} {span}."
         )
 
 

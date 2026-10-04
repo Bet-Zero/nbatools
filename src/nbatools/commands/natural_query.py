@@ -905,7 +905,7 @@ def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
     ):
         return None
 
-    if re.match(r"^(?:who|which|what|best|top|hottest|most|longest)\b", q):
+    if re.match(r"^(?:who|which|what|best|top|hottest|most|longest|worst|coldest)\b", q):
         return None
 
     match = re.match(
@@ -1492,6 +1492,8 @@ def _build_parse_state(query: str) -> dict:
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     window_defaulted = bool(stretch_request and stretch_request.get("window_defaulted"))
+    stretch_worst = bool(stretch_request and stretch_request.get("worst"))
+    stretch_player_group = stretch_request.get("player_group") if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
     team_stretch_request = detect_team_stretch_request(q)
     if team_stretch_request is not None:
@@ -1851,6 +1853,8 @@ def _build_parse_state(query: str) -> dict:
         "lineup_query_mode": lineup_query_mode,
         "window_size": window_size,
         "window_defaulted": window_defaulted,
+        "stretch_worst": stretch_worst,
+        "stretch_player_group": stretch_player_group,
         "stretch_metric": stretch_metric,
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
@@ -2806,9 +2810,40 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_a
         and not team_b
         and not (team and player is None and not stretch_names_players)
+        and parsed.get("stretch_player_group")
+        and not player
+    ):
+        # "best stretch by a rookie": the stretch ranking cannot narrow to a
+        # player group, so refuse rather than rank every player.
+        route = "player_stretch_leaderboard"
+        notes.append(
+            f"unsupported_boundary: stretches limited to {parsed['stretch_player_group']} "
+            "are not supported yet; no all-player ranking was substituted"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "player_group_stretch",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            window_size=window_size,
+            stretch_metric=stretch_metric,
+            limit=top_n or 10,
+        )
+    elif (
+        window_size is not None
+        and stretch_metric is not None
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and not (team and player is None and not stretch_names_players)
     ):
         route = "player_stretch_leaderboard"
         route_kwargs = {
+            "worst": bool(parsed.get("stretch_worst")),
             "season": season,
             "start_season": start_season,
             "end_season": end_season,

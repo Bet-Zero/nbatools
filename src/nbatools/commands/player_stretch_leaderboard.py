@@ -176,6 +176,7 @@ def build_result(
     stretch_metric: str = "game_score",
     limit: int = 10,
     dedupe_players: bool = False,
+    worst: bool = False,
 ) -> LeaderboardResult | NoResult:
     if window_size is None or window_size <= 0:
         return NoResult(
@@ -274,9 +275,10 @@ def build_result(
         )
 
     windows["stretch_value"] = pd.to_numeric(windows["stretch_value"], errors="coerce").round(3)
+    # "worst stretch" ranks from the bottom: the lowest value over the window.
     windows = windows.sort_values(
         ["stretch_value", "game_date", "player_name"],
-        ascending=[False, False, True],
+        ascending=[worst, False, True],
     )
     if dedupe_players:
         windows = windows.drop_duplicates(subset=["player_id"], keep="first")
@@ -311,6 +313,7 @@ def build_result(
         leaders=result,
         current_through=compute_current_through_for_seasons(seasons, season_type),
         notes=notes,
+        metadata={"worst": worst},
     )
 
 

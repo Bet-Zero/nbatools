@@ -142,3 +142,72 @@ def test_league_three_point_stretch_needs_a_made_three_per_game():
     assert any(
         note.startswith("qualifier: windows need 1+ made threes") for note in metadata["notes"]
     )
+
+
+def test_named_player_worst_stretch_ranks_from_the_bottom():
+    games = _player_points("LeBron James")
+    windows = [
+        (round(sum(p for _, p in games[i : i + 5]) / 5, 3), games[i][0], games[i + 4][0])
+        for i in range(len(games) - 4)
+    ]
+    worst = min(windows, key=lambda w: w[0])
+
+    rows, metadata = _board(f"LeBron worst 5 game scoring stretch in {SEASON}")
+    assert rows[0]["stretch_value"] == pytest.approx(worst[0])
+    assert metadata["answer_phrase"].startswith("LeBron James's worst 5-game stretch")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"LeBron coldest stretch in {SEASON}",
+        f"worst 5 game scoring stretch in {SEASON}",
+    ],
+)
+def test_worst_wording_says_worst(query):
+    _, metadata = _board(query)
+    assert "worst" in metadata["answer_phrase"]
+
+
+@pytest.mark.parametrize(
+    ("query", "metric"),
+    [
+        ("best 5 game scoring stretch by a Lakers player", "pts"),
+        ("LeBron best 5 game scoring stretch while shooting 50 percent", "pts"),
+        ("Curry best 3 point shooting 5 game stretch", "fg3_pct"),
+    ],
+)
+def test_shooting_only_counts_when_it_names_the_stretch(query, metric):
+    rows, _ = _board(f"{query} in {SEASON}")
+    assert rows[0]["stretch_metric"] == metric
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"best stretch for a rookie in {SEASON}",
+        f"best stretch by a shooting guard in {SEASON}",
+        f"best 5 game scoring stretch by a shooting guard in {SEASON}",
+        f"best shooting stretch by a guard in {SEASON}",
+    ],
+)
+def test_player_group_stretches_refuse_instead_of_ranking_everyone(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    "query", [f"best stretch four in {SEASON}", f"top stretch bigs in {SEASON}"]
+)
+def test_stretch_positions_are_not_rolling_stretches(query):
+    result = execute_natural_query(query)
+    assert result.metadata.get("route") not in {
+        "team_stretch_leaderboard",
+        "player_stretch_leaderboard",
+    }
+
+
+def test_team_shooting_stretch_ranks_teams():
+    _, metadata = _board(f"best team shooting stretch in {SEASON}")
+    assert metadata["route"] == "team_stretch_leaderboard"

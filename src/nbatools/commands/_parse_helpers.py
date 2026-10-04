@@ -2106,7 +2106,11 @@ _UNSIZED_STRETCH = re.compile(
     r"(?:\s+[a-z0-9%.'/-]+){0,3}?\s+stretch(?:es)?\b"
 )
 # "down the stretch" is late-game play and "stretch run" the end of a season.
-_NOT_A_ROLLING_STRETCH = re.compile(r"\b(?:down|in)\s+the\s+stretch\b|\bstretch\s+run\b")
+_NOT_A_ROLLING_STRETCH = re.compile(
+    r"\b(?:down|in)\s+the\s+stretch\b|\bstretch\s+run\b"
+    # "stretch four" / "stretch big" are positions.
+    r"|\bstretch\s+(?:four|4|five|5|bigs?|forwards?)\b"
+)
 
 
 def _extract_stretch_window_size(text: str) -> int | None:
@@ -2134,13 +2138,23 @@ def _extract_explicit_window_size(text: str) -> int | None:
     return None
 
 
+# Shooting rates only when "shooting" names the stretch ("3 point shooting
+# stretch"), never "by a shooting guard" or "scoring stretch while shooting".
+_SIZE_GAP = r"(?:\s+\d+\s*(?:-\s*|\s+)games?)?\s+"
 _STRETCH_SHOOTING_PATTERNS = (
-    (r"\btrue\s+shooting\b", "ts_pct"),
-    (r"\beffective\s+(?:field\s+goal\s+)?shooting\b", "efg_pct"),
-    (r"\b(?:3|three)[\s-]?(?:point|pt)?s?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
-    (r"\bfree[\s-]?throw\s+shooting\b", "ft_pct"),
-    (r"\bshooting\b", "fg_pct"),
+    (rf"\btrue\s+shooting{_SIZE_GAP}stretch", "ts_pct"),
+    (rf"\beffective\s+(?:field\s+goal\s+)?shooting{_SIZE_GAP}stretch", "efg_pct"),
+    (rf"\b(?:3|three)[\s-]?(?:point|pt)?s?\s+shooting{_SIZE_GAP}stretch", "fg3_pct"),
+    (rf"\bfree[\s-]?throw\s+shooting{_SIZE_GAP}stretch", "ft_pct"),
+    (rf"\bshooting{_SIZE_GAP}stretch", "fg_pct"),
 )
+# Player groups a player stretch ranking cannot filter to.
+_STRETCH_PLAYER_GROUP = re.compile(
+    r"\b(?:rookies?|sophomores?|(?:point|shooting)\s+guards?|guards?"
+    r"|(?:small|power)\s+forwards?|forwards?|centers?|bigs?|wings?|bench\s+players?"
+    r"|reserves?|starters?)\b"
+)
+_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|ugliest)\b")
 
 
 def detect_stretch_query(text: str) -> dict | None:
@@ -2178,6 +2192,8 @@ def detect_stretch_query(text: str) -> dict | None:
         "window_size": window_size,
         "stretch_metric": stretch_metric,
         "window_defaulted": _extract_explicit_window_size(text) is None,
+        "worst": bool(_STRETCH_WORST.search(text)),
+        "player_group": (group.group(0) if (group := _STRETCH_PLAYER_GROUP.search(text)) else None),
     }
 
 
@@ -2200,6 +2216,8 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
         r"\bby\s+(?:a\s+|any\s+)?team\b",
         r"\bteams?\s+with\b",
         r"\bteams?\s+(?:best|top|hottest|worst|coldest|longest)\b",
+        # "best team shooting stretch"
+        r"\bteam\s+(?:[a-z0-9%-]+\s+){0,3}stretch(?:es)?\b",
     )
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
 
