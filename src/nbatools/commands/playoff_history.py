@@ -949,6 +949,8 @@ def _champions(df: pd.DataFrame) -> pd.DataFrame:
         _team_key=finals["team_id"].astype(str).str.removesuffix(".0"),
         _win=finals["wl"].astype(str).eq("W").astype(int),
     )
+    # A repeated game row must not count as a second win.
+    work = work.drop_duplicates(["season", "game_id", "_team_key"])
     wins = work.groupby(["season", "_team_key"], as_index=False).agg(
         team_abbr=("team_abbr", "last"), team_name=("team_name", "last"), wins=("_win", "sum")
     )

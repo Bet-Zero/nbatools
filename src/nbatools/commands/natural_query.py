@@ -1311,6 +1311,12 @@ _NOT_A_RING = re.compile(
     r"|\b(?:mvp|dpoy|roy|awards?)\b"
 )
 # "players with the most rings", "who has the most rings": the players board.
+# Qualifiers a ring count cannot honour: refuse rather than answer the whole total.
+_RING_QUALIFIER = re.compile(
+    r"\b(?:vs\.?|versus|against|compared|than|over|and|or|as\s+an?|while|when|if)\b"
+    r"|\b(?:home|road|away|active|retired|bench|starters?|rookies?|among)\b"
+    r"|\bcurrent\s+players?\b"
+)
 _PLAYER_RING_BOARD = re.compile(
     r"\brings?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\brings?\b"
     r"|\bplayers?\b.*\b(?:most|leaders?)\b|\b(?:most|leaders?)\b.*\bplayers?\b"
@@ -2550,6 +2556,23 @@ def _route_parsed_query(parsed: dict) -> dict:
         and not _TITLE_EXTRA_CONDITION.search(q)
         and not _title_year_left_unused(q)
         and not (with_player or without_player)
+        and not _RING_QUALIFIER.search(q)
+        and not any(
+            parsed.get(key)
+            for key in (
+                "opponent",
+                "opponent_quality",
+                "opponent_player",
+                "opponent_conference",
+                "opponent_division",
+                "home_only",
+                "away_only",
+                "stat",
+                "min_value",
+                "max_value",
+                "threshold_conditions",
+            )
+        )
         and not unresolved_without_player
         and not (
             unresolved_with_player

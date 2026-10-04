@@ -9,6 +9,7 @@ series in the fixture, so these tests relabel it as the Finals.
 
 from __future__ import annotations
 
+import pandas as pd
 import pytest
 
 import nbatools.commands.playoff_history as playoff_history
@@ -80,6 +81,19 @@ def test_named_span_is_kept():
         "LeBron conference titles",
         "players with the most rings with Shaq",
         "LeBron back to back titles",
+        # Qualifiers a ring count cannot honour refuse, never answer the total.
+        "how many rings does LeBron have vs the Warriors",
+        "LeBron rings against the Celtics",
+        "LeBron rings at home",
+        "LeBron rings on the road",
+        "LeBron rings when he scores 30",
+        "Kobe vs Jordan rings",
+        "how many rings does Kobe have compared to Shaq",
+        "LeBron rings over Jordan",
+        "Kobe and Shaq rings",
+        "LeBron rings as a Laker",
+        "most rings among active players",
+        "who has the most rings as a bench player",
     ],
 )
 def test_other_title_questions_stay_refused(query):
@@ -163,3 +177,15 @@ def test_unknown_player_is_no_match():
         player="Nobody Atall", titles=True, season="2025-26"
     )
     assert result.result_reason == "no_match"
+
+
+def test_repeated_finals_rows_do_not_crown_a_champion(monkeypatch):
+    load = playoff_history._load_playoff_games
+
+    def doubled(seasons):
+        games = load(seasons).assign(playoff_round_code="04")
+        games = games[games["game_id"].astype(int) <= 543]
+        return pd.concat([games, games], ignore_index=True)
+
+    monkeypatch.setattr(playoff_history, "_load_playoff_games", doubled)
+    assert playoff_history._champions(doubled(["2025-26"])).empty
