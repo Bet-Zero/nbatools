@@ -610,14 +610,15 @@ _SEASON = (
     r"\b(?:this|current|the\s+current)\s+(?:season|year|yr|campaign)\b",
     r"\b(?:last|past|previous)\s+(?:season|year)\b",
     r"\b(?:over|in|during|across|for)?\s*(?:the\s+)?(?:last|past|previous)\s+"
-    r"(?:\d+|two|three|four|five|six|seven|eight|nine|ten)\s+(?:seasons?|years?)\b",
+    r"(?:\d+|two|three|four|five|six|seven|eight|nine|ten)\s+"
+    r"(?:seasons?|years?|playoffs|postseasons?)\b",
     r"\b\d{4}\s*-\s*\d{2,4}\b",
     r"\b(?:in|for|during|from)\s+\d{4}\b",
     r"\bsince\s+\d{4}\b",
     r"\b(?:so\s+far|right\s+now|to\s+date|all[-\s]?time|career|ever)\b",
     r"\b(?:seasons?|years?)\b",
 )
-_SEASON_TYPE = (r"\b(?:playoffs?|postseason|preseason|play-?in)\b",)
+_SEASON_TYPE = (r"\b(?:playoffs?|postseasons?|preseason|play-?in)\b",)
 _LAST_N = (
     r"\b(?:over|in|during|across)?\s*(?:the\s+)?(?:his|her|their|its)?\s*"
     r"(?:last|past|previous|recent)\s+\d+\s*(?:games?)?\b",

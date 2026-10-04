@@ -319,3 +319,20 @@ def test_route_without_series_situation_support_refuses(query, route):
     assert result.metadata["route"] == route
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    ("query", "start"),
+    [
+        ("Lakers record past 2 postseasons", "2024-25"),
+        ("most points in the last 5 playoffs", "2021-22"),
+        ("playoff scoring leaders last 3 playoffs", "2023-24"),
+    ],
+)
+def test_last_n_postseasons_are_playoff_seasons(query, start):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["season_type"] == "Playoffs"
+    assert (kwargs["start_season"], kwargs["end_season"]) == (start, "2025-26")
+    assert kwargs.get("last_n") is None
+    assert not kwargs.get("unsupported_filters")

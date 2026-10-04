@@ -1338,7 +1338,7 @@ def _has_explicit_playoff_competition_context(text: str) -> bool:
 
 
 def detect_season_type(text: str) -> str:
-    if re.search(r"\b(playoff|playoffs|postseason)\b", text):
+    if re.search(r"\b(playoff|playoffs|postseasons?)\b", text):
         if detects_playoff_team_opponent_quality(
             text
         ) and not _has_explicit_playoff_competition_context(text):
