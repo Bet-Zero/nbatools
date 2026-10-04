@@ -1495,6 +1495,9 @@ def _build_parse_state(query: str) -> dict:
     team_stretch_request = detect_team_stretch_request(q)
     if team_stretch_request is not None:
         team_stretch_request.update(_named_team_pairs(q))
+        # "Lakers vs Celtics best stretch vs playoff teams": the pair parse skips
+        # opponent quality, so read it here for the vs path to honor or refuse.
+        team_stretch_request["opponent_quality"] = detect_opponent_quality(q)
     stretch_names_players = bool(stretch_request and re.search(r"\b(?:players?|who)\b", q))
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
@@ -2097,6 +2100,8 @@ def _finalize_route(parsed: dict) -> dict:
         # list, so the wording does not say who is ranked.
         and not set(versus_teams) & set(team_stretch_request.get("opponents", []))
     )
+    if versus_pair and opponent_quality is None:
+        opponent_quality = team_stretch_request.get("opponent_quality")
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)
     team_leader_stat = parsed.get("team_leader_stat")

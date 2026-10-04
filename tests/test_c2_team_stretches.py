@@ -390,3 +390,12 @@ def test_team_count_after_vs_is_not_a_meeting():
 def test_versus_team_also_in_an_opponent_list_is_not_a_pair():
     result = execute_natural_query(f"Lakers vs Celtics and Knicks best 5 game stretch in {SEASON}")
     assert result.metadata["route"] != "team_stretch_leaderboard"
+
+
+@pytest.mark.parametrize("quality", ["playoff teams", "winning teams"])
+def test_versus_pair_never_drops_an_opponent_quality_filter(quality):
+    result = execute_natural_query(
+        f"Lakers vs Celtics best 5 game stretch vs {quality} in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
