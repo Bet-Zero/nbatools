@@ -367,3 +367,45 @@ def test_published_generation_current_through_is_computed_once(tmp_path, monkeyp
         assert compute_current_through("2025-26") == "2026-04-13"
     finally:
         reset_data_source_cache()
+
+
+def test_published_generation_manifest_entry_is_inspected_once_when_passed(tmp_path, monkeypatch):
+    from nbatools.commands import freshness
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.delenv("DATA_SOURCE", raising=False)
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    (tmp_path / "data" / "generations" / "gen-a").mkdir(parents=True)
+    states = {"2025-26": "passed", "2024-25": "failed"}
+    calls = []
+
+    def fake_entry(season, season_type, data_root):
+        calls.append(season)
+        return {"validation_state": states[season], "validation_errors": []}
+
+    monkeypatch.setattr(freshness, "_manifest_entry", fake_entry)
+    reset_data_source_cache()
+    try:
+        # Legacy layout: always inspected.
+        freshness.manifest_entry("2025-26", "Regular Season")
+        freshness.manifest_entry("2025-26", "Regular Season")
+        assert calls == ["2025-26", "2025-26"]
+
+        pointer = tmp_path / "data" / "metadata" / "active_generation.json"
+        pointer.parent.mkdir(parents=True, exist_ok=True)
+        pointer.write_text(json.dumps({"generation_id": "gen-a"}))
+        reset_data_source_cache()
+        calls.clear()
+        first = freshness.manifest_entry("2025-26", "Regular Season")
+        first["validation_errors"].append("caller edit")
+        second = freshness.manifest_entry("2025-26", "Regular Season")
+        assert calls == ["2025-26"]
+        assert second["validation_errors"] == []
+
+        # A failed inspection can come from a failed download: checked again.
+        freshness.manifest_entry("2024-25", "Regular Season")
+        freshness.manifest_entry("2024-25", "Regular Season")
+        assert calls == ["2025-26", "2024-25", "2024-25"]
+    finally:
+        reset_data_source_cache()
