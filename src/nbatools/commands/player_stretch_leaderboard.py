@@ -31,6 +31,16 @@ PERCENTAGE_COMPONENTS: dict[str, tuple[str, str]] = {
     "ft_pct": ("ftm", "fta"),
 }
 
+# Made shots per game a window needs in a league ranking: the NBA's season
+# minimums (300 FGM, 82 3PM, 125 FTM) over 82 games.
+_SHOOTING_QUALIFIERS: dict[str, tuple[str, float, str]] = {
+    "fg_pct": ("fgm", 3.66, "made field goals"),
+    "efg_pct": ("fgm", 3.66, "made field goals"),
+    "ts_pct": ("fgm", 3.66, "made field goals"),
+    "fg3_pct": ("fg3m", 1.0, "made threes"),
+    "ft_pct": ("ftm", 1.52, "made free throws"),
+}
+
 SUPPORTED_STRETCH_METRICS = {
     *RAW_AVG_METRICS.keys(),
     *PERCENTAGE_COMPONENTS.keys(),
@@ -121,6 +131,27 @@ def _compute_stretch_values(
     out["window_start_date"] = out.groupby("player_id")["game_date"].shift(window_size - 1)
     out["window_start_season"] = out.groupby("player_id")["season"].shift(window_size - 1)
     return out
+
+
+def _drop_overlapping(windows: pd.DataFrame, window_size: int, limit: int) -> pd.DataFrame:
+    """Best windows first, never two that share a game of the same player.
+
+    Overlapping windows are the same hot stretch counted again, so a player's
+    later rows are only windows clear of the ones already kept.
+    """
+    kept: list[int] = []
+    taken: dict[object, list[int]] = {}
+    for index, player_id, pos in zip(
+        windows.index, windows["player_id"], windows["_pos"], strict=True
+    ):
+        ends = taken.setdefault(player_id, [])
+        if any(abs(pos - end) < window_size for end in ends):
+            continue
+        ends.append(pos)
+        kept.append(index)
+        if len(kept) >= limit:
+            break
+    return windows.loc[kept]
 
 
 def build_result(
@@ -219,13 +250,27 @@ def build_result(
         stretch_metric=stretch_metric,
         window_size=window_size,
     )
+    df["_pos"] = df.groupby("player_id").cumcount()
+
+    notes: list[str] = []
+    qualifier = _SHOOTING_QUALIFIERS.get(stretch_metric)
+    if qualifier is not None and player is None:
+        # A league ranking of shooting rates needs volume, or one 3-for-3 window
+        # leads; use the NBA's season minimum as a per-game rate.
+        made_column, per_game, label = qualifier
+        made = _rolling_sum(df, made_column, window_size)
+        df.loc[made < per_game * window_size - 1e-9, "stretch_value"] = float("nan")
+        notes.append(
+            f"qualifier: windows need {per_game:g}+ {label} per game "
+            "(the NBA's season minimum rate)"
+        )
 
     windows = df[df["stretch_value"].notna()].copy()
     if windows.empty:
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
-            notes=[f"No players had at least {window_size} games in the filtered sample"],
+            notes=[f"No players had at least {window_size} games in the filtered sample", *notes],
         )
 
     windows["stretch_value"] = pd.to_numeric(windows["stretch_value"], errors="coerce").round(3)
@@ -235,6 +280,8 @@ def build_result(
     )
     if dedupe_players:
         windows = windows.drop_duplicates(subset=["player_id"], keep="first")
+    else:
+        windows = _drop_overlapping(windows, window_size, limit)
     windows = windows.head(limit)
 
     result = windows[
@@ -263,6 +310,7 @@ def build_result(
     return LeaderboardResult(
         leaders=result,
         current_through=compute_current_through_for_seasons(seasons, season_type),
+        notes=notes,
     )
 
 

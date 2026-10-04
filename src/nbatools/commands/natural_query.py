@@ -1491,6 +1491,7 @@ def _build_parse_state(query: str) -> dict:
     stretch_request = detect_stretch_query(q)
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
+    window_defaulted = bool(stretch_request and stretch_request.get("window_defaulted"))
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
     team_stretch_request = detect_team_stretch_request(q)
     if team_stretch_request is not None:
@@ -1849,6 +1850,7 @@ def _build_parse_state(query: str) -> dict:
         "minute_minimum": minute_minimum,
         "lineup_query_mode": lineup_query_mode,
         "window_size": window_size,
+        "window_defaulted": window_defaulted,
         "stretch_metric": stretch_metric,
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
@@ -4523,6 +4525,11 @@ def _finalize_route(parsed: dict) -> dict:
                 f"career_span: covers {EARLIEST_SEASON} onward; earlier seasons are not in the data"
             )
 
+    if parsed.get("window_defaulted") and route in {
+        "player_stretch_leaderboard",
+        "team_stretch_leaderboard",
+    }:
+        notes.append(f"default: no stretch length named; ranked {window_size}-game windows")
     if notes:
         out["notes"] = notes
 

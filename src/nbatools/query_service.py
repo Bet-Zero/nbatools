@@ -1253,6 +1253,59 @@ def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} {connector} {when}."
 
 
+_PLAYER_STRETCH_RATE_PHRASES = {
+    "fg_pct": "shooting",
+    "fg3_pct": "from three",
+    "ft_pct": "from the line",
+    "efg_pct": "effective field goal shooting",
+    "ts_pct": "true shooting",
+}
+
+
+def _add_player_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "Jokic best 5 game scoring stretch": value, dates and scope."""
+    if metadata.get("route") != "player_stretch_leaderboard":
+        return
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    row = result.leaders.iloc[0]
+    size = int(row["window_size"])
+    metric = str(row["stretch_metric"])
+    value = float(row["stretch_value"])
+    if metric == "game_score":
+        shown = f"a {_format_one_decimal(value)} Game Score average"
+    elif metric.endswith("_pct"):
+        shown = f"{value:.1%} {_PLAYER_STRETCH_RATE_PHRASES.get(metric, metric)}"
+    else:
+        label = _TEAM_STRETCH_PHRASES.get(metric, metric.replace("_", " "))
+        shown = f"{_format_one_decimal(value)} {label}"
+
+    def _day(stamp: Any) -> str:
+        return str(pd.Timestamp(stamp).date()) if pd.notna(stamp) else str(stamp)
+
+    span = f"from {_day(row['window_start_date'])} to {_day(row['window_end_date'])}"
+    seasons = sorted(
+        {str(s) for s in result.leaders["window_start_season"]}
+        | {str(s) for s in result.leaders["window_end_season"]}
+    )
+    first = metadata.get("start_season") or seasons[0]
+    last = metadata.get("end_season") or seasons[-1]
+    playoffs = " playoffs" if metadata.get("season_type") == "Playoffs" else ""
+    if first == last:
+        when = f"of the {first}{playoffs}" if playoffs else f"of {first}"
+    else:
+        when = f"from the {first} to {last}{playoffs}" if playoffs else f"from {first} to {last}"
+    if metadata.get("player"):
+        metadata["answer_phrase"] = (
+            f"{row['player_name']}'s best {size}-game stretch {when} was {shown} {span}."
+        )
+    else:
+        metadata["answer_phrase"] = (
+            f"{row['player_name']} had the best {size}-game stretch {when} by any player: "
+            f"{shown} {span}."
+        )
+
+
 def _indefinite_article(number_text: str) -> str:
     """'an 84.4', 'an 11.2', 'an 18-point' but 'a 104.5'."""
     whole = number_text.split(".")[0].lstrip("-")
@@ -1711,6 +1764,7 @@ def _finalize_natural_query_result(
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
+    _add_player_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
     _add_titles_leaderboard_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
@@ -2186,6 +2240,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
 
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
+    _add_player_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
     _add_titles_leaderboard_answer_metadata(metadata, result)
 

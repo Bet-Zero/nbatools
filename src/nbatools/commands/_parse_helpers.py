@@ -2100,7 +2100,26 @@ def build_on_off_note(
     )
 
 
+DEFAULT_STRETCH_WINDOW = 10
+_UNSIZED_STRETCH = re.compile(
+    r"\b(?:best|hottest|worst|coldest|greatest|top|poorest|ugliest)\b"
+    r"(?:\s+[a-z0-9%.'/-]+){0,3}?\s+stretch(?:es)?\b"
+)
+# "down the stretch" is late-game play and "stretch run" the end of a season.
+_NOT_A_ROLLING_STRETCH = re.compile(r"\b(?:down|in)\s+the\s+stretch\b|\bstretch\s+run\b")
+
+
 def _extract_stretch_window_size(text: str) -> int | None:
+    explicit = _extract_explicit_window_size(text)
+    if explicit is not None:
+        return explicit
+    # "Celtics best stretch" names no length; rank 10-game windows and say so.
+    if _UNSIZED_STRETCH.search(text) and not _NOT_A_ROLLING_STRETCH.search(text):
+        return DEFAULT_STRETCH_WINDOW
+    return None
+
+
+def _extract_explicit_window_size(text: str) -> int | None:
     patterns = (
         r"\b(\d+)\s*(?:-\s*|\s+)games?(?:\s+[a-z0-9%.'/-]+){0,3}\s+stretch(?:es)?\b",
         r"\brolling\s+(\d+)\s*(?:-\s*|\s+)games?\b",
@@ -2113,6 +2132,15 @@ def _extract_stretch_window_size(text: str) -> int | None:
         value = int(match.group(1))
         return value if value > 0 else None
     return None
+
+
+_STRETCH_SHOOTING_PATTERNS = (
+    (r"\btrue\s+shooting\b", "ts_pct"),
+    (r"\beffective\s+(?:field\s+goal\s+)?shooting\b", "efg_pct"),
+    (r"\b(?:3|three)[\s-]?(?:point|pt)?s?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
+    (r"\bfree[\s-]?throw\s+shooting\b", "ft_pct"),
+    (r"\bshooting\b", "fg_pct"),
+)
 
 
 def detect_stretch_query(text: str) -> dict | None:
@@ -2129,8 +2157,14 @@ def detect_stretch_query(text: str) -> dict | None:
     if re.search(r"\b(?:winning|losing)\s+streak\b", text):
         return None
 
+    shooting = next(
+        (key for pattern, key in _STRETCH_SHOOTING_PATTERNS if re.search(pattern, text)), None
+    )
     if re.search(r"\bgame\s+score\b", text):
         stretch_metric = "game_score"
+    elif shooting is not None:
+        # "best 3 point shooting stretch" is 3P%, not points.
+        stretch_metric = shooting
     else:
         explicit_stat = detect_stat(text)
         if explicit_stat is not None:
@@ -2143,6 +2177,7 @@ def detect_stretch_query(text: str) -> dict | None:
     return {
         "window_size": window_size,
         "stretch_metric": stretch_metric,
+        "window_defaulted": _extract_explicit_window_size(text) is None,
     }
 
 
@@ -2162,7 +2197,7 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
         r"\bteam\s+\d+\s*(?:-\s*|\s+)games?\b",
         r"\b\d+\s*(?:-\s*|\s+)games?\s+team\b",
         r"\bstretch(?:es)?\s+by\s+(?:a\s+)?team\b",
-        r"\bby\s+(?:a\s+)?team\b",
+        r"\bby\s+(?:a\s+|any\s+)?team\b",
         r"\bteams?\s+with\b",
         r"\bteams?\s+(?:best|top|hottest|worst|coldest|longest)\b",
     )

@@ -1,0 +1,144 @@
+"""C2 stretches with no length named, and player stretch answers.
+
+"Celtics best stretch" fell to a game list and "LeBron best stretch" to a
+season summary. Player stretch lists repeated the same hot run as several
+overlapping windows and had no headline.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
+from nbatools.query_service import execute_natural_query
+
+pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
+
+RAW = Path("qa/fixtures/query_engine_sample/data/raw/player_game_stats")
+SEASON = "2025-26"
+
+
+def _board(query: str) -> tuple[list[dict], dict]:
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", (query, result.result_reason)
+    return result.result.to_dict()["sections"]["leaderboard"], result.metadata
+
+
+@pytest.mark.parametrize(
+    ("unsized", "sized", "route"),
+    [
+        ("Celtics best stretch", "Celtics best 10 game stretch", "team_stretch_leaderboard"),
+        ("Celtics worst stretch", "Celtics worst 10 game stretch", "team_stretch_leaderboard"),
+        (
+            "which team had the best stretch",
+            "which team had the best 10 game stretch",
+            "team_stretch_leaderboard",
+        ),
+        ("LeBron best stretch", "LeBron best 10 game stretch", "player_stretch_leaderboard"),
+        (
+            "Jokic best scoring stretch",
+            "Jokic best 10 game scoring stretch",
+            "player_stretch_leaderboard",
+        ),
+    ],
+)
+def test_unsized_stretch_ranks_ten_game_windows(unsized, sized, route):
+    rows, metadata = _board(f"{unsized} in {SEASON}")
+    expected, _ = _board(f"{sized} in {SEASON}")
+    assert metadata["route"] == route
+    assert rows == expected
+    assert "default: no stretch length named; ranked 10-game windows" in metadata["notes"]
+
+
+def test_named_length_has_no_default_note():
+    _, metadata = _board(f"Celtics best 5 game stretch in {SEASON}")
+    assert not any("no stretch length" in note for note in metadata.get("notes") or [])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        f"Celtics played well down the stretch in {SEASON}",
+        f"Celtics stretch run record in {SEASON}",
+    ],
+)
+def test_late_game_and_season_end_wording_is_not_a_rolling_stretch(query):
+    result = execute_natural_query(query)
+    assert result.metadata["route"] not in {
+        "team_stretch_leaderboard",
+        "player_stretch_leaderboard",
+    }
+
+
+def test_any_team_wording_ranks_teams():
+    _, metadata = _board(f"best 5 game stretches by any team in {SEASON}")
+    assert metadata["route"] == "team_stretch_leaderboard"
+
+
+def _player_points(name: str) -> list[tuple]:
+    frame = pd.read_csv(RAW / f"{SEASON}_regular_season.csv", dtype={"game_id": str})
+    games = frame[frame["player_name"] == name].sort_values(["game_date", "game_id"])
+    return list(zip(games["game_date"], games["pts"], strict=True))
+
+
+def test_named_player_windows_never_overlap_and_lead_the_headline():
+    games = _player_points("Nikola Jokić")
+    windows = [
+        (round(sum(p for _, p in games[i : i + 5]) / 5, 3), games[i][0], games[i + 4][0])
+        for i in range(len(games) - 4)
+    ]
+    best = max(windows, key=lambda w: (w[0], w[2]))
+
+    rows, metadata = _board(f"Jokic best 5 game scoring stretch in {SEASON}")
+    top = rows[0]
+    assert top["stretch_value"] == pytest.approx(best[0])
+    assert str(top["window_start_date"])[:10] == best[1]
+    spans = sorted((str(r["window_start_date"])[:10], str(r["window_end_date"])[:10]) for r in rows)
+    for (_, end), (start, _) in zip(spans, spans[1:], strict=False):
+        assert start > end
+    assert metadata["answer_phrase"] == (
+        f"Nikola Jokić's best 5-game stretch of {SEASON} was "
+        f"{best[0]:.1f} points per game from {best[1]} to {best[2]}."
+    )
+
+
+def test_league_player_stretch_headline_names_the_leader():
+    rows, metadata = _board(f"best 5 game scoring stretch in {SEASON}")
+    assert metadata["answer_phrase"].startswith(
+        f"{rows[0]['player_name']} had the best 5-game stretch of {SEASON} by any player: "
+    )
+
+
+@pytest.mark.parametrize(
+    ("query", "metric"),
+    [
+        ("Curry best 5 game 3 point shooting stretch", "fg3_pct"),
+        ("Curry best 5 game three point shooting stretch", "fg3_pct"),
+        ("Curry best 5 game shooting stretch", "fg_pct"),
+        ("Curry best 5 game free throw shooting stretch", "ft_pct"),
+        ("Curry best 5 game true shooting stretch", "ts_pct"),
+    ],
+)
+def test_shooting_wording_ranks_the_shooting_rate(query, metric):
+    rows, _ = _board(f"{query} in {SEASON}")
+    assert rows[0]["stretch_metric"] == metric
+
+
+def test_league_three_point_stretch_needs_a_made_three_per_game():
+    frame = pd.read_csv(RAW / f"{SEASON}_regular_season.csv", dtype={"game_id": str})
+    best = None
+    for name, games in frame.sort_values(["game_date", "game_id"]).groupby("player_name"):
+        rows = list(zip(games["fg3m"], games["fg3a"], strict=True))
+        for i in range(len(rows) - 4):
+            made = sum(m for m, _ in rows[i : i + 5])
+            tried = sum(a for _, a in rows[i : i + 5])
+            if made >= 5 and tried:
+                best = max(best or 0.0, round(made / tried, 3))
+
+    rows, metadata = _board(f"best 5 game 3 point shooting stretch in {SEASON}")
+    assert rows[0]["stretch_value"] == pytest.approx(best)
+    assert any(
+        note.startswith("qualifier: windows need 1+ made threes") for note in metadata["notes"]
+    )
