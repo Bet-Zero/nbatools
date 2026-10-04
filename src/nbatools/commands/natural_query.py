@@ -1023,6 +1023,17 @@ def _detect_team_in_text(text: str):
     return detect_team_in_text(text)
 
 
+def _mask_opponent_group_phrase(q: str, conference: str | None, division: str | None) -> str:
+    """Hide "vs the West" from the player scan: West is a surname, not a player."""
+    if conference:
+        word = str(conference).lower() + r"(?:ern)?(?:\s+conference)?"
+    elif division:
+        word = re.escape(str(division).lower()) + r"(?:\s+division)?"
+    else:
+        return q
+    return re.sub(rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?{word}\b", " ", q)
+
+
 def _vs_clause_is_opponent_group(q: str, match: re.Match) -> bool:
     """The clause after "vs" names a team, quality bar or conference/division."""
     clause = re.split(r"\s+(?:against|vs\.?|versus)\s+", q[match.start(1) :])[0]
@@ -1947,7 +1958,9 @@ def _build_parse_state(query: str) -> dict:
     player = None
     entity_ambiguity: dict | None = None
     if not (player_a and player_b):
-        player_result = detect_player_resolved(q)
+        player_result = detect_player_resolved(
+            _mask_opponent_group_phrase(q, opponent_conference, opponent_division)
+        )
         if player_result.is_confident:
             player = player_result.resolved
         elif player_result.is_ambiguous:

@@ -67,3 +67,26 @@ def test_team_occurrence_vs_a_division_applies_the_filter():
     result = _run("which team has the most 120 point games vs Pacific teams")
     assert result.route == "team_occurrence_leaders"
     assert not result.metadata.get("unsupported_filters")
+
+
+def test_west_surname_does_not_make_a_conference_query_ambiguous(monkeypatch):
+    """Real data has David and Delonte West: "vs the West" is not a player."""
+    from nbatools.commands import natural_query
+    from nbatools.commands.entity_resolution import ResolutionResult
+
+    real = natural_query.detect_player_resolved
+
+    def resolve(text):
+        if __import__("re").search(r"\bwest\b", text):
+            return ResolutionResult(
+                candidates=["David West", "Delonte West"],
+                confidence="ambiguous",
+                source="last_name",
+            )
+        return real(text)
+
+    monkeypatch.setattr(natural_query, "detect_player_resolved", resolve)
+    result = _run("which team has the most 120 point games vs the West")
+    assert result.route == "team_occurrence_leaders"
+    # A player named West is still a player outside the "vs the West" phrase.
+    assert natural_query.parse_query("West stats vs the East").get("entity_ambiguity")
