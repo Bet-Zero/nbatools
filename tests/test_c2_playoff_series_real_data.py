@@ -32,9 +32,10 @@ def _raw_playoffs(season: str) -> pd.DataFrame:
 def test_series_order_matches_game_id_rounds():
     seasons = [f"{y}-{str(y + 1)[-2:]}" for y in range(2001, 2025)]
     games = playoff_history.load_team_games_for_seasons(seasons, "Playoffs")
-    games = games[~games["game_id"].astype(str).str.startswith("005")]
+    ids = playoff_history._game_id_text(games["game_id"])
+    games = games[~ids.str.startswith("005")]
     by_order = playoff_history._series_order_codes(games)
-    by_id = games["game_id"].astype(str).str[6:8]
+    by_id = ids[games.index].str[6:8]
     mismatched = games.loc[by_order != by_id, ["season", "team_abbr", "opponent_team_abbr"]]
     assert mismatched.empty, mismatched.drop_duplicates().head(10)
 

@@ -215,3 +215,14 @@ def test_unfinished_run_is_not_called_a_title_miss():
         "The Los Angeles Lakers have not won a title in 2025-26; "
         "their 2025-26 playoff run is still in progress."
     )
+
+
+def test_numeric_game_ids_keep_their_round_code():
+    # Read as numbers, "0042300401" is 42300401 and "0052300101" is 52300101.
+    rows = [
+        _game(42300401, "2023-24", "2024-06-06", 1, 9, "W"),
+        _game(49600001, "1996-97", "1997-04-25", 1, 2, "W"),
+    ]
+    labelled = playoff_history._add_round_column(pd.DataFrame(rows))
+    assert labelled["playoff_round"].tolist() == ["Finals", "First Round"]
+    assert playoff_history._game_id_text(pd.Series([52300101])).str.startswith("005").all()

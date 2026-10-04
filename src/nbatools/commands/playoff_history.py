@@ -88,13 +88,21 @@ ROUND_DATA_START_YEAR = 2001
 # ---------------------------------------------------------------------------
 
 
+def _game_id_text(game_ids: pd.Series) -> pd.Series:
+    """Ten-character game ids: CSVs read as numbers drop the leading zeros
+    ("0042300401" becomes 42300401), which moves the round code."""
+    text = game_ids.astype(str).str.strip().str.replace(r"\.0$", "", regex=True)
+    dropped_zeros = text.str.isdigit() & text.str.len().isin([8, 9])
+    return text.where(~dropped_zeros, text.str.zfill(10))
+
+
 def extract_playoff_round(game_id: str) -> str | None:
     """Extract the playoff round code from a game_id.
 
     Returns the 2-char round code ('01'-'04') or None if not determinable.
     game_id format: 004YYRRGSN where positions 6-7 (0-indexed) hold RR.
     """
-    gid = str(game_id)
+    gid = _game_id_text(pd.Series([game_id])).iloc[0]
     if len(gid) < 8:
         return None
     code = gid[6:8]
@@ -169,7 +177,7 @@ def _add_round_column(df: pd.DataFrame) -> pd.DataFrame:
     if "playoff_round_code" in df.columns:
         return df
     out = df.copy()
-    id_code = out["game_id"].astype(str).str[6:8]
+    id_code = _game_id_text(out["game_id"]).str[6:8]
     id_code = id_code.where(id_code.isin(list(ROUND_CODES)))
     if out.empty:
         out["playoff_round_code"] = id_code
@@ -182,7 +190,7 @@ def _add_round_column(df: pd.DataFrame) -> pd.DataFrame:
 def _load_playoff_games(seasons: list[str]) -> pd.DataFrame:
     """Every playoff game in ``seasons`` with its round, play-in games dropped."""
     df = load_team_games_for_seasons(seasons, "Playoffs")
-    df = df[~df["game_id"].astype(str).str.startswith("005")].copy()
+    df = df[~_game_id_text(df["game_id"]).str.startswith("005")].copy()
     return _add_round_column(df)
 
 
@@ -269,8 +277,8 @@ def _round_data_caveat(seasons: list[str]) -> str | None:
     early = [s for s in seasons if season_to_int(s) < ROUND_DATA_START_YEAR]
     if early:
         return (
-            f"rounds for {early[0]} to {early[-1]} are read from the order of each team's "
-            "series (game ids before 2001-02 do not carry the round)"
+            f"round data for {early[0]} to {early[-1]} is read from the order of each "
+            "team's series (game ids before 2001-02 do not carry the round)"
         )
     return None
 
