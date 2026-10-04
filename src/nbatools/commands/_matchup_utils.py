@@ -279,6 +279,12 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     # the subject and the "vs" team their opponent.
     team_a, team_b = _extract_compare_and_teams(cleaned_text)
     if team_a and team_b:
+        if not _COMPARE_LEAD_RE.search(cleaned_text) and _LEADING_PAIR_OTHER_INTENT_RE.search(
+            cleaned_text
+        ):
+            # "Lakers and Celtics leading scorers", "... series history": the
+            # pair is not asking for a side-by-side team summary.
+            return None, None
         return team_a, team_b
 
     team_keys = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
@@ -308,9 +314,8 @@ _COMPARE_JOIN_RE = re.compile(r"\s+(?:and|with|to)\s+(?:the\s+)?")
 _LEADING_TEAM_RE = re.compile(r"^\s*(?:the\s+)?")
 _LEADING_AND_RE = re.compile(r"\s+and\s+(?:the\s+)?")
 _LEADING_PAIR_OTHER_INTENT_RE = re.compile(
-    r"\b(?:leading|leaders?|scorers?|players?|most|fewest|highest|lowest|best|worst|top|"
-    r"streaks?|stretch(?:es)?|roster|standings|series|history|history|finals|playoff|"
-    r"rank(?:ed|ings?)?|who)\b"
+    r"\b(?:leading|leaders?|scorers?|players?|most|fewest|highest|lowest|"
+    r"streaks?|stretch(?:es)?|roster|standings|history|finals|rank(?:ed|ings?)?|who)\b"
 )
 
 
@@ -323,10 +328,6 @@ def _extract_compare_and_teams(text: str) -> tuple[str | None, str | None]:
     lead = _COMPARE_LEAD_RE.search(text)
     if lead:
         start, join = lead.end(), _COMPARE_JOIN_RE
-    elif _LEADING_PAIR_OTHER_INTENT_RE.search(text):
-        # "Lakers and Celtics leading scorers", "... series history": the
-        # pair is not asking for a side-by-side team summary.
-        return None, None
     else:
         start, join = _LEADING_TEAM_RE.match(text).end(), _LEADING_AND_RE
     mentions = _non_overlapping_team_mentions(text)

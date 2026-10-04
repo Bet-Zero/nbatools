@@ -352,3 +352,12 @@ def test_playoff_head_to_head_searches_every_season():
 
     kwargs = {"season_type": "Playoffs", "last_n": 10, "head_to_head": True}
     assert _team_compare_reach_back(kwargs, {}) >= 29
+
+
+def test_playoff_head_to_head_parse_starts_at_the_first_season(monkeypatch):
+    import nbatools.data_source as data_source
+    from nbatools.commands.natural_query import parse_query
+
+    monkeypatch.setattr(data_source, "data_exists", lambda path: True)
+    kwargs = parse_query("Lakers vs Nuggets last 10 playoff games")["route_kwargs"]
+    assert kwargs["start_season"] == "1996-97"

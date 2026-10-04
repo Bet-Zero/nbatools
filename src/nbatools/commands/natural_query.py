@@ -729,6 +729,7 @@ def _team_vs_team_meetings(parsed: dict) -> bool:
         parsed.get("last_n")
         and re.search(r"\b(?:vs\.?|versus|against)\b", text)
         and not parsed.get("opponent")
+        and not _joined_team_pair(parsed)
         and not re.search(r"\bcompar", text)
         and parsed.get("min_value") is None
         and parsed.get("max_value") is None

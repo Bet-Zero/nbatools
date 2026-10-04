@@ -175,3 +175,34 @@ def test_quality_filter_discriminates_winning_from_losing_opponents():
         (summary,) = _summary(f"Celtics record vs Pacific Division {term} teams")
         assert summary["games"] == len(expected)
         assert summary["wins"] == _wins(expected)
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["Lakers and Celtics series record", "Lakers and Celtics head-to-head series record"],
+)
+def test_pair_series_record_is_their_meetings(query):
+    result = _run(query)
+    assert result.route == "team_matchup_record"
+    lakers, celtics = result.result.to_dict()["sections"]["summary"]
+    meetings = _games("2025-26", team_abbr="LAL", opponent_team_abbr="BOS")
+    assert lakers["games"] == celtics["games"] == len(meetings)
+    assert lakers["wins"] == _wins(meetings)
+
+
+def test_pair_last_n_with_unrecognised_vs_text_is_not_their_meetings():
+    lakers, _ = _summary("Lakers and Celtics record vs the best teams last 10 games")
+    assert lakers["wins"] == _wins(_games("2025-26", team_abbr="LAL")[:10])
+
+
+def test_pair_playoff_last_n_is_each_teams_playoff_games():
+    rows = _csv(RAW / "team_game_stats" / "2025-26_playoffs.csv")
+    lakers, nuggets = _summary("Lakers and Nuggets last 5 playoff games")
+    for side, abbr in ((lakers, "LAL"), (nuggets, "DEN")):
+        own = sorted(
+            (r for r in rows if r["team_abbr"] == abbr),
+            key=lambda r: (r["game_date"], int(r["game_id"])),
+            reverse=True,
+        )[:5]
+        assert side["games"] == 5
+        assert side["wins"] == _wins(own)
