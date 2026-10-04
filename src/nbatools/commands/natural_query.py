@@ -1128,7 +1128,12 @@ _OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating
 # Title questions that ask more than a count: never answer them with one.
 _TITLE_EXTRA_CONDITION = re.compile(
     r"back[- ]to[- ]back|repeat|three[- ]?peat|clinch|\bstats?\b|\bgames?\b|\broster\b"
-    r"|\bwithout\b|\bwith(?:out)?\s+[a-z]"
+    r"|\bwithout\b|\bwith\s+(?!(?:the\s+)?most\b)[a-z]"
+)
+_LEAGUE_TITLE_WORDING = re.compile(
+    r"\b(?:which|what)\s+(?:nba\s+)?(?:teams?|franchises?)\b|\bteams?\b|\bfranchises?\b"
+    r"|\bchampions?\b|\bwinners?\b|\bwho\s+won\s+the\b(?!.*\bmost\b)"
+    r"|^(?!.*\b(?:who|players?)\b).*\bmost\b"
 )
 _BARE_YEAR = re.compile(r"(?<![\d-])(?:19|20)\d{2}(?!-\d{2}\b)(?!\d)")
 
@@ -1145,11 +1150,11 @@ def _title_year_left_unused(q: str) -> bool:
     return not (extract_season(q) or extract_since_season(q) or re.search(r"\b(?:19|20)\d0s\b", q))
 
 
-_TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|titles?)\b")
+_TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|champions?|titles?)\b")
 # Rings belong to players; division and conference titles are not Finals wins.
 _NON_LEAGUE_TITLE = re.compile(
     r"\brings?\b|\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
-    r"(?:titles?|championships?)\b|\bscoring\s+titles?\b"
+    r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
 )
 
 
@@ -2313,6 +2318,60 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         out["intent"] = "summary"
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
+        championship_count_boundary
+        and not team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and _TEAM_TITLE_COUNT.search(q)
+        and _LEAGUE_TITLE_WORDING.search(q)
+        and not re.search(r"\bplayers?\b", q)
+        and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not (
+            (unresolved_with_player and not re.match(r"(?:the\s+)?most\b", unresolved_with_player))
+            or unresolved_without_player
+        )
+    ):
+        # "which team has won the most titles since 2000" / "who won the 2016 title"
+        last_years = re.search(r"\b(?:last|past)\s+(\d+)\s+years?\b", q)
+        if last_years and not start_season and int(last_years.group(1)) > 0:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season = None
+            start_season, end_season = resolve_last_n_seasons(int(last_years.group(1)), "Playoffs")
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        if not start_season and not end_season and not named_season:
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        out["route"] = "playoff_appearances"
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "playoff_round": "04",
+            "titles": True,
+            # Every title winner unless a top N is asked: 11 franchises won since 2010.
+            "limit": top_n or 30,
+        }
+        out["intent"] = "leaderboard"
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

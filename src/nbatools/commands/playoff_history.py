@@ -696,8 +696,11 @@ def build_playoff_appearances_result(
     playoff_round: str | None = None,
     limit: int = 10,
     ascending: bool = False,
+    titles: bool = False,
 ) -> LeaderboardResult | SummaryResult | NoResult:
     """Count playoff appearances, optionally filtered by round stage.
+
+    With ``titles`` (and no team), rank teams by Finals series won instead.
 
     If *player* is given, returns an explicit unsupported result because the
     dataset and calculation are team-grain. If *team* is given, returns a
@@ -797,6 +800,9 @@ def build_playoff_appearances_result(
             caveats=caveats,
         )
 
+    if titles:
+        return _titles_leaderboard(df, seasons, limit=limit, caveats=caveats)
+
     # Leaderboard: all teams ranked by appearances
     result = (
         appearances.sort_values(
@@ -822,6 +828,59 @@ def build_playoff_appearances_result(
     return LeaderboardResult(
         leaders=result,
         current_through=current_through,
+        caveats=caveats,
+    )
+
+
+def _titles_leaderboard(
+    df: pd.DataFrame, seasons: list[str], *, limit: int, caveats: list[str]
+) -> LeaderboardResult | NoResult:
+    """Teams ranked by Finals series won, from Finals game rows."""
+    finals = df[df["playoff_round_code"] == "04"]
+    rows = []
+    for (abbr, name), team_games in finals.groupby(["team_abbr", "team_name"]):
+        series = _build_series_table(team_games)
+        won = series[series["result"] == "Won"]
+        row = {
+            "team_abbr": abbr,
+            "team_name": name,
+            "titles": len(won),
+            "finals_appearances": len(series),
+            "title_seasons": ", ".join(str(s) for s in won["season"]),
+        }
+        if len(seasons) == 1 and len(won):
+            # One season: name who the champion beat and the series score.
+            final = won.iloc[-1]
+            row["finals_opponent"] = final["opponent_team_name"]
+            row["finals_score"] = f"{int(final['wins'])}-{int(final['losses'])}"
+        rows.append(row)
+    board = pd.DataFrame(rows)
+    if board.empty or not (board["titles"] > 0).any():
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No completed Finals found in the specified span"],
+        )
+    board = board[board["titles"] > 0]
+    result = (
+        board.sort_values(
+            by=["titles", "finals_appearances", "team_name"], ascending=[False, True, True]
+        )
+        .head(limit)
+        .reset_index(drop=True)
+    )
+    result.insert(0, "rank", range(1, len(result) + 1))
+    caveats.append("titles are Finals series won")
+    if season_to_int(seasons[0]) < DATA_START_YEAR:
+        caveats.append("playoff data starts in 1996-97; earlier seasons are not counted")
+    if len(seasons) > 1:
+        result["seasons"] = f"{seasons[0]} to {seasons[-1]}"
+        caveats.append(f"across {seasons[0]} to {seasons[-1]}")
+    else:
+        result["season"] = seasons[0]
+    return LeaderboardResult(
+        leaders=result,
+        current_through=compute_current_through_for_seasons(seasons, "Playoffs"),
         caveats=caveats,
     )
 

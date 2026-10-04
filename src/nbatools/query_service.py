@@ -1087,7 +1087,7 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
         )
         return
     query_text = str(metadata.get("query_text") or "").lower()
-    if re.search(r"\b(?:titles?|championships?)\b", query_text) and not vs:
+    if re.search(r"\b(?:titles?|championships?|champions?)\b", query_text) and not vs:
         metadata["answer_phrase"] = _team_titles_phrase(team, series, metadata)
         return
     if first == last:
@@ -1108,6 +1108,41 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
 
 
 _PLAYOFF_DATA_START = "1996-97"
+
+
+def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "which team has won the most titles since 2000"."""
+    if metadata.get("route") != "playoff_appearances" or not isinstance(result, LeaderboardResult):
+        return
+    board = result.leaders
+    if board.empty or "titles" not in board:
+        return
+    top = board.iloc[0]
+    if "season" in board and "finals_opponent" in board:
+        # One season: who won it and whom they beat.
+        metadata["answer_phrase"] = (
+            f"The {top['team_name']} won the {top['season']} title, beating the "
+            f"{top['finals_opponent']} {top['finals_score']} in the Finals."
+        )
+        return
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+    most = int(top["titles"])
+    leaders = board[board["titles"] == most]
+    count = f"{most} {'title' if most == 1 else 'titles'}"
+    if len(leaders) == 1:
+        metadata["answer_phrase"] = (
+            f"The {top['team_name']} won the most titles {span}: {count} ({top['title_seasons']})."
+        )
+        return
+    names = [f"the {name}" for name in leaders["team_name"]]
+    joined = ", ".join(names[:-1]) + f" and {names[-1]}"
+    joined = joined[0].upper() + joined[1:]
+    metadata["answer_phrase"] = f"{joined} tied for the most titles {span}, with {count} each."
 
 
 def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str:
@@ -1677,6 +1712,7 @@ def _finalize_natural_query_result(
     _add_team_advanced_scalar_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
+    _add_titles_leaderboard_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -2151,6 +2187,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
+    _add_titles_leaderboard_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

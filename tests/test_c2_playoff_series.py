@@ -172,7 +172,7 @@ def test_team_title_counts_route_to_playoff_history(query, season, start_season)
         "how many rings does lebron have",
         "Celtics division titles",
         "Heat eastern conference titles",
-        "which team has won the most titles since 1997",
+        "Lakers conference champions",
     ],
 )
 def test_other_title_counts_stay_refused(query):

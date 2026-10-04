@@ -833,6 +833,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "playoff_round",
             "limit",
             "ascending",
+            "titles",
         ),
         examples=(
             {"team": "LAL", "playoff_round": "Finals"},

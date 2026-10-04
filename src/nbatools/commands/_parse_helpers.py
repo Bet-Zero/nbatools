@@ -286,7 +286,7 @@ def detect_championship_count_boundary(text: str) -> bool:
     "how many rings does lebron have" must refuse honestly, never answer
     with a count of games.
     """
-    return bool(re.search(r"\b(?:rings?|championships?|titles?)\b", text))
+    return bool(re.search(r"\b(?:rings?|championships?|champions?|titles?)\b", text))
 
 
 def detect_schedule_lookup_boundary(text: str) -> bool:
@@ -408,14 +408,14 @@ def extract_season(text: str) -> str | None:
         return m.group(0)
     # "the 2024 playoffs" / "2016 finals": playoffs are played in the spring,
     # so the year names the season that ends in it (2023-24). "the 2017 title" /
-    # "won the championship in 2016" name the same season. A year that opens or
-    # closes a range ("since the 2016 playoffs", "from 2010 to 2020 playoffs")
-    # is not one season.
+    # "won the championship in 2016" / "the 2016 champions" name the same season.
+    # A year that opens or closes a range ("since the 2016 playoffs", "from 2010
+    # to 2020 playoffs") is not one season.
     patterns = (
         r"\b((?:19|20)\d{2})\s+(?:nba\s+)?"
         r"(?:play-?offs?|postseason|finals|conference\s+finals|(?:first|second)\s+round)\b",
-        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?(?:titles?|championships?)\b",
-        r"\b(?:titles?|championships?)\s+in\s+((?:19|20)\d{2})\b",
+        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?(?:titles?|championships?|champions?)\b",
+        r"\b(?:titles?|championships?|champions?)\s+in\s+((?:19|20)\d{2})\b",
     )
     for pattern in patterns:
         for m in re.finditer(pattern, text):
