@@ -243,3 +243,20 @@ def test_league_win_streaks_vs_the_east_2023_24():
     assert result.route == "team_streak_finder"
     rows = result.result.to_dict()["sections"]["streak"]
     assert rows[0]["streak_length"] == max(longest.values())
+
+
+def test_team_120_point_games_vs_the_west_2023_24():
+    season = "2023-24"
+    games = _team_games(season)
+    west = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "West"
+    }
+    games = games[games["opponent_team_id"].isin(west)]
+    counts = games[pd.to_numeric(games["pts"]) >= 120].groupby("team_abbr").size()
+
+    result = _run(f"which team has the most 120 point games vs the West in {season}")
+    assert result.route == "team_occurrence_leaders"
+    board = result.result.to_dict()["sections"]["leaderboard"]
+    assert board[0]["games_pts_120+"] == int(counts.max())
