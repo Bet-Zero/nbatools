@@ -4467,12 +4467,15 @@ def _finalize_route(parsed: dict) -> dict:
         and not route_kwargs.get("end_date")
     ):
         # "Lakers vs Warriors last 10 games" means their 10 most recent
-        # meetings. Teams meet at least twice a season, so reach back far
-        # enough to fill the window.
+        # meetings. Regular-season teams meet at least twice a season (bar the
+        # 1998-99 and 2011-12 lockouts), so reach back that far plus a margin;
+        # playoff meetings are rare, so search every season.
+        if route_kwargs.get("season_type") == "Playoffs":
+            seasons_back = 100
+        else:
+            seasons_back = -(-int(route_kwargs["last_n"]) // 2) + 2
         route_kwargs.update(
-            last_n_reach_back_seasons(
-                route_kwargs["season"], seasons_back=-(-int(route_kwargs["last_n"]) // 2)
-            )
+            last_n_reach_back_seasons(route_kwargs["season"], seasons_back=seasons_back)
         )
 
     if route in _OPPONENT_GROUP_ROUTES:
@@ -4483,6 +4486,13 @@ def _finalize_route(parsed: dict) -> dict:
         for field in ("opponent_conference", "opponent_division"):
             if parsed.get(field) and field not in already_blocked:
                 route_kwargs.setdefault(field, parsed[field])
+
+    if parsed.get("opponent_conference_geography_boundary"):
+        # "vs the West coast" / "vs the Pacific Northwest" is geography, not a
+        # conference; refuse rather than answer for every opponent.
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "opponent_conference" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "opponent_conference"]
 
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:

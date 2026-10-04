@@ -338,15 +338,16 @@ def detect_opponent_conference_geography_boundary(text: str) -> bool:
     """Detect unsupported geography wording that resembles a conference filter."""
     return bool(
         re.search(
-            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:east|west)\s+coast\b",
+            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+            r"(?:(?:east|west|atlantic|pacific)\s+coast|pacific\s+northwest)\b",
             text,
         )
     )
 
 
 _DIVISION_NAMES_PATTERN = r"atlantic|central|southeast|northwest|pacific|southwest|midwest"
-# "vs Pacific Division teams", "vs Pacific teams" and "vs the Pacific" all
-# name the division; a bare "vs Pacific" is left alone.
+# "vs Pacific Division teams", "vs Pacific teams", "vs the Pacific" and a bare
+# "vs Pacific" all name the division (no NBA team shares those names).
 _OPPONENT_DIVISION_PATTERN = re.compile(
     rf"\b(?:against|vs\.?|versus)\s+(?P<article>the\s+)?"
     rf"(?P<conference_prefix>(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
@@ -357,8 +358,12 @@ _OPPONENT_DIVISION_PATTERN = re.compile(
 
 def _opponent_division_match(text: str):
     for match in _OPPONENT_DIVISION_PATTERN.finditer(text):
-        if match.group("suffix") or match.group("article"):
-            return match
+        # "vs the Pacific Northwest" / "vs the Atlantic coast" are geography.
+        if not match.group("suffix") and re.match(
+            r"\s+(?:northwest|coast|coastal|time)\b", text[match.end() :]
+        ):
+            continue
+        return match
     return None
 
 

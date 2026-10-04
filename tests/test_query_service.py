@@ -1941,16 +1941,23 @@ class TestOpponentDivisionTeamRecordLeaderboards:
             == explicit.to_dict()["sections"]["leaderboard"]
         )
 
-    def test_playoff_division_record_leaderboard_stays_unsupported(self):
-        qr = execute_natural_query("playoff record against Northwest Division teams")
+    def test_playoff_division_record_leaderboard_matches_explicit_opponent_list(self):
+        natural = execute_natural_query("playoff record against Northwest Division teams")
+        explicit = execute_structured_query(
+            "team_record_leaderboard",
+            season=natural.metadata["season"],
+            season_type="Playoffs",
+            stat="win_pct",
+            opponent=natural.metadata["opponent_team_abbrs"],
+            limit=10,
+            ascending=False,
+        )
 
-        assert qr.route == "team_record_leaderboard"
-        assert qr.result.result_status == "no_result"
-        assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["season_type"] == "Playoffs"
-        assert qr.metadata["opponent_division"] == "Northwest"
-        assert qr.metadata["unsupported_filters"] == ["opponent_division"]
-        assert qr.to_dict()["sections"] == {}
+        assert natural.route == "team_record_leaderboard"
+        assert natural.metadata["season_type"] == "Playoffs"
+        assert natural.metadata["opponent_team_abbrs"] == ["DEN", "MIN", "OKC", "POR", "UTA"]
+        assert natural.result.result_status == explicit.result.result_status
+        assert natural.to_dict()["sections"] == explicit.to_dict()["sections"]
 
 
 # ===================================================================

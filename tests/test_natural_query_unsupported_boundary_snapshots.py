@@ -25,19 +25,7 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["opponent_conference"],
         },
         {
-            "query": "playoff record against Northwest Division teams",
-            "route": "team_record_leaderboard",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["opponent_division"],
-        },
-        {
             "query": "Lakers record against Western Conference Pacific Division teams",
-            "route": "team_record",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["opponent_division"],
-        },
-        {
-            "query": "Celtics playoff record vs Atlantic Division",
             "route": "team_record",
             "reason": "filter_not_supported",
             "unsupported_filters": ["opponent_division"],

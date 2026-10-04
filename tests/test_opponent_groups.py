@@ -316,3 +316,39 @@ def test_conference_answers_report_the_member_abbreviations():
         r["team_abbr"] for r in rows if r["season"] == "2024-25" and r["conference"] == "East"
     )
     assert result.metadata["opponent_team_abbrs"] == expected
+
+
+def test_bare_division_name_is_the_division():
+    rows = _vs(_games("team_game_stats", team_abbr="LAL"), division="Pacific")
+    (summary,) = _sections(_run("Lakers record vs Pacific"))["summary"]
+    assert summary["games"] == len(rows)
+
+
+@pytest.mark.parametrize("query", ["Lakers vs the Pacific Northwest", "Lakers vs the West coast"])
+def test_geography_refuses_on_every_route(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert "opponent_conference" in result.metadata["unsupported_filters"]
+
+
+def test_head_to_head_shortfall_is_reported():
+    meetings = sum(
+        len(_games("team_game_stats", season, team_abbr="LAL", opponent_team_abbr="GSW"))
+        for season in ("2023-24", "2024-25", "2025-26")
+    )
+    result = _run("Lakers vs Warriors last 100 games")
+    a, _ = _sections(result)["summary"]
+    assert a["games"] == meetings
+    assert (
+        f"only {meetings} meetings found in the searched seasons"
+        in (result.result.to_dict()["caveats"])
+    )
+
+
+def test_playoff_head_to_head_searches_every_season():
+    from nbatools.commands.natural_query import parse_query
+
+    kwargs = parse_query("Lakers vs Nuggets last 10 playoff games")["route_kwargs"]
+    assert kwargs["start_season"] == "1996-97"
