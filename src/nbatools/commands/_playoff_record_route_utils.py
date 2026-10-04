@@ -97,10 +97,19 @@ def detect_playoff_history_intent(text: str) -> bool:
         text,
     ):
         return True
-    # "series results in the 2024 playoffs", "how did they do in the playoffs"
+    # "series results in the 2024 playoffs"
     if not re.search(r"\b(?:playoffs?|postseason)\b", text):
         return False
-    return bool(re.search(r"\bseries\b", text) or re.search(r"\bhow\s+did\b.*\bdo\b", text))
+    return bool(re.search(r"\bseries\b", text))
+
+
+def detect_how_did_playoffs(text: str) -> bool:
+    """ "how did the Lakers do in the playoffs": a team's run (callers check
+    that a team, not a player, is named)."""
+    return bool(
+        re.search(r"\b(?:playoffs?|postseason)\b", text)
+        and re.search(r"\bhow(?:'d|\s+did)\b.*\bdo\b", text)
+    )
 
 
 def _normalize_playoff_round_phrase_hyphens(text: str) -> str:

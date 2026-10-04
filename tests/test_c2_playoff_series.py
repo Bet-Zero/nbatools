@@ -396,3 +396,28 @@ def test_how_did_a_team_do_in_the_playoffs_means_the_latest_run():
 
     kwargs = parse_query("how did the Lakers do in the playoffs")["route_kwargs"]
     assert kwargs["season"] == default_end_season("Playoffs")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Celtics titles from 1990 to 2010",
+        "Lakers titles between 2000 and 2010",
+        "Lakers titles 2000-2010",
+        "Lakers titles before 2010",
+        "Spurs titles 2014",
+    ],
+)
+def test_title_counts_never_drop_a_year(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["championship_count"]
+
+
+@pytest.mark.parametrize(
+    "query", ["how did Jokic do in the playoffs", "how did LeBron do in the playoffs"]
+)
+def test_how_did_a_player_do_stays_a_player_summary(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["route_kwargs"]["season"]

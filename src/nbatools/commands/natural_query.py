@@ -328,6 +328,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._playoff_record_route_utils import (
     detect_by_decade_intent,
     detect_by_round_intent,
+    detect_how_did_playoffs,
     detect_playoff_appearance_intent,
     detect_playoff_history_intent,
     detect_playoff_round_filter,
@@ -1129,6 +1130,17 @@ _TITLE_EXTRA_CONDITION = re.compile(
     r"back[- ]to[- ]back|repeat|three[- ]?peat|clinch|\bstats?\b|\bgames?\b|\broster\b"
     r"|\bwithout\b|\bwith(?:out)?\s+[a-z]"
 )
+_BARE_YEAR = re.compile(r"(?<![\d-])(?:19|20)\d{2}(?!-\d{2}\b)(?!\d)")
+
+
+def _title_year_left_unused(q: str) -> bool:
+    """A year the title route would not apply ("titles from 1990 to 2010",
+    "titles 2014"): refuse rather than count every season."""
+    if not _BARE_YEAR.search(q):
+        return False
+    return not (extract_season(q) or extract_since_season(q) or re.search(r"\b(?:19|20)\d0s\b", q))
+
+
 _TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|titles?)\b")
 # Rings belong to players; division and conference titles are not Finals wins.
 _NON_LEAGUE_TITLE = re.compile(
@@ -1840,7 +1852,8 @@ def _build_parse_state(query: str) -> dict:
         "stat_context_only": stat_context_only,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
-        "playoff_history_intent": playoff_history_intent,
+        "playoff_history_intent": playoff_history_intent
+        or bool(team and not player and not player_a and detect_how_did_playoffs(q)),
         "playoff_round_filter": playoff_round_filter,
         "by_round_intent": by_round_intent,
         "threshold_conditions": [
@@ -2227,7 +2240,7 @@ def _finalize_route(parsed: dict) -> dict:
         (player or player_a or player_b)
         and detect_playoff_round_filter(q)
         # Player appearance counts have their own typed boundary.
-        and not re.search(r"\bappearances?\b", q)
+        and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
     ):
         # Player rows carry no playoff round, so "LeBron 2016 finals" must not
         # answer with the whole postseason.
@@ -2263,6 +2276,7 @@ def _finalize_route(parsed: dict) -> dict:
         and _TEAM_TITLE_COUNT.search(q)
         and not _NON_LEAGUE_TITLE.search(q)
         and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
         and not (with_player or without_player)
         and not (unresolved_with_player or unresolved_without_player)
     ):
