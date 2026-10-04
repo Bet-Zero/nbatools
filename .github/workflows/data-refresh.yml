@@ -1,0 +1,93 @@
+name: Data Refresh
+
+# Refreshes the current season from the NBA stats API and publishes a new
+# immutable R2 generation when new games arrived.
+#   check:   download the active generation, refresh, validate the result
+#            locally; nothing is written to R2.
+#   publish: the same, then publish a new generation (only if game data
+#            changed) and prune superseded generations.
+# Manual for now; a nightly schedule is added once a first publish is
+# confirmed. Only this workflow reads the r2-publication environment.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "check (no R2 writes) or publish"
+        required: true
+        default: check
+        type: choice
+        options:
+          - check
+          - publish
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: r2-publication
+    env:
+      PYTHONUNBUFFERED: "1"
+      R2_BUCKET_NAME: nbatools-data
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -e .
+
+      - name: Download the active generation
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
+        # The checkout tracks one reference file under data/; start empty.
+        run: >-
+          rm -rf data &&
+          nbatools-cli pipeline download-generation
+          --data-dir data
+          --manifest-out "$RUNNER_TEMP/active_manifest.json"
+
+      - name: Refresh the current season
+        run: nbatools-cli pipeline refresh
+
+      - name: List changed data files
+        run: >-
+          nbatools-cli pipeline changed-files
+          --manifest "$RUNNER_TEMP/active_manifest.json"
+
+      - name: Validate the refreshed data locally
+        if: ${{ inputs.mode == 'check' }}
+        run: >-
+          nbatools-cli pipeline publish-generation
+          --target local
+          --generation-id "check-${GITHUB_RUN_ID}"
+
+      - name: Publish a new generation if game data changed
+        if: ${{ inputs.mode == 'publish' }}
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
+        run: >-
+          nbatools-cli pipeline publish-generation
+          --target r2
+          --generation-id "refresh-$(date -u +%Y%m%d)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          --only-if-changed-from "$RUNNER_TEMP/active_manifest.json"
+
+      - name: Prune superseded generations
+        if: ${{ inputs.mode == 'publish' }}
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_PUBLISH_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_PUBLISH_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_PUBLISH_SECRET_ACCESS_KEY }}
+        run: nbatools-cli pipeline prune-generations --keep 4

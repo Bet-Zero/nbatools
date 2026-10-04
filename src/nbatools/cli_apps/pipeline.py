@@ -18,6 +18,11 @@ from nbatools.commands.pipeline.generation_publication import (
     rollback_local_generation,
     rollback_r2_generation,
 )
+from nbatools.commands.pipeline.generation_refresh import (
+    changed_data_files,
+    download_active_generation,
+    prune_r2_generations,
+)
 from nbatools.commands.pipeline.live_recovery_drill import (
     LiveRecoveryDrillError,
     prepare_live_recovery_drill_plan,
@@ -294,8 +299,26 @@ def publish_generation(
         "--target",
         help="Publication target: local or r2.",
     ),
+    only_if_changed_from: Path | None = typer.Option(
+        None,
+        "--only-if-changed-from",
+        help=(
+            "Generation manifest JSON (from download-generation). Skip publishing "
+            "when no raw/processed data file differs from it."
+        ),
+    ),
 ):
     """Validate, publish, and atomically activate one immutable generation."""
+    expected_base = None
+    if only_if_changed_from is not None:
+        manifest = json.loads(only_if_changed_from.read_text(encoding="utf-8"))
+        changed = changed_data_files(data_dir, manifest)
+        if not changed:
+            print("No data file changed since the active generation; nothing to publish.")
+            return
+        print(f"{len(changed)} data file(s) changed, e.g. {', '.join(changed[:5])}")
+        # Only publish over the generation this data was built from.
+        expected_base = str(manifest.get("generation_id") or "")
     try:
         if target is PublicationTarget.LOCAL:
             result = publish_local_generation(
@@ -304,11 +327,83 @@ def publish_generation(
                 data_root=data_dir,
             )
         else:
-            result = publish_r2_generation(generation_id, source_dir=data_dir)
+            result = publish_r2_generation(
+                generation_id, source_dir=data_dir, expected_base=expected_base
+            )
     except GenerationPublicationError as exc:
         print(f"Generation publication failed: {exc}")
         raise typer.Exit(code=1)
     _print_publication_result(result)
+
+
+@app.command("download-generation")
+def download_generation(
+    data_dir: Path = typer.Option(
+        Path("data"),
+        "--data-dir",
+        help="Empty directory to download the active R2 generation into.",
+    ),
+    manifest_out: Path = typer.Option(
+        ...,
+        "--manifest-out",
+        help="Where to save the downloaded generation's manifest (outside --data-dir).",
+    ),
+):
+    """Download and verify every file of the active R2 generation."""
+    try:
+        result = download_active_generation(data_dir)
+    except GenerationPublicationError as exc:
+        print(f"Generation download failed: {exc}")
+        raise typer.Exit(code=1)
+    manifest_out.parent.mkdir(parents=True, exist_ok=True)
+    manifest_out.write_text(json.dumps(result.manifest, indent=2, sort_keys=True) + "\n")
+    print(f"Downloaded generation: {result.generation_id}")
+    print(f"Files: {result.file_count}")
+    print(f"Bytes: {result.total_bytes}")
+
+
+@app.command("changed-files")
+def changed_files(
+    manifest: Path = typer.Option(
+        ...,
+        "--manifest",
+        help="Generation manifest JSON saved by download-generation.",
+    ),
+    data_dir: Path = typer.Option(Path("data"), "--data-dir", help="Local data directory."),
+):
+    """List raw/processed data files that differ from a generation manifest."""
+    changed = changed_data_files(data_dir, json.loads(manifest.read_text(encoding="utf-8")))
+    print(f"{len(changed)} data file(s) changed since the downloaded generation")
+    for path in changed:
+        print(f"  {path}")
+
+
+@app.command("prune-generations")
+def prune_generations(
+    keep: int = typer.Option(
+        ...,
+        "--keep",
+        help="Newest generations to keep (the active and previous are always kept).",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Report what would be deleted without deleting anything.",
+    ),
+):
+    """Delete superseded immutable R2 generations beyond the newest --keep."""
+    try:
+        result = prune_r2_generations(keep=keep, dry_run=dry_run)
+    except GenerationPublicationError as exc:
+        print(f"Generation pruning failed: {exc}")
+        raise typer.Exit(code=1)
+    verb = "Would delete" if dry_run else "Deleted"
+    print(f"Kept: {', '.join(result.kept) or '-'}")
+    print(f"{verb}: {', '.join(result.deleted) or '-'}")
+    if not dry_run:
+        print(f"Objects deleted: {result.deleted_objects}")
+    if result.ignored:
+        print(f"Left alone (no generation manifest): {', '.join(result.ignored)}")
 
 
 @app.command("rollback-generation")

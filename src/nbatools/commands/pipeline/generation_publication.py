@@ -202,8 +202,15 @@ def publish_r2_generation(
     bucket_name: str | None = None,
     env: Mapping[str, str] | None = None,
     env_file: Path | None = Path(".env"),
+    expected_base: str | None = None,
 ) -> GenerationPublicationResult:
-    """Validate, upload, verify, and atomically activate an immutable R2 generation."""
+    """Validate, upload, verify, and atomically activate an immutable R2 generation.
+
+    ``expected_base`` is the generation the source data was built from. When
+    given, publication refuses to run if the active generation has moved on
+    (a rollback or another publish happened meanwhile), so a stale build never
+    replaces newer data; the pointer switch is conditional on the same read.
+    """
     generation = _validated_generation_id(generation_id)
     source = source_dir.expanduser().resolve()
     if not source.is_dir():
@@ -215,6 +222,11 @@ def publish_r2_generation(
         env_file=env_file,
     )
     starting_pointer = _read_r2_pointer(s3_client, bucket)
+    if expected_base is not None and starting_pointer.generation_id != expected_base:
+        raise GenerationConflictError(
+            f"Active generation is {starting_pointer.generation_id}, not {expected_base} "
+            "that this data was built from; refusing to publish over it"
+        )
 
     with tempfile.TemporaryDirectory(prefix=f"nbatools-generation-{generation}-") as temp_dir:
         staged = Path(temp_dir) / generation

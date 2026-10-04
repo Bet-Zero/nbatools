@@ -249,6 +249,26 @@ Use:
 Use `nbatools-cli pipeline refresh`, or run `backfill-season` explicitly for
 the active season and intended season type.
 
+The `Data Refresh` GitHub workflow (`.github/workflows/data-refresh.yml`) runs
+the same refresh without a laptop. It downloads and verifies the active R2
+generation (`pipeline download-generation`), runs `pipeline refresh`, then:
+
+- `check` mode validates the refreshed data as a local generation; nothing is
+  written to R2.
+- `publish` mode publishes a new generation only when a `raw/` or `processed/`
+  file changed (`publish-generation --only-if-changed-from`), and only if the
+  active generation is still the one it downloaded (a rollback or another
+  publish in the meantime stops it). It then deletes superseded generations
+  beyond the newest four (`pipeline prune-generations --keep 4`): the active
+  and previous generations are always kept, the pointer is re-checked before
+  each deletion, and each generation's manifest is deleted last. A generation
+  is about 400 MB, so pruning keeps nightly copies inside the R2 free storage
+  allowance.
+
+It reads the `r2-publication` environment's `R2_PUBLISH_*` secrets, a key
+with read and write access to the data bucket only. No other workflow reads
+them.
+
 ## After major runs
 Check:
 - `nbatools-cli ops inventory`
