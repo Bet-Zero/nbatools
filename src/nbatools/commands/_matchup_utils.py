@@ -275,6 +275,11 @@ def _extract_question_form_player_comparison(
 
 def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     cleaned_text = strip_matchup_noise(text)
+    # "compare the Lakers and Warriors vs the Celtics": the joined pair is
+    # the subject and the "vs" team their opponent.
+    team_a, team_b = _extract_compare_and_teams(cleaned_text)
+    if team_a and team_b:
+        return team_a, team_b
 
     team_keys = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
     for alias_a in team_keys:
@@ -293,25 +298,35 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
         if team_b and team_b != team_a:
             return team_a, team_b
 
-    return _extract_compare_and_teams(cleaned_text)
+    return None, None
 
 
 _COMPARE_LEAD_RE = re.compile(r"\bcompar(?:e|ing)\s+(?:the\s+)?")
 _COMPARE_JOIN_RE = re.compile(r"\s+(?:and|with|to)\s+(?:the\s+)?")
 
 
+_LEADING_TEAM_RE = re.compile(r"^\s*(?:the\s+)?")
+_LEADING_AND_RE = re.compile(r"\s+and\s+(?:the\s+)?")
+
+
 def _extract_compare_and_teams(text: str) -> tuple[str | None, str | None]:
-    """ "compare the Lakers and Celtics when scoring 120": two adjacent teams."""
+    """Two teams joined by "and" that the question is about.
+
+    "compare the Lakers and Celtics when scoring 120", and also a question
+    that opens with the pair: "Lakers and Warriors last 10 games".
+    """
     lead = _COMPARE_LEAD_RE.search(text)
-    if not lead:
-        return None, None
+    if lead:
+        start, join = lead.end(), _COMPARE_JOIN_RE
+    else:
+        start, join = _LEADING_TEAM_RE.match(text).end(), _LEADING_AND_RE
     mentions = _non_overlapping_team_mentions(text)
     for (start_a, end_a, team_a), (start_b, _end_b, team_b) in zip(
         mentions, mentions[1:], strict=False
     ):
-        if start_a != lead.end() or team_a == team_b:
+        if start_a != start or team_a == team_b:
             continue
-        if _COMPARE_JOIN_RE.fullmatch(text[end_a:start_b]):
+        if join.fullmatch(text[end_a:start_b]):
             return team_a, team_b
     return None, None
 

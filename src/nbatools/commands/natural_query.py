@@ -653,6 +653,25 @@ _OPPONENT_GROUP_ROUTES = {
 }
 
 
+def _joined_team_pair(parsed: dict) -> bool:
+    """ "Lakers and Warriors record" asks about each team, not their meetings."""
+    from nbatools.commands._matchup_utils import _extract_compare_and_teams, strip_matchup_noise
+
+    text = parsed.get("normalized_query") or ""
+    return _extract_compare_and_teams(strip_matchup_noise(text))[0] is not None
+
+
+def _third_team_opponent(text: str, team_a: str, team_b: str) -> str | None:
+    from nbatools.commands._matchup_utils import _non_overlapping_team_mentions
+
+    for start, _end, team in _non_overlapping_team_mentions(text):
+        if team in {team_a, team_b}:
+            continue
+        if re.search(r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?$", text[:start]):
+            return team
+    return None
+
+
 def _team_vs_team_meetings(parsed: dict) -> bool:
     """ "Lakers vs Warriors last 10 games" means their last 10 meetings.
 
@@ -664,6 +683,7 @@ def _team_vs_team_meetings(parsed: dict) -> bool:
     return bool(
         parsed.get("last_n")
         and re.search(r"\b(?:vs\.?|versus|against)\b", text)
+        and not parsed.get("opponent")
         and not re.search(r"\bcompar", text)
         and parsed.get("min_value") is None
         and parsed.get("max_value") is None
@@ -1728,6 +1748,11 @@ def _build_parse_state(query: str) -> dict:
 
     team_resolution_confidence = "none"
 
+    if team_a and team_b:
+        # "compare the Lakers and Warriors vs winning teams", "Lakers and
+        # Warriors last 10 games vs the Celtics": a third team is the opponent.
+        opponent_quality = detect_opponent_quality(q)
+        opponent = _third_team_opponent(q, team_a, team_b)
     if not (team_a and team_b):
         opponent, q_without_opponent = detect_opponent(q)
 
@@ -3371,7 +3396,7 @@ def _finalize_route(parsed: dict) -> dict:
     # The ``record_intent`` flag (set by ``detect_record_intent``) is the
     # canonical gate; do not add duplicate guards here.
     # ---------------------------------------------------------------------------
-    elif team_a and team_b and record_intent:
+    elif team_a and team_b and record_intent and not _joined_team_pair(parsed):
         route = "team_matchup_record"
         route_kwargs = {
             "team_a": team_a,
@@ -4522,7 +4547,6 @@ def _finalize_route(parsed: dict) -> dict:
 
     if (
         route == "team_compare"
-        and route_kwargs.get("head_to_head")
         and route_kwargs.get("last_n")
         and parsed.get("season_defaulted")
         and route_kwargs.get("season") == parsed.get("season")
@@ -4534,10 +4558,13 @@ def _finalize_route(parsed: dict) -> dict:
         # meetings. Regular-season teams meet at least twice a season (bar the
         # 1998-99 and 2011-12 lockouts), so reach back that far plus a margin;
         # playoff meetings are rare, so search every season.
+        # Each team's own last N (no opponent) needs one earlier season at most.
         if route_kwargs.get("season_type") == "Playoffs":
             seasons_back = 100
-        else:
+        elif route_kwargs.get("head_to_head") or route_kwargs.get("opponent"):
             seasons_back = -(-int(route_kwargs["last_n"]) // 2) + 2
+        else:
+            seasons_back = 1
         route_kwargs.update(
             last_n_reach_back_seasons(route_kwargs["season"], seasons_back=seasons_back)
         )
