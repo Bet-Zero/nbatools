@@ -1136,8 +1136,12 @@ _BARE_YEAR = re.compile(r"(?<![\d-])(?:19|20)\d{2}(?!-\d{2}\b)(?!\d)")
 def _title_year_left_unused(q: str) -> bool:
     """A year the title route would not apply ("titles from 1990 to 2010",
     "titles 2014"): refuse rather than count every season."""
-    if not _BARE_YEAR.search(q):
+    years = _BARE_YEAR.findall(q)
+    if not years:
         return False
+    if len(years) > 1:
+        # "since 2010 until 2020": only one year is ever applied.
+        return True
     return not (extract_season(q) or extract_since_season(q) or re.search(r"\b(?:19|20)\d0s\b", q))
 
 

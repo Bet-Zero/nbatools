@@ -406,6 +406,7 @@ def test_how_did_a_team_do_in_the_playoffs_means_the_latest_run():
         "Lakers titles 2000-2010",
         "Lakers titles before 2010",
         "Spurs titles 2014",
+        "Lakers titles since 2010 until 2020",
     ],
 )
 def test_title_counts_never_drop_a_year(query):
