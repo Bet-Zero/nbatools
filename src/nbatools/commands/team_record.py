@@ -17,12 +17,15 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
+    apply_last_n_sample,
     apply_schedule_context_filters,
     apply_team_clutch_filter,
     build_clutch_filter_coverage_note,
@@ -33,11 +36,13 @@ from nbatools.commands.data_utils import (
     filter_period_rows,
     filter_with_player,
     filter_without_player,
+    last_n_outcome,
+    last_n_window_game_ids,
     load_team_game_period_stats_for_seasons,
     load_team_games_for_seasons,
     period_coverage_failure,
     period_window_label,
-    select_most_recent_games,
+    sample_season_span,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
@@ -90,6 +95,16 @@ def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     return pd.Timestamp(ts).normalize()
 
 
+def _prepare_condition_column(out: pd.DataFrame, stat_col: str) -> pd.DataFrame:
+    if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
+        if {"pts", "plus_minus"}.issubset(out.columns):
+            out = out.copy()
+            out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+                out["plus_minus"], errors="coerce"
+            )
+    return out
+
+
 def _apply_game_filters(
     df: pd.DataFrame,
     *,
@@ -102,6 +117,7 @@ def _apply_game_filters(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     season_type: str | None = None,
@@ -165,6 +181,11 @@ def _apply_game_filters(
             mask &= values <= max_value
         out = out[mask].copy()
 
+    if conditions:
+        out = apply_stat_conditions(
+            out, conditions, TEAM_RECORD_FILTER_STATS, prepare_stat_column=_prepare_condition_column
+        )
+
     return out
 
 
@@ -220,6 +241,7 @@ def build_team_record_result(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     clutch: bool = False,
@@ -230,6 +252,7 @@ def build_team_record_result(
     one_possession: bool = False,
     nationally_televised: bool = False,
     last_n: int | None = None,
+    last_n_scope: str = "qualifying",
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -356,6 +379,41 @@ def build_team_record_result(
     else:
         df = base_df
 
+    window_game_ids = None
+    if last_n is not None and last_n_scope in WINDOW_SCOPES:
+        # "how many games over 120 in their last 10": the window is the
+        # team's N most recent games in play; results and stat conditions
+        # are then counted inside it.
+        sample = _apply_game_filters(
+            base_df,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if with_player and not sample.empty:
+            sample = filter_with_player(
+                sample, with_player, seasons, season_type, team=team, strict_team_match=True
+            )
+        if without_player and not sample.empty:
+            sample = filter_without_player(
+                sample, without_player, seasons, season_type, team=team, strict_team_match=True
+            )
+        sample, _ = apply_schedule_context_filters(
+            sample,
+            seasons,
+            season_type,
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+        window_game_ids = last_n_window_game_ids(
+            sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+        )
+
     df = _apply_game_filters(
         df,
         team=team,
@@ -366,6 +424,7 @@ def build_team_record_result(
         losses_only=losses_only,
         stat=stat,
         min_value=min_value,
+        conditions=conditions,
         max_value=max_value,
         start_date=start_date,
         end_date=end_date,
@@ -437,7 +496,8 @@ def build_team_record_result(
         if tied_period_rows:
             df = df[df["wl"].astype(str).str.upper().isin({"W", "L"})].copy()
 
-    df = select_most_recent_games(df, last_n)
+    if last_n is not None and not df.empty:
+        df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
         if tied_period_rows:
@@ -488,9 +548,11 @@ def build_team_record_result(
     game_log = _build_game_log_section(df) if without_player or with_player or last_n else None
 
     caveats: list[str] = []
-    if len(seasons) > 1:
+    used_seasons = sample_season_span(df, seasons, last_n)
+    if len(used_seasons) > 1:
         caveats.append(
-            f"multi-season record aggregated from game logs across {seasons[0]} to {seasons[-1]}"
+            f"multi-season record aggregated from game logs across "
+            f"{used_seasons[0]} to {used_seasons[-1]}"
         )
     if opponent:
         caveats.append(f"record filtered to games vs {describe_opponent_filter(opponent)}")
@@ -515,7 +577,8 @@ def build_team_record_result(
         caveats.append(" ".join(parts))
     if last_n is not None:
         noun = "game" if last_n == 1 else "games"
-        caveats.append(f"last {last_n} {noun} (played {len(df)})")
+        played = len(window_game_ids) if window_game_ids is not None else len(df)
+        caveats.append(f"last {last_n} {noun} (played {played})")
     if start_date or end_date:
         dp = []
         if start_date:

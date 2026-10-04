@@ -2208,22 +2208,24 @@ cases:
       family: rolling_stretches
       variant: inverse_sibling
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
-    expected_route: player_stretch_leaderboard
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: team_rolling_stretch
-    review_notes: "Team rolling-stretch leaderboards are intentionally unsupported until a team route/result contract exists."
+      - path: result.sections.leaderboard.0.window_size
+        equals: 5
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: pts
+    review_notes: "Team rolling stretch: each team's best 5-game scoring average. It refused before the team stretch route (C2, agent change)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - rolling_stretch
         - team_scope
-      notes: "Wave 6 fixed this boundary so team-scoped rolling-stretch wording no longer returns player windows."
+      notes: "Review that rows are teams (not player windows) ranked by points per game over 5 straight games."
 
   - id: lakers_finals_appearances
     query: "Lakers Finals appearances"
@@ -4039,29 +4041,106 @@ cases:
     priority: p2
     acceptance:
       family: rolling_stretches
-      variant: nearby_unsupported
-      concept: team_advanced_metric_stretch_boundary
+      variant: synonym
+      concept: team_advanced_metric_stretch
       public_surface: true
-      review_role: boundary
+      review_role: supporting
       no_broad_fallback: true
       sibling_of: hottest_3_game_scoring_stretch
-      intent_model: player_stretch_leaderboard
+      intent_model: team_stretch_leaderboard
       qualifier_model:
         - team_scope
         - net_rating
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
-    expected_route: player_stretch_leaderboard
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
-    review_notes: "Team advanced-metric rolling stretch remains outside current support."
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: net_rating
+    review_notes: "Team net rating over 5 straight games, per 100 estimated possessions. It refused before the team stretch route (C2, agent change); the id is kept for history."
     manual_review:
       status: unreviewed
       tags:
         - rolling_stretch
+        - team_scope
+      notes: "Review the net rating against the box-score possession estimate."
+
+  - id: team_game_score_stretch_unsupported
+    query: "best 5-game team stretch by Game Score"
+    category: rolling_stretch
+    priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: nearby_unsupported
+      concept: team_game_score_stretch_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: pqa_stretch_sentence_game_score
+      intent_model: team_stretch_leaderboard
+      qualifier_model:
+        - team_scope
+        - game_score
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_stretch_leaderboard
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Game Score is a player measure; a team stretch by Game Score is refused rather than ranked by record (C2, agent change)."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - rolling_stretch
         - unsupported_boundary
-      notes: "Review unsupported boundary for team rolling stretches beyond scoring phrasing."
+      notes: "Review that no team or player rows are returned."
+
+  - id: c2_team_best_10_game_stretch
+    query: "best 10 game stretch for the Celtics"
+    category: rolling_stretch
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: BOS
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "A named team's best 10-game record window. It listed Celtics games (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review that the record and dates match ten straight Celtics games."
+
+  - id: c2_league_best_team_stretch
+    query: "which team had the best 10 game stretch this season"
+    category: rolling_stretch
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "Each team's best 10-game record window, ranked (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review that each team appears once and the leader's record is right."
 
   - id: warriors_conference_finals_appearances
     query: "Warriors conference finals appearances"
@@ -5006,50 +5085,53 @@ cases:
     priority: p2
     acceptance:
       family: playoff_history
-      variant: nearby_unsupported
+      variant: short
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Single-team Finals-record phrasing is an expected unsupported boundary; Bulls Finals-era round data is not reliable in the current dataset."
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-      notes: "Single-team playoff round records are deferred until the route/round-data contract is approved; Bulls pre-2001 Finals round labels are not reliable."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: warriors_finals_record_since_2015_wave4
     query: "Warriors Finals record since 2015"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.start_season
-        equals: 2015-16
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Finals plus since-year phrasing should not return a broad regular-season team record; single-team round records are deferred."
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - era
-        - unsupported_boundary
-      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: most_conference_finals_appearances_wave4
     query: "most conference finals appearances"
@@ -5073,23 +5155,26 @@ cases:
     query: "Celtics conference finals record"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Single-team conference-finals record phrasing should not fall through to a regular-season record; single-team round records are deferred."
+      - path: result.sections.summary.0.playoff_round
+        equals: Conference Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: spurs_playoff_history_since_2000_wave4
     query: "Spurs playoff history since 2000"
@@ -6400,45 +6485,51 @@ cases:
     query: "What is the Bulls Finals record?"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Question-form Bulls Finals record should remain an explicit unsupported boundary."
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.sections.summary.0.playoff_round
+        equals: Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-        - product_decision
-      notes: "Single-team Finals records remain deferred until round-data contract coverage is approved."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: celtics_record_in_conference_finals_wave5
     query: "What was the Celtics record in conference finals?"
     category: playoff_history
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
     expected_route: playoff_history
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Question-form single-team conference-finals record should remain unsupported."
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.sections.summary.0.playoff_round
+        equals: Conference Finals
+    review_notes: "Single-team round record with series won and lost. Rounds come from game ids from 2001-02 and from series order before that, so 1996-97 to 2000-01 are covered (C2, agent change; it refused before)."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - playoff
-        - unsupported_boundary
-        - product_decision
-      notes: "Single-team conference-finals record support is out of scope without a round-record entity contract."
+        - playoff_round
+      notes: "Review the round's game record and series won/lost against the team's playoff runs."
 
   - id: lakers_celtics_playoff_matchup_history_wave5
     query: "Lakers Celtics playoff matchup history"
@@ -7255,8 +7346,8 @@ cases:
       - path: result.metadata.season_type
         equals: Playoffs
       - path: result.metadata.unsupported_filters.0
-        equals: single_team_playoff_round_record
-    review_notes: "Conference-finals record phrasing should keep the existing playoff-round unsupported boundary even when a division phrase is also present."
+        equals: opponent_division
+    review_notes: "Single-team round records answer (C2, agent change); the opponent-division filter is still not executed by playoff_history, so this refuses on that filter instead of answering without it."
     manual_review:
       status: expected_unsupported
       tags:
@@ -7264,7 +7355,7 @@ cases:
         - unsupported_boundary
         - division_guard
         - product_decision
-      notes: "Single-team conference-finals records remain deferred; division cleanup must not preempt this boundary."
+      notes: "Conference-finals records answer; the division filter must refuse rather than be dropped."
 
   - id: most_clutch_player_wave5
     query: "Who is the most clutch player this season?"
@@ -8961,3 +9052,412 @@ cases:
       tags:
         - games_played
       notes: "Same board as b1_most_games_played."
+
+  - id: c2_league_longest_20_point_streak
+    query: "who has the longest 20 point streak this season"
+    category: streak
+    priority: p1
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "League streak ranking. It fell to a single-game list (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review that each player's streak is their longest run of consecutive 20-point games this season."
+
+  - id: c2_league_longest_winning_streak
+    query: "longest winning streak this season"
+    category: streak
+    priority: p1
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "League team streak ranking. It matched no route (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review that each team's streak is its longest run of consecutive wins this season."
+
+  - id: c2_team_current_winning_streak
+    query: "Lakers current winning streak"
+    category: streak
+    priority: p1
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "Current team streak. It listed Lakers games (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review that the streak runs through the Lakers' latest game, or that no active streak is reported."
+
+  - id: c2_player_streak_games_with_threes
+    query: "Curry longest streak of games with 5+ threes"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "Streak wording with 'games with N+'. It fell to the game finder (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review that the streak counts consecutive Curry games with 5+ made threes."
+
+  - id: c2_player_consecutive_rebound_games
+    query: "Jokic consecutive games with 10+ rebounds"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "'consecutive games with' wording. It fell to the game finder (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review the longest run of consecutive Jokic games with 10+ rebounds."
+
+  - id: c2_compound_condition_streak
+    query: "longest streak of 20 point 10 rebound games this season"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "Streak of games meeting two conditions (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review that every game in each streak has 20+ points and 10+ rebounds."
+
+  - id: lebron_30_in_last_10_window_a2
+    query: "how many times did LeBron score 30 in his last 10 games 2017-18"
+    category: finder_count
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - count
+      - finder
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2017-18
+    review_notes: >-
+      Window scope (issue #314, package A2): the 10 most recent games first,
+      then the 30 point games among them. It used to return his 10 most recent
+      30 point games of the season and report "10". The count and game ids are
+      checked against raw rows by tests/test_last_n_sample_scope_real_data.py.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: curry_last_5_with_30_qualifying_a2
+    query: "Curry last 5 games with 30 points 2015-16"
+    category: player_game_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: window
+        value: "5"
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 5
+    review_notes: >-
+      Qualifying scope (issue #314, package A2): his 5 most recent 30 point
+      games, not the 30 point games among his last 5. Game ids are checked
+      against raw rows by tests/test_last_n_sample_scope_real_data.py.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: celtics_last_3_meetings_knicks_a2
+    query: "Celtics last 3 meetings with the Knicks 2023-24"
+    category: team_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_filters:
+      - kind: window
+        value: "3"
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 3
+    hard_assertions:
+      - path: result.metadata.opponent
+        equals: NYK
+    review_notes: >-
+      Last N meetings (issue #314, package A2): "meetings with the Knicks" is
+      the last 3 games against New York. It used to drop the opponent and list
+      Boston's last 3 games against anyone.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: celtics_record_last_ten_words_a2
+    query: "Celtics record over their last ten games 2023-24"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 10
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 10
+    review_notes: >-
+      Spelled-out window (issue #314, package A2). "last ten games",
+      "previous 8 games" and "5 most recent games" used to drop the window and
+      return the whole season's record.
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Agent-verified on the committed fixture (tests/test_last_n_sample_scope.py)."
+
+  - id: c2_team_playoff_run_by_year
+    query: "how did the Celtics do in the 2024 playoffs"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2023-24
+      - path: result.sections.summary.0.titles
+        equals: 1
+    review_notes: "A year-named playoff run lists each series. '2024 playoffs' read as no season and the run was a game record (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the four Celtics series of 2023-24 and the title."
+
+  - id: c2_team_playoff_series_won
+    query: "how many playoff series have the Lakers won"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "Series won and lost since 1996-97. It was refused as a game-wins filter (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review series won/lost against the Lakers' runs since 1996-97."
+
+  - id: c2_team_titles_since_year
+    query: "Spurs championships since 1997"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "Team titles are Finals series won. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the Spurs title seasons since 1997-98."
+
+  - id: c2_team_title_in_year
+    query: "did the Warriors win the title in 2017"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "The 2017 title is the 2016-17 Finals. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the Warriors' 2016-17 run and Finals result."
+
+  - id: c2_early_playoff_run_rounds
+    query: "Spurs 1999 playoffs series"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    hard_assertions:
+      - path: result.sections.series.3.playoff_round
+        equals: Finals
+      - path: result.sections.series.3.result
+        equals: Won
+    review_notes: "1998-99 game ids carry no round; rounds come from series order (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review that the four Spurs series are labelled first round through Finals."
+
+  - id: c2_bare_year_range_team_record
+    query: "Lakers record from 2000 to 2002"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+      - by_season
+    hard_assertions:
+      - path: result.sections.summary.0.season_start
+        equals: 2000-01
+      - path: result.sections.summary.0.season_end
+        equals: 2002-03
+    review_notes: "A bare-year range names the seasons starting in those years. It used to fall back to the default season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review the Lakers record across 2000-01 to 2002-03."
+
+  - id: c2_bare_year_range_player_summary
+    query: "LeBron James points per game from 2010 to 2013"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - by_season
+      - game_log
+    hard_assertions:
+      - path: result.sections.summary.0.season_start
+        equals: 2010-11
+      - path: result.sections.summary.0.season_end
+        equals: 2013-14
+    review_notes: "A bare-year range reaches player summaries instead of the default season (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review LeBron's per-game line across 2010-11 to 2013-14."
+
+  - id: c2_league_most_titles_since_year
+    query: "which team has won the most titles since 1997"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: LAL
+      - path: result.sections.leaderboard.0.titles
+        equals: 6
+    review_notes: "League titles are Finals series won, ranked by team. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the title counts and seasons for every champion since 1997-98."
+
+  - id: c2_league_title_in_year
+    query: "who won the title in 2016"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: CLE
+      - path: result.sections.leaderboard.0.finals_opponent
+        equals: Golden State Warriors
+    review_notes: "The 2016 title is the 2015-16 Finals. It was refused as a championship count (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - playoff_series
+      notes: "Review the 2015-16 champion and Finals score."

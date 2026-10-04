@@ -4,6 +4,8 @@ from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
+    apply_last_n_sample,
     apply_player_clutch_filter,
     apply_player_role_filter,
     build_clutch_filter_coverage_note,
@@ -12,6 +14,8 @@ from nbatools.commands.data_utils import (
     filter_by_opponent_player,
     filter_period_rows,
     filter_without_player,
+    last_n_outcome,
+    last_n_window_game_ids,
     load_player_game_period_stats_for_seasons,
     load_player_games_for_seasons,
     period_coverage_failure,
@@ -145,6 +149,44 @@ def _apply_filters(
     return out
 
 
+def _window_game_ids(
+    df: pd.DataFrame,
+    last_n: int,
+    *,
+    seasons: list[str],
+    season_type: str,
+    player: str | None,
+    team: str | None,
+    opponent,
+    opponent_player: str | None,
+    without_player: str | None,
+    home_only: bool,
+    away_only: bool,
+    start_date: str | None,
+    end_date: str | None,
+    role: str | None,
+    outcome: str | None = None,
+) -> set[str]:
+    """The player's N most recent games in play, before any game condition."""
+    sample = _apply_filters(
+        df=df,
+        player=player,
+        team=team,
+        opponent=opponent,
+        home_only=home_only,
+        away_only=away_only,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    if opponent_player and not sample.empty:
+        sample = filter_by_opponent_player(sample, opponent_player, seasons, season_type)
+    if without_player and not sample.empty:
+        sample = filter_without_player(sample, without_player, seasons, season_type, team=team)
+    if role and not sample.empty:
+        sample, _ = apply_player_role_filter(sample, seasons, season_type, role)
+    return last_n_window_game_ids(sample, last_n, outcome)
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -174,6 +216,7 @@ def build_result(
     quarter: str | None = None,
     half: str | None = None,
     role: str | None = None,
+    last_n_scope: str = "qualifying",
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
@@ -205,7 +248,7 @@ def build_result(
     period_filter_requested = quarter is not None or half is not None
 
     try:
-        base_df = load_player_games_for_seasons(seasons, season_type)
+        base_df = load_player_games_for_seasons(seasons, season_type, player=player)
     except FileNotFoundError:
         if clutch:
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
@@ -313,6 +356,26 @@ def build_result(
                 notes=[coverage_note] if coverage_note else [],
             )
 
+    window_game_ids = None
+    if last_n is not None and last_n_scope in WINDOW_SCOPES:
+        window_game_ids = _window_game_ids(
+            base_df,
+            last_n,
+            seasons=seasons,
+            season_type=season_type,
+            player=player,
+            team=team,
+            opponent=opponent,
+            opponent_player=opponent_player,
+            without_player=without_player,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+            role=role,
+            outcome=last_n_outcome(last_n_scope, wins_only, losses_only),
+        )
+
     df = _apply_filters(
         df=df,
         player=player,
@@ -326,7 +389,6 @@ def build_result(
         min_value=min_value,
         max_value=max_value,
         conditions=conditions,
-        last_n=last_n,
         start_date=start_date,
         end_date=end_date,
         identity_notes=notes,
@@ -358,6 +420,11 @@ def build_result(
             reason="filter_not_supported",
             notes=[role_note],
         )
+
+    # Last N runs after every filter: on the qualifying games, or (window
+    # scope) on the N most recent games in play.
+    if last_n is not None and not df.empty:
+        df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
         return NoResult(query_class="finder", notes=notes)

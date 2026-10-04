@@ -811,19 +811,29 @@ def _build_count_phrase(
     """
     player = metadata.get("player")
     team = metadata.get("team")
-    entity = player or _team_subject(metadata) or "Result"
+    entity = player or _team_subject(metadata, games) or "Result"
     team_subject = bool(team and not player)
 
     if parsed.get("boolean_query_used"):
         game_word = "matching game" if count == 1 else "matching games"
         verb = "have had" if team_subject else "has had"
-        context = _count_context(metadata, player=bool(player))
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         threshold = _count_threshold_text(metadata.get("max_value"))
-        entity = _team_subject(metadata)
-        context = _count_context(metadata, player=bool(player))
+        entity = _team_subject(metadata, games)
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         times = "time" if count == 1 else "times"
         record = _record_suffix(games)
         return (
@@ -845,7 +855,12 @@ def _build_count_phrase(
             "pts": "has scored",
         }.get(stat, "has recorded")
         verb = singular_verb.replace("has ", "have ", 1) if team_subject else singular_verb
-        context = _count_context(metadata, player=bool(player))
+        context = _count_context(
+            metadata,
+            player=bool(player),
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
         return f"{entity} {verb} {count} {stat_name} {context}."
 
     conditions = normalize_stat_conditions(
@@ -861,7 +876,12 @@ def _build_count_phrase(
     else:
         occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
-    context = _count_context(metadata, player=bool(player))
+    context = _count_context(
+        metadata,
+        player=bool(player),
+        last_n=parsed.get("last_n"),
+        last_n_scope=parsed.get("last_n_scope"),
+    )
     if count_noun.startswith("games with "):
         verb = "have had" if team_subject else "has had"
     else:
@@ -869,18 +889,51 @@ def _build_count_phrase(
     return f"{entity} {verb} {count} {count_noun} {context}."
 
 
-def _team_subject(metadata: dict) -> str | None:
+def _team_subject(metadata: dict, games: Any = None) -> str | None:
     team_context = metadata.get("team_context")
     if isinstance(team_context, dict):
         team_name = _clean_text(team_context.get("team_name"))
+        if team_name:
+            return f"The {team_name}"
+    # Team finders carry only the abbreviation; name the team from its rows
+    # ("The Los Angeles Lakers", not "The LAL").
+    if (
+        metadata.get("team")
+        and games is not None
+        and hasattr(games, "columns")
+        and "team_name" in games.columns
+        and not games.empty
+    ):
+        team_name = _clean_text(games["team_name"].mode().iloc[0])
         if team_name:
             return f"The {team_name}"
     team = _clean_text(metadata.get("team"))
     return f"The {team}" if team else None
 
 
-def _count_context(metadata: dict, *, player: bool) -> str:
+def _count_context(
+    metadata: dict,
+    *,
+    player: bool,
+    last_n: int | None = None,
+    last_n_scope: str | None = None,
+) -> str:
     query_text = (_clean_text(metadata.get("query_text")) or "").lower()
+    if last_n:
+        if last_n_scope == "outcome_window":
+            owner = "his" if player else "their"
+            unit = "losses" if metadata.get("losses_only") else "wins"
+            if last_n == 1:
+                unit = "loss" if unit == "losses" else "win"
+                return f"in {owner} last {unit}"
+            return f"in {owner} last {last_n} {unit}"
+        if last_n_scope != "window":
+            # "last 10 games where he scored 30": the count is capped at N,
+            # so say so rather than claiming a 10-game window.
+            return f"(limited to the {last_n} most recent)"
+        owner = "his" if player else "their"
+        noun = "game" if last_n == 1 else f"{last_n} games"
+        return f"in {owner} last {noun}"
     season = metadata.get("season")
     start_s = metadata.get("start_season")
     end_s = metadata.get("end_season")
@@ -968,6 +1021,242 @@ def _add_team_advanced_scalar_answer_metadata(metadata: dict[str, Any], result: 
         f"The {team_label} have {article} {label} of {_format_one_decimal(float(value))} "
         f"({_ordinal(rank)} of {len(leaders)}) {context}."
     )
+
+
+_TEAM_STRETCH_PHRASES = {
+    "pts": "points per game",
+    "opp_pts": "points allowed per game",
+    "plus_minus": "point differential per game",
+    "reb": "rebounds per game",
+    "ast": "assists per game",
+    "stl": "steals per game",
+    "blk": "blocks per game",
+    "fg3m": "threes per game",
+    "tov": "turnovers per game",
+    "fg_pct": "FG%",
+    "fg3_pct": "3P%",
+    "ft_pct": "FT%",
+    "efg_pct": "eFG%",
+    "ts_pct": "TS%",
+    "off_rating": "offensive rating",
+    "def_rating": "defensive rating",
+    "net_rating": "net rating",
+}
+
+
+_ROUND_PROSE = {
+    "First Round": "first round",
+    "Second Round": "second round",
+    "Conference Finals": "conference finals",
+    "Finals": "Finals",
+}
+
+
+def _series_line(row: Any) -> str:
+    verb = {"Won": "beat", "Lost": "lost to"}.get(str(row["result"]), "are playing")
+    stage = _ROUND_PROSE.get(row["playoff_round"], str(row["playoff_round"]).lower())
+    return (
+        f"{verb} the {row['opponent_team_name']} {int(row['wins'])}-{int(row['losses'])} "
+        f"in the {stage}"
+    )
+
+
+def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for a team's playoff run, series record or round record."""
+    if metadata.get("route") != "playoff_history" or not isinstance(result, SummaryResult):
+        return
+    series = result.series
+    if result.summary.empty or series is None or series.empty:
+        return
+    row = result.summary.iloc[0]
+    team = row["team_name"]
+    games = f"{int(row['wins'])}-{int(row['losses'])}"
+    won, lost = int(row.get("series_won", 0)), int(row.get("series_lost", 0))
+    first, last = row["season_start"], row["season_end"]
+    round_label = row.get("playoff_round")
+    # An opponent filter narrows every count to the series against that team.
+    vs = ""
+    if metadata.get("opponent") and "opponent_team_name" in series:
+        vs = f" against the {series['opponent_team_name'].iloc[0]}"
+    if isinstance(round_label, str) and round_label:
+        span = f"from {first} to {last}" if first != last else f"in {first}"
+        stage = _ROUND_PROSE.get(round_label, round_label.lower())
+        metadata["answer_phrase"] = (
+            f"The {team} won {won} of {won + lost} {stage} series{vs} {span}, "
+            f"going {games} in those games."
+        )
+        return
+    query_text = str(metadata.get("query_text") or "").lower()
+    if re.search(r"\b(?:titles?|championships?|champions?)\b", query_text) and not vs:
+        metadata["answer_phrase"] = _team_titles_phrase(team, series, metadata)
+        return
+    if first == last:
+        runs = "; ".join(_series_line(r) for _, r in series.iterrows())
+        title = " and won the title" if int(row.get("titles", 0) or 0) and not vs else ""
+        metadata["answer_phrase"] = (
+            f"The {team} went {games}{vs} in the {first} playoffs{title}: {runs}."
+        )
+        return
+    titles = int(row.get("titles", 0) or 0)
+    title_text = (
+        f", with {titles} {'title' if titles == 1 else 'titles'}" if titles and not vs else ""
+    )
+    metadata["answer_phrase"] = (
+        f"From {first} to {last}, the {team} won {won} of {won + lost} playoff series{vs} "
+        f"({games} in games){title_text}."
+    )
+
+
+_PLAYOFF_DATA_START = "1996-97"
+
+
+def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "which team has won the most titles since 2000"."""
+    if metadata.get("route") != "playoff_appearances" or not isinstance(result, LeaderboardResult):
+        return
+    board = result.leaders
+    if board.empty or "titles" not in board:
+        return
+    top = board.iloc[0]
+    if "season" in board and "finals_opponent" in board:
+        # One season: who won it and whom they beat.
+        metadata["answer_phrase"] = (
+            f"The {top['team_name']} won the {top['season']} title, beating the "
+            f"{top['finals_opponent']} {top['finals_score']} in the Finals."
+        )
+        return
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+    most = int(top["titles"])
+    leaders = board[board["titles"] == most]
+    count = f"{most} {'title' if most == 1 else 'titles'}"
+    if len(leaders) == 1:
+        metadata["answer_phrase"] = (
+            f"The {top['team_name']} won the most titles {span}: {count} ({top['title_seasons']})."
+        )
+        return
+    names = [f"the {name}" for name in leaders["team_name"]]
+    joined = ", ".join(names[:-1]) + f" and {names[-1]}"
+    joined = joined[0].upper() + joined[1:]
+    metadata["answer_phrase"] = f"{joined} tied for the most titles {span}, with {count} each."
+
+
+def _team_titles_phrase(team: str, series: Any, metadata: dict[str, Any]) -> str:
+    """ "Lakers titles since 2000": Finals series won, with the seasons."""
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        # Earlier titles are not in the data, so never count from before it.
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+        start = _PLAYOFF_DATA_START
+    finals = series[series["playoff_round"] == "Finals"]
+    won = finals[finals["result"] == "Won"]
+    reached = len(finals)
+    # A run is still going when its last series is unfinished, or won short of the Finals.
+    last = series.sort_values(["season", "start_date"]).iloc[-1] if not series.empty else None
+    still_going = last is not None and (
+        last["result"] == "In progress"
+        or (last["result"] == "Won" and last["playoff_round"] != "Finals")
+    )
+    if won.empty and still_going:
+        season = last["season"]
+        return (
+            f"The {team} have not won a title {span}; "
+            f"their {season} playoff run is still in progress."
+        )
+    if start == end and reached:
+        # One season: name the Finals opponent and the series score.
+        final = finals.iloc[-1]
+        score = f"{int(final['wins'])}-{int(final['losses'])}"
+        opponent = final["opponent_team_name"]
+        if final["result"] == "Won":
+            won_text = f"won the {start} title, beating the {opponent} {score} in the Finals"
+            return f"The {team} {won_text}."
+        return (
+            f"The {team} did not win the {start} title; "
+            f"they lost to the {opponent} {score} in the Finals."
+        )
+    if won.empty:
+        if not reached:
+            return f"The {team} did not win a title {span}; they did not reach the Finals."
+        times = "once" if reached == 1 else f"{reached} times"
+        return f"The {team} did not win a title {span}; they reached the Finals {times}."
+    titles = "title" if len(won) == 1 else "titles"
+    seasons = ", ".join(str(season) for season in won["season"])
+    appearances = "appearance" if reached == 1 else "appearances"
+    return (
+        f"The {team} won {len(won)} {titles} {span} ({seasons}), in {reached} Finals {appearances}."
+    )
+
+
+def _add_team_stretch_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "Celtics best 10 game stretch": record, dates and margin."""
+    if metadata.get("route") != "team_stretch_leaderboard":
+        return
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    row = result.leaders.iloc[0]
+    size = int(row["window_size"])
+    metric = str(row["stretch_metric"])
+    direction = "worst" if result.metadata.get("worst") else "best"
+    net = float(row["net_per_game"])
+    margin = f"{'+' if net > 0 else ''}{_format_one_decimal(net)} per game"
+    record = f"{int(row['wins'])}-{int(row['losses'])}"
+    span = f"from {row['window_start_date']} to {row['window_end_date']}"
+    if metric == "wins":
+        detail = f"went {record} {span} ({margin})"
+    else:
+        value = float(row["stretch_value"])
+        label = _TEAM_STRETCH_PHRASES.get(metric, metric)
+        if metric.endswith("_pct"):
+            shown = f"{value:.1%}"
+            detail = f"posted {_indefinite_article(shown)} {shown} {label} {span}, going {record}"
+        elif metric == "plus_minus":
+            verb = "outscored opponents" if value >= 0 else "were outscored"
+            margin_text = _format_one_decimal(abs(value))
+            detail = f"{verb} by {margin_text} points per game {span}, going {record}"
+        elif metric.endswith("_rating"):
+            shown = _format_one_decimal(value)
+            detail = f"posted {_indefinite_article(shown)} {shown} {label} {span}, going {record}"
+        else:
+            detail = f"averaged {_format_one_decimal(value)} {label} {span}, going {record}"
+    teams = result.metadata.get("teams")
+    if teams:
+        either = "either team" if len(teams) == 2 else f"the {len(teams)} teams"
+        scope = f"the {direction} {size}-game stretch by {either}"
+    elif result.metadata.get("team"):
+        scope = f"their {direction} {size}-game stretch"
+    else:
+        scope = f"the league's {direction} {size}-game stretch"
+    when = (
+        f"the {row['season']} playoffs"
+        if metadata.get("season_type") == "Playoffs"
+        else str(row["season"])
+    )
+    connector = "in" if teams else "of"
+    seasons = sorted({str(season) for season in result.leaders["season"]})
+    first = metadata.get("start_season") or seasons[0]
+    last = metadata.get("end_season") or seasons[-1]
+    if teams and first != last:
+        # Each team's best window can fall in any season searched.
+        playoffs = " playoffs" if metadata.get("season_type") == "Playoffs" else ""
+        connector, when = (
+            "from",
+            f"the {first} to {last}{playoffs}" if playoffs else f"{first} to {last}",
+        )
+    metadata["answer_phrase"] = f"The {row['team_name']} {detail}, {scope} {connector} {when}."
+
+
+def _indefinite_article(number_text: str) -> str:
+    """'an 84.4', 'an 11.2', 'an 18-point' but 'a 104.5'."""
+    whole = number_text.split(".")[0].lstrip("-")
+    return "an" if whole.startswith("8") or whole in {"11", "18"} else "a"
 
 
 def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
@@ -1421,6 +1710,9 @@ def _finalize_natural_query_result(
         )
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
+    _add_team_stretch_answer_metadata(metadata, result)
+    _add_playoff_history_answer_metadata(metadata, result)
+    _add_titles_leaderboard_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -1701,6 +1993,7 @@ VALID_ROUTES = frozenset(
         "lineup_summary",
         "lineup_leaderboard",
         "player_stretch_leaderboard",
+        "team_stretch_leaderboard",
         "playoff_history",
         "playoff_appearances",
         "playoff_matchup_history",
@@ -1892,6 +2185,9 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         )
 
     _add_game_summary_answer_metadata(metadata, result)
+    _add_team_stretch_answer_metadata(metadata, result)
+    _add_playoff_history_answer_metadata(metadata, result)
+    _add_titles_leaderboard_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

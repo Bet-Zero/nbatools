@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import pandas as pd
 
+from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
@@ -10,6 +13,8 @@ from nbatools.commands.aggregate_metrics import (
     compute_grouped_rate_metrics,
 )
 from nbatools.commands.data_utils import (
+    WINDOW_SCOPES,
+    apply_last_n_sample,
     apply_player_clutch_filter,
     apply_player_role_filter,
     apply_schedule_context_filters,
@@ -19,7 +24,10 @@ from nbatools.commands.data_utils import (
     describe_opponent_filter,
     filter_by_opponent_player,
     filter_without_player,
+    last_n_outcome,
+    last_n_window_game_ids,
     load_player_games_for_seasons,
+    sample_season_span,
     select_most_recent_games,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -120,6 +128,7 @@ def _apply_filters(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -176,6 +185,9 @@ def _apply_filters(
         if max_value is not None:
             out = out[out[stat_col] <= max_value].copy()
 
+    if conditions:
+        out = apply_stat_conditions(out, conditions, ALLOWED_STATS)
+
     if out.empty:
         return out
 
@@ -195,7 +207,18 @@ def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:
     return game_log
 
 
-def build_result(
+@dataclass
+class PlayerSample:
+    """The game rows a player summary (or split) aggregates, after every filter."""
+
+    df: pd.DataFrame
+    seasons: list[str]
+    notes: list[str]
+    clutch_executed: bool
+    arc_seasons: list[str] | None
+
+
+def select_player_summary_sample(
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -213,6 +236,7 @@ def build_result(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -224,9 +248,17 @@ def build_result(
     nationally_televised: bool = False,
     career_intent: bool = False,
     df: pd.DataFrame | None = None,
-) -> SummaryResult | NoResult:
+    last_n_scope: str = "qualifying",
+) -> PlayerSample | NoResult:
+    """Select the games in play: every filter, condition and last-N window.
+
+    Shared by the player summary and the player split summary, so a split
+    view ("home vs away splits in wins since January") splits the same
+    sample the summary would describe.
+    """
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
+    window_game_ids: set[str] | None = None
 
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
@@ -236,7 +268,7 @@ def build_result(
 
     if df is None:
         try:
-            df = load_player_games_for_seasons(seasons, season_type)
+            df = load_player_games_for_seasons(seasons, season_type, player=player)
         except FileNotFoundError:
             if clutch:
                 notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
@@ -281,6 +313,39 @@ def build_result(
                 select_player_rows(df, player, team=team)["season"].unique().tolist()
             )
 
+        if last_n is not None and last_n_scope in WINDOW_SCOPES:
+            # The window is the player's N most recent games in play; game
+            # results and stat conditions then apply inside it.
+            sample = _apply_filters(
+                df=df,
+                player=player,
+                team=team,
+                opponent=opponent,
+                home_only=home_only,
+                away_only=away_only,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            if opponent_player and not sample.empty:
+                sample = filter_by_opponent_player(sample, opponent_player, seasons, season_type)
+            if without_player and not sample.empty:
+                sample = filter_without_player(
+                    sample, without_player, seasons, season_type, team=team
+                )
+            sample, _ = apply_schedule_context_filters(
+                sample,
+                seasons,
+                season_type,
+                back_to_back=back_to_back,
+                rest_days=rest_days,
+                one_possession=one_possession,
+                nationally_televised=nationally_televised,
+            )
+            sample, _ = apply_player_role_filter(sample, seasons, season_type, role)
+            window_game_ids = last_n_window_game_ids(
+                sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+            )
+
         df = _apply_filters(
             df=df,
             player=player,
@@ -292,8 +357,8 @@ def build_result(
             losses_only=losses_only,
             stat=stat,
             min_value=min_value,
+            conditions=conditions,
             max_value=max_value,
-            last_n=last_n,
             start_date=start_date,
             end_date=end_date,
             identity_notes=notes,
@@ -353,6 +418,86 @@ def build_result(
             reason="filter_not_supported",
             notes=[role_note],
         )
+
+    # Last N runs after every filter: on the qualifying games, or (window
+    # scope) on the N most recent games in play.
+    if last_n is not None and not df.empty:
+        df = apply_last_n_sample(df, last_n, window_game_ids)
+
+    return PlayerSample(df, seasons, notes, clutch_executed, _player_arc_seasons)
+
+
+def build_result(
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    season_type: str = "Regular Season",
+    player: str | None = None,
+    team: str | None = None,
+    opponent: str | None = None,
+    opponent_player: str | None = None,
+    without_player: str | None = None,
+    special_event: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    conditions: list[dict] | None = None,
+    last_n: int | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    clutch: bool = False,
+    role: str | None = None,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
+    career_intent: bool = False,
+    df: pd.DataFrame | None = None,
+    last_n_scope: str = "qualifying",
+) -> SummaryResult | NoResult:
+    sample = select_player_summary_sample(
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        player=player,
+        team=team,
+        opponent=opponent,
+        opponent_player=opponent_player,
+        without_player=without_player,
+        special_event=special_event,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        conditions=conditions,
+        last_n=last_n,
+        start_date=start_date,
+        end_date=end_date,
+        clutch=clutch,
+        role=role,
+        back_to_back=back_to_back,
+        rest_days=rest_days,
+        one_possession=one_possession,
+        nationally_televised=nationally_televised,
+        career_intent=career_intent,
+        df=df,
+        last_n_scope=last_n_scope,
+    )
+    if isinstance(sample, NoResult):
+        return sample
+    df = sample.df
+    seasons = sample.seasons
+    notes = sample.notes
+    clutch_executed = sample.clutch_executed
+    _player_arc_seasons = sample.arc_seasons
 
     if df.empty:
         return NoResult(query_class="summary", notes=notes)
@@ -459,9 +604,11 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
-    if len(seasons) > 1:
+    used_seasons = sample_season_span(df, seasons, last_n)
+    if len(used_seasons) > 1:
         caveats.append(
-            f"multi-season summary aggregated from game logs across {seasons[0]} to {seasons[-1]}"
+            f"multi-season summary aggregated from game logs across "
+            f"{used_seasons[0]} to {used_seasons[-1]}"
         )
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")

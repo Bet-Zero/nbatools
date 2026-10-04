@@ -85,6 +85,7 @@ class TestBuildResultMap:
             "lineup_summary",
             "lineup_leaderboard",
             "player_stretch_leaderboard",
+            "team_stretch_leaderboard",
             "playoff_history",
             "playoff_appearances",
             "playoff_matchup_history",

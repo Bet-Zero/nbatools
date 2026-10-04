@@ -33,6 +33,7 @@ type LeaderboardRoute =
   | "team_record_leaderboard"
   | "player_occurrence_leaders"
   | "team_occurrence_leaders"
+  | "team_stretch_leaderboard"
   | "playoff_appearances"
   | "lineup_leaderboard";
 
@@ -414,6 +415,7 @@ function leaderboardRoute(data: QueryResponse): LeaderboardRoute | null {
     case "team_record_leaderboard":
     case "player_occurrence_leaders":
     case "team_occurrence_leaders":
+    case "team_stretch_leaderboard":
     case "playoff_appearances":
     case "lineup_leaderboard":
       return route;
@@ -449,6 +451,8 @@ function routeSpecificColumns(
       return playerOccurrenceColumns(rows, metric, metricLabel);
     case "team_occurrence_leaders":
       return teamOccurrenceColumns(rows, metric, metricLabel);
+    case "team_stretch_leaderboard":
+      return teamStretchColumns(rows);
     case "playoff_appearances":
       return playoffAppearanceColumns(rows, metric, metricLabel);
     case "lineup_leaderboard":
@@ -535,6 +539,47 @@ function teamOccurrenceColumns(
   pushMetricColumn(columns, rows, metric, metricLabel);
   pushValueColumn(columns, rows, "games_played", "GP");
   pushSeasonContextColumns(columns, rows);
+  return columns;
+}
+
+const TEAM_STRETCH_LABELS: Record<string, string> = {
+  pts: "PPG",
+  opp_pts: "Opp PPG",
+  plus_minus: "Net/G",
+  reb: "RPG",
+  ast: "APG",
+  stl: "SPG",
+  blk: "BPG",
+  fg3m: "3PM/G",
+  tov: "TOV/G",
+  fg_pct: "FG%",
+  fg3_pct: "3P%",
+  ft_pct: "FT%",
+  efg_pct: "eFG%",
+  ts_pct: "TS%",
+  off_rating: "ORtg",
+  def_rating: "DRtg",
+  net_rating: "Net Rtg",
+};
+
+function teamStretchColumns(
+  rows: SectionRow[],
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  const metric = textValue(rows[0], "stretch_metric");
+  if (metric && metric !== "wins" && metric !== "plus_minus") {
+    pushValueColumn(
+      columns,
+      rows,
+      "stretch_value",
+      TEAM_STRETCH_LABELS[metric] ?? metric,
+    );
+  }
+  columns.push(recordColumn("record"));
+  pushValueColumn(columns, rows, "net_per_game", "Net/G");
+  pushValueColumn(columns, rows, "window_start_date", "From");
+  pushValueColumn(columns, rows, "window_end_date", "To");
+  pushValueColumn(columns, rows, "season", "Season");
   return columns;
 }
 

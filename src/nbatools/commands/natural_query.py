@@ -98,6 +98,7 @@ from nbatools.commands._occurrence_route_utils import (
     extract_occurrence_event,
     try_compound_occurrence_route,
     try_league_game_finder_route,
+    try_league_streak_route,
     try_occurrence_count_route,
     wants_occurrence_leaderboard,
 )
@@ -121,6 +122,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     build_role_filter_note as build_role_filter_note,
+)
+from nbatools.commands._parse_helpers import (
+    canonicalize_sample_phrases as canonicalize_sample_phrases,
 )
 from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
@@ -151,6 +155,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_last_n_scope as detect_last_n_scope,
 )
 from nbatools.commands._parse_helpers import (
     detect_lineup_query as detect_lineup_query,
@@ -237,6 +244,9 @@ from nbatools.commands._parse_helpers import (
     detect_team_rolling_stretch_boundary as detect_team_rolling_stretch_boundary,
 )
 from nbatools.commands._parse_helpers import (
+    detect_team_stretch_request as detect_team_stretch_request,
+)
+from nbatools.commands._parse_helpers import (
     detect_wins_losses as detect_wins_losses,
 )
 from nbatools.commands._parse_helpers import (
@@ -286,7 +296,13 @@ from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
 )
 from nbatools.commands._parse_helpers import (
+    last_n_reach_back_seasons as last_n_reach_back_seasons,
+)
+from nbatools.commands._parse_helpers import (
     merge_opponent_points_allowed_conditions as merge_opponent_points_allowed_conditions,
+)
+from nbatools.commands._parse_helpers import (
+    names_current_season as names_current_season,
 )
 from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
@@ -312,6 +328,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._playoff_record_route_utils import (
     detect_by_decade_intent,
     detect_by_round_intent,
+    detect_how_did_playoffs,
     detect_playoff_appearance_intent,
     detect_playoff_history_intent,
     detect_playoff_round_filter,
@@ -320,7 +337,11 @@ from nbatools.commands._playoff_record_route_utils import (
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
-from nbatools.commands.entity_resolution import format_ambiguity_message, resolve_stat
+from nbatools.commands.entity_resolution import (
+    TEAM_ALIASES,
+    format_ambiguity_message,
+    resolve_stat,
+)
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
@@ -497,6 +518,8 @@ def _multi_player_availability_boundary(q: str) -> bool:
 _WITH_PLAYER_SUPPORTED_ROUTES = {"team_record"}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
+    "player_split_summary",
+    "team_split_summary",
     "team_record_leaderboard",
     "game_finder",
     "game_summary",
@@ -560,12 +583,25 @@ _LAST_N_SUPPORTED_ROUTES = {
     "player_stretch_leaderboard",
     "season_leaders",
     "season_team_leaders",
+    "team_stretch_leaderboard",
     "team_compare",
     "team_record",
     "team_split_summary",
     "team_streak_finder",
     "top_player_games",
     "top_team_games",
+}
+
+# Game-log routes that can choose a last-N time window before applying game
+# results and stat conditions (see detect_last_n_scope).
+_LAST_N_WINDOW_ROUTES = {
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+    "player_split_summary",
+    "team_record",
+    "team_split_summary",
 }
 
 
@@ -1076,6 +1112,98 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 )
 
 
+_TEAM_PAIR_ALIASES = "|".join(
+    re.escape(name)
+    for name in sorted(TEAM_ALIASES, key=len, reverse=True)
+    # "cs" doubles as a word; "was"/"min" only count inside a list of teams.
+    if name not in {"cs", "c's"}
+)
+_TEAM_ONE = rf"(?:the\s+)?(?:{_TEAM_PAIR_ALIASES})(?![\w'])"
+_TEAM_LIST_SEP = r"(?:\s*,\s*(?:(?:and|&)\s+)?|\s+(?:and|&)\s+)"
+_TEAM_LIST_PATTERN = re.compile(rf"(?<![\w']){_TEAM_ONE}(?:{_TEAM_LIST_SEP}{_TEAM_ONE})+")
+_TEAM_ONE_PATTERN = re.compile(rf"(?<![\w'])(?:the\s+)?({_TEAM_PAIR_ALIASES})(?![\w'])")
+_OPPONENT_LEAD = re.compile(r"\b(?:vs\.?|versus|against|over|facing|beat|beating)\s*$")
+
+
+# Title questions that ask more than a count: never answer them with one.
+_TITLE_EXTRA_CONDITION = re.compile(
+    r"back[- ]to[- ]back|repeat|three[- ]?peat|clinch|\bstats?\b|\bgames?\b|\broster\b"
+    r"|\bwithout\b|\bwith\s+(?!(?:the\s+)?most\b)[a-z]"
+)
+_LEAGUE_TITLE_WORDING = re.compile(
+    r"\b(?:which|what)\s+(?:nba\s+)?(?:teams?|franchises?)\b|\bteams?\b|\bfranchises?\b"
+    r"|\bchampions?\b|\bwinners?\b|\bwho\s+won\s+the\b(?!.*\bmost\b)"
+    r"|^(?!.*\b(?:who|players?)\b).*\bmost\b"
+)
+_BARE_YEAR = re.compile(r"(?<![\d-])(?:19|20)\d{2}(?!-\d{2}\b)(?!\d)")
+
+
+def _title_year_left_unused(q: str) -> bool:
+    """A year the title route would not apply ("titles from 1990 to 2010",
+    "titles 2014"): refuse rather than count every season."""
+    years = _BARE_YEAR.findall(q)
+    if not years:
+        return False
+    if all(extract_season_range(q)):
+        # "titles from 2000 to 2010": both years bound the span.
+        return False
+    if len(years) > 1:
+        # "since 2010 until 2020": only one year is ever applied.
+        return True
+    return not (extract_season(q) or extract_since_season(q) or re.search(r"\b(?:19|20)\d0s\b", q))
+
+
+_TEAM_TITLE_COUNT = re.compile(r"\b(?:championships?|champions?|titles?)\b")
+# Rings belong to players; division and conference titles are not Finals wins.
+_NON_LEAGUE_TITLE = re.compile(
+    r"\brings?\b|\b(?:division|divisional|conference|east(?:ern)?|west(?:ern)?)\s+"
+    r"(?:titles?|championships?|champions?)\b|\bscoring\s+(?:titles?|champions?)\b"
+)
+
+# Title words that qualify another question rather than ask for a title count:
+# "record vs the defending champions", "best record by a title winner".
+_TITLE_NOT_A_COUNT = re.compile(
+    r"\b(?:defending|reigning)\s+champ|\b(?:vs\.?|versus|against|as)\s+(?:the\s+)?champions?\b"
+    r"|\brecords?\b|\bbest\b|\bworst\b|\bsince\s+winning\b|\bhow\s+(?:did|do|does)\b"
+    r"|\bstats?\b|\bpoints?\b|\baverag\w*"
+    r"|(?<!title\s)(?<!championship\s)\bwins\b|\bbeat(?:en|ing|s)?\b|\bplay(?:ing|ed|s)?\b"
+    r"|\bodds\b|\bchances?\b"
+)
+
+
+def _named_team_pairs(q: str) -> dict[str, list[str]]:
+    """Teams listed with "and"/commas: subjects ("lakers, celtics and knicks
+    best stretch") or, after "vs"/"against", opponents ("vs lakers and knicks").
+    """
+    found: dict[str, list[str]] = {"subjects": [], "opponents": [], "lead": []}
+    for match in _TEAM_LIST_PATTERN.finditer(q):
+        teams: list[str] = []
+        list_end = match.start()
+        closed = False
+        for one in _TEAM_ONE_PATTERN.finditer(q, match.start(), match.end()):
+            if closed:
+                break
+            # "and" joins the last item: "vs celtics and knicks, lakers best..."
+            # ends the list at the knicks.
+            closed = bool(re.search(r"(?:\band|&)\s+(?:the\s+)?$", q[list_end : one.start()]))
+            abbr = TEAM_ALIASES[one.group(1)]
+            if abbr not in teams:
+                teams.append(abbr)
+            list_end = one.end()
+        if len(teams) < 2:
+            continue
+        role = "opponents" if _OPPONENT_LEAD.search(q[: match.start()]) else "subjects"
+        if not found[role]:
+            found[role] = teams
+            if role == "opponents":
+                # The subject is a team named outside the opponent list.
+                outside = q[: match.start()] + " " + q[list_end:]
+                found["lead"] = [
+                    TEAM_ALIASES[one.group(1)] for one in _TEAM_ONE_PATTERN.finditer(outside)
+                ]
+    return found
+
+
 def _stretch_display_mode(q: str, player: str | None) -> str | None:
     """Classify rolling-stretch display intent when the query says so plainly."""
     if not re.search(r"\b(?:stretch(?:es)?|windows?|rolling)\b", q):
@@ -1199,6 +1327,7 @@ __all__ = [
     "detect_role",
     "detect_stretch_query",
     "detect_team_rolling_stretch_boundary",
+    "detect_team_stretch_request",
     "detect_opponent_conference",
     "detect_opponent_conference_boundary",
     "detect_opponent_conference_geography_boundary",
@@ -1241,11 +1370,24 @@ __all__ = [
 
 
 def _build_parse_state(query: str) -> dict:
-    q = normalize_text(query)
+    q = canonicalize_sample_phrases(normalize_text(query))
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
-    start_season, end_season = extract_season_range(q)
+    start_season, end_season = extract_season_range(q, season_type)
+    if start_season and end_season:
+        from nbatools.commands._seasons import default_end_season, season_to_int
+
+        # "from 2020 to 2030": the span ends with the latest season played. A
+        # span that starts after it is left alone, so it finds no games rather
+        # than quietly answering for the latest season.
+        latest = default_end_season(season_type)
+        if season_to_int(start_season) <= season_to_int(latest) < season_to_int(end_season):
+            end_season = latest
+    # "2019-2020" is one season written out, not a span.
+    written_out_season = start_season if start_season and start_season == end_season else None
+    if written_out_season:
+        start_season = end_season = None
     career_intent = False
 
     if not (start_season and end_season):
@@ -1281,7 +1423,7 @@ def _build_parse_state(query: str) -> dict:
     explicit_relative_season = False
     season = None
     if not (start_season and end_season):
-        season = extract_season(q)
+        season = extract_season(q) or written_out_season
         if season is None:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None
@@ -1315,6 +1457,10 @@ def _build_parse_state(query: str) -> dict:
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
+    team_stretch_request = detect_team_stretch_request(q)
+    if team_stretch_request is not None:
+        team_stretch_request.update(_named_team_pairs(q))
+    stretch_names_players = bool(stretch_request and re.search(r"\b(?:players?|who)\b", q))
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
     team_leader_stat = detect_team_leader_stat(q)
@@ -1418,6 +1564,7 @@ def _build_parse_state(query: str) -> dict:
     range_intent = bool(start_season and end_season)
     split_intent = wants_split_summary(q)
 
+    season_defaulted = False
     if season is None and start_season is None and end_season is None:
         if (
             last_n is not None
@@ -1432,6 +1579,7 @@ def _build_parse_state(query: str) -> dict:
             or window_size is not None
         ) and not historical_route_intent:
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     player_a, player_b = extract_player_comparison(q)
     bare_player_vs_player = False
@@ -1523,6 +1671,17 @@ def _build_parse_state(query: str) -> dict:
                 player = player_without_absence.resolved
 
     wins_only, losses_only = detect_wins_losses(q)
+    if (
+        re.search(r"\bseries\b", q)
+        and not re.search(r"\bgames?\b", q)
+        and re.search(r"\b(?:playoffs?|postseason)\b", q)
+    ):
+        # "how many playoff series have the Lakers won": series won and lost
+        # come from the playoff history, not a filter to winning games.
+        wins_only = losses_only = False
+    if stretch_request and re.search(r"\b(?:most|fewest|least)\s+(?:wins|losses)\b", q):
+        # "most wins over a 10 game stretch" ranks windows by record.
+        wins_only = losses_only = False
 
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
@@ -1579,6 +1738,7 @@ def _build_parse_state(query: str) -> dict:
             and not historical_route_intent
         ):
             season = default_season_for_context(season_type)
+            season_defaulted = True
 
     # Anchor rolling date windows to the data end date when data is stale.
     # Without this, a 14-day window ("last couple weeks") computed from
@@ -1596,16 +1756,24 @@ def _build_parse_state(query: str) -> dict:
     stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
-    explicit_range_start, explicit_range_end = extract_season_range(q)
+    explicit_range_start, explicit_range_end = extract_season_range(q, season_type)
 
+    if player and team_streak_request and team_streak_request.get("team_condition_only"):
+        # A bare stat condition is a team streak only without a player subject.
+        team_streak_request = None
     if (
         (streak_request or team_streak_request)
+        # "this season" / "last season" name a season too.
+        and not explicit_relative_season
+        and not re.search(r"\b(?:this|current)\s+(?:season|year)\b", q)
+        and not career_intent
         and explicit_single_season is None
         and explicit_range_start is None
         and explicit_range_end is None
         and start_date is None
         and end_date is None
     ):
+        pre_streak_scope = (season, start_season, end_season)
         default_end = default_season_for_context(season_type)
         end_year = int(default_end.split("-")[0])
         start_year = end_year - 2
@@ -1615,6 +1783,7 @@ def _build_parse_state(query: str) -> dict:
         streak_default_window = True
     else:
         streak_default_window = False
+        pre_streak_scope = None
 
     return {
         "normalized_query": q,
@@ -1622,6 +1791,7 @@ def _build_parse_state(query: str) -> dict:
         "start_season": start_season,
         "end_season": end_season,
         "explicit_relative_season": explicit_relative_season,
+        "season_defaulted": season_defaulted and not names_current_season(q),
         "start_date": start_date,
         "end_date": end_date,
         "season_type": season_type,
@@ -1644,6 +1814,8 @@ def _build_parse_state(query: str) -> dict:
         "stretch_metric": stretch_metric,
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
+        "team_stretch_request": team_stretch_request,
+        "stretch_names_players": stretch_names_players,
         "rookie_leaderboard_boundary": rookie_leaderboard_boundary,
         "sophomore_leaderboard_boundary": sophomore_leaderboard_boundary,
         # Only meaningful for a team-scoped leader; a league-wide "top scorers"
@@ -1665,6 +1837,7 @@ def _build_parse_state(query: str) -> dict:
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
+        "last_n_scope": detect_last_n_scope(q, threshold_conditions) if last_n else None,
         "min_games": min_games,
         "min_attempts": min_attempts,
         "top_n": top_n,
@@ -1698,6 +1871,7 @@ def _build_parse_state(query: str) -> dict:
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
         "streak_default_window": streak_default_window,
+        "pre_streak_scope": pre_streak_scope,
         "season_high_intent": season_high_intent,
         "top_team_game_intent": top_team_game_intent,
         "distinct_player_count": distinct_player_count,
@@ -1713,7 +1887,8 @@ def _build_parse_state(query: str) -> dict:
         "stat_context_only": stat_context_only,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
-        "playoff_history_intent": playoff_history_intent,
+        "playoff_history_intent": playoff_history_intent
+        or bool(team and not player and not player_a and detect_how_did_playoffs(q)),
         "playoff_round_filter": playoff_round_filter,
         "by_round_intent": by_round_intent,
         "threshold_conditions": [
@@ -1870,6 +2045,8 @@ def _finalize_route(parsed: dict) -> dict:
     stretch_metric = parsed.get("stretch_metric")
     stretch_display_mode = parsed.get("stretch_display_mode")
     team_rolling_stretch_boundary = parsed.get("team_rolling_stretch_boundary", False)
+    team_stretch_request = parsed.get("team_stretch_request")
+    stretch_names_players = parsed.get("stretch_names_players", False)
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)
     team_leader_stat = parsed.get("team_leader_stat")
@@ -2094,6 +2271,151 @@ def _finalize_route(parsed: dict) -> dict:
         out["alternates"] = generate_alternates(out)
         return out
 
+    if (
+        (player or player_a or player_b)
+        and detect_playoff_round_filter(q)
+        # Player appearance counts have their own typed boundary.
+        and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
+    ):
+        # Player rows carry no playoff round, so "LeBron 2016 finals" must not
+        # answer with the whole postseason.
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["player_playoff_round"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: player stats by playoff round (Finals, conference "
+            "finals, first or second round) are not supported yet; ask for the whole "
+            "playoffs instead"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
+        championship_count_boundary
+        and team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and _TEAM_TITLE_COUNT.search(q)
+        and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not (unresolved_with_player or unresolved_without_player)
+    ):
+        # A team title is a Finals series won: "Lakers titles since 2000".
+        last_years = re.search(r"\b(?:last|past)\s+(\d+)\s+years?\b", q)
+        if last_years and not start_season and int(last_years.group(1)) > 0:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season = None
+            start_season, end_season = resolve_last_n_seasons(int(last_years.group(1)), "Playoffs")
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+season\b", q
+        ):
+            from nbatools.commands._seasons import default_end_season
+
+            season = default_end_season("Playoffs")
+        if not start_season and not end_season and not named_season:
+            # "Lakers titles" counts every season, not the default one.
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        out["route"] = "playoff_history"
+        out["route_kwargs"] = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+        }
+        out["intent"] = "summary"
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if (
+        championship_count_boundary
+        and not team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and _TEAM_TITLE_COUNT.search(q)
+        and _LEAGUE_TITLE_WORDING.search(q)
+        and not re.search(r"\bplayers?\b", q)
+        and not _NON_LEAGUE_TITLE.search(q)
+        and not _TITLE_NOT_A_COUNT.search(q)
+        and not _TITLE_EXTRA_CONDITION.search(q)
+        and not _title_year_left_unused(q)
+        and not (with_player or without_player)
+        and not (
+            (unresolved_with_player and not re.match(r"(?:the\s+)?most\b", unresolved_with_player))
+            or unresolved_without_player
+        )
+    ):
+        # "which team has won the most titles since 2000" / "who won the 2016 title"
+        last_years = re.search(r"\b(?:last|past)\s+(\d+)\s+years?\b", q)
+        if last_years and not start_season and int(last_years.group(1)) > 0:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season = None
+            start_season, end_season = resolve_last_n_seasons(int(last_years.group(1)), "Playoffs")
+        named_season = (
+            extract_season(q)
+            or parsed.get("explicit_relative_season")
+            or re.search(r"\b(?:this|current|last|previous)\s+season\b", q)
+        )
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+season\b", q
+        ):
+            from nbatools.commands._seasons import default_end_season
+
+            season = default_end_season("Playoffs")
+        if not start_season and not end_season and not named_season:
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        out = dict(parsed)
+        out.update(season=season, start_season=start_season, end_season=end_season)
+        out["route"] = "playoff_appearances"
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "playoff_round": "04",
+            "titles": True,
+            # Every title winner unless a top N is asked: 11 franchises won since 2010.
+            "limit": top_n or 30,
+        }
+        out["intent"] = "leaderboard"
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
     if championship_count_boundary:
         out = dict(parsed)
         out["route"] = None
@@ -2313,18 +2635,35 @@ def _finalize_route(parsed: dict) -> dict:
     elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
         route, route_kwargs = lineup_route
     elif (
-        team_rolling_stretch_boundary
+        team_stretch_request is not None
         and window_size is not None
-        and stretch_metric is not None
         and not player
         and not player_a
         and not player_b
-    ):
-        route = "player_stretch_leaderboard"
-        notes.append(
-            "unsupported_boundary: team rolling-stretch leaderboards are not "
-            "supported with current routes"
+        # "compare the Lakers and Celtics 10 game stretches" names both teams.
+        and (not (team_a or team_b) or len(team_stretch_request.get("subjects", [])) >= 2)
+        and (
+            team_rolling_stretch_boundary
+            or (
+                (team or len(team_stretch_request.get("subjects", [])) >= 2)
+                and not stretch_names_players
+            )
         )
+    ):
+        route = "team_stretch_leaderboard"
+        stretch_opponent = team_stretch_request.get("opponents") or opponent
+        opponents = (
+            {stretch_opponent} if isinstance(stretch_opponent, str) else set(stretch_opponent or [])
+        )
+        subject_teams = [
+            abbr for abbr in team_stretch_request.get("subjects", []) if abbr not in opponents
+        ]
+        stretch_team = team
+        if team in opponents:
+            # "Lakers best stretch vs Celtics, Knicks and Heat": the subject is the
+            # team named before the opponent list, else the whole league.
+            leads = [abbr for abbr in team_stretch_request.get("lead", []) if abbr not in opponents]
+            stretch_team = leads[0] if leads else None
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -2332,22 +2671,39 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "season_type": season_type,
-            "player": None,
-            "team": team,
-            "opponent": opponent,
-            "opponent_player": opponent_player,
-            "without_player": without_player,
+            # "Lakers and Celtics best 5 game stretch" ranks both teams' best runs.
+            "team": stretch_team if len(subject_teams) < 2 else None,
+            "teams": subject_teams if len(subject_teams) >= 2 else None,
+            "opponent": stretch_opponent,
             "home_only": home_only,
             "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
             "last_n": last_n,
             "window_size": window_size,
-            "stretch_metric": stretch_metric,
-            "dedupe_players": False,
+            "stretch_metric": team_stretch_request["metric"],
+            "worst": team_stretch_request["worst"],
             "limit": top_n or 10,
-            "unsupported_filters": ["team_rolling_stretch"],
         }
+    elif (
+        window_size is not None
+        and stretch_names_players
+        and not player
+        and len((team_stretch_request or {}).get("subjects", [])) >= 2
+    ):
+        # "which Lakers and Celtics player": one team per player ranking, so refuse
+        # rather than rank one team's players.
+        route = "player_stretch_leaderboard"
+        route_kwargs = _unsupported_route_kwargs(
+            "multi_team_player_stretch",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            window_size=window_size,
+            stretch_metric=stretch_metric,
+            limit=top_n or 10,
+        )
     elif (
         window_size is not None
         and stretch_metric is not None
@@ -2355,7 +2711,7 @@ def _finalize_route(parsed: dict) -> dict:
         and not player_b
         and not team_a
         and not team_b
-        and not (team and player is None)
+        and not (team and player is None and not stretch_names_players)
     ):
         route = "player_stretch_leaderboard"
         route_kwargs = {
@@ -2568,6 +2924,7 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": team_streak_request.get("special_condition"),
             "min_streak_length": team_streak_request.get("min_streak_length"),
             "longest": team_streak_request.get("longest", False),
+            "current": bool(team_streak_request.get("current")),
             "limit": 25,
         }
         _fires, _note = streak_default_window(parsed)
@@ -2578,11 +2935,6 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ppr := try_playoff_record_route(parsed)) is not None:
         route, route_kwargs = ppr
-        if route_kwargs.get("unsupported_filters") == ["single_team_playoff_round_record"]:
-            notes.append(
-                "unsupported_boundary: single-team playoff round records are not supported "
-                "until the route and round-data contract is approved"
-            )
     elif (
         opponent_division_boundary
         and record_intent
@@ -2673,19 +3025,31 @@ def _finalize_route(parsed: dict) -> dict:
         }
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
+        # The split divides the same sample the player summary describes, so
+        # every summary filter travels with it (the split axis is dropped by
+        # the route itself).
         route_kwargs = {
             "split": split_type,
             "season": season,
             "start_season": start_season,
             "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
             "season_type": season_type,
             "player": player,
             "team": team,
             "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
             "last_n": last_n,
+            "special_event": special_event,
         }
     elif split_type and team and not team_a and not team_b:
         route = "team_split_summary"
@@ -2694,9 +3058,16 @@ def _finalize_route(parsed: dict) -> dict:
             "season": season,
             "start_season": start_season,
             "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
@@ -2721,6 +3092,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
             "ambiguous_intent": "bare_player_vs_player",
             "clarification_options": [
                 {
@@ -2761,6 +3135,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
         }
     # ---------------------------------------------------------------------------
     # ---------------------------------------------------------------------------
@@ -2811,6 +3188,9 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
         }
     elif player and streak_request and not player_a and not player_b:
         route = "player_streak_finder"
@@ -2835,11 +3215,19 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": streak_request.get("special_condition"),
             "min_streak_length": streak_request.get("min_streak_length"),
             "longest": streak_request.get("longest", False),
+            "current": bool(streak_request.get("current")),
             "limit": 25,
         }
+        if streak_request.get("conditions"):
+            route_kwargs["conditions"] = streak_request["conditions"]
         _fires, _note = streak_default_window(parsed)
         if _fires:
             notes.append(_note)
+    elif (league_streak := try_league_streak_route(parsed)) is not None:
+        route, route_kwargs = league_streak
+        _fires, _note = streak_default_window(parsed)
+        if _fires:
+            notes.append(_note.replace("team streak", "league streak ranking"))
     elif (
         "top" in q
         and "games" in q
@@ -3896,6 +4284,21 @@ def _finalize_route(parsed: dict) -> dict:
         # window applies to all of them rather than to each kwargs literal.
         route_kwargs["last_n"] = last_n
 
+    if route_kwargs.get("last_n") is not None and route in _LAST_N_WINDOW_ROUTES:
+        # "30 point games in his last 10" measures conditions inside the time
+        # window; "last 10 games where he scored 30" counts qualifying games.
+        route_kwargs["last_n_scope"] = parsed.get("last_n_scope") or "qualifying"
+        if (
+            parsed.get("season_defaulted")
+            and route_kwargs.get("season") == parsed.get("season")
+            and not route_kwargs.get("start_season")
+            and not route_kwargs.get("start_date")
+            and not route_kwargs.get("end_date")
+        ):
+            # No season was named, so "last 10 games" means the 10 most
+            # recent games even when the current season has fewer.
+            route_kwargs.update(last_n_reach_back_seasons(route_kwargs["season"]))
+
     unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
     if unexecuted_markers:
         parsed = dict(parsed)
@@ -4006,6 +4409,27 @@ def _finalize_route(parsed: dict) -> dict:
     ):
         route_kwargs["unsupported_filters"] = ["unsupported_concept"]
         notes.append(boundary_note)
+
+    if (
+        parsed.get("pre_streak_scope")
+        and route not in ("player_streak_finder", "team_streak_finder")
+        and "season" in route_kwargs
+    ):
+        # The three-season window is a streak default; a question that ends up
+        # on another route keeps the scope it would have had without it.
+        pre_season, pre_start, pre_end = parsed["pre_streak_scope"]
+        route_kwargs.update(season=pre_season, start_season=pre_start, end_season=pre_end)
+        notes = [note for note in notes if "three-season window" not in note]
+
+    if career_intent and route is not None:
+        from nbatools.commands._seasons import EARLIEST_SEASON
+
+        if route_kwargs.get("start_season") == EARLIEST_SEASON:
+            # The data starts in 1996-97, so a career that began earlier is
+            # only partly covered; say so rather than claim the full career.
+            notes.append(
+                f"career_span: covers {EARLIEST_SEASON} onward; earlier seasons are not in the data"
+            )
 
     if notes:
         out["notes"] = notes

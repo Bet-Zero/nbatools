@@ -224,7 +224,9 @@ def detect_bare_player_vs_player_query(text: str) -> tuple[str | None, str | Non
 
 def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | None]:
     compare_and = re.search(
-        r"\bcompare\s+([a-z0-9 .&'\-]+?)\s+(?:and|with)\s+([a-z0-9 .&'\-]+)$",
+        # The second phrase runs to the end and may carry filters such as
+        # "with 8+ rebounds"; the player resolver reads the name off its front.
+        r"\bcompare\s+([a-z0-9 .&'\-]+?)\s+(?:and|with)\s+(.+)$",
         cleaned_text,
     )
     if compare_and:
@@ -291,6 +293,26 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
         if team_b and team_b != team_a:
             return team_a, team_b
 
+    return _extract_compare_and_teams(cleaned_text)
+
+
+_COMPARE_LEAD_RE = re.compile(r"\bcompar(?:e|ing)\s+(?:the\s+)?")
+_COMPARE_JOIN_RE = re.compile(r"\s+(?:and|with|to)\s+(?:the\s+)?")
+
+
+def _extract_compare_and_teams(text: str) -> tuple[str | None, str | None]:
+    """ "compare the Lakers and Celtics when scoring 120": two adjacent teams."""
+    lead = _COMPARE_LEAD_RE.search(text)
+    if not lead:
+        return None, None
+    mentions = _non_overlapping_team_mentions(text)
+    for (start_a, end_a, team_a), (start_b, _end_b, team_b) in zip(
+        mentions, mentions[1:], strict=False
+    ):
+        if start_a != lead.end() or team_a == team_b:
+            continue
+        if _COMPARE_JOIN_RE.fullmatch(text[end_a:start_b]):
+            return team_a, team_b
     return None, None
 
 

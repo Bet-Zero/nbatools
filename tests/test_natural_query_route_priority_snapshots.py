@@ -33,12 +33,8 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "query": "Celtics conference finals record",
             "route": "playoff_history",
             "fields": {"team": "BOS", "season_type": "Playoffs"},
-            "route_kwargs": {
-                "team": "BOS",
-                "playoff_round": "03",
-                "unsupported_filters": ["single_team_playoff_round_record"],
-            },
-            "note_contains": "unsupported_boundary",
+            "route_kwargs": {"team": "BOS", "playoff_round": "03"},
+            "no_unsupported_filters": True,
         },
         {
             "query": "Celtics record against east coast teams",
@@ -149,10 +145,8 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "route_kwargs": {
                 "team": "BOS",
                 "playoff_round": "03",
-                # Two independent reasons: the single-team playoff-round record
-                # boundary, plus opponent-division filtering, which
-                # playoff_history never executes.
-                "unsupported_filters": ["single_team_playoff_round_record", "opponent_division"],
+                # Opponent-division filtering, which playoff_history never executes.
+                "unsupported_filters": ["opponent_division"],
             },
             "note_contains": "unsupported_boundary",
         },
@@ -345,14 +339,10 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
         },
         {
             "query": "best 5-game team scoring stretch this season",
-            "route": "player_stretch_leaderboard",
-            "fields": {"window_size": 5, "stretch_metric": "pts"},
-            "route_kwargs": {
-                "window_size": 5,
-                "stretch_metric": "pts",
-                "unsupported_filters": ["team_rolling_stretch"],
-            },
-            "note_contains": "unsupported_boundary",
+            "route": "team_stretch_leaderboard",
+            "fields": {"window_size": 5},
+            "route_kwargs": {"window_size": 5, "stretch_metric": "pts"},
+            "no_unsupported_filters": True,
         },
         {
             "query": "Jokic best 5-game rebounding stretch this season",

@@ -286,7 +286,7 @@ def detect_championship_count_boundary(text: str) -> bool:
     "how many rings does lebron have" must refuse honestly, never answer
     with a count of games.
     """
-    return bool(re.search(r"\b(?:rings?|championships?|titles?)\b", text))
+    return bool(re.search(r"\b(?:rings?|championships?|champions?|titles?)\b", text))
 
 
 def detect_schedule_lookup_boundary(text: str) -> bool:
@@ -404,7 +404,30 @@ def extract_season(text: str) -> str | None:
     # The lookahead keeps an ISO date ("2025-11-01") from reading as the
     # nonexistent season "2025-11".
     m = re.search(r"\b(?:19|20)\d{2}-\d{2}\b(?!-\d)", text)
-    return m.group(0) if m else None
+    if m:
+        return m.group(0)
+    # "the 2024 playoffs" / "2016 finals": playoffs are played in the spring,
+    # so the year names the season that ends in it (2023-24). "the 2017 title" /
+    # "won the championship in 2016" / "the 2016 champions" name the same season.
+    # A year that opens or closes a range ("since the 2016 playoffs", "from 2010
+    # to 2020 playoffs") is not one season.
+    patterns = (
+        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?"
+        r"(?:play-?offs?|postseason|finals|conference\s+finals|(?:first|second)\s+round)\b",
+        r"\b((?:19|20)\d{2})\s+(?:nba\s+)?(?:titles?|championships?|champions?)\b",
+        r"\b(?:titles?|championships?|champions?)\s+in\s+((?:19|20)\d{2})\b",
+    )
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            before = text[: m.start(1)]
+            if re.search(
+                r"\b(?:since|after|before|from|to|until|through|thru)\s+(?:the\s+)?$", before
+            ):
+                continue
+            from nbatools.commands._seasons import int_to_season
+
+            return int_to_season(int(m.group(1)) - 1)
+    return None
 
 
 def extract_relative_season(text: str, season_type: str) -> str | None:
@@ -416,10 +439,96 @@ def extract_relative_season(text: str, season_type: str) -> str | None:
     return None
 
 
-def extract_season_range(text: str) -> tuple[str | None, str | None]:
-    m = re.search(r"\bfrom\s+((?:19|20)\d{2}-\d{2})\s+to\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
-    if m:
-        return m.group(1), m.group(2)
+_RANGE_POINT = r"((?:19|20)\d{2}(?:-\d{2})?)(?![-\d])"
+_RANGE_JOIN = r"(?:\s+season)?\s*(?:-|\bto\b|\bthrough\b|\bthru\b|\buntil\b|\btill\b|\band\b)\s*"
+# "since 2020 and 2021" is not a span; "since" only closes with to/through/until.
+_SINCE_JOIN = r"(?:\s+season)?\s+(?:to|through|thru|until|till)\s+"
+# "between 2000 and 2050 points" is a stat bound, not seasons.
+_RANGE_NOT_A_STAT = (
+    r"(?!\s*(?:points?|pts|rebounds?|assists?|minutes?|mins?|yards?|steals?|blocks?|"
+    r"turnovers?|threes?|3s|fg|games?)\b)"
+)
+_SEASON_RANGES = (
+    # "from 2010 to 2015", "between 2000-01 and 2009-10", "from 1999 through 2003"
+    re.compile(
+        r"\b(?:from|between)\s+(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_JOIN
+        + r"(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_NOT_A_STAT
+    ),
+    re.compile(
+        r"\bsince\s+(?:the\s+)?"
+        + _RANGE_POINT
+        + _SINCE_JOIN
+        + r"(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_NOT_A_STAT
+    ),
+    # "2015-2017", "2003 - 2010", "2010-11 to 2014-15", "2010 through 2015"
+    re.compile(r"(?<![\w-])((?:19|20)\d{2})\s*-\s*((?:19|20)\d{2})(?![-\d])" + _RANGE_NOT_A_STAT),
+    re.compile(
+        r"(?<![\w-])"
+        + _RANGE_POINT
+        + r"\s+(?:to|through|thru|until|till)\s+(?:the\s+)?"
+        + _RANGE_POINT
+        + _RANGE_NOT_A_STAT
+    ),
+)
+# Playoffs and titles are named by the year they end in, as extract_season
+# reads "the 2016 playoffs" and "the 2017 title": "titles from 1991 to 1998"
+# runs from 1990-91 to 1997-98. "against playoff teams" is a regular-season
+# filter, so only the season type or a title word switches this on.
+_TITLE_YEAR_CONTEXT = re.compile(r"\b(?:finals|titles?|championships?|champions?|rings?)\b")
+
+
+def _range_point_season(point: str, ending_year: bool) -> str:
+    from nbatools.commands._seasons import int_to_season
+
+    if "-" in point:
+        return point
+    return int_to_season(int(point) - 1 if ending_year else int(point))
+
+
+def extract_season_range(
+    text: str, season_type: str | None = None
+) -> tuple[str | None, str | None]:
+    """Two seasons or years that bound a span, inclusive.
+
+    "from 2010-11 to 2014-15" -> 2010-11..2014-15. A bare year names the season
+    starting in it, as "since 2010" and "the 2010s" do ("from 2010 to 2015" ->
+    2010-11..2015-16). For playoffs and titles a year names the season ending
+    in it ("titles from 1991 to 1998" -> 1990-91..1997-98). Two consecutive
+    years joined by a hyphen are one season ("2019-2020" -> 2019-20), except
+    for titles, where they are two ("Warriors titles 2017-2018"). A span
+    written backwards ("from 2010 to 2005") covers the same seasons.
+    """
+    from nbatools.commands._seasons import int_to_season, season_to_int
+
+    for pattern in _SEASON_RANGES:
+        m = pattern.search(text)
+        if not m:
+            continue
+        first, last = m.group(1), m.group(2)
+        joined = text[m.start(1) + len(first) : m.start(2)]
+        title_years = bool(_TITLE_YEAR_CONTEXT.search(text))
+        if (
+            not title_years
+            and "-" not in first
+            and "-" not in last
+            and int(last) == int(first) + 1
+            and joined.strip() == "-"
+        ):
+            # "2019-2020" is the 2019-20 season written out.
+            season = int_to_season(int(first))
+            return season, season
+        ending_year = title_years or season_type == "Playoffs"
+        start = _range_point_season(first, ending_year)
+        end = _range_point_season(last, ending_year)
+        if season_to_int(start) > season_to_int(end):
+            start, end = end, start
+        return start, end
     return None, None
 
 
@@ -444,6 +553,16 @@ def extract_since_season(text: str) -> str | None:
     m = re.search(r"\bsince\s+((?:19|20)\d{2}-\d{2})\b(?!-\d)", text)
     if m:
         return m.group(1)
+    # "since the 2016 playoffs": the playoffs that end the 2015-16 season
+    m = re.search(
+        r"\bsince\s+(?:the\s+)?((?:19|20)\d{2})\s+(?:nba\s+)?"
+        r"(?:play-?offs?|postseason|finals|conference\s+finals|title|championship)\b",
+        text,
+    )
+    if m:
+        from nbatools.commands._seasons import int_to_season
+
+        return int_to_season(int(m.group(1)) - 1)
     # Bare year
     m = re.search(r"\bsince\s+((?:19|20)\d{2})\b(?!-\d)", text)
     if m:
@@ -466,6 +585,199 @@ def extract_last_n_seasons(text: str) -> int | None:
         value = int(m.group(1))
         return value if value > 0 else None
     return None
+
+
+_NUMBER_WORDS = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+    "twenty": 20,
+    "twenty five": 25,
+    "twenty-five": 25,
+    "thirty": 30,
+    "forty": 40,
+    "fifty": 50,
+}
+_NUMBER_WORD_PATTERN = "|".join(
+    re.escape(word) for word in sorted(_NUMBER_WORDS, key=len, reverse=True)
+)
+_RECENT_WORD = r"(?:last|past|previous|prior|latest|most\s+recent)"
+_SAMPLE_UNIT = r"(?:games?|contests?|outings?|matchups?|meetings?|seasons?|starts?|wins?|losses)"
+
+
+def canonicalize_sample_phrases(text: str) -> str:
+    """Rewrite recent-sample wording into the one form the detectors read.
+
+    Every detector downstream reads "last N games" (or "last N seasons"), so
+    "last ten games", "previous 5 games", "his 5 most recent games" and
+    "past five seasons" used to drop their window silently and answer for
+    the whole season. Meetings read as matchups against the named opponent:
+    "last 3 meetings with the Warriors" is the last 3 games vs the Warriors.
+    Only phrases with an explicit sample unit are rewritten, so "the last
+    five minutes" and "previous season" are left alone.
+    """
+    # Number words to digits, only inside a recent-sample phrase.
+    text = re.sub(
+        rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+(?={_SAMPLE_UNIT}\b)",
+        lambda m: f"{m.group(1)} {_NUMBER_WORDS[m.group(2)]} ",
+        text,
+    )
+    # "his 5 most recent games" / "LeBron's five latest games" -> "his last 5 games".
+    # A determiner is required so "30 points most recent game" keeps its threshold.
+    text = re.sub(
+        rf"((?:\b(?:his|her|their|its|the|my|your)|'s)\s+)(\d+|{_NUMBER_WORD_PATTERN})\s+"
+        rf"(?:most\s+recent|latest)\s+(?={_SAMPLE_UNIT}\b)",
+        lambda m: f"{m.group(1)}last {_NUMBER_WORDS.get(m.group(2), m.group(2))} ",
+        text,
+    )
+    # "previous/prior/latest/most recent N games" -> "last N games"
+    text = re.sub(
+        rf"\b(?:previous|prior|latest|most\s+recent)\s+(\d+)\s+(?={_SAMPLE_UNIT}\b)",
+        r"last \1 ",
+        text,
+    )
+    # "past N games" too; "past N seasons" already has its own season reading.
+    text = re.sub(
+        r"\bpast\s+(\d+)\s+(?=(?:games?|contests?|outings?|matchups?|meetings?|starts?)\b)",
+        r"last \1 ",
+        text,
+    )
+    # A single latest meeting is a one-game window against that opponent.
+    text = re.sub(
+        r"\b(?:last|latest|most\s+recent|previous)\s+(?:meeting|matchup)\s+"
+        r"(?:with|against|vs\.?|versus)\b",
+        "last game vs",
+        text,
+    )
+    # "meetings/matchups with X" -> "matchups vs X": "with" names the opponent.
+    text = re.sub(
+        r"\b(?:meetings?|matchups?)\s+(?:with|against|vs\.?|versus)\b",
+        "matchups vs",
+        text,
+    )
+    text = re.sub(r"\bmeetings?\b", "matchups", text)
+    return " ".join(text.split())
+
+
+# A last-N phrase introduced by one of these words names the time window the
+# rest of the question is measured over ("30 point games in his last 10").
+_WINDOW_PREPOSITION = (
+    r"(?:in|over|during|across|within|through|throughout|of|from|for)\s+"
+    r"(?:(?:his|her|their|its|the|my|your|them|those)\s+)?"
+)
+# Words that attach a condition to the games themselves ("last 10 games where
+# he scored 30"), so the condition picks which games count toward N.
+_QUALIFYING_CLAUSE = (
+    r"\s+(?:where|when|whenever|with|in\s+which|that|which|scoring|shooting|"
+    r"grabbing|dishing|recording|having|posting|putting\s+up|making|he|she|they|"
+    r"the\s+\w+\s+(?:scored|had|made|won|lost))\b"
+)
+_LAST_N_GAMES = (
+    r"\blast\s+\d+(?!\s+(?:seasons?|weeks?|days?|months?|minutes?))"
+    r"(?:\s+(?:games?|contests?|outings?))?\b"
+)
+_POSSESSIVE_WINDOW = r"\bof\s+(?:the\s+)?(?:[\w.-]+\s+){0,2}[\w.-]+(?:'s|s'|')\s*$"
+_STAT_PERFORMANCE_WORDS = (
+    r"\b(?:triple[- ]doubles?|double[- ]doubles?)\b"
+    r"|\b\d+\+?\s*[- ]?\s*(?:points?|pts?|rebounds?|rebs?|assists?|asts?|"
+    r"steals?|blocks?|threes?|3s|3pm)\b"
+)
+_PERFORMANCE_WORDS = rf"\b(?:wins?|won|losses|lost)\b|{_STAT_PERFORMANCE_WORDS}"
+
+
+def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = None) -> str:
+    """Say whether a last-N phrase is a time window or a qualifying count.
+
+    ``window``: "how many 30 point games in his last 10 games" takes the 10
+    most recent games, then counts the ones that meet the condition.
+    ``qualifying``: "his last 10 games where he scored 30" (and "last 10
+    wins", "last 5 home games") keeps the games that meet the condition,
+    then the 10 most recent of them. Context such as opponent, home/away,
+    season and teammate availability always picks the sample first; only
+    game results and stat conditions differ between the two.
+    """
+    match = re.search(_LAST_N_GAMES, text)
+    if not match:
+        return "qualifying"
+    # Without a game result or stat condition both readings select the same
+    # games, so equivalent phrasings keep one parse state.
+    if not threshold_conditions and not re.search(_PERFORMANCE_WORDS, text):
+        return "qualifying"
+    after = text[match.end() :]
+    outcome_unit = re.match(r"\s+(?:wins?|losses|loss)\b", after)
+    if outcome_unit:
+        # "his last 10 wins" is the sample. With another condition ("how many
+        # of his last 10 wins did he score 30") it is counted inside those
+        # wins; alone, the 10 most recent wins are the answer.
+        rest = text[: match.start()] + " " + after[outcome_unit.end() :]
+        other_condition = threshold_conditions or re.search(_STAT_PERFORMANCE_WORDS, rest)
+        return "outcome_window" if other_condition else "qualifying"
+    if re.match(_QUALIFYING_CLAUSE, after):
+        return "qualifying"
+    before = text[: match.start()]
+    if re.search(rf"\b{_WINDOW_PREPOSITION}$", before):
+        return "window"
+    # "how many of LeBron's last 10 games ...", "of the Lakers' last 10 ...":
+    # the possessive names whose window it is.
+    if re.search(_POSSESSIVE_WINDOW, before):
+        return "window"
+    # "LeBron's last 10 games, how many 30 point games": the question about
+    # the games comes after the window.
+    if re.search(r"\bhow\s+many\b", after):
+        return "window"
+    # A condition stated before a bare last-N phrase ("LeBron 30 point games
+    # last 10") is measured over that window.
+    condition_starts = [
+        text.find(condition["text"])
+        for condition in threshold_conditions or []
+        if condition.get("text") and condition["text"] in text
+    ]
+    condition_starts.extend(m.start() for m in re.finditer(_PERFORMANCE_WORDS, before))
+    if condition_starts and min(condition_starts) < match.start():
+        return "window"
+    return "qualifying"
+
+
+def last_n_reach_back_seasons(season: str) -> dict:
+    """Season kwargs letting a last-N window reach into the prior season.
+
+    With no season named, "Warriors last 10 games" is the ten most recent
+    games, even when the current season has only played a few. The window
+    is still the N most recent games; the earlier season only fills it.
+    """
+    from nbatools.commands._seasons import EARLIEST_SEASON, int_to_season, season_to_int
+
+    if season_to_int(season) <= season_to_int(EARLIEST_SEASON):
+        return {}
+    return {
+        "season": None,
+        "start_season": int_to_season(season_to_int(season) - 1),
+        "end_season": season,
+    }
+
+
+_CURRENT_SEASON_WORDS = re.compile(r"\b(?:this|current)\s+(?:season|year)\b")
+
+
+def names_current_season(text: str) -> bool:
+    """True when the query pins the sample to the current season in words."""
+    return bool(_CURRENT_SEASON_WORDS.search(text))
 
 
 def extract_last_n(text: str) -> int | None:
@@ -501,13 +813,109 @@ STREAK_SPECIAL_PATTERNS = {
 }
 
 
+_STREAK_WORD = re.compile(r"\b(streak|straight|consecutive|in\s+a\s+row)\b")
+# "current"/"active" asks for the streak alive at the latest game, not a
+# season-scope word ("current season").
+_CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
+# The streak length, never a game condition: "5 straight games with 30",
+# "3 straight 30 point games", "5 games in a row", "a 3 game winning streak".
+# Each match spans only the length words, so removing it keeps the condition.
+_STREAK_LENGTH = re.compile(
+    r"\b(\d+)\s+(?:straight|consecutive)\b(?=\s+(?:[\w+-]+\s+){0,3}?games?\b)"
+    r"|\b(\d+)\s+games?\s+in\s+a\s+row\b"
+    r"|\b(\d+)[- ]games?\b(?=\s+(?:[\w+-]+\s+){0,3}?streak)"
+)
+
+
+def _streak_length(normalized: str) -> tuple[int | None, str]:
+    """The stated streak length and the text with the length words removed."""
+    match = _STREAK_LENGTH.search(normalized)
+    if match is None:
+        return None, normalized
+    length = int(next(group for group in match.groups() if group))
+    return length, normalized[: match.start()] + " " + normalized[match.end() :]
+
+
+def _with_streak_mode(request: dict | None, normalized: str) -> dict | None:
+    if request is not None and _CURRENT_STREAK.search(normalized):
+        request = {**request, "current": True, "longest": False}
+    return request
+
+
 def extract_streak_request(text: str) -> dict | None:
     # Receives pre-normalized text from _build_parse_state; no per-detector
     # normalization needed.
     normalized = re.sub(r"[?.!,]+$", "", text)
-
-    if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
+    if not _STREAK_WORD.search(normalized):
         return None
+    # Several game conditions ("30 point 10 rebound games") go to the generic
+    # reader first: the fixed patterns would keep only one of them.
+    request = _generic_streak_request(normalized, compound_only=True)
+    if request is None:
+        request = _extract_streak_request_patterns(normalized)
+        length, without_length = _streak_length(normalized)
+        if request is not None and length and request.get("min_streak_length") is None:
+            # A fixed pattern read the condition but not a length stated before
+            # it ("3 consecutive 30 point games", "a 3 game 20 point streak").
+            request = _extract_streak_request_patterns(without_length) or _generic_streak_request(
+                normalized
+            )
+            if request is not None:
+                request = {**request, "min_streak_length": length, "longest": False}
+    if request is None:
+        request = _generic_streak_request(normalized)
+    return _with_streak_mode(request, normalized)
+
+
+def _generic_streak_request(normalized: str, compound_only: bool = False) -> dict | None:
+    """Read the streak's game condition with the occurrence-event parser.
+
+    Covers wording the fixed patterns miss: "longest streak of games with 5+
+    threes", "consecutive games with 10+ rebounds", "streak of 30 point 10
+    rebound games", "consecutive double doubles".
+    """
+    from nbatools.commands._occurrence_route_utils import (
+        _parse_single_threshold,
+        extract_compound_occurrence_event,
+        extract_occurrence_event,
+    )
+
+    request: dict = {
+        "special_condition": None,
+        "stat": None,
+        "min_value": None,
+        "max_value": None,
+        "min_streak_length": None,
+        "longest": bool(re.search(r"\b(?:longest|most\s+consecutive)\b", normalized)),
+    }
+    request["min_streak_length"], condition_text = _streak_length(normalized)
+    if "in a row" in normalized and condition_text != normalized:
+        condition_text += " games"
+
+    compound = extract_compound_occurrence_event(condition_text)
+    if compound and len(compound) >= 2:
+        return {**request, "conditions": [dict(c) for c in compound]}
+    if compound_only:
+        return None
+    # An upper bound alone ("games with under 20 points", "at most 2
+    # turnovers") is read by the threshold parser; the event parser only
+    # knows lower bounds.
+    event = extract_occurrence_event(condition_text) or _parse_single_threshold(condition_text)
+    if not event:
+        return None
+    if event.get("special_event") in ("triple_double", "double_double"):
+        return {**request, "special_condition": event["special_event"]}
+    if event.get("stat") and event["stat"] in STAT_ALIASES.values():
+        return {
+            **request,
+            "stat": event["stat"],
+            "min_value": event.get("min_value"),
+            "max_value": event.get("max_value"),
+        }
+    return None
+
+
+def _extract_streak_request_patterns(normalized: str) -> dict | None:
 
     for pattern in STREAK_SPECIAL_PATTERNS["triple_double"]:
         if re.search(pattern, normalized):
@@ -652,13 +1060,36 @@ TEAM_STREAK_SPECIAL_PATTERNS = {
 }
 
 
+_OUTCOME_STREAK = re.compile(r"\b(win(?:ning)?|los(?:ing|s))\s+streaks?\b")
+
+
 def extract_team_streak_request(text: str) -> dict | None:
     # Receives pre-normalized text from _build_parse_state; no per-detector
     # normalization needed.
-    normalized = text
-
-    if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
+    normalized = re.sub(r"[?.!,]+$", "", text)
+    if not _STREAK_WORD.search(normalized):
         return None
+    request = _extract_team_streak_request_patterns(normalized)
+    if request is None and not _OUTCOME_STREAK.search(normalized):
+        # One team stat condition ("120 point games", "games with 15+
+        # threes"); the team finder takes a single stat bound.
+        generic = _generic_streak_request(normalized)
+        if generic and generic.get("stat") and not generic.get("conditions"):
+            request = {**generic, "team_condition_only": True}
+    if request is None and (outcome := _OUTCOME_STREAK.search(normalized)):
+        # "Lakers current winning streak", "Celtics winning streak at home"
+        request = {
+            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "stat": None,
+            "min_value": None,
+            "max_value": None,
+            "min_streak_length": _streak_length(normalized)[0],
+            "longest": True,
+        }
+    return _with_streak_mode(request, normalized)
+
+
+def _extract_team_streak_request_patterns(normalized: str) -> dict | None:
 
     m = re.search(
         r"\b(?:[a-z0-9 .&'\-]+?)\s+(\d+)\s+straight\s+games?\s+scoring\s+(\d+)\+(?:\s+(?:points?|pts))?(?=\s|$)",  # noqa: E501
@@ -913,6 +1344,37 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     return matches
 
 
+_JOINED_STAT_THRESHOLD_RE = re.compile(
+    rf"\s*(?:,\s*)?(?:and\s+)?(\d{{1,3}})(?!\d)(?:\s*\+)?\s+{STAT_PATTERN}\b"
+)
+
+
+def _joined_stat_thresholds(text: str, end: int) -> list[dict]:
+    """Thresholds joined onto a scoring verb: "scoring 30 points and 5 assists".
+
+    The verb carries over to each joined "N <stat>", so the bare "5 assists"
+    is a 5+ assists condition rather than leftover text.
+    """
+    joined = []
+    while True:
+        m = _JOINED_STAT_THRESHOLD_RE.match(text, end)
+        if not m or m.start(1) == m.start():
+            break
+        stat = detect_stat(m.group(2)) or "pts"
+        joined.append(
+            {
+                "start": m.start(1),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": None,
+                "text": text[m.start(1) : m.end()],
+            }
+        )
+        end = m.end()
+    return joined
+
+
 def extract_threshold_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
@@ -1073,8 +1535,34 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     # the number ("drops 12 assists") keeps that stat instead of points.
     verb_pattern = (
         rf"\b(?:scores?|scored|drops?|dropped|puts?\s+up|put\s+up)\s+"
-        rf"(\d{{1,3}})\s*\+?(?:\s+{STAT_PATTERN})?"
+        rf"(\d{{1,3}})(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
     )
+    # "Lakers record when scoring 120", "LeBron splits scoring 30+": the
+    # participle reads the same way, except as a ranking adjective ("top
+    # scoring 5 games", "highest scoring 10 game stretch").
+    scoring_pattern = (
+        rf"\bscoring\s+(\d{{1,3}})(?!\d)(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
+        r"(?!\s*(?:-|\s)?(?:games?|players?|teams?|stretch(?:es)?|seasons?|nights?)\b)"
+    )
+    for m in re.finditer(scoring_pattern, text):
+        if re.search(
+            r"\b(?:top|highest|best|most|lowest|leading|worst|biggest)\s+$",
+            text[: m.start()],
+        ):
+            continue
+        stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
+        stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        matches.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": None,
+                "text": m.group(0).rstrip(" +"),
+            }
+        )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
     for m in re.finditer(verb_pattern, text):
         stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
         stat = (detect_stat(stat_text) if stat_text else None) or "pts"
@@ -1092,6 +1580,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 "text": m.group(0).rstrip(" +"),
             }
         )
+        matches.extend(_joined_stat_thresholds(text, m.end()))
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
     # games" = 20+ points and 10+ rebounds.
@@ -1119,12 +1608,19 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     matches.sort(key=lambda x: x["start"])
 
     deduped = []
-    seen = set()
     for item in matches:
-        key = (item["start"], item["end"], item["stat"], item["min_value"], item["max_value"])
-        if key not in seen:
-            seen.add(key)
-            deduped.append(item)
+        # "scores 25+ points" also matches "25+ points" on its own; keep one
+        # copy of a condition when two readings of the same words agree.
+        if any(
+            kept["stat"] == item["stat"]
+            and kept["min_value"] == item["min_value"]
+            and kept["max_value"] == item["max_value"]
+            and item["start"] < kept["end"]
+            and kept["start"] < item["end"]
+            for kept in deduped
+        ):
+            continue
+        deduped.append(item)
 
     return deduped
 
@@ -1139,7 +1635,11 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
     _POINT_SUFFIX = (
         r"(?:\s+(?:points?|pts))?"
-        r"(?=\s*(?:[?.!,]|$|\b(?:this|that|in|during|last|season|year|record|when|and|or)\b))"
+        # Followed by the end of the clause: punctuation, a joining word, a
+        # filter phrase ("at home", "vs Boston", "since March") or a season.
+        r"(?=\s*(?:[?.!,]|$|\d{4}(?:-\d{2})?\b|\b(?:this|that|in|during|last|"
+        r"season|year|record|when|and|or|at|on|vs|versus|against|since|over|from|"
+        r"for|with|without|while|but|after|before|home|away|road|games?)\b))"
     )
     patterns = [
         rf"\bheld\s+(?:opponents?|teams?|them)\s+(?:to\s+)?(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",
@@ -1663,8 +2163,78 @@ def detect_team_rolling_stretch_boundary(text: str) -> bool:
         r"\b\d+\s*(?:-\s*|\s+)games?\s+team\b",
         r"\bstretch(?:es)?\s+by\s+(?:a\s+)?team\b",
         r"\bby\s+(?:a\s+)?team\b",
+        r"\bteams?\s+with\b",
+        r"\bteams?\s+(?:best|top|hottest|worst|coldest|longest)\b",
     )
     return any(re.search(pattern, text) for pattern in team_scope_patterns)
+
+
+_TEAM_STRETCH_METRIC_PATTERNS = (
+    (r"\bnet\s+rating\b", "net_rating"),
+    (r"\b(?:offensive|off)\s+rating\b", "off_rating"),
+    (r"\b(?:defensive|def)\s+rating\b", "def_rating"),
+    (r"\b(?:points?\s+allowed|allow(?:ed|ing)?|defen[cs]e|defensive)\b", "opp_pts"),
+    (
+        r"\b(?:point\s+differential|differential|margin|plus[\s-]?minus|\+/-)\b",
+        "plus_minus",
+    ),
+    (r"\b(?:3|three)[\s-]?(?:point|pt)?\s+shooting\b|\b3p%|\bfg3\s*%", "fg3_pct"),
+    (r"\bthrees\b|\b3s\b|\b(?:3|three)[\s-]?pointers\b", "fg3m"),
+    (r"\bfree[\s-]?throw\b", "ft_pct"),
+    (r"\b(?:efficient|efficiency|true\s+shooting)\b", "ts_pct"),
+    (r"\bshooting\b", "fg_pct"),
+    (r"\b(?:scoring|offensive|offense|points?)\b", "pts"),
+    (r"\brebound(?:ing|s)?\b", "reb"),
+    (r"\bassists?\b", "ast"),
+    (r"\bturnovers?\b", "tov"),
+    (r"\bsteals?\b", "stl"),
+    (r"\bblocks?\b", "blk"),
+)
+_TEAM_STRETCH_WORST = re.compile(r"\b(?:worst|coldest|poorest|bad|ugliest)\b")
+_TEAM_STRETCH_BEST = re.compile(r"\b(?:best|hottest|greatest)\b")
+# "lowest"/"most" name the end of the raw number, not good or bad.
+_TEAM_STRETCH_LOW = re.compile(r"\b(?:lowest|fewest|least|min(?:imum)?)\b")
+# "most defensive"/"least efficient" grade the team, not the raw number.
+_TEAM_STRETCH_QUALITY = re.compile(
+    r"\b(most|least)\s+(?:efficient|efficiency|defensive|offensive|dominant)\b"
+)
+_TEAM_STRETCH_HIGH = re.compile(
+    r"\b(?:highest|most|max(?:imum)?)\b(?!\s+(?:efficient|efficiency|defensive|offensive))"
+)
+_TEAM_STRETCH_LOWER_IS_BETTER = {"opp_pts", "tov", "def_rating"}
+
+
+def detect_team_stretch_request(text: str) -> dict | None:
+    """Metric and direction of a team rolling stretch ("Celtics best 10 game stretch").
+
+    A team's "best stretch" with no stat named means its best record over the
+    window. A named stat the team route cannot rank (Game Score, minutes) is
+    passed through so the route refuses it rather than ranking by record.
+    ``None`` when the text is not a rolling-stretch query.
+    """
+    if detect_stretch_query(text) is None:
+        return None
+    if re.search(r"\bgame\s+score\b", text):
+        metric = "game_score"
+    else:
+        metric = next(
+            (key for pattern, key in _TEAM_STRETCH_METRIC_PATTERNS if re.search(pattern, text)),
+            detect_stat(text) or "wins",
+        )
+    quality = _TEAM_STRETCH_QUALITY.search(text)
+    if _TEAM_STRETCH_WORST.search(text):
+        worst = True
+    elif quality:
+        worst = quality.group(1) == "least"
+    elif _TEAM_STRETCH_BEST.search(text):
+        worst = False
+    elif _TEAM_STRETCH_LOW.search(text):
+        worst = metric not in _TEAM_STRETCH_LOWER_IS_BETTER
+    elif _TEAM_STRETCH_HIGH.search(text):
+        worst = metric in _TEAM_STRETCH_LOWER_IS_BETTER
+    else:
+        worst = False
+    return {"metric": metric, "worst": worst}
 
 
 _LINEUP_MEMBER_SPAN_RE = re.compile(
@@ -1922,7 +2492,7 @@ def detect_season_high_intent(text: str) -> bool:
     scan = re.sub(r"\s+", " ", scan).strip()
 
     if re.search(
-        r"\bseason[- ]?high\b"
+        r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
         rf"|\b(?:top|best|highest)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
         rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"

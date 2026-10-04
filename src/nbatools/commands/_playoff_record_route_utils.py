@@ -89,14 +89,26 @@ def detect_playoff_history_intent(text: str) -> bool:
     - "playoff matchup record"
     - "postseason history"
     """
+    if re.search(
+        r"\b(?:playoff|postseason)\s+(?:"
+        r"history|series(?:\s+(?:history|record))?|"
+        r"matchups?\s+(?:history|record|series(?:\s+(?:history|record))?)"
+        r")\b",
+        text,
+    ):
+        return True
+    # "series results in the 2024 playoffs"
+    if not re.search(r"\b(?:playoffs?|postseason)\b", text):
+        return False
+    return bool(re.search(r"\bseries\b", text))
+
+
+def detect_how_did_playoffs(text: str) -> bool:
+    """ "how did the Lakers do in the playoffs": a team's run (callers check
+    that a team, not a player, is named)."""
     return bool(
-        re.search(
-            r"\b(?:playoff|postseason)\s+(?:"
-            r"history|series(?:\s+(?:history|record))?|"
-            r"matchups?\s+(?:history|record|series(?:\s+(?:history|record))?)"
-            r")\b",
-            text,
-        )
+        re.search(r"\b(?:playoffs?|postseason)\b", text)
+        and re.search(r"\bhow(?:'d|\s+did)\b.*\bdo\b", text)
     )
 
 
@@ -235,7 +247,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "by_round": by_round_intent,
         }
 
-    # -- Unsupported boundary: single-team playoff round records/history --
+    # -- Single-team playoff round record ("Celtics conference finals record") --
     if (
         team
         and not team_a
@@ -255,7 +267,6 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "playoff_round": playoff_round_filter,
             "by_decade": by_decade_intent,
             "opponent": opponent,
-            "unsupported_filters": ["single_team_playoff_round_record"],
         }
 
     # -- Matchup by decade: team_a vs team_b by decade --
@@ -274,6 +285,9 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
 
     # -- Playoff history: single team --
     if playoff_history_intent and team and not team_a and not team_b:
+        if not (season or start_season or end_season) and re.search(r"\bhow(?:'d|\s+did)\b", q):
+            # "how did the Lakers do in the playoffs" asks about the latest run.
+            season = default_end_season("Playoffs")
         ph_season, ph_start, ph_end = _resolve_season_defaults(
             season, start_season, end_season, "Playoffs"
         )
