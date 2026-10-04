@@ -280,7 +280,16 @@ TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS = [
     "coverage_trusted",
 ]
 
-NBA_DIVISIONS = {"Atlantic", "Central", "Southeast", "Northwest", "Pacific", "Southwest"}
+# Midwest existed through 2003-04, before the six-division alignment.
+NBA_DIVISIONS = {
+    "Atlantic",
+    "Central",
+    "Southeast",
+    "Northwest",
+    "Pacific",
+    "Southwest",
+    "Midwest",
+}
 
 PERIOD_DESCRIPTOR_LOOKUP = {
     ("quarter", "1"): (1, 1),
