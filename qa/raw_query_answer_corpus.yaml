@@ -9491,3 +9491,44 @@ cases:
         - rolling_stretch
         - team_scope
       notes: "Review that the rows are the Lakers and Celtics best 10-game records since 2020-21."
+
+  - id: c2_unsized_team_stretch
+    query: "Celtics best stretch this season"
+    category: rolling_stretch
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "A stretch with no length ranks 10-game windows and says so in a note. It listed games before (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Review the Celtics best 10-game record this season."
+
+  - id: c2_player_three_point_shooting_stretch
+    query: "Stephen Curry best 5 game 3 point shooting stretch this season"
+    category: rolling_stretch
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: fg3_pct
+    review_notes: "3 point shooting ranks 3P% over the window. It ranked points before (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+      notes: "Review Curry's best 5-game 3P% stretch this season."

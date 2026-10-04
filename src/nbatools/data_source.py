@@ -9,6 +9,7 @@ import os
 import re
 import tempfile
 from collections.abc import Iterable, Iterator, Mapping
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -39,6 +40,8 @@ REQUIRED_R2_ENV_VARS = (
     "R2_BUCKET_NAME",
 )
 
+# Concurrent R2 downloads in data_prefetch; boto3's default pool holds 10.
+_PREFETCH_WORKERS = 8
 _GENERATION_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _REQUEST_GENERATION: ContextVar[str | None] = ContextVar(
     "nbatools_request_data_generation", default=None
@@ -146,6 +149,17 @@ def data_path(path: str | Path) -> Path:
 def data_glob(pattern: str | Path) -> list[Path]:
     """Return logical data paths matching ``pattern``."""
     return _get_data_source().glob(pattern)
+
+
+def data_prefetch(paths: Iterable[str | Path]) -> None:
+    """Fetch several files concurrently so the reads that follow are local.
+
+    Only R2 fetches over the network; a local source has nothing to do. A file
+    that can't be fetched here is skipped, and the later read reports it.
+    """
+    source = _get_data_source()
+    if isinstance(source, _R2DataSource):
+        source.prefetch(paths)
 
 
 def data_read_csv(path: str | Path, *args: Any, **kwargs: Any) -> pd.DataFrame:
@@ -306,8 +320,32 @@ class _R2DataSource:
         return files
 
     def resolve_path(self, path: str | Path) -> Path:
-        rel_path = _logical_relative_path(path)
+        return self._fetch(_logical_relative_path(path), current_data_generation())
+
+    def prefetch(self, paths: Iterable[str | Path]) -> None:
+        # Worker threads don't inherit the request's pinned generation, so
+        # resolve it here and hand it to each fetch.
         generation = current_data_generation()
+        pending = []
+        for path in paths:
+            rel_path = _logical_relative_path(path)
+            key = self._generation_key(rel_path, generation=generation)
+            cached = self.cache_root / generation / rel_path
+            if key not in self._downloaded_keys or not cached.exists():
+                pending.append(rel_path)
+        if len(pending) < 2:
+            return
+
+        def fetch(rel_path: Path) -> None:
+            try:
+                self._fetch(rel_path, generation)
+            except (DataSourceError, FileNotFoundError, OSError):
+                pass
+
+        with ThreadPoolExecutor(max_workers=min(_PREFETCH_WORKERS, len(pending))) as pool:
+            list(pool.map(fetch, pending))
+
+    def _fetch(self, rel_path: Path, generation: str) -> Path:
         key = self._generation_key(rel_path, generation=generation)
         cache_path = self.cache_root / generation / rel_path
         if key in self._downloaded_keys and cache_path.exists():

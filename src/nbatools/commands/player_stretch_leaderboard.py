@@ -31,6 +31,25 @@ PERCENTAGE_COMPONENTS: dict[str, tuple[str, str]] = {
     "ft_pct": ("ftm", "fta"),
 }
 
+# Made shots per game a window needs in a league ranking: the NBA's season
+# minimums (300 FGM, 82 3PM, 125 FTM) over 82 games.
+_SHOOTING_QUALIFIERS: dict[str, tuple[str, float, str]] = {
+    "fg_pct": ("fgm", 3.66, "made field goals"),
+    "efg_pct": ("fgm", 3.66, "made field goals"),
+    "ts_pct": ("fgm", 3.66, "made field goals"),
+    "fg3_pct": ("fg3m", 1.0, "made threes"),
+    "ft_pct": ("ftm", 1.52, "made free throws"),
+}
+
+# Attempts per game a window needs in a "worst" league ranking.
+_SHOOTING_ATTEMPT_QUALIFIERS: dict[str, tuple[str, float, str]] = {
+    "fg_pct": ("fga", 8.0, "field goal attempts"),
+    "efg_pct": ("fga", 8.0, "field goal attempts"),
+    "ts_pct": ("fga", 8.0, "field goal attempts"),
+    "fg3_pct": ("fg3a", 3.0, "three-point attempts"),
+    "ft_pct": ("fta", 2.0, "free throw attempts"),
+}
+
 SUPPORTED_STRETCH_METRICS = {
     *RAW_AVG_METRICS.keys(),
     *PERCENTAGE_COMPONENTS.keys(),
@@ -123,6 +142,27 @@ def _compute_stretch_values(
     return out
 
 
+def _drop_overlapping(windows: pd.DataFrame, window_size: int, limit: int) -> pd.DataFrame:
+    """Best windows first, never two that share a game of the same player.
+
+    Overlapping windows are the same hot stretch counted again, so a player's
+    later rows are only windows clear of the ones already kept.
+    """
+    kept: list[int] = []
+    taken: dict[object, list[int]] = {}
+    for index, player_id, pos in zip(
+        windows.index, windows["player_id"], windows["_pos"], strict=True
+    ):
+        ends = taken.setdefault(player_id, [])
+        if any(abs(pos - end) < window_size for end in ends):
+            continue
+        ends.append(pos)
+        kept.append(index)
+        if len(kept) >= limit:
+            break
+    return windows.loc[kept]
+
+
 def build_result(
     *,
     season: str | None = None,
@@ -145,6 +185,7 @@ def build_result(
     stretch_metric: str = "game_score",
     limit: int = 10,
     dedupe_players: bool = False,
+    worst: bool = False,
 ) -> LeaderboardResult | NoResult:
     if window_size is None or window_size <= 0:
         return NoResult(
@@ -219,22 +260,43 @@ def build_result(
         stretch_metric=stretch_metric,
         window_size=window_size,
     )
+    df["_pos"] = df.groupby("player_id").cumcount()
+
+    notes: list[str] = []
+    # Best shooting needs made shots; worst needs attempts, since a made-shot
+    # floor would drop the coldest windows being asked for.
+    qualifier = (_SHOOTING_ATTEMPT_QUALIFIERS if worst else _SHOOTING_QUALIFIERS).get(
+        stretch_metric
+    )
+    if qualifier is not None and player is None:
+        # A league ranking of shooting rates needs volume, or one 3-for-3 window
+        # leads; use the NBA's season minimum as a per-game rate.
+        made_column, per_game, label = qualifier
+        made = _rolling_sum(df, made_column, window_size)
+        df.loc[made < per_game * window_size - 1e-9, "stretch_value"] = float("nan")
+        notes.append(
+            f"qualifier: windows need {per_game:g}+ {label} per game"
+            + ("" if worst else " (the NBA's season minimum rate)")
+        )
 
     windows = df[df["stretch_value"].notna()].copy()
     if windows.empty:
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
-            notes=[f"No players had at least {window_size} games in the filtered sample"],
+            notes=[f"No players had at least {window_size} games in the filtered sample", *notes],
         )
 
     windows["stretch_value"] = pd.to_numeric(windows["stretch_value"], errors="coerce").round(3)
+    # "worst stretch" ranks from the bottom: the lowest value over the window.
     windows = windows.sort_values(
         ["stretch_value", "game_date", "player_name"],
-        ascending=[False, False, True],
+        ascending=[worst, False, True],
     )
     if dedupe_players:
         windows = windows.drop_duplicates(subset=["player_id"], keep="first")
+    else:
+        windows = _drop_overlapping(windows, window_size, limit)
     windows = windows.head(limit)
 
     result = windows[
@@ -263,6 +325,8 @@ def build_result(
     return LeaderboardResult(
         leaders=result,
         current_through=compute_current_through_for_seasons(seasons, season_type),
+        notes=notes,
+        metadata={"worst": worst},
     )
 
 
