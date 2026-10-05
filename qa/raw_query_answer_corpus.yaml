@@ -1051,7 +1051,7 @@ cases:
     expected_shape: leaderboard_table
     expected_sections:
       - leaderboard
-    review_notes: "Team record leaderboard; current payload caveat says wins only."
+    review_notes: "Team record leaderboard with full records; it filtered to won games and showed records like 47-0 (C2, agent change)."
 
   - id: defensive_team_leaders_recent
     query: "What team has played the best defense recently?"
@@ -8429,6 +8429,38 @@ cases:
     expected_sections:
       - leaderboard
     review_notes: "Single games played facing elimination, every playoff season since 1996-97. It ranked season totals in elimination games (C2, agent change)."
+
+  - id: c2_most_wins_single_season
+    query: "most wins in a single season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: GSW
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+      - path: result.sections.leaderboard.0.wins
+        equals: 73
+    review_notes: "One row per team season: the 2015-16 Warriors went 73-9. It refused, and plain 'most wins' boards counted only won games, showing records like 73-0 (C2, agent change)."
+
+  - id: c2_lebron_best_scoring_season
+    query: "LeBron best scoring season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: LeBron James
+      - path: result.sections.leaderboard.0.season
+        equals: 2005-06
+    review_notes: "LeBron's seasons ranked by points per game: 31.4 in 2005-06. It listed his top games of the current season (C2, agent change)."
 
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
