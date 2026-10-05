@@ -292,6 +292,43 @@ def test_distinct_30_and_10_players_2023_24():
     assert result.result.to_dict()["sections"]["count"][0]["count"] == rows["player_id"].nunique()
 
 
+def test_distinct_comma_list_and_bench_counts():
+    season = "2023-24"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    stats = rows[["pts", "reb", "ast"]].apply(pd.to_numeric)
+    listed = rows[(stats["pts"] >= 25) & (stats["reb"] >= 5) & (stats["ast"] >= 5)]
+    result = _run(f"how many players had 25 points, 5 rebounds, 5 assists in {season}")
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == listed["player_id"].nunique()
+
+    # Starter roles are served only from 2024-25.
+    season = "2024-25"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    stats = rows[["pts"]].apply(pd.to_numeric)
+    roles = data_read_csv(
+        f"raw/player_game_starter_roles/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    flag = roles["starter_flag"].astype(str).str.strip().str.lower()
+    bench = roles[flag.isin(["false", "0", "0.0"])]
+
+    def keys(frame: pd.DataFrame) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "game_id": pd.to_numeric(frame["game_id"]).astype(int),
+                "player_id": pd.to_numeric(frame["player_id"]).astype(int),
+            }
+        )
+
+    scored = keys(rows[stats["pts"] >= 30])
+    expected = scored.merge(keys(bench), on=["game_id", "player_id"])["player_id"].nunique()
+    assert expected > 0
+    result = _run(f"how many players scored 30 off the bench in {season}")
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
+
+
 def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     # The Lakers beat the Warriors 4-2 in the 2023 West semifinals, their only
     # playoff meeting since 1996-97.
