@@ -122,3 +122,38 @@ def test_possessive_team_after_vs_is_the_opponent(query, opponent):
     assert result.route == "player_game_finder"
     assert result.result_status == "ok"
     assert opponent in str(result.metadata.get("opponent_team_abbrs") or result.metadata)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers and Nuggets playoff record",
+        "Lakers vs Nuggets in the playoffs record",
+        "Lakers vs Nuggets postseason record",
+    ],
+)
+def test_pair_playoff_record_covers_every_meeting(query):
+    result = _run(query)
+    assert result.route == "playoff_matchup_history"
+    notes = " ".join(result.metadata.get("notes") or [])
+    assert "defaulted to the" not in notes
+    lakers = result.result.to_dict()["sections"]["summary"][0]
+    assert (lakers["wins"], lakers["losses"]) == (5, 1)
+    # The season chip reads metadata, so it must show the window that ran.
+    assert result.metadata.get("season") is None
+    assert result.metadata.get("start_season") == "1996-97"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers vs Nuggets playoff record this postseason",
+        "Lakers vs Nuggets playoff record these playoffs",
+        "Lakers vs Nuggets playoff record 2026",
+    ],
+)
+def test_pair_playoff_record_keeps_a_named_window(query):
+    result = _run(query)
+    assert result.route == "playoff_matchup_history"
+    assert result.metadata.get("season") == "2025-26"
+    assert not result.metadata.get("start_season")

@@ -172,6 +172,12 @@ def _resolve_playoff_span_defaults(
     return _resolve_season_defaults(season, start_season, end_season, "Playoffs")
 
 
+_PAIR_TIME_WORDS_RE = re.compile(
+    r"\b(?:19|20)\d{2}s?\b|\b\d{2}s\b|\b(?:this|these|current|last|past|since|"
+    r"recent|recently|decade|era|season|seasons|year|years)\b"
+)
+
+
 def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
     """Try to resolve a playoff/record/decade-bucketed route.
 
@@ -237,8 +243,15 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         and team_a
         and team_b
     ):
+        # "Lakers and Nuggets playoff record" with no season is their whole
+        # playoff history, not just the latest postseason.
+        # Only when the query names no time at all: "this postseason",
+        # "these playoffs" or a bare "2026" still mean a specific window.
+        pm_season = (
+            None if parsed.get("season_defaulted") and not _PAIR_TIME_WORDS_RE.search(q) else season
+        )
         pm_season, pm_start, pm_end = _resolve_season_defaults(
-            season, start_season, end_season, "Playoffs"
+            pm_season, start_season, end_season, "Playoffs"
         )
         return "playoff_matchup_history", {
             "team_a": team_a,
