@@ -65,6 +65,7 @@ export type RouteName =
   | "playoff_appearances"
   | "playoff_matchup_history"
   | "playoff_round_record"
+  | "playoff_series_comebacks"
   | "record_by_decade"
   | "record_by_decade_leaderboard"
   | "matchup_by_decade"

@@ -1411,9 +1411,14 @@ _RING_SPAN_PHRASES = (
     r"\b(?:over|in|during|for|throughout)\s+(?:his|her|their)\s+(?:whole\s+|entire\s+)?career\b",
     # "in the 2010s"
     r"\b(?:in|during)\s+the\s+(?:19|20)\d0s\b",
-    # "since 2015", "from 2012 to 2016", "between 2012 and 2016", "in 2012-13",
-    # "in the 2020 playoffs"
-    r"\b(?:since|from|between|through|thru|until|to|and|in|during)\s+(?:the\s+)?"
+    # "from 2012 to 2016", "between 2012 and 2016". Only these pairs: the parser
+    # leaves a lone "through 2016" / "until 2016" unresolved, so it must stay.
+    r"\b(?:from|between)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+"
+    r"(?:to|and|through|thru|until)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?"
+    r"(?:\s+(?:playoffs|postseason|season))?\b",
+    # "since 2015", "in 2012-13", "in the 2020 playoffs" (a lone "from 2015"
+    # is not resolved either)
+    r"\b(?:since|in|during)\s+(?:the\s+)?"
     r"(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?(?:\s+(?:playoffs|postseason|season))?\b",
     # "top 5"
     r"\btop\s+\d{1,2}\b",
@@ -5176,9 +5181,132 @@ def _series_comeback_route(parsed: dict) -> dict:
     return _series_refusal_route(
         parsed,
         "series_comeback",
-        "series comebacks and blown series leads (came back from 3-1, blew a 3-1 lead) "
-        "are not supported yet; ask for a team's record when down 1-3 instead",
+        "series comebacks (came back from 3-1, blew a 3-1 lead) can be listed for teams "
+        "by opponent, round and season only; this question adds something that list "
+        "cannot answer (a player, a count or ranking, a game condition or a team group)",
     )
+
+
+_COMEBACK_UNSUPPORTED_KEYS = (
+    "player",
+    "player_a",
+    "player_b",
+    "stat",
+    "min_value",
+    "max_value",
+    "threshold_conditions",
+    "home_only",
+    "away_only",
+    "opponent_quality",
+    "opponent_player",
+    "opponent_conference",
+    "opponent_division",
+    "with_player",
+    "without_player",
+    "last_n",
+)
+
+
+# Every word a plain comeback-list question can use once the series score, the
+# spans the parser resolves, the round and the named teams are removed.
+# Anything else ("most", "twice", "in game 7", "with Poole", "western
+# conference teams", "in March") asks for something the list cannot answer.
+_COMEBACK_QUESTION_WORDS = frozenset(
+    """
+    teams team which who what whats how many has have had ever the a an did does do in
+    from down series playoffs playoff postseason nba come came back coming comeback
+    comebacks rallied rally overcome overcame blew blown blow blowing squandered lead
+    leads led list all every any anyone anybody been was were is are of that to against
+    vs versus there times deficit collapse collapsed collapses hole win won often history and
+    """.split()
+)
+_COMEBACK_EXTRA_SPANS = (
+    r"\b(?:in\s+|during\s+)?(?:this|current)\s+(?:postseason|playoffs)\b",
+    r"\b(?:in\s+)?(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+(?:playoffs|postseason)\b",
+)
+
+
+def _team_reference_tokens(abbr: str | None) -> set[str]:
+    from nbatools.commands.entity_resolution import TEAM_ALIASES, _normalize_for_matching
+
+    if not abbr:
+        return set()
+    tokens = {abbr.lower()}
+    for key, value in TEAM_ALIASES.items():
+        if value == abbr:
+            tokens.update(_normalize_for_matching(key).split())
+    return tokens
+
+
+def _comeback_question_has_qualifier(q: str, parsed: dict) -> bool:
+    """True when ``q`` says more than "[team] came back from 3-1 [vs X] [round] [span]"."""
+    from nbatools.commands.entity_resolution import _normalize_for_matching
+    from nbatools.commands.playoff_history import ROUND_ALIASES
+
+    text = _normalize_for_matching(re.sub(r"'s\b", "", q)).replace("'", "")
+    spans = [phrase for phrase in _RING_SPAN_PHRASES if "top" not in phrase]
+    for phrase in (*_COMEBACK_EXTRA_SPANS, *spans):
+        text = re.sub(phrase, " ", text)
+    # "conference semifinals": the round names it; for a named team the
+    # conference ("Thunder ... western conference finals") adds nothing.
+    side = r"(?:(?:western|eastern|west|east)\s+)?" if parsed.get("team") else ""
+    text = re.sub(rf"\b{side}conference\s+(?=(?:finals?|semifinals?|semis)\b)", " ", text)
+    for alias in sorted(ROUND_ALIASES, key=len, reverse=True):
+        text = re.sub(rf"\b{re.escape(_normalize_for_matching(alias))}\b", " ", text)
+    # The series score itself ("3-1" reads "3 1" once normalized), once: any
+    # other number ("2 times", "in 7") is a qualifier the list cannot answer.
+    text = re.sub(r"\b[0-3]\s+(?:games?\s+)?(?:to\s+)?[0-3]\b", " ", text, count=1)
+    allowed = _team_reference_tokens(parsed.get("team")) | _team_reference_tokens(
+        parsed.get("opponent")
+    )
+    return any(
+        token not in _COMEBACK_QUESTION_WORDS and token not in allowed
+        for token in re.findall(r"[\w.]+", text)
+    )
+
+
+def _series_comeback_list_route(parsed: dict) -> dict:
+    """ "teams that came back from 3-1 down": the series they won after trailing."""
+    q = parsed["normalized_query"]
+    if (
+        any(parsed.get(key) for key in _COMEBACK_UNSUPPORTED_KEYS)
+        or _comeback_question_has_qualifier(q, parsed)
+        or re.search(r"\bplayers?\b|\bcoach(?:es|ed|ing)?\b|\bregular[\s-]season\b", q)
+        # "came back from 3-1 and won the title": the title is a later series.
+        or re.search(
+            r"\b(?:win|won|wins|winning)\s+(?:the\s+|it\s+)?(?:championship|title|finals|ring|all)\b",
+            q,
+        )
+        or parsed.get("team_a")
+        or parsed.get("team_b")
+    ):
+        return _series_comeback_route(parsed)
+    comeback = parsed["series_comeback"]
+    team = parsed.get("team")
+    opponent = parsed.get("opponent")
+    season = parsed.get("season")
+    if not (season or parsed.get("start_season") or parsed.get("end_season")):
+        # "this season" / "this postseason": the current playoffs.
+        from nbatools.commands._seasons import default_end_season
+
+        season = default_end_season("Playoffs")
+    out = dict(parsed)
+    out["route"] = "playoff_series_comebacks"
+    out["route_kwargs"] = {
+        "deficit_wins": comeback["wins"],
+        "deficit_losses": comeback["losses"],
+        "blown": comeback["blown"],
+        "team": team,
+        "opponent": opponent,
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "playoff_round": parsed.get("playoff_round_filter"),
+    }
+    # The series list already answers "how many" and "has ... ever".
+    out["count_intent"] = False
+    out["intent"] = "leaderboard"
+    return out
 
 
 # Counting stats whose total is the natural "most points in game 7s" answer.
@@ -5208,7 +5336,17 @@ def _finalize_route(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     refused = True
     if parsed.get("series_comeback"):
-        out = _series_comeback_route(parsed)
+        out = _series_comeback_list_route(parsed)
+        if out.get("route") and parsed.get("series_situation_career"):
+            from nbatools.commands._seasons import EARLIEST_SEASON
+
+            out["notes"] = [
+                *(out.get("notes") or []),
+                f"default: every playoff season since {EARLIEST_SEASON}",
+            ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
     elif situation and re.search(r"\bregular[\s-]season\b", q):
         out = _series_refusal_route(
             parsed,

@@ -1162,6 +1162,56 @@ def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: An
     metadata["answer_phrase"] = f"{joined} tied for the most titles {span}, with {count} each."
 
 
+_MAX_LISTED_SERIES = 5
+
+
+def _add_series_comebacks_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Headline for "teams that came back from 3-1 down" / "blew a 3-1 lead"."""
+    if metadata.get("route") != "playoff_series_comebacks":
+        return
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    kwargs = result.metadata
+    wins, losses = kwargs.get("deficit_wins"), kwargs.get("deficit_losses")
+    if wins is None or losses is None:
+        return
+    high, low = max(wins, losses), min(wins, losses)
+    blown = bool(kwargs.get("blown"))
+    what = f"blew a {high}-{low} series lead" if blown else f"came back from {high}-{low} down"
+    what += str(kwargs.get("scope") or "")
+    # The seasons the list covered, including a span the route filled in.
+    start, end = kwargs.get("first_season"), kwargs.get("last_season")
+    if not (start and end):
+        start, end = metadata.get("start_season"), metadata.get("end_season")
+    if not (start and end):
+        start = end = metadata.get("season")
+    span = f"in {start}" if start == end else f"from {start} to {end}"
+    if str(start) < _PLAYOFF_DATA_START:
+        span = f"from {_PLAYOFF_DATA_START} (where the data starts) to {end}"
+    rows = result.leaders
+    count = len(rows)
+    listed = [
+        f"{row['season']} {row['playoff_round']} vs the {row['opponent_team_name']} "
+        f"({'lost' if blown else 'won'} {row['series']})"
+        for _, row in rows.head(_MAX_LISTED_SERIES).iterrows()
+    ]
+    more = f", and {count - len(listed)} more" if count > len(listed) else ""
+    if kwargs.get("team_filter"):
+        team_name = str(rows["team_name"].iloc[0])
+        times = "once" if count == 1 else "twice" if count == 2 else f"{count} times"
+        metadata["answer_phrase"] = (
+            f"The {team_name} {what} {times} {span}: {'; '.join(listed)}{more}."
+        )
+        return
+    teams = [
+        f"the {row['season']} {row['team_name']} ({row['playoff_round']} vs the "
+        f"{row['opponent_team_name']}, {'lost' if blown else 'won'} {row['series']})"
+        for _, row in rows.head(_MAX_LISTED_SERIES).iterrows()
+    ]
+    lead = f"Teams {what} in {count} series {span}"
+    metadata["answer_phrase"] = f"{lead}: {'; '.join(teams)}{more}."
+
+
 def _add_player_rings_answer_metadata(metadata: dict[str, Any], board: Any) -> None:
     """Headline for "how many rings does LeBron have" and "who has the most rings"."""
     start, end = metadata.get("start_season"), metadata.get("end_season")
@@ -1824,6 +1874,7 @@ def _finalize_natural_query_result(
     _add_player_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
     _add_titles_leaderboard_answer_metadata(metadata, result)
+    _add_series_comebacks_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -2109,6 +2160,7 @@ VALID_ROUTES = frozenset(
         "playoff_appearances",
         "playoff_matchup_history",
         "playoff_round_record",
+        "playoff_series_comebacks",
         "record_by_decade",
         "record_by_decade_leaderboard",
         "matchup_by_decade",
