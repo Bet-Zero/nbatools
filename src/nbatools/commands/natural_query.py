@@ -1905,6 +1905,16 @@ def _build_parse_state(query: str) -> dict:
 
         start_season, end_season = resolve_career("Playoffs")
         series_situation_career = True
+    # "LeBron stats in the Finals": a round with no span named covers every
+    # playoff season, as a series situation does.
+    playoff_round_unnamed_span = bool(
+        playoff_round_filter
+        and not (season or start_season or end_season)
+        and not explicit_relative_season
+        and not re.search(
+            r"\b(?:this|current|last|previous)\s+(?:season|year|postseason|playoffs)\b", q
+        )
+    )
     historical_route_intent = bool(
         by_decade_intent
         or playoff_appearance_intent
@@ -2219,6 +2229,7 @@ def _build_parse_state(query: str) -> dict:
         "series_situation": series_situation,
         "series_comeback": series_comeback,
         "series_situation_career": series_situation_career,
+        "playoff_round_unnamed_span": playoff_round_unnamed_span,
         "stretch_worst": stretch_worst,
         "stretch_player_group": stretch_player_group,
         "stretch_opponent_description": stretch_opponent_description,
@@ -2806,7 +2817,7 @@ def _route_parsed_query(parsed: dict) -> dict:
 
     if (
         (player or player_a or player_b)
-        and detect_playoff_round_filter(q)
+        and parsed.get("playoff_round_filter")
         # Player appearance counts have their own typed boundary.
         and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
     ):
@@ -5433,8 +5444,175 @@ def _series_situation_totals(out: dict, q: str) -> None:
     ]
 
 
+# Routes that answer a playoff round themselves; everything else filters game
+# rows by the round as a series situation ("round_04", "game_7@04").
+_ROUND_NATIVE_ROUTES = {
+    "playoff_history",
+    "playoff_appearances",
+    "playoff_matchup_history",
+    "playoff_round_record",
+}
+_ROUND_AS_SITUATION_REFUSALS = {"player_playoff_round", "leaderboard_request_unclear"}
+
+
+# Wording that makes a round something other than "only that round's games":
+# an exclusion, a conference half, an award or draft pick, teams that reached
+# it, a count of trips, a single game, or a relative season the parser misses.
+_ROUND_NOT_A_FILTER = re.compile(
+    r"\b(?:not|non|excluding|exclude|except|outside|other\s+than|besides|minus|"
+    r"east|eastern|west|western|mvps?|picks?|draft(?:ed)?|"
+    r"made|make|making|reach(?:ed|es)?|appearances?|trips?|been\s+to|"
+    r"most\s+recent|latest|ago|highest\s+scoring)\b"
+    r"|\b(?:before|after|without|until|prior\s+to)\s+(?:the\s+)?(?:nba\s+|conference\s+)?"
+    r"(?:finals?|semifinals?|semis|championship|(?:first|second|third|1st|2nd|3rd)\s+round)\b"
+    r"|\b(?:against|vs\.?|versus)\b.*\bteams?\b"
+    r"|\bhow\s+many\s+(?:nba\s+)?finals\b"
+    r"|\b(?:finals?|round|semifinals?|semis|championship)\s+game\b(?!\s*s\b)(?!\s+\d)"
+)
+
+
+# A round filters games only where each mention reads "in/during the [2016]
+# <round>" or "<round> stats/averages/games/record/game 7". Any other framing
+# ("beyond the first round", "every round but the finals", "his first finals",
+# "first round series wins") falls back.
+_ROUND_LEAD_IN = re.compile(
+    r"\b(?:in|during)\s+(?:the\s+)?(?:nba\s+)?(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?"
+    r"(?:conference\s+|conf\s+)?$"
+    r"|(?<!\d)(?:19|20)\d{2}\s+$"
+    # "game 7s of the finals", "game 1 in the first round"
+    r"|\bgames?\s+(?:\d|one|two|three|four|five|six|seven)s?\s+(?:of|in)\s+(?:the\s+)?$"
+)
+# "years he lost in the finals", "runs that ended in the finals", "since the
+# 2016 finals": the round dates a clause, not the games asked about.
+_ROUND_CLAUSE_LEAD = re.compile(
+    r"\b(?:lost|lose|loses|losing|won|winning|played|plays|play|playing|was|were|is|are|"
+    r"been|ended|ends|end|ending|got|made|appeared|went|reached|faced|met|swept|fell)\s+"
+    r"(?:in|to|into)\s+(?:the\s+)?(?:(?:19|20)\d{2}\s+)?(?:conference\s+)?$"
+    r"|\b(?:since|after|before|until|till|from|through|thru|to)\s+(?:the\s+)?"
+    r"(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?(?:conference\s+)?$"
+)
+_ROUND_FOLLOWER = re.compile(
+    r"^\s+(?:stats?|statistics|averages?|avg|numbers|line|totals?|games|record"
+    r"|game\s+(?:\d|one|two|three|four|five|six|seven)|performances?)\b"
+)
+_ROUND_EXTRA_BLOCKS = re.compile(
+    r"\bseries\b|\bnumber\s+of\b|\b(?:his|her|their)\s+(?:first|last|second|final)\b"
+    r"|\b(?:exits?|eliminated|eliminating|upsets?|advanc\w*|swept|sweeps?|clinch\w*)\b"
+    r"|\b(?:aside\s+from|save\s+for|apart\s+from)\b"
+    r"|\b(?:first|second|third|1st|2nd|3rd)\s+(?:and|or|&|to|through)\s+"
+    r"(?:the\s+)?(?:first|second|third|1st|2nd|3rd)\b"
+)
+
+
+def _round_mentions(q: str) -> list[tuple[str, int, int]]:
+    from nbatools.commands.playoff_history import ROUND_ALIASES
+
+    text = q.replace("-", " ")
+    found: list[tuple[str, int, int]] = []
+    taken: list[tuple[int, int]] = []
+    for alias in sorted(ROUND_ALIASES, key=len, reverse=True):
+        for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
+            if any(match.start() < end and start < match.end() for start, end in taken):
+                continue
+            taken.append(match.span())
+            found.append((ROUND_ALIASES[alias], *match.span()))
+    return found
+
+
+def _round_reads_as_filter(q: str) -> bool:
+    text = q.replace("-", " ")
+    mentions = _round_mentions(q)
+    if not mentions or len({code for code, _, _ in mentions}) > 1:
+        return False
+    if _ROUND_EXTRA_BLOCKS.search(text):
+        return False
+    return all(
+        not _ROUND_CLAUSE_LEAD.search(text[:start])
+        and (_ROUND_LEAD_IN.search(text[:start]) or _ROUND_FOLLOWER.match(text[end:]))
+        for _, start, end in mentions
+    )
+
+
+def _round_as_situation(parsed: dict) -> dict | None:
+    """ "LeBron stats in the Finals", "Lakers game 7s in the Finals": the round
+    becomes a series situation on game routes instead of being dropped."""
+    round_code = parsed.get("playoff_round_filter")
+    if not round_code or parsed.get("series_comeback") or parsed.get("by_round_intent"):
+        return None
+    q = parsed["normalized_query"]
+    years = re.findall(r"(?<!\d)(?:19|20)\d{2}(?!\d)", q)
+    several_years = len(set(years)) > 1 and not (
+        parsed.get("start_season") or parsed.get("end_season")
+    )
+    two_subjects = (parsed.get("player_a") and parsed.get("player_b")) or (
+        parsed.get("team_a") and parsed.get("team_b")
+    )
+    if (
+        _ROUND_NOT_A_FILTER.search(q)
+        or several_years
+        or two_subjects
+        or not _round_reads_as_filter(q)
+    ):
+        # "excluding the first round", "first and second round", "western
+        # conference finals", "finals mvp", "most points in a finals game":
+        # never answer only one round's games for these.
+        return None
+    if not (parsed.get("season") or parsed.get("start_season") or parsed.get("end_season")):
+        if re.search(r"(?<!\d)(?:19|20)\d{2}(?!\d)", parsed["normalized_query"]):
+            # A year the parser did not resolve: never answer another span.
+            return None
+    from nbatools.commands._natural_query_execution import _SERIES_SITUATION_ROUTES
+
+    situation = parsed.get("series_situation")
+    if situation:
+        # "which teams won game 4 in the finals": the round record board takes
+        # the round itself and names it.
+        if _series_situation_board(parsed) is not None:
+            return None
+    else:
+        try:
+            trial = _route_parsed_query(parsed)
+        except ValueError:
+            return None
+        route = trial.get("route")
+        refused = set((trial.get("route_kwargs") or {}).get("unsupported_filters") or [])
+        if route in _ROUND_NATIVE_ROUTES:
+            return None
+        if route is None and not (refused & _ROUND_AS_SITUATION_REFUSALS):
+            return None
+        if route is not None and route not in _SERIES_SITUATION_ROUTES:
+            return None
+    rerouted = dict(parsed)
+    rerouted["playoff_round_filter"] = None
+    # The leaderboard check may count round words as answered only now.
+    rerouted["series_situation_round"] = round_code
+    rerouted["series_situation"] = (
+        f"{situation}@{round_code}" if situation else f"round_{round_code}"
+    )
+    if parsed.get("playoff_round_unnamed_span") and not parsed.get("series_situation_career"):
+        from nbatools.commands._seasons import resolve_career
+
+        rerouted["season"] = None
+        rerouted["start_season"], rerouted["end_season"] = resolve_career("Playoffs")
+        rerouted["series_situation_career"] = True
+    elif not (parsed.get("season") or parsed.get("start_season") or parsed.get("end_season")):
+        # "most rebounds in the first round this season": round questions skip
+        # the default season, so "this/last season" is resolved here.
+        from nbatools.commands._seasons import default_end_season, previous_season
+
+        q = parsed["normalized_query"]
+        if re.search(r"\b(?:last|previous)\s+(?:season|year|postseason|playoffs)\b", q):
+            rerouted["season"] = previous_season("Playoffs")
+        else:
+            rerouted["season"] = default_end_season("Playoffs")
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state; playoff series situations ride on every route."""
+    rerouted = _round_as_situation(parsed)
+    if rerouted is not None:
+        parsed = rerouted
     situation = parsed.get("series_situation")
     q = parsed["normalized_query"]
     refused = True

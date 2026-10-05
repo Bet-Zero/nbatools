@@ -381,13 +381,19 @@ def test_since_the_year_playoffs_starts_that_season():
 
 
 @pytest.mark.parametrize(
-    "query",
-    ["Curry 2016 finals", "LeBron stats in the 2016 finals", "LeBron career finals averages"],
+    ("query", "season"),
+    [
+        ("Curry 2016 finals", "2015-16"),
+        ("LeBron stats in the 2016 finals", "2015-16"),
+        ("LeBron career finals averages", None),
+    ],
 )
-def test_player_stats_by_playoff_round_are_refused(query):
+def test_player_stats_by_playoff_round_filter_that_rounds_games(query, season):
+    # Refused until stats by round landed (tests/test_c2_playoff_round_stats.py).
     parsed = parse_query(query)
-    assert parsed["route"] is None
-    assert parsed["route_kwargs"]["unsupported_filters"] == ["player_playoff_round"]
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["route_kwargs"]["series_situation"] == "round_04"
+    assert parsed["route_kwargs"]["season"] == season
 
 
 def test_how_did_a_team_do_in_the_playoffs_means_the_latest_run():
