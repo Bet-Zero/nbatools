@@ -713,6 +713,14 @@ _TEAM_NAME = ("|".join(re.escape(alias) for alias in sorted(TEAM_ALIASES, key=le
 _SUBJECT = (rf"(?<!\w)(?:{_TEAM_NAME[0]})(?!\w)",)
 
 #: (parse keys that must be resolved, wording they then account for).
+# A playoff round carried as a series situation ("most points in the Finals").
+_ROUND_PATTERNS = (
+    r"\b(?:in\s+)?(?:the\s+)?(?:nba\s+)?(?:(?:eastern|western|east|west)\s+)?"
+    r"(?:conference\s+|conf\s+)?(?:finals?|semifinals?|semis)(?:\s+games)?\b",
+    r"\b(?:in\s+)?(?:the\s+)?(?:first|1st|second|2nd|third|3rd)[\s-]+round"
+    r"(?:\s+games)?\b",
+)
+
 _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("season", "start_season", "end_season", "explicit_relative_season"), _SEASON),
     (("last_n",), _LAST_N),
@@ -733,6 +741,7 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("min_value", "max_value"), _THRESHOLD),
     (("team",), _SUBJECT),
     (("series_situation",), SERIES_SITUATION_PATTERNS),
+    (("series_situation_round",), _ROUND_PATTERNS),
 )
 
 
