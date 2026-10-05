@@ -840,7 +840,17 @@ def _build_count_phrase(
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
-        threshold = _count_threshold_text(metadata.get("max_value"))
+        max_value = metadata.get("max_value")
+        min_value = metadata.get("min_value")
+        if max_value is None and min_value is not None:
+            # "allow 110 or more points": a floor, not "held opponents under".
+            floor = _count_threshold_text(min_value)
+            action = f"allowed {floor}+ points"
+        elif isinstance(max_value, (int, float)) and float(max_value).is_integer():
+            # "held opponents to 100 or fewer" includes 100.
+            action = f"held opponents to {_count_threshold_text(max_value)} or fewer points"
+        else:
+            action = f"held opponents under {_count_threshold_text(max_value)} points"
         entity = _team_subject(metadata, games)
         context = _count_context(
             metadata,
@@ -850,10 +860,7 @@ def _build_count_phrase(
         )
         times = "time" if count == 1 else "times"
         record = _record_suffix(games)
-        return (
-            f"{entity} have held opponents under {threshold} points "
-            f"{count} {times} {context}{record}."
-        )
+        return f"{entity} have {action} {count} {times} {context}{record}."
 
     # Stat totals read as the stat itself ("has made 247 threes"), not as
     # a count of games.

@@ -94,3 +94,53 @@ def test_repeat_game_player_counts(query, expected, phrase):
     result = _run(query)
     assert _count(result) == expected
     assert result.metadata["count_phrase"].startswith(phrase)
+
+
+@pytest.mark.parametrize(
+    ("query", "phrase"),
+    [
+        (
+            "how many games did the Lakers give up 120+ points",
+            "The Los Angeles Lakers have allowed 120+ points 7 times",
+        ),
+        (
+            "how many games did the Lakers allow 100 or fewer points",
+            "The Los Angeles Lakers have held opponents to 100 or fewer points 43 times",
+        ),
+        (
+            "how many games did the Lakers hold opponents under 100",
+            "The Los Angeles Lakers have held opponents under 100 points 42 times",
+        ),
+    ],
+)
+def test_points_allowed_headlines(query, phrase):
+    assert _run(query).metadata["count_phrase"].startswith(phrase)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record when they allow 15 or more threes",
+        "Lakers record when they allow 45 or more rebounds",
+        "Lakers record when giving up 15+ threes",
+        "Lakers record when allowing 10 or fewer turnovers",
+    ],
+)
+def test_other_stats_after_allow_are_not_points_allowed(query):
+    from nbatools.commands.natural_query import parse_query
+
+    kwargs = parse_query(query)["route_kwargs"]
+    stats = {kwargs.get("stat")} | {c.get("stat") for c in kwargs.get("conditions") or []}
+    assert "opponent_pts" not in stats
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("how many players scored 30 points at least 10 times", 8),
+        ("how many players scored 30 points at least 5 times", 9),
+        ("how many players had 10 rebounds at least 20 times", 6),
+    ],
+)
+def test_at_least_n_times_after_a_stat(query, expected):
+    assert _count(_run(query)) == expected

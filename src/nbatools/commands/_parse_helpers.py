@@ -1640,7 +1640,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0001,
         ),
         (
-            rf"{STAT_PATTERN}\s+at least\s+{_NUM}",
+            # "30 points at least 5 times" counts games, not a points floor.
+            rf"{STAT_PATTERN}\s+at least\s+{_NUM}(?![\d.])(?!\s+(?:times?|games?)\b)",
             "min",
             0.0,
         ),
@@ -1895,7 +1896,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     _AT_MOST = r"(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of)\s+"
     _OR_FEWER = (
         r"(?:\s+(?:points?|pts))?\s+or\s+(?:fewer|less)\b(?!\s+than)"
-        r"(?:\s+(?:points?|pts)\b)?"
+        rf"(?:\s+(?:points?|pts)\b)?(?!\s+{STAT_PATTERN})"
     )
     _SUBJECTS = (
         r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to"
@@ -1918,12 +1919,15 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         r"|\bopponents?\s+(?:scor(?:e|es|ed|ing)|put\s+up|had)"
         r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:scor(?:e|es|ed)|put\s+up|had))\s+"
     )
-    _OR_MORE = r"(?:\s+(?:points?|pts))?\s+or\s+more\b(?:\s+(?:points?|pts)\b)?"
+    # A stat other than points after the bound ("allow 15 or more threes") is
+    # not a points-allowed condition.
+    _NOT_OTHER_STAT = rf"(?!\s+{STAT_PATTERN})"
+    _OR_MORE = r"(?:\s+(?:points?|pts))?\s+or\s+more\b(?:\s+(?:points?|pts)\b)?" + _NOT_OTHER_STAT
     min_patterns = [
         (rf"{_MIN_SUBJECTS}(?:at\s+least|a\s+min(?:imum)?\s+of)\s+{_NUM}{_POINT_SUFFIX}", 0.0),
         (rf"{_MIN_SUBJECTS}(?:over|more\s+than)\s+{_NUM}{_POINT_SUFFIX}", 0.0001),
         (rf"{_MIN_SUBJECTS}{_NUM}{_OR_MORE}", 0.0),
-        (rf"{_MIN_SUBJECTS}{_NUM}\+(?:\s+(?:points?|pts)\b)?", 0.0),
+        (rf"{_MIN_SUBJECTS}{_NUM}\+(?:\s+(?:points?|pts)\b)?{_NOT_OTHER_STAT}", 0.0),
     ]
 
     matches = []
@@ -2115,7 +2119,7 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     _NOT_GAMES = r"(?!\s+games?\b)"
     patterns = [
         rf"\b(\d+){_NOT_GAMES}\+",
-        rf"\bat least (\d+){_NOT_GAMES}\b",
+        rf"\bat least (\d+)(?!\d){_NOT_GAMES}(?!\s+times?\b)",
         rf"\bminimum (\d+){_NOT_GAMES}\b",
         rf"\bmin(?:imum)? (\d+){_NOT_GAMES}\b",
         rf"\b(\d+){_NOT_GAMES}\s+or\s+more\b",
