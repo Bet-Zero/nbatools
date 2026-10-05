@@ -654,6 +654,11 @@ def _prepare_route_conditions(
         return kwargs, extra_conditions
 
     route_conditions = normalize_stat_conditions(kwargs.get("conditions"))
+    # The route's own stat bound counts too: a team streak on "pts>=120"
+    # with an opponent condition already applies an extra "scoring 120".
+    primary_bound = primary_condition_from_kwargs(kwargs)
+    if primary_bound is not None:
+        route_conditions = [primary_bound, *route_conditions]
     if route_conditions and stat_conditions_cover(route_conditions, extra_conditions):
         return kwargs, []
 

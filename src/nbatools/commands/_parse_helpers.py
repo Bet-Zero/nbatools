@@ -1230,6 +1230,10 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
             masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
         own = _team_streak_request_base("".join(masked))
         if own is not None and own.get("stat") == stat:
+            # Its bound comes from the masked reading too: "scoring 120+
+            # while allowing under 110" read "under 110" as own points.
+            request["min_value"] = own.get("min_value")
+            request["max_value"] = own.get("max_value")
             stat = None
     extra = []
     for cond in opponent:
