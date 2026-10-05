@@ -181,3 +181,25 @@ def test_record_leaderboard_applies_conditions():
         "leaderboard"
     ]
     assert (rows[0]["team_abbr"], rows[0]["wins"], rows[0]["losses"]) == ("LAL", 3, 9)
+
+
+@pytest.mark.parametrize(
+    ("query", "condition", "length"),
+    [
+        # An own-stat bound and an opponent bound on the same stat both hold.
+        (
+            "Lakers longest streak of 120 point games while allowing under 110 points",
+            "pts>=120 and opponent_pts<110",
+            2,
+        ),
+        (
+            "Lakers longest streak of 15+ three games while allowing 15+ threes",
+            "fg3m>=15 and opponent_fg3m>=15",
+            3,
+        ),
+    ],
+)
+def test_team_streak_own_and_opponent_bounds(query, condition, length):
+    row = _run(query).result.to_dict()["sections"]["streak"][0]
+    assert row["condition"] == condition
+    assert row["streak_length"] == length

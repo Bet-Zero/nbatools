@@ -1182,6 +1182,11 @@ def extract_team_streak_request(text: str) -> dict | None:
     normalized = re.sub(r"[?.!,]+$", "", text)
     if not _STREAK_WORD.search(normalized):
         return None
+    request = _team_streak_request_base(normalized)
+    return _with_streak_mode(_with_opponent_stat_conditions(request, normalized), normalized)
+
+
+def _team_streak_request_base(normalized: str) -> dict | None:
     request = _extract_team_streak_request_patterns(normalized)
     if request is None and not _OUTCOME_STREAK.search(normalized):
         # One team stat condition ("120 point games", "games with 15+
@@ -1199,7 +1204,7 @@ def extract_team_streak_request(text: str) -> dict | None:
             "min_streak_length": _streak_length(normalized)[0],
             "longest": True,
         }
-    return _with_streak_mode(_with_opponent_stat_conditions(request, normalized), normalized)
+    return request
 
 
 def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dict | None:
@@ -1217,6 +1222,15 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
         return request
     request = dict(request)
     stat = request.get("stat")
+    if stat is not None:
+        # "120 point games while allowing under 110": with the opponent
+        # phrases blanked, the own-stat reading survives, so it stays.
+        masked = list(normalized)
+        for cond in opponent:
+            masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
+        own = _team_streak_request_base("".join(masked))
+        if own is not None and own.get("stat") == stat:
+            stat = None
     extra = []
     for cond in opponent:
         if (
