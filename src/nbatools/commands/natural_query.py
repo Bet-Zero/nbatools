@@ -1023,6 +1023,22 @@ def _detect_team_in_text(text: str):
     return detect_team_in_text(text)
 
 
+def _league_occurrence_role(q: str) -> str | None:
+    """Bench/starter wording on a league-wide occurrence leaderboard.
+
+    Stricter than ``detect_role``: a bare "starting" is usually time ("starting
+    in 2023-24"), so only lineup wording counts.
+    """
+    if re.search(r"\boff\s+the\s+bench\b|\bbench\b|\breserves?\b", q):
+        return "bench"
+    if re.search(
+        r"\bas\s+(?:a\s+)?starters?\b|\bstarters\b|\bstarting\s+(?:five|lineup|unit|role)\b",
+        q,
+    ):
+        return "starter"
+    return None
+
+
 def _mask_opponent_group_phrase(q: str, conference: str | None, division: str | None) -> str:
     """Hide "vs the West" from the player scan: West is a surname, not a player."""
     if conference:
@@ -3908,8 +3924,10 @@ def _route_parsed_query(parsed: dict) -> dict:
         # "most triple doubles off the bench": the leaderboard counts only games
         # in that role (dropping it ranked every game).
         occurrence_role = (
-            (parsed.get("role") or detect_role(q))
-            if route == "player_occurrence_leaders" and not route_kwargs.get("role")
+            _league_occurrence_role(q)
+            if route == "player_occurrence_leaders"
+            and not route_kwargs.get("role")
+            and not route_kwargs.get("player")
             else None
         )
         if occurrence_role:

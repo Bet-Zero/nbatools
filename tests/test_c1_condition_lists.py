@@ -108,3 +108,13 @@ def test_player_count_headline_names_the_opponent():
     assert result.metadata["count_phrase"] == (
         "17 players have had a game with 30+ points against the West this season."
     )
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["most double doubles starting in 2023-24", "most triple doubles in games starting at home"],
+)
+def test_starting_as_time_is_not_a_starter_filter(query):
+    result = _run(query)
+    notes = " ".join(result.metadata.get("notes") or [])
+    assert "role_leaderboard" not in notes
