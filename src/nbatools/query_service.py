@@ -1178,6 +1178,7 @@ def _add_series_comebacks_answer_metadata(metadata: dict[str, Any], result: Any)
     high, low = max(wins, losses), min(wins, losses)
     blown = bool(kwargs.get("blown"))
     what = f"blew a {high}-{low} series lead" if blown else f"came back from {high}-{low} down"
+    what += str(kwargs.get("scope") or "")
     start, end = metadata.get("start_season"), metadata.get("end_season")
     if not (start and end):
         start = end = metadata.get("season")

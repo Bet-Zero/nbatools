@@ -30,6 +30,7 @@ from nbatools.commands._seasons import (
     EARLIEST_SEASON,
     default_end_season,
     int_to_season,
+    resolve_career,
     resolve_seasons,
     season_to_int,
 )
@@ -382,6 +383,8 @@ def build_series_comebacks_result(
     when the team's series score before one of its games was exactly that
     score, so a comeback from 0-3 also passed through 1-3.
     """
+    if not (season or start_season or end_season):
+        start_season, end_season = resolve_career("Playoffs")
     seasons = resolve_seasons(season, start_season, end_season)
     try:
         games = _load_playoff_games(seasons)
@@ -428,6 +431,12 @@ def build_series_comebacks_result(
     high, low = max(deficit_wins, deficit_losses), min(deficit_wins, deficit_losses)
     what = f"blew a {high}-{low} series lead" if blown else f"came back from {high}-{low} down"
     span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
+    scope = ""
+    if opponent:
+        named = games.loc[_team_match(games, opponent), "team_name"]
+        scope += f" against the {named.iloc[-1]}" if not named.empty else f" against {opponent}"
+    if playoff_round:
+        scope += f" in the {round_code_to_label(playoff_round)}"
     caveats = [f"series where the team {what} and {'lost' if blown else 'won'}"]
     round_caveat = _round_data_caveat(seasons)
     if round_caveat:
@@ -438,11 +447,11 @@ def build_series_comebacks_result(
         subject = "No team"
         if team:
             named = games.loc[_team_match(games, team), "team_name"]
-            subject = f"The {named.iloc[-1] if not named.empty else team.upper()} never"
+            subject = f"The {named.iloc[-1]} never" if not named.empty else f"{team} never"
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
-            notes=[f"{subject} {what} in a playoff series {span}"],
+            notes=[f"{subject} {what} in a playoff series{scope} {span}"],
             caveats=caveats,
         )
     series = series.sort_values(["start_date"], ascending=False)
@@ -473,6 +482,7 @@ def build_series_comebacks_result(
             "deficit_losses": deficit_losses,
             "blown": blown,
             "team_filter": team,
+            "scope": scope,
         },
     )
 

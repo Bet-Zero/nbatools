@@ -60,6 +60,27 @@ def test_comeback_questions_route_to_series_list(query, wins, losses, blown, tea
     assert not parsed.get("count_intent")
 
 
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("teams that came back from 3-1 down this season", "2025-26"),
+        ("teams that came back from 3-1 down last season", "2024-25"),
+        ("teams that came back from 3-1 in the 2016 playoffs", "2015-16"),
+        ("Warriors blew a 3-1 lead in 2016", "2015-16"),
+    ],
+)
+def test_named_season_is_one_playoffs(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["season"], kwargs["start_season"]) == (season, None)
+
+
+def test_structured_call_without_a_span_covers_every_season(comeback):
+    from nbatools.query_service import execute_structured_query
+
+    result = execute_structured_query("playoff_series_comebacks", deficit_wins=0, deficit_losses=2)
+    assert result.result_status == "ok", result.result_reason
+
+
 def test_round_span_and_opponent_are_kept():
     kwargs = parse_query("teams that came back from 3-1 down in the Finals")["route_kwargs"]
     assert kwargs["playoff_round"] == "04"
@@ -78,6 +99,18 @@ def test_round_span_and_opponent_are_kept():
         "teams that came back from 3-1 down at home",
         "coaches who came back from 3-1",
         "teams that came back from 3-1 in the regular season",
+        # A count, ranking or qualifier the series list cannot honour.
+        "which team has the most 3-1 comebacks",
+        "teams that came back from 3-1 down twice",
+        "top 5 3-1 comebacks",
+        "teams that came back from 2-0 down in game 7",
+        "teams that came back from 2-0 down and won in 6",
+        "teams that came back from 3-1 down with Jordan Poole",
+        "teams that came back from 3-1 down in the 4th quarter",
+        "teams that came back from 3-1 down in March",
+        "western conference teams that came back from 3-1",
+        "lower seeds that came back from 2-0",
+        "last time a team came back from 3-1",
     ],
 )
 def test_comeback_questions_the_list_cannot_answer_refuse(query):
@@ -126,6 +159,17 @@ def test_team_that_never_did_it_is_no_match(comeback):
     assert (
         "The Denver Nuggets never came back from 2-0 down in a playoff series in 2000-01"
         in result.metadata["notes"]
+    )
+
+
+def test_no_match_note_names_the_round_and_opponent(comeback):
+    result = execute_natural_query(
+        "Lakers came back from 0-2 against the Nuggets in the Finals in 2001"
+    )
+    assert result.result_reason == "no_match"
+    assert (
+        "The Los Angeles Lakers never came back from 2-0 down in a playoff series against "
+        "the Denver Nuggets in the Finals in 2000-01" in result.metadata["notes"]
     )
 
 
