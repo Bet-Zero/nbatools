@@ -889,6 +889,36 @@ def _build_count_phrase(
         occurrence = _compound_occurrence_label(conditions)
     else:
         occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
+    if parsed.get("distinct_player_count") and not player:
+        # The count is players, not games: "18 players have had a game with 30+ points".
+        context = _count_context(
+            metadata,
+            player=False,
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
+        if not conditions and parsed.get("stat") and not parsed.get("occurrence_event"):
+            occurrence = _occurrence_label(
+                {
+                    "stat": parsed.get("stat"),
+                    "min_value": parsed.get("min_value"),
+                    "max_value": parsed.get("max_value"),
+                }
+            )
+        if occurrence.startswith("games with "):
+            occurrence = "game with " + occurrence[len("games with ") :]
+        subject = "1 player has" if count == 1 else f"{count} players have"
+        role = {"bench": " off the bench", "starter": " as a starter"}.get(
+            metadata.get("role") or ""
+        )
+        opponent = ""
+        if metadata.get("opponent_conference"):
+            opponent = f" against the {metadata['opponent_conference']}"
+        elif metadata.get("opponent_division"):
+            opponent = f" against the {metadata['opponent_division']} Division"
+        elif isinstance(metadata.get("opponent"), str) and metadata["opponent"]:
+            opponent = f" against {metadata['opponent']}"
+        return f"{subject} had a {occurrence}{role or ''}{opponent} {context}."
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     context = _count_context(
         metadata,
@@ -1485,6 +1515,8 @@ def _occurrence_label(occurrence: Any) -> str:
         max_value = occurrence.get("max_value")
         if isinstance(stat, str):
             stat_name = stat_phrase_label(stat)
+            if isinstance(min_value, (int, float)) and isinstance(max_value, (int, float)):
+                return f"games with {_range_phrase(min_value, max_value)} {stat_name}"
             if isinstance(min_value, (int, float)):
                 return f"games with {_minimum_threshold_phrase(min_value)} {stat_name}"
             if isinstance(max_value, (int, float)):
@@ -1505,7 +1537,9 @@ def _compound_occurrence_label(conditions: list[dict[str, Any]]) -> str:
         stat_name = stat_phrase_label(stat)
         min_value = cond.get("min_value")
         max_value = cond.get("max_value")
-        if isinstance(min_value, (int, float)):
+        if isinstance(min_value, (int, float)) and isinstance(max_value, (int, float)):
+            parts.append(f"{_range_phrase(min_value, max_value)} {stat_name}")
+        elif isinstance(min_value, (int, float)):
             parts.append(f"{_minimum_threshold_phrase(min_value)} {stat_name}")
         elif isinstance(max_value, (int, float)):
             parts.append(f"{_maximum_threshold_phrase(max_value)} {stat_name}")
@@ -1522,6 +1556,11 @@ def _minimum_threshold_phrase(value: int | float) -> str:
     if abs(numeric - (rounded + _COUNT_THRESHOLD_EPSILON)) < 0.000001:
         return f"over {compact_number(rounded)}"
     return f"{compact_number(value)}+"
+
+
+def _range_phrase(low: int | float, high: int | float) -> str:
+    # "between 20 and 30 points" reads as "20-30", not "20+".
+    return f"{compact_number(low)}-{compact_number(high)}"
 
 
 def _maximum_threshold_phrase(value: int | float) -> str:

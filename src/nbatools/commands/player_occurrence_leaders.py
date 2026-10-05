@@ -32,6 +32,7 @@ import pandas as pd
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_player_role_filter,
     build_opponent_mask,
     describe_opponent_filter,
     load_player_games_for_seasons,
@@ -323,6 +324,7 @@ def build_result(
     limit: int | None = 10,
     min_games: int = DEFAULT_MIN_GAMES,
     player: str | None = None,
+    role: str | None = None,
     **_context_filters: Any,
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
@@ -365,6 +367,8 @@ def build_result(
         Minimum total games played for a player to be eligible.
     player : str or None
         If provided, filter to only this player (for single-player occurrence counts).
+    role : str or None
+        "starter" or "bench": count only games in that role.
 
     Returns
     -------
@@ -437,6 +441,13 @@ def build_result(
         end_date=end_date,
     )
 
+    if basic.empty:
+        return NoResult(query_class="leaderboard", reason="no_match")
+
+    # "How many players had 30 off the bench": only games in that role count.
+    basic, role_note = apply_player_role_filter(basic, seasons, season_type, role)
+    if role_note:
+        return NoResult(query_class="leaderboard", reason="filter_not_supported", notes=[role_note])
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
 
