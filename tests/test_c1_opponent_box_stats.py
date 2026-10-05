@@ -147,3 +147,37 @@ def test_team_streak_points_allowed(query, condition, length):
     row = _run(query).result.to_dict()["sections"]["streak"][0]
     assert row["condition"] == condition
     assert row["streak_length"] == length
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        # "shot" stays attempts for later items; "N or more" may precede the stat.
+        ("Lakers record when opponents shot 40+ threes and 20 free throws", (1, 1, 0)),
+        ("Lakers record when they gave up 15 threes and 45 or more rebounds", (4, 2, 2)),
+        ("Lakers record when they gave up 15 threes and 15 or more turnovers", (10, 8, 2)),
+        # A count after the opponent no longer swaps the subject team.
+        ("Lakers record vs Celtics when opponents made 15+ threes", (5, 1, 4)),
+        ("Lakers record vs Celtics when they have 15+ threes", (3, 1, 2)),
+    ],
+)
+def test_more_opponent_lists_and_matchups(query, expected):
+    result = _run(query)
+    assert result.result.to_dict()["sections"]["summary"][0]["team_name"].endswith("Lakers")
+    assert _summary(result) == expected
+
+
+def test_record_leaderboard_applies_conditions():
+    # Boston's 14-5 when opponents made 15+ threes beats the Lakers' 17-7; the
+    # overall standings put the Lakers (47-13) first.
+    rows = _run("which team has the best record when opponents made 15+ threes").result.to_dict()[
+        "sections"
+    ]["leaderboard"]
+    assert [(r["team_abbr"], r["wins"], r["losses"]) for r in rows[:2]] == [
+        ("BOS", 14, 5),
+        ("LAL", 17, 7),
+    ]
+    rows = _run("best record when allowing 110 or more points").result.to_dict()["sections"][
+        "leaderboard"
+    ]
+    assert (rows[0]["team_abbr"], rows[0]["wins"], rows[0]["losses"]) == ("LAL", 3, 9)

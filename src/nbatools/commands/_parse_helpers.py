@@ -2118,7 +2118,7 @@ _OPP_LIST_ITEM = re.compile(
     r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)"
     r"(?P<pre>at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
     r"|fewer\s+than\s+|less\s+than\s+|no\s+more\s+than\s+)?"
-    r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?\s*"
+    r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?P<mid>\s+or\s+(?:more|fewer|less))?\s*"
     rf"(?P<stat>points?|pts|{_OPP_STAT_WORD})(?![\w-])"
     r"(?P<post>\s+or\s+(?:more|fewer|less)\b)?"
 )
@@ -2145,12 +2145,14 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
         # "under 100 points and 40 rebounds": a strict first bound stays strict.
         strict = 0.0 if float(bound).is_integer() else 0.0001
         end = cond["end"]
+        # "opponents shot 40+ threes and 20 free throws": both are attempts.
+        subject = "shot" if re.search(r"\bsho(?:t|ots?|oting)\b", cond.get("text") or "") else ""
         while m := _OPP_LIST_ITEM.match(text, end):
             word = m.group("stat")
             if re.fullmatch(r"points?|pts", word):
                 stat = "pts"
             else:
-                stat = _opponent_stat_word(word, cond.get("text") or "")
+                stat = _opponent_stat_word(word, subject)
             base = f"opponent_{stat}"
             if base != "opponent_pts" and base not in OPPONENT_STATS:
                 break
@@ -2159,8 +2161,8 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
                 item_mode, epsilon = _OPP_LIST_PRE[re.sub(r"\s+", " ", m.group("pre").strip())]
             elif m.group("plus"):
                 item_mode, epsilon = "min", 0.0
-            elif m.group("post"):
-                item_mode = "min" if "more" in m.group("post") else "max"
+            elif bound_words := m.group("mid") or m.group("post"):
+                item_mode = "min" if "more" in bound_words else "max"
                 epsilon = 0.0
             value = float(m.group("num"))
             found.append(

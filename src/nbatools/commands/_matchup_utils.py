@@ -93,10 +93,14 @@ def detect_head_to_head(text: str) -> bool:
 def detect_opponent(text: str) -> tuple[str | None, str]:
     cleaned_text = strip_matchup_noise(text)
 
+    # A count after the team ("vs Celtics 15+ threes") also ends the phrase;
+    # "+" is outside the phrase characters, so the match failed and the
+    # opponent was read as the subject team.
+    count = r"\s+\d+(?:\.\d+)?(?:\+|\s)"
     patterns = [
-        rf"\bvs\.?\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
-        rf"\bversus\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
-        rf"\bagainst\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
+        rf"\bvs\.?\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|{count}|$)",
+        rf"\bversus\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|{count}|$)",
+        rf"\bagainst\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|{count}|$)",
     ]
 
     for pattern in patterns:

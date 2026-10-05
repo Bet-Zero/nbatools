@@ -527,5 +527,11 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
             "start_date": start_date,
             "end_date": end_date,
         }
+        # "best record when allowing 110 or more points": rank on the games
+        # meeting every stat condition, not the whole season.
+        if conditions := parsed.get("threshold_conditions"):
+            route_kwargs["conditions"] = [
+                {k: c.get(k) for k in ("stat", "min_value", "max_value")} for c in conditions
+            ]
 
     return route, route_kwargs, notes
