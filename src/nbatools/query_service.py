@@ -844,8 +844,12 @@ def _build_count_phrase(
         min_value = metadata.get("min_value")
         if max_value is None and min_value is not None:
             # "allow 110 or more points": a floor, not "held opponents under".
+            # "over 119" is stored as 119.0001: say "more than 119".
             floor = _count_threshold_text(min_value)
-            action = f"allowed {floor}+ points"
+            if float(min_value).is_integer():
+                action = f"allowed {floor}+ points"
+            else:
+                action = f"allowed more than {floor} points"
         elif isinstance(max_value, (int, float)) and float(max_value).is_integer():
             # "held opponents to 100 or fewer" includes 100.
             action = f"held opponents to {_count_threshold_text(max_value)} or fewer points"

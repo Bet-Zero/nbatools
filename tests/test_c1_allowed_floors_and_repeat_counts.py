@@ -104,6 +104,10 @@ def test_repeat_game_player_counts(query, expected, phrase):
             "The Los Angeles Lakers have allowed 120+ points 7 times",
         ),
         (
+            "how many games did the Lakers allow over 119 points",
+            "The Los Angeles Lakers have allowed more than 119 points 7 times",
+        ),
+        (
             "how many games did the Lakers allow 100 or fewer points",
             "The Los Angeles Lakers have held opponents to 100 or fewer points 43 times",
         ),
