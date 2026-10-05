@@ -1529,6 +1529,23 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             "max",
             0.0001,
         ),
+        # Inclusive upper bounds: "at most 5 points", "no more than 2 turnovers",
+        # "5 points or fewer". Read as a bare number they became minimums.
+        (
+            rf"\b(?:at most|no more than|a max(?:imum)? of)\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "max",
+            0.0,
+        ),
+        (
+            rf"\b{_NUM}\s+or\s+(?:fewer|less)\s+{STAT_PATTERN}\b",
+            "max",
+            0.0,
+        ),
+        (
+            rf"\b{_NUM}\s+{STAT_PATTERN}\s+or\s+(?:fewer|less)\b",
+            "max",
+            0.0,
+        ),
         # Shorthand: N+ STAT — "30+ points", "5+ threes" (implicit >=)
         (
             rf"\b{_NUM}\+\s*{STAT_PATTERN}\b",
@@ -1617,6 +1634,10 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             if stat is None:
                 continue
             if mode == "between":
+                # "5 assists between 2023 and 2025" is a season span after a
+                # threshold, not an assist range.
+                if all(re.fullmatch(r"(?:19[4-9]|20[0-9])\d", g) for g in (m.group(2), m.group(3))):
+                    continue
                 low = _normalize_threshold_value(m.group(2), stat)
                 high = _normalize_threshold_value(m.group(3), stat)
                 if low > high:
