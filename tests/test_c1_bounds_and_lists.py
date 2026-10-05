@@ -149,3 +149,17 @@ def test_made_threes_and_teams_that_scored():
     row = _run("Lakers record vs teams that scored 100 or fewer").result.to_dict()
     summary = row["sections"]["summary"][0]
     assert (summary["games"], summary["wins"], summary["losses"]) == (43, 41, 2)
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        # A multi-word stat in a list used to drop the other condition.
+        ("how many games did LeBron have 3 or fewer made threes and 30 points", 6),
+        ("how many games did LeBron have 30 points and 3 or fewer made 3s", 6),
+        ("how many players have had a game with 3 or fewer made threes and 30 points", 18),
+        ("how many games did LeBron have 10 or fewer field goal attempts and 15 points", 3),
+    ],
+)
+def test_multi_word_stats_in_lists(query, expected):
+    assert _count(_run(query)) == expected

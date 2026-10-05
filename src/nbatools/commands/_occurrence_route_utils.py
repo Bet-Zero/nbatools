@@ -138,9 +138,20 @@ _COMPOUND_STAT_MAP = {
     "turnovers": "tov",
     "turnover": "tov",
     "tov": "tov",
+    # Multi-word stat phrases: a list item the parser did not recognize was
+    # dropped, so "3 or fewer made threes and 30 points" kept only the bound.
+    "made threes": "fg3m",
+    "made three": "fg3m",
+    "made 3s": "fg3m",
+    "made three-pointers": "fg3m",
+    "made three-pointer": "fg3m",
+    "field goal attempts": "fga",
+    "field goal attempt": "fga",
+    "fga": "fga",
 }
 
 _COMPOUND_STAT_WORDS = (
+    r"made (?:threes?|3s|three-pointers?)|field goal attempts?|fga|"
     r"points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
     r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov"
 )
