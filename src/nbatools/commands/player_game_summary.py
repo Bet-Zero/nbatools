@@ -4,7 +4,11 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from nbatools.commands._condition_utils import apply_stat_conditions
+from nbatools.commands._condition_utils import (
+    MARGIN_STATS,
+    apply_stat_conditions,
+    attach_margin_stats,
+)
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
@@ -71,6 +75,7 @@ ALLOWED_STATS = {
     "ast_pct": "ast_pct",
     "reb_pct": "reb_pct",
     "tov_pct": "tov_pct",
+    **MARGIN_STATS,
 }
 
 GAME_LOG_COLUMNS = [
@@ -138,7 +143,7 @@ def _apply_filters(
     end_date: str | None = None,
     identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
-    out = df.copy()
+    out = attach_margin_stats(df.copy(), {stat, *(c.get("stat") for c in conditions or [])})
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
 
     start_ts = _normalize_date_value(start_date)
