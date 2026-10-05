@@ -673,7 +673,6 @@ _SUMMARY_TYPO_BLOCKED_NAME_WORDS = frozenset(
         "floor",
         # Playoff rounds: "LeBron Finals stats" names a round, not a typo.
         "finals",
-        "final",
         "conference",
         "semifinals",
         "semis",

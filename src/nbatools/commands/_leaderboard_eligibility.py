@@ -716,9 +716,9 @@ _SUBJECT = (rf"(?<!\w)(?:{_TEAM_NAME[0]})(?!\w)",)
 # A playoff round carried as a series situation ("most points in the Finals").
 _ROUND_PATTERNS = (
     r"\b(?:in\s+)?(?:the\s+)?(?:nba\s+)?(?:(?:eastern|western|east|west)\s+)?"
-    r"(?:conference\s+|conf\s+)?(?:finals?|semifinals?|semis)(?:\s+games?)?\b",
-    r"\b(?:in\s+)?(?:the\s+)?(?:first|1st|second|2nd|third|3rd|opening)[\s-]+round"
-    r"(?:\s+games?)?\b",
+    r"(?:conference\s+|conf\s+)?(?:finals?|semifinals?|semis)(?:\s+games)?\b",
+    r"\b(?:in\s+)?(?:the\s+)?(?:first|1st|second|2nd|third|3rd)[\s-]+round"
+    r"(?:\s+games)?\b",
 )
 
 _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (

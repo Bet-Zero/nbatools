@@ -5352,11 +5352,44 @@ _ROUND_NATIVE_ROUTES = {
 _ROUND_AS_SITUATION_REFUSALS = {"player_playoff_round", "leaderboard_request_unclear"}
 
 
+# Wording that makes a round something other than "only that round's games":
+# an exclusion, a conference half, an award or draft pick, teams that reached
+# it, a count of trips, a single game, or a relative season the parser misses.
+_ROUND_NOT_A_FILTER = re.compile(
+    r"\b(?:not|non|excluding|exclude|except|outside|other\s+than|besides|minus|before|"
+    r"after|without|east|eastern|west|western|mvps?|picks?|draft(?:ed)?|"
+    r"made|make|making|reach(?:ed|es)?|appearances?|trips?|been\s+to|"
+    r"most\s+recent|latest|ago|highest\s+scoring)\b"
+    r"|\b(?:against|vs\.?|versus)\b.*\bteams?\b"
+    r"|\bhow\s+many\s+(?:nba\s+)?finals\b"
+    r"|\b(?:finals?|round|semifinals?|semis|championship)\s+game\b(?!\s*s\b)(?!\s+\d)"
+)
+
+
+def _named_round_codes(q: str) -> set[str]:
+    from nbatools.commands.playoff_history import ROUND_ALIASES
+
+    text = q.replace("-", " ")
+    codes = set()
+    for alias in sorted(ROUND_ALIASES, key=len, reverse=True):
+        pattern = rf"\b{re.escape(alias)}\b"
+        if re.search(pattern, text):
+            codes.add(ROUND_ALIASES[alias])
+            text = re.sub(pattern, " ", text)
+    return codes
+
+
 def _round_as_situation(parsed: dict) -> dict | None:
     """ "LeBron stats in the Finals", "Lakers game 7s in the Finals": the round
     becomes a series situation on game routes instead of being dropped."""
     round_code = parsed.get("playoff_round_filter")
     if not round_code or parsed.get("series_comeback") or parsed.get("by_round_intent"):
+        return None
+    q = parsed["normalized_query"]
+    if _ROUND_NOT_A_FILTER.search(q) or len(_named_round_codes(q)) > 1:
+        # "excluding the first round", "first and second round", "western
+        # conference finals", "finals mvp", "most points in a finals game":
+        # never answer only one round's games for these.
         return None
     if not (parsed.get("season") or parsed.get("start_season") or parsed.get("end_season")):
         if re.search(r"(?<!\d)(?:19|20)\d{2}(?!\d)", parsed["normalized_query"]):

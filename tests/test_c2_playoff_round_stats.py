@@ -107,3 +107,41 @@ def test_round_leaderboard_totals_that_rounds_games():
     assert result.result_status == "ok", result.result_reason
     top = result.result.to_dict()["sections"]["leaderboard"][0]
     assert (top["player_name"], top["games_played"], top["reb_total"]) == ("Nikola Jokić", 6, 79)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Exclusions, several rounds, a conference half, awards, draft picks,
+        # teams that reached a round, trips, single games and relative seasons
+        # the parser misses: never answer only one round's games.
+        "Jokic playoff stats excluding the first round",
+        "Jokic stats outside the finals",
+        "Jokic non-finals playoff stats",
+        "Jokic stats before the finals",
+        "Jokic stats in the first round and second round",
+        "Jokic stats in the finals and conference finals",
+        "LeBron western conference finals stats",
+        "most points in the western conference finals",
+        "Jokic stats in the west finals",
+        "Jokic stats in the east semis",
+        "most points in a finals game",
+        "highest scoring finals game",
+        "LeBron finals mvp",
+        "LeBron stats against finals teams",
+        "how many finals has LeBron been to",
+        "LeBron stats as a first round pick",
+        "LeBron stats in the most recent finals",
+        "LeBron finals stats two years ago",
+        "LeBron best finals game",
+    ],
+)
+def test_round_words_that_are_not_a_round_filter_never_filter(query):
+    parsed = parse_query(query)
+    situation = (parsed.get("route_kwargs") or {}).get("series_situation")
+    assert not (situation and ("round_" in situation or "@" in situation))
+
+
+def test_finals_game_number_still_filters():
+    kwargs = parse_query("LeBron finals game 7 stats")["route_kwargs"]
+    assert kwargs["series_situation"] == "game_7@04"
