@@ -151,6 +151,14 @@ def test_round_leaderboard_totals_that_rounds_games():
         "LeBron first round series record",
         "number of finals LeBron played in",
         "LeBron vs Jokic in the finals",
+        # The round dates a clause, not the games asked about.
+        "LeBron stats in years he lost in the finals",
+        "LeBron playoff stats in years he was in the finals",
+        "LeBron stats in runs that ended in the finals",
+        "Jokic playoff stats when he lost in the first round",
+        "LeBron stats in the playoffs aside from games in the finals",
+        "LeBron stats since he played in the finals",
+        "LeBron stats since the 2016 finals",
     ],
 )
 def test_round_words_that_are_not_a_round_filter_never_filter(query):
@@ -162,3 +170,25 @@ def test_round_words_that_are_not_a_round_filter_never_filter(query):
 def test_finals_game_number_still_filters():
     kwargs = parse_query("LeBron finals game 7 stats")["route_kwargs"]
     assert kwargs["series_situation"] == "game_7@04"
+
+
+@pytest.mark.parametrize(
+    ("query", "situation"),
+    [
+        ("most points in game 1 of the finals", "game_1@04"),
+        ("most points in game 7s of the conference finals", "game_7@03"),
+        ("most points in elimination games in the finals", "elimination@04"),
+        ("LeBron stats in game 6 of the finals", "game_6@04"),
+        ("Lakers record in game 1 of the finals", "game_1@04"),
+        ("Jokic stats in the conference semifinals", "round_02"),
+    ],
+)
+def test_situation_within_a_round_keeps_both(query, situation):
+    assert parse_query(query)["route_kwargs"]["series_situation"] == situation
+
+
+def test_leaderboard_never_drops_a_round_it_did_not_apply():
+    # "years he lost in the finals" is not a round filter, so a board must not
+    # answer it over every round either.
+    parsed = parse_query("most points in years he lost in the finals")
+    assert parsed["route_kwargs"].get("unsupported_filters")

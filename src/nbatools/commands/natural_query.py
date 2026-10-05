@@ -5373,8 +5373,20 @@ _ROUND_NOT_A_FILTER = re.compile(
 # ("beyond the first round", "every round but the finals", "his first finals",
 # "first round series wins") falls back.
 _ROUND_LEAD_IN = re.compile(
-    r"\b(?:in|during)\s+(?:the\s+)?(?:nba\s+)?(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?$"
+    r"\b(?:in|during)\s+(?:the\s+)?(?:nba\s+)?(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?"
+    r"(?:conference\s+|conf\s+)?$"
     r"|(?<!\d)(?:19|20)\d{2}\s+$"
+    # "game 7s of the finals", "game 1 in the first round"
+    r"|\bgames?\s+(?:\d|one|two|three|four|five|six|seven)s?\s+(?:of|in)\s+(?:the\s+)?$"
+)
+# "years he lost in the finals", "runs that ended in the finals", "since the
+# 2016 finals": the round dates a clause, not the games asked about.
+_ROUND_CLAUSE_LEAD = re.compile(
+    r"\b(?:lost|lose|loses|losing|won|winning|played|plays|play|playing|was|were|is|are|"
+    r"been|ended|ends|end|ending|got|made|appeared|went|reached|faced|met|swept|fell)\s+"
+    r"(?:in|to|into)\s+(?:the\s+)?(?:(?:19|20)\d{2}\s+)?(?:conference\s+)?$"
+    r"|\b(?:since|after|before|until|till|from|through|thru|to)\s+(?:the\s+)?"
+    r"(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?(?:conference\s+)?$"
 )
 _ROUND_FOLLOWER = re.compile(
     r"^\s+(?:stats?|statistics|averages?|avg|numbers|line|totals?|games|record"
@@ -5382,7 +5394,8 @@ _ROUND_FOLLOWER = re.compile(
 )
 _ROUND_EXTRA_BLOCKS = re.compile(
     r"\bseries\b|\bnumber\s+of\b|\b(?:his|her|their)\s+(?:first|last|second|final)\b"
-    r"|\b(?:exits?|eliminat\w*|upsets?|advanc\w*|swept|sweeps?|clinch\w*)\b"
+    r"|\b(?:exits?|eliminated|eliminating|upsets?|advanc\w*|swept|sweeps?|clinch\w*)\b"
+    r"|\b(?:aside\s+from|save\s+for|apart\s+from)\b"
     r"|\b(?:first|second|third|1st|2nd|3rd)\s+(?:and|or|&|to|through)\s+"
     r"(?:the\s+)?(?:first|second|third|1st|2nd|3rd)\b"
 )
@@ -5411,7 +5424,8 @@ def _round_reads_as_filter(q: str) -> bool:
     if _ROUND_EXTRA_BLOCKS.search(text):
         return False
     return all(
-        _ROUND_LEAD_IN.search(text[:start]) or _ROUND_FOLLOWER.match(text[end:])
+        not _ROUND_CLAUSE_LEAD.search(text[:start])
+        and (_ROUND_LEAD_IN.search(text[:start]) or _ROUND_FOLLOWER.match(text[end:]))
         for _, start, end in mentions
     )
 
@@ -5462,6 +5476,8 @@ def _round_as_situation(parsed: dict) -> dict | None:
             return None
     rerouted = dict(parsed)
     rerouted["playoff_round_filter"] = None
+    # The leaderboard check may count round words as answered only now.
+    rerouted["series_situation_round"] = round_code
     rerouted["series_situation"] = (
         f"{situation}@{round_code}" if situation else f"round_{round_code}"
     )

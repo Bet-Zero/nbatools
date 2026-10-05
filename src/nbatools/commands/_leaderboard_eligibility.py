@@ -740,7 +740,8 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("top_n",), _TOP_N),
     (("min_value", "max_value"), _THRESHOLD),
     (("team",), _SUBJECT),
-    (("series_situation",), SERIES_SITUATION_PATTERNS + _ROUND_PATTERNS),
+    (("series_situation",), SERIES_SITUATION_PATTERNS),
+    (("series_situation_round",), _ROUND_PATTERNS),
 )
 
 
