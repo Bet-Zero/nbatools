@@ -153,13 +153,11 @@ def test_best_single_seasons_rank_each_season_on_its_own():
 @pytest.mark.parametrize(
     "query",
     [
-        "most team points in a single season",
-        "which team scored the most points in a single season",
         "most points in a game in a single season",
         "most points off the bench by a team in a single season",
     ],
 )
-def test_single_season_questions_without_a_player_season_board_refuse(query):
+def test_single_season_questions_without_a_season_board_refuse(query):
     parsed = parse_query(query)
     assert parsed["route"] is None
     assert parsed["route_kwargs"]["unsupported_filters"] == ["single_season"]
