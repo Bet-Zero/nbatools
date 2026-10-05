@@ -141,3 +141,49 @@ def apply_stat_conditions(
             out = out[values <= cond["max_value"]].copy()
 
     return out
+
+
+#: Team box-score stats an opponent filter can name ("opponents made 15+
+#: threes"): read from the other team's row of the same game.
+OPPONENT_STAT_BASES = (
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+)
+OPPONENT_STATS = {f"opponent_{base}": f"opponent_{base}" for base in OPPONENT_STAT_BASES}
+
+
+def attach_opponent_stats(
+    df: pd.DataFrame, stat: str | None, conditions: Any = None
+) -> pd.DataFrame:
+    """Add ``opponent_<stat>`` columns named by *stat* or *conditions*.
+
+    Runs on the whole league frame, before team filters, so each game's other
+    row is still present to join on ``(game_id, opponent_team_id)``.
+    """
+    wanted = {stat} | {c["stat"] for c in normalize_stat_conditions(conditions)}
+    columns = [
+        name
+        for name in sorted(s for s in wanted if s in OPPONENT_STATS)
+        if name not in df.columns and name[len("opponent_") :] in df.columns
+    ]
+    if not columns or not {"game_id", "team_id", "opponent_team_id"}.issubset(df.columns):
+        return df
+    bases = [name[len("opponent_") :] for name in columns]
+    other = df[["game_id", "team_id", *bases]].rename(
+        columns={"team_id": "opponent_team_id", **dict(zip(bases, columns, strict=True))}
+    )
+    other = other.drop_duplicates(subset=["game_id", "opponent_team_id"])
+    out = df.merge(other, on=["game_id", "opponent_team_id"], how="left")
+    out.index = df.index
+    return out

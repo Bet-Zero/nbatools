@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import (
     apply_stat_conditions,
+    attach_opponent_stats,
     combined_stat_conditions,
 )
 from nbatools.commands._seasons import resolve_seasons
@@ -39,7 +40,7 @@ def filter_team_games(
     end_date: str | None = None,
     conditions: list[dict] | None = None,
 ) -> pd.DataFrame:
-    out = df.copy()
+    out = attach_opponent_stats(df.copy(), None, conditions)
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
 
     start_ts = _normalize_date_value(start_date)

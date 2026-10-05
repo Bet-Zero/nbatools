@@ -439,7 +439,7 @@ def _build_applied_filters(
         for cond in conditions:
             stat = cond["stat"]
             if cond.get("min_value") is not None:
-                label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
+                label = f"{_filter_stat_label(stat)} min"
                 applied_filters.append(
                     {
                         "label": label,
@@ -448,7 +448,7 @@ def _build_applied_filters(
                     }
                 )
             if cond.get("max_value") is not None:
-                label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
+                label = f"{_filter_stat_label(stat)} max"
                 applied_filters.append(
                     {
                         "label": label,
@@ -469,7 +469,7 @@ def _build_applied_filters(
             else route_kwargs.get("max_value")
         )
         if stat and min_value is not None:
-            label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
+            label = f"{_filter_stat_label(stat)} min"
             applied_filters.append(
                 {
                     "label": label,
@@ -478,7 +478,7 @@ def _build_applied_filters(
                 }
             )
         if stat and max_value is not None:
-            label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
+            label = f"{_filter_stat_label(stat)} max"
             applied_filters.append(
                 {
                     "label": label,
@@ -1602,6 +1602,13 @@ def pluralize_occurrence(label: str) -> str:
     return f"{label}s"
 
 
+def _filter_stat_label(stat: str) -> str:
+    """Filter-chip label: "OPP PTS", "OPP FG3M", or the stat id."""
+    if stat.startswith("opponent_"):
+        return f"OPP {stat[len('opponent_') :].upper()}"
+    return stat
+
+
 def stat_phrase_label(stat: str) -> str:
     labels = {
         "ast": "assists",
@@ -1611,8 +1618,19 @@ def stat_phrase_label(stat: str) -> str:
         "reb": "rebounds",
         "stl": "steals",
         "tov": "turnovers",
+        "fgm": "made field goals",
+        "fga": "field goal attempts",
+        "fg3a": "three-point attempts",
+        "ftm": "made free throws",
+        "fta": "free throw attempts",
+        "oreb": "offensive rebounds",
+        "dreb": "defensive rebounds",
     }
-    return labels.get(stat.lower(), stat.replace("_", " "))
+    key = stat.lower()
+    if key.startswith("opponent_") and key[len("opponent_") :] in labels:
+        # "games with 15+ opponent threes"
+        return f"opponent {labels[key[len('opponent_') :]]}"
+    return labels.get(key, stat.replace("_", " "))
 
 
 def compact_number(value: int | float) -> str:

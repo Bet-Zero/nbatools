@@ -167,3 +167,20 @@ def test_players_with_repeat_qualifying_games():
     result = _run(f"how many players scored 40+ in at least 3 games {SEASON}")
     assert result.route == "player_occurrence_leaders"
     assert _sections(result)["count"][0]["count"] == expected
+
+
+def test_opponent_threes_allowed():
+    games = _team("LAL")
+    every = data_read_csv(
+        f"raw/team_game_stats/{SEASON}_regular_season.csv", dtype={"game_id": str}
+    )
+    other = every[every["team_abbr"] != "LAL"][["game_id", "team_abbr", "fg3m"]].rename(
+        columns={"team_abbr": "opponent_team_abbr", "fg3m": "opp_fg3m"}
+    )
+    games = games.merge(other, on=["game_id", "opponent_team_abbr"], how="left")
+    allowed = games[pd.to_numeric(games["opp_fg3m"], errors="coerce") >= 15]
+    (summary,) = _sections(_run(f"Lakers record when they allow 15 or more threes {SEASON}"))[
+        "summary"
+    ]
+    assert summary["games"] == len(allowed)
+    assert summary["wins"] == int(allowed["won"].sum())

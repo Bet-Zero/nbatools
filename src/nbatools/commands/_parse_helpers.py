@@ -1959,6 +1959,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
                 }
             )
 
+    matches.extend(_opponent_box_stat_conditions(text))
+
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
     deduped = []
     accepted_spans: list[tuple[int, int]] = []
@@ -1969,6 +1971,59 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         accepted_spans.append(span)
         deduped.append(item)
     return deduped
+
+
+_OPP_STAT_SUBJECT = (
+    r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
+    r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them)\s+to"
+    r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to"
+    r"|\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:had|has|have|made|makes|hit|hits|shot|shoots"
+    r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
+    r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
+)
+_OPP_STAT_NUM = r"(\d+(?:\.\d+)?)"
+# (prefix, suffix, mode, epsilon): the bound sits before the number, after
+# it, or the number carries "+".
+_OPP_STAT_BOUNDS = (
+    (r"(?:at\s+least|a\s+min(?:imum)?\s+of)\s+", r"\s+", "min", 0.0),
+    (r"(?:over|more\s+than)\s+", r"\s+", "min", 0.0001),
+    (r"(?:under|below|fewer\s+than|less\s+than)\s+", r"\s+", "max", 0.0001),
+    (r"(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of)\s+", r"\s+", "max", 0.0),
+    (r"", r"\s+or\s+more\s+", "min", 0.0),
+    (r"", r"\s+or\s+(?:fewer|less)\s+", "max", 0.0),
+    (r"", r"\+\s*", "min", 0.0),
+)
+
+
+def _opponent_box_stat_conditions(text: str) -> list[dict]:
+    """Opponent box-score bounds: "allow 15 or more threes", "opponents had
+    20+ turnovers", "held opponents to under 40 rebounds".
+
+    These read the other team's row of the game. They were read as the
+    subject team's own stat.
+    """
+    found = []
+    for prefix, suffix, mode, epsilon in _OPP_STAT_BOUNDS:
+        pattern = rf"{_OPP_STAT_SUBJECT}{prefix}{_OPP_STAT_NUM}{suffix}(?:made\s+)?{STAT_PATTERN}\b"
+        for m in re.finditer(pattern, text):
+            stat = detect_stat(m.group(2))
+            base = f"opponent_{stat}"
+            from nbatools.commands._condition_utils import OPPONENT_STATS
+
+            if base not in OPPONENT_STATS:
+                continue
+            value = float(m.group(1))
+            found.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": base,
+                    "min_value": value + epsilon if mode == "min" else None,
+                    "max_value": value - epsilon if mode == "max" else None,
+                    "text": m.group(0),
+                }
+            )
+    return found
 
 
 def merge_opponent_points_allowed_conditions(
