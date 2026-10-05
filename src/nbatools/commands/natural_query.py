@@ -1765,6 +1765,7 @@ _SINGLE_SEASON_UNRANKED_ROUTES = frozenset(
 _RANKED_WINS_LOSSES = re.compile(
     r"\b(?:most|fewest|least)\s+(?:(?:road|home|away|playoffs?|postseason|regular[\s-]season)\s+)?"
     r"(?:wins|losses)\b"
+    r"|\bwin(?:ning)?\s+(?:percentage|pct|%)"
 )
 # "LeBron best scoring season", "Jokic most rebounds in a single season":
 # rank that player's own seasons.
@@ -1774,17 +1775,19 @@ _PLAYER_BEST_SEASON = re.compile(
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 _PLAYER_SEASON_BLOCKERS = re.compile(r"\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
 _PLAYER_SEASON_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
-_PLAYER_SEASON_FILTERS = (
-    "opponent",
-    "team",
-    "home_only",
-    "away_only",
-    "wins_only",
-    "losses_only",
-    "last_n",
-    "start_date",
-    "end_date",
-    "series_situation",
+# Route kwargs the player-season board keeps; any other set filter declines.
+_PLAYER_SEASON_KEPT = frozenset(
+    {
+        "season",
+        "start_season",
+        "end_season",
+        "season_type",
+        "player",
+        "stat",
+        "limit",
+        "sort_by",
+        "ascending",
+    }
 )
 _SINGLE_SEASON_TEAM = re.compile(r"\bby\s+an?\s+team\b|\bwhich\s+teams?\b|\bteams?\b")
 _SINGLE_SEASON = re.compile(r"\bin\s+(?:a|one|any)\s+(?:single\s+)?season\b|\bsingle[\s-]season\b")
@@ -5754,9 +5757,13 @@ def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
     ):
         # "LeBron best scoring season in 2016" names one season.
         return None
-    if any(route_kwargs.get(key) for key in _PLAYER_SEASON_FILTERS):
-        return None
-    if route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None:
+    if any(
+        value not in (None, False, "", [], (), {})
+        for key, value in route_kwargs.items()
+        if key not in _PLAYER_SEASON_KEPT
+    ):
+        # "LeBron best scoring season vs Curry / in the clutch / with Luka":
+        # the season board would drop the filter.
         return None
     from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
 
@@ -5807,6 +5814,10 @@ def _finalize_route(parsed: dict) -> dict:
         return out
     if out["route"] == "season_leaders" and _SINGLE_SEASON_TEAM.search(q) and not named:
         # A team question that landed on the player board.
+        return _single_season_refusal(parsed)
+    if route_kwargs.get("without_player") and not named:
+        # "most wins in a single season without LeBron": the record board
+        # has no absence filter, so refuse rather than answer an empty list.
         return _single_season_refusal(parsed)
     notes = list(out.get("notes") or [])
     if (

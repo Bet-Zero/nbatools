@@ -83,6 +83,19 @@ def test_ranked_wins_are_the_stat_not_a_filter(query):
     assert not kwargs.get("wins_only") and not kwargs.get("losses_only")
 
 
+@pytest.mark.parametrize(
+    "query", ["best win percentage in a single season", "best win percentage this season"]
+)
+def test_win_percentage_counts_every_game(query):
+    assert not parse_query(query)["route_kwargs"].get("wins_only")
+
+
+def test_team_single_season_without_a_player_refuses():
+    parsed = parse_query("most wins in a single season without LeBron")
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["single_season"]
+
+
 def test_wins_as_a_filter_stay_a_filter():
     assert parse_query("most points in wins this season")["route_kwargs"]["wins_only"] is True
 
@@ -143,9 +156,16 @@ def test_player_best_seasons_rank_that_players_seasons(query, player, stat, asce
         "LeBron most points in a game this season",
         "LeBron best scoring season in 2016",
         "LeBron season high",
+        "LeBron best scoring season vs Curry",
+        "LeBron best scoring season without Anthony Davis",
+        "LeBron best scoring season in the clutch",
+        "LeBron best scoring season as a starter",
+        "LeBron best scoring season in the second half",
+        "LeBron best scoring season against the West",
+        "LeBron best scoring season with Luka",
     ],
 )
-def test_player_game_and_named_season_questions_stay(query):
+def test_player_game_and_filtered_season_questions_stay(query):
     assert parse_query(query)["route"] != "season_leaders"
 
 
