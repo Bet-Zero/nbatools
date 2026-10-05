@@ -265,7 +265,16 @@ _SERIES_STATE_COLUMNS = [
 
 
 def series_situation_label(situation: str) -> str:
-    """Plain words for a series situation code."""
+    """Plain words for a series situation code.
+
+    ``round_04`` is every game of that round; ``game_7@04`` is a situation
+    within one round ("game 7s in the Finals").
+    """
+    situation, _, round_code = situation.partition("@")
+    if situation.startswith("round_"):
+        return f"{round_code_to_label(situation.removeprefix('round_'))} games"
+    if round_code:
+        return f"{series_situation_label(situation)} in the {round_code_to_label(round_code)}"
     if situation.startswith("game_"):
         numbers = situation.removeprefix("game_").split("_")
         if len(numbers) == 1:
@@ -294,7 +303,7 @@ def _series_state(seasons: list[str]) -> pd.DataFrame:
     """
     games = _load_playoff_games(seasons)
     if games.empty:
-        return pd.DataFrame(columns=["_game_key", "team_id", *_SERIES_STATE_COLUMNS])
+        return pd.DataFrame(columns=["_game_key", "team_id", *_SERIES_STATE_COLUMNS, "_round_code"])
     work = games.copy()
     work["_game_key"] = _series_game_key(work["game_id"])
     work["_date"] = pd.to_datetime(work["game_date"], errors="coerce")
@@ -309,10 +318,16 @@ def _series_state(seasons: list[str]) -> pd.DataFrame:
         _series_wins_needed(season, code)
         for season, code in zip(work["season"], work["playoff_round_code"], strict=True)
     ]
-    return work[["_game_key", "team_id", *_SERIES_STATE_COLUMNS]]
+    work["_round_code"] = work["playoff_round_code"]
+    return work[["_game_key", "team_id", *_SERIES_STATE_COLUMNS, "_round_code"]]
 
 
 def _situation_mask(state: pd.DataFrame, situation: str) -> pd.Series:
+    situation, _, round_code = situation.partition("@")
+    if situation.startswith("round_"):
+        return state["_round_code"].eq(situation.removeprefix("round_"))
+    if round_code:
+        return state["_round_code"].eq(round_code) & _situation_mask(state, situation)
     number = state["_series_game_number"]
     wins = state["_series_wins_before"]
     losses = state["_series_losses_before"]

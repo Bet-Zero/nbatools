@@ -1886,6 +1886,16 @@ def _build_parse_state(query: str) -> dict:
 
         start_season, end_season = resolve_career("Playoffs")
         series_situation_career = True
+    # "LeBron stats in the Finals": a round with no span named covers every
+    # playoff season, as a series situation does.
+    playoff_round_unnamed_span = bool(
+        playoff_round_filter
+        and not (season or start_season or end_season)
+        and not explicit_relative_season
+        and not re.search(
+            r"\b(?:this|current|last|previous)\s+(?:season|year|postseason|playoffs)\b", q
+        )
+    )
     historical_route_intent = bool(
         by_decade_intent
         or playoff_appearance_intent
@@ -2193,6 +2203,7 @@ def _build_parse_state(query: str) -> dict:
         "series_situation": series_situation,
         "series_comeback": series_comeback,
         "series_situation_career": series_situation_career,
+        "playoff_round_unnamed_span": playoff_round_unnamed_span,
         "stretch_worst": stretch_worst,
         "stretch_player_group": stretch_player_group,
         "stretch_opponent_description": stretch_opponent_description,
@@ -2742,7 +2753,7 @@ def _route_parsed_query(parsed: dict) -> dict:
 
     if (
         (player or player_a or player_b)
-        and detect_playoff_round_filter(q)
+        and parsed.get("playoff_round_filter")
         # Player appearance counts have their own typed boundary.
         and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
     ):
@@ -5330,8 +5341,72 @@ def _series_situation_totals(out: dict, q: str) -> None:
     ]
 
 
+# Routes that answer a playoff round themselves; everything else filters game
+# rows by the round as a series situation ("round_04", "game_7@04").
+_ROUND_NATIVE_ROUTES = {
+    "playoff_history",
+    "playoff_appearances",
+    "playoff_matchup_history",
+    "playoff_round_record",
+}
+_ROUND_AS_SITUATION_REFUSALS = {"player_playoff_round", "leaderboard_request_unclear"}
+
+
+def _round_as_situation(parsed: dict) -> dict | None:
+    """ "LeBron stats in the Finals", "Lakers game 7s in the Finals": the round
+    becomes a series situation on game routes instead of being dropped."""
+    round_code = parsed.get("playoff_round_filter")
+    if not round_code or parsed.get("series_comeback") or parsed.get("by_round_intent"):
+        return None
+    if not (parsed.get("season") or parsed.get("start_season") or parsed.get("end_season")):
+        if re.search(r"(?<!\d)(?:19|20)\d{2}(?!\d)", parsed["normalized_query"]):
+            # A year the parser did not resolve: never answer another span.
+            return None
+    from nbatools.commands._natural_query_execution import _SERIES_SITUATION_ROUTES
+
+    situation = parsed.get("series_situation")
+    if not situation:
+        try:
+            trial = _route_parsed_query(parsed)
+        except ValueError:
+            return None
+        route = trial.get("route")
+        refused = set((trial.get("route_kwargs") or {}).get("unsupported_filters") or [])
+        if route in _ROUND_NATIVE_ROUTES:
+            return None
+        if route is None and not (refused & _ROUND_AS_SITUATION_REFUSALS):
+            return None
+        if route is not None and route not in _SERIES_SITUATION_ROUTES:
+            return None
+    rerouted = dict(parsed)
+    rerouted["playoff_round_filter"] = None
+    rerouted["series_situation"] = (
+        f"{situation}@{round_code}" if situation else f"round_{round_code}"
+    )
+    if parsed.get("playoff_round_unnamed_span") and not parsed.get("series_situation_career"):
+        from nbatools.commands._seasons import resolve_career
+
+        rerouted["season"] = None
+        rerouted["start_season"], rerouted["end_season"] = resolve_career("Playoffs")
+        rerouted["series_situation_career"] = True
+    elif not (parsed.get("season") or parsed.get("start_season") or parsed.get("end_season")):
+        # "most rebounds in the first round this season": round questions skip
+        # the default season, so "this/last season" is resolved here.
+        from nbatools.commands._seasons import default_end_season, previous_season
+
+        q = parsed["normalized_query"]
+        if re.search(r"\b(?:last|previous)\s+(?:season|year|postseason|playoffs)\b", q):
+            rerouted["season"] = previous_season("Playoffs")
+        else:
+            rerouted["season"] = default_end_season("Playoffs")
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state; playoff series situations ride on every route."""
+    rerouted = _round_as_situation(parsed)
+    if rerouted is not None:
+        parsed = rerouted
     situation = parsed.get("series_situation")
     q = parsed["normalized_query"]
     refused = True

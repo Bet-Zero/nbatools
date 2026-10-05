@@ -1,0 +1,109 @@
+"""C2 stats by playoff round: "LeBron stats in the Finals", "most points in the first round".
+
+Player and leaderboard questions naming a round refused (player_playoff_round)
+or dropped the round. The round now filters the games as a series situation,
+every playoff season since 1996-97 unless a span is named. Team round records
+keep their own playoff routes.
+
+Fixture: the 2025-26 Lakers-Nuggets first round (game ids 541-546, Lakers 5-1).
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from nbatools.commands.natural_query import parse_query
+from nbatools.commands.playoff_history import series_situation_label
+from nbatools.query_service import execute_natural_query
+
+pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
+
+
+@pytest.mark.parametrize(
+    ("query", "route", "situation"),
+    [
+        ("LeBron stats in the Finals", "player_game_summary", "round_04"),
+        ("LeBron Finals stats", "player_game_summary", "round_04"),
+        ("LeBron Finals averages", "player_game_summary", "round_04"),
+        ("Jokic stats in the conference finals", "player_game_summary", "round_03"),
+        ("Jokic game 7 stats in the second round", "player_game_summary", "game_7@02"),
+        ("Lakers record in game 7s in the Finals", "team_record", "game_7@04"),
+        ("who scored the most points in the first round", "season_leaders", "round_01"),
+    ],
+)
+def test_round_filters_games_every_playoff_season(query, route, situation):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == route
+    assert kwargs["series_situation"] == situation
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("1996-97", "2025-26")
+    assert not kwargs.get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    ("query", "season", "start"),
+    [
+        ("LeBron stats in the 2016 Finals", "2015-16", None),
+        ("most rebounds in the first round this season", "2025-26", None),
+        ("most rebounds in the first round last season", "2024-25", None),
+        ("LeBron stats in the Finals last season", "2024-25", None),
+        ("who scored the most points in the Finals since 2000", None, "2000-01"),
+    ],
+)
+def test_named_span_is_kept(query, season, start):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["series_situation"].endswith(("_04", "_01"))
+    assert (kwargs["season"], kwargs["start_season"]) == (season, start)
+
+
+def test_round_leaders_default_to_totals():
+    kwargs = parse_query("who scored the most points in the Finals since 2000")["route_kwargs"]
+    assert kwargs["stat"] == "pts_total"
+
+
+@pytest.mark.parametrize(
+    ("query", "route"),
+    [
+        ("Lakers record in the Finals", "playoff_history"),
+        ("Lakers first round record", "playoff_history"),
+        ("Lakers vs Celtics Finals history", "playoff_matchup_history"),
+    ],
+)
+def test_team_round_records_keep_their_routes(query, route):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert not parsed["route_kwargs"].get("series_situation")
+
+
+def test_labels_name_the_round():
+    assert series_situation_label("round_04") == "Finals games"
+    assert series_situation_label("game_7@04") == "game 7s in the Finals"
+
+
+def test_player_round_stats_use_only_that_rounds_games():
+    result = execute_natural_query("LeBron stats in the first round this season")
+    assert result.result_status == "ok", result.result_reason
+    sections = result.result.to_dict()["sections"]
+    summary = sections["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"]) == (6, 5, 1)
+    assert sorted(int(g) for g in {row["game_id"] for row in sections["game_log"]}) == list(
+        range(541, 547)
+    )
+
+
+def test_round_the_player_never_reached_is_no_match():
+    result = execute_natural_query("LeBron Finals stats")
+    assert result.result_status == "no_result"
+
+
+def test_team_record_in_a_rounds_game_number():
+    result = execute_natural_query("Lakers record in game 6s in the first round")
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"]) == (1, 1, 0)
+
+
+def test_round_leaderboard_totals_that_rounds_games():
+    result = execute_natural_query("most rebounds in the first round this season")
+    assert result.result_status == "ok", result.result_reason
+    top = result.result.to_dict()["sections"]["leaderboard"][0]
+    assert (top["player_name"], top["games_played"], top["reb_total"]) == ("Nikola Jokić", 6, 79)

@@ -8339,6 +8339,23 @@ cases:
         equals: 2015-16
     review_notes: "The only Finals 3-1 comeback since 1996-97 is the 2016 Cavaliers over the Warriors; a series list, never a game record."
 
+  - id: c2_lebron_finals_stats
+    query: "LeBron stats in the Finals"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: LeBron James
+      - path: result.sections.summary.0.games
+        equals: 55
+    review_notes: "Only Finals games, every season since 1996-97: 2007, 2011-2018 and 2020 Finals (4+6+5+7+5+6+7+5+4+6 = 55 games)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
