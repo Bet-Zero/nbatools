@@ -1416,8 +1416,9 @@ _RING_SPAN_PHRASES = (
     r"\b(?:from|between)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+"
     r"(?:to|and|through|thru|until)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?"
     r"(?:\s+(?:playoffs|postseason|season))?\b",
-    # "since 2015", "in 2012-13", "in the 2020 playoffs"
-    r"\b(?:since|from|in|during)\s+(?:the\s+)?"
+    # "since 2015", "in 2012-13", "in the 2020 playoffs" (a lone "from 2015"
+    # is not resolved either)
+    r"\b(?:since|in|during)\s+(?:the\s+)?"
     r"(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?(?:\s+(?:playoffs|postseason|season))?\b",
     # "top 5"
     r"\btop\s+\d{1,2}\b",
@@ -5250,6 +5251,11 @@ def _series_comeback_list_route(parsed: dict) -> dict:
         any(parsed.get(key) for key in _COMEBACK_UNSUPPORTED_KEYS)
         or _comeback_question_has_qualifier(q, parsed)
         or re.search(r"\bplayers?\b|\bcoach(?:es|ed|ing)?\b|\bregular[\s-]season\b", q)
+        # "came back from 3-1 and won the title": the title is a later series.
+        or re.search(
+            r"\b(?:win|won|wins|winning)\s+(?:the\s+|it\s+)?(?:championship|title|finals|ring|all)\b",
+            q,
+        )
         or parsed.get("team_a")
         or parsed.get("team_b")
     ):

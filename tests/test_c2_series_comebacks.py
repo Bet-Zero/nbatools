@@ -163,6 +163,9 @@ def test_round_span_and_opponent_are_kept():
         "teams that came back from 3-1 through 2005",
         "teams that came back from 3-1 until 2010",
         "teams that came back from 3-1 to 2010",
+        "Celtics came back from 3-1 from 2008",
+        "teams that came back from 3-1 and won the championship",
+        "teams that came back from 3-1 to win the finals",
         "teams that came back from 3-1 in the western conference finals",
     ],
 )
