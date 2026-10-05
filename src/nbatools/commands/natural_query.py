@@ -1712,7 +1712,8 @@ __all__ = [
 
 _EVER_WORDS = re.compile(r"\bever\b|\bin\s+(?:nba\s+)?history\b|\bof\s+all\s+time\b")
 _NAMED_SEASON_WORDS = re.compile(
-    r"(?<!\d)(?:19|20)\d{2}(?!\d)|\b(?:this|last|current|previous)\s+(?:season|year)\b"
+    r"(?<!\d)(?:19|20)\d{2}(?!\d)|'\d{2}\b"
+    r"|\b(?:this|these|last|current|previous)\s+(?:season|year|postseason|playoffs)\b"
     r"|\b(?:today|tonight|yesterday|week|month)\b"
 )
 
@@ -1742,7 +1743,8 @@ _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
-    q = _WON_IT_ALL.sub(r"\1 the title", q)
+    if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
+        q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
     if _TITLE_WORD.search(q):
         # "who won the title last year": a title belongs to one season, so the

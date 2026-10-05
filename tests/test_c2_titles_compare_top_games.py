@@ -182,3 +182,29 @@ def test_team_round_record_keeps_this_season():
     kwargs = parse_query("Lakers record in the first round this season")["route_kwargs"]
     assert (kwargs["season"], kwargs["start_season"]) == ("2025-26", None)
     assert kwargs["playoff_round"] == "01"
+
+
+def test_team_round_record_keeps_last_year():
+    kwargs = parse_query("Lakers record in the first round last year")["route_kwargs"]
+    assert (kwargs["season"], kwargs["start_season"]) == (previous_season("Playoffs"), None)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "most points in a game ever this postseason",
+        "Jokic most points in a game ever this postseason",
+        "has Jokic ever had a triple double this postseason",
+        "most points ever in the current playoffs",
+        "most points in a game ever this season",
+    ],
+)
+def test_ever_keeps_a_named_season(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("start_season") is None
+    assert kwargs["season"] == "2025-26"
+
+
+def test_won_it_all_with_a_comeback_is_not_a_title_list():
+    with pytest.raises(ValueError):
+        parse_query("biggest series comeback by a team that won it all")
