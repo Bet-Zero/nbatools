@@ -5356,10 +5356,12 @@ _ROUND_AS_SITUATION_REFUSALS = {"player_playoff_round", "leaderboard_request_unc
 # an exclusion, a conference half, an award or draft pick, teams that reached
 # it, a count of trips, a single game, or a relative season the parser misses.
 _ROUND_NOT_A_FILTER = re.compile(
-    r"\b(?:not|non|excluding|exclude|except|outside|other\s+than|besides|minus|before|"
-    r"after|without|east|eastern|west|western|mvps?|picks?|draft(?:ed)?|"
+    r"\b(?:not|non|excluding|exclude|except|outside|other\s+than|besides|minus|"
+    r"east|eastern|west|western|mvps?|picks?|draft(?:ed)?|"
     r"made|make|making|reach(?:ed|es)?|appearances?|trips?|been\s+to|"
     r"most\s+recent|latest|ago|highest\s+scoring)\b"
+    r"|\b(?:before|after|without|until|prior\s+to)\s+(?:the\s+)?(?:nba\s+|conference\s+)?"
+    r"(?:finals?|semifinals?|semis|championship|(?:first|second|third|1st|2nd|3rd)\s+round)\b"
     r"|\b(?:against|vs\.?|versus)\b.*\bteams?\b"
     r"|\bhow\s+many\s+(?:nba\s+)?finals\b"
     r"|\b(?:finals?|round|semifinals?|semis|championship)\s+game\b(?!\s*s\b)(?!\s+\d)"
