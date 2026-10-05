@@ -5368,17 +5368,52 @@ _ROUND_NOT_A_FILTER = re.compile(
 )
 
 
-def _named_round_codes(q: str) -> set[str]:
+# A round filters games only where each mention reads "in/during the [2016]
+# <round>" or "<round> stats/averages/games/record/game 7". Any other framing
+# ("beyond the first round", "every round but the finals", "his first finals",
+# "first round series wins") falls back.
+_ROUND_LEAD_IN = re.compile(
+    r"\b(?:in|during)\s+(?:the\s+)?(?:nba\s+)?(?:(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+)?$"
+    r"|(?<!\d)(?:19|20)\d{2}\s+$"
+)
+_ROUND_FOLLOWER = re.compile(
+    r"^\s+(?:stats?|statistics|averages?|avg|numbers|line|totals?|games|record"
+    r"|game\s+(?:\d|one|two|three|four|five|six|seven)|performances?)\b"
+)
+_ROUND_EXTRA_BLOCKS = re.compile(
+    r"\bseries\b|\bnumber\s+of\b|\b(?:his|her|their)\s+(?:first|last|second|final)\b"
+    r"|\b(?:exits?|eliminat\w*|upsets?|advanc\w*|swept|sweeps?|clinch\w*)\b"
+    r"|\b(?:first|second|third|1st|2nd|3rd)\s+(?:and|or|&|to|through)\s+"
+    r"(?:the\s+)?(?:first|second|third|1st|2nd|3rd)\b"
+)
+
+
+def _round_mentions(q: str) -> list[tuple[str, int, int]]:
     from nbatools.commands.playoff_history import ROUND_ALIASES
 
     text = q.replace("-", " ")
-    codes = set()
+    found: list[tuple[str, int, int]] = []
+    taken: list[tuple[int, int]] = []
     for alias in sorted(ROUND_ALIASES, key=len, reverse=True):
-        pattern = rf"\b{re.escape(alias)}\b"
-        if re.search(pattern, text):
-            codes.add(ROUND_ALIASES[alias])
-            text = re.sub(pattern, " ", text)
-    return codes
+        for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
+            if any(match.start() < end and start < match.end() for start, end in taken):
+                continue
+            taken.append(match.span())
+            found.append((ROUND_ALIASES[alias], *match.span()))
+    return found
+
+
+def _round_reads_as_filter(q: str) -> bool:
+    text = q.replace("-", " ")
+    mentions = _round_mentions(q)
+    if not mentions or len({code for code, _, _ in mentions}) > 1:
+        return False
+    if _ROUND_EXTRA_BLOCKS.search(text):
+        return False
+    return all(
+        _ROUND_LEAD_IN.search(text[:start]) or _ROUND_FOLLOWER.match(text[end:])
+        for _, start, end in mentions
+    )
 
 
 def _round_as_situation(parsed: dict) -> dict | None:
@@ -5388,7 +5423,19 @@ def _round_as_situation(parsed: dict) -> dict | None:
     if not round_code or parsed.get("series_comeback") or parsed.get("by_round_intent"):
         return None
     q = parsed["normalized_query"]
-    if _ROUND_NOT_A_FILTER.search(q) or len(_named_round_codes(q)) > 1:
+    years = re.findall(r"(?<!\d)(?:19|20)\d{2}(?!\d)", q)
+    several_years = len(set(years)) > 1 and not (
+        parsed.get("start_season") or parsed.get("end_season")
+    )
+    two_subjects = (parsed.get("player_a") and parsed.get("player_b")) or (
+        parsed.get("team_a") and parsed.get("team_b")
+    )
+    if (
+        _ROUND_NOT_A_FILTER.search(q)
+        or several_years
+        or two_subjects
+        or not _round_reads_as_filter(q)
+    ):
         # "excluding the first round", "first and second round", "western
         # conference finals", "finals mvp", "most points in a finals game":
         # never answer only one round's games for these.

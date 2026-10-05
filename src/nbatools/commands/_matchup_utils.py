@@ -677,6 +677,9 @@ _SUMMARY_TYPO_BLOCKED_NAME_WORDS = frozenset(
         "semifinals",
         "semis",
         "round",
+        "first-round",
+        "second-round",
+        "third-round",
     }
 )
 

@@ -23,6 +23,8 @@ pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
     ("query", "route", "situation"),
     [
         ("LeBron stats in the Finals", "player_game_summary", "round_04"),
+        ("Jokic first-round averages", "player_game_summary", "round_01"),
+        ("LeBron finals game 7 stats", "player_game_summary", "game_7@04"),
         ("LeBron Finals stats", "player_game_summary", "round_04"),
         ("LeBron Finals averages", "player_game_summary", "round_04"),
         ("Jokic stats in the conference finals", "player_game_summary", "round_03"),
@@ -134,6 +136,21 @@ def test_round_leaderboard_totals_that_rounds_games():
         "LeBron stats in the most recent finals",
         "LeBron finals stats two years ago",
         "LeBron best finals game",
+        # Round words framed as anything but "in the <round>" / "<round> stats".
+        "Jokic stats in the first and second round",
+        "Jokic stats beyond the first round",
+        "LeBron stats in every round but the finals",
+        "LeBron playoff stats apart from the finals",
+        "LeBron stats leading up to the finals",
+        "LeBron stats through the conference finals",
+        "LeBron stats in his first finals",
+        "LeBron stats in the 2016 and 2018 finals",
+        "LeBron stats in the 2016 finals and 2018 finals",
+        "Jokic first round series wins",
+        "Jokic stats in first round exits",
+        "LeBron first round series record",
+        "number of finals LeBron played in",
+        "LeBron vs Jokic in the finals",
     ],
 )
 def test_round_words_that_are_not_a_round_filter_never_filter(query):
