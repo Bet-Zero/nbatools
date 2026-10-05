@@ -311,10 +311,20 @@ def test_distinct_comma_list_and_bench_counts():
     roles = data_read_csv(
         f"raw/player_game_starter_roles/{season}_regular_season.csv", dtype={"game_id": str}
     )
-    bench = roles[roles["starter_flag"].astype(str).str.lower().isin(["false", "0"])]
-    scored = rows[stats["pts"] >= 30][["game_id", "player_id"]].astype(str)
-    bench_keys = bench[["game_id", "player_id"]].astype(str)
-    expected = scored.merge(bench_keys, on=["game_id", "player_id"])["player_id"].nunique()
+    flag = roles["starter_flag"].astype(str).str.strip().str.lower()
+    bench = roles[flag.isin(["false", "0", "0.0"])]
+
+    def keys(frame: pd.DataFrame) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "game_id": pd.to_numeric(frame["game_id"]).astype(int),
+                "player_id": pd.to_numeric(frame["player_id"]).astype(int),
+            }
+        )
+
+    scored = keys(rows[stats["pts"] >= 30])
+    expected = scored.merge(keys(bench), on=["game_id", "player_id"])["player_id"].nunique()
+    assert expected > 0
     result = _run(f"how many players scored 30 off the bench in {season}")
     assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
 
