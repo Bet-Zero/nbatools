@@ -292,7 +292,7 @@ def test_distinct_30_and_10_players_2023_24():
     assert result.result.to_dict()["sections"]["count"][0]["count"] == rows["player_id"].nunique()
 
 
-def test_distinct_comma_list_and_bench_counts_2023_24():
+def test_distinct_comma_list_and_bench_counts():
     season = "2023-24"
     rows = data_read_csv(
         f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
@@ -302,6 +302,12 @@ def test_distinct_comma_list_and_bench_counts_2023_24():
     result = _run(f"how many players had 25 points, 5 rebounds, 5 assists in {season}")
     assert result.result.to_dict()["sections"]["count"][0]["count"] == listed["player_id"].nunique()
 
+    # Starter roles are served only from 2024-25.
+    season = "2024-25"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    stats = rows[["pts"]].apply(pd.to_numeric)
     roles = data_read_csv(
         f"raw/player_game_starter_roles/{season}_regular_season.csv", dtype={"game_id": str}
     )
