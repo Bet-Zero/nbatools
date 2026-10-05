@@ -148,3 +148,42 @@ def test_best_single_seasons_rank_each_season_on_its_own():
     keys = [(row["player_name"], row["season"]) for row in leaders]
     assert len(keys) == len(set(keys))
     assert any("single seasons ranked across 2023-24 to 2025-26" in c for c in result["caveats"])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "most team points in a single season",
+        "which team scored the most points in a single season",
+        "most points in a game in a single season",
+        "most points off the bench by a team in a single season",
+    ],
+)
+def test_single_season_questions_without_a_player_season_board_refuse(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["single_season"]
+
+
+def test_at_least_does_not_flip_a_team_game_list():
+    kwargs = parse_query("most points by a team in a game, at least 2023-24")["route_kwargs"]
+    assert kwargs["ascending"] is False
+
+
+@pytest.mark.parametrize(
+    ("query", "route"),
+    [
+        ("most points per game in an elimination game", "season_leaders"),
+        ("fewest points in an elimination game", "season_leaders"),
+    ],
+)
+def test_averages_and_fewest_in_a_situation_keep_the_season_board(query, route):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["route_kwargs"]["series_situation"] == "elimination"
+
+
+@pytest.mark.fixture_data
+def test_best_single_seasons_metadata_names_the_span():
+    result = execute_natural_query("most points in a single season")
+    assert (result.metadata["season"], result.metadata["start_season"]) == (None, "1996-97")
