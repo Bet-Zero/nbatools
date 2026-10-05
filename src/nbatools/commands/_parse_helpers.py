@@ -1211,7 +1211,8 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
     """
     if request is None:
         return None
-    opponent = _opponent_box_stat_conditions(normalized)
+    # Points allowed too: "streak of games holding opponents under 100".
+    opponent = extract_opponent_points_allowed_conditions(normalized)
     if not opponent:
         return request
     request = dict(request)

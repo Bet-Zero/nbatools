@@ -127,3 +127,23 @@ def test_held_to_count_is_not_points_before_another_word(text):
 )
 def test_opponent_subject_carries_through_list(query, expected):
     assert _summary(_run(query)) == expected
+
+
+@pytest.mark.parametrize(
+    ("query", "condition", "length"),
+    [
+        # Points allowed on a team streak read the opponent's score (the
+        # Lakers' own 100+ points gave 16).
+        ("Lakers streak of games holding opponents to 100 points", "opponent_pts<=100", 8),
+        ("Lakers streak of games holding opponents under 100 points", "opponent_pts<100", 8),
+        (
+            "Lakers longest win streak when allowing 110 or more points",
+            "wins and opponent_pts>=110",
+            2,
+        ),
+    ],
+)
+def test_team_streak_points_allowed(query, condition, length):
+    row = _run(query).result.to_dict()["sections"]["streak"][0]
+    assert row["condition"] == condition
+    assert row["streak_length"] == length
