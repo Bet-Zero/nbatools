@@ -383,6 +383,13 @@ def extract_adjacent_playoff_team_comparison(text: str) -> tuple[str | None, str
             r"\s+(?:history|series|matchups?|record)\b",
             cleaned_text,
         )
+        # "Lakers and Celtics record in the 2010 finals", as "finals record" reads.
+        or re.search(
+            r"\brecord\s+in\s+(?:the\s+)?(?:(?:19|20)\d{2}\s+)?(?:nba\s+)?"
+            r"(?:(?:eastern|western|east|west)\s+)?(?:conference\s+|conf\s+)?"
+            r"(?:finals?|semifinals|semis|(?:first|second)\s+round)\b",
+            cleaned_text,
+        )
     )
     if not has_playoff_context:
         return None, None

@@ -618,6 +618,7 @@ _SEASON = (
     r"\b(?:so\s+far|right\s+now|to\s+date|all[-\s]?time|career|ever)\b",
     r"\b(?:seasons?|years?)\b",
 )
+_SINGLE_SEASON = (r"\bin\s+(?:a|one|any)\s+(?:single\s+)?season\b", r"\bsingle[\s-]season\b")
 _SEASON_TYPE = (r"\b(?:playoffs?|postseasons?|preseason|play-?in)\b",)
 _LAST_N = (
     r"\b(?:over|in|during|across)?\s*(?:the\s+)?(?:his|her|their|its)?\s*"
@@ -742,6 +743,7 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("team",), _SUBJECT),
     (("series_situation",), SERIES_SITUATION_PATTERNS),
     (("series_situation_round",), _ROUND_PATTERNS),
+    (("single_season_intent",), _SINGLE_SEASON),
 )
 
 

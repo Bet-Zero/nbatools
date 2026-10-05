@@ -8404,6 +8404,32 @@ cases:
         equals: 57
     review_notes: "Every playoff game from 2000-01 on: Mitchell's 57 against Denver in the 2020 first round. It ranked only the current season (C2, agent change)."
 
+  - id: c2_best_single_season_scoring_since_2000
+    query: "most points in a single season since 2000"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: James Harden
+      - path: result.sections.leaderboard.0.season
+        equals: 2018-19
+    review_notes: "One row per player season: Harden's 36.1 ppg in 2018-19 is the best since 2000-01. It averaged every season together (C2, agent change)."
+
+  - id: c2_most_points_elimination_game
+    query: "most points in an elimination game"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    review_notes: "Single games played facing elimination, every playoff season since 1996-97. It ranked season totals in elimination games (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
