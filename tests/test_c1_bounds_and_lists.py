@@ -65,3 +65,54 @@ def test_summaries_apply_every_condition(query, games):
     result = _run(query)
     assert result.route == "player_game_summary"
     assert result.result.to_dict()["sections"]["summary"][0]["games"] == games
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        # "N STAT or fewer" is a maximum; the occurrence reading also kept N as
+        # a minimum, leaving only games with exactly N.
+        ("how many games did LeBron James have 20 points or fewer", 18),
+        ("how many games did Jokic have 2 turnovers or less", 29),
+        # A verb-led number followed by "or fewer" is the same maximum.
+        ("how many games did LeBron score 20 or fewer points", 18),
+        # "or less than" joins two conditions with "or".
+        ("how many games did Jokic have over 30 points or less than 2 turnovers", 24),
+        ("how many games did LeBron have 30+ points or less than 5 assists", 14),
+        ("how many games did LeBron have 30 points or less or 10 assists", 54),
+    ],
+)
+def test_or_fewer_upper_bounds(query, expected):
+    assert _count(_run(query)) == expected
+
+
+def test_or_fewer_on_summaries_and_leaderboards():
+    summary = _run("LeBron summary in games with 20 points or fewer")
+    assert summary.result.to_dict()["sections"]["summary"][0]["games"] == 18
+
+    leaders = _run("who has the most games with 20 points or fewer")
+    top = leaders.result.to_dict()["sections"]["leaderboard"][0]
+    assert top["games_pts_20_or_fewer"] == 60
+
+
+@pytest.mark.parametrize(
+    ("query", "games", "wins", "losses"),
+    [
+        ("Lakers record when scoring 110 or fewer points", 32, 21, 11),
+        ("Lakers record when scoring at most 110", 32, 21, 11),
+        # Points allowed, not the Lakers' own points.
+        ("Lakers record when holding opponents to 100 points or fewer", 43, 41, 2),
+        ("Lakers record when allowing at most 100 points", 43, 41, 2),
+        ("Lakers record when opponents score at most 100 points", 43, 41, 2),
+        ("Lakers record when they held opponents to 100 or fewer points", 43, 41, 2),
+    ],
+)
+def test_team_record_upper_bounds(query, games, wins, losses):
+    result = _run(query)
+    assert result.route == "team_record"
+    row = result.result.to_dict()["sections"]["summary"][0]
+    assert (row["games"], row["wins"], row["losses"]) == (games, wins, losses)
+
+
+def test_allowed_count_uses_opponent_points():
+    assert _count(_run("how many games did the Lakers allow 100 or fewer points")) == 43

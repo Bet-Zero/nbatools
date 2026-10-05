@@ -39,7 +39,9 @@ def normalize_text(text: str) -> str:
     return collapsed.rstrip("?!.,;:")
 
 
-BOOLEAN_OR_PATTERN = re.compile(r"\s+or\s+(?!(?:more|fewer|less)\b)", flags=re.IGNORECASE)
+BOOLEAN_OR_PATTERN = re.compile(
+    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than))", flags=re.IGNORECASE
+)
 
 
 def contains_boolean_or(text: str) -> bool:

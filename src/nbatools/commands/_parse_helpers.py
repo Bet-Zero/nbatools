@@ -1489,6 +1489,32 @@ def _joined_stat_thresholds(text: str, end: int) -> list[dict]:
     return joined
 
 
+def _verb_upper_bound(text: str, m: re.Match, stat: str) -> dict | None:
+    """Read "scoring 110 or fewer (points)" as a maximum, not 110+.
+
+    The verb patterns stop at the number, so the trailing "or fewer" was
+    left to a second, max-only reading and the two together kept only
+    games with exactly that number.
+    """
+    if "+" in m.group(0):
+        return None
+    tail = re.compile(rf"\s+or\s+(?:fewer|less)\b(?!\s+than)(?:\s+{STAT_PATTERN}\b)?").match(
+        text, m.end()
+    )
+    if not tail:
+        return None
+    if (tail.lastindex or 0) >= 1 and tail.group(1):
+        stat = detect_stat(tail.group(1)) or stat
+    return {
+        "start": m.start(),
+        "end": tail.end(),
+        "stat": stat,
+        "min_value": None,
+        "max_value": _normalize_threshold_value(m.group(1), stat),
+        "text": text[m.start() : tail.end()],
+    }
+
+
 def extract_threshold_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
@@ -1542,7 +1568,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
-            rf"\b{_NUM}\s+{STAT_PATTERN}\s+or\s+(?:fewer|less)\b",
+            rf"\b{_NUM}\s+{STAT_PATTERN}\s+or\s+(?:fewer|less)\b(?!\s+than)",
             "max",
             0.0,
         ),
@@ -1687,6 +1713,10 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             continue
         stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
         stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        upper = _verb_upper_bound(text, m, stat)
+        if upper:
+            matches.append(upper)
+            continue
         matches.append(
             {
                 "start": m.start(),
@@ -1701,6 +1731,10 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     for m in re.finditer(verb_pattern, text):
         stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
         stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        upper = _verb_upper_bound(text, m, stat)
+        if upper:
+            matches.append(upper)
+            continue
         min_value = _normalize_threshold_value(m.group(1), stat)
         matches.append(
             {
@@ -1716,6 +1750,26 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             }
         )
         matches.extend(_joined_stat_thresholds(text, m.end()))
+
+    # "Celtics record when scoring at most 100": a verb-led inclusive maximum.
+    for m in re.finditer(
+        r"\b(?:scor(?:e|es|ed|ing)|drops?|dropped|puts?\s+up)\s+"
+        r"(?:at\s+most|no\s+more\s+than)\s+(\d{1,3})(?!\d)"
+        rf"(?:\s+{STAT_PATTERN}\b)?",
+        text,
+    ):
+        stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
+        stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        matches.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": None,
+                "max_value": _normalize_threshold_value(m.group(1), stat),
+                "text": m.group(0),
+            }
+        )
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
     # games" = 20+ points and 10+ rebounds.
@@ -1786,21 +1840,42 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         rf"\b(?:gave|given|giving)\s+up\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\bopponents?\s+under\s+{_NUM}(?:\s+(?:points?|pts))?\b",
     ]
+    # Inclusive bounds: "held opponents to 100 or fewer points", "allowing at
+    # most 100 points", "opponents score no more than 100". Without these the
+    # generic "100 or fewer points" read as the team's own score.
+    _AT_MOST = r"(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of)\s+"
+    _OR_FEWER = (
+        r"(?:\s+(?:points?|pts))?\s+or\s+(?:fewer|less)\b(?!\s+than)"
+        r"(?:\s+(?:points?|pts)\b)?"
+    )
+    _SUBJECTS = (
+        r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to"
+        r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to"
+        r"|\ballow(?:s|ing|ed)?|\b(?:gave|given|giving)\s+up"
+        r"|\bopponents?\s+(?:scor(?:e|es|ed|ing)|put\s+up|had)"
+        r"|\b(?:points?|pts)\s+allowed(?:\s+(?:of|was|is))?"
+        r"|\b(?:opponent|opp)\s+(?:points?|pts)(?:\s+(?:of|was|is))?)\s+"
+    )
+    inclusive_patterns = [
+        rf"{_SUBJECTS}{_AT_MOST}{_NUM}{_POINT_SUFFIX}",
+        rf"{_SUBJECTS}{_NUM}{_OR_FEWER}",
+    ]
 
     matches = []
-    for pattern in patterns:
-        for m in re.finditer(pattern, text):
-            value = float(m.group(1))
-            matches.append(
-                {
-                    "start": m.start(),
-                    "end": m.end(),
-                    "stat": "opponent_pts",
-                    "min_value": None,
-                    "max_value": value - 0.0001,
-                    "text": m.group(0),
-                }
-            )
+    for pattern_list, epsilon in ((patterns, 0.0001), (inclusive_patterns, 0.0)):
+        for pattern in pattern_list:
+            for m in re.finditer(pattern, text):
+                value = float(m.group(1))
+                matches.append(
+                    {
+                        "start": m.start(),
+                        "end": m.end(),
+                        "stat": "opponent_pts",
+                        "min_value": None,
+                        "max_value": value - epsilon,
+                        "text": m.group(0),
+                    }
+                )
 
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
     deduped = []
