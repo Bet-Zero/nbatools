@@ -3444,14 +3444,22 @@ def _route_parsed_query(parsed: dict) -> dict:
         # "How many players have had a 40 point game this season?"
         # "How many players scored 40 points this season?"
         route = "player_occurrence_leaders"
+        from nbatools.commands._seasons import default_end_season
+
+        special_event = (
+            occurrence_event.get("special_event") if isinstance(occurrence_event, dict) else None
+        )
         route_kwargs = {
-            "season": season,
+            # "this season" carries no explicit season of its own.
+            "season": season
+            or (None if start_season or end_season else default_end_season(season_type)),
             "start_season": start_season,
             "end_season": end_season,
             "season_type": season_type,
-            "stat": stat,
-            "min_value": min_value,
-            "max_value": max_value,
+            "stat": None if special_event else stat,
+            "min_value": None if special_event else min_value,
+            "max_value": None if special_event else max_value,
+            "special_event": special_event,
             "occurrence_event": occurrence_event,
             "limit": None,
             "home_only": home_only,
@@ -3460,6 +3468,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "losses_only": losses_only,
             "start_date": start_date,
             "end_date": end_date,
+            "opponent": opponent,
         }
         notes.append("distinct_count: counting distinct players meeting condition")
     elif (

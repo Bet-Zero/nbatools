@@ -90,3 +90,51 @@ def test_west_surname_does_not_make_a_conference_query_ambiguous(monkeypatch):
     assert result.route == "team_occurrence_leaders"
     # A player named West is still a player outside the "vs the West" phrase.
     assert natural_query.parse_query("West stats vs the East").get("entity_ambiguity")
+
+
+def _players(opponents: set[str] | None, test) -> set[str]:
+    rows = _csv(RAW / "player_game_stats" / "2025-26_regular_season.csv")
+    return {
+        r["player_name"]
+        for r in rows
+        if (opponents is None or r["opponent_team_abbr"] in opponents) and test(r)
+    }
+
+
+def _count_tens(row) -> int:
+    return sum(float(row[s] or 0) >= 10 for s in ("pts", "reb", "ast", "stl", "blk"))
+
+
+@pytest.mark.parametrize(
+    ("query", "opponents", "test"),
+    [
+        (
+            "how many players scored 30 vs the Warriors",
+            {"GSW"},
+            lambda r: float(r["pts"] or 0) >= 30,
+        ),
+        ("how many players had a triple double this season", None, lambda r: _count_tens(r) >= 3),
+        (
+            "how many players had a triple double vs the Nuggets",
+            {"DEN"},
+            lambda r: _count_tens(r) >= 3,
+        ),
+        (
+            "how many players had a double double vs the Celtics",
+            {"BOS"},
+            lambda r: _count_tens(r) >= 2,
+        ),
+    ],
+)
+def test_distinct_player_counts_apply_the_opponent_and_event(query, opponents, test):
+    result = _run(query)
+    assert result.route == "player_occurrence_leaders"
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == len(
+        _players(opponents, test)
+    )
+
+
+def test_distinct_triple_double_count_vs_the_west():
+    result = _run("how many players had a triple double vs the West")
+    expected = _players(_west(), lambda r: _count_tens(r) >= 3)
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == len(expected)
