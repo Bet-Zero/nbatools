@@ -127,7 +127,6 @@ def test_round_leaderboard_totals_that_rounds_games():
         "most points in the western conference finals",
         "Jokic stats in the west finals",
         "Jokic stats in the east semis",
-        "most points in a finals game",
         "highest scoring finals game",
         "LeBron finals mvp",
         "LeBron stats against finals teams",
@@ -150,7 +149,6 @@ def test_round_leaderboard_totals_that_rounds_games():
         "Jokic stats in first round exits",
         "LeBron first round series record",
         "number of finals LeBron played in",
-        "LeBron vs Jokic in the finals",
         # The round dates a clause, not the games asked about.
         "LeBron stats in years he lost in the finals",
         "LeBron playoff stats in years he was in the finals",

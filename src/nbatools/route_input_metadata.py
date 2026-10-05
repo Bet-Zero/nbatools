@@ -149,7 +149,13 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_module="nbatools.commands.top_player_games",
         implementation_function="build_result",
         description="Rank individual player game performances for one stat.",
-        required_kwargs=("season", "stat"),
+        required_kwargs=("stat",),
+        one_of_groups=(
+            OneOfGroup(
+                description="Choose one season or a season span.",
+                options=(("season",), ("start_season", "end_season")),
+            ),
+        ),
         optional_kwargs=(
             "limit",
             "season_type",
@@ -162,20 +168,27 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "losses_only",
             "last_n",
             "opponent",
+            "series_situation",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=(
             {"season": "2005-06", "stat": "pts", "limit": 10},
             {"season": "2025-26", "stat": "ast", "limit": 5},
         ),
-        notes=("Requires a single season label; use season_leaders for season averages.",),
+        notes=("Takes one season or a start/end span; use season_leaders for season averages.",),
     ),
     "top_team_games": RouteInputMetadata(
         route="top_team_games",
         implementation_module="nbatools.commands.top_team_games",
         implementation_function="build_result",
         description="Rank team single-game performances for one stat.",
-        required_kwargs=("season", "stat"),
+        required_kwargs=("stat",),
+        one_of_groups=(
+            OneOfGroup(
+                description="Choose one season or a season span.",
+                options=(("season",), ("start_season", "end_season")),
+            ),
+        ),
         optional_kwargs=(
             "limit",
             "season_type",
@@ -188,6 +201,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "losses_only",
             "last_n",
             "opponent",
+            "series_situation",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=({"season": "2015-16", "stat": "fg3m", "limit": 10},),
@@ -377,6 +391,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "losses_only",
             "last_n",
             "head_to_head",
+            "series_situation",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=({"player_a": "Nikola Jokic", "player_b": "Joel Embiid", "season": "2024-25"},),
@@ -401,6 +416,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "losses_only",
             "last_n",
             "head_to_head",
+            "series_situation",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=({"team_a": "BOS", "team_b": "MIL", "start_season": "2021-22"},),

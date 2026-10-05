@@ -56,7 +56,9 @@ def test_comeback_questions_route_to_series_list(query, wins, losses, blown, tea
     assert (kwargs["deficit_wins"], kwargs["deficit_losses"]) == (wins, losses)
     assert (kwargs["blown"], kwargs["team"]) == (blown, team)
     assert (kwargs["start_season"], kwargs["end_season"]) == ("1996-97", "2025-26")
-    assert "default: every playoff season since 1996-97" in parsed["notes"]
+    if "ever" not in query:
+        # "ever" names every season itself, so it is not a default.
+        assert "default: every playoff season since 1996-97" in parsed["notes"]
     assert not parsed.get("count_intent")
 
 

@@ -129,8 +129,6 @@ def test_named_span_is_kept():
         "LeBron rings not counting the bubble",
         "who has the most rings over the past decade",
         # Span words the parser does not resolve, and bare numbers.
-        "LeBron rings this year",
-        "who has the most rings last year",
         "LeBron rings over 30",
         "most rings in 5 years",
         "LeBron rings in 3",

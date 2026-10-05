@@ -8356,6 +8356,54 @@ cases:
         equals: 55
     review_notes: "Only Finals games, every season since 1996-97: 2007, 2011-2018 and 2020 Finals (4+6+5+7+5+6+7+5+4+6 = 55 games)."
 
+  - id: c2_spurs_won_it_all
+    query: "how many times have the Spurs won it all"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+      - series
+    review_notes: "'won it all' is the title (1999, 2003, 2005, 2007, 2014 since 1996-97). It answered regular-season wins (C2, agent change)."
+
+  - id: c2_lebron_curry_finals_compare
+    query: "LeBron vs Curry in the Finals"
+    category: player_compare
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 55
+      - path: result.sections.summary.1.games
+        equals: 34
+    review_notes: "Finals games only, every season since 1996-97: LeBron 55, Curry 34 (2015-2019 and 2022 Finals: 6+7+5+4+6+6). It refused (C2, agent change)."
+
+  - id: c2_most_points_playoff_game_since_2000
+    query: "most points in a playoff game since 2000"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: Donovan Mitchell
+      - path: result.sections.leaderboard.0.pts
+        equals: 57
+    review_notes: "Every playoff game from 2000-01 on: Mitchell's 57 against Denver in the 2020 first round. It ranked only the current season (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
