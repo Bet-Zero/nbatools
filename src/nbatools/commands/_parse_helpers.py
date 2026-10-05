@@ -1182,6 +1182,24 @@ def extract_team_streak_request(text: str) -> dict | None:
     normalized = re.sub(r"[?.!,]+$", "", text)
     if not _STREAK_WORD.search(normalized):
         return None
+    request = _with_opponent_stat_conditions(_team_streak_request_base(normalized), normalized)
+    outcome = _OUTCOME_STREAK.search(normalized)
+    if request and outcome and request.get("stat") and not request.get("special_condition"):
+        # "longest win streak with 30+ assists": every game is a win and
+        # meets the bound; the stat reading had dropped the outcome.
+        bound = {k: request.get(k) for k in ("stat", "min_value", "max_value")}
+        request = {
+            **request,
+            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "stat": None,
+            "min_value": None,
+            "max_value": None,
+            "conditions": [bound, *(request.get("conditions") or [])],
+        }
+    return _with_streak_mode(request, normalized)
+
+
+def _team_streak_request_base(normalized: str) -> dict | None:
     request = _extract_team_streak_request_patterns(normalized)
     if request is None and not _OUTCOME_STREAK.search(normalized):
         # One team stat condition ("120 point games", "games with 15+
@@ -1199,7 +1217,7 @@ def extract_team_streak_request(text: str) -> dict | None:
             "min_streak_length": _streak_length(normalized)[0],
             "longest": True,
         }
-    return _with_streak_mode(_with_opponent_stat_conditions(request, normalized), normalized)
+    return request
 
 
 def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dict | None:
@@ -1211,11 +1229,37 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
     """
     if request is None:
         return None
-    opponent = _opponent_box_stat_conditions(normalized)
+    # Points allowed too: "streak of games holding opponents under 100".
+    opponent = extract_opponent_points_allowed_conditions(normalized)
     if not opponent:
         return request
     request = dict(request)
     stat = request.get("stat")
+    own_extra: list[dict] = []
+    if request.get("special_condition"):
+        # "longest win streak scoring 120 or more while allowing under 110":
+        # the team's own bounds outside the opponent phrases hold too.
+        masked = list(normalized)
+        for cond in opponent:
+            masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
+        own_extra = [
+            {"stat": c["stat"], "min_value": c.get("min_value"), "max_value": c.get("max_value")}
+            for c in extract_threshold_conditions("".join(masked))
+        ]
+    if stat is not None:
+        # "120 point games while allowing under 110": with the opponent
+        # phrases blanked, an own-stat reading that survives is the primary
+        # bound, whatever it read before ("scoring 120 or more while
+        # allowing 15+ threes" first read the threes as the team's own).
+        masked = list(normalized)
+        for cond in opponent:
+            masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
+        own = _team_streak_request_base("".join(masked))
+        if own is not None and own.get("stat") is not None:
+            request["stat"] = own["stat"]
+            request["min_value"] = own.get("min_value")
+            request["max_value"] = own.get("max_value")
+            stat = None
     extra = []
     for cond in opponent:
         if (
@@ -1235,6 +1279,7 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
                 "max_value": cond["max_value"],
             }
         )
+    extra = own_extra + extra
     if extra:
         request["conditions"] = [*(request.get("conditions") or []), *extra]
     return request
@@ -2013,7 +2058,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
             continue
         accepted_spans.append(span)
         deduped.append(item)
-    return deduped
+    return deduped + _opponent_list_continuations(text, deduped)
 
 
 _OPP_STAT_SUBJECT = (
@@ -2109,6 +2154,73 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
         if all(item["start"] >= k["end"] or item["end"] <= k["start"] for k in kept):
             kept.append(item)
     return kept
+
+
+# "gave up 15 threes and 50 rebounds": later list items share the opponent
+# subject. Each may carry its own bound; a bare count takes the first one's.
+_OPP_LIST_ITEM = re.compile(
+    r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)"
+    r"(?P<pre>at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
+    r"|fewer\s+than\s+|less\s+than\s+|no\s+more\s+than\s+)?"
+    r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?P<mid>\s+or\s+(?:more|fewer|less))?\s*"
+    rf"(?P<stat>points?|pts|{_OPP_STAT_WORD})(?![\w-])"
+    r"(?P<post>\s+or\s+(?:more|fewer|less)\b)?"
+)
+_OPP_LIST_PRE = {
+    "at least": ("min", 0.0),
+    "over": ("min", 0.0001),
+    "more than": ("min", 0.0001),
+    "under": ("max", 0.0001),
+    "below": ("max", 0.0001),
+    "fewer than": ("max", 0.0001),
+    "less than": ("max", 0.0001),
+    "at most": ("max", 0.0),
+    "no more than": ("max", 0.0),
+}
+
+
+def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict]:
+    from nbatools.commands._condition_utils import OPPONENT_STATS
+
+    found: list[dict] = []
+    for cond in conditions:
+        mode = "min" if cond.get("min_value") is not None else "max"
+        bound = cond.get("min_value") if mode == "min" else cond.get("max_value")
+        # "under 100 points and 40 rebounds": a strict first bound stays strict.
+        strict = 0.0 if float(bound).is_integer() else 0.0001
+        end = cond["end"]
+        # "opponents shot 40+ threes and 20 free throws": both are attempts.
+        subject = "shot" if re.search(r"\bsho(?:t|ots?|oting)\b", cond.get("text") or "") else ""
+        while m := _OPP_LIST_ITEM.match(text, end):
+            word = m.group("stat")
+            if re.fullmatch(r"points?|pts", word):
+                stat = "pts"
+            else:
+                stat = _opponent_stat_word(word, subject)
+            base = f"opponent_{stat}"
+            if base != "opponent_pts" and base not in OPPONENT_STATS:
+                break
+            item_mode, epsilon = mode, strict
+            if m.group("pre"):
+                item_mode, epsilon = _OPP_LIST_PRE[re.sub(r"\s+", " ", m.group("pre").strip())]
+            elif m.group("plus"):
+                item_mode, epsilon = "min", 0.0
+            elif bound_words := m.group("mid") or m.group("post"):
+                item_mode = "min" if "more" in bound_words else "max"
+                epsilon = 0.0
+            value = float(m.group("num"))
+            found.append(
+                {
+                    "start": m.start("num") if not m.group("pre") else m.start("pre"),
+                    "end": m.end(),
+                    "stat": base,
+                    "min_value": value + epsilon if item_mode == "min" else None,
+                    "max_value": value - epsilon if item_mode == "max" else None,
+                    "text": m.group(0).strip(),
+                }
+            )
+            end = m.end()
+    return found
 
 
 def merge_opponent_points_allowed_conditions(
