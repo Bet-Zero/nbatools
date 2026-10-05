@@ -203,6 +203,11 @@ def test_record_leaderboard_applies_conditions():
             2,
         ),
         (
+            "Lakers longest streak of games scoring 120 or more while allowing 15+ threes",
+            "pts>=120 and opponent_fg3m>=15",
+            1,
+        ),
+        (
             "Lakers longest streak of 15+ three games while allowing 15+ threes",
             "fg3m>=15 and opponent_fg3m>=15",
             3,

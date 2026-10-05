@@ -1224,14 +1224,15 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
     stat = request.get("stat")
     if stat is not None:
         # "120 point games while allowing under 110": with the opponent
-        # phrases blanked, the own-stat reading survives, so it stays.
+        # phrases blanked, an own-stat reading that survives is the primary
+        # bound, whatever it read before ("scoring 120 or more while
+        # allowing 15+ threes" first read the threes as the team's own).
         masked = list(normalized)
         for cond in opponent:
             masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
         own = _team_streak_request_base("".join(masked))
-        if own is not None and own.get("stat") == stat:
-            # Its bound comes from the masked reading too: "scoring 120+
-            # while allowing under 110" read "under 110" as own points.
+        if own is not None and own.get("stat") is not None:
+            request["stat"] = own["stat"]
             request["min_value"] = own.get("min_value")
             request["max_value"] = own.get("max_value")
             stat = None
