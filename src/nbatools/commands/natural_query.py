@@ -3517,6 +3517,9 @@ def _route_parsed_query(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ppr := try_playoff_record_route(parsed)) is not None:
         route, route_kwargs = ppr
+        if route == "playoff_matchup_history" and route_kwargs.get("start_season"):
+            # The pair's whole playoff history ran, not the latest postseason.
+            notes[:] = [n for n in notes if not n.startswith("no season specified: defaulted")]
     elif (
         opponent_division_boundary
         and record_intent

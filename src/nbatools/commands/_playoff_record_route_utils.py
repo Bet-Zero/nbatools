@@ -237,8 +237,11 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         and team_a
         and team_b
     ):
+        # "Lakers and Nuggets playoff record" with no season is their whole
+        # playoff history, not just the latest postseason.
+        pm_season = None if parsed.get("season_defaulted") else season
         pm_season, pm_start, pm_end = _resolve_season_defaults(
-            season, start_season, end_season, "Playoffs"
+            pm_season, start_season, end_season, "Playoffs"
         )
         return "playoff_matchup_history", {
             "team_a": team_a,

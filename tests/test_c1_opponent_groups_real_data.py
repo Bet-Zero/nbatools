@@ -297,5 +297,5 @@ def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     # playoff meeting since 1996-97.
     result = _run("Lakers and Warriors playoff record")
     assert result.route == "playoff_matchup_history"
-    text = str(result.result.to_dict())
-    assert "2022-23" in text
+    lakers = result.result.to_dict()["sections"]["summary"][0]
+    assert (lakers["team_name"], lakers["wins"], lakers["losses"]) == ("Los Angeles Lakers", 4, 2)
