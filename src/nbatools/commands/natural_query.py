@@ -1411,9 +1411,13 @@ _RING_SPAN_PHRASES = (
     r"\b(?:over|in|during|for|throughout)\s+(?:his|her|their)\s+(?:whole\s+|entire\s+)?career\b",
     # "in the 2010s"
     r"\b(?:in|during)\s+the\s+(?:19|20)\d0s\b",
-    # "since 2015", "from 2012 to 2016", "between 2012 and 2016", "in 2012-13",
-    # "in the 2020 playoffs"
-    r"\b(?:since|from|between|through|thru|until|to|and|in|during)\s+(?:the\s+)?"
+    # "from 2012 to 2016", "between 2012 and 2016". Only these pairs: the parser
+    # leaves a lone "through 2016" / "until 2016" unresolved, so it must stay.
+    r"\b(?:from|between)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?\s+"
+    r"(?:to|and|through|thru|until)\s+(?:the\s+)?(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?"
+    r"(?:\s+(?:playoffs|postseason|season))?\b",
+    # "since 2015", "in 2012-13", "in the 2020 playoffs"
+    r"\b(?:since|from|in|during)\s+(?:the\s+)?"
     r"(?:19|20)\d{2}(?:\s(?:19|20)?\d{2})?(?:\s+(?:playoffs|postseason|season))?\b",
     # "top 5"
     r"\btop\s+\d{1,2}\b",
@@ -5191,7 +5195,7 @@ _COMEBACK_QUESTION_WORDS = frozenset(
     from down series playoffs playoff postseason nba come came back coming comeback
     comebacks rallied rally overcome overcame blew blown blow blowing squandered lead
     leads led list all every any anyone anybody been was were is are of that to against
-    vs versus there times deficit
+    vs versus there times deficit collapse collapsed collapses hole win won often history and
     """.split()
 )
 _COMEBACK_EXTRA_SPANS = (
@@ -5221,10 +5225,15 @@ def _comeback_question_has_qualifier(q: str, parsed: dict) -> bool:
     spans = [phrase for phrase in _RING_SPAN_PHRASES if "top" not in phrase]
     for phrase in (*_COMEBACK_EXTRA_SPANS, *spans):
         text = re.sub(phrase, " ", text)
+    # "conference semifinals": the round names it; for a named team the
+    # conference ("Thunder ... western conference finals") adds nothing.
+    side = r"(?:(?:western|eastern|west|east)\s+)?" if parsed.get("team") else ""
+    text = re.sub(rf"\b{side}conference\s+(?=(?:finals?|semifinals?|semis)\b)", " ", text)
     for alias in sorted(ROUND_ALIASES, key=len, reverse=True):
         text = re.sub(rf"\b{re.escape(_normalize_for_matching(alias))}\b", " ", text)
-    # The series score ("3-1" reads "3 1" once normalized).
-    text = re.sub(r"\b[0-3]\s*[0-3]\b|\b[0-3]\b", " ", text)
+    # The series score itself ("3-1" reads "3 1" once normalized), once: any
+    # other number ("2 times", "in 7") is a qualifier the list cannot answer.
+    text = re.sub(r"\b[0-3]\s+(?:games?\s+)?(?:to\s+)?[0-3]\b", " ", text, count=1)
     allowed = _team_reference_tokens(parsed.get("team")) | _team_reference_tokens(
         parsed.get("opponent")
     )

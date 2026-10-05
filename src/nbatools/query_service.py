@@ -1179,7 +1179,10 @@ def _add_series_comebacks_answer_metadata(metadata: dict[str, Any], result: Any)
     blown = bool(kwargs.get("blown"))
     what = f"blew a {high}-{low} series lead" if blown else f"came back from {high}-{low} down"
     what += str(kwargs.get("scope") or "")
-    start, end = metadata.get("start_season"), metadata.get("end_season")
+    # The seasons the list covered, including a span the route filled in.
+    start, end = kwargs.get("first_season"), kwargs.get("last_season")
+    if not (start and end):
+        start, end = metadata.get("start_season"), metadata.get("end_season")
     if not (start and end):
         start = end = metadata.get("season")
     span = f"in {start}" if start == end else f"from {start} to {end}"

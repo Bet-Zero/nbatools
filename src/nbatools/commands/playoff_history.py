@@ -483,6 +483,8 @@ def build_series_comebacks_result(
             "blown": blown,
             "team_filter": team,
             "scope": scope,
+            "first_season": seasons[0],
+            "last_season": seasons[-1],
         },
     )
 

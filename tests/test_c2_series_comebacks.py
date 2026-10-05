@@ -79,6 +79,51 @@ def test_structured_call_without_a_span_covers_every_season(comeback):
 
     result = execute_structured_query("playoff_series_comebacks", deficit_wins=0, deficit_losses=2)
     assert result.result_status == "ok", result.result_reason
+    assert result.result.metadata["first_season"] == "1996-97"
+
+
+def test_this_season_headline_names_the_season(monkeypatch):
+    load = playoff_history._load_playoff_games
+
+    def series(seasons):
+        # The real 2025-26 first round is best of seven: Lakers lose 1-2, win 3-6.
+        games = load(["2025-26"]).copy()
+        results = [False, False, True, True, True, True]
+        lakers_won = dict(zip(sorted(games["game_id"].unique()), results))
+        on_lakers = games["team_abbr"].eq("LAL")
+        games["wl"] = [
+            "W" if lakers_won[game] == lakers else "L"
+            for game, lakers in zip(games["game_id"], on_lakers)
+        ]
+        return games
+
+    monkeypatch.setattr(playoff_history, "_load_playoff_games", series)
+    result = execute_natural_query("teams that came back from 2-0 down this season")
+    assert result.result_status == "ok", result.result_reason
+    assert result.metadata["answer_phrase"].startswith(
+        "Teams came back from 2-0 down in 1 series in 2025-26:"
+    )
+
+
+@pytest.mark.parametrize(
+    ("query", "team", "playoff_round"),
+    [
+        ("Warriors 3-1 collapse", "GSW", None),
+        ("Warriors collapsed from 3-1", "GSW", None),
+        ("teams that came back from 3-1 down to win the series", None, None),
+        ("teams that came back from 3-1 down and won the series", None, None),
+        ("teams that came back from 3-1 down in nba history", None, None),
+        ("teams that came back from a 3-0 hole", None, None),
+        ("how often have teams come back from 3-1", None, None),
+        ("teams that came back from 3-1 in the conference semifinals", None, "02"),
+        ("Thunder blew a 3-1 lead in the western conference finals", "OKC", "03"),
+    ],
+)
+def test_everyday_comeback_wording_answers(query, team, playoff_round):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "playoff_series_comebacks"
+    assert (kwargs["team"], kwargs["playoff_round"]) == (team, playoff_round)
 
 
 def test_round_span_and_opponent_are_kept():
@@ -111,6 +156,14 @@ def test_round_span_and_opponent_are_kept():
         "western conference teams that came back from 3-1",
         "lower seeds that came back from 2-0",
         "last time a team came back from 3-1",
+        "teams that came back from 3-1 down 2 times",
+        "teams that came back from 3-1 down 3 times",
+        "teams that came back from 3-1 down in 2",
+        # Span words the parser does not resolve must not fall back to every season.
+        "teams that came back from 3-1 through 2005",
+        "teams that came back from 3-1 until 2010",
+        "teams that came back from 3-1 to 2010",
+        "teams that came back from 3-1 in the western conference finals",
     ],
 )
 def test_comeback_questions_the_list_cannot_answer_refuse(query):
