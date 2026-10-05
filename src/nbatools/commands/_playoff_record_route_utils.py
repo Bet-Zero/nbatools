@@ -174,7 +174,7 @@ def _resolve_playoff_span_defaults(
 
 _PAIR_TIME_WORDS_RE = re.compile(
     r"\b(?:19|20)\d{2}s?\b|\b\d{2}s\b|\b(?:this|these|current|last|past|since|"
-    r"recent|recently|decade|era|season|seasons|year|years|postseason)\b"
+    r"recent|recently|decade|era|season|seasons|year|years)\b"
 )
 
 

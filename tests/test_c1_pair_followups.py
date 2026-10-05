@@ -125,7 +125,12 @@ def test_possessive_team_after_vs_is_the_opponent(query, opponent):
 
 
 @pytest.mark.parametrize(
-    "query", ["Lakers and Nuggets playoff record", "Lakers vs Nuggets in the playoffs record"]
+    "query",
+    [
+        "Lakers and Nuggets playoff record",
+        "Lakers vs Nuggets in the playoffs record",
+        "Lakers vs Nuggets postseason record",
+    ],
 )
 def test_pair_playoff_record_covers_every_meeting(query):
     result = _run(query)
