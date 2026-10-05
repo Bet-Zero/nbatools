@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands.freshness import compute_current_through
+from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 from nbatools.data_source import data_exists, data_read_csv
 
@@ -45,7 +50,7 @@ def _select_output_columns(
 
 
 def build_result(
-    season: str,
+    season: str | None,
     stat: str,
     limit: int = 10,
     season_type: str = "Regular Season",
@@ -58,11 +63,17 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     opponent: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    series_situation: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
-    path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
+    # "highest scoring team games since 2000" ranks every game in the span.
+    seasons = resolve_seasons(season, start_season, end_season)
+    paths = {s: Path(f"data/raw/team_game_stats/{s}_{safe}.csv") for s in seasons}
+    paths = {s: path for s, path in paths.items() if data_exists(path)}
 
-    if not data_exists(path):
+    if not paths:
         return NoResult(query_class="leaderboard", reason="no_data")
 
     stat = stat.lower().strip()
@@ -83,7 +94,8 @@ def build_result(
             notes=["limit must be greater than 0"],
         )
 
-    df = data_read_csv(path)
+    frames = [data_read_csv(path) for path in paths.values()]
+    df = frames[0] if len(frames) == 1 else pd.concat(frames, ignore_index=True)
 
     if "opponent_pts" not in df.columns and {
         "game_id",
@@ -98,9 +110,12 @@ def build_result(
         )
         df = df.merge(opponent_scores, on=["game_id", "opponent_team_abbr"], how="left")
 
+    if series_situation:
+        df = apply_series_situation_filter(df, list(paths), series_situation)
+
     col = ALLOWED_STATS[stat]
     if col not in df.columns:
-        raise ValueError(f"Column '{col}' not found in {path}")
+        raise ValueError(f"Column '{col}' not found in team game stats")
 
     # Apply filters
     if "game_date" in df.columns:
@@ -196,11 +211,18 @@ def build_result(
 
     result.insert(0, "rank", range(1, len(result) + 1))
 
-    current_through = compute_current_through(season, season_type)
+    current_through = compute_current_through_for_seasons(list(paths), season_type)
+
+    caveats: list[str] = []
+    if len(paths) > 1:
+        caveats.append(f"single games ranked across {min(paths)} to {max(paths)}")
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
 
     return LeaderboardResult(
         leaders=result,
         current_through=current_through,
+        caveats=caveats,
     )
 
 

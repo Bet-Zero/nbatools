@@ -14,6 +14,10 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.playoff_history import (
+    apply_series_situation_filter,
+    series_situation_label,
+)
 from nbatools.commands.structured_results import ComparisonResult, NoResult
 
 
@@ -242,6 +246,7 @@ def build_result(
     min_value: float | None = None,
     max_value: float | None = None,
     conditions: list[dict] | None = None,
+    series_situation: str | None = None,
 ) -> ComparisonResult | NoResult:
     conditions = combined_stat_conditions(stat, min_value, max_value, conditions)
     if conditions and head_to_head:
@@ -281,6 +286,10 @@ def build_result(
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
+
+    if series_situation:
+        # "Lakers vs Celtics in the Finals": both sides keep only those games.
+        df = apply_series_situation_filter(df, seasons, series_situation)
 
     if head_to_head:
         a_df, b_df = _build_team_head_to_head_frames(
@@ -364,6 +373,8 @@ def build_result(
             "multi-season comparison aggregated from game logs across "
             f"{seasons[0]} to {seasons[-1]}"
         )
+    if series_situation:
+        caveats.append(f"playoff series situation: {series_situation_label(series_situation)}")
     if head_to_head:
         caveats.append("head-to-head: only games where both teams faced each other")
     if opponent:

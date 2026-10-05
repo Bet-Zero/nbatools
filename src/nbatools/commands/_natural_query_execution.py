@@ -222,10 +222,14 @@ _SERIES_SITUATION_ROUTES = {
     "game_finder",
     "game_summary",
     "player_game_finder",
+    "player_compare",
     "player_game_summary",
     "playoff_round_record",
     "season_leaders",
+    "team_compare",
     "team_record",
+    "top_player_games",
+    "top_team_games",
 }
 
 

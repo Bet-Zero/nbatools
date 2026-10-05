@@ -308,8 +308,6 @@ def test_most_points_in_a_situation_is_a_total_and_rates_are_answered():
     ("query", "route"),
     [
         ("Lakers home away splits in closeout games", "team_split_summary"),
-        ("LeBron vs Jokic in elimination games", "player_compare"),
-        ("Lakers vs Nuggets in game 4s", "team_compare"),
     ],
 )
 def test_route_without_series_situation_support_refuses(query, route):

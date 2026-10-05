@@ -272,6 +272,11 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         and not playoff_appearance_intent
         and (record_intent or re.search(r"\bhistory\b", q))
     ):
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+(?:season|year|postseason|playoffs)\b", q
+        ):
+            # "Lakers record in the first round this season": not every season.
+            season = default_end_season("Playoffs")
         pr_season, pr_start, pr_end = _resolve_playoff_span_defaults(
             season, start_season, end_season
         )

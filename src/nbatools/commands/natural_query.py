@@ -1710,8 +1710,44 @@ __all__ = [
 ]
 
 
+_EVER_WORDS = re.compile(r"\bever\b|\bin\s+(?:nba\s+)?history\b|\bof\s+all\s+time\b")
+_NAMED_SEASON_WORDS = re.compile(
+    r"(?<!\d)(?:19|20)\d{2}(?!\d)|\b(?:this|last|current|previous)\s+(?:season|year)\b"
+    r"|\b(?:today|tonight|yesterday|week|month)\b"
+)
+
+
+def _top_games_span(
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+    season_type: str,
+) -> dict:
+    """ "most points in a game since 2000" ranks every game in the span."""
+    if start_season and end_season and not season:
+        return {"season": None, "start_season": start_season, "end_season": end_season}
+    return {"season": season or default_season_for_context(season_type)}
+
+
+# "won it all" is the title: without this it read as regular-season wins.
+_WON_IT_ALL = re.compile(r"\b(win|won|wins|winning)\s+it\s+all\b")
+# "most points in a finals game" is the single-game question asked of the Finals.
+_ROUND_SINGLE_GAME = re.compile(
+    r"\b(a|one|single|any)\s+((?:nba\s+)?(?:conference\s+)?(?:finals|semifinals|semis"
+    r"|(?:first|second|third|1st|2nd|3rd)[\s-]round))\s+game\b(?!\s*s\b)(?!\s+\d)"
+)
+_TITLE_WORD = re.compile(r"\b(?:titles?|championships?|champions?|rings?)\b")
+_TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
+
+
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
+    q = _WON_IT_ALL.sub(r"\1 the title", q)
+    q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
+    if _TITLE_WORD.search(q):
+        # "who won the title last year": a title belongs to one season, so the
+        # year reads as that season instead of falling back to every season.
+        q = _TITLE_RELATIVE_YEAR.sub(r"\1 season", q)
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
@@ -1754,8 +1790,8 @@ def _build_parse_state(query: str) -> dict:
             start_season, end_season = resolve_last_n_seasons(last_n_seasons, season_type)
 
     if not (start_season and end_season):
-        # Try "career" / "all-time"
-        if detect_career_intent(q):
+        # Try "career" / "all-time" / "ever" when no season is named
+        if detect_career_intent(q) or (_EVER_WORDS.search(q) and not _NAMED_SEASON_WORDS.search(q)):
             from nbatools.commands._seasons import resolve_career
 
             career_intent = True
@@ -3416,7 +3452,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     ):
         route = "top_team_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
             "limit": game_top_n or 10,
@@ -3501,7 +3537,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         # League-wide season-high: "highest scoring games this season"
         route = "top_player_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
             "limit": game_top_n or 10,
@@ -3919,7 +3955,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         # metric below is the one the query named, not a stand-in for none.
         route = "top_player_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
@@ -3961,7 +3997,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         # literal "top team" / "top ... team games" phrasings.
         route = "top_team_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             # Non-None: the eligibility guard above refuses an unanchored request.
             "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
@@ -4334,7 +4370,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     ):
         route = "top_player_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             "stat": "pts",
             "limit": top_n or 10,
             "season_type": season_type,
@@ -4368,7 +4404,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         # game, not a capped top-10.
         route = "top_player_games"
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            **_top_games_span(season, start_season, end_season, season_type),
             "stat": stat,
             "limit": 100,
             "season_type": season_type,
@@ -5462,12 +5498,12 @@ _ROUND_NOT_A_FILTER = re.compile(
     r"\b(?:not|non|excluding|exclude|except|outside|other\s+than|besides|minus|"
     r"east|eastern|west|western|mvps?|picks?|draft(?:ed)?|"
     r"made|make|making|reach(?:ed|es)?|appearances?|trips?|been\s+to|"
-    r"most\s+recent|latest|ago|highest\s+scoring)\b"
+    r"most\s+recent|latest|ago)\b"
     r"|\b(?:before|after|without|until|prior\s+to)\s+(?:the\s+)?(?:nba\s+|conference\s+)?"
     r"(?:finals?|semifinals?|semis|championship|(?:first|second|third|1st|2nd|3rd)\s+round)\b"
     r"|\b(?:against|vs\.?|versus)\b.*\bteams?\b"
     r"|\bhow\s+many\s+(?:nba\s+)?finals\b"
-    r"|\b(?:finals?|round|semifinals?|semis|championship)\s+game\b(?!\s*s\b)(?!\s+\d)"
+    r"|\b(?:finals?|round|semifinals?|semis|championship)\s+game\b(?!\s*s\b)(?!\s+\d)(?!\s+logs?\b)"
 )
 
 
@@ -5493,7 +5529,11 @@ _ROUND_CLAUSE_LEAD = re.compile(
 )
 _ROUND_FOLLOWER = re.compile(
     r"^\s+(?:stats?|statistics|averages?|avg|numbers|line|totals?|games|record"
-    r"|game\s+(?:\d|one|two|three|four|five|six|seven)|performances?)\b"
+    r"|game\s+(?:\d|one|two|three|four|five|six|seven)|performances?"
+    # "LeBron finals ppg", "Curry finals game log", "Jokic finals triple doubles"
+    r"|ppg|rpg|apg|spg|bpg|game\s+logs?|logs?|scoring|shooting"
+    r"|(?:points|rebounds|assists|steals|blocks|threes|turnovers)(?:\s+per\s+game)?"
+    r"|(?:triple|double)[\s-]doubles?)\b"
 )
 _ROUND_EXTRA_BLOCKS = re.compile(
     r"\bseries\b|\bnumber\s+of\b|\b(?:his|her|their)\s+(?:first|last|second|final)\b"
@@ -5547,12 +5587,7 @@ def _round_as_situation(parsed: dict) -> dict | None:
     two_subjects = (parsed.get("player_a") and parsed.get("player_b")) or (
         parsed.get("team_a") and parsed.get("team_b")
     )
-    if (
-        _ROUND_NOT_A_FILTER.search(q)
-        or several_years
-        or two_subjects
-        or not _round_reads_as_filter(q)
-    ):
+    if _ROUND_NOT_A_FILTER.search(q) or several_years or not _round_reads_as_filter(q):
         # "excluding the first round", "first and second round", "western
         # conference finals", "finals mvp", "most points in a finals game":
         # never answer only one round's games for these.
@@ -5583,6 +5618,15 @@ def _round_as_situation(parsed: dict) -> dict | None:
         if route is not None and route not in _SERIES_SITUATION_ROUTES:
             return None
     rerouted = dict(parsed)
+    if two_subjects:
+        # "LeBron vs Curry in the Finals": only a comparison takes two subjects
+        # and the round together.
+        try:
+            compare = _route_parsed_query({**parsed, "playoff_round_filter": None})
+        except ValueError:
+            return None
+        if compare.get("route") not in {"player_compare", "team_compare"}:
+            return None
     rerouted["playoff_round_filter"] = None
     # The leaderboard check may count round words as answered only now.
     rerouted["series_situation_round"] = round_code
