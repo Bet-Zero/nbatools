@@ -3601,6 +3601,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "longest": team_streak_request.get("longest", False),
             "current": bool(team_streak_request.get("current")),
             "limit": 25,
+            "conditions": team_streak_request.get("conditions"),
         }
         _fires, _note = streak_default_window(parsed)
         if _fires:

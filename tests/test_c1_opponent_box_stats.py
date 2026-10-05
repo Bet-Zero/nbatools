@@ -34,6 +34,17 @@ def _summary(result) -> tuple[int, int, int]:
         ("Lakers record when opponents had 20 or more turnovers", (5, 5, 0)),
         ("Lakers record when they held opponents to under 40 rebounds", (46, 38, 8)),
         ("Lakers record when scoring 120 and allowing 15 or more threes", (6, 5, 1)),
+        # Other spellings of the same bounds.
+        ("Lakers record when opponents made 15 3s", (24, 17, 7)),
+        ("Lakers record when they allow 45 rebounds or more", (5, 3, 2)),
+        ("Lakers record when they allow 45 rebounds or fewer", (56, 44, 12)),
+        ("Lakers record when they allowed 15+ 3-pointers", (24, 17, 7)),
+        ("Lakers record when opponents hit 15+ three pointers", (24, 17, 7)),
+        ("Lakers record when opponents made 15 or fewer threes", (42, 34, 8)),
+        ("Lakers record when they held opponents under 40 rebounds", (46, 38, 8)),
+        # "shot" counts attempts.
+        ("Lakers record when opponents shot 15+ free throws", (57, 45, 12)),
+        ("Lakers record when opponents shot 40+ threes", (1, 1, 0)),
         # The team's own threes are unchanged.
         ("Lakers record when they make 15 or more threes", (20, 18, 2)),
     ],
@@ -59,3 +70,22 @@ def test_summary_and_compare():
     }
     assert rows["LAL"] == (24, 17)
     assert rows["BOS"] == (19, 14)
+
+
+def test_team_streak_reads_opponent_stat():
+    # The streak runs on the opponent's threes (the Lakers' own threes give 6).
+    row = _run("Lakers streak of games allowing 15+ threes").result.to_dict()["sections"]["streak"][
+        0
+    ]
+    assert row["condition"] == "opponent_fg3m>=15"
+    assert row["streak_length"] == 5
+
+
+def test_team_win_streak_keeps_opponent_condition():
+    # Every game of the run is a win where the opponent made 15+ threes; the
+    # plain win streak is 13.
+    row = _run("Lakers longest win streak when opponents made 15+ threes").result.to_dict()[
+        "sections"
+    ]["streak"][0]
+    assert row["condition"] == "wins and opponent_fg3m>=15"
+    assert row["streak_length"] == 3
