@@ -200,3 +200,68 @@ def test_pair_leading_scorers_rank_both_rosters():
     result = _run(f"Lakers and Celtics leading scorers {season}")
     teams = {row["team_abbr"] for row in result.result.to_dict()["sections"]["leaderboard"]}
     assert teams == {"LAL", "BOS"}
+
+
+@pytest.mark.parametrize("season", ["2007-08", "2023-24"])
+def test_celtics_win_streak_vs_the_west(season):
+    games = _team_games(season)
+    west = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "West"
+    }
+    games = games[(games["team_abbr"] == "BOS") & games["opponent_team_id"].isin(west)]
+    games = games.sort_values(["game_date", "game_id"])
+    best = run = 0
+    for outcome in games["wl"]:
+        run = run + 1 if outcome == "W" else 0
+        best = max(best, run)
+
+    result = _run(f"Celtics longest winning streak vs the West in {season}")
+    assert result.route == "team_streak_finder"
+    assert result.result.to_dict()["sections"]["streak"][0]["streak_length"] == best
+
+
+def test_league_win_streaks_vs_the_east_2023_24():
+    season = "2023-24"
+    games = _team_games(season)
+    east = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "East"
+    }
+    games = games[games["opponent_team_id"].isin(east)].sort_values(["game_date", "game_id"])
+    longest = {}
+    for team, rows in games.groupby("team_abbr"):
+        best = run = 0
+        for outcome in rows["wl"]:
+            run = run + 1 if outcome == "W" else 0
+            best = max(best, run)
+        longest[team] = best
+
+    result = _run(f"longest winning streak vs the East in {season}")
+    assert result.route == "team_streak_finder"
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert rows[0]["streak_length"] == max(longest.values())
+
+
+def test_team_120_point_games_vs_the_west_2023_24():
+    season = "2023-24"
+    games = _team_games(season)
+    west = {
+        team_id
+        for team_id, (conference, _) in historical_alignment(season).items()
+        if conference == "West"
+    }
+    games = games[games["opponent_team_id"].isin(west)]
+    counts = games[pd.to_numeric(games["pts"]) >= 120].groupby("team_abbr").size()
+
+    result = _run(f"which team has the most 120 point games vs the West in {season}")
+    assert result.route == "team_occurrence_leaders"
+    board = result.result.to_dict()["sections"]["leaderboard"]
+    assert board[0]["games_pts_120+"] == int(counts.max())
+
+
+def test_league_win_streak_vs_the_west_is_not_a_player_named_west():
+    result = _run("longest winning streak vs the West in 2023-24")
+    assert result.route == "team_streak_finder"

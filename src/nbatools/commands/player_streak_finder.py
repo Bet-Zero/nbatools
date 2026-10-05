@@ -9,6 +9,7 @@ from nbatools.commands._streak_runs import (
     compound_condition_label,
     compound_condition_mask,
 )
+from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_game_finder import (
     ALLOWED_STATS,
@@ -406,6 +407,8 @@ def build_result(
         caveats.append(
             f"streaks computed across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})"
         )
+    if opponent:
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
 
     return StreakResult(
         streaks=out[output_cols].copy(),

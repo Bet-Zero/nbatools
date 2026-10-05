@@ -5,6 +5,7 @@ import math
 import pandas as pd
 
 from nbatools.commands._streak_runs import best_runs_per_entity
+from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import (
     ALLOWED_STATS,
@@ -390,7 +391,7 @@ def build_result(
             f"streaks computed across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})"
         )
     if opponent:
-        caveats.append(f"filtered to games vs {opponent.upper()}")
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
     if home_only:
         caveats.append("filtered to home games only")
     if away_only:
