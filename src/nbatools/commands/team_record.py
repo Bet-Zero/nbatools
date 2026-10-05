@@ -795,6 +795,7 @@ def build_record_leaderboard_result(
     ascending: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
+    conditions: list[dict] | None = None,
     per_season: bool = False,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
@@ -827,6 +828,13 @@ def build_record_leaderboard_result(
         df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
         return NoResult(query_class="leaderboard", reason="no_data")
+
+    if conditions:
+        # Opponent stats join the other team's row, so attach them first.
+        df = attach_opponent_stats(df, None, conditions)
+        df = apply_stat_conditions(
+            df, conditions, TEAM_RECORD_FILTER_STATS, prepare_stat_column=_prepare_condition_column
+        )
 
     # Apply global filters
     df = _apply_game_filters(

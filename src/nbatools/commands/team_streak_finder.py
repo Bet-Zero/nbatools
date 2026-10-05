@@ -11,6 +11,7 @@ from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import (
     ALLOWED_STATS,
     _apply_filters,
+    _ensure_stat_column,
     load_team_games_for_seasons,
     resolve_seasons,
 )
@@ -242,6 +243,8 @@ def build_result(
     # Opponent box stats join the other team's row, so attach them before the
     # team filter drops it.
     df = attach_opponent_stats(df, stat, conditions)
+    if "opponent_pts" in {stat} | {c["stat"] for c in normalize_stat_conditions(conditions)}:
+        df = _ensure_stat_column(df, "opponent_pts")
 
     required = [
         "game_id",
