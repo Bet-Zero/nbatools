@@ -192,3 +192,8 @@ def test_leaderboard_never_drops_a_round_it_did_not_apply():
     # answer it over every round either.
     parsed = parse_query("most points in years he lost in the finals")
     assert parsed["route_kwargs"].get("unsupported_filters")
+
+
+def test_round_record_board_keeps_the_round_by_name():
+    kwargs = parse_query("which teams won game 4 in the finals")["route_kwargs"]
+    assert (kwargs["series_situation"], kwargs["playoff_round"]) == ("game_4", "04")

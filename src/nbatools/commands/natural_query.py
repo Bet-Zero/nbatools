@@ -5497,7 +5497,12 @@ def _round_as_situation(parsed: dict) -> dict | None:
     from nbatools.commands._natural_query_execution import _SERIES_SITUATION_ROUTES
 
     situation = parsed.get("series_situation")
-    if not situation:
+    if situation:
+        # "which teams won game 4 in the finals": the round record board takes
+        # the round itself and names it.
+        if _series_situation_board(parsed) is not None:
+            return None
+    else:
         try:
             trial = _route_parsed_query(parsed)
         except ValueError:
