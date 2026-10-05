@@ -1182,8 +1182,21 @@ def extract_team_streak_request(text: str) -> dict | None:
     normalized = re.sub(r"[?.!,]+$", "", text)
     if not _STREAK_WORD.search(normalized):
         return None
-    request = _team_streak_request_base(normalized)
-    return _with_streak_mode(_with_opponent_stat_conditions(request, normalized), normalized)
+    request = _with_opponent_stat_conditions(_team_streak_request_base(normalized), normalized)
+    outcome = _OUTCOME_STREAK.search(normalized)
+    if request and outcome and request.get("stat") and not request.get("special_condition"):
+        # "longest win streak with 30+ assists": every game is a win and
+        # meets the bound; the stat reading had dropped the outcome.
+        bound = {k: request.get(k) for k in ("stat", "min_value", "max_value")}
+        request = {
+            **request,
+            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "stat": None,
+            "min_value": None,
+            "max_value": None,
+            "conditions": [bound, *(request.get("conditions") or [])],
+        }
+    return _with_streak_mode(request, normalized)
 
 
 def _team_streak_request_base(normalized: str) -> dict | None:
@@ -1222,6 +1235,17 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
         return request
     request = dict(request)
     stat = request.get("stat")
+    own_extra: list[dict] = []
+    if request.get("special_condition"):
+        # "longest win streak scoring 120 or more while allowing under 110":
+        # the team's own bounds outside the opponent phrases hold too.
+        masked = list(normalized)
+        for cond in opponent:
+            masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])
+        own_extra = [
+            {"stat": c["stat"], "min_value": c.get("min_value"), "max_value": c.get("max_value")}
+            for c in extract_threshold_conditions("".join(masked))
+        ]
     if stat is not None:
         # "120 point games while allowing under 110": with the opponent
         # phrases blanked, an own-stat reading that survives is the primary
@@ -1255,6 +1279,7 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
                 "max_value": cond["max_value"],
             }
         )
+    extra = own_extra + extra
     if extra:
         request["conditions"] = [*(request.get("conditions") or []), *extra]
     return request

@@ -218,3 +218,26 @@ def test_team_streak_own_and_opponent_bounds(query, condition, length):
     row = _run(query).result.to_dict()["sections"]["streak"][0]
     assert row["condition"] == condition
     assert row["streak_length"] == length
+
+
+@pytest.mark.parametrize(
+    ("query", "condition", "length"),
+    [
+        # Win and loss streaks keep the team's own bounds next to opponent ones.
+        (
+            "Lakers longest win streak scoring 120 or more while allowing under 110",
+            "wins and pts>=120 and opponent_pts<110",
+            2,
+        ),
+        (
+            "Lakers longest win streak with 30+ assists while allowing 15+ threes",
+            "wins and ast>=30 and opponent_fg3m>=15",
+            1,
+        ),
+        ("Lakers longest win streak with 120+ points", "wins and pts>=120", 5),
+    ],
+)
+def test_outcome_streak_keeps_stat_bounds(query, condition, length):
+    row = _run(query).result.to_dict()["sections"]["streak"][0]
+    assert row["condition"] == condition
+    assert row["streak_length"] == length
