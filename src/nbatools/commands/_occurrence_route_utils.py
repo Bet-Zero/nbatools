@@ -249,6 +249,9 @@ def _parse_single_threshold(text: str) -> dict | None:
     return None
 
 
+_BETWEEN_RANGE = re.compile(rf"\bbetween\s+(\d+)\s+and\s+(\d+)\s+({_COMPOUND_STAT_WORDS})\b")
+
+
 def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     """Extract compound occurrence conditions from natural language.
 
@@ -285,6 +288,15 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
 
     found_conditions: list[dict] = []
     seen_stats: set[str] = set()
+    # "between 20 and 30 points" is one ranged condition; its "and" is not a
+    # list separator (splitting there kept only "30 points" as a minimum).
+    for range_match in _BETWEEN_RANGE.finditer(text_lower):
+        stat = _COMPOUND_STAT_MAP.get(range_match.group(3))
+        low, high = sorted((float(range_match.group(1)), float(range_match.group(2))))
+        if stat and stat not in seen_stats:
+            found_conditions.append({"stat": stat, "min_value": low, "max_value": high})
+            seen_stats.add(stat)
+    text_lower = _BETWEEN_RANGE.sub(" ", text_lower)
     for part in re.split(r"\s*(?:,|\s(?:and|&)\s)\s*", text_lower):
         cond = _parse_single_threshold(part)
         if cond:

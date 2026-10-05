@@ -74,3 +74,37 @@ def test_count_headline_counts_players_not_games():
     assert result.metadata["count_phrase"] == (
         "9 players have had a game with 30+ points and 10+ rebounds this season."
     )
+
+
+def test_occurrence_leaderboard_keeps_off_the_bench():
+    # Robert Williams has five bench games with 15+ points and 5+ rebounds in
+    # 2024-25 on the fixture; ignoring the role ranked every game.
+    result = _run("most games with 15 points and 5 rebounds off the bench in 2024-25")
+    assert result.route == "player_occurrence_leaders"
+    top = result.result.to_dict()["sections"]["leaderboard"][0]
+    assert (top["player_name"], top["games_pts_15+_reb_5+"]) == ("Robert Williams", 5)
+
+
+def test_between_range_is_one_condition_in_a_list():
+    assert extract_compound_occurrence_event("between 20 and 30 points and 10 rebounds") == [
+        {"stat": "pts", "min_value": 20.0, "max_value": 30.0},
+        {"stat": "reb", "min_value": 10.0},
+    ]
+    result = _run(
+        "how many games did Jokic have between 20 and 30 points and 10 rebounds in 2024-25"
+    )
+    assert result.metadata["count_phrase"] == (
+        "Nikola Jokić has had 32 games with 20-30 points and 10+ rebounds "
+        "in the 2024-25 regular season."
+    )
+    assert (
+        _count(_run("how many players had between 20 and 30 points and 10 rebounds in 2024-25"))
+        == 17
+    )
+
+
+def test_player_count_headline_names_the_opponent():
+    result = _run("how many players had 30 points vs the West this season")
+    assert result.metadata["count_phrase"] == (
+        "17 players have had a game with 30+ points against the West this season."
+    )

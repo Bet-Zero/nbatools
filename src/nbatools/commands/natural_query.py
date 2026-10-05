@@ -3905,6 +3905,20 @@ def _route_parsed_query(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ocr := try_compound_occurrence_route(parsed)) is not None:
         route, route_kwargs = ocr
+        # "most triple doubles off the bench": the leaderboard counts only games
+        # in that role (dropping it ranked every game).
+        occurrence_role = (
+            (parsed.get("role") or detect_role(q))
+            if route == "player_occurrence_leaders" and not route_kwargs.get("role")
+            else None
+        )
+        if occurrence_role:
+            route_kwargs["role"] = occurrence_role
+            parsed["role"] = occurrence_role
+            notes.append(
+                f"role_leaderboard: filtered to {occurrence_role} games using trusted "
+                "starter-role data"
+            )
     elif (lgf := try_league_game_finder_route(parsed)) is not None:
         route, route_kwargs = lgf
     # ---------------------------------------------------------------------------
