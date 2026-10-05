@@ -94,3 +94,19 @@ def test_team_win_streak_keeps_opponent_condition():
     ]["streak"][0]
     assert row["condition"] == "wins and opponent_fg3m>=15"
     assert row["streak_length"] == 3
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "held opponents to 40% shooting",
+        "held opponents to 40 percent shooting",
+        "held opponents to 35 field goals",
+        "held opponents to 10 threes",
+    ],
+)
+def test_held_to_count_is_not_points_before_another_word(text):
+    from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
+
+    stats = [c["stat"] for c in extract_opponent_points_allowed_conditions(text)]
+    assert "opponent_pts" not in stats

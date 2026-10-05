@@ -1952,7 +1952,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         # is a ceiling.
         r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)"
         r"|\blimit(?:s|ed|ing)?\s+opponents?)\s+to\s+"
-        rf"{_NUM}(?:\s+(?:points?|pts)\b)?(?![\d.+]|\s+or\b)(?!\s+{STAT_PATTERN})",
+        rf"{_NUM}{_POINT_SUFFIX}",
     ]
     # Lower bounds: "allow 110 or more points", "giving up 120+", "opponents
     # score at least 120". Read as the team's own points before. "held
