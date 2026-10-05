@@ -329,6 +329,29 @@ def test_distinct_comma_list_and_bench_counts():
     assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
 
 
+def test_most_bench_games_with_15_and_5_2024_25():
+    season = "2024-25"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    roles = data_read_csv(
+        f"raw/player_game_starter_roles/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    bench = roles[
+        roles["starter_flag"].astype(str).str.strip().str.lower().isin(["false", "0", "0.0"])
+    ]
+    hits = rows[(pd.to_numeric(rows["pts"]) >= 15) & (pd.to_numeric(rows["reb"]) >= 5)]
+    key = ["game_id", "player_id"]
+    hits = hits.assign(**{k: pd.to_numeric(hits[k]).astype(int) for k in key})
+    bench = bench.assign(**{k: pd.to_numeric(bench[k]).astype(int) for k in key})
+    counts = hits.merge(bench[key], on=key).groupby("player_id").size()
+
+    result = _run(f"most games with 15 points and 5 rebounds off the bench in {season}")
+    assert result.route == "player_occurrence_leaders"
+    top = result.result.to_dict()["sections"]["leaderboard"][0]
+    assert top["games_pts_15+_reb_5+"] == int(counts.max())
+
+
 def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     # The Lakers beat the Warriors 4-2 in the 2023 West semifinals, their only
     # playoff meeting since 1996-97.
