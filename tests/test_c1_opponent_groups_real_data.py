@@ -366,7 +366,7 @@ def test_upper_bound_count_and_summary_condition_list_2023_24():
     lebron = rows[(rows["player_name"] == "LeBron James")]
     lebron_stats = stats.loc[lebron.index]
     expected = int((lebron_stats["pts"].between(20, 30) & (lebron_stats["ast"] >= 5)).sum())
-    result = _run(f"LeBron James between 20 and 30 points and 5 assists in {season}")
+    result = _run(f"LeBron James summary between 20 and 30 points and 5 assists in {season}")
     assert result.route == "player_game_summary"
     assert result.result.to_dict()["sections"]["summary"][0]["games"] == expected
 
