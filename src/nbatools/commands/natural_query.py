@@ -3520,6 +3520,10 @@ def _route_parsed_query(parsed: dict) -> dict:
         if route == "playoff_matchup_history" and route_kwargs.get("start_season"):
             # The pair's whole playoff history ran, not the latest postseason.
             notes[:] = [n for n in notes if not n.startswith("no season specified: defaulted")]
+            # Metadata (the season chip) reads these, so publish the window run.
+            parsed["season"] = None
+            parsed["start_season"] = route_kwargs["start_season"]
+            parsed["end_season"] = route_kwargs["end_season"]
     elif (
         opponent_division_boundary
         and record_intent

@@ -299,3 +299,4 @@ def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     assert result.route == "playoff_matchup_history"
     lakers = result.result.to_dict()["sections"]["summary"][0]
     assert (lakers["team_name"], lakers["wins"], lakers["losses"]) == ("Los Angeles Lakers", 4, 2)
+    assert result.metadata.get("season") is None
