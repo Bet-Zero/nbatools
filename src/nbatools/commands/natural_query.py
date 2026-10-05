@@ -3474,7 +3474,11 @@ def _route_parsed_query(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "opponent": opponent,
+            # "how many players had 30 off the bench" counts bench games only.
+            "role": detect_role(q),
         }
+        # Metadata (the Role chip and the count headline) reads parsed.
+        parsed["role"] = route_kwargs["role"]
         notes.append("distinct_count: counting distinct players meeting condition")
     elif (
         team

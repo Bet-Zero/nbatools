@@ -292,6 +292,27 @@ def test_distinct_30_and_10_players_2023_24():
     assert result.result.to_dict()["sections"]["count"][0]["count"] == rows["player_id"].nunique()
 
 
+def test_distinct_comma_list_and_bench_counts_2023_24():
+    season = "2023-24"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    stats = rows[["pts", "reb", "ast"]].apply(pd.to_numeric)
+    listed = rows[(stats["pts"] >= 25) & (stats["reb"] >= 5) & (stats["ast"] >= 5)]
+    result = _run(f"how many players had 25 points, 5 rebounds, 5 assists in {season}")
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == listed["player_id"].nunique()
+
+    roles = data_read_csv(
+        f"raw/player_game_starter_roles/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    bench = roles[roles["starter_flag"].astype(str).str.lower().isin(["false", "0"])]
+    scored = rows[stats["pts"] >= 30][["game_id", "player_id"]].astype(str)
+    bench_keys = bench[["game_id", "player_id"]].astype(str)
+    expected = scored.merge(bench_keys, on=["game_id", "player_id"])["player_id"].nunique()
+    result = _run(f"how many players scored 30 off the bench in {season}")
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
+
+
 def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     # The Lakers beat the Warriors 4-2 in the 2023 West semifinals, their only
     # playoff meeting since 1996-97.

@@ -277,55 +277,21 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     if combo:
         return combo
 
-    # Must have "and" in the text for compound detection
-    if " and " not in text_lower:
+    # Conditions are joined by "and", "&" or commas ("30 points, 10 rebounds
+    # and 5 assists"). Matching only the first "X and Y" pair, or splitting
+    # only on "and", silently dropped the rest of a longer list.
+    if not re.search(r"\s(?:and|&)\s|,", text_lower):
         return None
 
-    # Split on " and " and try to parse each part
-    # But be careful: "and" can appear in other contexts
-    # We look for patterns like "NUMBER+ STAT and NUMBER+ STAT"
-
-    # Pattern to detect compound occurrence: two or more threshold expressions connected by "and"
-    # First, try to find all threshold patterns in the text
-
-    # Also detect "under X stat" patterns
-
-    # Find all threshold matches
     found_conditions: list[dict] = []
     seen_stats: set[str] = set()
-
-    # Check for pattern like "NUMBER+ STAT and NUMBER+ STAT"
-    compound_pattern = (
-        rf"(\d+\+?)\s*({_COMPOUND_STAT_WORDS})\s+(?:and|&)\s+(\d+\+?)\s*({_COMPOUND_STAT_WORDS})"
-    )
-
-    compound_match = re.search(compound_pattern, text_lower)
-    if compound_match:
-        stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2))  # already lowercase
-        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4))
-        if stat1 and stat2 and stat1 != stat2:
-            return [
-                _threshold_condition(
-                    stat1, compound_match.group(1).rstrip("+"), compound_match.group(1)
-                ),
-                _threshold_condition(
-                    stat2, compound_match.group(3).rstrip("+"), compound_match.group(3)
-                ),
-            ]
-
-    # Try more flexible parsing: look at " and " separated parts
-    # Split on " and " and parse each segment
-    parts = re.split(r"\s+and\s+", text_lower)
-
-    if len(parts) >= 2:
-        # Check if multiple parts contain threshold patterns
-        for part in parts:
-            cond = _parse_single_threshold(part)
-            if cond:
-                stat = cond.get("stat")
-                if stat and stat not in seen_stats:
-                    found_conditions.append(cond)
-                    seen_stats.add(stat)
+    for part in re.split(r"\s*(?:,|\s(?:and|&)\s)\s*", text_lower):
+        cond = _parse_single_threshold(part)
+        if cond:
+            stat = cond.get("stat")
+            if stat and stat not in seen_stats:
+                found_conditions.append(cond)
+                seen_stats.add(stat)
 
     # Only return if we found 2+ distinct conditions
     if len(found_conditions) >= 2:
