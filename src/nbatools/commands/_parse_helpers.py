@@ -1515,6 +1515,53 @@ def _verb_upper_bound(text: str, m: re.Match, stat: str) -> dict | None:
     }
 
 
+_OR_FEWER_PHRASE = re.compile(r"\bor\s+(?:fewer|less)\b(?!\s+than)")
+_UPPER_BOUND_TEXT = re.compile(
+    r"\b(?:or\s+(?:fewer|less)|at\s+most|no\s+more\s+than|max(?:imum)?)\b"
+)
+# "won by 5 or fewer", "games decided by 3 points or less": a margin, not the
+# team's own points.
+_MARGIN_BEFORE = re.compile(
+    r"\b(?:decided|won|wins?|winning|lost|loses|lose|losing|beat|beats|beaten|margin(?:\s+of)?)"
+    r"\s+(?:by\s+)?$"
+)
+
+
+def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) -> str | None:
+    """Refuse an inclusive upper bound the parse or the route did not apply.
+
+    "or fewer" / "or less" used to read as a boolean "or" the parser refused.
+    Now that it reads as a bound, a phrase no pattern understood ("decided by 5
+    or less", "shooting 40% or less") or a bound the route never received
+    would otherwise return an unfiltered answer.
+    """
+    masked = text
+    for condition in conditions:
+        if condition.get("text"):
+            masked = masked.replace(condition["text"], " ")
+    if _OR_FEWER_PHRASE.search(masked):
+        return "unparsed_upper_bound"
+
+    bounds = [
+        c
+        for c in conditions
+        if c.get("max_value") is not None
+        and c.get("min_value") is None
+        and _UPPER_BOUND_TEXT.search(c.get("text") or "")
+    ]
+    keys = [(c["stat"], c["max_value"]) for c in bounds]
+    # "when Luka scores 20 or less and LeBron scores 20 or less": one bound
+    # per player, which no route applies separately.
+    if len(keys) != len(set(keys)):
+        return "unparsed_upper_bound"
+    applied = {(route_kwargs.get("stat"), route_kwargs.get("max_value"))}
+    for condition in route_kwargs.get("conditions") or []:
+        applied.add((condition.get("stat"), condition.get("max_value")))
+    if any(key not in applied for key in keys):
+        return "unparsed_upper_bound"
+    return None
+
+
 def extract_threshold_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
@@ -1563,7 +1610,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
-            rf"\b{_NUM}\s+or\s+(?:fewer|less)\s+{STAT_PATTERN}\b",
+            rf"\b{_NUM}\s+or\s+(?:fewer|less)\s+(?:made\s+)?{STAT_PATTERN}\b",
             "max",
             0.0,
         ),
@@ -1637,6 +1684,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 )
             else:
                 if detect_stat(m.group(2)) is None:
+                    continue
+                if mode == "max" and _MARGIN_BEFORE.search(text[: m.start()]):
                     continue
                 stat, min_value, max_value = _parse_threshold_match(
                     m.group(1), m.group(2), mode, epsilon
@@ -1853,6 +1902,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to"
         r"|\ballow(?:s|ing|ed)?|\b(?:gave|given|giving)\s+up"
         r"|\bopponents?\s+(?:scor(?:e|es|ed|ing)|put\s+up|had)"
+        r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:scor(?:e|es|ed)|put\s+up|had)"
         r"|\b(?:points?|pts)\s+allowed(?:\s+(?:of|was|is))?"
         r"|\b(?:opponent|opp)\s+(?:points?|pts)(?:\s+(?:of|was|is))?)\s+"
     )

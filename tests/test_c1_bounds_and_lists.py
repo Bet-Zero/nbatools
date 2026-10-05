@@ -116,3 +116,36 @@ def test_team_record_upper_bounds(query, games, wins, losses):
 
 def test_allowed_count_uses_opponent_points():
     assert _count(_run("how many games did the Lakers allow 100 or fewer points")) == 43
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Margins, percentages, rest and plus-minus bounds have no parse yet;
+        # they refuse rather than return an unfiltered answer.
+        "Celtics record in games decided by 5 or less",
+        "Celtics record in games decided by 5 points or fewer",
+        "Celtics record when they win by 10 or fewer",
+        "LeBron record on 1 day of rest or less",
+        "LeBron games shooting 40% or less",
+        "LeBron games with a plus minus of 0 or less",
+        "Lakers record when opponents shoot 40% or less",
+        # One bound per player is not applied separately.
+        "Lakers record when Luka scores 20 or less and LeBron scores 20 or less",
+        # A route that never receives the bound.
+        "which players had 5 or fewer points in most games",
+    ],
+)
+def test_unapplied_upper_bounds_refuse(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+def test_made_threes_and_teams_that_scored():
+    assert _count(_run("how many games did LeBron have 3 or fewer made threes")) == 42
+    row = _run("Lakers record vs teams that scored 100 or fewer").result.to_dict()
+    summary = row["sections"]["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"]) == (43, 41, 2)

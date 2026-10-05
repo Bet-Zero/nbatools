@@ -321,6 +321,9 @@ from nbatools.commands._parse_helpers import (
     names_current_season as names_current_season,
 )
 from nbatools.commands._parse_helpers import (
+    upper_bound_boundary as upper_bound_boundary,
+)
+from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
 )
 from nbatools.commands._parse_helpers import (
@@ -5049,6 +5052,21 @@ def _route_parsed_query(parsed: dict) -> dict:
             f"{', '.join(unexecuted_markers)} but has no execution path for it; "
             "no unfiltered fallback was returned"
         )
+
+    # An "or fewer" / "at most" bound the parse or the route dropped refuses
+    # rather than answering unfiltered.
+    if not route_kwargs.get("unsupported_filters"):
+        bound_boundary = upper_bound_boundary(
+            parsed.get("normalized_query") or "",
+            parsed.get("threshold_conditions") or [],
+            route_kwargs,
+        )
+        if bound_boundary:
+            route_kwargs["unsupported_filters"] = [bound_boundary]
+            notes.append(
+                "unsupported_boundary: an upper bound in the question was not "
+                "applied; no unfiltered fallback was returned"
+            )
 
     # Compound/event routing integrity. A route may answer only when it accounts
     # for every meaningful part of the request - executes it, is defined by it,
