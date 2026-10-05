@@ -209,6 +209,7 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "team_record_leaderboard":
     case "player_occurrence_leaders":
     case "team_occurrence_leaders":
+    case "playoff_series_comebacks":
       return [{ type: "leaderboard", sectionKey: "leaderboard" }];
     case "team_stretch_leaderboard":
       return [

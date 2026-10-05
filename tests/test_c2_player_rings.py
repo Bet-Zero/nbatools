@@ -136,6 +136,8 @@ def test_named_span_is_kept():
         "LeBron rings in 3",
         "LeBron rings since the 2010s",
         "Tim Duncan rings in the last 3 seasons of his career",
+        "LeBron rings through 2016",
+        "LeBron rings until 2016",
     ],
 )
 def test_other_title_questions_stay_refused(query):

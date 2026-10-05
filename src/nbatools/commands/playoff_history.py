@@ -30,6 +30,7 @@ from nbatools.commands._seasons import (
     EARLIEST_SEASON,
     default_end_season,
     int_to_season,
+    resolve_career,
     resolve_seasons,
     season_to_int,
 )
@@ -352,6 +353,140 @@ def apply_series_situation_filter(
         [_series_game_key(df["game_id"]), pd.to_numeric(df["team_id"], errors="coerce")]
     )
     return df[row_keys.isin(keys)].copy()
+
+
+def _team_match(df: pd.DataFrame, team: str, prefix: str = "") -> pd.Series:
+    wanted = team.upper()
+    mask = pd.Series(False, index=df.index)
+    for column in (f"{prefix}team_abbr", f"{prefix}team_name"):
+        if column in df.columns:
+            mask |= df[column].astype(str).str.upper().eq(wanted)
+    return mask
+
+
+def build_series_comebacks_result(
+    *,
+    deficit_wins: int,
+    deficit_losses: int,
+    blown: bool = False,
+    team: str | None = None,
+    opponent: str | None = None,
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    playoff_round: str | None = None,
+) -> LeaderboardResult | NoResult:
+    """Series a team won after trailing ``deficit_wins``-``deficit_losses``.
+
+    With ``blown`` the series the team lost after leading by that score
+    ("blew a 3-1 lead": ``deficit_wins=3, deficit_losses=1``). A series counts
+    when the team's series score before one of its games was exactly that
+    score, so a comeback from 0-3 also passed through 1-3.
+    """
+    if not (season or start_season or end_season):
+        start_season, end_season = resolve_career("Playoffs")
+    seasons = resolve_seasons(season, start_season, end_season)
+    try:
+        games = _load_playoff_games(seasons)
+    except FileNotFoundError:
+        return NoResult(query_class="leaderboard", reason="no_data")
+    if games.empty:
+        return NoResult(query_class="leaderboard", reason="no_data")
+    work = games.copy()
+    work["_game_key"] = _series_game_key(work["game_id"])
+    work["_date"] = pd.to_datetime(work["game_date"], errors="coerce")
+    work = work.drop_duplicates(["_game_key", "team_id"]).sort_values(["_date", "_game_key"])
+    key = [work["season"], work["team_id"], work["opponent_team_id"]]
+    win = work["wl"].astype(str).eq("W").astype(int)
+    loss = work["wl"].astype(str).eq("L").astype(int)
+    work["_win"], work["_loss"] = win, loss
+    work["_reached"] = (win.groupby(key).cumsum() - win).eq(deficit_wins) & (
+        loss.groupby(key).cumsum() - loss
+    ).eq(deficit_losses)
+    series = work.groupby(["season", "team_id", "opponent_team_id"], as_index=False).agg(
+        team_abbr=("team_abbr", "last"),
+        team_name=("team_name", "last"),
+        opponent_team_abbr=("opponent_team_abbr", "last"),
+        opponent_team_name=("opponent_team_name", "last"),
+        playoff_round_code=("playoff_round_code", "first"),
+        wins=("_win", "sum"),
+        losses=("_loss", "sum"),
+        reached=("_reached", "any"),
+        start_date=("_date", "min"),
+        end_date=("_date", "max"),
+    )
+    needed = [
+        _series_wins_needed(value, code)
+        for value, code in zip(series["season"], series["playoff_round_code"], strict=True)
+    ]
+    finished = series["losses"].ge(needed) if blown else series["wins"].ge(needed)
+    series = series[series["reached"] & finished]
+    if team:
+        series = series[_team_match(series, team)]
+    if opponent:
+        series = series[_team_match(series, opponent, "opponent_")]
+    if playoff_round:
+        series = series[series["playoff_round_code"] == playoff_round]
+
+    high, low = max(deficit_wins, deficit_losses), min(deficit_wins, deficit_losses)
+    what = f"blew a {high}-{low} series lead" if blown else f"came back from {high}-{low} down"
+    span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
+    scope = ""
+    if opponent:
+        named = games.loc[_team_match(games, opponent), "team_name"]
+        scope += f" against the {named.iloc[-1]}" if not named.empty else f" against {opponent}"
+    if playoff_round:
+        scope += f" in the {round_code_to_label(playoff_round)}"
+    caveats = [f"series where the team {what} and {'lost' if blown else 'won'}"]
+    round_caveat = _round_data_caveat(seasons)
+    if round_caveat:
+        caveats.append(round_caveat)
+    if season_to_int(seasons[0]) < DATA_START_YEAR:
+        caveats.append("playoff data starts in 1996-97; earlier seasons are not counted")
+    if series.empty:
+        subject = "No team"
+        if team:
+            named = games.loc[_team_match(games, team), "team_name"]
+            subject = f"The {named.iloc[-1]} never" if not named.empty else f"{team} never"
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=[f"{subject} {what} in a playoff series{scope} {span}"],
+            caveats=caveats,
+        )
+    series = series.sort_values(["start_date"], ascending=False)
+    score = f"{high}-{low}"
+    rows = pd.DataFrame(
+        {
+            "season": series["season"],
+            "playoff_round": series["playoff_round_code"].map(ROUND_CODES).fillna("Unknown Round"),
+            "team_name": series["team_name"],
+            "team_abbr": series["team_abbr"],
+            "opponent_team_name": series["opponent_team_name"],
+            "opponent_team_abbr": series["opponent_team_abbr"],
+            "led" if blown else "trailed": score if blown else f"{low}-{high}",
+            "series": [f"{w}-{lo}" for w, lo in zip(series["wins"], series["losses"], strict=True)],
+            "result": "Lost" if blown else "Won",
+            "start_date": series["start_date"].dt.date.astype(str),
+            "end_date": series["end_date"].dt.date.astype(str),
+        }
+    ).reset_index(drop=True)
+    if len(seasons) > 1:
+        rows["seasons"] = f"{seasons[0]} to {seasons[-1]}"
+    return LeaderboardResult(
+        leaders=rows,
+        current_through=compute_current_through_for_seasons(seasons, "Playoffs"),
+        caveats=caveats,
+        metadata={
+            "deficit_wins": deficit_wins,
+            "deficit_losses": deficit_losses,
+            "blown": blown,
+            "team_filter": team,
+            "scope": scope,
+            "first_season": seasons[0],
+            "last_season": seasons[-1],
+        },
+    )
 
 
 def _add_decade_column(df: pd.DataFrame) -> pd.DataFrame:

@@ -448,6 +448,7 @@ live runtime authority.
 - `playoff_history`
 - `playoff_appearances`
 - `playoff_matchup_history`
+- `playoff_series_comebacks`
 - `record_by_decade`
 - `record_by_decade_leaderboard`
 - `matchup_by_decade`

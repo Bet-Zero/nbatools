@@ -307,6 +307,7 @@ ROUTE_TO_INTENT: dict[str, str] = {
     "playoff_appearances": QueryIntent.LEADERBOARD,
     "record_by_decade_leaderboard": QueryIntent.LEADERBOARD,
     "playoff_round_record": QueryIntent.LEADERBOARD,
+    "playoff_series_comebacks": QueryIntent.LEADERBOARD,
     # Streak routes
     "player_streak_finder": QueryIntent.STREAK,
     "team_streak_finder": QueryIntent.STREAK,

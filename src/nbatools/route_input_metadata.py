@@ -884,6 +884,32 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         examples=({"playoff_round": "Finals", "start_season": "1980-81", "stat": "win_pct"},),
         notes=("Default stat is win_pct.",),
     ),
+    "playoff_series_comebacks": RouteInputMetadata(
+        route="playoff_series_comebacks",
+        implementation_module="nbatools.commands.playoff_history",
+        implementation_function="build_series_comebacks_result",
+        description=(
+            "List playoff series won after trailing (or lost after leading) by a series score."
+        ),
+        required_kwargs=("deficit_wins", "deficit_losses"),
+        optional_kwargs=(
+            "blown",
+            "team",
+            "opponent",
+            "season",
+            "start_season",
+            "end_season",
+            "playoff_round",
+        ),
+        examples=(
+            {"deficit_wins": 1, "deficit_losses": 3},
+            {"deficit_wins": 3, "deficit_losses": 1, "blown": True, "team": "GSW"},
+        ),
+        notes=(
+            "deficit_wins/deficit_losses are the team's series score before a game: "
+            "1 and 3 is 'came back from 3-1 down'; with blown, 3 and 1 is 'blew a 3-1 lead'.",
+        ),
+    ),
     "record_by_decade": RouteInputMetadata(
         route="record_by_decade",
         implementation_module="nbatools.commands.playoff_history",
