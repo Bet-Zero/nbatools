@@ -840,7 +840,21 @@ def _build_count_phrase(
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
-        threshold = _count_threshold_text(metadata.get("max_value"))
+        max_value = metadata.get("max_value")
+        min_value = metadata.get("min_value")
+        if max_value is None and min_value is not None:
+            # "allow 110 or more points": a floor, not "held opponents under".
+            # "over 119" is stored as 119.0001: say "more than 119".
+            floor = _count_threshold_text(min_value)
+            if float(min_value).is_integer():
+                action = f"allowed {floor}+ points"
+            else:
+                action = f"allowed more than {floor} points"
+        elif isinstance(max_value, (int, float)) and float(max_value).is_integer():
+            # "held opponents to 100 or fewer" includes 100.
+            action = f"held opponents to {_count_threshold_text(max_value)} or fewer points"
+        else:
+            action = f"held opponents under {_count_threshold_text(max_value)} points"
         entity = _team_subject(metadata, games)
         context = _count_context(
             metadata,
@@ -850,10 +864,7 @@ def _build_count_phrase(
         )
         times = "time" if count == 1 else "times"
         record = _record_suffix(games)
-        return (
-            f"{entity} have held opponents under {threshold} points "
-            f"{count} {times} {context}{record}."
-        )
+        return f"{entity} have {action} {count} {times} {context}{record}."
 
     # Stat totals read as the stat itself ("has made 247 threes"), not as
     # a count of games.
@@ -909,9 +920,17 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
-        if occurrence.startswith("games with "):
+        min_occurrences = parsed.get("min_occurrences")
+        if occurrence.startswith("games with ") and not (min_occurrences or 0) > 1:
             occurrence = "game with " + occurrence[len("games with ") :]
         subject = "1 player has" if count == 1 else f"{count} players have"
+        if (min_occurrences or 0) > 1:
+            # "16 players have had 20+ games with at most 10 points".
+            article = f"{min_occurrences}+"
+            if not occurrence.startswith("games"):
+                occurrence = pluralize_occurrence(occurrence)
+        else:
+            article = "a"
         role = {"bench": " off the bench", "starter": " as a starter"}.get(
             metadata.get("role") or ""
         )
@@ -922,7 +941,7 @@ def _build_count_phrase(
             opponent = f" against the {metadata['opponent_division']} Division"
         elif isinstance(metadata.get("opponent"), str) and metadata["opponent"]:
             opponent = f" against {metadata['opponent']}"
-        return f"{subject} had a {occurrence}{role or ''}{opponent} {context}."
+        return f"{subject} had {article} {occurrence}{role or ''}{opponent} {context}."
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     context = _count_context(
         metadata,

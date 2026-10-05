@@ -1578,12 +1578,12 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0001,
         ),
         (
-            rf"\bat least\s+{_NUM}\s+{STAT_PATTERN}\b",
+            rf"\bat least\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0,
         ),
         (
-            rf"\b{_NUM}\s+or\s+more\s+{STAT_PATTERN}\b",
+            rf"\b{_NUM}\s+or\s+more\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0,
         ),
@@ -1621,7 +1621,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
         ),
         # Shorthand: N+ STAT — "30+ points", "5+ threes" (implicit >=)
         (
-            rf"\b{_NUM}\+\s*{STAT_PATTERN}\b",
+            rf"\b{_NUM}\+\s*(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0,
         ),
@@ -1640,7 +1640,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0001,
         ),
         (
-            rf"{STAT_PATTERN}\s+at least\s+{_NUM}",
+            # "30 points at least 5 times" counts games, not a points floor.
+            rf"{STAT_PATTERN}\s+at least\s+{_NUM}(?![\d.])(?!\s+(?:times?|games?)\b)",
             "min",
             0.0,
         ),
@@ -1895,7 +1896,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     _AT_MOST = r"(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of)\s+"
     _OR_FEWER = (
         r"(?:\s+(?:points?|pts))?\s+or\s+(?:fewer|less)\b(?!\s+than)"
-        r"(?:\s+(?:points?|pts)\b)?"
+        rf"(?:\s+(?:points?|pts)\b)?(?!\s+{STAT_PATTERN})"
     )
     _SUBJECTS = (
         r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to"
@@ -1909,6 +1910,24 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     inclusive_patterns = [
         rf"{_SUBJECTS}{_AT_MOST}{_NUM}{_POINT_SUFFIX}",
         rf"{_SUBJECTS}{_NUM}{_OR_FEWER}",
+    ]
+    # Lower bounds: "allow 110 or more points", "giving up 120+", "opponents
+    # score at least 120". Read as the team's own points before. "held
+    # opponents to 100" is a ceiling, so holding verbs stay out.
+    _MIN_SUBJECTS = (
+        r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
+        r"|\bopponents?\s+(?:scor(?:e|es|ed|ing)|put\s+up|had)"
+        r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:scor(?:e|es|ed)|put\s+up|had))\s+"
+    )
+    # A stat other than points after the bound ("allow 15 or more threes") is
+    # not a points-allowed condition.
+    _NOT_OTHER_STAT = rf"(?!\s+{STAT_PATTERN})"
+    _OR_MORE = r"(?:\s+(?:points?|pts))?\s+or\s+more\b(?:\s+(?:points?|pts)\b)?" + _NOT_OTHER_STAT
+    min_patterns = [
+        (rf"{_MIN_SUBJECTS}(?:at\s+least|a\s+min(?:imum)?\s+of)\s+{_NUM}{_POINT_SUFFIX}", 0.0),
+        (rf"{_MIN_SUBJECTS}(?:over|more\s+than)\s+{_NUM}{_POINT_SUFFIX}", 0.0001),
+        (rf"{_MIN_SUBJECTS}{_NUM}{_OR_MORE}", 0.0),
+        (rf"{_MIN_SUBJECTS}{_NUM}\+(?:\s+(?:points?|pts)\b)?{_NOT_OTHER_STAT}", 0.0),
     ]
 
     matches = []
@@ -1926,6 +1945,19 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
                         "text": m.group(0),
                     }
                 )
+
+    for pattern, epsilon in min_patterns:
+        for m in re.finditer(pattern, text):
+            matches.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": "opponent_pts",
+                    "min_value": float(m.group(1)) + epsilon,
+                    "max_value": None,
+                    "text": m.group(0),
+                }
+            )
 
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
     deduped = []
@@ -1965,6 +1997,21 @@ def merge_opponent_points_allowed_conditions(
     merged.extend(opponent_conditions)
     merged.sort(key=lambda item: item.get("start", 0))
     return merged
+
+
+_MIN_OCCURRENCES = re.compile(
+    r"\bin\s+(?:at\s+least\s+(\d+)|(\d+)\s*\+|(\d+)\s+or\s+more)"
+    r"\s+(?:different\s+|separate\s+)?(?:games?|times?)\b"
+    r"|\bat\s+least\s+(\d+)\s+times\b"
+)
+
+
+def extract_min_occurrences(text: str) -> int | None:
+    """Qualifying games each player needs: "scored 30 in at least 5 games"."""
+    m = _MIN_OCCURRENCES.search(text)
+    if not m:
+        return None
+    return int(next(g for g in m.groups() if g))
 
 
 def extract_min_games(text: str) -> int | None:
@@ -2072,7 +2119,7 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     _NOT_GAMES = r"(?!\s+games?\b)"
     patterns = [
         rf"\b(\d+){_NOT_GAMES}\+",
-        rf"\bat least (\d+){_NOT_GAMES}\b",
+        rf"\bat least (\d+)(?!\d){_NOT_GAMES}(?!\s+times?\b)",
         rf"\bminimum (\d+){_NOT_GAMES}\b",
         rf"\bmin(?:imum)? (\d+){_NOT_GAMES}\b",
         rf"\b(\d+){_NOT_GAMES}\s+or\s+more\b",
@@ -2094,7 +2141,7 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     bare_patterns = [
         rf"{_CG}\b(\d+)\s+{STAT_PATTERN}\s+games?\b",  # "30 point games"
         rf"{_CG}\b(\d+)-{STAT_PATTERN}\s+games?\b",  # "30-point games"
-        rf"{_CG}\b(\d+)\s+{STAT_PATTERN}\b",  # "30 points"
+        rf"{_CG}\b(\d+)\s+(?:made\s+)?{STAT_PATTERN}\b",  # "30 points", "5 made threes"
         rf"{_CG}\b(\d+)-{STAT_PATTERN}\b",  # "30-points"
     ]
     for pattern in bare_patterns:

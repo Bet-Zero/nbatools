@@ -247,8 +247,7 @@ def _parse_single_threshold(text: str) -> dict | None:
 
     # Standard patterns: "30+ points", "10 rebounds", "0 turnovers", "no turnovers"
     standard_match = re.search(
-        r"\b(\d+\+?|zero|no)\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b(\s+or\s+more)?",
+        rf"\b(\d+\+?|zero|no)\s+({_COMPOUND_STAT_WORDS})\b(\s+or\s+more)?",
         text,
     )
     if standard_match:

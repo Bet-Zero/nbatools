@@ -276,6 +276,9 @@ from nbatools.commands._parse_helpers import (
     extract_min_games as extract_min_games,
 )
 from nbatools.commands._parse_helpers import (
+    extract_min_occurrences as extract_min_occurrences,
+)
+from nbatools.commands._parse_helpers import (
     extract_min_value as extract_min_value,
 )
 from nbatools.commands._parse_helpers import (
@@ -3560,9 +3563,11 @@ def _route_parsed_query(parsed: dict) -> dict:
             "opponent": opponent,
             # "how many players had 30 off the bench" counts bench games only.
             "role": detect_role(q),
+            "min_occurrences": extract_min_occurrences(q),
         }
         # Metadata (the Role chip and the count headline) reads parsed.
         parsed["role"] = route_kwargs["role"]
+        parsed["min_occurrences"] = route_kwargs["min_occurrences"]
         notes.append("distinct_count: counting distinct players meeting condition")
     elif (
         team
