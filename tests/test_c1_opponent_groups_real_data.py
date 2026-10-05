@@ -352,6 +352,25 @@ def test_most_bench_games_with_15_and_5_2024_25():
     assert top["games_pts_15+_reb_5+"] == int(counts.max())
 
 
+def test_upper_bound_count_and_summary_condition_list_2023_24():
+    season = "2023-24"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    stats = rows[["pts", "reb", "ast"]].apply(pd.to_numeric)
+    low = rows[(stats["pts"] < 10) & (stats["reb"] >= 10)]
+    result = _run(f"how many players had under 10 points and 10 rebounds in {season}")
+    assert result.route == "player_occurrence_leaders"
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == low["player_id"].nunique()
+
+    lebron = rows[(rows["player_name"] == "LeBron James")]
+    lebron_stats = stats.loc[lebron.index]
+    expected = int((lebron_stats["pts"].between(20, 30) & (lebron_stats["ast"] >= 5)).sum())
+    result = _run(f"LeBron James summary between 20 and 30 points and 5 assists in {season}")
+    assert result.route == "player_game_summary"
+    assert result.result.to_dict()["sections"]["summary"][0]["games"] == expected
+
+
 def test_lakers_and_warriors_playoff_record_is_their_2023_series():
     # The Lakers beat the Warriors 4-2 in the 2023 West semifinals, their only
     # playoff meeting since 1996-97.

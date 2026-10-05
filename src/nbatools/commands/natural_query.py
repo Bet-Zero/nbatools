@@ -321,6 +321,9 @@ from nbatools.commands._parse_helpers import (
     names_current_season as names_current_season,
 )
 from nbatools.commands._parse_helpers import (
+    upper_bound_boundary as upper_bound_boundary,
+)
+from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
 )
 from nbatools.commands._parse_helpers import (
@@ -1925,6 +1928,13 @@ def _build_parse_state(query: str) -> dict:
         extract_opponent_points_allowed_conditions(q),
     )
 
+    # "between 20 and 30 points and 5 assists": the threshold scan reads only
+    # operator-led conditions, so a plain "5 assists" in the same list was
+    # dropped and summaries counted the first condition alone.
+    threshold_conditions = _complete_threshold_conditions(
+        threshold_conditions, compound_occurrence_conditions
+    )
+
     extra_conditions = []
     stat_context_only = False
     if threshold_conditions:
@@ -2325,13 +2335,51 @@ def _build_parse_state(query: str) -> dict:
     }
 
 
+def _complete_threshold_conditions(
+    threshold_conditions: list[dict], compound_conditions: list[dict] | None
+) -> list[dict]:
+    """Add list conditions the operator-led threshold scan missed."""
+    compound = list(compound_conditions or [])
+    # With no operator-led conditions at all, routes already read the list.
+    if not threshold_conditions or len(compound) <= len(threshold_conditions):
+        return threshold_conditions
+    by_stat = {c["stat"]: c for c in threshold_conditions}
+    if not set(by_stat) <= {c.get("stat") for c in compound}:
+        return threshold_conditions
+    completed = []
+    for cond in compound:
+        existing = by_stat.get(cond.get("stat"))
+        if existing is not None:
+            completed.append(existing)
+            continue
+        completed.append(
+            {
+                "stat": cond["stat"],
+                "min_value": cond.get("min_value"),
+                "max_value": cond.get("max_value"),
+                "text": cond.get("text") or cond["stat"],
+            }
+        )
+    return completed
+
+
 def _conditions_for_route(parsed: dict, route: str, route_kwargs: dict) -> list[dict]:
     """Return canonical condition-list filters consumed by the selected route."""
     route_conditions = normalize_stat_conditions(route_kwargs.get("conditions"))
     if route_conditions:
         return route_conditions
 
-    if route in {"player_game_finder", "game_finder"}:
+    # Summaries and records take the list too: "LeBron summary with 30 points
+    # and 10 rebounds" counted only the 10-rebound games.
+    if route in {
+        "player_game_finder",
+        "game_finder",
+        "player_game_summary",
+        "game_summary",
+        "team_record",
+        "player_split_summary",
+        "team_split_summary",
+    }:
         threshold_conditions = normalize_stat_conditions(parsed.get("threshold_conditions"))
         if len(threshold_conditions) >= 2:
             return threshold_conditions
@@ -3472,7 +3520,11 @@ def _route_parsed_query(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     # Distinct player/team count routing
     # ---------------------------------------------------------------------------
-    elif distinct_player_count and (occurrence_event or (stat and min_value is not None)):
+    elif distinct_player_count and (
+        occurrence_event
+        or (stat and (min_value is not None or max_value is not None))
+        or len(parsed.get("compound_occurrence_conditions") or []) >= 2
+    ):
         # "How many players have had a 40 point game this season?"
         # "How many players scored 40 points this season?"
         route = "player_occurrence_leaders"
@@ -5011,6 +5063,21 @@ def _route_parsed_query(parsed: dict) -> dict:
             f"{', '.join(unexecuted_markers)} but has no execution path for it; "
             "no unfiltered fallback was returned"
         )
+
+    # An "or fewer" / "at most" bound the parse or the route dropped refuses
+    # rather than answering unfiltered.
+    if not route_kwargs.get("unsupported_filters"):
+        bound_boundary = upper_bound_boundary(
+            parsed.get("normalized_query") or "",
+            parsed.get("threshold_conditions") or [],
+            route_kwargs,
+        )
+        if bound_boundary:
+            route_kwargs["unsupported_filters"] = [bound_boundary]
+            notes.append(
+                "unsupported_boundary: an upper bound in the question was not "
+                "applied; no unfiltered fallback was returned"
+            )
 
     # Compound/event routing integrity. A route may answer only when it accounts
     # for every meaningful part of the request - executes it, is defined by it,

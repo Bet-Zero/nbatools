@@ -18,6 +18,11 @@ from nbatools.commands._seasons import default_end_season
 _RANKED_COUNT = re.compile(r"\b(?:top|best|worst|highest|lowest|biggest|greatest)\s*$")
 
 
+# "20 points or fewer" / "2 turnovers or less": the number is a maximum.
+# "30 points or less than 5 assists" is two conditions joined by "or".
+_OR_FEWER_AFTER = re.compile(r"\s+or\s+(?:fewer|less)\b(?!\s+than)")
+
+
 def extract_occurrence_event(text: str) -> dict | None:
     """Detect and extract an occurrence-event definition from natural language.
 
@@ -79,6 +84,10 @@ def extract_occurrence_event(text: str) -> dict | None:
     for pattern, stat in games_with_patterns:
         m = re.search(pattern, text)
         if m:
+            # "games with 20 points or fewer" is an upper bound; reading the
+            # number as a minimum too left only games with exactly 20.
+            if _OR_FEWER_AFTER.match(text, m.end()):
+                return {"stat": stat, "min_value": None, "max_value": float(m.group(1))}
             return _threshold_condition(stat, m.group(1), m.group(0))
 
     return None
@@ -129,9 +138,20 @@ _COMPOUND_STAT_MAP = {
     "turnovers": "tov",
     "turnover": "tov",
     "tov": "tov",
+    # Multi-word stat phrases: a list item the parser did not recognize was
+    # dropped, so "3 or fewer made threes and 30 points" kept only the bound.
+    "made threes": "fg3m",
+    "made three": "fg3m",
+    "made 3s": "fg3m",
+    "made three-pointers": "fg3m",
+    "made three-pointer": "fg3m",
+    "field goal attempts": "fga",
+    "field goal attempt": "fga",
+    "fga": "fga",
 }
 
 _COMPOUND_STAT_WORDS = (
+    r"made (?:threes?|3s|three-pointers?)|field goal attempts?|fga|"
     r"points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
     r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov"
 )
@@ -215,7 +235,7 @@ def _parse_single_threshold(text: str) -> dict | None:
             False,
         ),
         (rf"\b(\d+)\s+or\s+(?:fewer|less)\s+({stat_words})\b", False),
-        (rf"\b(\d+)\s+({stat_words})\s+or\s+(?:fewer|less)\b", False),
+        (rf"\b(\d+)\s+({stat_words})\s+or\s+(?:fewer|less)\b(?!\s+than)", False),
     ):
         bound_match = re.search(pattern, text)
         if bound_match:

@@ -887,8 +887,20 @@ def _build_count_phrase(
         occurrence = _occurrence_label(conditions[0])
     elif len(conditions) >= 2:
         occurrence = _compound_occurrence_label(conditions)
+    elif parsed.get("occurrence_event"):
+        occurrence = _occurrence_label(parsed.get("occurrence_event"))
+    elif parsed.get("min_value") is not None or parsed.get("max_value") is not None:
+        # A thresholded stat ("5 assists") reads "games with 5+ assists", not
+        # the bare stat name ("166 asts").
+        occurrence = _occurrence_label(
+            {
+                "stat": parsed.get("stat"),
+                "min_value": parsed.get("min_value"),
+                "max_value": parsed.get("max_value"),
+            }
+        )
     else:
-        occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
+        occurrence = _occurrence_label(parsed.get("stat"))
     if parsed.get("distinct_player_count") and not player:
         # The count is players, not games: "18 players have had a game with 30+ points".
         context = _count_context(
@@ -897,14 +909,6 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
-        if not conditions and parsed.get("stat") and not parsed.get("occurrence_event"):
-            occurrence = _occurrence_label(
-                {
-                    "stat": parsed.get("stat"),
-                    "min_value": parsed.get("min_value"),
-                    "max_value": parsed.get("max_value"),
-                }
-            )
         if occurrence.startswith("games with "):
             occurrence = "game with " + occurrence[len("games with ") :]
         subject = "1 player has" if count == 1 else f"{count} players have"
