@@ -909,9 +909,17 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
-        if occurrence.startswith("games with "):
+        min_occurrences = parsed.get("min_occurrences")
+        if occurrence.startswith("games with ") and not (min_occurrences or 0) > 1:
             occurrence = "game with " + occurrence[len("games with ") :]
         subject = "1 player has" if count == 1 else f"{count} players have"
+        if (min_occurrences or 0) > 1:
+            # "16 players have had 20+ games with at most 10 points".
+            article = f"{min_occurrences}+"
+            if not occurrence.startswith("games"):
+                occurrence = pluralize_occurrence(occurrence)
+        else:
+            article = "a"
         role = {"bench": " off the bench", "starter": " as a starter"}.get(
             metadata.get("role") or ""
         )
@@ -922,7 +930,7 @@ def _build_count_phrase(
             opponent = f" against the {metadata['opponent_division']} Division"
         elif isinstance(metadata.get("opponent"), str) and metadata["opponent"]:
             opponent = f" against {metadata['opponent']}"
-        return f"{subject} had a {occurrence}{role or ''}{opponent} {context}."
+        return f"{subject} had {article} {occurrence}{role or ''}{opponent} {context}."
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     context = _count_context(
         metadata,

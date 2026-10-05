@@ -143,3 +143,27 @@ def test_bare_stat_joined_to_scoring_is_kept():
         _run(f"Curry averages in games scoring 30 points and 5 assists {SEASON}")
     )["summary"]
     _assert_rows(summary, games)
+
+
+def test_points_allowed_floor_and_made_threes():
+    games = _team("LAL")
+    allowed = games[games["opp_pts"] >= 115]
+    (summary,) = _sections(_run(f"Lakers record when they allow 115 or more points {SEASON}"))[
+        "summary"
+    ]
+    assert summary["games"] == len(allowed)
+    assert summary["wins"] == int(allowed["won"].sum())
+
+    lebron = _lebron()
+    threes = pd.to_numeric(lebron["fg3m"], errors="coerce")
+    result = _run(f"how many games did LeBron have 4 made threes {SEASON}")
+    assert _sections(result)["count"][0]["count"] == int((threes >= 4).sum())
+
+
+def test_players_with_repeat_qualifying_games():
+    frame = data_read_csv(f"raw/player_game_stats/{SEASON}_regular_season.csv")
+    pts = pd.to_numeric(frame["pts"], errors="coerce")
+    expected = int(((pts >= 40).groupby(frame["player_id"]).sum() >= 3).sum())
+    result = _run(f"how many players scored 40+ in at least 3 games {SEASON}")
+    assert result.route == "player_occurrence_leaders"
+    assert _sections(result)["count"][0]["count"] == expected

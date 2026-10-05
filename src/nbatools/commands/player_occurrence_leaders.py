@@ -325,6 +325,7 @@ def build_result(
     min_games: int = DEFAULT_MIN_GAMES,
     player: str | None = None,
     role: str | None = None,
+    min_occurrences: int | None = None,
     **_context_filters: Any,
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
@@ -483,8 +484,9 @@ def build_result(
     # Apply minimum games filter
     grouped = grouped[grouped["games_played"] >= min_games].copy()
 
-    # Remove players with zero occurrences
-    grouped = grouped[grouped["occurrence_count"] > 0].copy()
+    # Remove players with zero occurrences, or fewer than asked for ("how many
+    # players scored 30 in at least 5 games").
+    grouped = grouped[grouped["occurrence_count"] >= max(min_occurrences or 1, 1)].copy()
 
     if grouped.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
