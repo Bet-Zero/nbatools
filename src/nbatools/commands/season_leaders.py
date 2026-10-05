@@ -816,6 +816,46 @@ def _load_roster_experience(seasons: list[str]) -> pd.DataFrame:
     return rosters.drop_duplicates(subset=["season", "player_id"])
 
 
+def _best_single_seasons(kwargs: dict) -> LeaderboardResult | NoResult:
+    """Rank player seasons across a span: "most points in a single season".
+
+    Each season is ranked on its own (with its own games floor), then the
+    seasons' rows are merged, so one row is one player season.
+    """
+    seasons = resolve_seasons(None, kwargs["start_season"], kwargs["end_season"])
+    target_col = _normalize_stat(kwargs["stat"])
+    frames: list[pd.DataFrame] = []
+    caveats: list[str] = []
+    for one in seasons:
+        result = build_result(
+            **{**kwargs, "season": one, "start_season": None, "end_season": None},
+        )
+        if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+            continue
+        frames.append(result.leaders)
+        caveats.extend(c for c in result.caveats if c not in caveats)
+    if not frames:
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
+    combined = pd.concat(frames, ignore_index=True).drop(columns=["rank"])
+    ascending = kwargs["ascending"]
+    by = list(dict.fromkeys([target_col, "games_played", "player_name"]))
+    order = [ascending, True] if target_col == "games_played" else [ascending, False, True]
+    combined = (
+        combined.sort_values(by=by, ascending=order).head(kwargs["limit"]).reset_index(drop=True)
+    )
+    combined.insert(0, "rank", range(1, len(combined) + 1))
+    caveats.insert(0, f"single seasons ranked across {seasons[0]} to {seasons[-1]}")
+    return LeaderboardResult(
+        leaders=combined,
+        current_through=compute_current_through_for_seasons(seasons, kwargs["season_type"]),
+        caveats=caveats,
+    )
+
+
 def build_result(
     season: str | None = None,
     stat: str = "pts",
@@ -843,7 +883,10 @@ def build_result(
     min_attempts_per_game: bool = False,
     attempt_stat: str | None = None,
     series_situation: str | None = None,
+    per_season: bool = False,
 ) -> LeaderboardResult | NoResult:
+    if per_season and not season and start_season and end_season:
+        return _best_single_seasons(dict(locals()))
     safe = season_type.lower().replace(" ", "_")
 
     # Resolve the list of seasons to load

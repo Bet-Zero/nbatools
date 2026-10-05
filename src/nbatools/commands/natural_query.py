@@ -1586,6 +1586,14 @@ def _wants_top_team_games(q: str) -> bool:
             q,
         )
         or re.search(r"\bmost\s+points\s+by\s+a\s+team\s+in\s+a\s+game\b", q)
+        # "most threes in a game by a team", "most assists by a team in a single game"
+        or re.search(
+            r"\b(?:most|fewest)\s+(?:[a-z0-9%-]+\s+){1,3}(?:by|from)\s+an?\s+(?:nba\s+)?team\s+"
+            r"in\s+an?\s+(?:single\s+)?game\b"
+            r"|\b(?:most|fewest)\s+(?:[a-z0-9%-]+\s+){1,3}in\s+an?\s+(?:single\s+)?game\s+"
+            r"(?:by|from)\s+an?\s+(?:nba\s+)?team\b",
+            q,
+        )
     )
 
 
@@ -1740,6 +1748,15 @@ _ROUND_SINGLE_GAME = re.compile(
     r"\b(a|one|single|any)\s+((?:nba\s+)?(?:conference\s+)?(?:finals|semifinals|semis"
     r"|(?:first|second|third|1st|2nd|3rd)[\s-]round))\s+game\b(?!\s*s\b)(?!\s+\d)"
 )
+_FEWEST_WORDS = re.compile(r"\b(?:fewest|lowest|least)\b")
+# "most points in an elimination game" is the single-game question asked of them.
+_SITUATION_SINGLE_GAME = re.compile(
+    r"\bin\s+(a|an|one|single|any|a\s+single)\s+(elimination|closeout|close-out|clinching"
+    r"|series[\s-]clinching|deciding|winner[\s-]take[\s-]all)\s+game\b(?!\s*s\b)"
+)
+# "most points in a single season", "most threes in a season since 2000":
+# one player season per row, not totals across the span.
+_SINGLE_SEASON = re.compile(r"\bin\s+(?:a|one|any)\s+(?:single\s+)?season\b|\bsingle[\s-]season\b")
 _TITLE_WORD = re.compile(r"\b(?:titles?|championships?|champions?|rings?)\b")
 _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 
@@ -1749,6 +1766,7 @@ def _build_parse_state(query: str) -> dict:
     if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
         q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
+    q = _SITUATION_SINGLE_GAME.sub(r"in a game in \2 games", q)
     if _TITLE_WORD.search(q):
         # "who won the title last year": a title belongs to one season, so the
         # year reads as that season instead of falling back to every season.
@@ -2270,6 +2288,7 @@ def _build_parse_state(query: str) -> dict:
         "series_situation": series_situation,
         "series_comeback": series_comeback,
         "series_situation_career": series_situation_career,
+        "single_season_intent": bool(_SINGLE_SEASON.search(q)),
         "playoff_round_unnamed_span": playoff_round_unnamed_span,
         "stretch_worst": stretch_worst,
         "stretch_player_group": stretch_player_group,
@@ -3462,7 +3481,8 @@ def _route_parsed_query(parsed: dict) -> dict:
             "stat": anchored_leaderboard_metric(parsed),
             "limit": game_top_n or 10,
             "season_type": season_type,
-            "ascending": False,
+            # "fewest points by a team in a game" ranks from the bottom.
+            "ascending": bool(_FEWEST_WORDS.search(q)),
             "start_date": start_date,
             "end_date": end_date,
             "home_only": home_only,
@@ -4009,7 +4029,8 @@ def _route_parsed_query(parsed: dict) -> dict:
             "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
-            "ascending": False,
+            # "fewest points by a team in a game" ranks from the bottom.
+            "ascending": bool(_FEWEST_WORDS.search(q)),
             "start_date": start_date,
             "end_date": end_date,
             "home_only": home_only,
@@ -5660,6 +5681,34 @@ def _round_as_situation(parsed: dict) -> dict | None:
 
 
 def _finalize_route(parsed: dict) -> dict:
+    """Route a parse state, then rank single seasons when one season is asked."""
+    out = _finalize_route_inner(parsed)
+    if out.get("route") != "season_leaders" or not parsed.get("single_season_intent"):
+        return out
+    route_kwargs = dict(out.get("route_kwargs") or {})
+    if route_kwargs.get("unsupported_filters"):
+        return out
+    notes = list(out.get("notes") or [])
+    if not route_kwargs.get("start_season") and not _NAMED_SEASON_WORDS.search(
+        parsed["normalized_query"]
+    ):
+        # "most points in a single season": every season since 1996-97.
+        from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
+
+        season_type = route_kwargs.get("season_type") or "Regular Season"
+        route_kwargs["season"] = None
+        route_kwargs["start_season"], route_kwargs["end_season"] = resolve_career(season_type)
+        notes.append(f"default: every season since {EARLIEST_SEASON}")
+    if route_kwargs.get("start_season"):
+        route_kwargs["per_season"] = True
+        notes.append("single_season: each player season ranked on its own")
+    out = dict(out)
+    out["route_kwargs"] = route_kwargs
+    out["notes"] = notes
+    return out
+
+
+def _finalize_route_inner(parsed: dict) -> dict:
     """Route a parse state; playoff series situations ride on every route."""
     rerouted = _round_as_situation(parsed)
     if rerouted is not None:
@@ -5694,6 +5743,17 @@ def _finalize_route(parsed: dict) -> dict:
         refused = False
         board = _series_situation_board(parsed) if situation else None
         out = board if board is not None else _route_parsed_query(parsed)
+        if out.get("route") == "team_compare" and parsed.get("playoff_round_filter"):
+            # "Celtics vs Heat in the eastern conference finals": a comparison
+            # that cannot take the round must not compare whole postseasons.
+            out = _series_refusal_route(
+                parsed,
+                "playoff_round",
+                "this comparison cannot be limited to that playoff round; ask for the "
+                'teams\' games in that round ("Celtics vs Heat in the conference finals") '
+                "or their playoff series history",
+            )
+            refused = True
         if situation and board is None:
             _series_situation_totals(out, q)
     if refused or not situation:
