@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import pandas as pd
 
-from nbatools.commands._condition_utils import apply_stat_conditions
+from nbatools.commands._condition_utils import (
+    OPPONENT_STATS,
+    apply_stat_conditions,
+    attach_opponent_stats,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -50,6 +54,7 @@ ALLOWED_STATS = {
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
     "opponent_pts": "opponent_pts",
+    **OPPONENT_STATS,
 }
 
 GAME_LOG_COLUMNS = [
@@ -150,7 +155,7 @@ def _apply_filters(
     start_date: str | None = None,
     end_date: str | None = None,
 ) -> pd.DataFrame:
-    out = df.copy()
+    out = attach_opponent_stats(df.copy(), stat, conditions)
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
 
     start_ts = _normalize_date_value(start_date)

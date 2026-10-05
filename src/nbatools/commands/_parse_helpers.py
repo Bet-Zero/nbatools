@@ -1199,7 +1199,45 @@ def extract_team_streak_request(text: str) -> dict | None:
             "min_streak_length": _streak_length(normalized)[0],
             "longest": True,
         }
-    return _with_streak_mode(request, normalized)
+    return _with_streak_mode(_with_opponent_stat_conditions(request, normalized), normalized)
+
+
+def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dict | None:
+    """Read "allowing 15+ threes" on a team streak as the opponent's stat.
+
+    The stat readers above see "15+ threes" as the team's own threes. An
+    opponent bound on the same stat replaces that reading; any other
+    opponent bound joins as an extra condition.
+    """
+    if request is None:
+        return None
+    opponent = _opponent_box_stat_conditions(normalized)
+    if not opponent:
+        return request
+    request = dict(request)
+    stat = request.get("stat")
+    extra = []
+    for cond in opponent:
+        if (
+            not request.get("special_condition")
+            and stat is not None
+            and cond["stat"] == f"opponent_{stat}"
+        ):
+            request["stat"] = cond["stat"]
+            request["min_value"] = cond["min_value"]
+            request["max_value"] = cond["max_value"]
+            stat = None
+            continue
+        extra.append(
+            {
+                "stat": cond["stat"],
+                "min_value": cond["min_value"],
+                "max_value": cond["max_value"],
+            }
+        )
+    if extra:
+        request["conditions"] = [*(request.get("conditions") or []), *extra]
+    return request
 
 
 def _extract_team_streak_request_patterns(normalized: str) -> dict | None:
@@ -1910,6 +1948,11 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     inclusive_patterns = [
         rf"{_SUBJECTS}{_AT_MOST}{_NUM}{_POINT_SUFFIX}",
         rf"{_SUBJECTS}{_NUM}{_OR_FEWER}",
+        # "held opponents to 100 points": a bare count after a holding verb
+        # is a ceiling.
+        r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)"
+        r"|\blimit(?:s|ed|ing)?\s+opponents?)\s+to\s+"
+        rf"{_NUM}{_POINT_SUFFIX}",
     ]
     # Lower bounds: "allow 110 or more points", "giving up 120+", "opponents
     # score at least 120". Read as the team's own points before. "held
@@ -1959,6 +2002,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
                 }
             )
 
+    matches.extend(_opponent_box_stat_conditions(text))
+
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
     deduped = []
     accepted_spans: list[tuple[int, int]] = []
@@ -1969,6 +2014,101 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         accepted_spans.append(span)
         deduped.append(item)
     return deduped
+
+
+_OPP_STAT_SUBJECT = (
+    r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
+    r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them)(?:\s+to)?"
+    r"|\blimit(?:s|ed|ing)?\s+opponents?(?:\s+to)?"
+    r"|\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:had|has|have|made|makes|hit|hits|shot|shoots"
+    r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
+    r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
+)
+_OPP_STAT_NUM = r"(\d+(?:\.\d+)?)"
+# (prefix, suffix, mode, epsilon): the bound sits before the number, after
+# it, or the number carries "+".
+_OPP_STAT_BOUNDS = (
+    (r"(?:at\s+least|a\s+min(?:imum)?\s+of)\s+", r"\s+", "min", 0.0),
+    (r"(?:over|more\s+than)\s+", r"\s+", "min", 0.0001),
+    (r"(?:under|below|fewer\s+than|less\s+than)\s+", r"\s+", "max", 0.0001),
+    (r"(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of)\s+", r"\s+", "max", 0.0),
+    (r"", r"\s+or\s+more\s+", "min", 0.0),
+    (r"", r"\s+or\s+(?:fewer|less)\s+", "max", 0.0),
+    (r"", r"\+\s*", "min", 0.0),
+    # A bare count ("opponents made 15 3s") is a floor, as "scoring 30" is.
+    (r"", r"\s+", "min", 0.0),
+)
+# Spellings STAT_PATTERN lacks, and the bound written after the stat
+# ("allow 45 rebounds or more").
+_OPP_STAT_WORD = rf"(?:{STAT_PATTERN}|(?:3|three)[- ]?pointers?|free\s+throws?)"
+_OPP_STAT_AFTER = (
+    (r"\s+or\s+more\b", "min"),
+    (r"\s+or\s+(?:fewer|less)\b", "max"),
+)
+_HOLDING = re.compile(r"\s*(?:h(?:e|o)ld|limit)")
+# "shot 40+ threes" counts attempts; "made"/"hit" counts makes.
+_OPP_SHOT_ATTEMPTS = {"fg3m": "fg3a", "ftm": "fta", "fgm": "fga"}
+
+
+def _opponent_stat_word(word: str, subject: str) -> str | None:
+    word = word.strip()
+    if re.fullmatch(r"(?:3|three)[- ]?pointers?", word):
+        stat = "fg3m"
+    elif re.fullmatch(r"free\s+throws?", word):
+        stat = "ftm"
+    else:
+        stat = detect_stat(word)
+    if stat and re.search(r"\bsho(?:t|ots?)\s*$", subject.strip()):
+        stat = _OPP_SHOT_ATTEMPTS.get(stat, stat)
+    return stat
+
+
+def _opponent_box_stat_conditions(text: str) -> list[dict]:
+    """Opponent box-score bounds: "allow 15 or more threes", "opponents had
+    20+ turnovers", "held opponents to under 40 rebounds".
+
+    These read the other team's row of the game. They were read as the
+    subject team's own stat.
+    """
+    from nbatools.commands._condition_utils import OPPONENT_STATS
+
+    subject = rf"({_OPP_STAT_SUBJECT})"
+    found = []
+    bounds = [(p, s, m, e, "") for p, s, m, e in _OPP_STAT_BOUNDS]
+    bounds += [("", r"\s+", mode, 0.0, after) for after, mode in _OPP_STAT_AFTER]
+    for prefix, suffix, mode, epsilon, after in bounds:
+        pattern = (
+            rf"{subject}{prefix}{_OPP_STAT_NUM}{suffix}(?:made\s+)?({_OPP_STAT_WORD})"
+            rf"(?![\w-]){after}"
+        )
+        for m in re.finditer(pattern, text):
+            stat = _opponent_stat_word(m.group(3), m.group(1))
+            base = f"opponent_{stat}"
+            if base not in OPPONENT_STATS:
+                continue
+            value = float(m.group(2))
+            bound = mode
+            if not prefix and not after and suffix == r"\s+" and _HOLDING.match(m.group(1)):
+                # "held opponents to 10 threes" is a ceiling.
+                bound = "max"
+            found.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": base,
+                    "min_value": value + epsilon if bound == "min" else None,
+                    "max_value": value - epsilon if bound == "max" else None,
+                    "text": m.group(0),
+                }
+            )
+    # Several bounds can read one phrase ("allow 45 rebounds or more" is also
+    # a bare "45 rebounds"): keep the longest reading at each place.
+    found.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
+    kept: list[dict] = []
+    for item in found:
+        if all(item["start"] >= k["end"] or item["end"] <= k["start"] for k in kept):
+            kept.append(item)
+    return kept
 
 
 def merge_opponent_points_allowed_conditions(

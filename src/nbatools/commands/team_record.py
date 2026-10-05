@@ -17,7 +17,11 @@ from __future__ import annotations
 
 import pandas as pd
 
-from nbatools.commands._condition_utils import apply_stat_conditions
+from nbatools.commands._condition_utils import (
+    OPPONENT_STATS,
+    apply_stat_conditions,
+    attach_opponent_stats,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -87,6 +91,7 @@ TEAM_RECORD_FILTER_STATS = {
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
     "opponent_pts": "opponent_pts",
+    **OPPONENT_STATS,
 }
 
 
@@ -127,7 +132,7 @@ def _apply_game_filters(
     season_type: str | None = None,
 ) -> pd.DataFrame:
     """Filter a game-log DataFrame by standard criteria."""
-    out = df.copy()
+    out = attach_opponent_stats(df.copy(), stat, conditions)
     if "game_date" in out.columns:
         out["game_date"] = pd.to_datetime(out["game_date"], errors="coerce").dt.normalize()
 

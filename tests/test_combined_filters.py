@@ -329,7 +329,9 @@ def test_points_allowed_threshold_ends_before_a_season_or_filter(text):
 def test_points_allowed_threshold_skips_other_stats():
     from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
 
-    assert extract_opponent_points_allowed_conditions("allowing under 110 rebounds") == []
+    # Another stat after "allowing" is the opponent's rebounds, not points.
+    conditions = extract_opponent_points_allowed_conditions("allowing under 110 rebounds")
+    assert [c["stat"] for c in conditions] == ["opponent_reb"]
 
 
 @pytest.mark.parametrize(

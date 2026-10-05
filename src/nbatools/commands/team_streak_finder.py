@@ -4,6 +4,7 @@ import math
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import attach_opponent_stats, normalize_stat_conditions
 from nbatools.commands._streak_runs import best_runs_per_entity
 from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -221,6 +222,7 @@ def build_result(
     last_n: int | None = None,
     limit: int = 25,
     current: bool = False,
+    conditions: list[dict] | None = None,
 ) -> StreakResult | NoResult:
     """Streaks of consecutive team games meeting a condition.
 
@@ -237,6 +239,9 @@ def build_result(
         df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
         return NoResult(query_class="streak", reason="no_data")
+    # Opponent box stats join the other team's row, so attach them before the
+    # team filter drops it.
+    df = attach_opponent_stats(df, stat, conditions)
 
     required = [
         "game_id",
@@ -299,6 +304,21 @@ def build_result(
         max_value=max_value,
         special_condition=special_condition,
     )
+    # "longest win streak when opponents made 15+ threes": every extra
+    # condition must hold in each game of the run.
+    for extra in normalize_stat_conditions(conditions):
+        mask = mask & _build_condition_mask(
+            filtered,
+            stat=extra["stat"],
+            min_value=extra.get("min_value"),
+            max_value=extra.get("max_value"),
+        )
+        extra_label = _condition_label(
+            stat=extra["stat"],
+            min_value=extra.get("min_value"),
+            max_value=extra.get("max_value"),
+        )
+        condition = f"{condition} and {extra_label}"
 
     if team is None:
         rows = [
@@ -426,6 +446,7 @@ def run(
     last_n: int | None = None,
     limit: int = 25,
     current: bool = False,
+    conditions: list[dict] | None = None,
 ) -> None:
     result = build_result(
         season=season,
@@ -449,6 +470,7 @@ def run(
         last_n=last_n,
         limit=limit,
         current=current,
+        conditions=conditions,
     )
     if isinstance(result, NoResult):
         print("no matching games")
