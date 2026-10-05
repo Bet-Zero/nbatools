@@ -2013,7 +2013,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
             continue
         accepted_spans.append(span)
         deduped.append(item)
-    return deduped
+    return deduped + _opponent_list_continuations(text, deduped)
 
 
 _OPP_STAT_SUBJECT = (
@@ -2109,6 +2109,71 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
         if all(item["start"] >= k["end"] or item["end"] <= k["start"] for k in kept):
             kept.append(item)
     return kept
+
+
+# "gave up 15 threes and 50 rebounds": later list items share the opponent
+# subject. Each may carry its own bound; a bare count takes the first one's.
+_OPP_LIST_ITEM = re.compile(
+    r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)"
+    r"(?P<pre>at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
+    r"|fewer\s+than\s+|less\s+than\s+|no\s+more\s+than\s+)?"
+    r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?\s*"
+    rf"(?P<stat>points?|pts|{_OPP_STAT_WORD})(?![\w-])"
+    r"(?P<post>\s+or\s+(?:more|fewer|less)\b)?"
+)
+_OPP_LIST_PRE = {
+    "at least": ("min", 0.0),
+    "over": ("min", 0.0001),
+    "more than": ("min", 0.0001),
+    "under": ("max", 0.0001),
+    "below": ("max", 0.0001),
+    "fewer than": ("max", 0.0001),
+    "less than": ("max", 0.0001),
+    "at most": ("max", 0.0),
+    "no more than": ("max", 0.0),
+}
+
+
+def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict]:
+    from nbatools.commands._condition_utils import OPPONENT_STATS
+
+    found: list[dict] = []
+    for cond in conditions:
+        mode = "min" if cond.get("min_value") is not None else "max"
+        bound = cond.get("min_value") if mode == "min" else cond.get("max_value")
+        # "under 100 points and 40 rebounds": a strict first bound stays strict.
+        strict = 0.0 if float(bound).is_integer() else 0.0001
+        end = cond["end"]
+        while m := _OPP_LIST_ITEM.match(text, end):
+            word = m.group("stat")
+            if re.fullmatch(r"points?|pts", word):
+                stat = "pts"
+            else:
+                stat = _opponent_stat_word(word, cond.get("text") or "")
+            base = f"opponent_{stat}"
+            if base != "opponent_pts" and base not in OPPONENT_STATS:
+                break
+            item_mode, epsilon = mode, strict
+            if m.group("pre"):
+                item_mode, epsilon = _OPP_LIST_PRE[re.sub(r"\s+", " ", m.group("pre").strip())]
+            elif m.group("plus"):
+                item_mode, epsilon = "min", 0.0
+            elif m.group("post"):
+                item_mode = "min" if "more" in m.group("post") else "max"
+                epsilon = 0.0
+            value = float(m.group("num"))
+            found.append(
+                {
+                    "start": m.start("num") if not m.group("pre") else m.start("pre"),
+                    "end": m.end(),
+                    "stat": base,
+                    "min_value": value + epsilon if item_mode == "min" else None,
+                    "max_value": value - epsilon if item_mode == "max" else None,
+                    "text": m.group(0).strip(),
+                }
+            )
+            end = m.end()
+    return found
 
 
 def merge_opponent_points_allowed_conditions(

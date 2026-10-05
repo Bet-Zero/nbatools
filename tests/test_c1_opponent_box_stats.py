@@ -110,3 +110,20 @@ def test_held_to_count_is_not_points_before_another_word(text):
 
     stats = [c["stat"] for c in extract_opponent_points_allowed_conditions(text)]
     assert "opponent_pts" not in stats
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        # Later list items share the opponent subject and, when bare, its bound.
+        ("Lakers record when they held teams to 10 threes and 100 points", (16, 16, 0)),
+        ("Lakers record when they gave up 15 threes and 50 rebounds", (3, 2, 1)),
+        ("Lakers record when opponents had 15 threes and 30 assists", (1, 0, 1)),
+        ("Lakers record when they allow 15+ threes and 120+ points", (4, 0, 4)),
+        ("Lakers record when they held opponents under 100 points and 40 rebounds", (34, 33, 1)),
+        # A verb starts the team's own clause.
+        ("Lakers record when they allowed 15 threes and scored 120", (6, 5, 1)),
+    ],
+)
+def test_opponent_subject_carries_through_list(query, expected):
+    assert _summary(_run(query)) == expected
