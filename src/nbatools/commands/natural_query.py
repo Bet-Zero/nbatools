@@ -3449,6 +3449,8 @@ def _route_parsed_query(parsed: dict) -> dict:
         special_event = (
             occurrence_event.get("special_event") if isinstance(occurrence_event, dict) else None
         )
+        compound_conditions = list(parsed.get("compound_occurrence_conditions") or [])
+        compound = len(compound_conditions) >= 2
         route_kwargs = {
             # "this season" carries no explicit season of its own.
             "season": season
@@ -3456,11 +3458,14 @@ def _route_parsed_query(parsed: dict) -> dict:
             "start_season": start_season,
             "end_season": end_season,
             "season_type": season_type,
-            "stat": None if special_event else stat,
-            "min_value": None if special_event else min_value,
-            "max_value": None if special_event else max_value,
+            "stat": None if special_event or compound else stat,
+            "min_value": None if special_event or compound else min_value,
+            "max_value": None if special_event or compound else max_value,
             "special_event": special_event,
             "occurrence_event": occurrence_event,
+            # "how many players had 30 points and 10 rebounds": every condition
+            # must hold in the same game.
+            "conditions": compound_conditions if compound else None,
             "limit": None,
             "home_only": home_only,
             "away_only": away_only,

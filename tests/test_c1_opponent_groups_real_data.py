@@ -278,3 +278,24 @@ def test_distinct_40_point_scorers_vs_the_warriors_2023_24():
     assert result.route == "player_occurrence_leaders"
     count = result.result.to_dict()["sections"]["count"][0]["count"]
     assert count == rows["player_id"].nunique()
+
+
+def test_distinct_30_and_10_players_2023_24():
+    season = "2023-24"
+    rows = data_read_csv(
+        f"raw/player_game_stats/{season}_regular_season.csv", dtype={"game_id": str}
+    )
+    rows = rows[(pd.to_numeric(rows["pts"]) >= 30) & (pd.to_numeric(rows["reb"]) >= 10)]
+
+    result = _run(f"how many players had 30 points and 10 rebounds in {season}")
+    assert result.route == "player_occurrence_leaders"
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == rows["player_id"].nunique()
+
+
+def test_lakers_and_warriors_playoff_record_is_their_2023_series():
+    # The Lakers beat the Warriors 4-2 in the 2023 West semifinals, their only
+    # playoff meeting since 1996-97.
+    result = _run("Lakers and Warriors playoff record")
+    assert result.route == "playoff_matchup_history"
+    text = str(result.result.to_dict())
+    assert "2022-23" in text

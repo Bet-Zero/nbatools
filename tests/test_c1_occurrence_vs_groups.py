@@ -138,3 +138,31 @@ def test_distinct_triple_double_count_vs_the_west():
     result = _run("how many players had a triple double vs the West")
     expected = _players(_west(), lambda r: _count_tens(r) >= 3)
     assert result.result.to_dict()["sections"]["count"][0]["count"] == len(expected)
+
+
+@pytest.mark.parametrize(
+    ("query", "opponents", "test"),
+    [
+        (
+            "how many players had 30 points and 10 rebounds this season",
+            None,
+            lambda r: float(r["pts"] or 0) >= 30 and float(r["reb"] or 0) >= 10,
+        ),
+        (
+            "how many players scored 30 points and 10 rebounds against the Lakers",
+            {"LAL"},
+            lambda r: float(r["pts"] or 0) >= 30 and float(r["reb"] or 0) >= 10,
+        ),
+        (
+            "how many players had 20 points and 10 assists",
+            None,
+            lambda r: float(r["pts"] or 0) >= 20 and float(r["ast"] or 0) >= 10,
+        ),
+    ],
+)
+def test_distinct_counts_require_every_condition_in_one_game(query, opponents, test):
+    result = _run(query)
+    assert result.route == "player_occurrence_leaders"
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == len(
+        _players(opponents, test)
+    )
