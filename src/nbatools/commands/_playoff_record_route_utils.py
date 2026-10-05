@@ -248,9 +248,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         # Only when the query names no time at all: "this postseason",
         # "these playoffs" or a bare "2026" still mean a specific window.
         pm_season = (
-            None
-            if parsed.get("season_defaulted") and not _PAIR_TIME_WORDS_RE.search(q)
-            else season
+            None if parsed.get("season_defaulted") and not _PAIR_TIME_WORDS_RE.search(q) else season
         )
         pm_season, pm_start, pm_end = _resolve_season_defaults(
             pm_season, start_season, end_season, "Playoffs"
