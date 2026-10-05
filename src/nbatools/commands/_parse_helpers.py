@@ -1948,6 +1948,11 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     inclusive_patterns = [
         rf"{_SUBJECTS}{_AT_MOST}{_NUM}{_POINT_SUFFIX}",
         rf"{_SUBJECTS}{_NUM}{_OR_FEWER}",
+        # "held opponents to 100 points": a bare count after a holding verb
+        # is a ceiling.
+        r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)"
+        r"|\blimit(?:s|ed|ing)?\s+opponents?)\s+to\s+"
+        rf"{_NUM}(?:\s+(?:points?|pts)\b)?(?![\d.+]|\s+or\b)(?!\s+{STAT_PATTERN})",
     ]
     # Lower bounds: "allow 110 or more points", "giving up 120+", "opponents
     # score at least 120". Read as the team's own points before. "held
@@ -2040,6 +2045,7 @@ _OPP_STAT_AFTER = (
     (r"\s+or\s+more\b", "min"),
     (r"\s+or\s+(?:fewer|less)\b", "max"),
 )
+_HOLDING = re.compile(r"\s*(?:h(?:e|o)ld|limit)")
 # "shot 40+ threes" counts attempts; "made"/"hit" counts makes.
 _OPP_SHOT_ATTEMPTS = {"fg3m": "fg3a", "ftm": "fta", "fgm": "fga"}
 
@@ -2081,13 +2087,17 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
             if base not in OPPONENT_STATS:
                 continue
             value = float(m.group(2))
+            bound = mode
+            if not prefix and not after and suffix == r"\s+" and _HOLDING.match(m.group(1)):
+                # "held opponents to 10 threes" is a ceiling.
+                bound = "max"
             found.append(
                 {
                     "start": m.start(),
                     "end": m.end(),
                     "stat": base,
-                    "min_value": value + epsilon if mode == "min" else None,
-                    "max_value": value - epsilon if mode == "max" else None,
+                    "min_value": value + epsilon if bound == "min" else None,
+                    "max_value": value - epsilon if bound == "max" else None,
                     "text": m.group(0),
                 }
             )

@@ -42,6 +42,11 @@ def _summary(result) -> tuple[int, int, int]:
         ("Lakers record when opponents hit 15+ three pointers", (24, 17, 7)),
         ("Lakers record when opponents made 15 or fewer threes", (42, 34, 8)),
         ("Lakers record when they held opponents under 40 rebounds", (46, 38, 8)),
+        # A bare count after a holding verb is a ceiling.
+        ("Lakers record when they held opponents to 10 threes", (22, 19, 3)),
+        ("Lakers record when they limited opponents to 10 threes", (22, 19, 3)),
+        ("Lakers record when they held opponents to 40 rebounds", (49, 41, 8)),
+        ("Lakers record when they held opponents to 100 points", (43, 41, 2)),
         # "shot" counts attempts.
         ("Lakers record when opponents shot 15+ free throws", (57, 45, 12)),
         ("Lakers record when opponents shot 40+ threes", (1, 1, 0)),
