@@ -65,7 +65,7 @@ def detect_by_decade_intent(text: str) -> bool:
             r"\bby\s+decade\b|\b(?:19|20)\d0s\b"
             r"|"
             + _DECADE_SUPERLATIVE.pattern
-            + r"|\bwhich\s+decade\b(?=.*\b(?:wins?|won|records?|loss|losses|lost)\b)",
+            + r"|\bwhich\s+decade\b(?=.*\b(?:(?:win|won|lose|lost)\s+the\s+most|records?)\b)",
             text,
         )
     )
@@ -73,8 +73,8 @@ def detect_by_decade_intent(text: str) -> bool:
 
 # "Lakers best decade", "best playoff decade": a record ranked by decade.
 _DECADE_SUPERLATIVE = re.compile(
-    r"\b(?:best|worst|winningest|greatest)\s+(?:(?:playoffs?|postseason|regular[\s-]season)\s+)?"
-    r"decades?\b"
+    r"\b(?:best|worst|winningest|greatest)\s+"
+    r"(?:(?:playoffs?|postseason|regular[\s-]season|[a-z]+(?:ive|ing))\s+)?decades?\b"
 )
 
 

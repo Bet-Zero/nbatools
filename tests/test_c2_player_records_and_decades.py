@@ -136,3 +136,82 @@ def test_players_with_the_best_record_answers():
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert rows[0]["win_pct"] <= rows[-1]["win_pct"]
     assert {"wins", "losses"} <= set(rows[0])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best decade for points",
+        "best decade by net rating",
+        "Lakers best decade scoring",
+        "Lakers best defensive decade",
+        "best offensive decade",
+    ],
+)
+def test_decade_superlative_with_a_stat_refuses(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["decade_stat"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "which decade did the Lakers lose the most",
+        "Lakers best decade by wins",
+    ],
+)
+def test_more_team_decade_wordings(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "record_by_decade"
+    assert not parsed["route_kwargs"].get("unsupported_filters")
+
+
+@pytest.mark.parametrize("query", ["which decade did LeBron win the most", "LeBron wins by decade"])
+def test_player_decades_refuse(query):
+    assert parse_query(query)["route_kwargs"]["unsupported_filters"] == ["player_decade"]
+
+
+def test_role_rides_along():
+    kwargs = parse_query("players with the best record coming off the bench")["route_kwargs"]
+    assert kwargs["role"] == "bench"
+
+
+@pytest.mark.parametrize(
+    "query", ["most wins by a rookie coach", "rookie coach with the most wins"]
+)
+def test_rookie_coaches_are_not_rookie_players(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert not kwargs.get("rookies_only")
+
+
+def test_which_decade_keeps_a_wins_filter_on_other_stats():
+    parsed = parse_query("which decade did the Lakers score the most in wins")
+    assert parsed["route"] != "record_by_decade" or parsed["route_kwargs"].get("wins_only")
+
+
+@pytest.mark.fixture_data
+def test_single_season_records_skip_short_seasons(monkeypatch):
+    from nbatools.commands import season_leaders
+
+    seen = {}
+    real = season_leaders.best_single_seasons
+
+    def spy(build, kwargs, **options):
+        seen.update(options)
+        return real(build, kwargs, **options)
+
+    monkeypatch.setattr(season_leaders, "best_single_seasons", spy)
+    build_result(start_season="2023-24", end_season="2025-26", stat="win_pct", per_season=True)
+    assert seen["full_seasons_only"] is True
+
+
+def test_one_postseason_counts_a_swept_series():
+    import pandas as pd
+
+    from nbatools.commands.season_leaders import _win_pct_floor
+
+    df = pd.DataFrame({"games_played": [4, 12, 24]})
+    assert _win_pct_floor(df, 1, season_type="Playoffs") == 4
+    assert _win_pct_floor(df, 1, season_type="Playoffs", num_seasons=3) == 12
+    assert _win_pct_floor(df, 1, season_type="Regular Season") == 12

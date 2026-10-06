@@ -735,15 +735,21 @@ def _apply_default_guardrails(
 _WIN_PCT_SPAN_CAP = {"regular": 400, "playoffs": 50}
 
 
-def _win_pct_floor(df: pd.DataFrame, min_games: int, season_type: str | None = None) -> int:
+def _win_pct_floor(
+    df: pd.DataFrame, min_games: int, season_type: str | None = None, num_seasons: int = 1
+) -> int:
     """A record board counts players with at least half the most games played.
 
     A player who went 3-0 is not the best record of a season; the floor scales
-    with the sample (a season in progress, a span, the playoffs).
+    with the sample (a season in progress, a span). One postseason counts any
+    player with a full series, so a swept team's players can rank.
     """
     if df.empty:
         return min_games
-    cap = _WIN_PCT_SPAN_CAP["playoffs" if _is_playoff_season_type(season_type) else "regular"]
+    if _is_playoff_season_type(season_type):
+        cap = 4 if num_seasons == 1 else _WIN_PCT_SPAN_CAP["playoffs"]
+    else:
+        cap = _WIN_PCT_SPAN_CAP["regular"]
     return max(min_games, min(math.ceil(df["games_played"].max() / 2), cap))
 
 
@@ -883,8 +889,13 @@ def build_result(
     player: str | list[str] | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
+        # A record over a few games of a season in progress is not a season.
         return best_single_seasons(
-            build_result, dict(locals()), target_col=_normalize_stat(stat), name_col="player_name"
+            build_result,
+            dict(locals()),
+            target_col=_normalize_stat(stat),
+            name_col="player_name",
+            full_seasons_only=_normalize_stat(stat) == "win_pct",
         )
     safe = season_type.lower().replace(" ", "_")
 
@@ -1250,7 +1261,9 @@ def build_result(
         # A total over a handful of game 7s needs no games floor.
         df = df[df["games_played"] >= min_games].copy()
     elif target_col == "win_pct":
-        win_pct_floor = _win_pct_floor(df, min_games, season_type=season_type)
+        win_pct_floor = _win_pct_floor(
+            df, min_games, season_type=season_type, num_seasons=len(seasons)
+        )
         df = df[df["games_played"] >= win_pct_floor].copy()
     elif attempt_col is not None:
         if attempt_col not in df.columns:
