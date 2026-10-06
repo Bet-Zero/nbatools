@@ -369,7 +369,8 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "season_type": season_type,
             "stat": record_stat,
             "limit": top_n or 10,
-            "ascending": False,
+            # "fewest losses in the 2020s" ranks the fewest first.
+            "ascending": bool(re.search(r"\bfewest\s+|(?<!\bat\s)\bleast\s+", q)),
             "playoff_round": playoff_round_filter,
         }
 

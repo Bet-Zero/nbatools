@@ -1765,7 +1765,7 @@ _SINGLE_SEASON_UNRANKED_ROUTES = frozenset(
 _RANKED_WINS_LOSSES = re.compile(
     r"\b(?:most|fewest|least)\s+(?:(?:road|home|away|playoffs?|postseason|regular[\s-]season)\s+)?"
     r"(?:wins|losses)\b"
-    r"|\bwin(?:ning)?\s+(?:percentage|pct|%)"
+    r"|\bwin(?:ning)?\s+(?:percentage|pct)|\bwin(?:ning)?\s*%"
 )
 # "LeBron best scoring season", "Jokic most rebounds in a single season":
 # rank that player's own seasons.

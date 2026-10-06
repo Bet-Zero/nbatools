@@ -81,3 +81,32 @@ def test_apostrophe_decade():
 
 def test_possessives_are_not_years():
     assert parse_query("Jokic's 16 points")["normalized_query"] == "jokic's 16 points"
+
+
+@pytest.mark.parametrize("query", ["Lakers win%", "Lakers win% at home", "best win% this season"])
+def test_win_percent_without_a_space_counts_every_game(query):
+    assert not parse_query(query)["route_kwargs"].get("wins_only")
+
+
+@pytest.mark.fixture_data
+def test_team_win_percent_is_the_full_record():
+    games = pd.read_csv(RAW / "team_game_stats" / "2025-26_regular_season.csv")
+    home = games[games["team_abbr"].eq("LAL") & games["is_home"].astype(str).eq("True")]
+    result = execute_natural_query("Lakers win% at home")
+    row = result.result.to_dict()["sections"]["summary"][0]
+    assert (row["games"], row["wins"]) == (len(home), int(home["wl"].eq("W").sum()))
+
+
+@pytest.mark.parametrize(
+    ("query", "ascending"),
+    [
+        ("fewest losses by decade", True),
+        ("least losses in the 2020s", True),
+        ("most wins by decade since 2000", False),
+        ("teams with at least 50 wins by decade", False),
+    ],
+)
+def test_decade_record_boards_follow_fewest(query, ascending):
+    parsed = parse_query(query)
+    assert parsed["route"] == "record_by_decade_leaderboard"
+    assert parsed["route_kwargs"]["ascending"] is ascending
