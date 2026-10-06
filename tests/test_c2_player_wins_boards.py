@@ -59,3 +59,41 @@ def test_player_playoff_wins_answer():
     rows = result.result.to_dict()["sections"]["leaderboard"]
     # Lakers and Nuggets players only; no one can exceed the series' games.
     assert rows and all(0 < row["games_played"] <= 7 for row in rows)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "teams with the most wins when their best players rest",
+        "most wins by a team with no all-star players",
+    ],
+)
+def test_team_subject_with_players_word_stays_team_board(query):
+    assert parse_query(query)["route"] == "team_record_leaderboard"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "players with the most wins when facing elimination in the 2010s",
+        "players with the most wins in game 7s in the 2010s",
+        "players with the most playoff wins when facing elimination in the 2010s",
+    ],
+)
+def test_playoff_situation_decades_are_not_shifted(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("2010-11", "2019-20")
+
+
+def test_rookie_wins_keep_the_rookie_filter():
+    kwargs = parse_query("players with the most wins as a rookie")["route_kwargs"]
+    assert kwargs["rookies_only"] is True
+
+
+@pytest.mark.fixture_data
+def test_player_wins_show_the_count_in_pretty_output():
+    from nbatools.commands.format_output import format_pretty_from_result
+
+    query = "most playoff wins by a player"
+    text = format_pretty_from_result(execute_natural_query(query).result, query)
+    assert "games_played" in text

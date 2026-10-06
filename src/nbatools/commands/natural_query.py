@@ -6206,7 +6206,11 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     first, last = min(starts), max(starts) + 9
     # Playoff years name the season ending in them, so the 2020s playoffs
     # (2020-21 to 2029-30) are "from 2021 to 2030".
-    shift = 1 if (out.get("route_kwargs") or {}).get("season_type") == "Playoffs" else 0
+    # Only when the question itself says playoffs: otherwise the rewritten
+    # years read as start years ("game 7s in the 2010s").
+    playoff_words = re.search(r"\bplayoffs?\b|\bpostseason\b", q)
+    playoffs = (out.get("route_kwargs") or {}).get("season_type") == "Playoffs"
+    shift = 1 if playoffs and playoff_words else 0
     span = f"from {first + shift} to {last + shift}"
     ranged = q[: phrases[0].start()] + span + q[phrases[-1].end() :]
     rerouted = _finalize_route(_build_parse_state(ranged))
@@ -6250,6 +6254,9 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
     q = parsed["normalized_query"]
     if stat not in ("wins", "losses") or not _PLAYER_SUBJECT.search(q):
         return None
+    if re.search(r"\bteams?\b|\bfranchises?\b", q):
+        # "teams with the most wins when their best players rest".
+        return None
     if parsed.get("team") or parsed.get("player"):
         return None
     if any(
@@ -6271,6 +6278,7 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         home_only=bool(route_kwargs.get("home_only")),
         away_only=bool(route_kwargs.get("away_only")),
         per_season=bool(route_kwargs.get("per_season")),
+        rookies_only=bool(re.search(r"\brookies?\b", q)),
     )
     notes = list(out.get("notes") or [])
     named = bool(_NAMED_SEASON_WORDS.search(q))
