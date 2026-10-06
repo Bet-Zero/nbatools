@@ -17,6 +17,12 @@ from nbatools.commands.playoff_history import ROUND_ALIASES, decade_season_range
 # ---------------------------------------------------------------------------
 
 
+# "most road wins", "fewest wins", "most home losses": the count is the stat.
+_RANKED_RECORD_COUNT = re.compile(
+    r"\b(?:most|fewest|least)\s+(?:(?:home|away|road|playoffs?|postseason)\s+)?(wins|losses)\b"
+)
+
+
 def detect_record_intent(text: str) -> bool:
     """Detect explicit record-oriented intent.
 
@@ -32,15 +38,16 @@ def detect_record_intent(text: str) -> bool:
     return bool(
         re.search(
             r"\b(?:records?|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
-            r"|most\s+(?:home\s+|away\s+)?wins|most\s+(?:home\s+|away\s+)?losses"
-            r"|fewest\s+(?:home\s+|away\s+)?losses"
+            r"|(?:most|fewest|least)\s+(?:home\s+|away\s+|road\s+)?(?:wins|losses)"
             r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|worst\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|highest\s+win|lowest\s+win"
             r"|winningest"
-            r"|home\s+record|away\s+record"
+            r"|home\s+record|away\s+record|road\s+record"
             r"|playoff\s+record|postseason\s+record"
-            r"|matchup\s+record|all[- ]?time\s+record)\b",
+            r"|matchup\s+record|all[- ]?time\s+record)\b"
+            # "win %" ends on a non-word character, so no closing \b.
+            r"|\bwin(?:ning)?\s*%",
             text,
         )
     )
@@ -362,7 +369,8 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "season_type": season_type,
             "stat": record_stat,
             "limit": top_n or 10,
-            "ascending": False,
+            # "fewest losses in the 2020s" ranks the fewest first.
+            "ascending": bool(re.search(r"\bfewest\s+|(?<!\bat\s)\bleast\s+", q)),
             "playoff_round": playoff_round_filter,
         }
 
@@ -474,21 +482,20 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
 
     # Determine the sort stat from query phrasing
     record_stat = "win_pct"
-    if re.search(r"\bmost\s+wins\b|\bmost\s+home\s+wins\b|\bmost\s+away\s+wins\b", q):
-        record_stat = "wins"
-    elif re.search(r"\bmost\s+loss", q):
-        record_stat = "losses"
-    elif re.search(r"\bfewest\s+loss", q):
-        record_stat = "losses"
+    counted = _RANKED_RECORD_COUNT.search(q)
+    if counted:
+        # "most road wins", "fewest wins", "most home losses"
+        record_stat = "wins" if counted.group(1) == "wins" else "losses"
 
     lb_ascending = wants_ascending_leaderboard(q)
     # Smart ascending for record stats
     if re.search(r"\b(best|top|highest)\b", q):
         lb_ascending = False
-    elif re.search(r"\b(worst|lowest|fewest)\b", q):
+    elif re.search(r"\b(worst|lowest|fewest|least)\b", q):
         lb_ascending = True
-        if record_stat == "losses":
-            lb_ascending = True  # fewest losses is ascending
+    if counted:
+        # "most losses" ranks the most first; "fewest wins" the fewest.
+        lb_ascending = counted.group(0).split()[0] in ("fewest", "least")
 
     notes: list[str] = []
     route = "team_record_leaderboard"

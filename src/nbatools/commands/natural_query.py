@@ -1765,7 +1765,7 @@ _SINGLE_SEASON_UNRANKED_ROUTES = frozenset(
 _RANKED_WINS_LOSSES = re.compile(
     r"\b(?:most|fewest|least)\s+(?:(?:road|home|away|playoffs?|postseason|regular[\s-]season)\s+)?"
     r"(?:wins|losses)\b"
-    r"|\bwin(?:ning)?\s+(?:percentage|pct|%)"
+    r"|\bwin(?:ning)?\s+(?:percentage|pct)|\bwin(?:ning)?\s*%"
 )
 # "LeBron best scoring season", "Jokic most rebounds in a single season":
 # rank that player's own seasons.
@@ -1795,8 +1795,22 @@ _TITLE_WORD = re.compile(r"\b(?:titles?|championships?|champions?|rings?)\b")
 _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 
 
+# "in '16", "the '90s", "'15-16": apostrophe years. Data starts in 1996-97,
+# so '90-'99 are 1990s and everything else is 2000s.
+_SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
+
+
+def _expand_short_year(match: re.Match) -> str:
+    year = int(match.group(1))
+    full = (1900 if year >= 90 else 2000) + year
+    if match.group(3):
+        return f"{full}-{match.group(3)}"
+    return f"{full}{match.group(2)}"
+
+
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
+    q = _SHORT_YEAR.sub(_expand_short_year, q)
     if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
         q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)

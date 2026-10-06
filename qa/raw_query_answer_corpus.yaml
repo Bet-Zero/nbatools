@@ -8462,6 +8462,37 @@ cases:
         equals: 2005-06
     review_notes: "LeBron's seasons ranked by points per game: 31.4 in 2005-06. It listed his top games of the current season (C2, agent change)."
 
+  - id: c2_most_road_wins_single_season
+    query: "most road wins in a single season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: GSW
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+      - path: result.sections.leaderboard.0.wins
+        equals: 34
+    review_notes: "One row per team season, road games only: the 2015-16 Warriors won 34 on the road. 'most road wins' could not be mapped (C2, agent change)."
+
+  - id: c2_most_points_game_short_year
+    query: "most points in a game in '16"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+    review_notes: "An apostrophe year names the season ending in it, as a bare year does. It answered the current season (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
