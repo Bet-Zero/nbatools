@@ -6090,6 +6090,16 @@ _GAME_LIST_PERCENT_BOUND = re.compile(
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
 # List nouns a league game list reads itself.
 _LEAGUE_GAME_LIST_WORDS = re.compile(r"games?|nights?|performances?|outings?")
+# Subjects and samples a league game list cannot apply.
+_LEAGUE_LIST_UNREAD = re.compile(
+    r"\b(?:guards?|forwards?|centers?|wings?|bigs?|big\s+m[ae]n)\b|\blast\s+\d+"
+)
+# What may follow a number the parse reads as a stat bound.
+_LEAGUE_LIST_BOUND_TAIL = re.compile(
+    r"\s*(?:\+|\s+or\s+(?:more|fewer|less))?\s*(?:points?|pts|rebounds?|reb|assists?|ast|"
+    r"threes?|3s|3pm|turnovers?|tov|minutes?|mins?|steals?|stl|blocks?|blk|fouls?|"
+    r"made\s+threes|free\s+throws?|field\s+goals?)\b|\s+or\s+more\b"
+)
 # Routes a league-wide "best shooting games" question lands on.
 _LEAGUE_GAME_LIST_ROUTES = frozenset({"season_leaders", "season_team_leaders", "top_player_games"})
 
@@ -6153,6 +6163,35 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
                 for word in residual
             ):
                 return None
+            # The residual misses filters the partial parse dropped ("for
+            # rookies", "among guards", "in his last 10", "under 25").
+            plain = _GAME_LIST_PERCENT_BOUND.sub(" ", q)
+            if _ROOKIE_SUBJECT.search(plain) or _LEAGUE_LIST_UNREAD.search(plain):
+                return None
+            for number in re.finditer(r"\b\d+(?:\.\d+)?\b", plain):
+                if re.fullmatch(r"(?:19|20)\d\d", number.group(0)):
+                    continue
+                if not _LEAGUE_LIST_BOUND_TAIL.match(plain, number.end()):
+                    # "over 50% from three under 25": a number nothing applies.
+                    return None
+            plain = re.sub(r"\b(?:nights?|performances?|outings?)\b", "games", plain)
+            try:
+                again = _finalize_route_inner(_build_parse_state(plain))
+            except ValueError:
+                return None
+            again_kwargs = again.get("route_kwargs") or {}
+            explained = {"leaderboard_request_unclear", "compound_event_request_unexecutable"}
+            if (
+                again.get("route") not in _LEAGUE_GAME_LIST_ROUTES
+                or not set(again_kwargs.get("unsupported_filters") or []) <= explained
+            ):
+                return None
+            for key, value in again_kwargs.items():
+                if key in ("unsupported_filters", "leaderboard_eligibility"):
+                    continue
+                if value not in (None, False, "", [], (), {}) and key not in route_kwargs:
+                    # A filter the finder cannot take refuses below.
+                    route_kwargs[key] = value
         if re.search(r"\bby\s+(?!(?:an?\s+)?players?\b)", q):
             # "by the top 10 scorers", "by a rookie": a subject this list
             # does not filter.

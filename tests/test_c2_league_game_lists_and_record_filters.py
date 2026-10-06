@@ -131,6 +131,15 @@ def test_player_record_against_one_opponent():
         "best shooting games in 10 years",
         "best shooting games in 100 games",
         "best shooting performances by the top 10 scorers",
+        "best shooting performances for rookies",
+        "best shooting performances among guards",
+        "best shooting games over 50% from deep for rookies",
+        "best shooting games over 50% from three for guards",
+        "best shooting games over 50% from three among centers",
+        "best shooting games over 50% from three of rookies",
+        "best shooting games over 50% from three under 25",
+        "best shooting games over 50% from three over 30",
+        "best shooting games over 50% from three in his last 10",
     ],
 )
 def test_league_game_lists_never_drop_an_unread_filter(query):
@@ -140,3 +149,10 @@ def test_league_game_lists_never_drop_an_unread_filter(query):
 def test_league_game_list_reads_its_own_words():
     kwargs = parse_query("best three point shooting performances")["route_kwargs"]
     assert kwargs["stat"] == "fg3_pct"
+
+
+def test_league_game_list_keeps_margin_and_span():
+    kwargs = parse_query("best shooting games in wins by 20 or more")["route_kwargs"]
+    assert {"stat": "win_margin", "min_value": 20.0, "max_value": None} in kwargs["conditions"]
+    kwargs = parse_query("best shooting games over 50% since 2023")["route_kwargs"]
+    assert kwargs["start_season"] == "2023-24"
