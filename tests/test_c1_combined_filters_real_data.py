@@ -184,3 +184,24 @@ def test_opponent_threes_allowed():
     ]
     assert summary["games"] == len(allowed)
     assert summary["wins"] == int(allowed["won"].sum())
+
+
+def test_final_margin_filters():
+    games = _team("LAL")
+    margin = games["pts"].astype(float) - games["opp_pts"]
+    for query, expected in (
+        (f"Lakers record in games won by 10 or more {SEASON}", games[margin >= 10]),
+        (f"Lakers record in games decided by 3 points or less {SEASON}", games[margin.abs() <= 3]),
+        (f"Lakers record when losing by 20+ {SEASON}", games[margin <= -20]),
+    ):
+        (summary,) = _sections(_run(query))["summary"]
+        assert (summary["games"], summary["wins"]) == (len(expected), int(expected["won"].sum()))
+
+    # Player rows take the team's margin, not their own plus-minus.
+    teams = data_read_csv(
+        f"raw/team_game_stats/{SEASON}_regular_season.csv", dtype={"game_id": str}
+    )[["game_id", "team_id", "plus_minus"]].rename(columns={"plus_minus": "team_pm"})
+    lebron = _lebron().merge(teams, on=["game_id", "team_id"], how="left")
+    expected = lebron[pd.to_numeric(lebron["team_pm"], errors="coerce") >= 10]
+    (summary,) = _sections(_run(f"LeBron summary in games won by 10+ {SEASON}"))["summary"]
+    assert summary["games"] == len(expected)

@@ -120,7 +120,7 @@ def apply_stat_conditions(
         Optional callback ``(df, stat_col) -> df`` used by callers that derive
         columns on demand, such as ``opponent_pts``.
     """
-    out = df
+    out = attach_margin_stats(df, {c["stat"] for c in normalize_stat_conditions(conditions)})
     for cond in normalize_stat_conditions(conditions):
         stat = cond["stat"]
         if stat not in allowed_stats:
@@ -161,6 +161,39 @@ OPPONENT_STAT_BASES = (
     "tov",
 )
 OPPONENT_STATS = {f"opponent_{base}": f"opponent_{base}" for base in OPPONENT_STAT_BASES}
+#: Final-margin stats from the team plus-minus: ``margin`` is either team's
+#: ("decided by 3 or fewer"); ``win_margin`` and ``loss_margin`` exist only on
+#: wins or losses ("won by 10+", "lost by 20+"), so no bound matches the other.
+MARGIN_STATS = {"margin": "margin", "win_margin": "win_margin", "loss_margin": "loss_margin"}
+#: Stats read from a team game row beyond its own box score.
+TEAM_GAME_EXTRA_STATS = {**OPPONENT_STATS, **MARGIN_STATS}
+
+
+def attach_margin_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
+    """Add the margin columns named in *wanted* from the team plus-minus.
+
+    Player rows carry their team's as ``team_plus_minus``; their own
+    ``plus_minus`` is on-court only and never a final margin.
+    """
+    names = [n for n in MARGIN_STATS if n in set(wanted) and n not in df.columns]
+    if "team_plus_minus" in df.columns:
+        source = "team_plus_minus"
+    elif "plus_minus" in df.columns and "player_id" not in df.columns:
+        source = "plus_minus"
+    else:
+        return df
+    if not names:
+        return df
+    df = df.copy()
+    pm = pd.to_numeric(df[source], errors="coerce")
+    columns = {
+        "margin": pm.abs(),
+        "win_margin": pm.where(pm > 0),
+        "loss_margin": (-pm).where(pm < 0),
+    }
+    for name in names:
+        df[name] = columns[name]
+    return df
 
 
 def attach_opponent_stats(
@@ -172,6 +205,7 @@ def attach_opponent_stats(
     row is still present to join on ``(game_id, opponent_team_id)``.
     """
     wanted = {stat} | {c["stat"] for c in normalize_stat_conditions(conditions)}
+    df = attach_margin_stats(df, wanted)
     columns = [
         name
         for name in sorted(s for s in wanted if s in OPPONENT_STATS)

@@ -784,7 +784,162 @@ def canonicalize_sample_phrases(text: str) -> str:
         text,
     )
     text = re.sub(r"\bmeetings?\b", "matchups", text)
-    return " ".join(text.split())
+    return canonicalize_margin_phrases(" ".join(text.split()))
+
+
+_PTS_WORD = r"(?:\s+(?:points?|pts))?"
+# "by 10+", "by 10 or more points", "by at least 10", "by double digits":
+# the final margin, which is the absolute team plus-minus. Each entry gives
+# the bound's direction and how the number turns into an inclusive bound.
+_MARGIN_BOUNDS = (
+    (rf"(\d+)\s*\+{_PTS_WORD}", "min", 0),
+    (rf"(\d+){_PTS_WORD}\s+or\s+more{_PTS_WORD}", "min", 0),
+    (rf"at\s+least\s+(\d+){_PTS_WORD}", "min", 0),
+    (rf"(?:more\s+than|over){_PTS_WORD}\s+(\d+){_PTS_WORD}", "min", 1),
+    (rf"(\d+){_PTS_WORD}\s+or\s+(?:fewer|less){_PTS_WORD}", "max", 0),
+    (rf"(?:at\s+most|no\s+more\s+than)\s+(\d+){_PTS_WORD}", "max", 0),
+    (rf"(?:(?:fewer|less)\s+than|under){_PTS_WORD}\s+(\d+){_PTS_WORD}", "max", -1),
+    (r"double[- ]digits?", "min", 10),
+    (r"single[- ]digits?", "max", 9),
+    (rf"(\d+){_PTS_WORD}\s*(?:to|-|–)\s*(\d+){_PTS_WORD}", "range", 0),
+    (rf"between\s+(\d+){_PTS_WORD}\s+and\s+(\d+){_PTS_WORD}", "range", 0),
+    # A bare number is that margin exactly: "won by 1", "lost by 20".
+    (rf"(\d+){_PTS_WORD}", "exact", 0),
+)
+_MARGIN_LEAD = (
+    r"\b((?:winning|losing)\s+streaks?|won|wins?|winning|beat|beats|beaten|lost|loses|lose|losing|loss(?:es)?"
+    r"|decided)\s+by\s+"
+)
+# "double-digit wins/losses". A number there ("30 point wins") stays a score:
+# for a player it is their points, for a team it can be its own score.
+_MARGIN_PREFIX = re.compile(r"\bdouble[- ]digit\s+(wins?|victor(?:y|ies)|loss(?:es)?|defeats?)\b")
+# "winning by 10 at halftime", "within 5 in the last 5 minutes", "by 10 in
+# the paint": not the final margin.
+_MARGIN_NOT_FINAL = re.compile(
+    r"\s+(?:at|by|after|in|through|going\s+into|entering)\s+(?:the\s+)?"
+    r"(?:half(?:time)?\b(?!\s*(?:way|-way|of))|break\b|"
+    r"(?:end\s+of\s+(?:the\s+)?)?(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+"
+    r"(?:quarter|half|period)\b(?!\s+of\s+the\s+season)|end\s+of\s+(?:the\s+)?"
+    r"(?:quarter|half|regulation|period)\b|(?:\d+|one|two|three)\s+quarters?\b|"
+    r"(?:last|final)\s+\w+\s+minutes?\b|clutch\b|paint\b)"
+)
+IN_GAME_LEAD_MARKER = "in-game lead"
+_OPPOSITE_OUTCOME = {
+    "won": "lost",
+    "win": "lose",
+    "wins": "loses",
+    "winning": "losing",
+    "beat": "lost",
+    "beats": "loses",
+    "lost": "won",
+    "loses": "wins",
+    "lose": "win",
+    "losing": "winning",
+}
+
+
+_WIN_LEADS = re.compile(
+    r"(?:winning\s+streaks?|won|wins?|winning|beat|beats|beaten|victor(?:y|ies))$"
+)
+_LOSS_LEADS = re.compile(r"(?:losing\s+streaks?|lost|loses|lose|losing|loss(?:es)?|defeats?)$")
+
+
+def _margin_phrase(direction: str, value, lead: str = "") -> str:
+    """The canonical bound: "won by" reads the winning margin (losses never
+    match it), "lost by" the losing margin, "decided by" either."""
+    stat = "game margin"
+    if _WIN_LEADS.search(lead):
+        stat = "win margin"
+    elif _LOSS_LEADS.search(lead):
+        stat = "loss margin"
+    if direction == "min":
+        return f"{value}+ {stat}"
+    if direction == "exact":
+        return f"between {value} and {value} {stat}"
+    if direction == "range":
+        low, high = value
+        return f"between {low} and {high} {stat}"
+    return f"{value} or fewer {stat}"
+
+
+def canonicalize_margin_phrases(text: str) -> str:
+    """Rewrite final-margin wording into a "game margin" bound.
+
+    "Lakers games won by 10+ points" used to read as games where the Lakers
+    scored 10 or more; "decided by 3 or fewer" refused. The margin is the
+    absolute plus-minus of the team's game; "won by" and "lost by" read the
+    winning or losing margin, so a record "when winning by double digits"
+    counts wins only: "won by 10+" -> "won at 10+ win margin".
+    """
+    bounds = "|".join(f"(?:{pattern})" for pattern, _, _ in _MARGIN_BOUNDS)
+
+    def by_phrase(m: re.Match) -> str:
+        before, after = m.string[: m.start()], m.string[m.end() :]
+        if re.search(r"\b(?:road|home|away|visiting)\s+teams?\s+$", before):
+            # "road team won by 20" names a side, not the subject's games.
+            return m.group(0)
+        other_stat = re.match(rf"\s+(?:made\s+)?{_OPP_STAT_WORD}", after)
+        if other_stat and detect_stat(other_stat.group(0)) != "pts":
+            # Another stat ("won by 5 steals") is not a margin.
+            return m.group(0)
+        if _MARGIN_NOT_FINAL.match(after):
+            # A lead at halftime or in a quarter: no period scores are
+            # loaded, so mark it for the unsupported boundary.
+            return f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
+        tail = m.group(2)
+        for pattern, direction, adjust in _MARGIN_BOUNDS:
+            bound = re.fullmatch(pattern, tail)
+            if bound is None:
+                continue
+            if direction == "range":
+                value = tuple(sorted(int(g) for g in bound.groups()))
+            elif bound.groups():
+                value = int(bound.group(1)) + adjust
+            else:
+                value = adjust
+            lead = m.group(1)
+            # "with" would read as a teammate ("with 3 ..."); "at" reads as
+            # nothing else.
+            word = "" if lead == "decided" else f"{lead} "
+            return f"{word}at {_margin_phrase(direction, value, lead)}"
+        return m.group(0)
+
+    # "a win margin of 10+" says "won by 10+".
+    text = re.sub(
+        r"\b(?:with\s+)?(?:an?\s+)?(?:(win(?:ning)?)|los(?:s|ing))\s+margin\s+of\s+"
+        r"(?=\d|at\s+(?:least|most)|more|over|under|fewer|less|double|single|between)",
+        lambda m: "won by " if m.group(1) else "lost by ",
+        text,
+    )
+    # "the opponent won by 10+" is the subject losing by 10+.
+    text = re.sub(
+        r"\b(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+team)\s+"
+        r"(won|wins?|winning|beat|beats|lost|loses|lose|losing)\s+by\s+",
+        lambda m: f"{_OPPOSITE_OUTCOME[m.group(1)]} by ",
+        text,
+    )
+    text = re.sub(
+        rf"{_MARGIN_LEAD}({bounds})(?=$|\s|[,.?!;])(?!\s*%)",
+        by_phrase,
+        text,
+    )
+    # "games within 5 points", "within 3": a close game either way.
+    text = re.sub(
+        r"\b(games?|decided)\s+within\s+(\d+)(?:\s+(?:points?|pts))?\b",
+        lambda m: (
+            f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
+            if _MARGIN_NOT_FINAL.match(m.string[m.end() :])
+            else (
+                f"{m.group(1) if m.group(1) != 'decided' else ''} at "
+                f"{_margin_phrase('max', int(m.group(2)))}"
+            ).strip()
+        ),
+        text,
+    )
+
+    return _MARGIN_PREFIX.sub(
+        lambda m: f"{m.group(1)} at {_margin_phrase('min', 10, m.group(1))}", text
+    )
 
 
 # A last-N phrase introduced by one of these words names the time window the
@@ -1174,6 +1329,37 @@ TEAM_STREAK_SPECIAL_PATTERNS = {
 
 
 _OUTCOME_STREAK = re.compile(r"\b(win(?:ning)?|los(?:ing|s))\s+streaks?\b")
+# "streak of 120 point wins", "5 straight 10+ point losses", "wins in a row"
+_OUTCOME_STREAK_OF = re.compile(
+    r"\b(?:streak\s+of|straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(win|loss)(?:es|s)?\b"
+    r"|\b(win|loss)(?:es|s)?\s+in\s+a\s+row\b"
+)
+# "streak of games without a loss" is unbeaten: the outcome is the other one.
+_NOT_OUTCOME = re.compile(r"\b(?:without|no|zero)\s+(?:a\s+|any\s+)?(win|los)(?:s|ses|ing)?\b")
+# "5 straight wins", "10 consecutive road wins", "3 wins in a row"
+_OUTCOME_LENGTH = re.compile(
+    r"\b(\d+)\s+(?:straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(?:win|loss)(?:es|s)?\b"
+    r"|\b(\d+)\s+(?:wins|losses)\s+in\s+a\s+row\b"
+)
+
+
+def _streak_outcome(normalized: str) -> str | None:
+    """ "wins" or "losses" for an outcome streak, else None."""
+    negated = _NOT_OUTCOME.search(normalized)
+    if negated:
+        return "losses" if negated.group(1) == "win" else "wins"
+    match = _OUTCOME_STREAK.search(normalized) or _OUTCOME_STREAK_OF.search(normalized)
+    if match is None:
+        return None
+    word = next(group for group in match.groups() if group)
+    return "wins" if word.startswith("win") else "losses"
+
+
+def _outcome_streak_length(normalized: str) -> int | None:
+    length = _streak_length(normalized)[0]
+    if length is None and (match := _OUTCOME_LENGTH.search(normalized)):
+        length = int(next(group for group in match.groups() if group))
+    return length
 
 
 def extract_team_streak_request(text: str) -> dict | None:
@@ -1183,20 +1369,28 @@ def extract_team_streak_request(text: str) -> dict | None:
     if not _STREAK_WORD.search(normalized):
         return None
     request = _with_opponent_stat_conditions(_team_streak_request_base(normalized), normalized)
-    outcome = _OUTCOME_STREAK.search(normalized)
+    outcome = _streak_outcome(normalized)
     if request and outcome and request.get("stat") and not request.get("special_condition"):
         # "longest win streak with 30+ assists": every game is a win and
         # meets the bound; the stat reading had dropped the outcome.
         bound = {k: request.get(k) for k in ("stat", "min_value", "max_value")}
+        length = request.get("min_streak_length") or _outcome_streak_length(normalized)
         request = {
             **request,
-            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "special_condition": outcome,
+            "min_streak_length": length,
+            "longest": _longest_unless_length(length, normalized),
             "stat": None,
             "min_value": None,
             "max_value": None,
             "conditions": [bound, *(request.get("conditions") or [])],
         }
     return _with_streak_mode(request, normalized)
+
+
+def _longest_unless_length(length: int | None, normalized: str) -> bool:
+    """A stated length without "longest" asks for every run that long."""
+    return length is None or bool(re.search(r"\blongest\b", normalized))
 
 
 def _team_streak_request_base(normalized: str) -> dict | None:
@@ -1207,15 +1401,29 @@ def _team_streak_request_base(normalized: str) -> dict | None:
         generic = _generic_streak_request(normalized)
         if generic and generic.get("stat") and not generic.get("conditions"):
             request = {**generic, "team_condition_only": True}
-    if request is None and (outcome := _OUTCOME_STREAK.search(normalized)):
-        # "Lakers current winning streak", "Celtics winning streak at home"
+        elif generic is None and len(bounds := extract_threshold_conditions(normalized)) == 1:
+            # "longest streak of games decided by 5 or fewer": a bound the
+            # occurrence reader does not know (the final margin).
+            request = {
+                "special_condition": None,
+                "stat": bounds[0]["stat"],
+                "min_value": bounds[0]["min_value"],
+                "max_value": bounds[0]["max_value"],
+                "min_streak_length": _streak_length(normalized)[0],
+                "longest": True,
+                "team_condition_only": True,
+            }
+    if request is None and (outcome := _streak_outcome(normalized)):
+        # "Lakers current winning streak", "Celtics winning streak at home",
+        # "5 straight wins" (every run of 5 or more)
+        length = _outcome_streak_length(normalized)
         request = {
-            "special_condition": "wins" if outcome.group(1).startswith("win") else "losses",
+            "special_condition": outcome,
             "stat": None,
             "min_value": None,
             "max_value": None,
-            "min_streak_length": _streak_length(normalized)[0],
-            "longest": True,
+            "min_streak_length": length,
+            "longest": _longest_unless_length(length, normalized),
         }
     return request
 
@@ -1231,14 +1439,15 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
         return None
     # Points allowed too: "streak of games holding opponents under 100".
     opponent = extract_opponent_points_allowed_conditions(normalized)
-    if not opponent:
+    if not opponent and not request.get("special_condition"):
         return request
     request = dict(request)
     stat = request.get("stat")
     own_extra: list[dict] = []
     if request.get("special_condition"):
-        # "longest win streak scoring 120 or more while allowing under 110":
-        # the team's own bounds outside the opponent phrases hold too.
+        # "longest win streak with 15+ threes", "winning streak scoring 120
+        # or more while allowing under 110": the team's own bounds outside
+        # the opponent phrases hold in every game of the streak.
         masked = list(normalized)
         for cond in opponent:
             masked[cond["start"] : cond["end"]] = " " * (cond["end"] - cond["start"])

@@ -1141,7 +1141,13 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
         if not data_exists(team_stats_path):
             raise FileNotFoundError(f"Missing team stats file: {team_stats_path}")
 
-        team_stats = data_read_csv(team_stats_path)[["game_id", "team_id", "wl"]].drop_duplicates()
+        team_stats = data_read_csv(team_stats_path)
+        # The team's final margin rides along for "games the Lakers won by 10+".
+        team_columns = ["game_id", "team_id", "wl"]
+        if "plus_minus" in team_stats.columns:
+            team_stats = team_stats.rename(columns={"plus_minus": "team_plus_minus"})
+            team_columns.append("team_plus_minus")
+        team_stats = team_stats[team_columns].drop_duplicates(subset=["game_id", "team_id"])
         df = df.merge(team_stats, on=["game_id", "team_id"], how="left", suffixes=("", "_team"))
 
         if "wl_team" in df.columns:

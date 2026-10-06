@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._condition_utils import (
-    OPPONENT_STATS,
+    TEAM_GAME_EXTRA_STATS,
     apply_stat_conditions,
     attach_opponent_stats,
 )
@@ -54,7 +54,7 @@ ALLOWED_STATS = {
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
     "opponent_pts": "opponent_pts",
-    **OPPONENT_STATS,
+    **TEAM_GAME_EXTRA_STATS,
 }
 
 GAME_LOG_COLUMNS = [
