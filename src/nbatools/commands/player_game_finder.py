@@ -196,6 +196,16 @@ def _window_game_ids(
     return last_n_window_game_ids(sample, last_n, outcome)
 
 
+# A per-game shooting rate ranks only games with this many attempts.
+_RATE_SORT_ATTEMPTS = {
+    "fg_pct": ("fga", 10, "field goal attempts"),
+    "efg_pct": ("fga", 10, "field goal attempts"),
+    "ts_pct": ("fga", 10, "field goal attempts"),
+    "fg3_pct": ("fg3a", 5, "three-point attempts"),
+    "ft_pct": ("fta", 5, "free throw attempts"),
+}
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -445,12 +455,35 @@ def build_result(
     if stat:
         stat_col = ALLOWED_STATS[stat.lower()]
 
+    caveats: list[str] = []
     if sort_by == "game_date":
         df = df.sort_values(["game_date", "game_id"], ascending=[ascending, ascending]).copy()
     else:
         if stat_col is None:
             raise ValueError("sort_by='stat' requires --stat")
-        df = df.sort_values([stat_col, "game_date"], ascending=[ascending, ascending]).copy()
+        attempts = _RATE_SORT_ATTEMPTS.get(stat_col)
+        if (
+            attempts
+            and min_value is None
+            and max_value is None
+            and last_n is None
+            and attempts[0] in df.columns
+        ):
+            # "best shooting game": a 2-for-2 cameo is not one; rank games
+            # with a real number of attempts and say so.
+            column, floor, label = attempts
+            kept = df[pd.to_numeric(df[column], errors="coerce") >= floor]
+            if len(kept) < len(df):
+                caveats.append(f"games with fewer than {floor} {label} left out")
+            df = kept
+            if df.empty:
+                return NoResult(query_class="finder", notes=notes + caveats)
+            # 10-for-10 ranks above 5-for-5.
+            df = df.sort_values(
+                [stat_col, column, "game_date"], ascending=[ascending, False, ascending]
+            ).copy()
+        else:
+            df = df.sort_values([stat_col, "game_date"], ascending=[ascending, ascending]).copy()
 
     df = df.reset_index(drop=True)
     df.insert(0, "rank", range(1, len(df) + 1))
@@ -511,7 +544,8 @@ def build_result(
             [f"playoff series situation: {series_situation_label(series_situation)}"]
             if series_situation
             else []
-        ),
+        )
+        + caveats,
     )
 
 
