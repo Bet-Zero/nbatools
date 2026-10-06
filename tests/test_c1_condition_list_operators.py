@@ -92,3 +92,25 @@ def test_unreadable_or_more_clause_still_refuses(query):
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        # "no more than" contains "more than" but is a ceiling, alone or in a list.
+        ("LeBron James games with no more than 2 turnovers", 22),
+        ("Lakers games with no more than 10 turnovers", 7),
+        ("LeBron James games with 30 points and no more than 5 turnovers", 11),
+        ("LeBron James games with 30 points and no more than 2 turnovers", 5),
+        ("Lakers games with 120 points and no more than 10 turnovers", 3),
+        ("LeBron James games with 10 or more assists and no more than 2 turnovers", 4),
+    ],
+)
+def test_no_more_than_stays_a_ceiling(query, expected):
+    assert len(_rows(query)) == expected
+
+
+def test_not_more_than_is_a_ceiling():
+    assert _rows("LeBron James games with not more than 2 turnovers") == _rows(
+        "LeBron James games with no more than 2 turnovers"
+    )

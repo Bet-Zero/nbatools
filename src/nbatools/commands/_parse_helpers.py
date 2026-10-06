@@ -1910,7 +1910,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
         # Only the inclusive readings were listed here, so it fell through to a
         # bare-number reading and counted games with exactly 10.
         (
-            rf"\bmore than\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
+            # "no more than" / "not more than" are ceilings, read below.
+            rf"(?<!\bno )(?<!\bnot )\bmore than\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0001,
         ),
@@ -1942,7 +1943,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
         # Inclusive upper bounds: "at most 5 points", "no more than 2 turnovers",
         # "5 points or fewer". Read as a bare number they became minimums.
         (
-            rf"\b(?:at most|no more than|a max(?:imum)? of)\s+{_NUM}\s+{STAT_PATTERN}\b",
+            rf"\b(?:at most|no(?:t)? more than|a max(?:imum)? of)\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0,
         ),
