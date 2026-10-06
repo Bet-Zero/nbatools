@@ -133,3 +133,28 @@ def test_team_sitting_is_not_an_absence():
 )
 def test_team_subjects_are_not_second_players(query, record):
     assert _record(query) == record
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # Plural verbs, "as a team" and totals no player reaches are team stats.
+        ("Lakers record when LeBron James plays and records 30 assists as a team", (3, 2, 5)),
+        ("Lakers record when LeBron James plays and record 30 assists", (3, 2, 5)),
+        ("Lakers record when LeBron James plays and score 120 points", (18, 1, 19)),
+        ("Lakers record when LeBron James plays and scores 120 points", (18, 1, 19)),
+        ("Lakers record when LeBron James plays and makes 15 threes", (18, 2, 20)),
+        # A setting between "plays" and the player's own stat.
+        ("Lakers record when LeBron James plays at home and scores 30 points", (4, 1, 5)),
+    ],
+)
+def test_team_stat_clause_after_presence(query, record):
+    assert _record(query) == record
+
+
+def test_later_player_own_stat_beside_presence_refuses():
+    result = _execute(
+        "Lakers record when Luka Doncic plays and LeBron James plays and has 10 assists"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"

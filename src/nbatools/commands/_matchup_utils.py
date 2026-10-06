@@ -590,11 +590,42 @@ _AVAILABILITY_CLAUSE = re.compile(
 )
 
 # "plays and scores 30", "played and had 10 assists": the player's own stat
-# condition, not bare presence.
+# condition, not bare presence. Only singular or past verbs: "and score 120
+# points" / "and record 30 assists" have the team as subject.
 _OWN_STAT_CLAUSE = (
-    r"\s+and\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes|dished|has|had"
-    r"|records?|recorded|puts?\s+up|makes?|made|hits?)\b"
+    r"\s+and\s+(?:scores|scored|scoring|grabs|grabbed|dishes|dished|has|had"
+    r"|records|recorded|puts\s+up|makes|made|hits)\b"
 )
+# "plays at home and scores 30": a short setting between "plays" and the clause.
+_PRESENCE_SETTING = r"(?:\s+(?:at\s+home|on\s+the\s+road|away|in\s+the\s+playoffs))?"
+# Beyond these no player has a game in the data window, so "and scores 120
+# points" / "and makes 15 threes" can only be the team's total.
+_PLAYER_STAT_CEILING = (
+    (r"points?|pts", 100),
+    (r"rebounds?|boards?|rebs", 56),
+    (r"assists?|dimes", 31),
+    (r"threes?|3s|3pm|three[- ]pointers?", 15),
+    (r"steals?", 12),
+    (r"blocks?", 16),
+)
+
+
+def _states_own_stat(tail: str) -> bool:
+    m = re.match(_PRESENCE_SETTING + _OWN_STAT_CLAUSE, tail)
+    if m is None:
+        return False
+    clause = re.split(r"\b(?:and|while|when|but)\b", tail[m.end() :], maxsplit=1)[0]
+    if re.search(r"\b(?:as\s+a\s+team|team|teams|combined)\b", clause):
+        return False
+    for stat, ceiling in _PLAYER_STAT_CEILING:
+        count = re.search(rf"(\d+)\+?\s+(?:or\s+more\s+)?(?:made\s+)?(?:{stat})\b", clause)
+        if count and int(count.group(1)) >= ceiling:
+            return False
+    return True
+
+
+def _states_player_condition(tail: str) -> bool:
+    return bool(re.match(_MINUTES_BOUND_TAIL, tail) or _states_own_stat(tail))
 
 
 def names_other_player_availability(text: str, player: str | None) -> bool:
@@ -643,11 +674,10 @@ def presence_states_player_condition(text: str) -> bool:
     stays a presence filter (another player's clause follows), the team route
     would check the condition against team rows and must refuse instead.
     """
-    m = re.search(rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+[\w .&'\-]+?\s+(?:plays?|played)\b", text)
-    if m is None:
-        return False
-    tail = text[m.end() :]
-    return bool(re.match(_MINUTES_BOUND_TAIL, tail) or re.match(_OWN_STAT_CLAUSE, tail))
+    return any(
+        _states_player_condition(text[m.end() :])
+        for m in re.finditer(r"\s(?:plays?|played)\b", text)
+    )
 
 
 def detect_with_player(text: str) -> tuple[str | None, str]:
@@ -679,7 +709,7 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
             if (
                 player
                 and index == 1
-                and (re.match(_MINUTES_BOUND_TAIL, tail) or re.match(_OWN_STAT_CLAUSE, tail))
+                and _states_player_condition(tail)
                 and not names_other_player_availability(tail, player)
             ):
                 # "when PLAYER plays 35 minutes" / "plays and scores 30" state a
