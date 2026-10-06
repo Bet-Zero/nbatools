@@ -15,6 +15,8 @@ ComparisonResult, LeaderboardResult, NoResult).
 
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
 from nbatools.commands._condition_utils import (
@@ -866,6 +868,15 @@ def build_record_leaderboard_result(
     # Minimum games guardrail: at least 1 game per season for record queries
     # Playoff teams skip seasons, so a playoff span keeps every team that played.
     min_games = 1 if season_type == "Playoffs" else max(1, len(seasons))
+    condition_min_games = 0
+    if conditions and team is None and stat not in ("wins", "losses") and not agg.empty:
+        # "best record when scoring 120+": a 1-0 team in a stat-condition
+        # sample is not the best record. Require a fifth of the games the
+        # most frequent team has in the sample, and at least 3 when the
+        # leader has that many.
+        most = int(agg["games_played"].max())
+        condition_min_games = max(math.ceil(0.2 * most), min(3, most))
+        min_games = max(min_games, condition_min_games)
     agg = agg[agg["games_played"] >= min_games].copy()
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
@@ -916,6 +927,9 @@ def build_record_leaderboard_result(
         if end_date:
             dp.append(f"to {end_date}")
         caveats.append(f"date window: {' '.join(dp)}")
+
+    if condition_min_games > 1:
+        caveats.append(f"teams with at least {condition_min_games} games in this sample")
 
     return LeaderboardResult(
         leaders=result,
