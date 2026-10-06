@@ -681,6 +681,35 @@ def _names_conditional_player(text: str) -> bool:
     return bool(cond and detect_player(text[cond.end() :]))
 
 
+_PEOPLE_WORDS = re.compile(
+    r"\b(?:teammates?|guards?|forwards?|centers?|bench|players?|starters?|lineups?|"
+    r"coach(?:es)?|rookies?|scorers?|shooters?|defenders?|roster|duo|trio|big\s+men)\b"
+)
+
+
+def _superlative_names_a_stat(phrase: str, text: str) -> bool:
+    """ "the best record", "the most turnovers": a stat, not a person or group."""
+    sup = r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)"
+    rest = re.sub(rf"^{sup}\b\s*", "", phrase).strip()
+    if not rest:
+        # The phrase stopped at a word the player pattern drops ("record").
+        m = re.search(
+            rf"\bwith\s+{sup}\s+(.+?)(?=\s+(?:in|this|since|over|from|during|of|for|with|"
+            r"without|by|vs|against)\b|[,?.]|$)",
+            text,
+        )
+        rest = m.group(1).strip() if m else ""
+    if not rest or _PEOPLE_WORDS.search(rest):
+        return False
+    if re.fullmatch(
+        r"(?:(?:home|road|away|regular[\s-]season|playoff)\s+)?(?:record|wins|losses)", rest
+    ):
+        return True
+    from nbatools.commands._parse_helpers import detect_stat
+
+    return detect_stat(rest) is not None
+
+
 def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
@@ -731,9 +760,12 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             and re.match(r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase)
             and (
                 re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
-                or re.search(
-                    r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
-                    text,
+                or (
+                    re.search(
+                        r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
+                        text,
+                    )
+                    and _superlative_names_a_stat(phrase, text)
                 )
             )
         ):

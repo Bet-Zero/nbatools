@@ -5859,6 +5859,9 @@ def _single_season_refusal(parsed: dict) -> dict:
     return out
 
 
+_WITH_SUPERLATIVE = re.compile(r"\bwith\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b")
+
+
 def _best_season_scope(parsed: dict, out: dict, kept: frozenset) -> dict | None:
     """Shared checks for "<subject> best <stat> season(s)"; the span, or None."""
     q = parsed["normalized_query"]
@@ -5866,6 +5869,9 @@ def _best_season_scope(parsed: dict, out: dict, kept: frozenset) -> dict | None:
     if not (parsed.get("single_season_intent") or _PLAYER_BEST_SEASON.search(q)):
         return None
     if _PLAYER_SEASON_BLOCKERS.search(q):
+        return None
+    if _WITH_SUPERLATIVE.search(q) and detect_unresolved_availability_player(q, mode="with"):
+        # "season with the highest scoring teammate": a person, not a stat.
         return None
     if route_kwargs.get("start_season") is None and (
         _NAMED_SEASON_WORDS.search(q) or extract_season(q) is not None
@@ -6029,6 +6035,7 @@ _GAME_SHOOTING_PATTERNS = tuple(
     (pattern.replace(r"seasons?\b", r"(?:games?|nights?|performances?|outings?)\b"), stat)
     for pattern, stat in _SEASON_SHOOTING_PATTERNS
 )
+_RATE_STATS = frozenset({"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"})
 _GAME_LIST_PERCENT_BOUND = re.compile(
     r"\b(over|above|better\s+than|at\s+least|under|below|less\s+than|worse\s+than)\s+"
     r"(\d+(?:\.\d+)?)\s*(?:%|percent)"
@@ -6048,6 +6055,9 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     shooting = next(
         (stat for pattern, stat in _GAME_SHOOTING_PATTERNS if re.search(pattern, q)), None
     )
+    if shooting == "fg_pct" and route_kwargs.get("stat") in _RATE_STATS:
+        # "best shooting games shooting over 50% from three": the named rate.
+        shooting = route_kwargs["stat"]
     if shooting and route_kwargs.get("min_value") == 3 and route_kwargs.get("stat") == "pts":
         # "3 point shooting": the 3 is not a points threshold.
         route_kwargs.pop("min_value")
@@ -6068,27 +6078,34 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             "max_value": route_kwargs.pop("max_value", None),
         }
         route_kwargs["conditions"] = list(route_kwargs.get("conditions") or []) + [bound]
+    conditions = list(route_kwargs.get("conditions") or [])
     if shooting and route_kwargs.get("stat") == shooting:
-        # "at least 50%" can arrive unscaled; percentages are fractions.
+        # A bound on the ranked rate ("over 50%", "at least 50%") becomes a
+        # condition, so the finder's attempt floor still applies.
+        bound = {
+            "stat": shooting,
+            "min_value": route_kwargs.pop("min_value", None),
+            "max_value": route_kwargs.pop("max_value", None),
+        }
         for key in ("min_value", "max_value"):
-            if (route_kwargs.get(key) or 0) > 1:
-                route_kwargs[key] = route_kwargs[key] / 100
-    if shooting:
-        percent = _GAME_LIST_PERCENT_BOUND.search(q)
-        if (
-            percent
-            and all(route_kwargs.get(key) is None for key in ("min_value", "max_value"))
-            and route_kwargs.get("stat") in (None, shooting)
-        ):
-            # "best shooting games over 50%": the bound is on the shooting stat.
-            value = float(percent.group(2))
-            value = value / 100 if value > 1 else value
-            if percent.group(1) in ("over", "above", "better than"):
-                route_kwargs["min_value"] = value + 0.0001
-            elif percent.group(1) == "at least":
-                route_kwargs["min_value"] = value
-            else:
-                route_kwargs["max_value"] = value - 0.0001
+            if (bound[key] or 0) > 1:
+                # "at least 50%" can arrive unscaled; percentages are fractions.
+                bound[key] = bound[key] / 100
+        if bound["min_value"] is not None or bound["max_value"] is not None:
+            conditions.append(bound)
+    percent = _GAME_LIST_PERCENT_BOUND.search(q) if shooting else None
+    if percent and not any(c.get("stat") in _RATE_STATS for c in conditions):
+        # "best shooting games over 50%": the bound is on the shooting stat.
+        value = float(percent.group(2))
+        value = value / 100 if value > 1 else value
+        if percent.group(1) in ("over", "above", "better than"):
+            conditions.append({"stat": shooting, "min_value": value + 0.0001, "max_value": None})
+        elif percent.group(1) == "at least":
+            conditions.append({"stat": shooting, "min_value": value, "max_value": None})
+        else:
+            conditions.append({"stat": shooting, "min_value": None, "max_value": value - 0.0001})
+    if conditions:
+        route_kwargs["conditions"] = conditions
     stat = shooting or route_kwargs.get("stat") or "pts"
     route_kwargs.pop("career_intent", None)
     from inspect import signature

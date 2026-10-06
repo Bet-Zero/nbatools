@@ -20,6 +20,7 @@ pytestmark = [pytest.mark.query]
         ("LeBron best shooting games at least 50%", "fg_pct", 0.5, None, False),
         ("LeBron worst shooting games under 40%", "fg_pct", None, 0.3999, True),
         ("Curry best 3 point shooting games over 40%", "fg3_pct", 0.4001, None, False),
+        ("LeBron best shooting games shooting over 50% from three", "fg3_pct", 0.5001, None, False),
     ],
 )
 def test_shooting_game_list_keeps_percent_bound(query, stat, min_value, max_value, ascending):
@@ -27,16 +28,12 @@ def test_shooting_game_list_keeps_percent_bound(query, stat, min_value, max_valu
     kwargs = parsed["route_kwargs"]
     assert parsed["route"] == "player_game_finder"
     assert (kwargs["stat"], kwargs["sort_by"], kwargs["ascending"]) == (stat, "stat", ascending)
-    assert (
-        kwargs.get("min_value") == pytest.approx(min_value)
-        if min_value
-        else not kwargs.get("min_value")
-    )
-    assert (
-        kwargs.get("max_value") == pytest.approx(max_value)
-        if max_value
-        else not kwargs.get("max_value")
-    )
+    # The bound is a condition, so the attempt floor still applies.
+    assert kwargs.get("min_value") is None and kwargs.get("max_value") is None
+    [condition] = kwargs["conditions"]
+    assert condition["stat"] == stat
+    assert condition["min_value"] == (pytest.approx(min_value) if min_value else None)
+    assert condition["max_value"] == (pytest.approx(max_value) if max_value else None)
 
 
 @pytest.mark.parametrize(
@@ -80,6 +77,31 @@ def test_season_with_the_most_ranks_seasons(query, route, stat, ascending):
     assert parsed["route"] == route
     assert (kwargs["stat"], kwargs["ascending"], kwargs["per_season"]) == (stat, ascending, True)
     assert not kwargs.get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record in seasons with the worst bench",
+        "LeBron season with the highest scoring teammate",
+        "Lakers seasons with the best point guard",
+    ],
+)
+def test_season_with_a_person_is_not_a_stat_board(query):
+    parsed = parse_query(query)
+    assert parsed["route"] not in (
+        "season_leaders",
+        "season_team_leaders",
+        "team_record_leaderboard",
+    )
+
+
+@pytest.mark.fixture_data
+def test_percent_bound_keeps_the_attempt_floor():
+    result = execute_natural_query("Curry best 3 point shooting games over 40%")
+    assert result.result_status == "ok"
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert rows and all(row["fg3a"] >= 5 and row["fg3_pct"] > 0.4 for row in rows)
 
 
 @pytest.mark.fixture_data
