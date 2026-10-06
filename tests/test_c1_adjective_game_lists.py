@@ -92,9 +92,27 @@ def test_or_alternative_keeps_first_condition():
         # A player named after the stat bound cannot be combined yet.
         "Lakers record in games with 15 threes and LeBron",
         "Lakers record in games with 120 points with LeBron",
+        "Lakers record when LeBron scores 30 in games with 120 points",
+        # A stat noun the threshold reader does not read.
+        "Lakers record in games with 15 3-pointers",
+        # "or" before a season is not a stat alternative.
+        "LeBron 30 point games with 10 assists in 2023-24 or 2024-25",
     ],
 )
 def test_non_stat_counts_still_refuse(query):
     from nbatools.query_service import execute_natural_query
 
     assert execute_natural_query(query).result_status != "ok"
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        ("Lakers record in games with 10 or more turnovers", (45, 11)),
+        ("Lakers record in games with 120 points or more", (18, 1)),
+        ("Lakers record in games with 120 points vs the Celtics", (3, 1)),
+    ],
+)
+def test_team_record_stat_count_with_scope(query, record):
+    summary = _run(query).result.to_dict()["sections"]["summary"][0]
+    assert (summary["wins"], summary["losses"]) == record

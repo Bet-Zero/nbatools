@@ -804,7 +804,11 @@ def canonicalize_adjective_game_lists(text: str) -> str:
     return f"{text[: m.start()]}games with {first} and {rest}"
 
 
-_ALTERNATIVE_COUNT = re.compile(r"\bor\s+((?:at\s+least\s+|over\s+|more\s+than\s+|under\s+)?\d)")
+# "or 10 rebounds": an alternative stat count, never "or 2024-25".
+_ALTERNATIVE_COUNT = re.compile(
+    r"\bor\s+((?:at\s+least\s+|over\s+|more\s+than\s+|under\s+)?\d+\+?\s+"
+    r"(?:points?|rebounds?|assists?|threes?|3s|steals?|blocks?|turnovers?)\b)"
+)
 _ADJECTIVE_GAMES_WITH = re.compile(
     r"\b(\d+)(\+)?[- ](point|rebound|assist|three|steal|block|turnover)\s+games?\s+"
     r"(?:with|where\s+(?:he|she|they)\s+(?:had|made|hit|grabbed|dished))\s+"
