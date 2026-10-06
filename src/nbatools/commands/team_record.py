@@ -869,7 +869,7 @@ def build_record_leaderboard_result(
     # Playoff teams skip seasons, so a playoff span keeps every team that played.
     min_games = 1 if season_type == "Playoffs" else max(1, len(seasons))
     condition_min_games = 0
-    if conditions and team is None and not agg.empty:
+    if conditions and team is None and stat not in ("wins", "losses") and not agg.empty:
         # "best record when scoring 120+": a 1-0 team in a stat-condition
         # sample is not the best record. Require a fifth of the games the
         # most frequent team has in the sample, and at least 3 when the
