@@ -6075,6 +6075,7 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
 
 
 _NAMED_DECADE = re.compile(r"\bthe\s+(?:19|20)?\d0'?s\b")
+_NAMED_DECADE_PHRASE = re.compile(r"\b(?:(?:in|during|of|from|over)\s+)?the\s+(?:19|20)?\d0'?s\b")
 _DECADE_BUCKETS = re.compile(r"\b(?:by|per|each|every)\s+decade\b|\bdecades\b")
 _RECORD_WORDS = re.compile(r"\brecords?\b|\bwin(?:ning)?\s*(?:%|pct|percentage)")
 
@@ -6083,51 +6084,35 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     """ "most points in a season in the 2010s": a stat board over that decade.
 
     The decade record board ranks team records; a stat question landed there
-    and answered wins.
+    and answered wins. The named decade is folded into the equivalent year
+    range and the question parsed again, so every other filter (rookies, home,
+    totals, minimum games) is kept exactly as the range form keeps it.
     """
     if out.get("route") != "record_by_decade_leaderboard":
         return None
     q = parsed["normalized_query"]
     if not _NAMED_DECADE.search(q) or _DECADE_BUCKETS.search(q):
         return None
-    if parsed.get("player") or parsed.get("team") or parsed.get("opponent"):
-        return None
-    route_kwargs = out.get("route_kwargs") or {}
     stat = parsed.get("stat")
-    single = bool(parsed.get("single_season_intent"))
     record = (
         stat in (None, "wins", "losses", "win_pct")
         or _RANKED_WINS_LOSSES.search(q)
         or _RECORD_WORDS.search(q)
     )
-    if record and not single:
+    if record and not parsed.get("single_season_intent"):
         # "best record in the 2010s": the decade record board.
         return None
-    kwargs = {
-        "season": None,
-        "start_season": route_kwargs["start_season"],
-        "end_season": route_kwargs["end_season"],
-        "season_type": route_kwargs.get("season_type") or "Regular Season",
-        "limit": parsed.get("top_n") or 10,
-    }
-    if record:
-        route = "team_record_leaderboard"
-        kwargs.update(
-            stat=route_kwargs.get("stat") or "win_pct",
-            ascending=bool(route_kwargs.get("ascending")),
-            per_season=True,
-        )
-    else:
-        route = "season_team_leaders" if _SINGLE_SEASON_TEAM.search(q) else "season_leaders"
-        kwargs.update(stat=stat, ascending=bool(_PLAYER_SEASON_LOW.search(q)))
-        if single:
-            kwargs["per_season"] = True
-    rerouted = dict(out)
-    rerouted.update(route=route, intent="leaderboard", route_kwargs=kwargs)
-    for key in ("season", "start_season", "end_season"):
-        rerouted[key] = kwargs[key]
-    rerouted["notes"] = list(out.get("notes") or []) + [
-        "single_season: each season ranked on its own" if single else "decade: totals over the span"
+    century, tens = re.search(r"(19|20)?(\d)0'?s\b", _NAMED_DECADE.search(q).group(0)).groups()
+    if century is None:
+        century = "19" if tens == "9" else "20"
+    first = int(century + tens + "0")
+    ranged = _NAMED_DECADE_PHRASE.sub(f"from {first} to {first + 9}", q, count=1)
+    rerouted = _finalize_route(_build_parse_state(ranged))
+    if rerouted.get("route") in (None, "record_by_decade_leaderboard"):
+        return None
+    rerouted["normalized_query"] = q
+    rerouted["notes"] = list(rerouted.get("notes") or []) + [
+        f"decade: the {first}s read as {first} to {first + 9}"
     ]
     return rerouted
 

@@ -58,6 +58,25 @@ def test_named_decade_stat_questions(query, route, stat, start, per_season, asce
 
 
 @pytest.mark.parametrize(
+    ("query", "key", "value"),
+    [
+        ("most points in a season by a rookie in the 2020s", "rookies_only", True),
+        ("most points in a season this decade by a rookie", "rookies_only", True),
+        ("most points in a season in the 2020s at home", "home_only", True),
+        ("most total points in a season in the 2020s", "stat", "pts_total"),
+        ("most points per game in the 2020s with at least 50 games", "min_games", 50),
+    ],
+)
+def test_named_decade_keeps_every_filter(query, key, value):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "season_leaders"
+    assert kwargs["start_season"] == "2020-21"
+    assert kwargs[key] == value
+    assert "2029" not in parsed["normalized_query"]
+
+
+@pytest.mark.parametrize(
     "query", ["best record in the 2010s", "most wins in the 2010s", "best record by decade"]
 )
 def test_decade_record_boards_stay(query):
