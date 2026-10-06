@@ -198,6 +198,7 @@ def _clear_covered_event_refusal(route_kwargs: dict, own: list[dict]) -> None:
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Read team/opponent bounds and the ranking stat of a player game list."""
     _apply_team_context(route, route_kwargs, text)
+    _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
 
@@ -220,6 +221,75 @@ def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -
 
 # "highest scoring games", "top 5 games by assists", "most rebounds in a game".
 _RANKING_WORDS = re.compile(r"\b(?:highest|most|top|best|biggest|largest|lowest|fewest|least|by)\b")
+
+
+_RANK_WORD = r"(?:highest|most|top|best|biggest|largest|lowest|fewest|(?<!\bat )least)"
+_RANKED_BY = re.compile(
+    rf"\b{_RANK_WORD}[\s-]+(?P<a>scoring|plus[\s-]?minus|{STAT_PATTERN})\b"
+    rf"|\bby\s+(?:the\s+)?(?:{_RANK_WORD}\s+)?(?P<b>scoring|plus[\s-]?minus|{STAT_PATTERN})\b"
+)
+# "with 30 points", "in a game with at least 30 points", "30 point games",
+# "a 30 minute game": a player's own game condition beside the ranking.
+_EVENT_PATTERNS = (
+    re.compile(rf"\bwith\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b"),
+    re.compile(rf"\b(?P<n>\d+)\+?[\s-]+(?P<w>{STAT_PATTERN}|minutes?)[\s-]+games?\b"),
+)
+
+
+def _stat_word(word: str) -> str | None:
+    from nbatools.commands._parse_helpers import detect_stat
+
+    word = re.sub(r"[\s-]+", " ", word.strip())
+    if re.fullmatch(r"minutes?", word):
+        return "minutes"
+    return detect_stat(word)
+
+
+def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Rank by the stat a rank word names and keep the game conditions.
+
+    "most rebounds in a game with 30 points" read the 30 as a rebound bound
+    and refused; "top 5 games by assists with 30 points" dropped the 30
+    points; "fewest points in a 30 minute game" dropped the minutes.
+    """
+    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+        return
+    ranked = {_stat_word(m.group("a") or m.group("b")) for m in _RANKED_BY.finditer(text)} - {None}
+    if len(ranked) != 1:
+        return
+    (ranking,) = ranked
+    events = []
+    claimed: list[tuple[int, int]] = []
+    for pattern in _EVENT_PATTERNS:
+        for m in pattern.finditer(text):
+            if any(m.start() < e and s < m.end() for s, e in claimed):
+                continue
+            stat = _stat_word(m.group("w"))
+            if stat is None:
+                continue
+            claimed.append(m.span())
+            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+    if not events:
+        return
+    from nbatools.commands.player_game_finder import ALLOWED_STATS
+
+    if ranking not in ALLOWED_STATS:
+        return
+    kept = [
+        c
+        for c in _kwargs_conditions(route_kwargs)
+        if not (
+            c["stat"] == ranking and any(e["stat"] != ranking and _same_bound(c, e) for e in events)
+        )
+    ]
+    for event in events:
+        if not any(c["stat"] == event["stat"] and _same_bound(c, event) for c in kept):
+            kept.append(event)
+    _clear_covered_event_refusal(route_kwargs, kept)
+    route_kwargs["conditions"] = kept
+    route_kwargs["stat"] = ranking
+    route_kwargs["min_value"] = None
+    route_kwargs["max_value"] = None
 
 
 def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> None:
