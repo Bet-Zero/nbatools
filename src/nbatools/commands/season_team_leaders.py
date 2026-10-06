@@ -430,6 +430,7 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     per_season: bool = False,
+    team: str | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         # "most team points in a single season": one row per team season.
@@ -563,6 +564,10 @@ def build_result(
         opponent_active=bool(opponent),
         num_seasons=len(seasons),
     )
+
+    if team is not None and not df.empty:
+        # "Lakers best scoring season": rank one team's seasons.
+        df = df[df["team_abbr"].astype(str).str.upper() == team.upper()].copy()
 
     if df.empty:
         return NoResult(

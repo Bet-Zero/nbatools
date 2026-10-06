@@ -797,6 +797,7 @@ def build_record_leaderboard_result(
     end_date: str | None = None,
     conditions: list[dict] | None = None,
     per_season: bool = False,
+    team: str | None = None,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -865,6 +866,9 @@ def build_record_leaderboard_result(
     # Minimum games guardrail: at least 1 game per season for record queries
     min_games = max(1, len(seasons))
     agg = agg[agg["games_played"] >= min_games].copy()
+    if team is not None:
+        # "Lakers best record in a single season": rank one team's seasons.
+        agg = agg[agg["team_abbr"].astype(str).str.upper() == team.upper()].copy()
 
     if agg.empty:
         return _empty_sample_result("leaderboard")

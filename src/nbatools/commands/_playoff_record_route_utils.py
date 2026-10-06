@@ -38,7 +38,8 @@ def detect_record_intent(text: str) -> bool:
     return bool(
         re.search(
             r"\b(?:records?|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
-            r"|(?:most|fewest|least)\s+(?:home\s+|away\s+|road\s+)?(?:wins|losses)"
+            r"|(?:most|fewest|least)\s+(?:home\s+|away\s+|road\s+|playoffs?\s+|postseason\s+)?"
+            r"(?:wins|losses)"
             r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|worst\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|highest\s+win|lowest\s+win"
@@ -356,11 +357,23 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         bdl_season, bdl_start, bdl_end = _resolve_season_defaults(
             season, start_season, end_season, season_type
         )
-        record_stat = "wins"
-        if re.search(r"\bwin_pct\b|\bwin\s*%\b|\bwinning\s+pct\b", q):
+        low = bool(re.search(r"\b(?:fewest|worst|lowest)\b|(?<!\bat\s)\bleast\b", q))
+        counted = _RANKED_RECORD_COUNT.search(q)
+        if counted:
+            # "most wins by decade", "fewest losses in the 2020s"
+            record_stat = counted.group(1)
+            low = counted.group(0).split()[0] in ("fewest", "least")
+        elif re.search(
+            r"\bwin_pct\b|\bwin(?:ning)?\s*%|\bwin(?:ning)?\s+(?:percent(?:age)?|pct)\b"
+            r"|\brecords?\b",
+            q,
+        ):
+            # "best record by decade", "lowest win% in the 2010s"
             record_stat = "win_pct"
         elif re.search(r"\bloss", q):
             record_stat = "losses"
+        else:
+            record_stat = "wins"
 
         return "record_by_decade_leaderboard", {
             "season": bdl_season,
@@ -369,8 +382,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "season_type": season_type,
             "stat": record_stat,
             "limit": top_n or 10,
-            # "fewest losses in the 2020s" ranks the fewest first.
-            "ascending": bool(re.search(r"\bfewest\s+|(?<!\bat\s)\bleast\s+", q)),
+            "ascending": low,
             "playoff_round": playoff_round_filter,
         }
 
