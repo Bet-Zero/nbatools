@@ -102,3 +102,39 @@ def test_threshold_lists_keep_every_game():
     result = execute_natural_query("LeBron games shooting over 60% since 2023")
     caveats = result.result.to_dict().get("caveats") or []
     assert not any("left out" in caveat for caveat in caveats)
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "limit"),
+    [
+        ("Jokic top 3 shooting performances", "fg_pct", 3),
+        ("LeBron top 3 shooting games", "fg_pct", 3),
+        ("LeBron 3 best shooting games", "fg_pct", 3),
+    ],
+)
+def test_top_n_is_a_count_not_three_point_shooting(query, stat, limit):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["stat"], kwargs["limit"]) == (stat, limit)
+
+
+def test_top_three_shooting_seasons_rank_field_goal_percentage():
+    kwargs = parse_query("LeBron top 3 shooting seasons")["route_kwargs"]
+    assert (kwargs["stat"], kwargs["limit"]) == ("fg_pct", 3)
+
+
+def test_a_bound_on_another_stat_keeps_that_stat():
+    kwargs = parse_query("LeBron best shooting games over 25 points")["route_kwargs"]
+    assert (kwargs["stat"], kwargs["min_value"]) == ("pts", 25.0001)
+
+
+def test_defensive_games_are_not_ranked_by_points():
+    parsed = parse_query("Jokic best defensive games")
+    assert parsed["route_kwargs"].get("stat") != "pts" or parsed["route"] != "player_game_finder"
+
+
+@pytest.mark.fixture_data
+def test_last_n_lists_keep_every_game():
+    result = execute_natural_query("LeBron last 20 games sorted by 3pt%")
+    data = result.result.to_dict()
+    assert len(data["sections"]["finder"]) == 20
+    assert not any("left out" in caveat for caveat in data.get("caveats") or [])

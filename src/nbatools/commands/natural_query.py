@@ -1810,7 +1810,12 @@ _PLAYER_SEASON_KEPT = frozenset(
 _SEASON_SHOOTING_PATTERNS = (
     (r"\btrue\s+shooting\s+seasons?\b", "ts_pct"),
     (r"\beffective\s+(?:field\s+goal\s+)?shooting\s+seasons?\b", "efg_pct"),
-    (r"\b(?:3|three)[\s-]?(?:point|pt)?s?\s+shooting\s+seasons?\b", "fg3_pct"),
+    # "top 3 shooting seasons" is a count, not 3-point shooting.
+    (
+        r"(?:\bthree[\s-]?(?:point|pt)?s?|\b3[\s-]?(?:point|pt)s?"
+        r"|(?<!\btop\s)(?<!\bbest\s)(?<!\bworst\s)\b3s?)\s+shooting\s+seasons?\b",
+        "fg3_pct",
+    ),
     (r"\bfree[\s-]?throw\s+shooting\s+seasons?\b", "ft_pct"),
     (r"\bshooting\s+seasons?\b", "fg_pct"),
 )
@@ -5988,7 +5993,7 @@ _PLAYER_GAME_LIST = re.compile(
 _PLAYER_GAME_LIST_BLOCKERS = re.compile(
     r"\bgame\s+score\b|\bper\s+game\b|\bin\s+a\s+row\b|\bstraight\b|\bstreaks?\b"
     r"|\bstretch(?:es)?\b|\bspan\b|\bseasons\b|\bsingle[\s-]season\b|\bin\s+a\s+season\b"
-    r"|\baverage|\bavg\b|\brecord\b"
+    r"|\baverage|\bavg\b|\brecord\b|\bdefen[sc]"
 )
 _GAME_SHOOTING_PATTERNS = tuple(
     (pattern.replace(r"seasons?\b", r"(?:games?|nights?|performances?|outings?)\b"), stat)
@@ -6014,6 +6019,13 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         route_kwargs.pop("min_value")
     elif shooting is None and out["route"] == "player_game_finder":
         # Already a ranked list of the stat asked for.
+        return None
+    elif (
+        shooting
+        and route_kwargs.get("stat") not in (None, shooting)
+        and (route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None)
+    ):
+        # "best shooting games over 25 points": the bound is on another stat.
         return None
     stat = shooting or route_kwargs.get("stat") or "pts"
     route_kwargs.pop("career_intent", None)

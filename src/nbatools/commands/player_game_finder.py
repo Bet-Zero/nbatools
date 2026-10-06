@@ -462,7 +462,13 @@ def build_result(
         if stat_col is None:
             raise ValueError("sort_by='stat' requires --stat")
         attempts = _RATE_SORT_ATTEMPTS.get(stat_col)
-        if attempts and min_value is None and max_value is None and attempts[0] in df.columns:
+        if (
+            attempts
+            and min_value is None
+            and max_value is None
+            and last_n is None
+            and attempts[0] in df.columns
+        ):
             # "best shooting game": a 2-for-2 cameo is not one; rank games
             # with a real number of attempts and say so.
             column, floor, label = attempts
