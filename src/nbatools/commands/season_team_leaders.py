@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands._single_season_boards import best_single_seasons
 from nbatools.commands.data_utils import safe_divide
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
@@ -428,7 +429,17 @@ def build_result(
     wins_only: bool = False,
     losses_only: bool = False,
     last_n: int | None = None,
+    per_season: bool = False,
 ) -> LeaderboardResult | NoResult:
+    if per_season and not season and start_season and end_season:
+        # "most team points in a single season": one row per team season.
+        return best_single_seasons(
+            build_result,
+            dict(locals()),
+            target_col=_normalize_stat(stat),
+            name_col="team_name",
+            full_seasons_only=season_type == "Regular Season",
+        )
     safe = season_type.lower().replace(" ", "_")
 
     try:

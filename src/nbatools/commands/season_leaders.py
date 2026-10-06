@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
 
 from nbatools.commands._player_identity import canonicalize_player_names
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands._single_season_boards import best_single_seasons
 from nbatools.commands.data_utils import (
     build_role_filter_coverage_note,
     exact_coverage_failure,
@@ -816,44 +818,9 @@ def _load_roster_experience(seasons: list[str]) -> pd.DataFrame:
     return rosters.drop_duplicates(subset=["season", "player_id"])
 
 
-def _best_single_seasons(kwargs: dict) -> LeaderboardResult | NoResult:
-    """Rank player seasons across a span: "most points in a single season".
-
-    Each season is ranked on its own (with its own games floor), then the
-    seasons' rows are merged, so one row is one player season.
-    """
-    seasons = resolve_seasons(None, kwargs["start_season"], kwargs["end_season"])
-    target_col = _normalize_stat(kwargs["stat"])
-    frames: list[pd.DataFrame] = []
-    caveats: list[str] = []
-    for one in seasons:
-        result = build_result(
-            **{**kwargs, "season": one, "start_season": None, "end_season": None},
-        )
-        if not isinstance(result, LeaderboardResult) or result.leaders.empty:
-            continue
-        frames.append(result.leaders)
-        caveats.extend(c for c in result.caveats if c not in caveats)
-    if not frames:
-        return NoResult(
-            query_class="leaderboard",
-            reason="no_match",
-            notes=["No games matched the specified filters"],
-        )
-    combined = pd.concat(frames, ignore_index=True).drop(columns=["rank"])
-    ascending = kwargs["ascending"]
-    by = list(dict.fromkeys([target_col, "games_played", "player_name"]))
-    order = [ascending, True] if target_col == "games_played" else [ascending, False, True]
-    combined = (
-        combined.sort_values(by=by, ascending=order).head(kwargs["limit"]).reset_index(drop=True)
-    )
-    combined.insert(0, "rank", range(1, len(combined) + 1))
-    caveats.insert(0, f"single seasons ranked across {seasons[0]} to {seasons[-1]}")
-    return LeaderboardResult(
-        leaders=combined,
-        current_through=compute_current_through_for_seasons(seasons, kwargs["season_type"]),
-        caveats=caveats,
-    )
+def _name_key(name: object) -> str:
+    text = unicodedata.normalize("NFKD", str(name))
+    return "".join(ch for ch in text if not unicodedata.combining(ch)).casefold().strip()
 
 
 def build_result(
@@ -884,9 +851,12 @@ def build_result(
     attempt_stat: str | None = None,
     series_situation: str | None = None,
     per_season: bool = False,
+    player: str | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
-        return _best_single_seasons(dict(locals()))
+        return best_single_seasons(
+            build_result, dict(locals()), target_col=_normalize_stat(stat), name_col="player_name"
+        )
     safe = season_type.lower().replace(" ", "_")
 
     # Resolve the list of seasons to load
@@ -1265,6 +1235,10 @@ def build_result(
             num_seasons=len(seasons),
             series_situation=bool(series_situation),
         )
+
+    if player is not None and not df.empty:
+        # "LeBron best scoring season": rank one player's qualified seasons.
+        df = df[df["player_name"].map(_name_key) == _name_key(player)].copy()
 
     if df.empty:
         return NoResult(

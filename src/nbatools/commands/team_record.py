@@ -23,6 +23,7 @@ from nbatools.commands._condition_utils import (
     attach_opponent_stats,
 )
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands._single_season_boards import best_single_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
     compute_grouped_rate_metrics,
@@ -795,6 +796,7 @@ def build_record_leaderboard_result(
     start_date: str | None = None,
     end_date: str | None = None,
     conditions: list[dict] | None = None,
+    per_season: bool = False,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -809,6 +811,16 @@ def build_record_leaderboard_result(
         raise ValueError("limit must be greater than 0")
     if without_player:
         return _empty_sample_result("leaderboard")
+    if per_season and not season and start_season and end_season:
+        # "most wins in a single season": one row per team season.
+        kwargs = dict(locals())
+        return best_single_seasons(
+            build_record_leaderboard_result,
+            kwargs,
+            target_col=stat if stat in ("wins", "losses", "win_pct") else "win_pct",
+            name_col="team_name",
+            full_seasons_only=season_type == "Regular Season",
+        )
 
     seasons = resolve_seasons(season, start_season, end_season)
 
