@@ -632,6 +632,7 @@ _READ_SCOPE_UNIT = (
     r"|since\s+(?:" + _SEASON + r"|" + _MONTH + r"(?:\s+" + _SEASON + r")?)"
     r"|(?:in\s+)?" + _MONTH + r"(?:\s+" + _SEASON + r")?"
     r"|(?:vs\.?|versus|against)\s+(?:teams\s+(?:over|under|above|below)\s+\.500"
+    r"|(?:good|bad|winning|losing)\s+teams"
     r"|(?:the\s+)?(?P<opp>[a-z]+))"
     r"|at\s+home|on\s+the\s+road|home|road|away"
     r"|(?:in\s+the\s+)?(?:playoffs|postseason|regular\s+season)"

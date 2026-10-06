@@ -552,5 +552,17 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
             route_kwargs["conditions"] = [
                 {k: c.get(k) for k in ("stat", "min_value", "max_value")} for c in conditions
             ]
+        elif parsed.get("stat") and (
+            parsed.get("min_value") is not None or parsed.get("max_value") is not None
+        ):
+            # "best record with 15 threes": a bare count is a single bound
+            # the threshold list does not carry; never rank the whole season.
+            route_kwargs["conditions"] = [
+                {
+                    "stat": parsed["stat"],
+                    "min_value": parsed.get("min_value"),
+                    "max_value": parsed.get("max_value"),
+                }
+            ]
 
     return route, route_kwargs, notes

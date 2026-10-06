@@ -112,6 +112,10 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record in games with 120 points vs playoff teams",
         "Lakers record in games with 120 points against division rivals",
         "Lakers record in games with 120 points if anyone plays",
+        # A non-stat count after filler is not rewritten into a bound.
+        "LeBron 30 point games for the Lakers with 2 teammates scoring 20",
+        "Lakers 120 point games this season with 2 players scoring 30",
+        "LeBron 30 point games this season with 3 days rest",
     ],
 )
 def test_non_stat_counts_still_refuse(query):
@@ -137,3 +141,58 @@ def test_non_stat_counts_still_refuse(query):
 def test_team_record_stat_count_with_scope(query, record):
     summary = _run(query).result.to_dict()["sections"]["summary"][0]
     assert (summary["wins"], summary["losses"]) == record
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "how many 30 point games did lebron have with 5+ threes",
+            "how many games did lebron have with 30 points and 5+ threes",
+        ),
+        (
+            "lebron 30 point games this season with 5 threes",
+            "lebron games this season with 30 points and 5 threes",
+        ),
+        # A teammate between keeps the adjective form.
+        (
+            "lebron 30 point games with anthony davis with 5 threes",
+            "lebron 30 point games with anthony davis with 5 threes",
+        ),
+    ],
+)
+def test_separated_adjective_rewrite(text, expected):
+    assert canonicalize_sample_phrases(text) == expected
+
+
+def test_separated_adjective_count():
+    result = _run("how many 30 point games did LeBron have with 5+ threes")
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == 3
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        ("Lakers record in games with 120 points vs good teams", (7, 1)),
+        ("Lakers record in games with 120 points against losing teams", (11, 0)),
+    ],
+)
+def test_stat_bound_with_opponent_quality(query, record):
+    summary = _run(query).result.to_dict()["sections"]["summary"][0]
+    assert (summary["wins"], summary["losses"]) == record
+
+
+@pytest.mark.parametrize(
+    ("query", "top"),
+    [
+        # A bare count is a bound, not the whole season.
+        ("which team has the best record with 15 threes", ("LAL", 18, 2)),
+        # Teams with a handful of games in the sample are left out.
+        ("best record when scoring 120+", ("LAL", 18, 1)),
+    ],
+)
+def test_record_leaderboard_stat_sample(query, top):
+    rows = _run(query).result.to_dict()["sections"]["leaderboard"]
+    assert (rows[0]["team_abbr"], rows[0]["wins"], rows[0]["losses"]) == top
+    if "120" in query:
+        assert all(row["wins"] + row["losses"] >= 4 for row in rows)

@@ -801,7 +801,7 @@ def canonicalize_adjective_game_lists(text: str) -> str:
     # the second clause. The condition list reads "or" loosest, so repeat
     # the first clause in each alternative: (30 and 10 ast) or (30 and 10 reb).
     rest = _ALTERNATIVE_COUNT.sub(lambda a: f"or {first} and {a.group(1)}", text[m.end() :])
-    return f"{text[: m.start()]}games with {first} and {rest}"
+    return f"{text[: m.start()]}games {m.group('filler')}with {first} and {rest}"
 
 
 # "or 10 rebounds": an alternative stat count, never "or 2024-25".
@@ -811,8 +811,16 @@ _ALTERNATIVE_COUNT = re.compile(
 )
 _ADJECTIVE_GAMES_WITH = re.compile(
     r"\b(\d+)(\+)?[- ](point|rebound|assist|three|steal|block|turnover)\s+games?\s+"
+    # "30 point games did LeBron have with 5+ threes", "... this season with":
+    # a few words between, none of which starts another clause.
+    r"(?P<filler>(?:(?!(?:with|without|w/|w/o|and|or|vs|versus|against|where|when|if|while)\b)"
+    r"[\w.'\-]+\s+){0,5}?)"
     r"(?:with|where\s+(?:he|she|they)\s+(?:had|made|hit|grabbed|dished))\s+"
-    r"(?=(?:at\s+least\s+|over\s+|\d))"
+    # Only before a stat count: "with 2 players scoring 30" or "with 3 days
+    # rest" are not stat bounds.
+    r"(?=(?:at\s+least\s+|over\s+|more\s+than\s+)?\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+"
+    r"(?:points?|pts|rebounds?|boards|assists?|dimes|threes?|3s|3pm|three[- ]pointers?"
+    r"|steals?|blocks?|turnovers?|fouls?)\b)"
 )
 
 
