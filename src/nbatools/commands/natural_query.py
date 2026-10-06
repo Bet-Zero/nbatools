@@ -1877,7 +1877,14 @@ _SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'�
 
 
 # "the 90s", "the 2000s" short form: four digits, like the apostrophe form.
-_BARE_DECADE = re.compile(r"\bthe\s+(\d)0s\b")
+# The 1930s and 1940s can never have data, so "the 30s"/"the 40s" stay
+# unread.
+_BARE_DECADE = re.compile(r"\bthe\s+([0-25-9])0s\b")
+# "games with points in the 20s", "scoring in the 30s": a stat band, not a
+# decade.
+_STAT_BAND = re.compile(
+    r"\b(?:scor\w*|shoot\w*|shot|games?|nights?|with\s+\w+(?:\s+\w+)?)\s+in\s+the\s+\d0s\b"
+)
 _THIS_DECADE = re.compile(r"\b(?:(?:in|during|of|from)\s+)?this\s+decade\b")
 # "who won the most games in a season" is most wins; "in a row" is a streak.
 _WON_MOST_GAMES = re.compile(
@@ -1900,7 +1907,8 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
-    q = _BARE_DECADE.sub(lambda m: f"the {19 if int(m.group(1)) >= 3 else 20}{m.group(1)}0s", q)
+    if not _STAT_BAND.search(q):
+        q = _BARE_DECADE.sub(lambda m: f"the {19 if int(m.group(1)) >= 5 else 20}{m.group(1)}0s", q)
     if _THIS_DECADE.search(q):
         # "this decade": the decade the current season starts in.
         start = int(default_season_for_context("Regular Season")[:4]) // 10 * 10
@@ -6112,6 +6120,16 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
         # "best record in the 2010s": the decade record board.
         return None
     phrases = list(_NAMED_DECADE_PHRASE.finditer(q))
+    if len(phrases) != 1:
+        # Two decades not joined by "and"/"to" ("the 2010s by a rookie
+        # compared to the 2020s"): folding them would drop whatever sits
+        # between, and the record board would answer wins. Refuse.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["leaderboard_request_unclear"]
+        refused["notes"] = [
+            "unsupported_boundary: ask about one decade or one year range at a time"
+        ]
+        return refused
     starts = [int(year) for m in phrases for year in re.findall(r"\d{4}", m.group(0))]
     # "the 2010s and the 2020s": one span from the first decade to the last.
     first, last = min(starts), max(starts) + 9

@@ -175,3 +175,25 @@ def test_named_decade_spans(query, start, end, season_type):
 def test_decade_before_the_data_says_so():
     notes = parse_query("most points in a season in the 90s")["notes"]
     assert "coverage: data starts in 1996-97" in notes
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron games with points in the 20s",
+        "Jokic games scoring in the 30s",
+        "games where Curry scored in the 40s",
+        "Jokic games in the 30s",
+    ],
+)
+def test_stat_bands_are_not_decades(query):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "player_game_finder"
+    assert not kwargs.get("start_season")
+
+
+def test_two_unjoined_decades_refuse():
+    parsed = parse_query("most points in a season in the 2010s by a rookie compared to the 2020s")
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_request_unclear"]
