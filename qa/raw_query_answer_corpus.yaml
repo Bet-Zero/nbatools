@@ -8522,8 +8522,12 @@ cases:
       - path: result.sections.leaderboard.0.player_name
         equals: LeBron James
       - path: result.sections.leaderboard.0.season
-        equals: 2012-13
-    review_notes: "LeBron's seasons ranked by 3P%: .406 in 2012-13. It ranked his points in current-season games (C2, agent change)."
+        equals: 2023-24
+      - path: result.sections.leaderboard.0.fg3m_total
+        equals: 149
+      - path: result.sections.leaderboard.0.fg3a_total
+        equals: 363
+    review_notes: "LeBron's seasons ranked by 3P%: 149 of 363 (.410) in 2023-24, ahead of .406 in 2012-13. It ranked his points in current-season games (C2, agent change)."
 
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
