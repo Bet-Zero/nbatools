@@ -116,6 +116,7 @@ def test_ceiling_after_the_stat_stays_a_ceiling(query, stat, values):
         # A total no player reaches is the team's score.
         "LeBron James most rebounds in a 120 point game",
         "LeBron James most assists in 100 point games",
+        "LeBron James most rebounds in a 90 point game",
         "LeBron James most rebounds in a game with 30 points in a 120 point game",
     ],
 )

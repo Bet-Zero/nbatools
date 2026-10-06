@@ -244,7 +244,7 @@ _EVENT_PATTERNS = (
 
 
 # Near NBA single-game records: a bigger count names a team total.
-_EVENT_CEILING = {"pts": 100, "reb": 56, "ast": 31, "fg3m": 15, "stl": 12, "blk": 16, "minutes": 70}
+_EVENT_CEILING = {"pts": 82, "reb": 56, "ast": 31, "fg3m": 15, "stl": 12, "blk": 16, "minutes": 70}
 
 
 def _stat_word(word: str) -> str | None:
