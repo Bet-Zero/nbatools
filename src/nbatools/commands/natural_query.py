@@ -1589,12 +1589,12 @@ def _wants_top_team_games(q: str) -> bool:
     """Detect team single-game performance intent without catching team seasons."""
     return bool(
         re.search(
-            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,3}}\s+)?team\s+"
+            rf"\b(?:top|highest|best|biggest|lowest|fewest)\s+(?:\d{{1,3}}\s+)?team\s+"
             rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?(?:games?|performances?|nights?)\b",
             q,
         )
         or re.search(
-            rf"\b(?:top|highest|best|biggest)\s+(?:\d{{1,3}}\s+)?"
+            rf"\b(?:top|highest|best|biggest|lowest|fewest)\s+(?:\d{{1,3}}\s+)?"
             rf"(?:(?:points?|scoring|{STAT_PATTERN})\s+)?team\s+"
             r"(?:games?|performances?|nights?)\b",
             q,
@@ -1779,12 +1779,12 @@ _SINGLE_SEASON_UNRANKED_ROUTES = frozenset(
 _RANKED_WINS_LOSSES = re.compile(
     r"\b(?:most|fewest|least)\s+(?:(?:road|home|away|playoffs?|postseason|regular[\s-]season)\s+)?"
     r"(?:wins|losses)\b"
-    r"|\bwin(?:ning)?\s+(?:percentage|pct|%)"
+    r"|\bwin(?:ning)?\s+(?:percentage|pct)|\bwin(?:ning)?\s*%"
 )
 # "LeBron best scoring season", "Jokic most rebounds in a single season":
 # rank that player's own seasons.
 _PLAYER_BEST_SEASON = re.compile(
-    r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z%-]+\s+){0,2}?seasons?\b"
+    r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,4}?seasons?\b"
 )
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 _PLAYER_SEASON_BLOCKERS = re.compile(r"\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
@@ -1803,14 +1803,58 @@ _PLAYER_SEASON_KEPT = frozenset(
         "ascending",
     }
 )
+# "LeBron best three point shooting season": the shooting rate, not points.
+_SEASON_SHOOTING_PATTERNS = (
+    (r"\btrue\s+shooting\s+seasons?\b", "ts_pct"),
+    (r"\beffective\s+(?:field\s+goal\s+)?shooting\s+seasons?\b", "efg_pct"),
+    (r"\b(?:3|three)[\s-]?(?:point|pt)?s?\s+shooting\s+seasons?\b", "fg3_pct"),
+    (r"\bfree[\s-]?throw\s+shooting\s+seasons?\b", "ft_pct"),
+    (r"\bshooting\s+seasons?\b", "fg_pct"),
+)
+
+
+def _season_shooting_stat(q: str) -> str | None:
+    for pattern, stat in _SEASON_SHOOTING_PATTERNS:
+        if re.search(pattern, q):
+            return stat
+    return None
+
+
+_TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record"})
+_TEAM_SEASON_KEPT = _PLAYER_SEASON_KEPT - {"player"} | {"team"}
+# "Lakers best season", "Lakers worst record in a single season": the record.
+_TEAM_PLAIN_BEST_SEASON = re.compile(
+    r"\b(?:best|worst|greatest|top\s+\d+)\s+"
+    r"(?:(?:playoff|postseason|regular[\s-]season|regular|winning)\s+)?(?:seasons?|records?)\b"
+    r"|\brecords?\b"
+)
+# "best scoring season by a Lakers player", "Lakers points allowed": not the
+# team's own stat season.
+_TEAM_SEASON_BLOCKERS = re.compile(
+    r"\bplayers?\b|\bindividual\b|\bby\s+an?\b|\bwho\b|\ballow(?:ed|ing)?\b|\bgiven\s+up\b"
+)
 _SINGLE_SEASON_TEAM = re.compile(r"\bby\s+an?\s+team\b|\bwhich\s+teams?\b|\bteams?\b")
 _SINGLE_SEASON = re.compile(r"\bin\s+(?:a|one|any)\s+(?:single\s+)?season\b|\bsingle[\s-]season\b")
 _TITLE_WORD = re.compile(r"\b(?:titles?|championships?|champions?|rings?)\b")
 _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 
 
+# "in '16", "the '90s", "'15-16": apostrophe years. Data starts in 1996-97,
+# so '90-'99 are 1990s and everything else is 2000s.
+_SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
+
+
+def _expand_short_year(match: re.Match) -> str:
+    year = int(match.group(1))
+    full = (1900 if year >= 90 else 2000) + year
+    if match.group(3):
+        return f"{full}-{match.group(3)}"
+    return f"{full}{match.group(2)}"
+
+
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
+    q = _SHORT_YEAR.sub(_expand_short_year, q)
     if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
         q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
@@ -5754,14 +5798,10 @@ def _single_season_refusal(parsed: dict) -> dict:
     return out
 
 
-def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
-    """ "LeBron best scoring season": that player's seasons, best first."""
+def _best_season_scope(parsed: dict, out: dict, kept: frozenset) -> dict | None:
+    """Shared checks for "<subject> best <stat> season(s)"; the span, or None."""
     q = parsed["normalized_query"]
     route_kwargs = out.get("route_kwargs") or {}
-    player = parsed.get("player")
-    stat = route_kwargs.get("stat")
-    if out.get("route") not in _PLAYER_SEASON_ROUTES or not player or not stat:
-        return None
     if not (parsed.get("single_season_intent") or _PLAYER_BEST_SEASON.search(q)):
         return None
     if _PLAYER_SEASON_BLOCKERS.search(q):
@@ -5771,10 +5811,13 @@ def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
     ):
         # "LeBron best scoring season in 2016" names one season.
         return None
+    if _season_shooting_stat(q):
+        # "3 point shooting season": the 3 is not a points threshold.
+        kept = kept | {"min_value"} if route_kwargs.get("min_value") == 3 else kept
     if any(
         value not in (None, False, "", [], (), {})
         for key, value in route_kwargs.items()
-        if key not in _PLAYER_SEASON_KEPT
+        if key not in kept
     ):
         # "LeBron best scoring season vs Curry / in the clutch / with Luka":
         # the season board would drop the filter.
@@ -5787,30 +5830,88 @@ def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
     if not start:
         start, end = resolve_career(season_type)
         notes.append(f"default: every season since {EARLIEST_SEASON}")
-    notes.append("single_season: each of the player's seasons ranked on its own")
-    kwargs = {
+    return {
         "season": None,
         "start_season": start,
         "end_season": end,
         "season_type": season_type,
-        "stat": stat,
-        "player": player,
         "per_season": True,
         "limit": parsed.get("top_n") or 10,
         "ascending": bool(_PLAYER_SEASON_LOW.search(q)),
+        "notes": notes,
     }
+
+
+def _rerouted_to_seasons(out: dict, route: str, kwargs: dict, note: str) -> dict:
+    notes = kwargs.pop("notes") + [note]
     rerouted = dict(out)
-    rerouted.update(route="season_leaders", intent="leaderboard", route_kwargs=kwargs)
+    rerouted.update(route=route, intent="leaderboard", route_kwargs=kwargs)
     for key in ("season", "start_season", "end_season"):
         rerouted[key] = kwargs[key]
     rerouted["notes"] = notes
     return rerouted
 
 
+def _players_named(q: str, player: str) -> str | list[str]:
+    """ "LeBron and Curry best scoring season": both players, else the one."""
+    for sep in (" and ", " & "):
+        if sep in q:
+            left, right = q.split(sep, 1)
+            names = [detect_player(left.strip(" .")), detect_player(right.strip(" ."))]
+            if all(names) and names[0] != names[1]:
+                return names
+    return player
+
+
+def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
+    """ "LeBron best scoring season": that player's seasons, best first."""
+    route_kwargs = out.get("route_kwargs") or {}
+    player = parsed.get("player")
+    stat = _season_shooting_stat(parsed["normalized_query"]) or route_kwargs.get("stat")
+    if out.get("route") not in _PLAYER_SEASON_ROUTES or not player or not stat:
+        return None
+    kwargs = _best_season_scope(parsed, out, _PLAYER_SEASON_KEPT)
+    if kwargs is None:
+        return None
+    kwargs.update(stat=stat, player=_players_named(parsed["normalized_query"], player))
+    return _rerouted_to_seasons(
+        out,
+        "season_leaders",
+        kwargs,
+        "single_season: each of the player's seasons ranked on its own",
+    )
+
+
+def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
+    """ "Lakers best scoring season", "Lakers best record in a single season"."""
+    q = parsed["normalized_query"]
+    route_kwargs = out.get("route_kwargs") or {}
+    team = route_kwargs.get("team")
+    if out.get("route") not in _TEAM_SEASON_ROUTES or not isinstance(team, str):
+        return None
+    if parsed.get("player") or parsed.get("team_a") or parsed.get("team_b"):
+        return None
+    if _TEAM_SEASON_BLOCKERS.search(q):
+        return None
+    stat = _season_shooting_stat(q) or route_kwargs.get("stat")
+    record = stat in (None, "wins", "losses", "win_pct")
+    if stat is None and not _TEAM_PLAIN_BEST_SEASON.search(q):
+        # "Celtics best defensive season": a stat the parser did not read.
+        return None
+    kwargs = _best_season_scope(parsed, out, _TEAM_SEASON_KEPT)
+    if kwargs is None:
+        return None
+    kwargs.update(team=team, stat=stat or "win_pct")
+    route = "team_record_leaderboard" if record else "season_team_leaders"
+    return _rerouted_to_seasons(
+        out, route, kwargs, "single_season: each of the team's seasons ranked on its own"
+    )
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     out = _finalize_route_inner(parsed)
-    best = _player_best_seasons(parsed, out)
+    best = _player_best_seasons(parsed, out) or _team_best_seasons(parsed, out)
     if best is not None:
         return best
     if not parsed.get("single_season_intent") or not out.get("route"):

@@ -851,7 +851,7 @@ def build_result(
     attempt_stat: str | None = None,
     series_situation: str | None = None,
     per_season: bool = False,
-    player: str | None = None,
+    player: str | list[str] | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         return best_single_seasons(
@@ -1238,7 +1238,8 @@ def build_result(
 
     if player is not None and not df.empty:
         # "LeBron best scoring season": rank one player's qualified seasons.
-        df = df[df["player_name"].map(_name_key) == _name_key(player)].copy()
+        wanted = {_name_key(name) for name in ([player] if isinstance(player, str) else player)}
+        df = df[df["player_name"].map(_name_key).isin(wanted)].copy()
 
     if df.empty:
         return NoResult(
