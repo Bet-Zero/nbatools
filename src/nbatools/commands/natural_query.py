@@ -1852,7 +1852,7 @@ def _team_season_stat(q: str) -> str | None:
     return _season_shooting_stat(q)
 
 
-_TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record"})
+_TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record", "record_by_decade"})
 _TEAM_SEASON_KEPT = _PLAYER_SEASON_KEPT - {"player"} | {"team"}
 # "Lakers best season", "Lakers worst record in a single season": the record.
 _TEAM_PLAIN_BEST_SEASON = re.compile(
@@ -1876,6 +1876,16 @@ _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 _SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
 
 
+# "the 90s", "the 2000s" short form: four digits, like the apostrophe form.
+# The 1930s and 1940s can never have data, so "the 30s"/"the 40s" stay
+# unread.
+_BARE_DECADE = re.compile(r"\bthe\s+([0-25-9])0s\b")
+# "games with points in the 20s", "scoring in the 30s": a stat band, not a
+# decade.
+_STAT_BAND = re.compile(
+    r"\b(?:scor\w*|shoot\w*|shot|games?|nights?|with\s+\w+(?:\s+\w+)?)\s+in\s+the\s+\d0s\b"
+)
+_THIS_DECADE = re.compile(r"\b(?:(?:in|during|of|from)\s+)?this\s+decade\b")
 # "who won the most games in a season" is most wins; "in a row" is a streak.
 _WON_MOST_GAMES = re.compile(
     r"\b(won|lost)\s+the\s+(most|fewest)\s+games\b"
@@ -1886,7 +1896,9 @@ _WON_LOST = {"won": "wins", "lost": "losses"}
 
 def _expand_short_year(match: re.Match) -> str:
     year = int(match.group(1))
-    full = (1900 if year >= 90 else 2000) + year
+    # A decade ("the '80s") is never in the future; a single year is 2000s
+    # unless '90-'99.
+    full = (1900 if year >= (30 if match.group(2) else 90) else 2000) + year
     if match.group(3):
         return f"{full}-{match.group(3)}"
     return f"{full}{match.group(2)}"
@@ -1895,6 +1907,12 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
+    if not _STAT_BAND.search(q):
+        q = _BARE_DECADE.sub(lambda m: f"the {19 if int(m.group(1)) >= 5 else 20}{m.group(1)}0s", q)
+    if _THIS_DECADE.search(q):
+        # "this decade": the decade the current season starts in.
+        start = int(default_season_for_context("Regular Season")[:4]) // 10 * 10
+        q = _THIS_DECADE.sub(f"in the {start}s", q)
     if not re.search(r"\bplayers?\b|\bcoach(?:es)?\b", q):
         # "which player won the most games" is not a team record.
         q = _WON_MOST_GAMES.sub(lambda m: f"had the {m.group(2)} {_WON_LOST[m.group(1)]}", q)
@@ -5906,16 +5924,28 @@ def _players_named(q: str, player: str) -> str | list[str]:
     return player
 
 
+_PLAYER_PLAIN_BEST_SEASON = re.compile(
+    r"\b(?:best|worst|greatest|top(?:\s+\d+)?)\s+(?:(?:regular[\s-]season|playoff)\s+)?seasons?\b"
+)
+
+
 def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
     """ "LeBron best scoring season": that player's seasons, best first."""
     route_kwargs = out.get("route_kwargs") or {}
     player = parsed.get("player")
-    stat = _season_shooting_stat(parsed["normalized_query"]) or route_kwargs.get("stat")
+    q = parsed["normalized_query"]
+    stat = _season_shooting_stat(q) or route_kwargs.get("stat")
+    plain = stat is None and _PLAYER_PLAIN_BEST_SEASON.search(q)
+    if plain:
+        # "LeBron best season" names no stat: rank by scoring and say so.
+        stat = "pts"
     if out.get("route") not in _PLAYER_SEASON_ROUTES or not player or not stat:
         return None
     kwargs = _best_season_scope(parsed, out, _PLAYER_SEASON_KEPT)
     if kwargs is None:
         return None
+    if plain:
+        kwargs["notes"].append("default: best season ranked by points per game")
     kwargs.update(stat=stat, player=_players_named(parsed["normalized_query"], player))
     return _rerouted_to_seasons(
         out,
@@ -6057,9 +6087,73 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
+# Short decades ("the 90s", "the '80s") are already four digits here.
+_NAMED_DECADE = re.compile(r"\bthe\s+(?:19|20)\d0s\b")
+_NAMED_DECADE_PHRASE = re.compile(
+    r"\b(?:(?:in|during|of|from|over)\s+)?the\s+(?:19|20)\d0s"
+    r"(?:\s+(?:and|to|through|thru)\s+(?:the\s+)?(?:19|20)\d0s)?\b"
+)
+_DECADE_BUCKETS = re.compile(r"\b(?:by|per|each|every)\s+decade\b|\bdecades\b")
+_RECORD_WORDS = re.compile(r"\brecords?\b|\bwin(?:ning)?\s*(?:%|pct|percentage)")
+
+
+def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
+    """ "most points in a season in the 2010s": a stat board over that decade.
+
+    The decade record board ranks team records; a stat question landed there
+    and answered wins. The named decade is folded into the equivalent year
+    range and the question parsed again, so every other filter (rookies, home,
+    totals, minimum games) is kept exactly as the range form keeps it.
+    """
+    if out.get("route") != "record_by_decade_leaderboard":
+        return None
+    q = parsed["normalized_query"]
+    if not _NAMED_DECADE.search(q) or _DECADE_BUCKETS.search(q):
+        return None
+    stat = parsed.get("stat")
+    record = (
+        stat in (None, "wins", "losses", "win_pct")
+        or _RANKED_WINS_LOSSES.search(q)
+        or _RECORD_WORDS.search(q)
+    )
+    if record and not parsed.get("single_season_intent"):
+        # "best record in the 2010s": the decade record board.
+        return None
+    phrases = list(_NAMED_DECADE_PHRASE.finditer(q))
+    if len(phrases) != 1:
+        # Two decades not joined by "and"/"to" ("the 2010s by a rookie
+        # compared to the 2020s"): folding them would drop whatever sits
+        # between, and the record board would answer wins. Refuse.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["leaderboard_request_unclear"]
+        refused["notes"] = [
+            "unsupported_boundary: ask about one decade or one year range at a time"
+        ]
+        return refused
+    starts = [int(year) for m in phrases for year in re.findall(r"\d{4}", m.group(0))]
+    # "the 2010s and the 2020s": one span from the first decade to the last.
+    first, last = min(starts), max(starts) + 9
+    # Playoff years name the season ending in them, so the 2020s playoffs
+    # (2020-21 to 2029-30) are "from 2021 to 2030".
+    shift = 1 if (out.get("route_kwargs") or {}).get("season_type") == "Playoffs" else 0
+    span = f"from {first + shift} to {last + shift}"
+    ranged = q[: phrases[0].start()] + span + q[phrases[-1].end() :]
+    rerouted = _finalize_route(_build_parse_state(ranged))
+    if rerouted.get("route") in (None, "record_by_decade_leaderboard"):
+        return None
+    rerouted["normalized_query"] = q
+    rerouted["notes"] = list(rerouted.get("notes") or []) + [f"decade: read as {first} to {last}"]
+    if first < 1996:
+        rerouted["notes"].append("coverage: data starts in 1996-97")
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     out = _finalize_route_inner(parsed)
+    decade = _decade_stat_board(parsed, out)
+    if decade is not None:
+        return decade
     games = _player_game_list(parsed, out)
     if games is not None:
         return games

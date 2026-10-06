@@ -8601,6 +8601,53 @@ cases:
         equals: games with fewer than 5 free throw attempts left out
     review_notes: "LeBron's games ranked by FT% with 5+ attempts. It returned a season summary (C2, agent change)."
 
+  - id: c2_most_points_single_season_2010s
+    query: "most points in a season in the 2010s"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: James Harden
+      - path: result.sections.leaderboard.0.season
+        equals: 2018-19
+    review_notes: "Single seasons 2010-11 to 2019-20: Harden 2018-19. It ranked team wins by decade (C2, agent change)."
+
+  - id: c2_most_wins_single_season_2010s
+    query: "most wins in a season in the 2010s"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: GSW
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+      - path: result.sections.leaderboard.0.wins
+        equals: 73
+    review_notes: "Single team seasons in the 2010s: the 2015-16 Warriors, 73 wins. It ranked decade win totals (C2, agent change)."
+
+  - id: c2_lebron_best_season_plain
+    query: "LeBron best season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: LeBron James
+      - path: result.sections.leaderboard.0.season
+        equals: 2005-06
+    review_notes: "No stat named: LeBron's seasons by points per game, 31.4 in 2005-06, with a note. It gave a current-season summary (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
