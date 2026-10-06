@@ -6204,16 +6204,23 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     starts = [int(year) for m in phrases for year in re.findall(r"\d{4}", m.group(0))]
     # "the 2010s and the 2020s": one span from the first decade to the last.
     first, last = min(starts), max(starts) + 9
+
     # Playoff years name the season ending in them, so the 2020s playoffs
     # (2020-21 to 2029-30) are "from 2021 to 2030".
-    # Only when the question itself says playoffs: otherwise the rewritten
-    # years read as start years ("game 7s in the 2010s").
-    playoff_words = re.search(r"\bplayoffs?\b|\bpostseason\b", q)
-    playoffs = (out.get("route_kwargs") or {}).get("season_type") == "Playoffs"
-    shift = 1 if playoffs and playoff_words else 0
-    span = f"from {first + shift} to {last + shift}"
-    ranged = q[: phrases[0].start()] + span + q[phrases[-1].end() :]
-    rerouted = _finalize_route(_build_parse_state(ranged))
+    def _reparse(shift: int) -> dict:
+        span = f"from {first + shift} to {last + shift}"
+        return _finalize_route(
+            _build_parse_state(q[: phrases[0].start()] + span + q[phrases[-1].end() :])
+        )
+
+    # Playoff years can read as the season ending in them ("the finals"),
+    # so check which reading starts the span at the decade's first season.
+    want = f"{first}-{str(first + 1)[2:]}"
+    rerouted = _reparse(0)
+    if (rerouted.get("route_kwargs") or {}).get("start_season") not in (None, want):
+        shifted = _reparse(1)
+        if (shifted.get("route_kwargs") or {}).get("start_season") == want:
+            rerouted = shifted
     if rerouted.get("route") in (None, "record_by_decade_leaderboard"):
         return None
     rerouted["normalized_query"] = q
@@ -6278,7 +6285,7 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         home_only=bool(route_kwargs.get("home_only")),
         away_only=bool(route_kwargs.get("away_only")),
         per_season=bool(route_kwargs.get("per_season")),
-        rookies_only=bool(re.search(r"\brookies?\b", q)),
+        rookies_only=bool(re.search(r"(?<!\bagainst\s)(?<!\bvs\s)(?<!\bversus\s)\brookies?\b", q)),
     )
     notes = list(out.get("notes") or [])
     named = bool(_NAMED_SEASON_WORDS.search(q))

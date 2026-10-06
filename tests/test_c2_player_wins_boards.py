@@ -97,3 +97,24 @@ def test_player_wins_show_the_count_in_pretty_output():
     query = "most playoff wins by a player"
     text = format_pretty_from_result(execute_natural_query(query).result, query)
     assert "games_played" in text
+
+
+@pytest.mark.parametrize(
+    ("query", "start", "end"),
+    [
+        ("most points in the finals in the 2010s", "2010-11", "2019-20"),
+        ("most points in the conference finals in the 2010s", "2010-11", "2019-20"),
+        ("most rebounds in the finals in the 2000s", "2000-01", "2009-10"),
+        ("most points in game 7s in the 2010s", "2010-11", "2019-20"),
+        ("most playoff points in the 2010s", "2010-11", "2019-20"),
+        ("players with the most wins in the finals in the 2010s", "2010-11", "2019-20"),
+    ],
+)
+def test_playoff_decades_start_at_the_decades_first_season(query, start, end):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == (start, end)
+
+
+def test_wins_against_rookies_do_not_filter_to_rookies():
+    kwargs = parse_query("players with the most wins against rookies")["route_kwargs"]
+    assert not kwargs.get("rookies_only")
