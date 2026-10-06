@@ -55,8 +55,27 @@ def detect_record_intent(text: str) -> bool:
 
 
 def detect_by_decade_intent(text: str) -> bool:
-    """Detect 'by decade' bucketing intent."""
-    return bool(re.search(r"\bby\s+decade\b|\b(?:19|20)\d0s\b", text))
+    """Detect 'by decade' bucketing intent.
+
+    "Lakers best decade" and "which decade did the Lakers win the most" are
+    answered by the decade table.
+    """
+    return bool(
+        re.search(
+            r"\bby\s+decade\b|\b(?:19|20)\d0s\b"
+            r"|"
+            + _DECADE_SUPERLATIVE.pattern
+            + r"|\bwhich\s+decade\b(?=.*\b(?:wins?|won|records?|loss|losses|lost)\b)",
+            text,
+        )
+    )
+
+
+# "Lakers best decade", "best playoff decade": a record ranked by decade.
+_DECADE_SUPERLATIVE = re.compile(
+    r"\b(?:best|worst|winningest|greatest)\s+(?:(?:playoffs?|postseason|regular[\s-]season)\s+)?"
+    r"decades?\b"
+)
 
 
 def extract_decade_season_range(text: str) -> tuple[str | None, str | None]:
@@ -348,7 +367,12 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
     # -- Record by decade leaderboard: no specific team --
     if (
         by_decade_intent
-        and (record_intent or leaderboard_intent or team_leaderboard_intent)
+        and (
+            record_intent
+            or leaderboard_intent
+            or team_leaderboard_intent
+            or _DECADE_SUPERLATIVE.search(q)
+        )
         and not team
         and not team_a
         and not team_b
@@ -367,7 +391,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             r"\bwin_pct\b|\bwin(?:ning)?\s*%|\bwin(?:ning)?\s+(?:percent(?:age)?|pct)\b"
             r"|\brecords?\b",
             q,
-        ):
+        ) or _DECADE_SUPERLATIVE.search(q):
             # "best record by decade", "lowest win% in the 2010s"
             record_stat = "win_pct"
         elif re.search(r"\bloss", q):
