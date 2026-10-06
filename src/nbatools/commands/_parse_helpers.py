@@ -1886,6 +1886,13 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
     applied = {(route_kwargs.get("stat"), route_kwargs.get("max_value"))}
     for condition in route_kwargs.get("conditions") or []:
         applied.add((condition.get("stat"), condition.get("max_value")))
+    # "when the Lakers score 110 or fewer" is read as pts and applied as the
+    # team's column (team_pts) on a player route.
+    applied |= {
+        (str(stat).split("_", 1)[1], value)
+        for stat, value in list(applied)
+        if str(stat).startswith(("team_", "opponent_"))
+    }
     if any(key not in applied for key in keys):
         return "unparsed_upper_bound"
     return None
@@ -2279,12 +2286,22 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     # A stat other than points after the bound ("allow 15 or more threes") is
     # not a points-allowed condition.
     _NOT_OTHER_STAT = rf"(?!\s+{STAT_PATTERN})"
+    _OPPONENT_SCORERS = (
+        r"\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:scor(?:e|es|ed|ing)|puts?\s+up|had)\s+"
+    )
+    # "opponents score below 100": a ceiling, not the team's own points.
+    patterns.append(
+        rf"{_OPPONENT_SCORERS}(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}"
+    )
     _OR_MORE = r"(?:\s+(?:points?|pts))?\s+or\s+more\b(?:\s+(?:points?|pts)\b)?" + _NOT_OTHER_STAT
     min_patterns = [
         (rf"{_MIN_SUBJECTS}(?:at\s+least|a\s+min(?:imum)?\s+of)\s+{_NUM}{_POINT_SUFFIX}", 0.0),
         (rf"{_MIN_SUBJECTS}(?:over|more\s+than)\s+{_NUM}{_POINT_SUFFIX}", 0.0001),
         (rf"{_MIN_SUBJECTS}{_NUM}{_OR_MORE}", 0.0),
         (rf"{_MIN_SUBJECTS}{_NUM}\+(?:\s+(?:points?|pts)\b)?{_NOT_OTHER_STAT}", 0.0),
+        # A bare count after an opponent subject is a floor, as "scored 30"
+        # is: "opponents score 120", "the other team scored 120 points".
+        (rf"{_OPPONENT_SCORERS}{_NUM}{_POINT_SUFFIX}{_NOT_OTHER_STAT}", 0.0),
     ]
 
     matches = []
@@ -2334,7 +2351,7 @@ _OPP_STAT_SUBJECT = (
     r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
     r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them)(?:\s+to)?"
     r"|\blimit(?:s|ed|ing)?\s+opponents?(?:\s+to)?"
-    r"|\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:had|has|have|made|makes|hit|hits|shot|shoots"
+    r"|\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:had|has|have|made|makes?|hit|hits|shot|shoots|scor(?:e|es|ed)"
     r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
     r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
 )

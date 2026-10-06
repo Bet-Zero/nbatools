@@ -349,6 +349,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._parse_helpers import (
     wants_team_leaderboard as wants_team_leaderboard,
 )
+from nbatools.commands._player_game_context import apply_player_game_context
 from nbatools.commands._playoff_record_route_utils import (
     _DECADE_SUPERLATIVE,
     detect_by_decade_intent,
@@ -5233,6 +5234,10 @@ def _route_parsed_query(parsed: dict) -> dict:
         if "multi_player_availability" not in existing_unsupported:
             existing_unsupported.append("multi_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
+
+    # "LeBron games when the Lakers score 120": a team-subject bound is the
+    # team's total, read from the team rows of the player's games.
+    apply_player_game_context(route, route_kwargs, q)
 
     if route == "team_record" and last_n is not None and route_kwargs.get("last_n") is None:
         # Every team_record branch selects the same game log, so the last-N
