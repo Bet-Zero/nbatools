@@ -584,7 +584,8 @@ _MINUTES_BOUND_TAIL = (
 
 # "and Luka sits", "while Davis is out": another player's availability clause.
 _AVAILABILITY_CLAUSE = re.compile(
-    r"\b(?:and|while|when|but)\s+([\w .'\-]+?)\s+(?:plays?|played|playing|sits?|sat"
+    r"\b(?:and|while|when|but)\s+((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)"
+    r"\s+(?:plays?|played|playing|sits?|sat|rests?|rested|(?:is|was)\s+resting"
     r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"
 )
 
@@ -599,14 +600,25 @@ _OWN_STAT_CLAUSE = (
 def names_other_player_availability(text: str, player: str | None) -> bool:
     """True when ``text`` states availability for a player other than ``player``.
 
-    Only clauses whose subject resolves to a player count, so "and the Lakers
-    play at home" or "and he plays well" do not.
+    A pronoun or a team ("and he plays well", "and the Lakers play at home")
+    is not another player. Any other subject counts, including a name the
+    resolver can't match ("and Davis sits"): dropping that clause would
+    answer about the first player alone.
     """
+    own_words = set(player.lower().split()) if player else set()
     for m in _AVAILABILITY_CLAUSE.finditer(text):
-        other = detect_player(m.group(1))
-        if other and (player is None or other.upper() != player.upper()):
+        subject = re.sub(r"^(?:the|his|their)\s+", "", m.group(1).strip())
+        if not subject or subject in _NON_PLAYER_SUBJECTS or subject in TEAM_ALIASES:
+            continue
+        other = detect_player(subject)
+        if other is None and set(subject.split()) <= own_words:
+            continue
+        if other is None or player is None or other.upper() != player.upper():
             return True
     return False
+
+
+_NON_PLAYER_SUBJECTS = {"he", "she", "they", "we", "it", "team", "teams", "squad", "game"}
 
 
 def detect_with_player(text: str) -> tuple[str | None, str]:
@@ -796,6 +808,11 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+out\b",
             r"\brecord\s+([\w .&'\-]+?)\s+out\b",
+            # "when Davis sits"; not "when they sit atop the standings".
+            r"\b(?:when|while|and)\s+(?!(?:they|he|she|we|it|the)\b)"
+            r"((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
+            r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b"
+            r"(?!\s+(?:atop|at|in|on|near|behind|ahead)\b)",
             # "no more than 10 turnovers" is a bound, not a missing player.
             rf"\b(?:no|sans|minus)\s+(?!{_NEGATED_BOUND})([\w .&'\-]+?)"
             rf"(?=\s+(?:{STOP_WORDS})\b|$)",

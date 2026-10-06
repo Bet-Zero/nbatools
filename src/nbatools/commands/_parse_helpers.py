@@ -2757,7 +2757,13 @@ def detect_wins_losses(text: str) -> tuple[bool, bool]:
     losses_only = bool(
         re.search(r"\bloss(?:es)?\b|\blost\b", text)
         # "... but loses", "and the Lakers lose": a loss clause on the sample.
-        or re.search(r"\b(?:but|and)\s+(?:(?:the\s+)?[\w.']+\s+)?los(?:e|es)\b", text)
+        # Not "win and lose" (both outcomes) or a record ranking, where the
+        # clause is not a sample filter.
+        or (
+            re.search(r"\b(?:but|and)\s+(?:(?:the\s+)?[\w.']+\s+)?los(?:e|es)\b", text)
+            and not wins_only
+            and not re.search(r"\b(?:best|worst)\s+records?\b", text)
+        )
     )
     return wins_only, losses_only
 

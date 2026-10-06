@@ -81,6 +81,12 @@ def test_sits_is_absence(query):
         "Lakers record when LeBron James plays and Luka Doncic sits",
         "Lakers record in games LeBron James plays at least 35 minutes and Luka Doncic plays "
         "at least 35 minutes",
+        # A second player the resolver can't name still isn't dropped.
+        "Lakers record when LeBron James plays 35 minutes and Davis sits",
+        "Lakers record when LeBron James plays and scores 30 points and Davis sits",
+        "Lakers record when LeBron James plays and scores 30 points while Davis rests",
+        "Lakers record when LeBron James plays and scores 30 points while Davis is out",
+        "Lakers record when Davis sits",
     ],
 )
 def test_second_player_clause_refuses(query):
@@ -96,3 +102,8 @@ def test_below_is_a_ceiling():
     assert _rows("LeBron James games with 30 points and below 3 turnovers") == _rows(
         "LeBron James games with 30 points and at most 2 turnovers"
     )
+
+
+def test_team_sitting_is_not_an_absence():
+    # "they sit atop the standings" names no player; the record is unfiltered.
+    assert _record("Lakers record when they sit atop the standings") == (47, 13, 60)
