@@ -1926,7 +1926,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
-            rf"(?<!\bno )(?<!\bnot )\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
+            # "below 3 turnovers" is the same strict ceiling as "under 3".
+            rf"(?<!\bno )(?<!\bnot )\b(?:under|below)\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
         ),
@@ -2753,7 +2754,17 @@ def build_opponent_quality_note(opponent_quality: dict | None = None) -> str | N
 
 def detect_wins_losses(text: str) -> tuple[bool, bool]:
     wins_only = bool(re.search(r"\bwins?\b|\bwon\b", text))
-    losses_only = bool(re.search(r"\bloss(?:es)?\b|\blost\b", text))
+    losses_only = bool(
+        re.search(r"\bloss(?:es)?\b|\blost\b", text)
+        # "... but loses", "and the Lakers lose": a loss clause on the sample.
+        # Not "win and lose" (both outcomes) or a record ranking, where the
+        # clause is not a sample filter.
+        or (
+            re.search(r"\b(?:but|and)\s+(?:(?:the\s+)?[\w.']+\s+)?los(?:e|es)\b", text)
+            and not wins_only
+            and not re.search(r"\b(?:best|worst)\s+records?\b", text)
+        )
+    )
     return wins_only, losses_only
 
 
