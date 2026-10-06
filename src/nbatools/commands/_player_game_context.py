@@ -15,6 +15,7 @@ import re
 from typing import Any
 
 from nbatools.commands._condition_utils import PLAYER_GAME_CONTEXT_BASES
+from nbatools.commands._constants import STAT_PATTERN
 from nbatools.commands._parse_helpers import (
     _OPP_STAT_WORD,
     _opponent_stat_word,
@@ -27,7 +28,7 @@ _PLAYER_ROUTES = ("player_game_finder", "player_game_summary")
 _SCORE_VERB = r"scor(?:e|es|ed)|puts?\s+up|put\s+up"
 _TEAM_STAT_VERB = re.compile(
     rf"\s({_SCORE_VERB}|ha(?:d|s|ve)|ma(?:de|kes?)|hits?|grab(?:s|bed)?"
-    r"|record(?:s|ed)?|dish(?:es|ed)?)\s+"
+    r"|record(?:s|ed)?|dish(?:es|ed)?|commit(?:s|ted)?)\s+"
 )
 _BOUND = re.compile(
     r"(?P<pre>at\s+least\s+|a\s+min(?:imum)?\s+of\s+|over\s+|more\s+than\s+|under\s+"
@@ -75,9 +76,12 @@ def _subject_team(prefix: str) -> tuple[str, int] | None:
             return None
         if not _CLAUSE_OPENER.search(prefix[: m.start(1)]):
             continue
-        bare = re.sub(r"^the\s+", "", phrase)
+        bare = re.sub(r"^(?:the|his|her|their)\s+", "", phrase)
         if phrase in _TEAM_WORDS or bare in _TEAM_WORDS:
             return "TEAM", m.start(1)
+        if bare == "la":
+            # Lakers or Clippers: whichever side of the game is from LA.
+            return "LA", m.start(1)
         if bare in TEAM_ALIASES and len(bare) > 3:
             return TEAM_ALIASES[bare], m.start(1)
     return None
@@ -192,6 +196,71 @@ def _clear_covered_event_refusal(route_kwargs: dict, own: list[dict]) -> None:
 
 
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Read team/opponent bounds and the ranking stat of a player game list."""
+    _apply_team_context(route, route_kwargs, text)
+    _apply_ranking_stat(route, route_kwargs, text)
+    _apply_ranking_direction(route, route_kwargs, text)
+
+
+# "lowest scoring games", "fewest turnovers": rank from the bottom. The low
+# word must sit on the ranked stat; "vs teams with the fewest wins" or "at
+# least" says nothing about the order.
+_RANKED_STAT = rf"[\s-]+(?:scoring|shooting|efficient|plus[\s-]?minus|{STAT_PATTERN})\b"
+_ASCENDING_RANK = re.compile(rf"\b(?:lowest|fewest|(?<!\bat )least){_RANKED_STAT}")
+_DESCENDING_RANK = re.compile(rf"\b(?:highest|most|top|best|biggest|largest){_RANKED_STAT}")
+
+
+def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -> None:
+    """A player game list ranked by a stat runs lowest first when asked."""
+    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+        return
+    if _ASCENDING_RANK.search(text) and not _DESCENDING_RANK.search(text):
+        route_kwargs["ascending"] = True
+
+
+# "highest scoring games", "top 5 games by assists", "most rebounds in a game".
+_RANKING_WORDS = re.compile(r"\b(?:highest|most|top|best|biggest|largest|lowest|fewest|least|by)\b")
+
+
+def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Rank a filtered game list by the stat the question ranks by.
+
+    "LeBron highest scoring games with 10 assists" put the assist bound in
+    the ranking slot: the list was ordered by assists, or refused because
+    points went unused. The bound stays a condition and points rank.
+    """
+    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+        return
+    if not _RANKING_WORDS.search(text):
+        return
+    conditions = _kwargs_conditions(route_kwargs)
+    if not conditions:
+        return
+    from nbatools.commands._compound_event_authorization import (
+        named_metrics,
+        occurrence_count_column_condition,
+    )
+
+    filtered = {c["stat"] for c in conditions}
+    filtered |= {s.split("_", 1)[1] for s in filtered if _is_context_stat(s)}
+    candidates = [
+        metric
+        for metric in named_metrics({"normalized_query": text})
+        if metric not in filtered and not occurrence_count_column_condition(metric)
+    ]
+    if len(candidates) != 1:
+        return
+    from nbatools.commands.player_game_finder import ALLOWED_STATS
+
+    if candidates[0] not in ALLOWED_STATS:
+        return
+    route_kwargs["conditions"] = conditions
+    route_kwargs["stat"] = candidates[0]
+    route_kwargs["min_value"] = None
+    route_kwargs["max_value"] = None
+
+
+def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Move team-subject bounds on a player route to team/opponent stats.
 
     The player's own bounds are read again from the question without the team
@@ -206,10 +275,25 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     }
     found = []
     for item in team_subject_stat_conditions(text):
-        if item["team"] == "TEAM" or item["team"] == own_team:
-            found.append({**item, "side": "team"})
-        elif item["team"] in opponents:
+        team = item["team"]
+        if team == "LA":
+            # Only an LA team: the player's own when he plays for one, else
+            # an LA opponent of the route.
+            if own_team in ("LAL", "LAC"):
+                team = own_team
+            else:
+                team = next((t for t in ("LAL", "LAC") if t in opponents), None)
+            if team is None:
+                continue
+        if team in opponents:
             found.append({**item, "side": "opponent"})
+        elif team in ("TEAM", own_team):
+            found.append({**item, "side": "team"})
+        elif not own_team:
+            # "LeBron games vs Boston when the Lakers score 120": the named
+            # team is his; keep only his games for it.
+            route_kwargs["team"] = own_team = team
+            found.append({**item, "side": "team"})
     # "when opponents score 120", "the other team made 15 threes".
     for item in extract_opponent_points_allowed_conditions(text):
         if any(item["start"] < f["end"] and f["start"] < item["end"] for f in found):

@@ -1177,8 +1177,12 @@ def attach_player_game_context_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFr
     wanted = {str(w).lower() for w in wanted or () if w}
     names = [n for n in PLAYER_GAME_CONTEXT_STATS if n in wanted and n not in df.columns]
     keys = {"game_id", "team_id", "opponent_team_id", "season", "season_type"}
-    if not names or df.empty or not keys.issubset(df.columns):
+    if not names:
         return df
+    if df.empty or not keys.issubset(df.columns):
+        # No games to join ("Kawhi games when they score 120" off the data):
+        # the columns still exist, so the filter finds nothing.
+        return df.assign(**{name: pd.Series(dtype="float64", index=df.index) for name in names})
     bases = sorted({n.split("_", 1)[1] for n in names})
     parts = []
     for season_type, group in df.groupby("season_type", sort=False):
