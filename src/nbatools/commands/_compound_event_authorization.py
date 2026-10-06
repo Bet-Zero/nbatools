@@ -187,8 +187,12 @@ def condition_is_executed(
         return any(
             candidate.get("special_event") == declared["special_event"] for candidate in executed
         )
+    stat = declared.get("stat")
+    # "in which the Lakers scored 120" is declared as points and executed on
+    # the team's column of a player's games (``team_pts``).
+    stats = {stat, f"team_{stat}", f"opponent_{stat}"}
     for candidate in executed:
-        if candidate.get("stat") != declared.get("stat"):
+        if candidate.get("stat") not in stats:
             continue
         if not _same_bound(declared.get("min_value"), candidate.get("min_value")):
             continue
