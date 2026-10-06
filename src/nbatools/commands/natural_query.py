@@ -5979,9 +5979,78 @@ def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     )
 
 
+# "Curry best 3 point shooting game", "LeBron top 5 games", "worst shooting
+# night": a list of that player's games ranked by one stat.
+_PLAYER_GAME_LIST = re.compile(
+    r"\b(?:best|worst|top|greatest|highest|lowest)\b(?:\s+[a-z0-9%-]+){0,4}?\s+"
+    r"(?:games?|nights?|performances?|outings?)\b"
+)
+_PLAYER_GAME_LIST_BLOCKERS = re.compile(
+    r"\bgame\s+score\b|\bper\s+game\b|\bin\s+a\s+row\b|\bstraight\b|\bstreaks?\b"
+    r"|\bstretch(?:es)?\b|\bspan\b|\bseasons\b|\bsingle[\s-]season\b|\bin\s+a\s+season\b"
+    r"|\baverage|\bavg\b|\brecord\b"
+)
+_GAME_SHOOTING_PATTERNS = tuple(
+    (pattern.replace(r"seasons?\b", r"(?:games?|nights?|performances?|outings?)\b"), stat)
+    for pattern, stat in _SEASON_SHOOTING_PATTERNS
+)
+_PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
+
+
+def _player_game_list(parsed: dict, out: dict) -> dict | None:
+    """ "Curry best 3 point shooting game": that player's games, best first."""
+    q = parsed["normalized_query"]
+    route_kwargs = dict(out.get("route_kwargs") or {})
+    player = route_kwargs.get("player")
+    if out.get("route") not in _PLAYER_GAME_LIST_ROUTES or not isinstance(player, str):
+        return None
+    if not _PLAYER_GAME_LIST.search(q) or _PLAYER_GAME_LIST_BLOCKERS.search(q):
+        return None
+    shooting = next(
+        (stat for pattern, stat in _GAME_SHOOTING_PATTERNS if re.search(pattern, q)), None
+    )
+    if shooting and route_kwargs.get("min_value") == 3 and route_kwargs.get("stat") == "pts":
+        # "3 point shooting": the 3 is not a points threshold.
+        route_kwargs.pop("min_value")
+    elif shooting is None and out["route"] == "player_game_finder":
+        # Already a ranked list of the stat asked for.
+        return None
+    stat = shooting or route_kwargs.get("stat") or "pts"
+    route_kwargs.pop("career_intent", None)
+    from inspect import signature
+
+    from nbatools.commands.player_game_finder import build_result as finder
+
+    accepted = set(signature(finder).parameters)
+    if any(
+        value not in (None, False, "", [], (), {})
+        for key, value in route_kwargs.items()
+        if key not in accepted
+    ):
+        # A filter the game list cannot apply: keep the original answer.
+        return None
+    kwargs = {key: value for key, value in route_kwargs.items() if key in accepted}
+    kwargs.update(
+        stat=stat,
+        sort_by="stat",
+        limit=parsed.get("top_n") or 10,
+        ascending=bool(re.search(r"\b(?:worst|lowest)\b", q)),
+    )
+    rerouted = dict(out)
+    rerouted.update(route="player_game_finder", intent="finder", route_kwargs=kwargs)
+    rerouted.update(stat=stat, min_value=kwargs.get("min_value"))
+    rerouted["notes"] = list(out.get("notes") or []) + [
+        f"game_list: {player}'s games ranked by {stat}"
+    ]
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     out = _finalize_route_inner(parsed)
+    games = _player_game_list(parsed, out)
+    if games is not None:
+        return games
     best = _player_best_seasons(parsed, out) or _team_best_seasons(parsed, out)
     if best is not None:
         return best

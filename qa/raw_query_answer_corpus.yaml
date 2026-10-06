@@ -8569,6 +8569,38 @@ cases:
         equals: 73
     review_notes: "Most wins in one season: the 2015-16 Warriors, 73. It could not be mapped (C2, agent change)."
 
+  - id: c2_curry_best_three_point_shooting_game
+    query: "Curry best 3 point shooting game"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.sections.finder.0.player_name
+        equals: Stephen Curry
+      - path: result.metadata.stat
+        equals: fg3_pct
+    review_notes: "Curry's games ranked by 3P% (5+ attempts). It ranked points with a 3-point floor (C2, agent change)."
+
+  - id: c2_lebron_best_free_throw_shooting_game
+    query: "LeBron best free throw shooting game"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.sections.finder.0.player_name
+        equals: LeBron James
+      - path: result.sections.finder.0.ft_pct
+        equals: 1.0
+      - path: result.caveats.0
+        equals: games with fewer than 5 free throw attempts left out
+    review_notes: "LeBron's games ranked by FT% with 5+ attempts. It returned a season summary (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary
