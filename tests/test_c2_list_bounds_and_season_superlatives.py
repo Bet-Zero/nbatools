@@ -141,6 +141,7 @@ def test_percent_from_three_or_the_line_names_its_rate(query, stat, min_value, m
     assert condition["max_value"] == (pytest.approx(max_value) if max_value else None)
 
 
+@pytest.mark.fixture_data
 @pytest.mark.parametrize(
     "query",
     [
