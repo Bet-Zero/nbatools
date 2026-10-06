@@ -5268,7 +5268,7 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
-    review_notes: "2020s era leaderboard phrasing."
+    review_notes: "2020s era leaderboard phrasing; best record ranks win percentage (it ranked wins until C2)."
     manual_review:
       status: unreviewed
       tags:
@@ -8492,6 +8492,42 @@ cases:
       - path: result.sections.leaderboard.0.season
         equals: 2015-16
     review_notes: "An apostrophe year names the season ending in it, as a bare year does. It answered the current season (C2, agent change)."
+
+  - id: c2_lakers_best_season
+    query: "Lakers best season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: LAL
+      - path: result.sections.leaderboard.0.season
+        equals: 1999-00
+      - path: result.sections.leaderboard.0.wins
+        equals: 67
+    review_notes: "The Lakers' seasons ranked by record: 67-15 in 1999-00. It listed Lakers games from the current season (C2, agent change)."
+
+  - id: c2_lebron_best_three_point_season
+    query: "LeBron best three point shooting season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: LeBron James
+      - path: result.sections.leaderboard.0.season
+        equals: 2023-24
+      - path: result.sections.leaderboard.0.fg3m_total
+        equals: 149
+      - path: result.sections.leaderboard.0.fg3a_total
+        equals: 363
+    review_notes: "LeBron's seasons ranked by 3P%: 149 of 363 (.410) in 2023-24, ahead of .406 in 2012-13. It ranked his points in current-season games (C2, agent change)."
 
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
