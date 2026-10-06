@@ -194,6 +194,12 @@ STAT_ALIASES: dict[str, str] = {
     "plus/minus": "plus_minus",
     "plus_minus": "plus_minus",
     "+/-": "plus_minus",
+    # Final margins; margin phrases are rewritten to these forms ("won by
+    # 10+" -> "won at 10+ win margin", "decided by 3 or fewer" -> "at 3 or
+    # fewer game margin").
+    "game margin": "margin",
+    "win margin": "win_margin",
+    "loss margin": "loss_margin",
     # Usage rate
     "usage rate": "usg_pct",
     "usage percentage": "usg_pct",
