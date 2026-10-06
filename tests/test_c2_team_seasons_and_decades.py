@@ -164,3 +164,48 @@ def test_lowest_scoring_team_games_are_single_games():
     assert parsed["route"] == "top_team_games"
     leaders = _leaders("lowest scoring team games since 2023")
     assert leaders[0]["pts"] == pd.concat(frames)["pts"].min()
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers best scoring season by a player",
+        "best scoring season by a Lakers player",
+        "Lakers player with the best scoring season",
+        "Lakers best individual scoring season",
+        "who had the best season for the Lakers",
+        "Lakers most points allowed in a season",
+    ],
+)
+def test_player_and_allowed_questions_are_not_team_seasons(query):
+    assert parse_query(query)["route_kwargs"].get("per_season") is not True
+
+
+@pytest.mark.parametrize(
+    ("query", "season_type", "limit"),
+    [
+        ("Lakers best playoff season", "Playoffs", 10),
+        ("Lakers best regular season", "Regular Season", 10),
+        ("Lakers top 3 seasons", "Regular Season", 3),
+        ("Lakers best winning season", "Regular Season", 10),
+    ],
+)
+def test_team_season_wording_variants(query, season_type, limit):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "team_record_leaderboard"
+    assert (kwargs["team"], kwargs["season_type"], kwargs["limit"]) == ("LAL", season_type, limit)
+
+
+def test_effective_field_goal_shooting_season():
+    kwargs = parse_query("LeBron best effective field goal shooting season")["route_kwargs"]
+    assert (kwargs["stat"], kwargs["per_season"]) == ("efg_pct", True)
+
+
+@pytest.mark.fixture_data
+@pytest.mark.parametrize(
+    "query", ["most playoff wins since 2000", "fewest playoff wins since 2023"]
+)
+def test_playoff_win_counts_over_a_span_keep_every_playoff_team(query):
+    leaders = _leaders(query)
+    assert {row["team_abbr"] for row in leaders} == {"LAL", "DEN"}

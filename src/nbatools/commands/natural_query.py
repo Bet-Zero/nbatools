@@ -1770,7 +1770,7 @@ _RANKED_WINS_LOSSES = re.compile(
 # "LeBron best scoring season", "Jokic most rebounds in a single season":
 # rank that player's own seasons.
 _PLAYER_BEST_SEASON = re.compile(
-    r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,3}?seasons?\b"
+    r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,4}?seasons?\b"
 )
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 _PLAYER_SEASON_BLOCKERS = re.compile(r"\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
@@ -1810,7 +1810,14 @@ _TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record"})
 _TEAM_SEASON_KEPT = _PLAYER_SEASON_KEPT - {"player"} | {"team"}
 # "Lakers best season", "Lakers worst record in a single season": the record.
 _TEAM_PLAIN_BEST_SEASON = re.compile(
-    r"\b(?:best|worst|greatest)\s+(?:seasons?|records?)\b|\brecords?\b"
+    r"\b(?:best|worst|greatest|top\s+\d+)\s+"
+    r"(?:(?:playoff|postseason|regular[\s-]season|regular|winning)\s+)?(?:seasons?|records?)\b"
+    r"|\brecords?\b"
+)
+# "best scoring season by a Lakers player", "Lakers points allowed": not the
+# team's own stat season.
+_TEAM_SEASON_BLOCKERS = re.compile(
+    r"\bplayers?\b|\bindividual\b|\bby\s+an?\b|\bwho\b|\ballow(?:ed|ing)?\b|\bgiven\s+up\b"
 )
 _SINGLE_SEASON_TEAM = re.compile(r"\bby\s+an?\s+team\b|\bwhich\s+teams?\b|\bteams?\b")
 _SINGLE_SEASON = re.compile(r"\bin\s+(?:a|one|any)\s+(?:single\s+)?season\b|\bsingle[\s-]season\b")
@@ -5869,6 +5876,8 @@ def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     if out.get("route") not in _TEAM_SEASON_ROUTES or not isinstance(team, str):
         return None
     if parsed.get("player") or parsed.get("team_a") or parsed.get("team_b"):
+        return None
+    if _TEAM_SEASON_BLOCKERS.search(q):
         return None
     stat = _season_shooting_stat(q) or route_kwargs.get("stat")
     record = stat in (None, "wins", "losses", "win_pct")

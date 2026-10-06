@@ -864,7 +864,8 @@ def build_record_leaderboard_result(
     agg["win_pct"] = (agg["wins"] / agg["games_played"]).round(3)
 
     # Minimum games guardrail: at least 1 game per season for record queries
-    min_games = max(1, len(seasons))
+    # Playoff teams skip seasons, so a playoff span keeps every team that played.
+    min_games = 1 if season_type == "Playoffs" else max(1, len(seasons))
     agg = agg[agg["games_played"] >= min_games].copy()
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
