@@ -65,3 +65,22 @@ def best_single_seasons(
         current_through=compute_current_through_for_seasons(seasons, kwargs["season_type"]),
         caveats=caveats,
     )
+
+
+def apply_win_bounds(df: pd.DataFrame, min_wins: int | None, max_wins: int | None) -> pd.DataFrame:
+    """ "teams with at least 50 wins": keep rows whose wins fall in the bounds."""
+    if min_wins is not None:
+        df = df[df["wins"] >= min_wins].copy()
+    if max_wins is not None:
+        df = df[df["wins"] <= max_wins].copy()
+    return df
+
+
+def win_bounds_caveat(min_wins: int | None, max_wins: int | None) -> str | None:
+    if min_wins is not None and max_wins is not None:
+        return f"teams with {min_wins} to {max_wins} wins"
+    if min_wins is not None:
+        return f"teams with at least {min_wins} wins"
+    if max_wins is not None:
+        return f"teams with at most {max_wins} wins"
+    return None

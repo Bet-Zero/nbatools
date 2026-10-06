@@ -25,7 +25,11 @@ from nbatools.commands._condition_utils import (
     attach_opponent_stats,
 )
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands._single_season_boards import best_single_seasons
+from nbatools.commands._single_season_boards import (
+    apply_win_bounds,
+    best_single_seasons,
+    win_bounds_caveat,
+)
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
     compute_grouped_rate_metrics,
@@ -800,6 +804,8 @@ def build_record_leaderboard_result(
     conditions: list[dict] | None = None,
     per_season: bool = False,
     team: str | None = None,
+    min_wins: int | None = None,
+    max_wins: int | None = None,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -878,6 +884,7 @@ def build_record_leaderboard_result(
         condition_min_games = max(math.ceil(0.2 * most), min(3, most))
         min_games = max(min_games, condition_min_games)
     agg = agg[agg["games_played"] >= min_games].copy()
+    agg = apply_win_bounds(agg, min_wins, max_wins)
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
         agg = agg[agg["team_abbr"].astype(str).str.upper() == team.upper()].copy()
@@ -930,6 +937,9 @@ def build_record_leaderboard_result(
 
     if condition_min_games > 1:
         caveats.append(f"teams with at least {condition_min_games} games in this sample")
+    bounds = win_bounds_caveat(min_wins, max_wins)
+    if bounds:
+        caveats.append(bounds)
 
     return LeaderboardResult(
         leaders=result,

@@ -8633,6 +8633,38 @@ cases:
         equals: 73
     review_notes: "Single team seasons in the 2010s: the 2015-16 Warriors, 73 wins. It ranked decade win totals (C2, agent change)."
 
+  - id: c2_league_seasons_most_wins
+    query: "seasons with the most wins"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: GSW
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+      - path: result.sections.leaderboard.0.wins
+        equals: 73
+    review_notes: "Team seasons since 1996-97: the 2015-16 Warriors, 73 wins. It ranked the current season only (C2, agent change)."
+
+  - id: c2_win_floor_ranked_by_losses
+    query: "seasons with at least 60 wins ranked by losses"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.wins
+        equals: 60
+      - path: result.sections.leaderboard.0.losses
+        equals: 22
+    review_notes: "60-win team seasons with the most losses: 60-22 (82-game seasons). It refused, reading wins and losses as game filters (C2, agent change)."
+
   - id: c2_lebron_best_season_plain
     query: "LeBron best season"
     category: leaderboard
