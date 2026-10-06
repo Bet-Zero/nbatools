@@ -69,3 +69,41 @@ def test_plays_matches_the_has_phrasing():
 def test_bare_presence_still_reads_as_presence(query):
     # No bound stated: every game he played, not a minutes condition.
     assert _record(query) == (47, 13, 60)
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # Negated and comparative operators state the same bounds.
+        ("Lakers record when LeBron James plays no fewer than 35 minutes", (6, 1, 7)),
+        ("Lakers record when LeBron James plays not less than 35 minutes", (6, 1, 7)),
+        ("Lakers record when LeBron James plays above 35 minutes", (6, 1, 7)),
+        ("Lakers record when LeBron James plays greater than 35 minutes", (6, 1, 7)),
+        ("Lakers record when LeBron James plays not more than 25 minutes", (19, 2, 21)),
+        ("Lakers record when LeBron James plays not over 25 minutes", (19, 2, 21)),
+        ("Lakers record when LeBron James plays no greater than 25 minutes", (19, 2, 21)),
+        ("Lakers record when LeBron James plays 35 mins", (6, 1, 7)),
+        ("Lakers record when LeBron James plays at least 35 minutes at home", (2, 0, 2)),
+    ],
+)
+def test_every_minutes_operator_is_applied(query, record):
+    assert _record(query) == record
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A second player's clause can't ride the player route, and team rows
+        # only carry team minutes: refuse rather than drop either part.
+        "Lakers record when LeBron James plays at least 35 minutes and Luka Doncic plays "
+        "at least 35 minutes",
+        "Lakers record when LeBron James plays at least 35 minutes and Luka Doncic sits",
+        "Lakers record when Luka Doncic plays and LeBron James plays at least 35 minutes",
+    ],
+)
+def test_minutes_bound_with_a_second_player_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"

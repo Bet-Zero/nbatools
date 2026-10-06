@@ -1926,7 +1926,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
-            rf"\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
+            rf"(?<!\bno )(?<!\bnot )\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
         ),
@@ -1960,7 +1960,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
         # A negated bound flips: "no fewer than 10" is a floor and "not over
         # 2" a ceiling. The plain operators inside them read the opposite way.
         (
-            rf"\bno(?:t)? (?:fewer|less) than\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
+            rf"\bno(?:t)? (?:(?:fewer|less) than|under|below)"
+            rf"\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0,
         ),

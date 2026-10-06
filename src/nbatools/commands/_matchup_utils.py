@@ -567,13 +567,20 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     return None, cleaned_text
 
 
-# "35 minutes", "at least 35 minutes", "30 minutes or less", "35+ mpg": a
+# "35 minutes", "at least 35 minutes", "30 minutes or less", "35+ mins": a
 # minutes condition, not a word that can follow bare presence.
 _MINUTES_BOUND_TAIL = (
-    r"\s+(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+"
-    r"|no\s+more\s+than\s+|a\s+max(?:imum)?\s+of\s+)?"
+    # Any operator words ("at least", "no fewer than", "a max of") before the
+    # number; the threshold reader decides which bound they state.
+    r"\s+(?:[a-z]+\s+){0,3}"
     r"\d+(?:\.\d+)?\+?(?:\s+or\s+(?:more|fewer|less))?\s*"
-    r"(?:minutes?|mins?|mpg)\b"
+    r"(?:minutes?|mins?)\b"
+)
+
+
+_SECOND_AVAILABILITY_CLAUSE = (
+    r"\b(?:and|while|when|but)\s+[\w .'\-]+?\s+(?:plays?|played|playing|sits?|sat"
+    r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"
 )
 
 
@@ -592,9 +599,11 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
         with_player_pattern,
         # "when PLAYER plays" is whole-game presence, but "when PLAYER plays 35
         # minutes" states a minutes condition on that player. Read as presence
-        # it dropped the bound and answered with the team's whole record.
+        # it dropped the bound and answered with the team's whole record. With
+        # a second player's clause after it ("... and Luka sits") the player
+        # route would drop that clause, so it stays presence and is refused.
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b"
-        rf"(?!{_MINUTES_BOUND_TAIL})",
+        rf"(?!{_MINUTES_BOUND_TAIL}(?!.*{_SECOND_AVAILABILITY_CLAUSE}))",
     ]
 
     for pattern in presence_patterns:

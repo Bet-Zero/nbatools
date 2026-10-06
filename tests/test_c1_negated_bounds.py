@@ -86,3 +86,16 @@ def test_plain_operators_keep_their_reading():
 def test_team_record_reads_negated_bound_as_a_stat(query, record):
     summary = _result(query)["summary"][0]
     assert (summary["wins"], summary["losses"]) == record
+
+
+def test_not_under_is_a_floor():
+    assert _rows("LeBron James games with not under 10 assists") == _rows(
+        "LeBron James games with at least 10 assists"
+    )
+    assert _rows("LeBron James games with 20 points and not under 5 rebounds") == _rows(
+        "LeBron James games with 20 points and at least 5 rebounds"
+    )
+
+
+def test_mins_is_minutes():
+    assert len(_rows("LeBron James games with at least 35 mins")) == 7

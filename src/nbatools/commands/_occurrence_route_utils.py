@@ -260,7 +260,7 @@ def _parse_single_threshold(text: str) -> dict | None:
         text,
     ) or re.search(
         # "no fewer than 10 assists" is a floor, not the ceiling "fewer than" is.
-        rf"\bno(?:t)?\s+(?:fewer|less)\s+than\s+(\d+)\s+(?:made\s+)?({stat_words})\b",
+        rf"\bno(?:t)?\s+(?:(?:fewer|less)\s+than|under|below)\s+(\d+)\s+(?:made\s+)?({stat_words})\b",
         text,
     )
     if lower_match:
