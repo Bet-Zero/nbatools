@@ -1906,6 +1906,14 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             "min",
             0.0001,
         ),
+        # "more than 10 assists" is the same strict floor as "over 10 assists".
+        # Only the inclusive readings were listed here, so it fell through to a
+        # bare-number reading and counted games with exactly 10.
+        (
+            rf"\bmore than\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
+            "min",
+            0.0001,
+        ),
         (
             rf"\bat least\s+{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",

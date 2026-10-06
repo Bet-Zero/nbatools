@@ -245,6 +245,20 @@ def _parse_single_threshold(text: str) -> dict | None:
                 # "under 10" means < 10
                 return {"stat": stat, "max_value": value - 0.0001 if strict else value}
 
+    # Inclusive lower bounds that put the operator between the number and the
+    # stat: "10 or more assists". The standard pattern below needs the stat
+    # noun right after the number, so this form matched nothing and the whole
+    # list fell back to a single condition ("30 points and 10 or more assists"
+    # kept only the assists).
+    lower_match = re.search(
+        rf"\b(\d+)\s+or\s+more\s+(?:made\s+)?({stat_words})\b",
+        text,
+    )
+    if lower_match:
+        stat = _COMPOUND_STAT_MAP.get(lower_match.group(2))
+        if stat:
+            return _threshold_condition(stat, lower_match.group(1), lower_match.group(0))
+
     # Standard patterns: "30+ points", "10 rebounds", "0 turnovers", "no turnovers"
     standard_match = re.search(
         rf"\b(\d+\+?|zero|no)\s+({_COMPOUND_STAT_WORDS})\b(\s+or\s+more)?",
