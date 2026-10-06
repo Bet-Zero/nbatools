@@ -600,6 +600,11 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     return None, cleaned_text
 
 
+_STAT_COUNT_PHRASE = re.compile(
+    r"(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+)?\d"
+)
+
+
 def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
@@ -630,6 +635,9 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             continue
         phrase = m.group(1).strip()
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+            continue
+        if mode == "with" and _STAT_COUNT_PHRASE.match(phrase):
+            # "record in games with 120 points": a stat bound, not a teammate.
             continue
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase

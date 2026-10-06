@@ -784,7 +784,20 @@ def canonicalize_sample_phrases(text: str) -> str:
         text,
     )
     text = re.sub(r"\bmeetings?\b", "matchups", text)
-    return canonicalize_margin_phrases(" ".join(text.split()))
+    text = canonicalize_margin_phrases(" ".join(text.split()))
+    # "30 point games with 10 assists" -> "games with 30 points and 10 assists":
+    # the list form every condition reader handles. Only before another
+    # number, so "30 point games with LeBron" keeps its teammate.
+    return _ADJECTIVE_GAMES_WITH.sub(
+        lambda m: f"games with {m.group(1)}{m.group(2) or ''} {m.group(3)}s and ", text
+    )
+
+
+_ADJECTIVE_GAMES_WITH = re.compile(
+    r"\b(\d+)(\+)?[- ](point|rebound|assist|three|steal|block|turnover)\s+games?\s+"
+    r"(?:with|where\s+(?:he|she|they)\s+(?:had|made|hit|grabbed|dished))\s+"
+    r"(?=(?:at\s+least\s+|over\s+|\d))"
+)
 
 
 _PTS_WORD = r"(?:\s+(?:points?|pts))?"
