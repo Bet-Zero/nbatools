@@ -1165,6 +1165,45 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
     )
 
 
+def attach_player_game_context_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
+    """Add the ``team_<stat>`` / ``opponent_<stat>`` columns named in *wanted*.
+
+    Player rows carry only their own box score; "games when the Lakers score
+    120" or "when opponents make 15 threes" read the team rows of the same
+    game, joined on the player's team and on his opponent.
+    """
+    from nbatools.commands._condition_utils import PLAYER_GAME_CONTEXT_STATS
+
+    wanted = {str(w).lower() for w in wanted or () if w}
+    names = [n for n in PLAYER_GAME_CONTEXT_STATS if n in wanted and n not in df.columns]
+    keys = {"game_id", "team_id", "opponent_team_id", "season", "season_type"}
+    if not names or df.empty or not keys.issubset(df.columns):
+        return df
+    bases = sorted({n.split("_", 1)[1] for n in names})
+    parts = []
+    for season_type, group in df.groupby("season_type", sort=False):
+        team = load_team_games_for_seasons(
+            sorted(group["season"].astype(str).unique()), season_type
+        )
+        parts.append(team[["game_id", "team_id", *[b for b in bases if b in team.columns]]])
+    team = pd.concat(parts, ignore_index=True).drop_duplicates(subset=["game_id", "team_id"])
+    out = df.copy()
+    team["game_id"] = team["game_id"].astype(out["game_id"].dtype)
+    team["team_id"] = team["team_id"].astype(out["team_id"].dtype)
+    for side, key in (("team", "team_id"), ("opponent", "opponent_team_id")):
+        side_names = [n for n in names if n.startswith(f"{side}_")]
+        if not side_names:
+            continue
+        columns = {n.split("_", 1)[1]: n for n in side_names if n.split("_", 1)[1] in team}
+        side_frame = team[["game_id", "team_id", *columns]].rename(
+            columns={"team_id": key, **columns}
+        )
+        merged = out.merge(side_frame, on=["game_id", key], how="left")
+        merged.index = out.index
+        out = merged
+    return out
+
+
 def load_player_games_for_seasons(
     seasons: list[str], season_type: str, *, player: str | None = None
 ) -> pd.DataFrame:

@@ -6,6 +6,7 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import (
     MARGIN_STATS,
+    PLAYER_GAME_CONTEXT_STATS,
     apply_stat_conditions,
     attach_margin_stats,
 )
@@ -22,6 +23,7 @@ from nbatools.commands.data_utils import (
     apply_player_clutch_filter,
     apply_player_role_filter,
     apply_schedule_context_filters,
+    attach_player_game_context_stats,
     build_clutch_filter_coverage_note,
     build_opponent_mask,
     build_schedule_context_filter_coverage_notes,
@@ -76,6 +78,7 @@ ALLOWED_STATS = {
     "reb_pct": "reb_pct",
     "tov_pct": "tov_pct",
     **MARGIN_STATS,
+    **PLAYER_GAME_CONTEXT_STATS,
 }
 
 GAME_LOG_COLUMNS = [
@@ -143,7 +146,8 @@ def _apply_filters(
     end_date: str | None = None,
     identity_notes: list[str] | None = None,
 ) -> pd.DataFrame:
-    out = attach_margin_stats(df.copy(), {stat, *(c.get("stat") for c in conditions or [])})
+    wanted = {stat, *(c.get("stat") for c in conditions or [])}
+    out = attach_player_game_context_stats(attach_margin_stats(df.copy(), wanted), wanted)
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
 
     start_ts = _normalize_date_value(start_date)
