@@ -6039,7 +6039,14 @@ _RATE_STATS = frozenset({"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"})
 _GAME_LIST_PERCENT_BOUND = re.compile(
     r"\b(over|above|better\s+than|at\s+least|under|below|less\s+than|worse\s+than)\s+"
     r"(\d+(?:\.\d+)?)\s*(?:%|percent)"
+    r"(?:\s+(?:from\s+)?(?:the\s+)?(three|3|deep|downtown|line|free\s+throws?|field))?"
 )
+_PERCENT_FROM = {
+    "line": "ft_pct",
+    "free throw": "ft_pct",
+    "free throws": "ft_pct",
+    "field": "fg_pct",
+}
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
 
 
@@ -6094,6 +6101,15 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         if bound["min_value"] is not None or bound["max_value"] is not None:
             conditions.append(bound)
     percent = _GAME_LIST_PERCENT_BOUND.search(q) if shooting else None
+    if percent and percent.group(3):
+        # "over 50% from three": the bound names its own rate.
+        named = _PERCENT_FROM.get(re.sub(r"\s+", " ", percent.group(3)), "fg3_pct")
+        if named != shooting and shooting != "fg_pct":
+            # "best 3 point shooting games over 80% from the line": two rates.
+            return None
+        shooting = named
+        # A rate bound read before the "from three" is on the wrong rate.
+        conditions = [c for c in conditions if c.get("stat") not in _RATE_STATS]
     if percent and not any(c.get("stat") in _RATE_STATS for c in conditions):
         # "best shooting games over 50%": the bound is on the shooting stat.
         value = float(percent.group(2))

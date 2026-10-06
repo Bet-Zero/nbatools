@@ -701,9 +701,10 @@ def _superlative_names_a_stat(phrase: str, text: str) -> bool:
         rest = m.group(1).strip() if m else ""
     if not rest or _PEOPLE_WORDS.search(rest):
         return False
-    if re.fullmatch(
-        r"(?:(?:home|road|away|regular[\s-]season|playoff)\s+)?(?:record|wins|losses)", rest
-    ):
+    if re.search(r"\b(?:home|road|away)\b", rest):
+        # No home/road season board yet: keep the refusal.
+        return False
+    if re.fullmatch(r"(?:(?:regular[\s-]season|playoff)\s+)?(?:record|wins|losses)", rest):
         return True
     from nbatools.commands._parse_helpers import detect_stat
 

@@ -120,3 +120,35 @@ def test_season_with_the_most_turnovers_answers():
     assert result.result_status == "ok"
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert {row["season"] for row in rows} == {"2023-24", "2024-25", "2025-26"}
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "min_value", "max_value"),
+    [
+        ("LeBron best shooting games over 80% from the line", "ft_pct", 0.8001, None),
+        ("LeBron worst shooting games under 30% from three", "fg3_pct", None, 0.2999),
+        ("Curry best shooting games over 50% from deep", "fg3_pct", 0.5001, None),
+        ("LeBron best shooting games over 40% from 3", "fg3_pct", 0.4001, None),
+        ("LeBron best shooting games with at least 40% from three", "fg3_pct", 0.4, None),
+    ],
+)
+def test_percent_from_three_or_the_line_names_its_rate(query, stat, min_value, max_value):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["stat"] == stat
+    [condition] = kwargs["conditions"]
+    assert condition["stat"] == stat
+    assert condition["min_value"] == (pytest.approx(min_value) if min_value else None)
+    assert condition["max_value"] == (pytest.approx(max_value) if max_value else None)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers season with the best home record",
+        "Lakers seasons with the best road record",
+        "Lakers season with the most home wins",
+    ],
+)
+def test_home_road_season_records_do_not_answer_one_season(query):
+    result = execute_natural_query(query)
+    assert result.result_status != "ok"
