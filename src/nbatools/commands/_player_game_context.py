@@ -24,7 +24,7 @@ from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 _PLAYER_ROUTES = ("player_game_finder", "player_game_summary")
 
-_SCORE_VERB = r"scor(?:e|es|ed|ing)|puts?\s+up|put\s+up"
+_SCORE_VERB = r"scor(?:e|es|ed)|puts?\s+up|put\s+up"
 _TEAM_STAT_VERB = re.compile(
     rf"\s({_SCORE_VERB}|ha(?:d|s|ve)|ma(?:de|kes?)|hits?|grab(?:s|bed)?"
     r"|record(?:s|ed)?|dish(?:es|ed)?)\s+"
@@ -50,6 +50,14 @@ _PRE = {
     "no more than": ("max", 0.0),
 }
 _TEAM_WORDS = {"they", "team", "the team", "we"}
+# The subject opens a clause: "when the Lakers score 120", "games they had 30
+# assists". After "vs Boston" / "for the Lakers" the team is a filter and a
+# following verb belongs to the player ("LeBron vs Boston scores 30").
+_CLAUSE_OPENER = re.compile(
+    r"(?:^|\b(?:when|whenever|where|if|and|while|but|after|games?|that|which))\s*$"
+)
+# "the other team" / "the opposing team" is the opponent, read elsewhere.
+_OPPONENT_WORDS = re.compile(r"\b(?:other|opposing)\s+team$")
 
 
 def _subject_team(prefix: str) -> tuple[str, int] | None:
@@ -63,6 +71,10 @@ def _subject_team(prefix: str) -> tuple[str, int] | None:
         if m is None:
             continue
         phrase = m.group(1)
+        if _OPPONENT_WORDS.search(prefix.rstrip()):
+            return None
+        if not _CLAUSE_OPENER.search(prefix[: m.start(1)]):
+            continue
         bare = re.sub(r"^the\s+", "", phrase)
         if phrase in _TEAM_WORDS or bare in _TEAM_WORDS:
             return "TEAM", m.start(1)
@@ -222,8 +234,12 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
 
     rest = parse_query(_without_team_clauses(text, found))
     rest_kwargs = rest.get("route_kwargs") or {}
+    ranking_stat = None
     if rest.get("route") in _PLAYER_ROUTES and rest_kwargs.get("player") == route_kwargs["player"]:
         own = [c for c in _kwargs_conditions(rest_kwargs) if not _is_context_stat(c["stat"])]
+        # "highest scoring games when the Lakers score 120" still ranks by
+        # the player's points.
+        ranking_stat = rest_kwargs.get("stat")
     else:
         # The team clause's bound was read as the player's own; drop it.
         own = [
@@ -232,6 +248,13 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     conditions = own + context
     _clear_covered_event_refusal(route_kwargs, own)
     route_kwargs["conditions"] = conditions
-    route_kwargs["stat"] = conditions[0]["stat"]
-    route_kwargs["min_value"] = conditions[0]["min_value"]
-    route_kwargs["max_value"] = conditions[0]["max_value"]
+    primary = next((c for c in conditions if c["stat"] == ranking_stat), None)
+    if ranking_stat and primary is None:
+        route_kwargs["stat"] = ranking_stat
+        route_kwargs["min_value"] = None
+        route_kwargs["max_value"] = None
+        return
+    primary = primary or conditions[0]
+    route_kwargs["stat"] = primary["stat"]
+    route_kwargs["min_value"] = primary["min_value"]
+    route_kwargs["max_value"] = primary["max_value"]

@@ -102,3 +102,27 @@ def test_opponent_scoring_on_team_records(query, record):
 def test_plain_player_bounds_unchanged():
     assert _record("Lakers record when LeBron James scores 30 points") == (10, 1, 11)
     assert len(_rows("LeBron James games with 30 points and 10 assists")) == 2
+
+
+@pytest.mark.parametrize(
+    ("query", "count"),
+    [
+        # A team after "vs" / "for" / "with" is a filter; "scoring" is the player's.
+        ("LeBron James games vs Boston scoring 30 points", 3),
+        ("LeBron James vs Boston scores 30 points", 3),
+        ("LeBron James games for the Lakers scoring 30 points", 11),
+        ("LeBron James games with the Lakers scoring 30", 11),
+        # "the other team" is only the opponent.
+        ("LeBron James games when the other team scored 120 points", 7),
+        ("how many games did LeBron James play when the Lakers scored 110 or fewer", 32),
+    ],
+)
+def test_team_word_that_is_not_a_clause_subject(query, count):
+    assert len(_rows(query)) == count
+
+
+def test_ranking_keeps_the_players_stat():
+    rows = _rows("LeBron James highest scoring games when the Lakers score 120")
+    points = [row["pts"] for row in rows]
+    assert points == sorted(points, reverse=True)
+    assert points[:3] == [36, 35, 33]

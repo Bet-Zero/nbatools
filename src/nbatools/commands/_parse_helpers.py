@@ -1886,6 +1886,13 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
     applied = {(route_kwargs.get("stat"), route_kwargs.get("max_value"))}
     for condition in route_kwargs.get("conditions") or []:
         applied.add((condition.get("stat"), condition.get("max_value")))
+    # "when the Lakers score 110 or fewer" is read as pts and applied as the
+    # team's column (team_pts) on a player route.
+    applied |= {
+        (str(stat).split("_", 1)[1], value)
+        for stat, value in list(applied)
+        if str(stat).startswith(("team_", "opponent_"))
+    }
     if any(key not in applied for key in keys):
         return "unparsed_upper_bound"
     return None
