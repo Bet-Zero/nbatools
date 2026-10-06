@@ -149,6 +149,12 @@ def test_outcome_streak_bounds(query, condition, length):
             "games within 5 points in the last 5 minutes",
             "games within 5 points in the last 5 minutes",
         ),
+        # Season windows after the margin keep it.
+        ("won by 10+ in the first 20 games", "won at 10+ win margin in the first 20 games"),
+        ("won by 10+ at the end of the season", "won at 10+ win margin at the end of the season"),
+        ("lost by 10+ in the third week", "lost at 10+ loss margin in the third week"),
+        ("won by 10 in the first quarter", "won by 10 in the first quarter"),
+        ("games with a win margin of 10+", "games with won at 10+ win margin"),
     ],
 )
 def test_margin_ranges_and_non_margins(text, expected):
@@ -194,6 +200,7 @@ def test_in_game_score_state_refuses(query):
         ("Lakers 5 straight games won by 10+", [7, 7, 7, 7, 5, 5]),
         ("Lakers 3 consecutive 120 point wins", [5]),
         ("Lakers longest streak of games decided by 5 or fewer", [2, 2, 2, 2, 2, 2]),
+        ("Lakers longest streak of games with a win margin of 10+", [7, 7, 7, 7]),
     ],
 )
 def test_streak_outcomes_and_lengths(query, lengths):

@@ -817,9 +817,11 @@ _MARGIN_PREFIX = re.compile(r"\bdouble[- ]digit\s+(wins?|victor(?:y|ies)|loss(?:
 # the paint": not the final margin.
 _MARGIN_NOT_FINAL = re.compile(
     r"\s+(?:at|by|after|in|through|going\s+into|entering)\s+(?:the\s+)?"
-    r"(?:half(?:time)?|break|end\s+of|first|second|third|fourth|1st|2nd|3rd|4th|"
-    r"(?:\d+|one|two|three)\s+quarters?|quarter|(?:last|final)\s+\w+\s+minutes?|"
-    r"clutch|paint)\b"
+    r"(?:half(?:time)?\b(?!\s*(?:way|-way|of))|break\b|"
+    r"(?:end\s+of\s+(?:the\s+)?)?(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+"
+    r"(?:quarter|half|period)\b(?!\s+of\s+the\s+season)|end\s+of\s+(?:the\s+)?"
+    r"(?:quarter|half|regulation|period)\b|(?:\d+|one|two|three)\s+quarters?\b|"
+    r"(?:last|final)\s+\w+\s+minutes?\b|clutch\b|paint\b)"
 )
 _OPPOSITE_OUTCOME = {
     "won": "lost",
@@ -900,6 +902,12 @@ def canonicalize_margin_phrases(text: str) -> str:
             return f"{word}at {_margin_phrase(direction, value, lead)}"
         return m.group(0)
 
+    # "a win margin of 10+" says "won by 10+".
+    text = re.sub(
+        r"\b(?:an?\s+)?(?:(win(?:ning)?)|los(?:s|ing))\s+margin\s+of\s+",
+        lambda m: "won by " if m.group(1) else "lost by ",
+        text,
+    )
     # "the opponent won by 10+" is the subject losing by 10+.
     text = re.sub(
         r"\b(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+team)\s+"

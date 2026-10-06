@@ -370,7 +370,6 @@ from nbatools.commands.query_boolean_parser import expression_contains_boolean_o
 _UNSUPPORTED_BOUNDARY_PHRASES = (
     # Score state during a game (no period scores are loaded).
     "at halftime",
-    "at the half",
     "after 3 quarters",
     "after three quarters",
     "in the paint",
