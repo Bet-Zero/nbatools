@@ -618,6 +618,10 @@ _STAT_COUNT_CLAUSE = (
 _STAT_COUNT_PHRASE = re.compile(
     rf"{_STAT_COUNT_CLAUSE}(?:\s*(?:,|and|,\s*and)\s+{_STAT_COUNT_CLAUSE})*(?![\w-])"
 )
+_READ_BOUND_TAIL = re.compile(
+    r"\s*(?:$|[?.!,;:]|(?:vs\.?|versus|against|this|last|since|in|on|at|during|before"
+    r"|after|home|road|away|playoffs?|regular)\b|if\s+[\w .'\-]+?\s+plays?\b)"
+)
 _CONDITIONAL_CLAUSE = re.compile(r"\b(?:when|if|while|whenever)\b")
 
 
@@ -660,6 +664,9 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
         if (
             stat_bound
+            # Only scope the parser already reads may follow the bound, so
+            # nothing ("and 2 days rest", "from Davis") is silently dropped.
+            and _READ_BOUND_TAIL.match(text, stat_bound.end())
             and not detect_player(text[stat_bound.end() :])
             and not _names_conditional_player(text)
         ):
