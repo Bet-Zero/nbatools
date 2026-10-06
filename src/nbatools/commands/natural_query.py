@@ -367,8 +367,11 @@ from nbatools.commands.entity_resolution import (
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
+# "leading at the half" (not "at the halfway point of the season")
+_AT_THE_HALF = re.compile(r"\bat\s+the\s+half\b(?![- ]?way)")
 _UNSUPPORTED_BOUNDARY_PHRASES = (
     # Score state during a game (no period scores are loaded).
+    "in-game lead",
     "at halftime",
     "after 3 quarters",
     "after three quarters",
@@ -432,7 +435,7 @@ _ATTEMPT_QUALIFIER = re.compile(
 
 
 def _unsupported_phrase_boundary_note(q: str) -> str | None:
-    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES):
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or _AT_THE_HALF.search(q):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
             "no result was executed for the unsupported concept"

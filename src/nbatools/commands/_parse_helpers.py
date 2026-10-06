@@ -823,6 +823,7 @@ _MARGIN_NOT_FINAL = re.compile(
     r"(?:quarter|half|regulation|period)\b|(?:\d+|one|two|three)\s+quarters?\b|"
     r"(?:last|final)\s+\w+\s+minutes?\b|clutch\b|paint\b)"
 )
+IN_GAME_LEAD_MARKER = "in-game lead"
 _OPPOSITE_OUTCOME = {
     "won": "lost",
     "win": "lose",
@@ -878,12 +879,13 @@ def canonicalize_margin_phrases(text: str) -> str:
             # "road team won by 20" names a side, not the subject's games.
             return m.group(0)
         other_stat = re.match(rf"\s+(?:made\s+)?{_OPP_STAT_WORD}", after)
-        if _MARGIN_NOT_FINAL.match(after) or (
-            other_stat and detect_stat(other_stat.group(0)) != "pts"
-        ):
-            # A lead at halftime, or another stat ("won by 5 steals"), is not
-            # the final margin.
+        if other_stat and detect_stat(other_stat.group(0)) != "pts":
+            # Another stat ("won by 5 steals") is not a margin.
             return m.group(0)
+        if _MARGIN_NOT_FINAL.match(after):
+            # A lead at halftime or in a quarter: no period scores are
+            # loaded, so mark it for the unsupported boundary.
+            return f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
         tail = m.group(2)
         for pattern, direction, adjust in _MARGIN_BOUNDS:
             bound = re.fullmatch(pattern, tail)
@@ -904,7 +906,8 @@ def canonicalize_margin_phrases(text: str) -> str:
 
     # "a win margin of 10+" says "won by 10+".
     text = re.sub(
-        r"\b(?:an?\s+)?(?:(win(?:ning)?)|los(?:s|ing))\s+margin\s+of\s+",
+        r"\b(?:with\s+)?(?:an?\s+)?(?:(win(?:ning)?)|los(?:s|ing))\s+margin\s+of\s+"
+        r"(?=\d|at\s+(?:least|most)|more|over|under|fewer|less|double|single|between)",
         lambda m: "won by " if m.group(1) else "lost by ",
         text,
     )
@@ -924,7 +927,7 @@ def canonicalize_margin_phrases(text: str) -> str:
     text = re.sub(
         r"\b(games?|decided)\s+within\s+(\d+)(?:\s+(?:points?|pts))?\b",
         lambda m: (
-            m.group(0)
+            f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
             if _MARGIN_NOT_FINAL.match(m.string[m.end() :])
             else (
                 f"{m.group(1) if m.group(1) != 'decided' else ''} at "

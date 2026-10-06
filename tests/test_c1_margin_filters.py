@@ -144,17 +144,18 @@ def test_outcome_streak_bounds(query, condition, length):
         # Not the final margin: another stat, a lead during the game.
         ("lakers games won by 5 steals", "lakers games won by 5 steals"),
         ("lakers won by 10+ free throws", "lakers won by 10+ free throws"),
-        ("winning by 10+ at halftime", "winning by 10+ at halftime"),
+        ("winning by 10+ at halftime", "winning by 10+ in-game lead at halftime"),
         (
             "games within 5 points in the last 5 minutes",
-            "games within 5 points in the last 5 minutes",
+            "games within 5 points in-game lead in the last 5 minutes",
         ),
         # Season windows after the margin keep it.
         ("won by 10+ in the first 20 games", "won at 10+ win margin in the first 20 games"),
         ("won by 10+ at the end of the season", "won at 10+ win margin at the end of the season"),
         ("lost by 10+ in the third week", "lost at 10+ loss margin in the third week"),
-        ("won by 10 in the first quarter", "won by 10 in the first quarter"),
-        ("games with a win margin of 10+", "games with won at 10+ win margin"),
+        ("won by 10 in the first quarter", "won by 10 in-game lead in the first quarter"),
+        ("games with a win margin of 10+", "games won at 10+ win margin"),
+        ("biggest win margin of the season", "biggest win margin of the season"),
     ],
 )
 def test_margin_ranges_and_non_margins(text, expected):
@@ -179,6 +180,9 @@ def test_margin_ranges_execute(query, rows):
         "Lakers record when winning by 10+ at halftime",
         "Lakers record when leading at halftime",
         "Lakers record in games within 5 points in the last 5 minutes",
+        "Lakers games won by 10+ at the half",
+        "Lakers record when leading at the half",
+        "Lakers games won by 10+ by the end of regulation",
     ],
 )
 def test_in_game_score_state_refuses(query):
