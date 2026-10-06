@@ -390,6 +390,11 @@ def _route_context_filters_for_execution(
     return routed, notes, blocked_filters
 
 
+# A season#team token no game carries: an empty opponent list would read as
+# no filter, so a quality bar no team met uses this instead.
+_NO_OPPONENT_TOKEN = "0000#0"
+
+
 def _resolve_opponent_quality_kwargs(
     route: str,
     kwargs: dict,
@@ -427,12 +432,16 @@ def _resolve_opponent_quality_kwargs(
             tokens = None
         if tokens is not None:
             sanitized["opponent"] = OpponentGroup(
-                tokens, "opponents that met the bar in that season"
+                tokens or [_NO_OPPONENT_TOKEN], "opponents that met the bar in that season"
             )
             notes.append("Opponent quality is applied season by season.")
             return sanitized, notes, []
     resolved_opponents = resolve_opponent_quality_teams(opponent_quality, seasons, season_type)
-    sanitized["opponent"] = resolved_opponents
+    # No team met the bar ("non-playoff teams" when every team made it): an
+    # empty opponent list would read as no filter and return every game.
+    sanitized["opponent"] = resolved_opponents or OpponentGroup(
+        ["0000#0"], "no qualifying opponents"
+    )
     if len(seasons) > 1:
         notes.append(
             "Multi-season opponent-quality filters use the union of qualifying teams "
