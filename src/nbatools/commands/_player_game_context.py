@@ -230,8 +230,15 @@ _RANKED_BY = re.compile(
 )
 # "with 30 points", "in a game with at least 30 points", "30 point games",
 # "a 30 minute game": a player's own game condition beside the ranking.
+# "10 assists or fewer" is a ceiling the parse already holds, and "5 threes
+# allowed" is the defense's stat, so neither is a floor on the player.
+_NOT_A_FLOOR = (
+    r"(?![\s-]+(?:or\s+(?:fewer|less|under|below|lower)|at\s+most|max\b|allowed|given\s+up))"
+)
 _EVENT_PATTERNS = (
-    re.compile(rf"\bwith\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b"),
+    re.compile(
+        rf"\bwith\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b{_NOT_A_FLOOR}"
+    ),
     re.compile(rf"\b(?P<n>\d+)\+?[\s-]+(?P<w>{STAT_PATTERN}|minutes?)[\s-]+games?\b"),
 )
 
@@ -268,6 +275,9 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
             if stat is None:
                 continue
             claimed.append(m.span())
+            if stat == "pts" and float(m.group("n")) < 10 and pattern is _EVENT_PATTERNS[1]:
+                # "3 point games" are games decided by 3 points.
+                continue
             events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
     if not events:
         return
@@ -282,6 +292,10 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
             c["stat"] == ranking and any(e["stat"] != ranking and _same_bound(c, e) for e in events)
         )
     ]
+    if any(c["stat"] == e["stat"] and not _same_bound(c, e) for c in kept for e in events):
+        # The parse read another bound on the same stat ("with 30 points
+        # against teams that scored 120"); adding the event would hide it.
+        return
     for event in events:
         if not any(c["stat"] == event["stat"] and _same_bound(c, event) for c in kept):
             kept.append(event)

@@ -76,3 +76,48 @@ def test_plain_rankings_unchanged():
         35,
         33,
     ]
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "values"),
+    [
+        # "or fewer" keeps the ceiling; it is not a second, exact-value floor.
+        (
+            "LeBron James most points in a game with 10 assists or fewer",
+            "pts",
+            [36, 35, 33, 33, 32],
+        ),
+        ("LeBron James most points in a game with 10 assists or less", "pts", [36, 35, 33, 33, 32]),
+        (
+            "LeBron James most points in a game with 3 turnovers or fewer",
+            "pts",
+            [35, 33, 33, 32, 31],
+        ),
+        (
+            "LeBron James most rebounds in a game with 30 points or fewer",
+            "reb",
+            [14, 12, 12, 12, 11],
+        ),
+        ("LeBron James most points in a game with 30 minutes or less", "pts", [33, 33, 32, 31, 31]),
+    ],
+)
+def test_ceiling_after_the_stat_stays_a_ceiling(query, stat, values):
+    assert [row[stat] for row in _rows(query)] == values
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Another bound on the same stat, a defensive stat and a margin are
+        # not read as the player's own floor.
+        "LeBron James most rebounds in a game with 30 points against teams that scored 120 points",
+        "LeBron James most points in a game with 5 threes allowed",
+        "LeBron James most assists in 3 point games",
+    ],
+)
+def test_unread_conditions_still_refuse(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
