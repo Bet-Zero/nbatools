@@ -230,7 +230,7 @@ def _parse_single_threshold(text: str) -> dict | None:
     for pattern, strict in (
         (rf"\b(?:under|fewer\s+than|less\s+than)\s+(\d+)\+?\s+({stat_words})\b", True),
         (
-            rf"\b(?:at\s+most|no\s+more\s+than|a\s+max(?:imum)?\s+of|max(?:imum)?(?:\s+of)?)"
+            rf"\b(?:at\s+most|no(?:t)?\s+more\s+than|a\s+max(?:imum)?\s+of|max(?:imum)?(?:\s+of)?)"
             rf"\s+(\d+)\s+({stat_words})\b",
             False,
         ),

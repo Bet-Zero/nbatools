@@ -110,7 +110,23 @@ def test_no_more_than_stays_a_ceiling(query, expected):
     assert len(_rows(query)) == expected
 
 
-def test_not_more_than_is_a_ceiling():
-    assert _rows("LeBron James games with not more than 2 turnovers") == _rows(
-        "LeBron James games with no more than 2 turnovers"
-    )
+@pytest.mark.parametrize(
+    ("not_form", "no_form"),
+    [
+        (
+            "LeBron James games with not more than 2 turnovers",
+            "LeBron James games with no more than 2 turnovers",
+        ),
+        # In a list the second reader must agree, or the request refuses.
+        (
+            "LeBron James games with 30 points and not more than 2 turnovers",
+            "LeBron James games with 30 points and no more than 2 turnovers",
+        ),
+        (
+            "Lakers games with 120 points and not more than 10 turnovers",
+            "Lakers games with 120 points and no more than 10 turnovers",
+        ),
+    ],
+)
+def test_not_more_than_is_a_ceiling(not_form, no_form):
+    assert _rows(not_form) == _rows(no_form)
