@@ -6189,7 +6189,7 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             for key, value in again_kwargs.items():
                 if key in ("unsupported_filters", "leaderboard_eligibility"):
                     continue
-                if value not in (None, False, "", [], (), {}) and key not in route_kwargs:
+                if value not in (None, False, "", [], (), {}) and not route_kwargs.get(key):
                     # A filter the finder cannot take refuses below.
                     route_kwargs[key] = value
         if re.search(r"\bby\s+(?!(?:an?\s+)?players?\b)", q):

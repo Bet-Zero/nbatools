@@ -156,3 +156,18 @@ def test_league_game_list_keeps_margin_and_span():
     assert {"stat": "win_margin", "min_value": 20.0, "max_value": None} in kwargs["conditions"]
     kwargs = parse_query("best shooting games over 50% since 2023")["route_kwargs"]
     assert kwargs["start_season"] == "2023-24"
+
+
+@pytest.mark.parametrize(
+    ("query", "role"),
+    [
+        ("best shooting performances off the bench", "bench"),
+        ("best shooting performances as starters", "starter"),
+        ("best shooting games over 50% from three off the bench", "bench"),
+        ("best shooting games over 50% from three as a starter", "starter"),
+    ],
+)
+def test_league_game_list_keeps_the_role(query, role):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["route_kwargs"]["role"] == role
