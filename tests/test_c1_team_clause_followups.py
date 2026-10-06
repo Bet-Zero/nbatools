@@ -119,3 +119,17 @@ def test_ranking_with_condition_and_team_total():
         "LeBron James highest scoring games with 10 assists when the Lakers score 120"
     )["finder"]
     assert [row["pts"] for row in rows] == [29]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A low word on something else leaves a highest-first ranking alone.
+        "LeBron James highest scoring games against the lowest seeded teams",
+        "LeBron James most points in a game against teams with the fewest wins",
+        "LeBron James top scoring games, to say the least",
+    ],
+)
+def test_low_word_elsewhere_keeps_highest_first(query):
+    rows = _sections(query)["finder"]
+    assert [row["pts"] for row in rows][:3] == [36, 35, 33]

@@ -15,6 +15,7 @@ import re
 from typing import Any
 
 from nbatools.commands._condition_utils import PLAYER_GAME_CONTEXT_BASES
+from nbatools.commands._constants import STAT_PATTERN
 from nbatools.commands._parse_helpers import (
     _OPP_STAT_WORD,
     _opponent_stat_word,
@@ -201,16 +202,19 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranking_direction(route, route_kwargs, text)
 
 
-# "lowest scoring games", "fewest turnovers": rank from the bottom. "at least"
-# is a bound, not a direction.
-_ASCENDING_WORDS = re.compile(r"\b(?:lowest|fewest|(?<!\bat )least)\b")
+# "lowest scoring games", "fewest turnovers": rank from the bottom. The low
+# word must sit on the ranked stat; "vs teams with the fewest wins" or "at
+# least" says nothing about the order.
+_RANKED_STAT = rf"[\s-]+(?:scoring|shooting|efficient|plus[\s-]?minus|{STAT_PATTERN})\b"
+_ASCENDING_RANK = re.compile(rf"\b(?:lowest|fewest|(?<!\bat )least){_RANKED_STAT}")
+_DESCENDING_RANK = re.compile(rf"\b(?:highest|most|top|best|biggest|largest){_RANKED_STAT}")
 
 
 def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -> None:
     """A player game list ranked by a stat runs lowest first when asked."""
     if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
         return
-    if _ASCENDING_WORDS.search(text):
+    if _ASCENDING_RANK.search(text) and not _DESCENDING_RANK.search(text):
         route_kwargs["ascending"] = True
 
 
