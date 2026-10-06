@@ -720,6 +720,13 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "try a single-player absence query such as 'Lakers record without LeBron' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "player_minutes_bound":
+        return (
+            "a player's minutes bound can't be combined with another player's "
+            "availability on a team record; ask with one player, such as 'Lakers "
+            "record when LeBron plays at least 35 minutes' "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "unresolved_player_availability":
         return (
             "the requested availability player could not be resolved confidently; "

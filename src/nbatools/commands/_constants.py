@@ -117,6 +117,7 @@ STAT_ALIASES: dict[str, str] = {
     # Minutes
     "minutes": "minutes",
     "min": "minutes",
+    "mins": "minutes",
     # Box-score makes/attempts
     "field goals made": "fgm",
     "field goal made": "fgm",

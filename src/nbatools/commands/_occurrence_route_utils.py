@@ -228,7 +228,12 @@ def _parse_single_threshold(text: str) -> dict | None:
     # number they became lower bounds ("at most 1 turnover" counted tov >= 1).
     stat_words = _COMPOUND_STAT_WORDS
     for pattern, strict in (
-        (rf"\b(?:under|fewer\s+than|less\s+than)\s+(\d+)\+?\s+({stat_words})\b", True),
+        (
+            rf"(?<!\bno )(?<!\bnot )\b(?:under|fewer\s+than|less\s+than)"
+            rf"\s+(\d+)\+?\s+({stat_words})\b",
+            True,
+        ),
+        (rf"\bno(?:t)?\s+(?:greater\s+than|over|above)\s+(\d+)\s+({stat_words})\b", False),
         (
             rf"\b(?:at\s+most|no(?:t)?\s+more\s+than|a\s+max(?:imum)?\s+of|max(?:imum)?(?:\s+of)?)"
             rf"\s+(\d+)\s+({stat_words})\b",
@@ -252,6 +257,10 @@ def _parse_single_threshold(text: str) -> dict | None:
     # kept only the assists).
     lower_match = re.search(
         rf"\b(\d+)\s+or\s+more\s+(?:made\s+)?({stat_words})\b",
+        text,
+    ) or re.search(
+        # "no fewer than 10 assists" is a floor, not the ceiling "fewer than" is.
+        rf"\bno(?:t)?\s+(?:(?:fewer|less)\s+than|under|below)\s+(\d+)\s+(?:made\s+)?({stat_words})\b",
         text,
     )
     if lower_match:

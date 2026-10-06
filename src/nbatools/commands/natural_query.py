@@ -5195,6 +5195,19 @@ def _route_parsed_query(parsed: dict) -> dict:
             "was returned for this route"
         )
 
+    if (
+        route == "team_record"
+        and route_kwargs.get("stat") == "minutes"
+        and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
+    ):
+        # A minutes bound next to a player is that player's minutes; team rows
+        # only carry the whole team's (~240), so applying it there answered a
+        # different question. Refuse instead.
+        existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
+        if "player_minutes_bound" not in existing_unsupported:
+            existing_unsupported.append("player_minutes_bound")
+        route_kwargs["unsupported_filters"] = existing_unsupported
+
     if route == "team_record" and last_n is not None and route_kwargs.get("last_n") is None:
         # Every team_record branch selects the same game log, so the last-N
         # window applies to all of them rather than to each kwargs literal.
