@@ -198,6 +198,20 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     """Read team/opponent bounds and the ranking stat of a player game list."""
     _apply_team_context(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
+    _apply_ranking_direction(route, route_kwargs, text)
+
+
+# "lowest scoring games", "fewest turnovers": rank from the bottom. "at least"
+# is a bound, not a direction.
+_ASCENDING_WORDS = re.compile(r"\b(?:lowest|fewest|(?<!\bat )least)\b")
+
+
+def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -> None:
+    """A player game list ranked by a stat runs lowest first when asked."""
+    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+        return
+    if _ASCENDING_WORDS.search(text):
+        route_kwargs["ascending"] = True
 
 
 # "highest scoring games", "top 5 games by assists", "most rebounds in a game".
@@ -259,8 +273,13 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     for item in team_subject_stat_conditions(text):
         team = item["team"]
         if team == "LA":
-            team = next((t for t in ("LAL", "LAC") if t in opponents), own_team or "TEAM")
-            if team not in ("LAL", "LAC", "TEAM"):
+            # Only an LA team: the player's own when he plays for one, else
+            # an LA opponent of the route.
+            if own_team in ("LAL", "LAC"):
+                team = own_team
+            else:
+                team = next((t for t in ("LAL", "LAC") if t in opponents), None)
+            if team is None:
                 continue
         if team in opponents:
             found.append({**item, "side": "opponent"})

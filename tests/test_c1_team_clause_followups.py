@@ -39,7 +39,6 @@ def _games(query: str) -> int:
     [
         ("LeBron James games when his team scores 120", 19),
         ("LeBron James games when his Lakers score 120", 19),
-        ("LeBron James games when LA scores 120", 19),
         ("LeBron James games when the opposing team scored 120", 7),
         ("LeBron James games when the Lakers allow 120", 7),
         ("LeBron James games when the Lakers commit 20 turnovers", 10),
@@ -61,6 +60,37 @@ def test_team_and_opponent_clauses(query, games):
 def test_allowed_points_are_the_opponents(query):
     summary = _sections(query)["summary"][0]
     assert (summary["wins"], summary["losses"]) == (2, 5)
+
+
+def test_la_is_only_an_la_team():
+    # Tatum's team is not from LA, so "LA" is not his team's total.
+    result = _execute("Jayson Tatum games when LA scores 120")
+    assert result.result_status == "no_result"
+    assert _games("Jayson Tatum games vs the Lakers when LA scores 120") == 4
+
+
+def test_player_without_games_finds_none():
+    # Kawhi is not in the fixture: no games, not an error.
+    for query in (
+        "Kawhi Leonard games when they score 120",
+        "Kawhi Leonard games when opponents score 120",
+    ):
+        result = _execute(query)
+        assert result.result_status == "no_result", query
+        assert result.result_reason == "no_match", query
+
+
+@pytest.mark.parametrize(
+    ("query", "points"),
+    [
+        ("LeBron James lowest scoring games with 10 assists", [14, 19, 21, 29, 30]),
+        ("LeBron James lowest scoring games", [11, 14, 14, 16, 17]),
+        ("LeBron James highest scoring games with at least 10 assists", [32, 30, 29, 21, 19]),
+    ],
+)
+def test_ranking_direction(query, points):
+    rows = _sections(query)["finder"]
+    assert [row["pts"] for row in rows][:5] == points
 
 
 def test_team_named_beside_an_opponent():
