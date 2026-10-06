@@ -728,10 +728,17 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             continue
         if (
             mode == "with"
-            and re.match(r"(?:the\s+)?(?:most|fewest)\b", phrase)
-            and re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
+            and re.match(r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase)
+            and (
+                re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
+                or re.search(
+                    r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
+                    text,
+                )
+            )
         ):
-            # "season with the most wins" ranks seasons, it names no player.
+            # "season with the most wins / best record" ranks seasons, it
+            # names no player.
             continue
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase

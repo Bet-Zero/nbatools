@@ -124,7 +124,8 @@ def test_top_three_shooting_seasons_rank_field_goal_percentage():
 
 def test_a_bound_on_another_stat_keeps_that_stat():
     kwargs = parse_query("LeBron best shooting games over 25 points")["route_kwargs"]
-    assert (kwargs["stat"], kwargs["min_value"]) == ("pts", 25.0001)
+    assert kwargs["stat"] == "fg_pct"
+    assert kwargs["conditions"] == [{"stat": "pts", "min_value": 25.0001, "max_value": None}]
 
 
 def test_defensive_games_are_not_ranked_by_points():

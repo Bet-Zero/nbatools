@@ -1786,7 +1786,7 @@ _RANKED_WINS_LOSSES = re.compile(
 _PLAYER_BEST_SEASON = re.compile(
     r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,4}?seasons?\b"
     r"|\bseasons?\s+(?:ranked|sorted|ordered)\s+by\b"
-    r"|\bseasons?\s+with\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b"
+    r"|\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b"
 )
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 # "per game" is a season average, not a single-game ask.
@@ -6029,6 +6029,10 @@ _GAME_SHOOTING_PATTERNS = tuple(
     (pattern.replace(r"seasons?\b", r"(?:games?|nights?|performances?|outings?)\b"), stat)
     for pattern, stat in _SEASON_SHOOTING_PATTERNS
 )
+_GAME_LIST_PERCENT_BOUND = re.compile(
+    r"\b(over|above|better\s+than|at\s+least|under|below|less\s+than|worse\s+than)\s+"
+    r"(\d+(?:\.\d+)?)\s*(?:%|percent)"
+)
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
 
 
@@ -6047,6 +6051,7 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     if shooting and route_kwargs.get("min_value") == 3 and route_kwargs.get("stat") == "pts":
         # "3 point shooting": the 3 is not a points threshold.
         route_kwargs.pop("min_value")
+        route_kwargs.pop("stat")
     elif shooting is None and out["route"] == "player_game_finder":
         # Already a ranked list of the stat asked for.
         return None
@@ -6055,8 +6060,35 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         and route_kwargs.get("stat") not in (None, shooting)
         and (route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None)
     ):
-        # "best shooting games over 25 points": the bound is on another stat.
-        return None
+        # "worst shooting games under 15 points": the bound is on another
+        # stat; keep it as a condition and rank by the shooting stat.
+        bound = {
+            "stat": route_kwargs.pop("stat"),
+            "min_value": route_kwargs.pop("min_value", None),
+            "max_value": route_kwargs.pop("max_value", None),
+        }
+        route_kwargs["conditions"] = list(route_kwargs.get("conditions") or []) + [bound]
+    if shooting and route_kwargs.get("stat") == shooting:
+        # "at least 50%" can arrive unscaled; percentages are fractions.
+        for key in ("min_value", "max_value"):
+            if (route_kwargs.get(key) or 0) > 1:
+                route_kwargs[key] = route_kwargs[key] / 100
+    if shooting:
+        percent = _GAME_LIST_PERCENT_BOUND.search(q)
+        if (
+            percent
+            and all(route_kwargs.get(key) is None for key in ("min_value", "max_value"))
+            and route_kwargs.get("stat") in (None, shooting)
+        ):
+            # "best shooting games over 50%": the bound is on the shooting stat.
+            value = float(percent.group(2))
+            value = value / 100 if value > 1 else value
+            if percent.group(1) in ("over", "above", "better than"):
+                route_kwargs["min_value"] = value + 0.0001
+            elif percent.group(1) == "at least":
+                route_kwargs["min_value"] = value
+            else:
+                route_kwargs["max_value"] = value - 0.0001
     stat = shooting or route_kwargs.get("stat") or "pts"
     route_kwargs.pop("career_intent", None)
     from inspect import signature
