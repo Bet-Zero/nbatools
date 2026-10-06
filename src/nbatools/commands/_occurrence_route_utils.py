@@ -229,7 +229,7 @@ def _parse_single_threshold(text: str) -> dict | None:
     stat_words = _COMPOUND_STAT_WORDS
     for pattern, strict in (
         (
-            rf"(?<!\bno )(?<!\bnot )\b(?:under|fewer\s+than|less\s+than)"
+            rf"(?<!\bno )(?<!\bnot )\b(?:under|below|fewer\s+than|less\s+than)"
             rf"\s+(\d+)\+?\s+({stat_words})\b",
             True,
         ),

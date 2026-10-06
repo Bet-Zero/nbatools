@@ -539,6 +539,10 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
         # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
         r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
+        # `when/while/and PLAYER sits/rests`: "Lakers record when Luka sits"
+        # read no absence and answered with the whole record.
+        r"\b(?:when|while|and)\s+((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
+        r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b",
         # `when/while PLAYER is/was out`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
         # `when/while PLAYER out` (no copula)
@@ -578,10 +582,31 @@ _MINUTES_BOUND_TAIL = (
 )
 
 
-_SECOND_AVAILABILITY_CLAUSE = (
-    r"\b(?:and|while|when|but)\s+[\w .'\-]+?\s+(?:plays?|played|playing|sits?|sat"
+# "and Luka sits", "while Davis is out": another player's availability clause.
+_AVAILABILITY_CLAUSE = re.compile(
+    r"\b(?:and|while|when|but)\s+([\w .'\-]+?)\s+(?:plays?|played|playing|sits?|sat"
     r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"
 )
+
+# "plays and scores 30", "played and had 10 assists": the player's own stat
+# condition, not bare presence.
+_OWN_STAT_CLAUSE = (
+    r"\s+and\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes|dished|has|had"
+    r"|records?|recorded|puts?\s+up|makes?|made|hits?)\b"
+)
+
+
+def names_other_player_availability(text: str, player: str | None) -> bool:
+    """True when ``text`` states availability for a player other than ``player``.
+
+    Only clauses whose subject resolves to a player count, so "and the Lakers
+    play at home" or "and he plays well" do not.
+    """
+    for m in _AVAILABILITY_CLAUSE.finditer(text):
+        other = detect_player(m.group(1))
+        if other and (player is None or other.upper() != player.upper()):
+            return True
+    return False
 
 
 def detect_with_player(text: str) -> tuple[str | None, str]:
@@ -597,16 +622,10 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     )
     presence_patterns = [
         with_player_pattern,
-        # "when PLAYER plays" is whole-game presence, but "when PLAYER plays 35
-        # minutes" states a minutes condition on that player. Read as presence
-        # it dropped the bound and answered with the team's whole record. With
-        # a second player's clause after it ("... and Luka sits") the player
-        # route would drop that clause, so it stays presence and is refused.
-        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b"
-        rf"(?!{_MINUTES_BOUND_TAIL}(?!.*{_SECOND_AVAILABILITY_CLAUSE}))",
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
     ]
 
-    for pattern in presence_patterns:
+    for index, pattern in enumerate(presence_patterns):
         m = re.search(pattern, cleaned_text)
         if m:
             phrase = m.group(1).strip()
@@ -615,6 +634,20 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
             if _phrase_names_multiple_players(phrase):
                 continue
             player = detect_player(phrase)
+            tail = cleaned_text[m.end() :]
+            if (
+                player
+                and index == 1
+                and (re.match(_MINUTES_BOUND_TAIL, tail) or re.match(_OWN_STAT_CLAUSE, tail))
+                and not names_other_player_availability(tail, player)
+            ):
+                # "when PLAYER plays 35 minutes" / "plays and scores 30" state a
+                # condition on that player. Read as presence the bound was
+                # dropped (or checked against team rows) and the team's whole
+                # record came back. With another player's clause after it the
+                # player route would drop that clause, so it stays presence and
+                # the team route refuses.
+                continue
             if player:
                 cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
                 cleaned = normalize_text(cleaned)
@@ -624,7 +657,7 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
 
 
 _STAT_COUNT_QUALIFIER = (
-    r"(?:at\s+(?:least|most)\s+|(?:no(?:t)?\s+)?(?:over|above)\s+|under\s+"
+    r"(?:at\s+(?:least|most)\s+|(?:no(?:t)?\s+)?(?:over|above|under|below)\s+"
     r"|(?:no(?:t)?\s+)?(?:more|fewer|less|greater)\s+than\s+)?"
 )
 # Only nouns the threshold reader turns into a stat; "3-pointers", "rebs" or
@@ -750,7 +783,7 @@ def _superlative_names_a_stat(phrase: str, text: str) -> bool:
     return detect_stat(rest) is not None
 
 
-_NEGATED_BOUND = r"(?:(?:more|fewer|less|greater)\s+than|over|above)\s+\d"
+_NEGATED_BOUND = r"(?:(?:more|fewer|less|greater)\s+than|over|above|under|below)\s+\d"
 
 
 def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:

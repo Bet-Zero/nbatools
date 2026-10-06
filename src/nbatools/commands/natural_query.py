@@ -81,6 +81,7 @@ from nbatools.commands._matchup_utils import (
     extract_adjacent_playoff_team_comparison,
     extract_player_comparison,
     extract_team_comparison,
+    names_other_player_availability,
 )
 from nbatools.commands._natural_query_execution import (  # noqa: F401
     _apply_extra_conditions_to_result,
@@ -5206,6 +5207,18 @@ def _route_parsed_query(parsed: dict) -> dict:
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "player_minutes_bound" not in existing_unsupported:
             existing_unsupported.append("player_minutes_bound")
+        route_kwargs["unsupported_filters"] = existing_unsupported
+
+    if (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
+        and names_other_player_availability(q, route_kwargs["player"])
+    ):
+        # "in games LeBron plays 35 minutes and Luka sits": the player route
+        # reads only its own player, so the second clause would be dropped.
+        existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
+        if "multi_player_availability" not in existing_unsupported:
+            existing_unsupported.append("multi_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
     if route == "team_record" and last_n is not None and route_kwargs.get("last_n") is None:
