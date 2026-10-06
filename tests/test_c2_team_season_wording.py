@@ -149,6 +149,11 @@ def test_offensive_rating_seasons_keep_the_team():
         ("Lakers seasons with the most losses", "losses", False),
         ("Lakers seasons with the fewest losses", "losses", True),
         ("Celtics best season by turnovers", "tov", True),
+        ("Lakers worst season with the most losses", "losses", False),
+        ("Lakers seasons ranked by defensive rating", "def_rating", True),
+        ("Lakers seasons ranked by turnovers", "tov", True),
+        ("Lakers top 3 seasons by losses", "losses", False),
+        ("Lakers highest defensive rating season", "def_rating", False),
     ],
 )
 def test_season_direction_follows_the_words(query, stat, ascending):

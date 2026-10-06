@@ -1774,7 +1774,6 @@ _PLAYER_BEST_SEASON = re.compile(
     r"|\bseasons?\s+(?:ranked|sorted|ordered)\s+by\b"
     r"|\bseasons?\s+with\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b"
 )
-_MOST_OR_FEWEST = re.compile(r"\b(?:most|fewest|least|highest|lowest)\b")
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 # "per game" is a season average, not a single-game ask.
 _PLAYER_SEASON_BLOCKERS = re.compile(r"(?<!\bper\s)\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
@@ -5946,12 +5945,19 @@ def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     if kwargs is None:
         return None
     if stat == "losses" or _ranks_lower_is_better(stat):
-        # "Celtics best defensive seasons", "best season by losses": the
-        # lowest first; "most losses" and "fewest turnovers" keep their order.
-        if re.search(r"\b(?:best|top|greatest)\b", q) and not _MOST_OR_FEWEST.search(q):
-            kwargs["ascending"] = True
-        elif re.search(r"\bworst\b", q) and not _MOST_OR_FEWEST.search(q):
+        # Lower is better: "most losses" / "highest defensive rating" first
+        # when said, else "best" is the lowest and "worst" the highest; a
+        # plain "ranked by defensive rating" is lowest first, "losses" most.
+        if re.search(r"\b(?:most|highest)\b", q):
             kwargs["ascending"] = False
+        elif re.search(r"\b(?:fewest|lowest)\b|(?<!\bat\s)\bleast\b", q):
+            kwargs["ascending"] = True
+        elif re.search(r"\b(?:best|greatest)\b|\btop\b(?!\s+\d)", q):
+            kwargs["ascending"] = True
+        elif re.search(r"\bworst\b", q):
+            kwargs["ascending"] = False
+        else:
+            kwargs["ascending"] = stat != "losses"
     kwargs.update(team=team, stat=stat or "win_pct")
     route = "team_record_leaderboard" if record else "season_team_leaders"
     return _rerouted_to_seasons(
