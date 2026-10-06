@@ -617,7 +617,7 @@ _SEASON = (
     r"\bsince\s+\d{4}\b",
     # "from 2010 to 2019", "between 2010 and 2019", "in the 2010s".
     r"\b(?:from|between)?\s*\d{4}\s*(?:to|and|through|thru|until|-)\s*\d{4}\b",
-    r"\b(?:in\s+)?the\s+(?:19|20)?\d0'?s\b",
+    r"\b(?:in\s+)?the\s+(?:19|20)\d0s\b",
     r"\b(?:so\s+far|right\s+now|to\s+date|all[-\s]?time|career|ever)\b",
     r"\b(?:seasons?|years?)\b",
 )

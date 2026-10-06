@@ -150,3 +150,28 @@ def test_this_decade_board_answers():
     assert result.result_status == "ok"
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert {row["season"] for row in rows} <= {"2023-24", "2024-25", "2025-26"}
+
+
+@pytest.mark.parametrize(
+    ("query", "start", "end", "season_type"),
+    [
+        ("most points in a season in the 90s", "1990-91", "1999-00", "Regular Season"),
+        ("most points in a season in the '80s", "1980-81", "1989-90", "Regular Season"),
+        ("most points in the 90s", "1990-91", "1999-00", "Regular Season"),
+        ("most points in a season in the 2010s and the 2020s", "2010-11", None, "Regular Season"),
+        ("most points in a season in the 2010s and 2020s", "2010-11", None, "Regular Season"),
+        ("most playoff points in a season in the 2020s", "2020-21", None, "Playoffs"),
+    ],
+)
+def test_named_decade_spans(query, start, end, season_type):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "season_leaders"
+    assert (kwargs["start_season"], kwargs["season_type"]) == (start, season_type)
+    if end is not None:
+        assert kwargs["end_season"] == end
+
+
+def test_decade_before_the_data_says_so():
+    notes = parse_query("most points in a season in the 90s")["notes"]
+    assert "coverage: data starts in 1996-97" in notes

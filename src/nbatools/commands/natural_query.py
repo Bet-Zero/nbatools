@@ -1876,6 +1876,8 @@ _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 _SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
 
 
+# "the 90s", "the 2000s" short form: four digits, like the apostrophe form.
+_BARE_DECADE = re.compile(r"\bthe\s+(\d)0s\b")
 _THIS_DECADE = re.compile(r"\b(?:(?:in|during|of|from)\s+)?this\s+decade\b")
 # "who won the most games in a season" is most wins; "in a row" is a streak.
 _WON_MOST_GAMES = re.compile(
@@ -1887,7 +1889,9 @@ _WON_LOST = {"won": "wins", "lost": "losses"}
 
 def _expand_short_year(match: re.Match) -> str:
     year = int(match.group(1))
-    full = (1900 if year >= 90 else 2000) + year
+    # A decade ("the '80s") is never in the future; a single year is 2000s
+    # unless '90-'99.
+    full = (1900 if year >= (30 if match.group(2) else 90) else 2000) + year
     if match.group(3):
         return f"{full}-{match.group(3)}"
     return f"{full}{match.group(2)}"
@@ -1896,6 +1900,7 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
+    q = _BARE_DECADE.sub(lambda m: f"the {19 if int(m.group(1)) >= 3 else 20}{m.group(1)}0s", q)
     if _THIS_DECADE.search(q):
         # "this decade": the decade the current season starts in.
         start = int(default_season_for_context("Regular Season")[:4]) // 10 * 10
@@ -6074,8 +6079,12 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
-_NAMED_DECADE = re.compile(r"\bthe\s+(?:19|20)?\d0'?s\b")
-_NAMED_DECADE_PHRASE = re.compile(r"\b(?:(?:in|during|of|from|over)\s+)?the\s+(?:19|20)?\d0'?s\b")
+# Short decades ("the 90s", "the '80s") are already four digits here.
+_NAMED_DECADE = re.compile(r"\bthe\s+(?:19|20)\d0s\b")
+_NAMED_DECADE_PHRASE = re.compile(
+    r"\b(?:(?:in|during|of|from|over)\s+)?the\s+(?:19|20)\d0s"
+    r"(?:\s+(?:and|to|through|thru)\s+(?:the\s+)?(?:19|20)\d0s)?\b"
+)
 _DECADE_BUCKETS = re.compile(r"\b(?:by|per|each|every)\s+decade\b|\bdecades\b")
 _RECORD_WORDS = re.compile(r"\brecords?\b|\bwin(?:ning)?\s*(?:%|pct|percentage)")
 
@@ -6102,18 +6111,22 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     if record and not parsed.get("single_season_intent"):
         # "best record in the 2010s": the decade record board.
         return None
-    century, tens = re.search(r"(19|20)?(\d)0'?s\b", _NAMED_DECADE.search(q).group(0)).groups()
-    if century is None:
-        century = "19" if tens == "9" else "20"
-    first = int(century + tens + "0")
-    ranged = _NAMED_DECADE_PHRASE.sub(f"from {first} to {first + 9}", q, count=1)
+    phrases = list(_NAMED_DECADE_PHRASE.finditer(q))
+    starts = [int(year) for m in phrases for year in re.findall(r"\d{4}", m.group(0))]
+    # "the 2010s and the 2020s": one span from the first decade to the last.
+    first, last = min(starts), max(starts) + 9
+    # Playoff years name the season ending in them, so the 2020s playoffs
+    # (2020-21 to 2029-30) are "from 2021 to 2030".
+    shift = 1 if (out.get("route_kwargs") or {}).get("season_type") == "Playoffs" else 0
+    span = f"from {first + shift} to {last + shift}"
+    ranged = q[: phrases[0].start()] + span + q[phrases[-1].end() :]
     rerouted = _finalize_route(_build_parse_state(ranged))
     if rerouted.get("route") in (None, "record_by_decade_leaderboard"):
         return None
     rerouted["normalized_query"] = q
-    rerouted["notes"] = list(rerouted.get("notes") or []) + [
-        f"decade: the {first}s read as {first} to {first + 9}"
-    ]
+    rerouted["notes"] = list(rerouted.get("notes") or []) + [f"decade: read as {first} to {last}"]
+    if first < 1996:
+        rerouted["notes"].append("coverage: data starts in 1996-97")
     return rerouted
 
 
