@@ -113,6 +113,10 @@ def test_ceiling_after_the_stat_stays_a_ceiling(query, stat, values):
         "LeBron James most rebounds in a game with 30 points against teams that scored 120 points",
         "LeBron James most points in a game with 5 threes allowed",
         "LeBron James most assists in 3 point games",
+        # A total no player reaches is the team's score.
+        "LeBron James most rebounds in a 120 point game",
+        "LeBron James most assists in 100 point games",
+        "LeBron James most rebounds in a game with 30 points in a 120 point game",
     ],
 )
 def test_unread_conditions_still_refuse(query):

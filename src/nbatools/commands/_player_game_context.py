@@ -243,6 +243,10 @@ _EVENT_PATTERNS = (
 )
 
 
+# Near NBA single-game records: a bigger count names a team total.
+_EVENT_CEILING = {"pts": 100, "reb": 56, "ast": 31, "fg3m": 15, "stl": 12, "blk": 16, "minutes": 70}
+
+
 def _stat_word(word: str) -> str | None:
     from nbatools.commands._parse_helpers import detect_stat
 
@@ -280,6 +284,12 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
                 continue
             events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
     if not events:
+        return
+    if any(e["min_value"] >= _EVENT_CEILING.get(e["stat"], float("inf")) for e in events) or any(
+        a["stat"] == b["stat"] and not _same_bound(a, b) for a in events for b in events
+    ):
+        # "a 120 point game" is the team's total, not the player's; leave
+        # the parse's reading (and its refusal) in place.
         return
     from nbatools.commands.player_game_finder import ALLOWED_STATS
 
