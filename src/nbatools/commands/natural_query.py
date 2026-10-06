@@ -6083,6 +6083,8 @@ _GAME_LIST_PERCENT_BOUND = re.compile(
     r"free\s+throws?|field))?"
 )
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
+# Routes a league-wide "best shooting games" question lands on.
+_LEAGUE_GAME_LIST_ROUTES = frozenset({"season_leaders", "season_team_leaders", "top_player_games"})
 
 
 def _percent_rate(source: str | None, default: str) -> str:
@@ -6095,17 +6097,50 @@ def _percent_rate(source: str | None, default: str) -> str:
 
 
 def _player_game_list(parsed: dict, out: dict) -> dict | None:
-    """ "Curry best 3 point shooting game": that player's games, best first."""
+    """ "Curry best 3 point shooting game": that player's games, best first.
+
+    "best shooting games this season" with no player ranks every player's
+    games the same way; the season boards answered season percentages.
+    """
     q = parsed["normalized_query"]
     route_kwargs = dict(out.get("route_kwargs") or {})
     player = route_kwargs.get("player")
-    if out.get("route") not in _PLAYER_GAME_LIST_ROUTES or not isinstance(player, str):
+    league = (
+        out.get("route") in _LEAGUE_GAME_LIST_ROUTES
+        and not player
+        and not parsed.get("player")
+        and not route_kwargs.get("team")
+        and not parsed.get("team")
+        and not re.search(r"\bteams?\b|\bfranchises?\b", q)
+    )
+    if not league and (
+        out.get("route") not in _PLAYER_GAME_LIST_ROUTES or not isinstance(player, str)
+    ):
         return None
     if not _PLAYER_GAME_LIST.search(q) or _PLAYER_GAME_LIST_BLOCKERS.search(q):
         return None
     shooting = next(
         (stat for pattern, stat in _GAME_SHOOTING_PATTERNS if re.search(pattern, q)), None
     )
+    if league:
+        if shooting is None:
+            # "highest scoring games": the league game board already ranks it.
+            return None
+        if (route_kwargs.get("unsupported_filters") or []) not in (
+            [],
+            ["leaderboard_request_unclear"],
+        ):
+            return None
+        for key in ("unsupported_filters", "leaderboard_eligibility", "min_games", "per_season"):
+            route_kwargs.pop(key, None)
+        if parsed.get("min_value") is not None or parsed.get("max_value") is not None:
+            # "worst shooting games under 15 points": the season board kept
+            # the stat but not its bound.
+            route_kwargs.update(
+                stat=parsed.get("stat"),
+                min_value=parsed.get("min_value"),
+                max_value=parsed.get("max_value"),
+            )
     if shooting == "fg_pct" and route_kwargs.get("stat") in _RATE_STATS:
         # "best shooting games shooting over 50% from three": the named rate.
         shooting = route_kwargs["stat"]
@@ -6191,9 +6226,8 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     rerouted = dict(out)
     rerouted.update(route="player_game_finder", intent="finder", route_kwargs=kwargs)
     rerouted.update(stat=stat, min_value=kwargs.get("min_value"))
-    rerouted["notes"] = list(out.get("notes") or []) + [
-        f"game_list: {player}'s games ranked by {stat}"
-    ]
+    whose = f"{player}'s games" if player else "every player's games"
+    rerouted["notes"] = list(out.get("notes") or []) + [f"game_list: {whose} ranked by {stat}"]
     return rerouted
 
 
@@ -6274,8 +6308,13 @@ _ROOKIE_SUBJECT = re.compile(
     r"(?<!\bagainst\s)(?<!\bvs\s)(?<!\bvs\.\s)(?<!\bversus\s)\brookies?\b"
     r"(?!\s+(?:head\s+)?coach)"
 )
+# "guards with the best record": a position group of players.
+_POSITION_SUBJECT = re.compile(r"\b(guards|forwards|centers|big\s+men|bigs|wings)\b")
 _PLAYER_SUBJECT = re.compile(
-    r"\bplayers?\b|\bby\s+an?\s+(?:player|individual)\b|" + _ROOKIE_SUBJECT.pattern
+    r"\bplayers?\b|\bby\s+an?\s+(?:player|individual)\b|"
+    + _ROOKIE_SUBJECT.pattern
+    + "|"
+    + _POSITION_SUBJECT.pattern
 )
 # Team-record kwargs a player wins board can keep.
 _PLAYER_WINS_KEPT = frozenset(
@@ -6290,6 +6329,9 @@ _PLAYER_WINS_KEPT = frozenset(
         "home_only",
         "away_only",
         "per_season",
+        "opponent",
+        "start_date",
+        "end_date",
     }
 )
 
@@ -6327,6 +6369,11 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         return None
     if parsed.get("team") or parsed.get("player"):
         return None
+    position = _POSITION_SUBJECT.search(q)
+    if position and route_kwargs.get("unsupported_filters") == ["position_filter"]:
+        # "most wins by guards": the team board cannot filter positions; the
+        # player board can.
+        route_kwargs = {k: v for k, v in route_kwargs.items() if k != "unsupported_filters"}
     if any(
         value not in (None, False, "", [], (), {})
         for key, value in route_kwargs.items()
@@ -6340,7 +6387,10 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         stat="win_pct" if stat == "win_pct" else "games_played",
         limit=route_kwargs.get("limit") or 10,
         ascending=bool(route_kwargs.get("ascending")),
-        min_games=1,
+        min_games=parsed.get("min_games") or 1,
+        opponent=route_kwargs.get("opponent"),
+        start_date=route_kwargs.get("start_date"),
+        end_date=route_kwargs.get("end_date"),
         wins_only=stat == "wins",
         losses_only=stat == "losses",
         home_only=bool(route_kwargs.get("home_only")),
@@ -6349,6 +6399,8 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         rookies_only=bool(_ROOKIE_SUBJECT.search(q)),
         role=detect_role(q),
     )
+    if position:
+        kwargs["position"] = re.sub(r"\s+", " ", position.group(1))
     notes = list(out.get("notes") or [])
     named = bool(_NAMED_SEASON_WORDS.search(q))
     if parsed.get("single_season_intent") and not kwargs["start_season"] and not named:
