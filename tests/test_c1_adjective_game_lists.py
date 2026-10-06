@@ -112,6 +112,10 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record in games with 120 points vs playoff teams",
         "Lakers record in games with 120 points against division rivals",
         "Lakers record in games with 120 points if anyone plays",
+        # A non-stat count after filler is not rewritten into a bound.
+        "LeBron 30 point games for the Lakers with 2 teammates scoring 20",
+        "Lakers 120 point games this season with 2 players scoring 30",
+        "LeBron 30 point games this season with 3 days rest",
     ],
 )
 def test_non_stat_counts_still_refuse(query):

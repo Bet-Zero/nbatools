@@ -816,7 +816,11 @@ _ADJECTIVE_GAMES_WITH = re.compile(
     r"(?P<filler>(?:(?!(?:with|without|w/|w/o|and|or|vs|versus|against|where|when|if|while)\b)"
     r"[\w.'\-]+\s+){0,5}?)"
     r"(?:with|where\s+(?:he|she|they)\s+(?:had|made|hit|grabbed|dished))\s+"
-    r"(?=(?:at\s+least\s+|over\s+|\d))"
+    # Only before a stat count: "with 2 players scoring 30" or "with 3 days
+    # rest" are not stat bounds.
+    r"(?=(?:at\s+least\s+|over\s+|more\s+than\s+)?\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+"
+    r"(?:points?|pts|rebounds?|boards|assists?|dimes|threes?|3s|3pm|three[- ]pointers?"
+    r"|steals?|blocks?|turnovers?|fouls?)\b)"
 )
 
 

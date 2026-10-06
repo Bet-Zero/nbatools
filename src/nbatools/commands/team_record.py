@@ -872,8 +872,10 @@ def build_record_leaderboard_result(
     if conditions and team is None and not agg.empty:
         # "best record when scoring 120+": a 1-0 team in a stat-condition
         # sample is not the best record. Require a fifth of the games the
-        # most frequent team has in the sample.
-        condition_min_games = math.ceil(0.2 * int(agg["games_played"].max()))
+        # most frequent team has in the sample, and at least 3 when the
+        # leader has that many.
+        most = int(agg["games_played"].max())
+        condition_min_games = max(math.ceil(0.2 * most), min(3, most))
         min_games = max(min_games, condition_min_games)
     agg = agg[agg["games_played"] >= min_games].copy()
     if team is not None:
