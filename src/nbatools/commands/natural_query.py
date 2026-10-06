@@ -368,6 +368,18 @@ from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
 _UNSUPPORTED_BOUNDARY_PHRASES = (
+    # Score state during a game (no period scores are loaded).
+    "at halftime",
+    "at the half",
+    "after 3 quarters",
+    "after three quarters",
+    "in the paint",
+    "last 5 minutes",
+    "last five minutes",
+    "last 2 minutes",
+    "last two minutes",
+    "final 5 minutes",
+    "final five minutes",
     "cooled off",
     "double-double over",
     "averaged a double-double",

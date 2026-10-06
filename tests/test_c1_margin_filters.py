@@ -132,3 +132,70 @@ def test_outcome_streak_bounds(query, condition, length):
     ]
     row = _run(query).result.to_dict()["sections"]["streak"][0]
     assert row["streak_length"] == length
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("lakers games won by 3 to 5 points", "lakers games won at between 3 and 5 win margin"),
+        ("lakers won by between 5 and 10", "lakers won at between 5 and 10 win margin"),
+        ("lakers games won by 65+", "lakers games won at 65+ win margin"),
+        ("games where the opponent won by 10+", "games where lost at 10+ loss margin"),
+        # Not the final margin: another stat, a lead during the game.
+        ("lakers games won by 5 steals", "lakers games won by 5 steals"),
+        ("lakers won by 10+ free throws", "lakers won by 10+ free throws"),
+        ("winning by 10+ at halftime", "winning by 10+ at halftime"),
+        (
+            "games within 5 points in the last 5 minutes",
+            "games within 5 points in the last 5 minutes",
+        ),
+    ],
+)
+def test_margin_ranges_and_non_margins(text, expected):
+    assert canonicalize_margin_phrases(text) == expected
+
+
+@pytest.mark.parametrize(
+    ("query", "rows"),
+    [
+        ("Lakers games won by 3 to 5 points", 2),
+        ("Lakers games won by 65+", 4),
+        ("Lakers games where the opponent won by 10+", 8),
+    ],
+)
+def test_margin_ranges_execute(query, rows):
+    assert len(_run(query).result.to_dict()["sections"]["finder"]) == rows
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record when winning by 10+ at halftime",
+        "Lakers record when leading at halftime",
+        "Lakers record in games within 5 points in the last 5 minutes",
+    ],
+)
+def test_in_game_score_state_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "lengths"),
+    [
+        # "without a loss" is the unbeaten run.
+        ("Lakers longest streak of games without a loss", [13]),
+        ("Lakers longest streak without a win", [3, 3]),
+        # A stated length lists every run at least that long.
+        ("Lakers 5 straight wins", [13, 10, 8, 8, 8, 7, 7, 6]),
+        ("Celtics 10 consecutive wins", [15, 10]),
+        ("Lakers 5 straight road wins", [8, 7]),
+        ("Lakers 5 straight games won by 10+", [7, 7, 7, 7, 5, 5]),
+        ("Lakers 3 consecutive 120 point wins", [5]),
+        ("Lakers longest streak of games decided by 5 or fewer", [2, 2, 2, 2, 2, 2]),
+    ],
+)
+def test_streak_outcomes_and_lengths(query, lengths):
+    rows = _run(query).result.to_dict()["sections"]["streak"]
+    assert [row["streak_length"] for row in rows] == lengths
