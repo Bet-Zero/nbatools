@@ -646,6 +646,13 @@ _READ_TAIL_END = re.compile(r"\s*[?.!]?\s*$")
 _CONFERENCE_OPPONENTS = {"east", "west", "eastern conference", "western conference"}
 
 
+def _opponent_quality_end(text: str, pos: int) -> int | None:
+    # _parse_helpers imports this module, so load it lazily.
+    from nbatools.commands._parse_helpers import opponent_quality_span_end
+
+    return opponent_quality_span_end(text, pos)
+
+
 def _tail_is_read_scope(text: str, pos: int) -> bool:
     """Whether everything from ``pos`` on is scope the parser applies.
 
@@ -653,6 +660,13 @@ def _tail_is_read_scope(text: str, pos: int) -> bool:
     player, so "vs playoff teams" or "if anyone plays" is never dropped.
     """
     while not _READ_TAIL_END.match(text, pos):
+        gap = re.compile(r"\s+").match(text, pos)
+        quality_end = _opponent_quality_end(text, gap.end()) if gap else None
+        if quality_end is not None:
+            # "vs playoff teams", "against top-10 defenses": glossary terms
+            # the opponent-quality filter applies.
+            pos = quality_end
+            continue
         step = _READ_SCOPE_STEP.match(text, pos)
         if not step:
             return False

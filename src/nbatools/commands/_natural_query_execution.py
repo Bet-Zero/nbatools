@@ -432,7 +432,11 @@ def _resolve_opponent_quality_kwargs(
             notes.append("Opponent quality is applied season by season.")
             return sanitized, notes, []
     resolved_opponents = resolve_opponent_quality_teams(opponent_quality, seasons, season_type)
-    sanitized["opponent"] = resolved_opponents
+    # No team met the bar ("non-playoff teams" when every team made it): an
+    # empty opponent list would read as no filter and return every game.
+    sanitized["opponent"] = resolved_opponents or OpponentGroup(
+        ["0000#0"], "no qualifying opponents"
+    )
     if len(seasons) > 1:
         notes.append(
             "Multi-season opponent-quality filters use the union of qualifying teams "
