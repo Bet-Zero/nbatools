@@ -631,6 +631,13 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         phrase = m.group(1).strip()
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
             continue
+        if (
+            mode == "with"
+            and re.match(r"(?:the\s+)?(?:most|fewest)\b", phrase)
+            and re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
+        ):
+            # "season with the most wins" ranks seasons, it names no player.
+            continue
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase
         if phrase and not detect_player(phrase):

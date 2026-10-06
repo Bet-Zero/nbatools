@@ -62,7 +62,6 @@ def test_team_best_seasons_rank_that_teams_seasons(query, route, stat, ascending
 @pytest.mark.parametrize(
     "query",
     [
-        "Celtics best defensive season",
         "Lakers best season vs Celtics",
         "Lakers best season in 2016",
         "Lakers best games this season",

@@ -1785,9 +1785,12 @@ _RANKED_WINS_LOSSES = re.compile(
 # rank that player's own seasons.
 _PLAYER_BEST_SEASON = re.compile(
     r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,4}?seasons?\b"
+    r"|\bseasons?\s+(?:ranked|sorted|ordered)\s+by\b"
+    r"|\bseasons?\s+with\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b"
 )
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
-_PLAYER_SEASON_BLOCKERS = re.compile(r"\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
+# "per game" is a season average, not a single-game ask.
+_PLAYER_SEASON_BLOCKERS = re.compile(r"(?<!\bper\s)\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
 _PLAYER_SEASON_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
 # Route kwargs the player-season board keeps; any other set filter declines.
 _PLAYER_SEASON_KEPT = frozenset(
@@ -1820,6 +1823,30 @@ def _season_shooting_stat(q: str) -> str | None:
     return None
 
 
+# "Celtics best defensive seasons", "Lakers worst offensive season".
+_TEAM_SEASON_RATING = (
+    (r"\bdefensive\s+(?:rating\s+)?seasons?\b", "def_rating"),
+    (r"\boffensive\s+(?:rating\s+)?seasons?\b", "off_rating"),
+    (r"\bnet\s+rating\s+seasons?\b", "net_rating"),
+)
+# "Lakers top 3 seasons by wins", "Lakers best season with the most wins".
+_TEAM_SEASON_RECORD_STAT = re.compile(
+    r"\b(?:by|with\s+the\s+(?:most|fewest))\s+"
+    r"(wins|losses|win(?:ning)?\s*(?:%|percentage|pct))(?![\w%])"
+)
+
+
+def _team_season_stat(q: str) -> str | None:
+    for pattern, stat in _TEAM_SEASON_RATING:
+        if re.search(pattern, q):
+            return stat
+    m = _TEAM_SEASON_RECORD_STAT.search(q)
+    if m:
+        word = m.group(1)
+        return word if word in ("wins", "losses") else "win_pct"
+    return _season_shooting_stat(q)
+
+
 _TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record"})
 _TEAM_SEASON_KEPT = _PLAYER_SEASON_KEPT - {"player"} | {"team"}
 # "Lakers best season", "Lakers worst record in a single season": the record.
@@ -1844,6 +1871,14 @@ _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 _SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
 
 
+# "who won the most games in a season" is most wins; "in a row" is a streak.
+_WON_MOST_GAMES = re.compile(
+    r"\b(won|lost)\s+the\s+(most|fewest)\s+games\b"
+    r"(?!\s+(?:in\s+a\s+row|straight|consecutive|without|when|by|vs|against))"
+)
+_WON_LOST = {"won": "wins", "lost": "losses"}
+
+
 def _expand_short_year(match: re.Match) -> str:
     year = int(match.group(1))
     full = (1900 if year >= 90 else 2000) + year
@@ -1855,6 +1890,9 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
+    if not re.search(r"\bplayers?\b|\bcoach(?:es)?\b", q):
+        # "which player won the most games" is not a team record.
+        q = _WON_MOST_GAMES.sub(lambda m: f"had the {m.group(2)} {_WON_LOST[m.group(1)]}", q)
     if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
         q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
@@ -5885,22 +5923,55 @@ def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
 def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     """ "Lakers best scoring season", "Lakers best record in a single season"."""
     q = parsed["normalized_query"]
-    route_kwargs = out.get("route_kwargs") or {}
+    route_kwargs = dict(out.get("route_kwargs") or {})
     team = route_kwargs.get("team")
-    if out.get("route") not in _TEAM_SEASON_ROUTES or not isinstance(team, str):
+    kept = _TEAM_SEASON_KEPT
+    if (
+        out.get("route") == "season_team_leaders"
+        and team is None
+        and isinstance(parsed.get("team"), str)
+    ):
+        # "Lakers best offensive rating season" landed on the league board.
+        team = parsed["team"]
+        kept = kept | {"min_games"}
+    elif out.get("route") not in _TEAM_SEASON_ROUTES:
+        return None
+    if not isinstance(team, str):
         return None
     if parsed.get("player") or parsed.get("team_a") or parsed.get("team_b"):
         return None
     if _TEAM_SEASON_BLOCKERS.search(q):
         return None
-    stat = _season_shooting_stat(q) or route_kwargs.get("stat")
+    worded = _team_season_stat(q)
+    stat = worded or route_kwargs.get("stat")
+    if stat in ("wins", "losses", "win_pct"):
+        # "by wins" read as wins_only: the stat names the board, not a filter.
+        route_kwargs.pop("wins_only", None)
+        route_kwargs.pop("losses_only", None)
+    if route_kwargs.get("unsupported_filters") == ["single_team_advanced_stat_summary"]:
+        # The team's game summary has no ratings; the season board does.
+        route_kwargs.pop("unsupported_filters")
     record = stat in (None, "wins", "losses", "win_pct")
     if stat is None and not _TEAM_PLAIN_BEST_SEASON.search(q):
-        # "Celtics best defensive season": a stat the parser did not read.
+        # "Celtics best clutch season": a stat the parser did not read.
         return None
-    kwargs = _best_season_scope(parsed, out, _TEAM_SEASON_KEPT)
+    kwargs = _best_season_scope(parsed, {**out, "route_kwargs": route_kwargs}, kept)
     if kwargs is None:
         return None
+    if stat == "losses" or _ranks_lower_is_better(stat):
+        # Lower is better: "most losses" / "highest defensive rating" first
+        # when said, else "best" is the lowest and "worst" the highest; a
+        # plain "ranked by defensive rating" is lowest first, "losses" most.
+        if re.search(r"\b(?:most|highest)\b", q):
+            kwargs["ascending"] = False
+        elif re.search(r"\b(?:fewest|lowest)\b|(?<!\bat\s)\bleast\b", q):
+            kwargs["ascending"] = True
+        elif re.search(r"\b(?:best|greatest)\b|\btop\b(?!\s+\d)", q):
+            kwargs["ascending"] = True
+        elif re.search(r"\bworst\b", q):
+            kwargs["ascending"] = False
+        else:
+            kwargs["ascending"] = stat != "losses"
     kwargs.update(team=team, stat=stat or "win_pct")
     route = "team_record_leaderboard" if record else "season_team_leaders"
     return _rerouted_to_seasons(
