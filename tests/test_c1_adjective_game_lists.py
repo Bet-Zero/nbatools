@@ -108,6 +108,10 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record in games with 120 points before the all-star break",
         "Lakers record in games with 120 points in close games",
         "Lakers record in games with 120 points after a loss",
+        # Opponents and players after the bound must resolve.
+        "Lakers record in games with 120 points vs playoff teams",
+        "Lakers record in games with 120 points against division rivals",
+        "Lakers record in games with 120 points if anyone plays",
     ],
 )
 def test_non_stat_counts_still_refuse(query):
@@ -126,6 +130,8 @@ def test_non_stat_counts_still_refuse(query):
         ("Lakers record in games with 120 points against teams over .500", (7, 1)),
         ("Lakers record in games with 120 points after the all-star break", (10, 1)),
         ("Lakers record in games with 120 points in December", (2, 0)),
+        ("Lakers record in games with 120 points against the Golden State Warriors", (3, 0)),
+        ("Lakers record in games with 120 points vs the Celtics at home", (2, 0)),
     ],
 )
 def test_team_record_stat_count_with_scope(query, record):

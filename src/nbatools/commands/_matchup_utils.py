@@ -632,15 +632,47 @@ _READ_SCOPE_UNIT = (
     r"|since\s+(?:" + _SEASON + r"|" + _MONTH + r"(?:\s+" + _SEASON + r")?)"
     r"|(?:in\s+)?" + _MONTH + r"(?:\s+" + _SEASON + r")?"
     r"|(?:vs\.?|versus|against)\s+(?:teams\s+(?:over|under|above|below)\s+\.500"
-    r"|(?:the\s+)?[a-z]+(?:\s+[a-z]+)?)"
+    r"|(?:the\s+)?(?P<opp>[a-z]+))"
     r"|at\s+home|on\s+the\s+road|home|road|away"
     r"|(?:in\s+the\s+)?(?:playoffs|postseason|regular\s+season)"
     r"|in\s+(?:a\s+)?(?:win|loss|wins|losses)"
     r"|in\s+(?:the|their|his)\s+last\s+\d+\s+games?"
     r"|after\s+the\s+all[- ]star\s+break"
-    r"|if\s+[a-z][\w.'\-]*(?:\s+[a-z][\w.'\-]*)?\s+plays?"
+    r"|if\s+(?P<plr>[a-z][\w.'\-]*(?:\s+[a-z][\w.'\-]*)?)\s+plays?"
 )
-_READ_BOUND_TAIL = re.compile(rf"(?:\s+(?:{_READ_SCOPE_UNIT}))*\s*[?.!]?\s*$")
+_READ_SCOPE_STEP = re.compile(rf"\s+(?:{_READ_SCOPE_UNIT})(?![\w.-])")
+_READ_TAIL_END = re.compile(r"\s*[?.!]?\s*$")
+_CONFERENCE_OPPONENTS = {"east", "west", "eastern conference", "western conference"}
+
+
+def _tail_is_read_scope(text: str, pos: int) -> bool:
+    """Whether everything from ``pos`` on is scope the parser applies.
+
+    Opponents must resolve to a team or conference and "if X plays" to a
+    player, so "vs playoff teams" or "if anyone plays" is never dropped.
+    """
+    while not _READ_TAIL_END.match(text, pos):
+        step = _READ_SCOPE_STEP.match(text, pos)
+        if not step:
+            return False
+        pos = step.end()
+        if step.group("opp") is not None:
+            # The longest run of up to three words that names a team or
+            # conference: "the boston celtics", "golden state", "the east".
+            words = re.match(r"[a-z]+(?:\s+[a-z]+){0,2}", text[step.start("opp") :])
+            names = words.group(0).split() if words else []
+            for n in range(len(names), 0, -1):
+                name = " ".join(names[:n])
+                if name in TEAM_ALIASES or name in _CONFERENCE_OPPONENTS:
+                    pos = step.start("opp") + len(name)
+                    break
+            else:
+                return False
+        if step.group("plr") is not None and not detect_player(step.group("plr")):
+            return False
+    return True
+
+
 _CONDITIONAL_CLAUSE = re.compile(r"\b(?:when|if|while|whenever)\b")
 
 
@@ -685,7 +717,7 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             stat_bound
             # Only scope the parser already reads may follow the bound, so
             # nothing ("and 2 days rest", "from Davis") is silently dropped.
-            and _READ_BOUND_TAIL.match(text, stat_bound.end())
+            and _tail_is_read_scope(text, stat_bound.end())
             and not detect_player(text[stat_bound.end() :])
             and not _names_conditional_player(text)
         ):
