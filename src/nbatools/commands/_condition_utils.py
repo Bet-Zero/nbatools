@@ -165,6 +165,15 @@ OPPONENT_STATS = {f"opponent_{base}": f"opponent_{base}" for base in OPPONENT_ST
 #: ("decided by 3 or fewer"); ``win_margin`` and ``loss_margin`` exist only on
 #: wins or losses ("won by 10+", "lost by 20+"), so no bound matches the other.
 MARGIN_STATS = {"margin": "margin", "win_margin": "win_margin", "loss_margin": "loss_margin"}
+#: A player's game context ("LeBron games when the Lakers score 120", "when
+#: opponents make 15 threes"): his team's and the opponent's box score, read
+#: from team rows of the same game.
+PLAYER_GAME_CONTEXT_BASES = ("pts", *OPPONENT_STAT_BASES)
+PLAYER_GAME_CONTEXT_STATS = {
+    f"{side}_{base}": f"{side}_{base}"
+    for side in ("team", "opponent")
+    for base in PLAYER_GAME_CONTEXT_BASES
+}
 #: Stats read from a team game row beyond its own box score.
 TEAM_GAME_EXTRA_STATS = {**OPPONENT_STATS, **MARGIN_STATS}
 

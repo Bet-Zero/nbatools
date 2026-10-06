@@ -598,8 +598,8 @@ _OWN_STAT_CLAUSE = (
 )
 # "plays at home and scores 30": a short setting between "plays" and the clause.
 _PRESENCE_SETTING = r"(?:\s+(?:at\s+home|on\s+the\s+road|away|in\s+the\s+playoffs))?"
-# Beyond these no player has a game in the data window, so "and scores 120
-# points" / "and makes 15 threes" can only be the team's total.
+# At or above these (near the NBA single-game records) a count can only be
+# the team's total: "and scores 120 points", "and makes 15 threes".
 _PLAYER_STAT_CEILING = (
     (r"points?|pts", 100),
     (r"rebounds?|boards?|rebs", 56),

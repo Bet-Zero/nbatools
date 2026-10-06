@@ -454,6 +454,13 @@ def authorize_compound_event_route(
     # reading only the stated side reported that third metric as discarded.
     accounted = {condition.get("stat") for condition in declared}
     accounted |= {condition.get("stat") for condition in executed}
+    # "when opponents make 15 threes" names threes for the opponent's or
+    # team's column (``opponent_fg3m``), not as a ranking key.
+    accounted |= {
+        str(stat).split("_", 1)[1]
+        for stat in list(accounted)
+        if stat and str(stat).startswith(("opponent_", "team_"))
+    }
     ranking_stat = route_kwargs.get("stat")
     if ranking_stat:
         accounted.add(ranking_stat)
