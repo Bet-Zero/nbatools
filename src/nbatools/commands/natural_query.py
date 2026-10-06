@@ -6039,15 +6039,20 @@ _RATE_STATS = frozenset({"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"})
 _GAME_LIST_PERCENT_BOUND = re.compile(
     r"\b(over|above|better\s+than|at\s+least|under|below|less\s+than|worse\s+than)\s+"
     r"(\d+(?:\.\d+)?)\s*(?:%|percent)"
-    r"(?:\s+(?:from\s+)?(?:the\s+)?(three|3|deep|downtown|line|free\s+throws?|field))?"
+    r"(?:\s+(?:(?:from|at)\s+)?(?:the\s+)?"
+    r"(three(?:[\s-]point\s+range)?|3|deep|downtown|(?:free[\s-]throw\s+)?line|stripe|"
+    r"free\s+throws?|field))?"
 )
-_PERCENT_FROM = {
-    "line": "ft_pct",
-    "free throw": "ft_pct",
-    "free throws": "ft_pct",
-    "field": "fg_pct",
-}
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
+
+
+def _percent_rate(source: str | None, default: str) -> str:
+    """The rate a "% from ..." bound names; the ranked rate when none."""
+    if not source:
+        return default
+    if re.search(r"line|stripe|free", source):
+        return "ft_pct"
+    return "fg_pct" if source == "field" else "fg3_pct"
 
 
 def _player_game_list(parsed: dict, out: dict) -> dict | None:
@@ -6100,26 +6105,27 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
                 bound[key] = bound[key] / 100
         if bound["min_value"] is not None or bound["max_value"] is not None:
             conditions.append(bound)
-    percent = _GAME_LIST_PERCENT_BOUND.search(q) if shooting else None
-    if percent and percent.group(3):
-        # "over 50% from three": the bound names its own rate.
-        named = _PERCENT_FROM.get(re.sub(r"\s+", " ", percent.group(3)), "fg3_pct")
-        if named != shooting and shooting != "fg_pct":
-            # "best 3 point shooting games over 80% from the line": two rates.
-            return None
-        shooting = named
-        # A rate bound read before the "from three" is on the wrong rate.
+    percents = list(_GAME_LIST_PERCENT_BOUND.finditer(q)) if shooting else []
+    named = [_percent_rate(m.group(3), shooting) for m in percents]
+    if any(m.group(3) for m in percents):
+        # "over 50% from three": the bound names its own rate, so a rate bound
+        # the parser read on another rate is dropped.
         conditions = [c for c in conditions if c.get("stat") not in _RATE_STATS]
-    if percent and not any(c.get("stat") in _RATE_STATS for c in conditions):
-        # "best shooting games over 50%": the bound is on the shooting stat.
-        value = float(percent.group(2))
+        if shooting == "fg_pct" and not re.search(r"\bfield[\s-]goal|\bfg\b", q):
+            # Plain "shooting games over 50% from three" ranks the named rate.
+            shooting = named[0]
+            named = [_percent_rate(m.group(3), shooting) for m in percents]
+    elif percents and any(c.get("stat") in _RATE_STATS for c in conditions):
+        percents = []
+    for match, rate in zip(percents, named):
+        value = float(match.group(2))
         value = value / 100 if value > 1 else value
-        if percent.group(1) in ("over", "above", "better than"):
-            conditions.append({"stat": shooting, "min_value": value + 0.0001, "max_value": None})
-        elif percent.group(1) == "at least":
-            conditions.append({"stat": shooting, "min_value": value, "max_value": None})
+        if match.group(1) in ("over", "above", "better than"):
+            conditions.append({"stat": rate, "min_value": value + 0.0001, "max_value": None})
+        elif match.group(1) == "at least":
+            conditions.append({"stat": rate, "min_value": value, "max_value": None})
         else:
-            conditions.append({"stat": shooting, "min_value": None, "max_value": value - 0.0001})
+            conditions.append({"stat": rate, "min_value": None, "max_value": value - 0.0001})
     if conditions:
         route_kwargs["conditions"] = conditions
     stat = shooting or route_kwargs.get("stat") or "pts"

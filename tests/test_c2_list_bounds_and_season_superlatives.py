@@ -153,3 +153,33 @@ def test_percent_from_three_or_the_line_names_its_rate(query, stat, min_value, m
 def test_home_road_season_records_do_not_answer_one_season(query):
     result = execute_natural_query(query)
     assert result.result_status != "ok"
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "conditions"),
+    [
+        (
+            "Curry best 3 point shooting games over 80% from the line",
+            "fg3_pct",
+            [("ft_pct", 0.8001, None)],
+        ),
+        (
+            "LeBron best free throw shooting games over 50% from three",
+            "ft_pct",
+            [("fg3_pct", 0.5001, None)],
+        ),
+        ("LeBron best shooting games over 70% at the line", "ft_pct", [("ft_pct", 0.7001, None)]),
+        (
+            "LeBron best shooting games over 50% from the field and over 40% from three",
+            "fg_pct",
+            [("fg_pct", 0.5001, None), ("fg3_pct", 0.4001, None)],
+        ),
+    ],
+)
+def test_two_rates_rank_one_and_bound_the_other(query, stat, conditions):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["stat"] == stat
+    assert [
+        (c["stat"], pytest.approx(c["min_value"]) if c["min_value"] else None, c["max_value"])
+        for c in kwargs["conditions"]
+    ] == [(s, pytest.approx(lo) if lo else None, hi) for s, lo, hi in conditions]
