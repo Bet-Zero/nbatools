@@ -8529,6 +8529,46 @@ cases:
         equals: 363
     review_notes: "LeBron's seasons ranked by 3P%: 149 of 363 (.410) in 2023-24, ahead of .406 in 2012-13. It ranked his points in current-season games (C2, agent change)."
 
+  - id: c2_lakers_top_seasons_by_wins
+    query: "Lakers top 3 seasons by wins"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.season
+        equals: 1999-00
+      - path: result.sections.leaderboard.0.wins
+        equals: 67
+      - path: result.sections.leaderboard.1.season
+        equals: 2008-09
+      - path: result.sections.leaderboard.1.wins
+        equals: 65
+      - path: result.sections.leaderboard.2.season
+        equals: 1997-98
+      - path: result.sections.leaderboard.2.wins
+        equals: 61
+    review_notes: "The Lakers' three best seasons by wins: 67, 65, 61. It listed three Lakers wins from the current season (C2, agent change)."
+
+  - id: c2_team_won_most_games_in_a_season
+    query: "which team won the most games in a season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: GSW
+      - path: result.sections.leaderboard.0.season
+        equals: 2015-16
+      - path: result.sections.leaderboard.0.wins
+        equals: 73
+    review_notes: "Most wins in one season: the 2015-16 Warriors, 73. It could not be mapped (C2, agent change)."
+
   - id: fan_lakers_play_next_boundary
     query: "when do the lakers play next"
     category: unsupported_boundary

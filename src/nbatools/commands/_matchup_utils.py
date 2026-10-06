@@ -659,6 +659,13 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             # A player named later ("... with 15 threes and LeBron") still
             # needs the availability reading, which this path cannot combine.
             continue
+        if (
+            mode == "with"
+            and re.match(r"(?:the\s+)?(?:most|fewest)\b", phrase)
+            and re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
+        ):
+            # "season with the most wins" ranks seasons, it names no player.
+            continue
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase
         if phrase and not detect_player(phrase):
