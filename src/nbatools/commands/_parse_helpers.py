@@ -2666,37 +2666,37 @@ def detect_home_away(text: str) -> tuple[bool, bool]:
     return home_only, away_only
 
 
+_OPPONENT_QUALITY_PATTERNS = [
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}contenders\b", "contenders"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}good\s+teams\b", "good teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}bad\s+teams\b", "bad teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+teams\b", "top teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}best\s+teams\b", "top teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+teams\b", "top 10 teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]5\s+teams\b", "top 5 teams"),
+    (
+        rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]seeded\s+teams\b",
+        "top seeded teams",
+    ),
+    *[(pattern, "playoff teams") for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS],
+    *[(pattern, "non-playoff teams") for pattern in _NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS],
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}winning\s+teams\b", "winning teams"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}losing\s+teams\b", "losing teams"),
+    (
+        rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:over|above)\s+\.500\b",
+        "teams over .500",
+    ),
+    (
+        rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:under|below)\s+\.500\b",
+        "teams under .500",
+    ),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+defenses\b", "top-10 defenses"),
+    (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+defenses\b", "top-10 defenses"),
+]
+
+
 def detect_opponent_quality(text: str) -> dict | None:
-    patterns = [
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}contenders\b", "contenders"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}good\s+teams\b", "good teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}bad\s+teams\b", "bad teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+teams\b", "top teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}best\s+teams\b", "top teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+teams\b", "top 10 teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]5\s+teams\b", "top 5 teams"),
-        (
-            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]seeded\s+teams\b",
-            "top seeded teams",
-        ),
-        *[(pattern, "playoff teams") for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS],
-        *[
-            (pattern, "non-playoff teams")
-            for pattern in _NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS
-        ],
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}winning\s+teams\b", "winning teams"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}losing\s+teams\b", "losing teams"),
-        (
-            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:over|above)\s+\.500\b",
-            "teams over .500",
-        ),
-        (
-            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:under|below)\s+\.500\b",
-            "teams under .500",
-        ),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+defenses\b", "top-10 defenses"),
-        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+defenses\b", "top-10 defenses"),
-    ]
+    patterns = _OPPONENT_QUALITY_PATTERNS
     for pattern, term in patterns:
         if re.search(pattern, text):
             policy = OPPONENT_QUALITY_TERMS[term]
@@ -2705,6 +2705,19 @@ def detect_opponent_quality(text: str) -> dict | None:
                 "surface_term": term,
                 "definition": dict(policy.resolved_definition),
             }
+    return None
+
+
+def opponent_quality_span_end(text: str, pos: int) -> int | None:
+    """End of an opponent-quality phrase ("vs playoff teams") starting at ``pos``.
+
+    "top" terms are left out: "vs top 5 teams" after a stat bound routes to
+    an occurrence leaderboard, and top-10 defenses are not served yet.
+    """
+    for pattern, term in _OPPONENT_QUALITY_PATTERNS:
+        m = re.compile(pattern).match(text, pos)
+        if m:
+            return None if term.startswith("top") else m.end()
     return None
 
 

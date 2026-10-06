@@ -109,7 +109,6 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record in games with 120 points in close games",
         "Lakers record in games with 120 points after a loss",
         # Opponents and players after the bound must resolve.
-        "Lakers record in games with 120 points vs playoff teams",
         "Lakers record in games with 120 points against division rivals",
         "Lakers record in games with 120 points if anyone plays",
         # A non-stat count after filler is not rewritten into a bound.
@@ -196,3 +195,40 @@ def test_record_leaderboard_stat_sample(query, top):
     assert (rows[0]["team_abbr"], rows[0]["wins"], rows[0]["losses"]) == top
     if "120" in query:
         assert all(row["wins"] + row["losses"] >= 4 for row in rows)
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # Glossary opponent-quality terms are read scope after a stat bound.
+        # Every fixture team ranks in its conference top 10.
+        ("Lakers record in games with 120 points vs playoff teams", (18, 1)),
+        ("Lakers record in games with 120 points against teams that made the playoffs", (18, 1)),
+        ("Lakers record in games with 120 points vs good teams at home", (5, 0)),
+    ],
+)
+def test_stat_bound_with_glossary_opponents(query, record):
+    summary = _run(query).result.to_dict()["sections"]["summary"][0]
+    assert (summary["wins"], summary["losses"]) == record
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record vs non-playoff teams",
+        "LeBron games vs non-playoff teams",
+        "Lakers record in games with 120 points vs non-playoff teams",
+        # Multi-season and streak routes take the season-token path.
+        "Lakers record vs non-playoff teams since 2023",
+        "LeBron longest 20 point streak vs non-playoff teams",
+        "Lakers longest winning streak vs non-playoff teams",
+    ],
+)
+def test_empty_opponent_quality_set_is_no_match(query):
+    # No fixture team missed the playoffs: the answer is no games, never the
+    # unfiltered record.
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "no_match"
