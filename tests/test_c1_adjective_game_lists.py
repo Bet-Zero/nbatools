@@ -103,6 +103,11 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record in games with 120 points when Davis sits",
         "Lakers record in games with 10 rebounds from Davis",
         "Lakers record in games with 120 points while allowing 130",
+        "Lakers record in games with 120 points, 2 days rest",
+        "Lakers record in games with 120 points in games where Davis sits",
+        "Lakers record in games with 120 points before the all-star break",
+        "Lakers record in games with 120 points in close games",
+        "Lakers record in games with 120 points after a loss",
     ],
 )
 def test_non_stat_counts_still_refuse(query):
@@ -119,6 +124,8 @@ def test_non_stat_counts_still_refuse(query):
         ("Lakers record in games with 120 points vs the Celtics", (3, 1)),
         ("Lakers record in games with 120 points on the road", (5, 1)),
         ("Lakers record in games with 120 points against teams over .500", (7, 1)),
+        ("Lakers record in games with 120 points after the all-star break", (10, 1)),
+        ("Lakers record in games with 120 points in December", (2, 0)),
     ],
 )
 def test_team_record_stat_count_with_scope(query, record):

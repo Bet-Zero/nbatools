@@ -618,10 +618,29 @@ _STAT_COUNT_CLAUSE = (
 _STAT_COUNT_PHRASE = re.compile(
     rf"{_STAT_COUNT_CLAUSE}(?:\s*(?:,|and|,\s*and)\s+{_STAT_COUNT_CLAUSE})*(?![\w-])"
 )
-_READ_BOUND_TAIL = re.compile(
-    r"\s*(?:$|[?.!,;:]|(?:vs\.?|versus|against|this|last|since|in|on|at|during|before"
-    r"|after|home|road|away|playoffs?|regular)\b|if\s+[\w .'\-]+?\s+plays?\b)"
+_MONTH = (
+    r"(?:january|february|march|april|may|june|july|august|september|october"
+    r"|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)"
 )
+_SEASON = r"(?:(?:19|20)\d{2}(?:-\d{2}(?:\d{2})?)?)"
+# Scope the parser applies after a stat-count bound. The whole tail must be
+# made of these, so nothing after the bound ("in games where Davis sits",
+# "before the all-star break", ", 2 days rest") is silently dropped.
+_READ_SCOPE_UNIT = (
+    r"(?:(?:in|during|for)\s+(?:the\s+)?)?" + _SEASON + r"(?:\s+(?:season|regular\s+season))?"
+    r"|(?:this|last)\s+(?:season|year)"
+    r"|since\s+(?:" + _SEASON + r"|" + _MONTH + r"(?:\s+" + _SEASON + r")?)"
+    r"|(?:in\s+)?" + _MONTH + r"(?:\s+" + _SEASON + r")?"
+    r"|(?:vs\.?|versus|against)\s+(?:teams\s+(?:over|under|above|below)\s+\.500"
+    r"|(?:the\s+)?[a-z]+(?:\s+[a-z]+)?)"
+    r"|at\s+home|on\s+the\s+road|home|road|away"
+    r"|(?:in\s+the\s+)?(?:playoffs|postseason|regular\s+season)"
+    r"|in\s+(?:a\s+)?(?:win|loss|wins|losses)"
+    r"|in\s+(?:the|their|his)\s+last\s+\d+\s+games?"
+    r"|after\s+the\s+all[- ]star\s+break"
+    r"|if\s+[a-z][\w.'\-]*(?:\s+[a-z][\w.'\-]*)?\s+plays?"
+)
+_READ_BOUND_TAIL = re.compile(rf"(?:\s+(?:{_READ_SCOPE_UNIT}))*\s*[?.!]?\s*$")
 _CONDITIONAL_CLAUSE = re.compile(r"\b(?:when|if|while|whenever)\b")
 
 
