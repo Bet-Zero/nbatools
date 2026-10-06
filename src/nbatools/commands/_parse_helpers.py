@@ -2709,11 +2709,15 @@ def detect_opponent_quality(text: str) -> dict | None:
 
 
 def opponent_quality_span_end(text: str, pos: int) -> int | None:
-    """End of an opponent-quality phrase ("vs playoff teams") starting at ``pos``."""
-    for pattern, _term in _OPPONENT_QUALITY_PATTERNS:
+    """End of an opponent-quality phrase ("vs playoff teams") starting at ``pos``.
+
+    "top" terms are left out: "vs top 5 teams" after a stat bound routes to
+    an occurrence leaderboard, and top-10 defenses are not served yet.
+    """
+    for pattern, term in _OPPONENT_QUALITY_PATTERNS:
         m = re.compile(pattern).match(text, pos)
         if m:
-            return m.end()
+            return None if term.startswith("top") else m.end()
     return None
 
 

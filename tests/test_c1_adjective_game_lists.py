@@ -218,6 +218,10 @@ def test_stat_bound_with_glossary_opponents(query, record):
         "Lakers record vs non-playoff teams",
         "LeBron games vs non-playoff teams",
         "Lakers record in games with 120 points vs non-playoff teams",
+        # Multi-season and streak routes take the season-token path.
+        "Lakers record vs non-playoff teams since 2023",
+        "LeBron longest 20 point streak vs non-playoff teams",
+        "Lakers longest winning streak vs non-playoff teams",
     ],
 )
 def test_empty_opponent_quality_set_is_no_match(query):
