@@ -82,6 +82,7 @@ from nbatools.commands._matchup_utils import (
     extract_player_comparison,
     extract_team_comparison,
     names_other_player_availability,
+    presence_states_player_condition,
 )
 from nbatools.commands._natural_query_execution import (  # noqa: F401
     _apply_extra_conditions_to_result,
@@ -5198,12 +5199,14 @@ def _route_parsed_query(parsed: dict) -> dict:
 
     if (
         route == "team_record"
-        and route_kwargs.get("stat") == "minutes"
         and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
+        and (route_kwargs.get("stat") == "minutes" or presence_states_player_condition(q))
     ):
-        # A minutes bound next to a player is that player's minutes; team rows
-        # only carry the whole team's (~240), so applying it there answered a
-        # different question. Refuse instead.
+        # A minutes bound or "plays and scores 30" next to a presence filter
+        # is that player's own condition; team rows only carry team totals
+        # (~240 minutes, the team's points), so applying it there answered a
+        # different question. This happens when another player's clause keeps
+        # "when X plays" as presence. Refuse instead.
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "player_minutes_bound" not in existing_unsupported:
             existing_unsupported.append("player_minutes_bound")

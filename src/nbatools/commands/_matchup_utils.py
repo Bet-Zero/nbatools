@@ -618,7 +618,36 @@ def names_other_player_availability(text: str, player: str | None) -> bool:
     return False
 
 
-_NON_PLAYER_SUBJECTS = {"he", "she", "they", "we", "it", "team", "teams", "squad", "game"}
+_NON_PLAYER_SUBJECTS = {
+    "he",
+    "she",
+    "they",
+    "we",
+    "it",
+    "team",
+    "teams",
+    "squad",
+    "game",
+    "defense",
+    "offense",
+    "bench",
+    "la",
+    "los angeles",
+}
+
+
+def presence_states_player_condition(text: str) -> bool:
+    """True when "when PLAYER plays" is followed by that player's own condition.
+
+    "when LeBron plays and scores 30" / "plays 35 minutes": when this clause
+    stays a presence filter (another player's clause follows), the team route
+    would check the condition against team rows and must refuse instead.
+    """
+    m = re.search(rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+[\w .&'\-]+?\s+(?:plays?|played)\b", text)
+    if m is None:
+        return False
+    tail = text[m.end() :]
+    return bool(re.match(_MINUTES_BOUND_TAIL, tail) or re.match(_OWN_STAT_CLAUSE, tail))
 
 
 def detect_with_player(text: str) -> tuple[str | None, str]:

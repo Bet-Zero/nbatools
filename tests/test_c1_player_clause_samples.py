@@ -87,6 +87,11 @@ def test_sits_is_absence(query):
         "Lakers record when LeBron James plays and scores 30 points while Davis rests",
         "Lakers record when LeBron James plays and scores 30 points while Davis is out",
         "Lakers record when Davis sits",
+        # The first player's own stat can't be checked on team rows.
+        "Lakers record when LeBron James plays and scores 30 points and Davis plays",
+        "Lakers record when LeBron James plays and has 10 assists and Anthony Davis plays",
+        "Lakers record when LeBron James plays and scores 30 points and the starters play 30 "
+        "minutes",
     ],
 )
 def test_second_player_clause_refuses(query):
@@ -107,3 +112,24 @@ def test_below_is_a_ceiling():
 def test_team_sitting_is_not_an_absence():
     # "they sit atop the standings" names no player; the record is unfiltered.
     assert _record("Lakers record when they sit atop the standings") == (47, 13, 60)
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        (
+            "Lakers record when LeBron James plays and grabs 10 rebounds and the defense plays "
+            "well",
+            (11, 2, 13),
+        ),
+        ("Lakers record when LeBron James plays and scores 30 points and LA plays", (10, 1, 11)),
+        (
+            "Lakers record when LeBron James plays and scores 30 points and the Lakers play at home",
+            (4, 1, 5),
+        ),
+        # A team stat beside presence still filters team rows.
+        ("Lakers record with LeBron James in games with 120 points", (18, 1, 19)),
+    ],
+)
+def test_team_subjects_are_not_second_players(query, record):
+    assert _record(query) == record

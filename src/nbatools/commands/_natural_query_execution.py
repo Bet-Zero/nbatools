@@ -722,7 +722,8 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "player_minutes_bound":
         return (
-            "a player's minutes bound can't be combined with another player's "
+            "a player's own condition (minutes, points, assists) can't be combined "
+            "with another player's "
             "availability on a team record; ask with one player, such as 'Lakers "
             "record when LeBron plays at least 35 minutes' "
             f"(blocked: {', '.join(all_filters)})"
