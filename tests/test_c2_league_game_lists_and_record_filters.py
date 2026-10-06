@@ -123,6 +123,14 @@ def test_player_record_against_one_opponent():
         "best shooting games by all-stars",
         "best shooting nights by players over 6 feet",
         "best shooting games in the last 10 games",
+        "best shooting games by a player under 25",
+        "best shooting games by a player over 30",
+        "best shooting performances from deep",
+        "best shooting games from the 3 point line",
+        "best shooting outings at the line",
+        "best shooting games in 10 years",
+        "best shooting games in 100 games",
+        "best shooting performances by the top 10 scorers",
     ],
 )
 def test_league_game_lists_never_drop_an_unread_filter(query):

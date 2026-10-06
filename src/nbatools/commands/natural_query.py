@@ -6083,12 +6083,8 @@ _GAME_LIST_PERCENT_BOUND = re.compile(
     r"free\s+throws?|field))?"
 )
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
-# Words a league game list reads itself: list nouns and percent bounds.
-_LEAGUE_GAME_LIST_WORDS = re.compile(
-    r"games?|nights?|performances?|outings?|over|above|under|below|at|least|most|better|"
-    r"worse|than|\d{1,3}(?:\.\d+)?%?|from|the|three|3|deep|downtown|line|stripe|field|free|"
-    r"throws?|point|pt|percent"
-)
+# List nouns a league game list reads itself.
+_LEAGUE_GAME_LIST_WORDS = re.compile(r"games?|nights?|performances?|outings?")
 # Routes a league-wide "best shooting games" question lands on.
 _LEAGUE_GAME_LIST_ROUTES = frozenset({"season_leaders", "season_team_leaders", "top_player_games"})
 
@@ -6140,8 +6136,22 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             # could not read is one this list reads itself ("performances",
             # "over 50% from three"). "by a guard", "by a Laker" refuse.
             residual = (route_kwargs.get("leaderboard_eligibility") or {}).get("residual") or []
-            if not all(_LEAGUE_GAME_LIST_WORDS.fullmatch(str(word)) for word in residual):
+            # Bound words count as read only inside a "% ..." bound this list
+            # applies; "under 25", "from deep", "in 10 years" are not.
+            bound_words = {
+                word
+                for match in _GAME_LIST_PERCENT_BOUND.finditer(q)
+                for word in match.group(0).split()
+            }
+            if not all(
+                _LEAGUE_GAME_LIST_WORDS.fullmatch(str(word)) or str(word) in bound_words
+                for word in residual
+            ):
                 return None
+        if re.search(r"\bby\s+(?!(?:an?\s+)?players?\b)", q):
+            # "by the top 10 scorers", "by a rookie": a subject this list
+            # does not filter.
+            return None
         if route_kwargs.get("last_n"):
             # "in the last 10 games" means each player's last games, which a
             # league game list cannot apply.
