@@ -567,6 +567,16 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     return None, cleaned_text
 
 
+# "35 minutes", "at least 35 minutes", "30 minutes or less", "35+ mpg": a
+# minutes condition, not a word that can follow bare presence.
+_MINUTES_BOUND_TAIL = (
+    r"\s+(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+"
+    r"|no\s+more\s+than\s+|a\s+max(?:imum)?\s+of\s+)?"
+    r"\d+(?:\.\d+)?\+?(?:\s+or\s+(?:more|fewer|less))?\s*"
+    r"(?:minutes?|mins?|mpg)\b"
+)
+
+
 def detect_with_player(text: str) -> tuple[str | None, str]:
     """Detect whole-game presence patterns like ``with PLAYER`` / ``w/ PLAYER``.
 
@@ -580,7 +590,11 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     )
     presence_patterns = [
         with_player_pattern,
-        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
+        # "when PLAYER plays" is whole-game presence, but "when PLAYER plays 35
+        # minutes" states a minutes condition on that player. Read as presence
+        # it dropped the bound and answered with the team's whole record.
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b"
+        rf"(?!{_MINUTES_BOUND_TAIL})",
     ]
 
     for pattern in presence_patterns:
@@ -601,7 +615,8 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
 
 
 _STAT_COUNT_QUALIFIER = (
-    r"(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+)?"
+    r"(?:at\s+(?:least|most)\s+|(?:no(?:t)?\s+)?(?:over|above)\s+|under\s+"
+    r"|(?:no(?:t)?\s+)?(?:more|fewer|less|greater)\s+than\s+)?"
 )
 # Only nouns the threshold reader turns into a stat; "3-pointers", "rebs" or
 # "minutes" would skip the refusal and then apply no filter.
@@ -726,6 +741,9 @@ def _superlative_names_a_stat(phrase: str, text: str) -> bool:
     return detect_stat(rest) is not None
 
 
+_NEGATED_BOUND = r"(?:(?:more|fewer|less|greater)\s+than|over|above)\s+\d"
+
+
 def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
@@ -736,7 +754,9 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+out\b",
             r"\brecord\s+([\w .&'\-]+?)\s+out\b",
-            rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+            # "no more than 10 turnovers" is a bound, not a missing player.
+            rf"\b(?:no|sans|minus)\s+(?!{_NEGATED_BOUND})([\w .&'\-]+?)"
+            rf"(?=\s+(?:{STOP_WORDS})\b|$)",
         ]
     elif mode == "with":
         with_player_pattern = (
