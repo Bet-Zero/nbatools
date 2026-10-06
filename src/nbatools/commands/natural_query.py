@@ -348,6 +348,7 @@ from nbatools.commands._parse_helpers import (
     wants_team_leaderboard as wants_team_leaderboard,
 )
 from nbatools.commands._playoff_record_route_utils import (
+    _DECADE_SUPERLATIVE,
     detect_by_decade_intent,
     detect_by_round_intent,
     detect_how_did_playoffs,
@@ -1776,6 +1777,10 @@ _SINGLE_SEASON_RANKED_ROUTES = frozenset(
 _SINGLE_SEASON_UNRANKED_ROUTES = frozenset(
     {"top_player_games", "top_team_games", "team_occurrence_leaders"}
 )
+# "which decade did the Lakers win the most": the record is ranked.
+_WHICH_DECADE_RECORD = re.compile(
+    r"\bwhich\s+decade\b.*\b(?:win|won|lose|lost)\s+the\s+most(?!\s+(?:series|titles?))\b"
+)
 _RANKED_WINS_LOSSES = re.compile(
     r"\b(?:most|fewest|least)\s+(?:(?:road|home|away|playoffs?|postseason|regular[\s-]season)\s+)?"
     r"(?:wins|losses)\b"
@@ -2305,9 +2310,14 @@ def _build_parse_state(query: str) -> dict:
         # "how many playoff series have the Lakers won": series won and lost
         # come from the playoff history, not a filter to winning games.
         wins_only = losses_only = False
-    if re.search(_RANKED_WINS_LOSSES, q):
-        # "most wins in a single season", "most wins over a 10 game stretch":
-        # wins are the ranked stat, not a filter to won games.
+    if (
+        re.search(_RANKED_WINS_LOSSES, q)
+        or re.search(_WHICH_DECADE_RECORD, q)
+        or _DECADE_SUPERLATIVE.search(q)
+    ):
+        # "most wins in a single season", "most wins over a 10 game stretch",
+        # "which decade did the Lakers win the most": wins are the ranked
+        # stat, not a filter to won games.
         wins_only = losses_only = False
 
     # If without_player is the same as the detected player, clear player so the
@@ -6243,7 +6253,14 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
-_PLAYER_SUBJECT = re.compile(r"\bplayers?\b|\bby\s+an?\s+(?:player|individual)\b")
+# "against rookies" names opponents, not the players ranked.
+_ROOKIE_SUBJECT = re.compile(
+    r"(?<!\bagainst\s)(?<!\bvs\s)(?<!\bvs\.\s)(?<!\bversus\s)\brookies?\b"
+    r"(?!\s+(?:head\s+)?coach)"
+)
+_PLAYER_SUBJECT = re.compile(
+    r"\bplayers?\b|\bby\s+an?\s+(?:player|individual)\b|" + _ROOKIE_SUBJECT.pattern
+)
 # Team-record kwargs a player wins board can keep.
 _PLAYER_WINS_KEPT = frozenset(
     {
@@ -6265,14 +6282,29 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
     """ "most playoff wins by a player": players ranked by games won.
 
     The record board ranks teams; a player's wins are the games he played
-    that his team won.
+    that his team won, and his record ("players with the best record") is
+    those wins over the games he played.
     """
+    q = parsed["normalized_query"]
+    if (
+        out.get("route") == "record_by_decade_leaderboard"
+        and _PLAYER_SUBJECT.search(q)
+        and not re.search(r"\bteams?\b|\bfranchises?\b", q)
+    ):
+        # "players with the most wins by decade": the decade board ranks
+        # teams; a player board per decade is not built yet.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["player_record_by_decade"]
+        refused["notes"] = [
+            "unsupported_boundary: player wins and records are ranked over one season or "
+            'one span ("players with the most wins in the 2010s"), not decade by decade'
+        ]
+        return refused
     if out.get("route") != "team_record_leaderboard":
         return None
     route_kwargs = out.get("route_kwargs") or {}
     stat = route_kwargs.get("stat")
-    q = parsed["normalized_query"]
-    if stat not in ("wins", "losses") or not _PLAYER_SUBJECT.search(q):
+    if stat not in ("wins", "losses", "win_pct") or not _PLAYER_SUBJECT.search(q):
         return None
     if re.search(r"\bteams?\b|\bfranchises?\b", q):
         # "teams with the most wins when their best players rest".
@@ -6289,7 +6321,7 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
     kwargs = {key: route_kwargs.get(key) for key in ("season", "start_season", "end_season")}
     kwargs.update(
         season_type=route_kwargs.get("season_type") or "Regular Season",
-        stat="games_played",
+        stat="win_pct" if stat == "win_pct" else "games_played",
         limit=route_kwargs.get("limit") or 10,
         ascending=bool(route_kwargs.get("ascending")),
         min_games=1,
@@ -6298,7 +6330,8 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
         home_only=bool(route_kwargs.get("home_only")),
         away_only=bool(route_kwargs.get("away_only")),
         per_season=bool(route_kwargs.get("per_season")),
-        rookies_only=bool(re.search(r"(?<!\bagainst\s)(?<!\bvs\s)(?<!\bversus\s)\brookies?\b", q)),
+        rookies_only=bool(_ROOKIE_SUBJECT.search(q)),
+        role=detect_role(q),
     )
     notes = list(out.get("notes") or [])
     named = bool(_NAMED_SEASON_WORDS.search(q))
@@ -6315,10 +6348,39 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
     rerouted.update(route="season_leaders", intent="leaderboard", route_kwargs=kwargs)
     for key in ("season", "start_season", "end_season"):
         rerouted[key] = kwargs[key]
-    rerouted["notes"] = notes + [
-        f"player_{stat}: games played that the player's team {'won' if stat == 'wins' else 'lost'}"
-    ]
+    outcome = {"wins": "won", "losses": "lost", "win_pct": "won or lost"}[stat]
+    rerouted["notes"] = notes + [f"player_{stat}: games played that the player's team {outcome}"]
     return rerouted
+
+
+# A decade ranked by something other than its record.
+_DECADE_STAT_CUE = re.compile(
+    r"\b(?:scor\w*|offens\w*|defens\w*|differential|rating|points?|pointers?|threes?|"
+    r"rebound\w*|assists?|blocks?|steals?|shooting)\b"
+)
+
+
+def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
+    """ "best decade for points": refuse rather than rank decades by record.
+
+    "best decade" alone is a record question; with a stat it asks for a
+    decade board the record tables cannot give.
+    """
+    q = parsed["normalized_query"]
+    if out.get("route") not in ("record_by_decade", "record_by_decade_leaderboard"):
+        return None
+    if not _DECADE_SUPERLATIVE.search(q):
+        return None
+    stat = parsed.get("stat")
+    if stat in (None, "wins", "losses", "win_pct") and not _DECADE_STAT_CUE.search(q):
+        return None
+    refused = _single_season_refusal(parsed)
+    refused["route_kwargs"]["unsupported_filters"] = ["decade_stat"]
+    refused["notes"] = [
+        "unsupported_boundary: decades are ranked by record; ask for one decade's "
+        'stat leaders by name ("most points in the 2010s")'
+    ]
+    return refused
 
 
 def _finalize_route(parsed: dict) -> dict:
@@ -6330,6 +6392,22 @@ def _finalize_route(parsed: dict) -> dict:
     wins = _player_wins_board(parsed, out)
     if wins is not None:
         return wins
+    decade_stat = _decade_superlative_stat(parsed, out)
+    if decade_stat is not None:
+        return decade_stat
+    if parsed.get("player") and (
+        _DECADE_SUPERLATIVE.search(parsed["normalized_query"])
+        or re.search(r"\bby\s+decade\b|\bwhich\s+decade\b", parsed["normalized_query"])
+    ):
+        # "LeBron best decade", "which decade did LeBron win the most":
+        # decades are ranked for team records only.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["player_decade"]
+        refused["notes"] = [
+            "unsupported_boundary: decades are ranked for team records; ask for a "
+            'player\'s decade by name ("LeBron points per game in the 2010s")'
+        ]
+        return refused
     games = _player_game_list(parsed, out)
     if games is not None:
         return games

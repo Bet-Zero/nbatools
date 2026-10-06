@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import unicodedata
 from pathlib import Path
 
@@ -153,6 +154,7 @@ ALLOWED_STATS = {
     "def_rating": "def_rating",
     "games": "games_played",
     "games_played": "games_played",
+    "win_pct": "win_pct",
     "games_20p": "games_20p",
     "20 point games": "games_20p",
     "20-point games": "games_20p",
@@ -344,6 +346,10 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
     for col in ("oreb", "dreb", "stl", "blk", "tov", "plus_minus", "minutes", "pf"):
         if col in basic.columns:
             agg_spec[f"{col}_total"] = (col, "sum")
+    if "wl" in basic.columns:
+        # A player's record: the games he played that his team won or lost.
+        agg_spec["wins"] = ("wl", lambda s: int(s.eq("W").sum()))
+        agg_spec["losses"] = ("wl", lambda s: int(s.eq("L").sum()))
 
     basic = canonicalize_player_names(basic)
     grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(**agg_spec)
@@ -368,6 +374,10 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         2 * (grouped["fga_total"] + 0.44 * grouped["fta_total"]),
         fill=None,
     )
+    if "wins" in grouped.columns:
+        grouped["win_pct"] = safe_divide(
+            grouped["wins"], grouped["wins"] + grouped["losses"], fill=None
+        )
 
     return grouped
 
@@ -720,6 +730,29 @@ def _apply_default_guardrails(
     )
 
 
+# A span's record needs at most this many games: a long career is not
+# required to qualify for "best record since 2010".
+_WIN_PCT_SPAN_CAP = {"regular": 400, "playoffs": 50}
+
+
+def _win_pct_floor(
+    df: pd.DataFrame, min_games: int, season_type: str | None = None, num_seasons: int = 1
+) -> int:
+    """A record board counts players with at least half the most games played.
+
+    A player who went 3-0 is not the best record of a season; the floor scales
+    with the sample (a season in progress, a span). One postseason counts any
+    player with a full series, so a swept team's players can rank.
+    """
+    if df.empty:
+        return min_games
+    if _is_playoff_season_type(season_type):
+        cap = 4 if num_seasons == 1 else _WIN_PCT_SPAN_CAP["playoffs"]
+    else:
+        cap = _WIN_PCT_SPAN_CAP["regular"]
+    return max(min_games, min(math.ceil(df["games_played"].max() / 2), cap))
+
+
 def _apply_attempt_floors(
     df: pd.DataFrame, target_col: str, *, fga_floor: int, fg3a_floor: int, fta_floor: int
 ) -> pd.DataFrame:
@@ -748,6 +781,8 @@ def _leaderboard_context_columns(target_col: str) -> list[str]:
         return ["fg3m_total", "fg3a_total"]
     if target_col == "ft_pct":
         return ["ftm_total", "fta_total"]
+    if target_col == "win_pct":
+        return ["wins", "losses"]
     return []
 
 
@@ -854,8 +889,15 @@ def build_result(
     player: str | list[str] | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
+        # A record over a few games of a season in progress is not a season;
+        # a postseason is as long as the team's run.
         return best_single_seasons(
-            build_result, dict(locals()), target_col=_normalize_stat(stat), name_col="player_name"
+            build_result,
+            dict(locals()),
+            target_col=_normalize_stat(stat),
+            name_col="player_name",
+            full_seasons_only=_normalize_stat(stat) == "win_pct"
+            and not _is_playoff_season_type(season_type),
         )
     safe = season_type.lower().replace(" ", "_")
 
@@ -936,7 +978,7 @@ def build_result(
 
     # Player game logs lack a 'wl' column — derive it from team game stats
     # so that wins_only / losses_only filters can be applied.
-    if (wins_only or losses_only) and "wl" not in basic.columns:
+    if (wins_only or losses_only or target_col == "win_pct") and "wl" not in basic.columns:
         team_frames: list[pd.DataFrame] = []
         for s in seasons:
             team_path = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
@@ -1212,6 +1254,7 @@ def build_result(
         or bool(series_situation)
     )
 
+    win_pct_floor: int | None = None
     if clutch_executed:
         df = df[df["games_played"] >= min_games].copy()
     elif series_situation and (
@@ -1219,6 +1262,11 @@ def build_result(
     ):
         # A total over a handful of game 7s needs no games floor.
         df = df[df["games_played"] >= min_games].copy()
+    elif target_col == "win_pct":
+        win_pct_floor = _win_pct_floor(
+            df, min_games, season_type=season_type, num_seasons=len(seasons)
+        )
+        df = df[df["games_played"] >= win_pct_floor].copy()
     elif attempt_col is not None:
         if attempt_col not in df.columns:
             raise ValueError(f"Column '{attempt_col}' not available for the attempt minimum")
@@ -1291,6 +1339,11 @@ def build_result(
         current_through = compute_current_through(seasons[0], season_type)
 
     caveats: list[str] = []
+    if win_pct_floor is not None:
+        caveats.append(
+            "record: games played that the player's team won or lost; "
+            f"at least {win_pct_floor} games"
+        )
     if attempt_col is not None:
         amount = f"{min_attempts:g}"
         unit = _ATTEMPT_LABEL[attempt_col] + (" per game" if min_attempts_per_game else "")
