@@ -6187,7 +6187,7 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
         or _RANKED_WINS_LOSSES.search(q)
         or _RECORD_WORDS.search(q)
     )
-    if record and not parsed.get("single_season_intent"):
+    if record and not parsed.get("single_season_intent") and not _PLAYER_SUBJECT.search(q):
         # "best record in the 2010s": the decade record board.
         return None
     phrases = list(_NAMED_DECADE_PHRASE.finditer(q))
@@ -6219,12 +6219,89 @@ def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
+_PLAYER_SUBJECT = re.compile(r"\bplayers?\b|\bby\s+an?\s+(?:player|individual)\b")
+# Team-record kwargs a player wins board can keep.
+_PLAYER_WINS_KEPT = frozenset(
+    {
+        "season",
+        "start_season",
+        "end_season",
+        "season_type",
+        "stat",
+        "limit",
+        "ascending",
+        "home_only",
+        "away_only",
+        "per_season",
+    }
+)
+
+
+def _player_wins_board(parsed: dict, out: dict) -> dict | None:
+    """ "most playoff wins by a player": players ranked by games won.
+
+    The record board ranks teams; a player's wins are the games he played
+    that his team won.
+    """
+    if out.get("route") != "team_record_leaderboard":
+        return None
+    route_kwargs = out.get("route_kwargs") or {}
+    stat = route_kwargs.get("stat")
+    q = parsed["normalized_query"]
+    if stat not in ("wins", "losses") or not _PLAYER_SUBJECT.search(q):
+        return None
+    if parsed.get("team") or parsed.get("player"):
+        return None
+    if any(
+        value not in (None, False, "", [], (), {})
+        for key, value in route_kwargs.items()
+        if key not in _PLAYER_WINS_KEPT
+    ):
+        # "players with the most road wins": a filter this board would drop.
+        return None
+    kwargs = {key: route_kwargs.get(key) for key in ("season", "start_season", "end_season")}
+    kwargs.update(
+        season_type=route_kwargs.get("season_type") or "Regular Season",
+        stat="games_played",
+        limit=route_kwargs.get("limit") or 10,
+        ascending=bool(route_kwargs.get("ascending")),
+        min_games=1,
+        wins_only=stat == "wins",
+        losses_only=stat == "losses",
+        home_only=bool(route_kwargs.get("home_only")),
+        away_only=bool(route_kwargs.get("away_only")),
+        per_season=bool(route_kwargs.get("per_season")),
+    )
+    notes = list(out.get("notes") or [])
+    named = bool(_NAMED_SEASON_WORDS.search(q))
+    if parsed.get("single_season_intent") and not kwargs["start_season"] and not named:
+        # "most wins in a single season by a player": every season since 1996-97.
+        from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
+
+        kwargs["season"] = None
+        kwargs["start_season"], kwargs["end_season"] = resolve_career(kwargs["season_type"])
+        notes.append(f"default: every season since {EARLIEST_SEASON}")
+    if parsed.get("single_season_intent") and kwargs["start_season"]:
+        kwargs["per_season"] = True
+    rerouted = dict(out)
+    rerouted.update(route="season_leaders", intent="leaderboard", route_kwargs=kwargs)
+    for key in ("season", "start_season", "end_season"):
+        rerouted[key] = kwargs[key]
+    rerouted["notes"] = notes + [
+        f"player_{stat}: games played that the player's team {'won' if stat == 'wins' else 'lost'}"
+    ]
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     out = _finalize_route_inner(parsed)
     decade = _decade_stat_board(parsed, out)
     if decade is not None:
         return decade
+    wins = _player_wins_board(parsed, out)
+    if wins is not None:
+        return wins
     games = _player_game_list(parsed, out)
     if games is not None:
         return games
