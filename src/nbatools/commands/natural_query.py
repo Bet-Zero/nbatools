@@ -6083,6 +6083,12 @@ _GAME_LIST_PERCENT_BOUND = re.compile(
     r"free\s+throws?|field))?"
 )
 _PLAYER_GAME_LIST_ROUTES = frozenset({"player_game_finder", "player_game_summary"})
+# Words a league game list reads itself: list nouns and percent bounds.
+_LEAGUE_GAME_LIST_WORDS = re.compile(
+    r"games?|nights?|performances?|outings?|over|above|under|below|at|least|most|better|"
+    r"worse|than|\d{1,3}(?:\.\d+)?%?|from|the|three|3|deep|downtown|line|stripe|field|free|"
+    r"throws?|point|pt|percent"
+)
 # Routes a league-wide "best shooting games" question lands on.
 _LEAGUE_GAME_LIST_ROUTES = frozenset({"season_leaders", "season_team_leaders", "top_player_games"})
 
@@ -6126,10 +6132,19 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         if shooting is None:
             # "highest scoring games": the league game board already ranks it.
             return None
-        if (route_kwargs.get("unsupported_filters") or []) not in (
-            [],
-            ["leaderboard_request_unclear"],
-        ):
+        unclear = route_kwargs.get("unsupported_filters") or []
+        if unclear not in ([], ["leaderboard_request_unclear"]):
+            return None
+        if unclear:
+            # The board's parse is partial; answer only when every word it
+            # could not read is one this list reads itself ("performances",
+            # "over 50% from three"). "by a guard", "by a Laker" refuse.
+            residual = (route_kwargs.get("leaderboard_eligibility") or {}).get("residual") or []
+            if not all(_LEAGUE_GAME_LIST_WORDS.fullmatch(str(word)) for word in residual):
+                return None
+        if route_kwargs.get("last_n"):
+            # "in the last 10 games" means each player's last games, which a
+            # league game list cannot apply.
             return None
         for key in ("unsupported_filters", "leaderboard_eligibility", "min_games", "per_season"):
             route_kwargs.pop(key, None)

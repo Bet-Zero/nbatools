@@ -112,3 +112,23 @@ def test_player_record_against_one_opponent():
     assert "filtered to games vs BOS" in data["caveats"]
     rows = data["sections"]["leaderboard"]
     assert all(row["wins"] + row["losses"] <= row["games_played"] for row in rows)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best shooting games by a guard this season",
+        "best shooting games by a Laker",
+        "best shooting games in the 2025 playoffs against the Celtics",
+        "best shooting games by all-stars",
+        "best shooting nights by players over 6 feet",
+        "best shooting games in the last 10 games",
+    ],
+)
+def test_league_game_lists_never_drop_an_unread_filter(query):
+    assert parse_query(query)["route"] != "player_game_finder"
+
+
+def test_league_game_list_reads_its_own_words():
+    kwargs = parse_query("best three point shooting performances")["route_kwargs"]
+    assert kwargs["stat"] == "fg3_pct"
