@@ -600,6 +600,87 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     return None, cleaned_text
 
 
+_STAT_COUNT_QUALIFIER = (
+    r"(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+)?"
+)
+# Only nouns the threshold reader turns into a stat; "3-pointers", "rebs" or
+# "minutes" would skip the refusal and then apply no filter.
+_STAT_COUNT_NOUN = (
+    r"(?:made\s+)?(?:points?|pts|rebounds?|boards?|assists?|dimes"
+    r"|threes?|3s|3pm|three[- ]pointers?|steals?|blocks?|turnovers?|fouls?)"
+)
+_STAT_COUNT_CLAUSE = (
+    rf"{_STAT_COUNT_QUALIFIER}\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+{_STAT_COUNT_NOUN}"
+    r"(?:\s+or\s+(?:more|fewer|less|better))?"
+)
+# "120 points", "15+ threes and 30 assists": every clause is a count of a
+# box-score stat. "1 day of rest", "2 players scoring 30" and "23" are not.
+_STAT_COUNT_PHRASE = re.compile(
+    rf"{_STAT_COUNT_CLAUSE}(?:\s*(?:,|and|,\s*and)\s+{_STAT_COUNT_CLAUSE})*(?![\w-])"
+)
+_MONTH = (
+    r"(?:january|february|march|april|may|june|july|august|september|october"
+    r"|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)"
+)
+_SEASON = r"(?:(?:19|20)\d{2}(?:-\d{2}(?:\d{2})?)?)"
+# Scope the parser applies after a stat-count bound. The whole tail must be
+# made of these, so nothing after the bound ("in games where Davis sits",
+# "before the all-star break", ", 2 days rest") is silently dropped.
+_READ_SCOPE_UNIT = (
+    r"(?:(?:in|during|for)\s+(?:the\s+)?)?" + _SEASON + r"(?:\s+(?:season|regular\s+season))?"
+    r"|(?:this|last)\s+(?:season|year)"
+    r"|since\s+(?:" + _SEASON + r"|" + _MONTH + r"(?:\s+" + _SEASON + r")?)"
+    r"|(?:in\s+)?" + _MONTH + r"(?:\s+" + _SEASON + r")?"
+    r"|(?:vs\.?|versus|against)\s+(?:teams\s+(?:over|under|above|below)\s+\.500"
+    r"|(?:the\s+)?(?P<opp>[a-z]+))"
+    r"|at\s+home|on\s+the\s+road|home|road|away"
+    r"|(?:in\s+the\s+)?(?:playoffs|postseason|regular\s+season)"
+    r"|in\s+(?:a\s+)?(?:win|loss|wins|losses)"
+    r"|in\s+(?:the|their|his)\s+last\s+\d+\s+games?"
+    r"|after\s+the\s+all[- ]star\s+break"
+    r"|if\s+(?P<plr>[a-z][\w.'\-]*(?:\s+[a-z][\w.'\-]*)?)\s+plays?"
+)
+_READ_SCOPE_STEP = re.compile(rf"\s+(?:{_READ_SCOPE_UNIT})(?![\w.-])")
+_READ_TAIL_END = re.compile(r"\s*[?.!]?\s*$")
+_CONFERENCE_OPPONENTS = {"east", "west", "eastern conference", "western conference"}
+
+
+def _tail_is_read_scope(text: str, pos: int) -> bool:
+    """Whether everything from ``pos`` on is scope the parser applies.
+
+    Opponents must resolve to a team or conference and "if X plays" to a
+    player, so "vs playoff teams" or "if anyone plays" is never dropped.
+    """
+    while not _READ_TAIL_END.match(text, pos):
+        step = _READ_SCOPE_STEP.match(text, pos)
+        if not step:
+            return False
+        pos = step.end()
+        if step.group("opp") is not None:
+            # The longest run of up to three words that names a team or
+            # conference: "the boston celtics", "golden state", "the east".
+            words = re.match(r"[a-z]+(?:\s+[a-z]+){0,2}", text[step.start("opp") :])
+            names = words.group(0).split() if words else []
+            for n in range(len(names), 0, -1):
+                name = " ".join(names[:n])
+                if name in TEAM_ALIASES or name in _CONFERENCE_OPPONENTS:
+                    pos = step.start("opp") + len(name)
+                    break
+            else:
+                return False
+        if step.group("plr") is not None and not detect_player(step.group("plr")):
+            return False
+    return True
+
+
+_CONDITIONAL_CLAUSE = re.compile(r"\b(?:when|if|while|whenever)\b")
+
+
+def _names_conditional_player(text: str) -> bool:
+    cond = _CONDITIONAL_CLAUSE.search(text)
+    return bool(cond and detect_player(text[cond.end() :]))
+
+
 def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
@@ -630,6 +711,20 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             continue
         phrase = m.group(1).strip()
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+            continue
+        stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
+        if (
+            stat_bound
+            # Only scope the parser already reads may follow the bound, so
+            # nothing ("and 2 days rest", "from Davis") is silently dropped.
+            and _tail_is_read_scope(text, stat_bound.end())
+            and not detect_player(text[stat_bound.end() :])
+            and not _names_conditional_player(text)
+        ):
+            # "record in games with 120 points": a stat bound, not a teammate.
+            # A player named later ("... with 15 threes and LeBron") or in a
+            # "when LeBron scores 30" clause still needs the availability
+            # reading, which this path cannot combine with the team bound.
             continue
         if (
             mode == "with"
