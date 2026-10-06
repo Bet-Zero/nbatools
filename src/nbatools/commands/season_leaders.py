@@ -889,13 +889,15 @@ def build_result(
     player: str | list[str] | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
-        # A record over a few games of a season in progress is not a season.
+        # A record over a few games of a season in progress is not a season;
+        # a postseason is as long as the team's run.
         return best_single_seasons(
             build_result,
             dict(locals()),
             target_col=_normalize_stat(stat),
             name_col="player_name",
-            full_seasons_only=_normalize_stat(stat) == "win_pct",
+            full_seasons_only=_normalize_stat(stat) == "win_pct"
+            and not _is_playoff_season_type(season_type),
         )
     safe = season_type.lower().replace(" ", "_")
 

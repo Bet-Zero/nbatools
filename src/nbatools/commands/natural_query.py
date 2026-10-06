@@ -6384,8 +6384,7 @@ def _finalize_route(parsed: dict) -> dict:
         return decade_stat
     if parsed.get("player") and (
         _DECADE_SUPERLATIVE.search(parsed["normalized_query"])
-        or out.get("route") in ("record_by_decade", "record_by_decade_leaderboard")
-        or parsed.get("by_decade_intent")
+        or re.search(r"\bby\s+decade\b|\bwhich\s+decade\b", parsed["normalized_query"])
     ):
         # "LeBron best decade", "which decade did LeBron win the most":
         # decades are ranked for team records only.

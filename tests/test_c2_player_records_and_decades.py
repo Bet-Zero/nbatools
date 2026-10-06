@@ -215,3 +215,17 @@ def test_one_postseason_counts_a_swept_series():
     assert _win_pct_floor(df, 1, season_type="Playoffs") == 4
     assert _win_pct_floor(df, 1, season_type="Playoffs", num_seasons=3) == 12
     assert _win_pct_floor(df, 1, season_type="Regular Season") == 12
+
+
+@pytest.mark.parametrize(
+    ("query", "route"),
+    [
+        ("LeBron points per game in the 2010s", "player_game_summary"),
+        ("Curry most points in a game in the 2010s", "player_game_finder"),
+        ("LeBron vs Celtics in the 2010s", "player_game_summary"),
+    ],
+)
+def test_a_player_in_a_named_decade_still_answers(query, route):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["route_kwargs"]["start_season"] == "2010-11"
