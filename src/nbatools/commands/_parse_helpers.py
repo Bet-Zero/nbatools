@@ -2287,7 +2287,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     # not a points-allowed condition.
     _NOT_OTHER_STAT = rf"(?!\s+{STAT_PATTERN})"
     _OPPONENT_SCORERS = (
-        r"\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:scor(?:e|es|ed|ing)|puts?\s+up|had)\s+"
+        r"\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+team)\s+"
+        r"(?:scor(?:e|es|ed|ing)|puts?\s+up|had)\s+"
     )
     # "opponents score below 100": a ceiling, not the team's own points.
     patterns.append(
@@ -2302,6 +2303,12 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         # A bare count after an opponent subject is a floor, as "scored 30"
         # is: "opponents score 120", "the other team scored 120 points".
         (rf"{_OPPONENT_SCORERS}{_NUM}{_POINT_SUFFIX}{_NOT_OTHER_STAT}", 0.0),
+        # "they allow 120", "gave up 120 points": the opponent's score.
+        (
+            r"\b(?:allow(?:s|ing|ed)?|(?:gave|given|giving|give|gives)\s+up)\s+"
+            rf"{_NUM}{_POINT_SUFFIX}{_NOT_OTHER_STAT}",
+            0.0,
+        ),
     ]
 
     matches = []
@@ -2351,7 +2358,8 @@ _OPP_STAT_SUBJECT = (
     r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
     r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them)(?:\s+to)?"
     r"|\blimit(?:s|ed|ing)?\s+opponents?(?:\s+to)?"
-    r"|\b(?:the\s+)?(?:opponents?|other\s+team)\s+(?:had|has|have|made|makes?|hit|hits|shot|shoots|scor(?:e|es|ed)"
+    r"|\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+team)\s+(?:had|has|have|made|makes?"
+    r"|hit|hits|shot|shoots|scor(?:e|es|ed)|commit"
     r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
     r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
 )
