@@ -1772,7 +1772,9 @@ _RANKED_WINS_LOSSES = re.compile(
 _PLAYER_BEST_SEASON = re.compile(
     r"\b(?:best|highest|top|greatest|worst|lowest)\s+(?:[a-z0-9%-]+\s+){0,4}?seasons?\b"
     r"|\bseasons?\s+(?:ranked|sorted|ordered)\s+by\b"
+    r"|\bseasons?\s+with\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b"
 )
+_MOST_OR_FEWEST = re.compile(r"\b(?:most|fewest|least|highest|lowest)\b")
 _PLAYER_SEASON_LOW = re.compile(r"\b(?:worst|lowest|fewest)\b|(?<!\bat\s)\bleast\b")
 # "per game" is a season average, not a single-game ask.
 _PLAYER_SEASON_BLOCKERS = re.compile(r"(?<!\bper\s)\bgames?\b|\bstretch\b|\bseason[\s-]highs?\b")
@@ -1875,7 +1877,9 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
-    q = _WON_MOST_GAMES.sub(lambda m: f"had the {m.group(2)} {_WON_LOST[m.group(1)]}", q)
+    if not re.search(r"\bplayers?\b|\bcoach(?:es)?\b", q):
+        # "which player won the most games" is not a team record.
+        q = _WON_MOST_GAMES.sub(lambda m: f"had the {m.group(2)} {_WON_LOST[m.group(1)]}", q)
     if not re.search(r"\bcome\s*backs?\b|\bcame\s+back\b|\bcomebacks?\b", q):
         q = _WON_IT_ALL.sub(r"\1 the title", q)
     q = _ROUND_SINGLE_GAME.sub(r"\1 game in the \2", q)
@@ -5941,9 +5945,13 @@ def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     kwargs = _best_season_scope(parsed, {**out, "route_kwargs": route_kwargs}, kept)
     if kwargs is None:
         return None
-    if _ranks_lower_is_better(stat):
-        # "Celtics best defensive seasons": the lowest rating first.
-        kwargs["ascending"] = not kwargs["ascending"]
+    if stat == "losses" or _ranks_lower_is_better(stat):
+        # "Celtics best defensive seasons", "best season by losses": the
+        # lowest first; "most losses" and "fewest turnovers" keep their order.
+        if re.search(r"\b(?:best|top|greatest)\b", q) and not _MOST_OR_FEWEST.search(q):
+            kwargs["ascending"] = True
+        elif re.search(r"\bworst\b", q) and not _MOST_OR_FEWEST.search(q):
+            kwargs["ascending"] = False
     kwargs.update(team=team, stat=stat or "win_pct")
     route = "team_record_leaderboard" if record else "season_team_leaders"
     return _rerouted_to_seasons(

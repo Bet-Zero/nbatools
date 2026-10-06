@@ -137,3 +137,38 @@ def test_offensive_rating_seasons_keep_the_team():
     ratings = [row["off_rating"] for row in leaders]
     assert ratings == sorted(ratings, reverse=True)
     assert {row["team_abbr"] for row in leaders} == {"LAL"}
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "ascending"),
+    [
+        ("Lakers best season by losses", "losses", True),
+        ("Lakers worst season by losses", "losses", False),
+        ("Lakers seasons with the most wins", "wins", False),
+        ("Lakers season with the most wins", "wins", False),
+        ("Lakers seasons with the most losses", "losses", False),
+        ("Lakers seasons with the fewest losses", "losses", True),
+        ("Celtics best season by turnovers", "tov", True),
+    ],
+)
+def test_season_direction_follows_the_words(query, stat, ascending):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["stat"], kwargs["ascending"], kwargs["per_season"]) == (stat, ascending, True)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers with the best record",
+        "Lakers record with the most points",
+        "Lakers record with the best players",
+        "Lakers record with the most wins",
+    ],
+)
+def test_with_phrases_that_name_no_season_still_refuse(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert "unresolved_player_availability" in (kwargs.get("unsupported_filters") or [])
+
+
+def test_which_player_won_the_most_games_is_not_a_team_board():
+    assert parse_query("which player won the most games")["route"] != "team_record_leaderboard"
