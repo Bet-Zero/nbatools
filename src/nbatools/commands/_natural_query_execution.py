@@ -32,6 +32,7 @@ from nbatools.commands._condition_utils import (
 from nbatools.commands._constants import BOOLEAN_OR_PATTERN, contains_boolean_or, normalize_text
 from nbatools.commands._parse_helpers import (
     build_opponent_quality_note,
+    canonicalize_adjective_game_lists,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
@@ -1104,7 +1105,9 @@ def _combine_or_results(results: list):
 
 
 def _split_or_clauses(text: str) -> list[str]:
-    text = normalize_text(text)
+    # "30 point games with 10 assists or 10 rebounds" repeats its first
+    # clause in each alternative before the split.
+    text = canonicalize_adjective_game_lists(normalize_text(text))
     if not contains_boolean_or(text):
         return [text]
 

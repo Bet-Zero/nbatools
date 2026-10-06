@@ -68,3 +68,33 @@ def test_adjective_games_with_rows(query, rows):
 def test_record_with_a_count_is_a_condition(query, expected):
     row = _run(query).result.to_dict()["sections"]["summary"][0]
     assert (row["games"], row["wins"], row["losses"]) == expected
+
+
+def test_or_alternative_keeps_first_condition():
+    # 30+ points and (10+ assists or 10+ rebounds), not (30 and 10 ast) or 10 reb.
+    rows = _run("LeBron 30 point games with 10 assists or 10 rebounds").result.to_dict()
+    finder = rows["sections"]["finder"]
+    assert len(finder) == 4
+    assert all(row["pts"] >= 30 for row in finder)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Counts that are not box-score stats still refuse instead of
+        # returning the unfiltered record.
+        "Lakers record in games with 1 day of rest",
+        "Lakers record in games with 2 overtimes",
+        "Lakers record in games with 6 players in double figures",
+        "Lakers record in games with 2 players scoring 30",
+        "Lakers record with at least 3 days rest",
+        "Lakers record with 23",
+        # A player named after the stat bound cannot be combined yet.
+        "Lakers record in games with 15 threes and LeBron",
+        "Lakers record in games with 120 points with LeBron",
+    ],
+)
+def test_non_stat_counts_still_refuse(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status != "ok"

@@ -785,14 +785,26 @@ def canonicalize_sample_phrases(text: str) -> str:
     )
     text = re.sub(r"\bmeetings?\b", "matchups", text)
     text = canonicalize_margin_phrases(" ".join(text.split()))
+
+    return canonicalize_adjective_game_lists(text)
+
+
+def canonicalize_adjective_game_lists(text: str) -> str:
     # "30 point games with 10 assists" -> "games with 30 points and 10 assists":
     # the list form every condition reader handles. Only before another
     # number, so "30 point games with LeBron" keeps its teammate.
-    return _ADJECTIVE_GAMES_WITH.sub(
-        lambda m: f"games with {m.group(1)}{m.group(2) or ''} {m.group(3)}s and ", text
-    )
+    m = _ADJECTIVE_GAMES_WITH.search(text)
+    if m is None:
+        return text
+    first = f"{m.group(1)}{m.group(2) or ''} {m.group(3)}s"
+    # "30 point games with 10 assists or 10 rebounds" groups the "or" under
+    # the second clause. The condition list reads "or" loosest, so repeat
+    # the first clause in each alternative: (30 and 10 ast) or (30 and 10 reb).
+    rest = _ALTERNATIVE_COUNT.sub(lambda a: f"or {first} and {a.group(1)}", text[m.end() :])
+    return f"{text[: m.start()]}games with {first} and {rest}"
 
 
+_ALTERNATIVE_COUNT = re.compile(r"\bor\s+((?:at\s+least\s+|over\s+|more\s+than\s+|under\s+)?\d)")
 _ADJECTIVE_GAMES_WITH = re.compile(
     r"\b(\d+)(\+)?[- ](point|rebound|assist|three|steal|block|turnover)\s+games?\s+"
     r"(?:with|where\s+(?:he|she|they)\s+(?:had|made|hit|grabbed|dished))\s+"

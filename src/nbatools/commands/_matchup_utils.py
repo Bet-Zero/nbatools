@@ -600,8 +600,22 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     return None, cleaned_text
 
 
+_STAT_COUNT_QUALIFIER = (
+    r"(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+)?"
+)
+_STAT_COUNT_NOUN = (
+    r"(?:made\s+)?(?:points?|pts|rebounds?|rebs?|boards?|assists?|asts?|dimes"
+    r"|threes?|3s|3pm|(?:3|three)[- ]?pointers?|steals?|stls?|blocks?|blks?"
+    r"|turnovers?|tovs?|fouls?|minutes?|mins?|free\s+throws?)"
+)
+_STAT_COUNT_CLAUSE = (
+    rf"{_STAT_COUNT_QUALIFIER}\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+{_STAT_COUNT_NOUN}"
+    r"(?:\s+or\s+(?:more|fewer|less|better))?"
+)
+# "120 points", "15+ threes and 30 assists": every clause is a count of a
+# box-score stat. "1 day of rest", "2 players scoring 30" and "23" are not.
 _STAT_COUNT_PHRASE = re.compile(
-    r"(?:at\s+(?:least|most)\s+|over\s+|under\s+|(?:more|fewer|less)\s+than\s+)?\d"
+    rf"{_STAT_COUNT_CLAUSE}(?:\s*(?:,|and|,\s*and)\s+{_STAT_COUNT_CLAUSE})*"
 )
 
 
@@ -636,8 +650,14 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         phrase = m.group(1).strip()
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
             continue
-        if mode == "with" and _STAT_COUNT_PHRASE.match(phrase):
+        if (
+            mode == "with"
+            and _STAT_COUNT_PHRASE.fullmatch(phrase)
+            and not detect_player(text[m.end() :])
+        ):
             # "record in games with 120 points": a stat bound, not a teammate.
+            # A player named later ("... with 15 threes and LeBron") still
+            # needs the availability reading, which this path cannot combine.
             continue
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase
