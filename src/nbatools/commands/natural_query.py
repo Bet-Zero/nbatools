@@ -1852,7 +1852,7 @@ def _team_season_stat(q: str) -> str | None:
     return _season_shooting_stat(q)
 
 
-_TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record"})
+_TEAM_SEASON_ROUTES = frozenset({"game_finder", "game_summary", "team_record", "record_by_decade"})
 _TEAM_SEASON_KEPT = _PLAYER_SEASON_KEPT - {"player"} | {"team"}
 # "Lakers best season", "Lakers worst record in a single season": the record.
 _TEAM_PLAIN_BEST_SEASON = re.compile(
@@ -1876,6 +1876,7 @@ _TITLE_RELATIVE_YEAR = re.compile(r"\b(this|last|previous)\s+year\b")
 _SHORT_YEAR = re.compile(r"(?<![\w'’])['’](\d{2})(s?)(?:-(\d{2}))?(?![\w%'’])")
 
 
+_THIS_DECADE = re.compile(r"\b(?:(?:in|during|of|from)\s+)?this\s+decade\b")
 # "who won the most games in a season" is most wins; "in a row" is a streak.
 _WON_MOST_GAMES = re.compile(
     r"\b(won|lost)\s+the\s+(most|fewest)\s+games\b"
@@ -1895,6 +1896,10 @@ def _expand_short_year(match: re.Match) -> str:
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
     q = _SHORT_YEAR.sub(_expand_short_year, q)
+    if _THIS_DECADE.search(q):
+        # "this decade": the decade the current season starts in.
+        start = int(default_season_for_context("Regular Season")[:4]) // 10 * 10
+        q = _THIS_DECADE.sub(f"in the {start}s", q)
     if not re.search(r"\bplayers?\b|\bcoach(?:es)?\b", q):
         # "which player won the most games" is not a team record.
         q = _WON_MOST_GAMES.sub(lambda m: f"had the {m.group(2)} {_WON_LOST[m.group(1)]}", q)
@@ -5906,16 +5911,28 @@ def _players_named(q: str, player: str) -> str | list[str]:
     return player
 
 
+_PLAYER_PLAIN_BEST_SEASON = re.compile(
+    r"\b(?:best|worst|greatest|top(?:\s+\d+)?)\s+(?:(?:regular[\s-]season|playoff)\s+)?seasons?\b"
+)
+
+
 def _player_best_seasons(parsed: dict, out: dict) -> dict | None:
     """ "LeBron best scoring season": that player's seasons, best first."""
     route_kwargs = out.get("route_kwargs") or {}
     player = parsed.get("player")
-    stat = _season_shooting_stat(parsed["normalized_query"]) or route_kwargs.get("stat")
+    q = parsed["normalized_query"]
+    stat = _season_shooting_stat(q) or route_kwargs.get("stat")
+    plain = stat is None and _PLAYER_PLAIN_BEST_SEASON.search(q)
+    if plain:
+        # "LeBron best season" names no stat: rank by scoring and say so.
+        stat = "pts"
     if out.get("route") not in _PLAYER_SEASON_ROUTES or not player or not stat:
         return None
     kwargs = _best_season_scope(parsed, out, _PLAYER_SEASON_KEPT)
     if kwargs is None:
         return None
+    if plain:
+        kwargs["notes"].append("default: best season ranked by points per game")
     kwargs.update(stat=stat, player=_players_named(parsed["normalized_query"], player))
     return _rerouted_to_seasons(
         out,
@@ -6057,9 +6074,70 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
+_NAMED_DECADE = re.compile(r"\bthe\s+(?:19|20)?\d0'?s\b")
+_DECADE_BUCKETS = re.compile(r"\b(?:by|per|each|every)\s+decade\b|\bdecades\b")
+_RECORD_WORDS = re.compile(r"\brecords?\b|\bwin(?:ning)?\s*(?:%|pct|percentage)")
+
+
+def _decade_stat_board(parsed: dict, out: dict) -> dict | None:
+    """ "most points in a season in the 2010s": a stat board over that decade.
+
+    The decade record board ranks team records; a stat question landed there
+    and answered wins.
+    """
+    if out.get("route") != "record_by_decade_leaderboard":
+        return None
+    q = parsed["normalized_query"]
+    if not _NAMED_DECADE.search(q) or _DECADE_BUCKETS.search(q):
+        return None
+    if parsed.get("player") or parsed.get("team") or parsed.get("opponent"):
+        return None
+    route_kwargs = out.get("route_kwargs") or {}
+    stat = parsed.get("stat")
+    single = bool(parsed.get("single_season_intent"))
+    record = (
+        stat in (None, "wins", "losses", "win_pct")
+        or _RANKED_WINS_LOSSES.search(q)
+        or _RECORD_WORDS.search(q)
+    )
+    if record and not single:
+        # "best record in the 2010s": the decade record board.
+        return None
+    kwargs = {
+        "season": None,
+        "start_season": route_kwargs["start_season"],
+        "end_season": route_kwargs["end_season"],
+        "season_type": route_kwargs.get("season_type") or "Regular Season",
+        "limit": parsed.get("top_n") or 10,
+    }
+    if record:
+        route = "team_record_leaderboard"
+        kwargs.update(
+            stat=route_kwargs.get("stat") or "win_pct",
+            ascending=bool(route_kwargs.get("ascending")),
+            per_season=True,
+        )
+    else:
+        route = "season_team_leaders" if _SINGLE_SEASON_TEAM.search(q) else "season_leaders"
+        kwargs.update(stat=stat, ascending=bool(_PLAYER_SEASON_LOW.search(q)))
+        if single:
+            kwargs["per_season"] = True
+    rerouted = dict(out)
+    rerouted.update(route=route, intent="leaderboard", route_kwargs=kwargs)
+    for key in ("season", "start_season", "end_season"):
+        rerouted[key] = kwargs[key]
+    rerouted["notes"] = list(out.get("notes") or []) + [
+        "single_season: each season ranked on its own" if single else "decade: totals over the span"
+    ]
+    return rerouted
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     out = _finalize_route_inner(parsed)
+    decade = _decade_stat_board(parsed, out)
+    if decade is not None:
+        return decade
     games = _player_game_list(parsed, out)
     if games is not None:
         return games
