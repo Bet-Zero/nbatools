@@ -411,6 +411,10 @@ def _detect_value_column(df: pd.DataFrame) -> str | None:
     for col in candidates:
         if pd.api.types.is_numeric_dtype(df[col]):
             return col
+    if "games_played" in df.columns:
+        # "most games played", "most playoff wins by a player": the count is
+        # the ranked value.
+        return "games_played"
     return None
 
 
