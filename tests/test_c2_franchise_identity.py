@@ -135,3 +135,80 @@ def test_team_occurrence_count_is_one_row_per_franchise(monkeypatch):
     assert len(rows) == 1
     assert rows[0]["team_abbr"] == "OKC"
     assert rows[0]["games_played"] == 4
+
+
+def test_name_by_latest_franchise_merges_earlier_names():
+    from nbatools.commands._franchise import name_by_latest_franchise
+
+    rows = _rows().assign(
+        season=["2007-08", "2008-09", "2011-12", "2000-01", "2001-02"],
+        game_date=["2008-01-01", "2009-01-01", "2012-01-01", "2001-01-01", "2002-01-01"],
+    )
+    named = name_by_latest_franchise(rows)
+    assert named["team_abbr"].tolist() == ["OKC", "OKC", "NJN", "MEM", "MEM"]
+    assert named["team_name"].tolist()[:2] == ["Oklahoma City Thunder"] * 2
+    # A frame without team ids is left as it is.
+    assert name_by_latest_franchise(rows.drop(columns="team_id")).equals(
+        rows.drop(columns="team_id")
+    )
+
+
+def test_league_occurrence_board_is_one_row_per_franchise(monkeypatch):
+    from nbatools.commands import team_occurrence_leaders
+
+    games = pd.DataFrame(
+        {
+            "game_id": [1, 2, 3, 4],
+            "game_date": ["2008-01-01", "2008-01-03", "2009-01-01", "2009-01-03"],
+            "season": ["2007-08", "2007-08", "2008-09", "2008-09"],
+            "season_type": ["Regular Season"] * 4,
+            "team_abbr": ["SEA", "SEA", "OKC", "OKC"],
+            "team_name": ["Seattle SuperSonics"] * 2 + ["Oklahoma City Thunder"] * 2,
+            "team_id": [OKC] * 4,
+            "opponent_team_abbr": ["BKN"] * 4,
+            "opponent_team_name": ["Brooklyn Nets"] * 4,
+            "opponent_team_id": [BKN] * 4,
+            "is_home": [1, 0, 1, 0],
+            "is_away": [0, 1, 0, 1],
+            "wl": ["W", "L", "W", "W"],
+            "pts": [121, 99, 125, 130],
+        }
+    )
+    monkeypatch.setattr(
+        team_occurrence_leaders, "load_team_games_for_seasons", lambda s, t: games.copy()
+    )
+    result = team_occurrence_leaders.build_result(
+        stat="pts", min_value=120, start_season="2007-08", end_season="2008-09"
+    )
+    rows = result.leaders.to_dict("records")
+    assert [(row["team_abbr"], row["games_played"]) for row in rows] == [("OKC", 4)]
+
+
+def test_decade_board_names_each_decade_as_the_team_was_then(monkeypatch):
+    from nbatools.commands import playoff_history
+
+    games = pd.DataFrame(
+        {
+            "game_id": ["1", "2", "3", "4"],
+            "game_date": ["1999-01-01", "2000-01-01", "2008-01-01", "2009-01-01"],
+            "season": ["1998-99", "1999-00", "2007-08", "2008-09"],
+            "season_type": ["Regular Season"] * 4,
+            "team_abbr": ["SEA", "SEA", "SEA", "OKC"],
+            "team_name": ["Seattle SuperSonics"] * 3 + ["Oklahoma City Thunder"],
+            "team_id": [OKC] * 4,
+            "opponent_team_abbr": ["NJN"] * 4,
+            "opponent_team_name": ["New Jersey Nets"] * 4,
+            "opponent_team_id": [BKN] * 4,
+            "wl": ["W", "W", "L", "W"],
+        }
+    )
+    monkeypatch.setattr(playoff_history, "load_team_games_for_seasons", lambda s, t: games.copy())
+    result = playoff_history.build_record_by_decade_leaderboard_result(
+        start_season="1998-99", end_season="2008-09"
+    )
+    names = {
+        (row["decade"], row["team_name"], row["games_played"])
+        for row in result.leaders.to_dict("records")
+    }
+    assert ("1990s", "Seattle SuperSonics", 2) in names
+    assert ("2000s", "Oklahoma City Thunder", 2) in names

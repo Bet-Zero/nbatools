@@ -98,3 +98,22 @@ def test_thunder_record_without_durant_in_2007_08_is_seattle_games_he_missed():
         int((missed["wl"] == "W").sum()),
         int((missed["wl"] == "L").sum()),
     )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best record from 2000-01 to 2024-25",
+        "which team has the most 120 point games from 2000-01 to 2024-25",
+        "most playoff wins from 2000-01 to 2024-25",
+    ],
+)
+def test_league_boards_show_one_row_per_franchise(query):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", (query, result.result_reason)
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    abbrs = [str(row.get("team_abbr")) for row in rows]
+    for old, new in (("SEA", "OKC"), ("NJN", "BKN"), ("VAN", "MEM"), ("NOH", "NOP")):
+        assert not (old in abbrs and new in abbrs), (query, abbrs)

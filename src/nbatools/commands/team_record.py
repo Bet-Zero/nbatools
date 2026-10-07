@@ -24,7 +24,7 @@ from nbatools.commands._condition_utils import (
     apply_stat_conditions,
     attach_opponent_stats,
 )
-from nbatools.commands._franchise import franchise_caveat
+from nbatools.commands._franchise import franchise_caveat, name_by_latest_franchise
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands._single_season_boards import (
     apply_win_bounds,
@@ -865,6 +865,8 @@ def build_record_leaderboard_result(
     if "wl" in df.columns:
         df["_is_win"] = (df["wl"] == "W").astype(int)
 
+    # One franchise is one row across a relocation or rename.
+    df = name_by_latest_franchise(df)
     agg = df.groupby(["team_id", "team_name", "team_abbr"], as_index=False).agg(
         games_played=("game_id", "nunique"),
         wins=("_is_win", "sum"),
