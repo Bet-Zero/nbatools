@@ -354,6 +354,97 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     return None
 
 
+# "players with 25 points and 10 rebounds", "players with a triple double":
+# every player who had such a game, most often first. A bare "players with 30
+# points" names no game and stays out (a game or a season total).
+_PLAYERS_WITH = re.compile(
+    r"^(?:(?:show|list|give)(?:\s+me)?\s+)?(?:all\s+)?(?:the\s+)?players\s+with\b"
+)
+
+
+# The whole question must read as game conditions plus filters the
+# occurrence board applies; anything else ("per game", "in 5 games", "three
+# 30 point games", "two seasons ago", "in the finals") keeps its old route.
+_GAME_STAT = (
+    r"(?:points?|pts|rebounds?|rebs?|boards|assists?|asts?|steals?|stls?|blocks?|blks?"
+    r"|threes|three[\s-]pointers|3[\s-]pointers|3s|turnovers?|tov)"
+)
+_GAME_ATOM = (
+    rf"(?:(?:\d{{1,3}}\+?(?:\s+or\s+more)?|no|zero)[\s-]+{_GAME_STAT}"
+    r"|(?:triple|double)[\s-]doubles?)"
+)
+_GAME_CONDITIONS = re.compile(
+    rf"(?:an?\s+)?{_GAME_ATOM}(?:\s*(?:,|and|&)?\s*{_GAME_ATOM})*"
+    r"(?:\s+games?)?(?:\s+in\s+(?:a|one|a\s+single)\s+game)?"
+)
+_YEAR = r"(?:19|20)\d{2}(?:-\d{2})?"
+_MONTH = (
+    r"(?:january|february|march|april|may|june|july|august|september|october|november"
+    r"|december)"
+)
+# One filter clause of each kind, at most.
+_GAME_LIST_FILTERS = {
+    "span": (
+        rf"(?:this|last)\s+season|since\s+{_YEAR}|(?:in|during)\s+(?:the\s+)?{_YEAR}"
+        rf"(?:\s+season)?|(?:from|between)\s+{_YEAR}\s+(?:to|and|through)\s+{_YEAR}"
+    ),
+    "season_type": r"(?:in|during)\s+the\s+(?:playoffs|regular\s+season)",
+    "location": r"at\s+home|on\s+the\s+road|away(?:\s+from\s+home)?",
+    "outcome": r"in\s+(?:wins|losses|a\s+win|a\s+loss)|(?:and|in)\s+an?\s+(?:win|loss)",
+    # A named team, conference, division or quality group; no free words.
+    "opponent": r"(?:vs\.?|versus|against)\s+(?:the\s+)?(?:{teams}|"
+    r"(?:east|west|eastern|western)(?:\s+conference)?(?:\s+teams)?|"
+    r"(?:atlantic|central|southeast|northwest|pacific|southwest|midwest)(?:\s+division)?"
+    r"(?:\s+teams)?|"
+    r"(?:winning|losing|good|bad|playoff|non[\s-]playoff|above[\s-]\.500|below[\s-]\.500"
+    r"|over[\s-]\.500|under[\s-]\.500|\.500)\s+teams)",
+    "month": rf"in\s+{_MONTH}",
+}
+_SINGLE_GAME_CEILING = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+
+
+def _game_list_filters() -> dict[str, str]:
+    from nbatools.commands.entity_resolution import TEAM_ALIASES
+
+    teams = "|".join(re.escape(alias) for alias in sorted(TEAM_ALIASES, key=len, reverse=True))
+    return {kind: p.replace("{teams}", teams) for kind, p in _GAME_LIST_FILTERS.items()}
+
+
+def _only_game_list_filters(rest: str) -> bool:
+    filters = _game_list_filters()
+    seen: set[str] = set()
+    rest = rest.strip()
+    while rest:
+        for kind, pattern in filters.items():
+            m = re.match(rf"(?:and\s+)?(?:{pattern})(?:\s+|$)", rest)
+            if m:
+                if kind in seen:
+                    return False
+                seen.add(kind)
+                rest = rest[m.end() :].strip()
+                break
+        else:
+            return False
+    return True
+
+
+def wants_players_with_list(text: str) -> bool:
+    """ "players with 25 points and 10 rebounds": every player with such a game."""
+    prefix = _PLAYERS_WITH.search(text)
+    if not prefix:
+        return False
+    body = text[prefix.end() :].strip(" ?.!")
+    m = _GAME_CONDITIONS.match(body)
+    if not m or not _only_game_list_filters(body[m.end() :]):
+        return False
+    conditions = extract_compound_occurrence_event(text) or [extract_occurrence_event(text) or {}]
+    for cond in conditions:
+        value = cond.get("min_value")
+        if value is not None and value > _SINGLE_GAME_CEILING.get(cond.get("stat"), 100):
+            return False
+    return True
+
+
 def wants_occurrence_leaderboard(text: str) -> bool:
     """Detect if the query is asking for an occurrence leaderboard.
 
@@ -365,6 +456,8 @@ def wants_occurrence_leaderboard(text: str) -> bool:
     event = extract_occurrence_event(text) or extract_compound_occurrence_event(text)
     if event is None:
         return False
+    if wants_players_with_list(text):
+        return True
 
     return bool(
         re.search(
@@ -379,6 +472,13 @@ def wants_occurrence_leaderboard(text: str) -> bool:
 # ---------------------------------------------------------------------------
 # Route helpers — called from _finalize_route() in natural_query.py
 # ---------------------------------------------------------------------------
+
+
+def _player_board_limit(q: str, top_n: int | None) -> int | None:
+    """ "players with ...": every player who did it, unless a top N is asked."""
+    if top_n:
+        return top_n
+    return None if wants_players_with_list(q) else 10
 
 
 def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
@@ -566,7 +666,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "losses_only": losses_only,
             "start_date": start_date,
             "end_date": end_date,
-            "limit": top_n or 10,
+            "limit": _player_board_limit(q, top_n),
         }
 
     # -----------------------------------------------------------------------
@@ -578,7 +678,12 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and not player
         and not player_a
         and not player_b
-        and not re.match(r"games_\d", detect_player_leaderboard_stat(q) or "")
+        and (
+            # "most 30 point games" ranks on the season board; "players with
+            # 30 point games" lists every player who had one.
+            wants_players_with_list(q)
+            or not re.match(r"games_\d", detect_player_leaderboard_stat(q) or "")
+        )
     ):
         occ_season = season
         occ_start = start_season
@@ -628,7 +733,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
                 "losses_only": losses_only,
                 "start_date": start_date,
                 "end_date": end_date,
-                "limit": top_n or 10,
+                "limit": _player_board_limit(q, top_n),
             }
         return "player_occurrence_leaders", {
             "stat": occurrence_event.get("stat"),
@@ -645,7 +750,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "losses_only": losses_only,
             "start_date": start_date,
             "end_date": end_date,
-            "limit": top_n or 10,
+            "limit": _player_board_limit(q, top_n),
         }
 
     return None

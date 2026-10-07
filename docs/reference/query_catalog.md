@@ -480,6 +480,7 @@ Examples:
 - `top scorers this season`
 - `highest ts% among players`
 - `most 30 point games`
+- `players with 25 points and 10 rebounds` / `players with 30 point games` / `players with a triple double` (every player with a qualifying game, most often first, no top-10 cut; a bare `players with 30 points` is not read as games)
 - `best rebounders last 3 seasons`
 - `top scorers since 2020`
 - `best ts% vs Celtics last 3 seasons`
@@ -845,9 +846,6 @@ Compound no-match behavior:
   documented `ts_pct` alias, and no route ranks individual games by it. It does
   not become a 30-point-game count, a points leaderboard, or another efficiency
   metric
-- `players with 25 points and 10 rebounds` refuses this way: both thresholds are
-  read and preserved, and the question states no ranking or aggregation to
-  execute them under
 - `most 40-point games while the player was injured` refuses this way: the
   40-point condition is preserved and injury status is named as unavailable.
   Injury is never inferred from missed games or any other proxy

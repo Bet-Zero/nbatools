@@ -9108,49 +9108,29 @@ cases:
 
   - id: two_threshold_player_condition_unexecutable
     query: "players with 25 points and 10 rebounds"
-    category: unsupported_boundary
+    category: leaderboard
     priority: p0
     acceptance:
       family: count_queries
-      variant: nearby_unsupported
+      variant: canonical
       concept: compound_condition_without_aggregation
       public_surface: true
-      review_required: true
-      review_role: boundary
-      no_broad_fallback: true
-      intent_model: compound_event_boundary
       qualifier_model:
         - points_threshold
         - rebounds_threshold
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
-    expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+      - leaderboard
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: compound_event_request_unexecutable
-      # Both thresholds, whole or not at all.
-      - path: result.metadata.requested_event_conditions.0.stat
-        equals: pts
-      - path: result.metadata.requested_event_conditions.0.min_value
-        equals: 25.0
-      - path: result.metadata.requested_event_conditions.1.stat
-        equals: reb
-      - path: result.metadata.requested_event_conditions.1.min_value
-        equals: 10.0
-      # The base surfaced an unrouted error still carrying `reb`.
+      # Both thresholds in the same game, never one alone.
+      - path: result.sections.leaderboard.0.player_name
+        equals: Nikola Jokić
+      - path: result.sections.leaderboard.0.games_pts_25+_reb_10+
+        equals: 28
       - path: result.metadata.stat
         equals: null
-    review_notes: "Both thresholds are meaningful. The question states no ranking or aggregation, so executing either reading would invent one. Must not apply only points, only rebounds, or become an ordinary leaderboard."
-    manual_review:
-      status: expected_unsupported
-      tags:
-        - compound_event_boundary
-        - no_broad_fallback
-      notes: "Settled owner decision: the truthful refusal is the accepted V1 behavior. The query states two game-level conditions and no operation over the matching games - not 'most games', 'how many games', 'list the games', or any other ranking or aggregation intent. player_occurrence_leaders could count games meeting both conditions, but doing so would add a counting intent the user never stated, so the refusal preserves both thresholds, publishes no execution stat, and returns no sections instead."
-
+    review_notes: "Every player with a 25-point, 10-rebound game this season, most often first, no top-10 cut. It refused (an earlier V1 boundary: no aggregation stated); the 2026-10-02 queue lists it as a desired answer (B1, agent change). Fixture counts are re-derived from raw rows in tests/test_b1_players_with.py; the real-data values here (Jokic 28 of 104 players, R2 run 37582866952) pin the engine's output."
   - id: forty_point_games_injury_condition_unsupported
     query: "most 40-point games while the player was injured"
     category: unsupported_boundary
