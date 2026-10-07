@@ -895,7 +895,9 @@ def _build_count_phrase(
         )
         subject = _team_subject(metadata, games) or "The team"
         margin = _margin_text(outcome) if outcome.get("stat") else ""
-        return f"{subject} have {verb} {count} {times}{margin}{against} {context}."
+        venue = " at home" if outcome.get("home_only") else ""
+        venue = " on the road" if outcome.get("away_only") else venue
+        return f"{subject} have {verb} {count} {times}{margin}{against}{venue} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")

@@ -1006,12 +1006,16 @@ def canonicalize_margin_phrases(text: str) -> str:
         lambda m: f"{_OPPOSITE_OUTCOME[m.group(1)]} by ",
         text,
     )
+    # "were the Lakers beaten by the Celtics (by 20)": a loss, not a win.
+    if re.search(r"\b(?:were|was|got|get|gets|been|be|being)\b", text):
+        text = re.sub(rf"\bbeaten\s+by\s+(?=(?:{bounds})(?:$|\s|[,.?!;]))", "lost by ", text)
+        text = re.sub(r"\bbeaten\s+by\s+(?=(?:the\s+)?[a-z0-9])", "lost to ", text)
     # "beat the Celtics by 20", "lost to Boston by 10 or more": the margin
     # follows the opponent.
     text = re.sub(
         r"\b(beat|beats|beaten|beating|defeat|defeats|defeated|defeating"
         r"|(?:lose|loses|lost|losing)\s+to)\s+"
-        r"((?:the\s+)?[a-z][a-z0-9.'-]*(?:\s+[a-z][a-z0-9.'-]*){0,2}?)\s+by\s+"
+        r"((?:the\s+)?[a-z0-9][a-z0-9.'-]*(?:\s+[a-z][a-z0-9.'-]*){0,2}?)\s+by\s+"
         rf"({bounds})(?=$|\s|[,.?!;])(?!\s*%)(?!\s+(?:made\s+)?{_OPP_STAT_WORD})",
         opponent_by_phrase,
         text,
