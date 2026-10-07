@@ -6969,8 +6969,9 @@ _TOTAL_NUMBER_STAT = re.compile(
     r"postseason)\s+)?(points?|pts|rebounds?|assists?|steals?|blocks?|threes|3s|"
     r"three\s+pointers|3\s+pointers)\b"
 )
+# "in scoring 2016" names a season, so only the verb reads a total.
 _SCORED_NUMBER = re.compile(
-    r"\bscor(?:ed|es?|ing)\s+(?:at\s+least\s+|over\s+|more\s+than\s+)?(\d{3,6})(?!\d)"
+    r"\bscor(?:ed|es?)\s+(?:at\s+least\s+|over\s+|more\s+than\s+)?(\d{3,6})(?!\d)"
 )
 
 

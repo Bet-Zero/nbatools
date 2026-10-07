@@ -116,6 +116,8 @@ def test_playoff_points_number_is_not_the_2000_playoffs():
         "how many players scored 40 points this season",
         # Per-game wording is never a total.
         "players averaging 2000 points",
+        # "in scoring 2016" is a season.
+        "who led the league in scoring 2016",
     ],
 )
 def test_game_sized_numbers_keep_their_routes(query):
