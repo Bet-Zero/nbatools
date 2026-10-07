@@ -239,6 +239,55 @@ describe("ResultRenderer split and streak patterns", () => {
   });
 
 
+  it("lists the counted players under a season-total count", () => {
+    const data = makeResponse({
+      query: "how many players have 1000 points this season",
+      route: "season_leaders",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          query_text: "how many players have 1000 points this season",
+          route: "season_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          count: [{ count: 2 }],
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Luka Doncic",
+              player_id: 1629029,
+              team_abbr: "LAL",
+              games_played: 60,
+              pts_total: 1677,
+              season: "2025-26",
+            },
+            {
+              rank: 2,
+              player_name: "Jayson Tatum",
+              player_id: 1628369,
+              team_abbr: "BOS",
+              games_played: 60,
+              pts_total: 1624,
+              season: "2025-26",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
+    expect(screen.getAllByText("Jayson Tatum").length).toBeGreaterThan(0);
+  });
+
+
   it("renders player streaks through the streak pattern", () => {
     const data = makeResponse({
       query: "Jokic 25-point game streak",

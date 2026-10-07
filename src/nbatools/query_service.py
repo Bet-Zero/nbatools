@@ -1321,6 +1321,78 @@ def _add_player_series_phrase(metadata: dict, row: Any, series: Any, player: str
     )
 
 
+_SEASON_TOTAL_NOUNS = {
+    "pts_total": "points",
+    "reb_total": "rebounds",
+    "ast_total": "assists",
+    "stl_total": "steals",
+    "blk_total": "blocks",
+    "fg3m_total": "threes",
+}
+
+
+def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "17 players have 1,000+ points this season: Luka Dončić (1,677), ..."."""
+    request = next(
+        (
+            note
+            for note in metadata.get("notes") or []
+            if isinstance(note, str) and note.startswith("season_total_list:")
+        ),
+        None,
+    )
+    match = request and re.search(r"([\d.]+)\+ \w+ \((\w+)\)", request)
+    if not match:
+        return
+    if isinstance(result, LeaderboardResult):
+        rows = result.leaders
+    elif isinstance(result, CountResult):
+        rows = result.games
+    else:
+        return
+    column = match.group(2)
+    noun = _SEASON_TOTAL_NOUNS.get(column)
+    if noun is None:
+        return
+    line = f"{float(match.group(1)):,.0f}+ {noun}"
+    # "in a season since 2010": one row per player season.
+    per_season = any(
+        isinstance(note, str) and note.startswith("single_season")
+        for note in metadata.get("notes") or []
+    )
+    start, end = metadata.get("start_season"), metadata.get("end_season")
+    context = _count_context(metadata, player=False)
+    if per_season and start and end:
+        context = f"in a single season from {start} to {end}"
+    elif start and end and not metadata.get("season"):
+        context = f"combined {context}"
+    players = int(rows["player_id"].nunique()) if "player_id" in rows else len(rows)
+    team_name = (getattr(result, "metadata", None) or {}).get("team_name") or (
+        (metadata.get("team_context") or {}).get("team_name")
+    )
+    who = f"{team_name} " if team_name else ""
+    population = re.search(
+        r"\b(rookie|sophomore|guard|forward|center|starter|bench player)s?\b",
+        str(metadata.get("query_text") or "").lower(),
+    )
+    unit = population.group(1) if population else "player"
+    if players == 0:
+        metadata["answer_phrase"] = f"No {who}{unit} has {line} {context}."
+    else:
+        listed = []
+        for _, row in rows.head(5).iterrows():
+            where = f" in {row['season']}" if per_season and "season" in row else ""
+            listed.append(f"{row['player_name']} ({int(row[column]):,}{where})")
+        if len(rows) > 5:
+            more = "seasons" if per_season else ""
+            listed.append(f"{len(rows) - 5} more {more}".strip())
+        joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
+        subject = f"1 {who}{unit} has" if players == 1 else f"{players} {who}{unit}s have"
+        metadata["answer_phrase"] = f"{subject} {line} {context}: {joined}."
+    if metadata.get("query_class") == "count":
+        metadata["count_phrase"] = metadata["answer_phrase"]
+
+
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
     Boston Celtics (8 times) and the New York Knicks (5)."."""
@@ -2226,8 +2298,17 @@ def _apply_count_intent(
     team_name = route_kwargs.get("team")
     entity_count: int | None = None
     missing_entity_reason: str | None = None
+    detail = pd.DataFrame()
 
-    if parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
+    if route_kwargs.get("min_total") is not None:
+        # "how many players scored 2000 points (in a season)": distinct players
+        # at the line, not their seasons and not a team's row.
+        leaders = result.leaders
+        entity_count = (
+            int(leaders["player_id"].nunique()) if "player_id" in leaders else len(leaders)
+        )
+        detail = leaders
+    elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
         entity_count = len(result.leaders)
     elif player_name:
         if "player_name" not in result.leaders.columns:
@@ -2316,12 +2397,14 @@ def _apply_count_intent(
 
     return CountResult(
         count=entity_count,
+        games=detail,
         result_status=result.result_status,
         result_reason=result.result_reason,
         current_through=result.current_through,
         metadata=result.metadata,
         notes=result.notes,
         caveats=result.caveats,
+        detail_section="leaderboard" if not detail.empty else "finder",
     )
 
 
@@ -2366,6 +2449,7 @@ def _finalize_natural_query_result(
     _add_appearances_answer_metadata(metadata, result)
     _add_series_comebacks_answer_metadata(metadata, result)
     _add_opponent_record_list_answer_metadata(metadata, result)
+    _add_season_total_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

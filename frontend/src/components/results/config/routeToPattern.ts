@@ -71,6 +71,10 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     // "how many 10 game winning streaks": the counted rows are streaks.
     return [{ type: "streak", sectionKey: "streak" }];
   }
+  if (isCountResult(data) && Array.isArray(data.result?.sections?.leaderboard)) {
+    // "how many players scored 2000 points": the counted rows are players.
+    return [{ type: "leaderboard", sectionKey: "leaderboard" }];
+  }
   if (isCountResult(data)) {
     return [
       {

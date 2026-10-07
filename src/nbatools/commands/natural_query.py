@@ -6927,6 +6927,151 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
+# The most anyone has had in one NBA game. "players with 2000 points" asks for a
+# season total: no game ever reached the number.
+_SINGLE_GAME_RECORD = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+# Filters a season-total threshold list cannot apply; any of them keeps the
+# question on its own route.
+_SEASON_TOTAL_STOPS = (
+    "player",
+    "player_a",
+    "player_b",
+    "team_a",
+    "team_b",
+    "max_value",
+    "last_n",
+    "with_player",
+    "without_player",
+    "unresolved_without_player",
+    "clutch",
+    "quarter",
+    "half",
+    "back_to_back",
+    "rest_days",
+    "one_possession",
+    "nationally_televised",
+    "opponent_quality",
+    "opponent_conference",
+    "opponent_division",
+    "opponent_player",
+    "occurrence_event",
+    "series_situation",
+    "playoff_round_filter",
+    "team_bench_scoring_boundary",
+    "compound_occurrence_conditions",
+)
+
+
+# "20000 career points", "1000 total rebounds", "scored 2000": a number the
+# threshold reader leaves when a word sits between it and the stat.
+_TOTAL_NUMBER_STAT = re.compile(
+    r"\b(\d{3,6})(?!\d)\s+(?:(?:career|total|season|regular[-\s]season|playoff|"
+    r"postseason)\s+)?(points?|pts|rebounds?|assists?|steals?|blocks?|threes|3s|"
+    r"three\s+pointers|3\s+pointers)\b"
+)
+_SCORED_NUMBER = re.compile(
+    r"\bscor(?:ed|es?|ing)\s+(?:at\s+least\s+|over\s+|more\s+than\s+)?(\d{3,6})(?!\d)"
+)
+
+
+def _season_total_wording(q: str, stat: str | None) -> tuple[str | None, float | None]:
+    """The stat and number of a total the threshold reader did not read."""
+    if match := _TOTAL_NUMBER_STAT.search(q):
+        return detect_stat(match.group(2)) or stat, float(match.group(1))
+    if stat in (None, "pts") and (match := _SCORED_NUMBER.search(q)):
+        return "pts", float(match.group(1))
+    return stat, None
+
+
+def _season_total_threshold_board(parsed: dict) -> dict | None:
+    """ "how many players scored 2000 points", "players with 500 rebounds":
+    every player whose season total reaches the number.
+
+    No player has had that many in a game, so the number is a season total
+    (or a total over a named span), never a per-game threshold.
+    """
+    q = parsed["normalized_query"]
+    stat, value = parsed.get("stat"), parsed.get("min_value")
+    if value is None:
+        stat, value = _season_total_wording(q, stat)
+    record = _SINGLE_GAME_RECORD.get(stat or "")
+    if record is None or value is None or value <= record:
+        return None
+    if len(parsed.get("threshold_conditions") or []) > 1:
+        return None
+    if any(parsed.get(key) not in (None, False, "", [], {}) for key in _SEASON_TOTAL_STOPS):
+        return None
+    unresolved = parsed.get("unresolved_with_player")
+    if unresolved and not re.match(r"\d", str(unresolved)):
+        # "players with 1000 total rebounds" is the threshold, not a teammate.
+        return None
+    if not (_PLAYER_SUBJECT.search(q) or re.search(r"\bwho\b", q)) or re.search(
+        r"\bteams?\b|\bfranchises?\b", q
+    ):
+        return None
+    if re.search(r"\b(?:per\s+game|a\s+game|average|averag(?:ed|ing))\b", q):
+        # "players averaging 2000 points" is not a total.
+        return None
+    season_type = parsed.get("season_type") or "Regular Season"
+    from nbatools.commands._seasons import int_to_season
+
+    notes = list(parsed.get("notes") or [])
+    season = parsed.get("season")
+    year = int(value)
+    if season and season == int_to_season(year - 1) and len(re.findall(rf"\b{year}\b", q)) == 1:
+        # "players with 2000 playoff points": the number was read as the 2000
+        # playoffs; it is the total, so the latest season answers.
+        from nbatools.commands._seasons import default_end_season
+
+        season = default_end_season(season_type)
+        notes.append(f"no season specified: defaulted to {season}")
+    kwargs = {
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": season_type,
+        "stat": f"{stat}_total",
+        "limit": 10,
+        "min_games": 1,
+        "ascending": False,
+        "min_total": value,
+        "team": parsed.get("team"),
+        "opponent": parsed.get("opponent"),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "home_only": bool(parsed.get("home_only")),
+        "away_only": bool(parsed.get("away_only")),
+        "wins_only": bool(parsed.get("wins_only")),
+        "losses_only": bool(parsed.get("losses_only")),
+        "rookies_only": bool(_ROOKIE_SUBJECT.search(q)),
+        "role": detect_role(q),
+    }
+    position = _POSITION_SUBJECT.search(q)
+    if position:
+        kwargs["position"] = re.sub(r"\s+", " ", position.group(1))
+    if parsed.get("single_season_intent") and parsed.get("season_defaulted"):
+        # "players with 2000 points in a season": every season served.
+        from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
+
+        kwargs["season"] = None
+        kwargs["start_season"], kwargs["end_season"] = resolve_career(season_type)
+        notes = [n for n in notes if not n.startswith("no season specified")]
+        notes.append(f"default: every season since {EARLIEST_SEASON}")
+    if parsed.get("single_season_intent") and kwargs["start_season"]:
+        # "2000 points in a season since 2010": each player season on its own.
+        kwargs["per_season"] = True
+        notes.append("single_season: each player season ranked on its own")
+    label = f"{value:g}+ {stat} ({kwargs['stat']})"
+    notes.append(f"season_total_list: players with {label}")
+    out = dict(parsed)
+    out.update(route="season_leaders", intent="leaderboard", route_kwargs=kwargs, notes=notes)
+    for key in ("season", "start_season", "end_season"):
+        out[key] = kwargs[key]
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 # A decade ranked by something other than its record.
 _DECADE_STAT_CUE = re.compile(
     r"\b(?:scor\w*|offens\w*|defens\w*|differential|rating|points?|pointers?|threes?|"
@@ -6959,6 +7104,9 @@ def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
 
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
+    totals = _season_total_threshold_board(parsed)
+    if totals is not None:
+        return totals
     try:
         out = _finalize_route_inner(parsed)
     except ValueError:

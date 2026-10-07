@@ -33,12 +33,18 @@ def best_single_seasons(
     seasons = resolve_seasons(None, kwargs["start_season"], kwargs["end_season"])
     frames: list[pd.DataFrame] = []
     caveats: list[str] = []
+    empty: pd.DataFrame | None = None
     for one in seasons:
         result = build(**{**kwargs, "season": one, "start_season": None, "end_season": None})
+        if isinstance(result, LeaderboardResult) and result.leaders.empty:
+            empty = result.leaders
         if not isinstance(result, LeaderboardResult) or result.leaders.empty:
             continue
         frames.append(result.leaders)
         caveats.extend(c for c in result.caveats if c not in caveats)
+    if not frames and empty is not None and kwargs.get("min_total") is not None:
+        # "players with 300 threes in a season": nobody reached it, a valid zero.
+        frames.append(empty)
     if not frames:
         return NoResult(
             query_class="leaderboard",
@@ -55,9 +61,11 @@ def best_single_seasons(
     ascending = kwargs["ascending"]
     by = list(dict.fromkeys([target_col, "games_played", name_col]))
     order = [ascending, True] if target_col == "games_played" else [ascending, False, True]
-    combined = (
-        combined.sort_values(by=by, ascending=order).head(kwargs["limit"]).reset_index(drop=True)
-    )
+    combined = combined.sort_values(by=by, ascending=order)
+    if kwargs.get("min_total") is None:
+        # A threshold list keeps every season at the line.
+        combined = combined.head(kwargs["limit"])
+    combined = combined.reset_index(drop=True)
     combined.insert(0, "rank", range(1, len(combined) + 1))
     caveats.insert(0, f"single seasons ranked across {seasons[0]} to {seasons[-1]}")
     return LeaderboardResult(
