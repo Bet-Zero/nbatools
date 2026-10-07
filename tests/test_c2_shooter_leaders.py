@@ -72,6 +72,10 @@ def test_bare_best_shooters_is_not_guessed():
         "Lakers best three point percentage season",
         "Lakers best fg% seasons",
         "Lakers best 3pt% season since 2023",
+        "Lakers highest fg% for a season",
+        "Lakers top 3pt% of any season",
+        "Lakers best 3 point percentage in a season",
+        "Lakers best 3 point percentage in a single season",
     ],
 )
 def test_team_seasons_stay_team_season_boards(query):

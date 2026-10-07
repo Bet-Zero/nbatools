@@ -245,7 +245,8 @@ def detect_team_leader_stat(text: str) -> str | None:
     ) and not re.search(
         # Game lists, team seasons ("Lakers best 3P% season") and player groups
         # the team board cannot apply ("bench", "starters", "rookies").
-        r"\bgames?\b|\bnights?\b|\bstretch|(?:%|percentage|pct|shooting)\s+seasons?\b|\bbench\b"
+        r"\bgames?\b|\bnights?\b|\bstretch|(?:%|percentage|pct|shooting)\s+seasons?\b"
+        r"|\b(?:in|for|of|during)\s+(?:a\s+|any\s+|one\s+)?(?:single\s+)?season\b|\bbench\b"
         r"|\bstart(?:ers?|ing)\b|\breserves?\b|\brookies?\b|\bsophomores?\b",
         text,
     ):
