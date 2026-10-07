@@ -205,15 +205,19 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
 
 # "lowest scoring games", "fewest turnovers": rank from the bottom. The low
 # word must sit on the ranked stat; "vs teams with the fewest wins" or "at
-# least" says nothing about the order.
-_RANKED_STAT = rf"[\s-]+(?:scoring|shooting|efficient|plus[\s-]?minus|{STAT_PATTERN})\b"
+# least" says nothing about the order, and "fewest points allowed" ranks the
+# opponent's score, not the team's.
+_RANKED_STAT = (
+    rf"[\s-]+(?:scoring|shooting|efficient|plus[\s-]?minus|{STAT_PATTERN})\b"
+    r"(?![\s-]+(?:allowed|given))"
+)
 _ASCENDING_RANK = re.compile(rf"\b(?:lowest|fewest|(?<!\bat )least){_RANKED_STAT}")
 _DESCENDING_RANK = re.compile(rf"\b(?:highest|most|top|best|biggest|largest){_RANKED_STAT}")
 
 
 def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -> None:
-    """A player game list ranked by a stat runs lowest first when asked."""
-    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+    """A player or team game list ranked by a stat runs lowest first when asked."""
+    if route not in ("player_game_finder", "game_finder") or route_kwargs.get("sort_by") != "stat":
         return
     if _ASCENDING_RANK.search(text) and not _DESCENDING_RANK.search(text):
         route_kwargs["ascending"] = True

@@ -784,9 +784,35 @@ def canonicalize_sample_phrases(text: str) -> str:
         text,
     )
     text = re.sub(r"\bmeetings?\b", "matchups", text)
+    text = canonicalize_bound_phrases(text)
     text = canonicalize_margin_phrases(" ".join(text.split()))
 
     return canonicalize_adjective_game_lists(text)
+
+
+_TRAILING_CEILING = re.compile(
+    rf"\b(\d+(?:\.\d+)?)\s+({STAT_PATTERN}|minutes?|mins?)\s+"
+    r"(?:at\s+most|max(?:imum)?|or\s+(?:under|below|lower))\b"
+)
+
+
+def canonicalize_bound_phrases(text: str) -> str:
+    """Rewrite bound wording the readers miss into the form they read.
+
+    "10 assists at most" / "10 assists max" / "30 minutes or under" read as
+    floors or refused; "no-more-than" and "never more than" read as floors;
+    "when held to 100" was a 100-point floor; "vs above .500 teams" was
+    ignored and answered with every game.
+    """
+    text = _TRAILING_CEILING.sub(r"\1 \2 or fewer", text)
+    text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
+    text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
+    text = re.sub(
+        rf"\bheld\s+to\s+(\d+)(?:\s+points?)?\b(?!\s+or\b|\s+{STAT_PATTERN})",
+        r"held to \1 or fewer points",
+        text,
+    )
+    return re.sub(r"\b(over|above|under|below)\s+\.500\s+(teams?)\b", r"\2 \1 .500", text)
 
 
 def canonicalize_adjective_game_lists(text: str) -> str:

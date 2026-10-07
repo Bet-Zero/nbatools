@@ -39,8 +39,11 @@ def normalize_text(text: str) -> str:
     return collapsed.rstrip("?!.,;:")
 
 
+# "or fewer" / "30 minutes or under" are bounds, not a boolean "or"; "or
+# under 5 turnovers" still is one.
 BOOLEAN_OR_PATTERN = re.compile(
-    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than))", flags=re.IGNORECASE
+    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than)|(?:under|below|lower)\b(?!\s+(?:than|\d|\.\d)))",
+    flags=re.IGNORECASE,
 )
 
 
