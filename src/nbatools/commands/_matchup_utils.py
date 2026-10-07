@@ -648,12 +648,27 @@ def names_other_player_availability(
         other = detect_player(subject)
         if other is None and set(subject.split()) <= own_words:
             continue
-        if other is not None and other.upper() in applied:
+        if other is not None and other.upper() in applied and _lone_absence(text, m, subject):
             # "when LeBron didn't play": already read as with/without_player.
             continue
         if other is None or player is None or other.upper() != player.upper():
             return True
     return False
+
+
+def _lone_absence(text: str, m: re.Match, subject: str) -> bool:
+    """True when clause ``m`` names only its one player: not "X or Y sits",
+    "X and Y sit", "X sits and Y too" or "X sits and X scores 30"."""
+    if text[m.start() :].split(maxsplit=1)[0] == "and":
+        return False
+    if re.search(r"\b(?:or|both|and|nor)\b|[,&/]", subject):
+        return False
+    if re.match(r"\s*(?:,\s*)?(?:too|as\s+well|either|also)\b", text[m.end() :]):
+        return False
+    if re.search(r"\b(?:too|as\s+well(?:\s+as)?|either)\b", text[m.end() :]):
+        return False
+    last = subject.split()[-1]
+    return len(re.findall(rf"\b{re.escape(last)}\b", text)) == 1
 
 
 _NON_PLAYER_SUBJECTS = {

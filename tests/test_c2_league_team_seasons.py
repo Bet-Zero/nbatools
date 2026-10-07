@@ -229,3 +229,24 @@ def test_the_wins_number_is_not_the_row_count():
     kwargs = parse_query("best 50 win teams")["route_kwargs"]
     assert (kwargs["limit"], kwargs["min_wins"]) == (10, 50)
     assert parse_query("top 5 50 win teams")["route_kwargs"]["limit"] == 5
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "maxey when embiid and george sit",
+        "anthony davis when lebron and reaves both sit",
+        "anthony davis when both lebron and reaves sit",
+        "maxey when embiid or george sits",
+        "maxey when embiid or george didn't play",
+        "anthony davis when lebron or reaves sits",
+        "anthony davis when lebron or luka is out",
+        "anthony davis when lebron sits and reaves too",
+        "anthony davis when lebron sits and reaves does too",
+        "anthony davis when lebron sits as well as reaves",
+        "anthony davis when lebron sits and lebron scores 30",
+    ],
+)
+def test_two_absences_never_answer_with_one(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert "multi_player_availability" in kwargs["unsupported_filters"]
