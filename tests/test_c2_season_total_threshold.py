@@ -181,3 +181,22 @@ def test_strict_floor_and_team_in_a_season_headlines():
         "how many Lakers players have 1000 points in a season since 2024"
     ).metadata["answer_phrase"]
     assert phrase.startswith("3 Los Angeles Lakers players have")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "players with 1000 or more points",
+        "players with 1000 points or more",
+        "every player with 1500 points",
+        "list every player with 1500 points this season",
+    ],
+)
+def test_plain_threshold_wording_is_a_total_list(query):
+    assert parse_query(query)["route_kwargs"].get("min_total") in (1000.0, 1500.0)
+
+
+def test_a_total_in_several_seasons_refuses_rather_than_count_games():
+    result = execute_natural_query("how many players have scored 1500 points in multiple seasons")
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"

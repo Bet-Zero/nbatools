@@ -6939,8 +6939,18 @@ _SEASON_TOTAL_FLOOR = {"pts": 150, "reb": 100, "ast": 50, "stl": 25, "blk": 25, 
 # game totals ("games with 250 total points") or a second condition ("or").
 _SEASON_TOTAL_REFUSES = re.compile(
     r"\b(?:per\s+game|a\s+game|one\s+game|single[-\s]game|in\s+a\s+night|last\s+night|"
-    r"tonight|yesterday|average|averag(?:ed|ing)|each|both|every|multiple|several|and|or|"
+    r"tonight|yesterday|average|averag(?:ed|ing)|and|or|"
     r"\d+\s+games?|all[-\s]?star|break|games?\s+with)\b"
+)
+# "1500 points in each of the last 2 seasons", "in both", "in multiple
+# seasons": a total repeated across seasons, which the list does not count.
+_SEASON_TOTAL_REPEAT = re.compile(
+    r"\b(?:each|both|multiple|several|every\s+season|\d+\s+(?:different\s+)?seasons|"
+    r"(?:two|three|four|five)\s+seasons|\d+\s+times)\b"
+)
+# Wording that is part of a plain threshold list, not a second condition.
+_SEASON_TOTAL_PLAIN = re.compile(
+    r"\bor\s+(?:more|better|higher|above|greater|over)\b|\bevery\s+(?:player|one)\b"
 )
 # Filters a season-total threshold list cannot apply; any of them keeps the
 # question on its own route.
@@ -7014,7 +7024,19 @@ def _season_total_threshold_board(parsed: dict) -> dict | None:
     floor = _SEASON_TOTAL_FLOOR.get(stat or "")
     if floor is None or value is None or value < floor:
         return None
-    if _SEASON_TOTAL_REFUSES.search(q):
+    plain = _SEASON_TOTAL_PLAIN.sub(" ", q)
+    if _SEASON_TOTAL_REPEAT.search(plain) and _PLAYER_SUBJECT.search(q):
+        # Refuse rather than fall back to a game count that reads the total
+        # as one game ("0 players have had a game with 1500+ points").
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["season_total_repeat"]
+        refused["notes"] = [
+            "unsupported_boundary: a total reached in several seasons is not counted "
+            'yet; ask for one season or a span ("players with 1500 points in a season '
+            'since 2020")'
+        ]
+        return refused
+    if _SEASON_TOTAL_REFUSES.search(plain):
         # The list would drop it and answer a different question.
         return None
     if len(parsed.get("threshold_conditions") or []) > 1:
