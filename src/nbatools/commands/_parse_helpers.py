@@ -486,12 +486,49 @@ _BARE_YEAR = re.compile(
     # "Lakers record 2024", "LeBron stats 2016": a year closing the question.
     rf"|(?<![\d/-])\b({_YEAR})\s*[?.!]?\s*$"
 )
-# "how many players scored 2000", "players with over 2000": a closing number
-# that a stat word owns is a value, not a year.
+# "how many players scored 2000", "top scorers min 2000", "record when allowing
+# 2000", "LeBron game 2000": a closing number a value word owns is not a year.
 _TRAILING_YEAR_IS_A_VALUE = re.compile(
     r"\b(?:scored|scores?|scoring|had|has|have|with|over|under|least|than|above|below|"
-    r"top|reach(?:ed|es)?|surpass(?:ed|es)?|pass(?:ed|es)?|exceed(?:ed|s)?)\s*$"
+    r"top|reach(?:ed|es)?|surpass(?:ed|es)?|pass(?:ed|es)?|exceed(?:ed|s)?|"
+    r"allow(?:s|ed|ing)?|giv(?:e|es|ing)\s+up|gave\s+up|held\s+to|game|last|next|total)\s*$"
+    r"|\bmin(?:imum)?(?:\s+[a-z%]+)?\s*$"
 )
+# "pre 2016", "up to 2024", "LeBron 2013 vs 2016": the closing year is one end
+# of a range or a comparison, not the season.
+_TRAILING_YEAR_ANCHOR = re.compile(
+    r"\b(?:pre|post|up\s+to|as\s+of|ending|beginning|to|vs\.?|versus|compared\s+to|"
+    r"and|or)\s*$"
+)
+# Other time wording already names the time ("this season 2016", "career
+# 2016", "since 2010 2016"): a closing year beside it is not read.
+_TRAILING_YEAR_OTHER_TIME = re.compile(
+    r"\b(?:this|current|last|past|previous|next)\s+(?:\d+\s+|two\s+|three\s+|four\s+|"
+    r"five\s+|ten\s+)?(?:seasons?|years?|campaign)\b"
+    r"|\bcareer\b|\ball[-\s]?time\b|\bever\b|\bsince\b|\bfrom\b|\bbetween\b"
+)
+
+
+def _trailing_year_owned_elsewhere(text: str, match: re.Match) -> bool:
+    """True when a closing year is a value, a range end, or beside other time."""
+    before = text[: match.start()]
+    if _TRAILING_YEAR_IS_A_VALUE.search(before) or _TRAILING_YEAR_ANCHOR.search(before):
+        return True
+    if _TRAILING_YEAR_OTHER_TIME.search(text):
+        return True
+    year = int(match.group(3))
+    if {int(y) for y in re.findall(rf"(?<!\d)({_YEAR})(?!\d)", text)} - {year}:
+        # "Lakers record 2010 2016", "Warriors 2017 vs Cavs 2016".
+        return True
+    from datetime import date
+
+    # "Lakers record 2099": no NBA season ended then.
+    return not 1947 <= year <= date.today().year + 1
+
+
+# A year closing the question, as read by ``extract_bare_year_season``.
+TRAILING_YEAR = re.compile(rf"(?<![\d/-])\b({_YEAR})\s*[?.!]?\s*$")
+
 # "since the 2019 season", "before 2025": a range word owns the year.
 _BARE_YEAR_RANGE_WORD = re.compile(
     r"\b(?:since|after|before|until|till|through|thru|starting|from|by|prior\s+to)"
@@ -525,7 +562,7 @@ def extract_bare_year_season(text: str) -> tuple[int, str] | None:
         text[: match.start()]
     ):
         return None
-    if match.group(3) and _TRAILING_YEAR_IS_A_VALUE.search(text[: match.start()]):
+    if match.group(3) and _trailing_year_owned_elsewhere(text, match):
         return None
     from nbatools.commands._seasons import int_to_season
 

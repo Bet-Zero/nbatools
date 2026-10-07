@@ -162,3 +162,48 @@ def test_trailing_year_answers_a_leaderboard():
     parsed = parse_query("top scorers 2024")
     assert parsed["route"] == "season_leaders"
     assert not parsed["route_kwargs"].get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A value word owns the number.
+        "top scorers min 2000",
+        "Lakers record when allowing 2000",
+        "Lakers record when giving up 2000",
+        "scoring leaders min minutes 2000",
+        "LeBron game 2000",
+        # A second year, a range end or a comparison.
+        "Lakers record 2010 2016",
+        "Lakers record 2016 compared to 2024",
+        "Warriors 2017 vs Cavs 2016",
+        "LeBron pre 2016",
+        "LeBron up to 2016",
+        "Lakers record to 2024",
+        # Other time wording already names the time.
+        "Lakers record this season 2016",
+        "top scorers last 3 seasons 2016",
+        "most points career 2016",
+        "top scorers since 2010 2016",
+        # No NBA season ended then.
+        "Lakers record 2099",
+        "Lakers record 1900",
+    ],
+)
+def test_closing_years_owned_elsewhere_are_not_one_season(query):
+    assert not any("as the" in note for note in _notes(query))
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "who led the league in scoring 2016",
+        "top scorers with 2000",
+        "top scorers min 2000",
+        "most points this season 2016",
+    ],
+)
+def test_leaderboard_refuses_a_closing_year_the_parser_set_aside(query):
+    # The board must not answer the current season for a year it never read.
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("unsupported_filters") == ["leaderboard_request_unclear"]
