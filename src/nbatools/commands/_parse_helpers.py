@@ -1,6 +1,10 @@
 import re
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
+from nbatools.commands._constants import (
+    STAT_ALIASES,
+    STAT_PATTERN,
+    canonicalize_trailing_ceilings,
+)
 from nbatools.commands._glossary import FUZZY_LAST_N_TERMS, OPPONENT_QUALITY_TERMS
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
@@ -790,9 +794,11 @@ def canonicalize_sample_phrases(text: str) -> str:
     return canonicalize_adjective_game_lists(text)
 
 
-_TRAILING_CEILING = re.compile(
-    rf"\b(\d+(?:\.\d+)?)\s+({STAT_PATTERN}|minutes?|mins?)\s+"
-    r"(?:at\s+most|max(?:imum)?|or\s+(?:under|below|lower))\b"
+# "when held to 100": the subject's own score. Not "opponents were held to
+# 100" or "held to 40% shooting".
+_HELD_TO = re.compile(
+    r"\b((?:when|if|while|games?)\s+(?:(?:they|we|he)\s+)?(?:(?:were|are|was|is|get|gets|got)\s+)?)"
+    rf"held\s+to\s+(\d+)(?:\s+points?)?\b(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
 )
 
 
@@ -804,14 +810,10 @@ def canonicalize_bound_phrases(text: str) -> str:
     "when held to 100" was a 100-point floor; "vs above .500 teams" was
     ignored and answered with every game.
     """
-    text = _TRAILING_CEILING.sub(r"\1 \2 or fewer", text)
+    text = canonicalize_trailing_ceilings(text)
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
-    text = re.sub(
-        rf"\bheld\s+to\s+(\d+)(?:\s+points?)?\b(?!\s+or\b|\s+{STAT_PATTERN})",
-        r"held to \1 or fewer points",
-        text,
-    )
+    text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
     return re.sub(r"\b(over|above|under|below)\s+\.500\s+(teams?)\b", r"\2 \1 .500", text)
 
 

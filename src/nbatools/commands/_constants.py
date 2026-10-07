@@ -39,16 +39,13 @@ def normalize_text(text: str) -> str:
     return collapsed.rstrip("?!.,;:")
 
 
-# "or fewer" / "30 minutes or under" are bounds, not a boolean "or"; "or
-# under 5 turnovers" still is one.
 BOOLEAN_OR_PATTERN = re.compile(
-    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than)|(?:under|below|lower)\b(?!\s+(?:than|\d|\.\d)))",
-    flags=re.IGNORECASE,
+    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than))", flags=re.IGNORECASE
 )
 
 
 def contains_boolean_or(text: str) -> bool:
-    return bool(BOOLEAN_OR_PATTERN.search(normalize_text(text)))
+    return bool(BOOLEAN_OR_PATTERN.search(canonicalize_trailing_ceilings(normalize_text(text))))
 
 
 # ---------------------------------------------------------------------------
@@ -252,6 +249,24 @@ def _build_stat_pattern(aliases: dict[str, str]) -> str:
 
 
 STAT_PATTERN = _build_stat_pattern(STAT_ALIASES)
+
+# "10 assists at most", "30 minutes or under", "score 100 or lower": an
+# inclusive ceiling, rewritten to the "or fewer" form the readers handle. A
+# number or "than" after "or under" keeps it a boolean "or" ("30 points or
+# under 5 turnovers"), and ".500 or below" is left alone.
+_TRAILING_STAT_CEILING = re.compile(
+    rf"(?<![.\d])\b(\d+(?:\.\d+)?)\s+({STAT_PATTERN}|minutes?|mins?)\s+"
+    r"(?:at\s+most|max(?:imum)?|or\s+(?:under|below|lower))\b(?!\s+(?:than|\d|\.\d))"
+)
+_TRAILING_BARE_CEILING = re.compile(
+    r"(?<![.\d])\b(\d+)\s+or\s+(?:under|below|lower)\b(?!\s+(?:than|\d|\.\d))"
+)
+
+
+def canonicalize_trailing_ceilings(text: str) -> str:
+    text = _TRAILING_STAT_CEILING.sub(r"\1 \2 or fewer", text)
+    return _TRAILING_BARE_CEILING.sub(r"\1 or fewer", text)
+
 
 # ---------------------------------------------------------------------------
 # Stat availability sets

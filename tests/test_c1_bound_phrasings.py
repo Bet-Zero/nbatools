@@ -103,3 +103,46 @@ def test_or_under_before_a_number_is_still_boolean():
 
     assert contains_boolean_or("LeBron games with 30 points or under 5 turnovers")
     assert not contains_boolean_or("LeBron games with 30 minutes or under")
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # A bare number before "or under / lower / below" is a ceiling too.
+        ("Lakers record when they score 100 or under", (6, 8)),
+        ("Lakers record when they score 100 or lower", (6, 8)),
+        ("Lakers record when scoring 100 or below", (6, 8)),
+        ("Lakers record when they allow 100 or under", (41, 2)),
+        ("Lakers record when opponents score 100 or under", (41, 2)),
+        ("LeBron James record when he scores 20 or under", (12, 6)),
+    ],
+)
+def test_bare_number_ceiling(query, record):
+    assert _record(query) == record
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # ".500 or below" includes .500, which no reader handles yet.
+        "Lakers record against teams at .500 or below",
+        "Lakers record vs teams .500 or below",
+    ],
+)
+def test_500_or_below_still_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+def test_held_to_reads_only_the_subjects_points():
+    from nbatools.commands._parse_helpers import canonicalize_bound_phrases
+
+    assert "or fewer" in canonicalize_bound_phrases("lakers record when held to 100")
+    for text in (
+        "lakers record when held to 40% shooting",
+        "lakers games when held to 40 percent shooting",
+        "lakers record when opponents were held to 100",
+        "lakers record when the celtics were held to 100",
+    ):
+        assert canonicalize_bound_phrases(text) == text
