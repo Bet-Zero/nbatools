@@ -1083,21 +1083,31 @@ def canonicalize_margin_phrases(text: str) -> str:
     # more", "games beaten by 10 by the Celtics") the verb form keeps it.
     opp = r"(?P<opp>(?:the\s+)?[a-z0-9][a-z0-9.'-]*(?:\s+[a-z][a-z0-9.'-]*){0,2}?)"
     margin_after = rf"\s+by\s+(?=(?:{bounds})(?:$|\s|[,.?!;]))"
+
+    def named(team: str) -> str:
+        # "76ers" resolves after "the" only.
+        return f"the {team}" if team[0].isdigit() else team
+
     text = re.sub(
         rf"\b(?:losses|loss|defeats|defeat)\s+(?:to|against|at\s+the\s+hands\s+of)\s+{opp}"
         + margin_after,
-        lambda m: f"lost to {m.group('opp')} by ",
+        lambda m: f"lost to {named(m.group('opp'))} by ",
         text,
     )
     text = re.sub(
         rf"\b(?:wins|win|victories|victory)\s+(?:over|against)\s+{opp}" + margin_after,
-        lambda m: f"beat {m.group('opp')} by ",
+        lambda m: f"beat {named(m.group('opp'))} by ",
+        text,
+    )
+    text = re.sub(
+        rf"\b(?P<games>games?)\s+beaten\s+by\s+{opp}" + margin_after,
+        lambda m: f"{m.group('games')} lost to {named(m.group('opp'))} by ",
         text,
     )
     text = re.sub(
         rf"\b(?P<games>games?)\s+beaten\s+by\s+(?P<margin>(?:{bounds}))\s+by\s+{opp}"
         r"(?=$|\s|[,.?!;])",
-        lambda m: f"{m.group('games')} lost to {m.group('opp')} by {m.group('margin')}",
+        lambda m: f"{m.group('games')} lost to {named(m.group('opp'))} by {m.group('margin')}",
         text,
     )
     text = re.sub(

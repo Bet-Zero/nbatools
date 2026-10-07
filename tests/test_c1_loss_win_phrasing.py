@@ -123,6 +123,8 @@ def _against_by(team: str, opponent: str, wl: str, floor: int) -> int:
         ("Lakers wins over the Celtics by 10 or more", "W", 10),
         ("Lakers games beaten by 10 by the Celtics", "L", 10),
         ("Lakers games beaten by double digits by the Celtics", "L", 10),
+        ("Lakers games beaten by the Celtics by 10", "L", 10),
+        ("Lakers games beaten by Boston by 10 or more", "L", 10),
     ],
 )
 def test_a_margin_beside_the_opponent_is_kept(query, wl, floor):
@@ -138,6 +140,8 @@ def test_a_margin_beside_the_opponent_is_kept(query, wl, floor):
         ("Lakers games beaten by 76ers", "losses_only"),
         ("Lakers wins over 76ers", "wins_only"),
         ("Lakers victory over 76ers", "wins_only"),
+        ("Lakers wins over 76ers by 10", "wins_only"),
+        ("Lakers games beaten by 76ers by 10", "losses_only"),
     ],
 )
 def test_76ers_is_a_team_not_a_number(query, outcome):
