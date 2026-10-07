@@ -1082,10 +1082,17 @@ def canonicalize_margin_phrases(text: str) -> str:
     text = re.sub(
         r"\b(?:losses|loss|defeats|defeat)\s+(?:to|at\s+the\s+hands\s+of)\b", "losses against", text
     )
-    text = re.sub(r"\b(?:wins|win|victories|victory)\s+over\b", "wins against", text)
+    # "wins over 120 points" / "over .500" keep the strict "over".
+    text = re.sub(r"\b(?:wins|win|victories|victory)\s+over\b(?!\s*\.?\d)", "wins against", text)
     text = re.sub(r"\bvictories\b", "wins", text)
-    # "Lakers games beaten by the Celtics (by 20)": the games they lost.
-    text = re.sub(r"\b(games?)\s+beaten\s+by\s+(?=\d)", r"\1 lost by ", text)
+    # "Lakers games beaten by the Celtics (by 20)": the games they lost; a
+    # number or margin word after "by" is the losing margin.
+    text = re.sub(
+        r"\b(games?)\s+beaten\s+by\s+(?=\d|(?:at\s+(?:least|most)|more\s+than|less\s+than|"
+        r"fewer\s+than|over|under|double|single|between|exactly)\b)",
+        r"\1 lost by ",
+        text,
+    )
     text = re.sub(r"\b(games?)\s+beaten\s+by\s+(?=(?:the\s+)?[a-z])", r"\1 lost to ", text)
     # "were the Lakers beaten by the Celtics (by 20)": a loss, not a win.
     if re.search(r"\b(?:were|was|got|get|gets|been|be|being)\b", text):

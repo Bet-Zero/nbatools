@@ -69,3 +69,37 @@ def test_was_before_a_possessive_or_participle_is_not_washington():
 def test_active_beaten_by_a_margin_is_unchanged():
     kwargs = parse_query("which teams have the Celtics beaten by 20")["route_kwargs"]
     assert kwargs["team"] == "BOS" and kwargs["wins_only"] is True
+
+
+def _over(team: str, stat: str, line: float, wl: str = "W") -> int:
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    games = games[(games["team_abbr"] == team) & (games["wl"] == wl)]
+    return int((games[stat] > line).sum())
+
+
+def test_wins_over_a_number_stay_strict():
+    # "over" is a strict floor; the "wins over <team>" rewrite must not eat it.
+    kwargs = parse_query("Lakers wins over 120 points")["route_kwargs"]
+    assert kwargs["min_value"] > 120
+    rows = execute_natural_query("Lakers wins over 120 points").result.to_dict()["sections"]
+    assert len(rows["finder"]) == _over("LAL", "pts", 120)
+
+
+def _losses_by(team: str, floor: int) -> int:
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    games = games[(games["team_abbr"] == team) & (games["wl"] == "L")]
+    return int((-games["plus_minus"] >= floor).sum())
+
+
+@pytest.mark.parametrize(
+    ("query", "floor"),
+    [
+        ("Lakers games beaten by at least 20", 20),
+        ("Lakers games beaten by more than 10", 11),
+        ("Lakers games beaten by double digits", 10),
+        ("Lakers games beaten by over 20", 21),
+    ],
+)
+def test_games_beaten_by_a_margin_word(query, floor):
+    rows = execute_natural_query(query).result.to_dict()["sections"]["finder"]
+    assert len(rows) == _losses_by("LAL", floor)
