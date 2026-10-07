@@ -133,7 +133,8 @@ class TestCountFinalizerParity:
 
         qr = execute_natural_query("How many Celtics wins this season")
 
-        assert qr.metadata["count_phrase"] == "The Celtics have recorded 1 game this season."
+        # A count of wins says "won", with the plural verb for a team.
+        assert qr.metadata["count_phrase"] == "The Celtics have won 1 game this season."
 
     def test_standard_or_and_grouped_paths_share_the_count_overlay(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)

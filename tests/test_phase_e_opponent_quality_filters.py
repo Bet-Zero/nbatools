@@ -234,3 +234,36 @@ def test_natural_query_intersects_team_record_conference_and_opponent_quality():
     assert int(row["games"]) == 36
     assert int(row["wins"]) == 9
     assert int(row["losses"]) == 27
+
+
+@pytest.mark.parametrize(
+    ("query", "term", "route"),
+    [
+        ("Lakers record when playing teams that made the playoffs", "playoff teams", "team_record"),
+        ("Celtics record facing teams which made the playoffs", "playoff teams", "team_record"),
+        (
+            "Lakers record beating teams that missed the playoffs",
+            "non-playoff teams",
+            "team_record",
+        ),
+        (
+            "LeBron stats against opponents who missed the playoffs",
+            "non-playoff teams",
+            "player_game_summary",
+        ),
+    ],
+)
+def test_playoff_team_clauses_after_playing_or_opponents_filter_opponents(query, term, route):
+    # "when playing teams that made the playoffs" switched to playoff games
+    # and dropped the opponent filter.
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == term
+
+
+def test_beaten_playoff_teams_is_an_opponent_filter_not_an_appearance():
+    parsed = parse_query("how many times have the Lakers beaten teams that made the playoffs")
+    assert parsed["route"] == "game_finder"
+    assert parsed["route_kwargs"]["wins_only"] is True
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
