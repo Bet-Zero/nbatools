@@ -49,3 +49,41 @@ def test_over_and_under_500_keep_their_strict_bars():
 def test_or_better_is_a_bound_not_an_alternative():
     parsed = parse_query("LeBron games with 30 points or better")
     assert parsed["route_kwargs"]["min_value"] == 30.0
+
+
+@pytest.mark.parametrize(
+    ("query", "term"),
+    [
+        ("Lakers record vs teams at or above .500", "winning teams"),
+        ("Lakers record vs teams at or below .500", "teams .500 or worse"),
+        ("Lakers record vs .500 or worse teams", "teams .500 or worse"),
+    ],
+)
+def test_at_or_above_and_below_500(query, term):
+    assert parse_query(query)["route_kwargs"]["opponent_quality"]["surface_term"] == term
+    assert execute_natural_query(query).result_status == "ok"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Not a .500 opponent bar: no reader applies these, so they refuse
+        # rather than answer the unfiltered season.
+        "Lakers record vs teams .600 or better",
+        "Lakers record when shooting .500 or better",
+        "Lakers record when shooting 50% or better",
+        "LeBron games with fg pct .500 or better",
+        "win% .500 or higher",
+    ],
+)
+def test_other_or_better_rates_still_refuse(query):
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "rows"),
+    [("Lakers games scoring 120 or higher", "finder"), ("LeBron 30 points or better", "finder")],
+)
+def test_whole_number_or_better_is_one_floor(query, rows):
+    result = execute_natural_query(query)
+    assert result.result_status == "ok" and result.result.to_dict()["sections"][rows]

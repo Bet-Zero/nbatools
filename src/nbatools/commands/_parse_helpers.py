@@ -3,6 +3,7 @@ import re
 from nbatools.commands._constants import (
     STAT_ALIASES,
     STAT_PATTERN,
+    canonicalize_500_team_bars,
     canonicalize_trailing_ceilings,
 )
 from nbatools.commands._glossary import FUZZY_LAST_N_TERMS, OPPONENT_QUALITY_TERMS
@@ -884,19 +885,9 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
-    # "vs .500 teams", "wins over .500 or better teams", "teams .500 or
-    # better": a .500-or-better record, the "winning teams" bar.
-    text = re.sub(
-        r"(?:\bteams?\s+)?(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:better|above|higher)(?:\s+teams?)?\b",
-        "winning teams",
-        text,
-    )
-    # ".500 or below", "teams at .500 or worse": the bar that includes .500.
-    text = re.sub(
-        r"(?:\bteams?\s+)?(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:worse|below|lower)(?:\s+teams?)?\b",
-        "teams .500 or worse",
-        text,
-    )
+    # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
+    # winning-teams bar, or the bar that includes .500.
+    text = canonicalize_500_team_bars(text)
     text = re.sub(
         r"(?<!over\s)(?<!above\s)(?<!under\s)(?<!below\s)(?<![\w.])\.500\s+teams?\b",
         "winning teams",
