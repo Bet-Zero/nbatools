@@ -560,11 +560,11 @@ def _ranking_description(route: str | None, route_kwargs: dict) -> str:
 def unrouted_compound_event_reason(parsed: dict) -> str | None:
     """Why a compound event request that matched no route cannot be answered.
 
-    ``players with 25 points and 10 rebounds`` states two real conditions and
-    then says nothing about what to do with them - count the games, average the
-    season, list them. It used to surface as an unrouted error whose metadata
-    still carried a stat, which reads as a partial answer to a question nothing
-    executed.
+    A request with two real conditions and nothing said about what to do with
+    them - count the games, average the season, list them - used to surface as
+    an unrouted error whose metadata still carried a stat, which reads as a
+    partial answer to a question nothing executed. (``players with 25 points
+    and 10 rebounds`` now lists each player with such a game, most often first.)
 
     Answering it means choosing an aggregation the question never stated, so it
     refuses with both conditions intact instead. Deliberately narrow: it

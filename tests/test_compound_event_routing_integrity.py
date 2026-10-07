@@ -586,7 +586,7 @@ def test_occurrence_leaderboard_with_an_absence_refuses_end_to_end():
 
 def test_authorization_rejection_admits_no_fallback_route():
     """Every refused priority query returns an empty result, not a smaller one."""
-    for query in (EFFICIENT_QUERY, TWO_THRESHOLD_QUERY, INJURY_QUERY, TEAM_SCORER_QUERY):
+    for query in (EFFICIENT_QUERY, INJURY_QUERY, TEAM_SCORER_QUERY):
         executed = execute_natural_query(query)
         assert executed.to_dict()["sections"] == {}, query
         assert executed.metadata.get("stat") is None, query
@@ -603,7 +603,7 @@ def test_every_compound_refusal_carries_human_wording():
     id. The suppression half is pinned in the frontend suite, which keeps
     ``LEADERBOARD_BOUNDARY_IDS`` in sync with this module.
     """
-    for query in (EFFICIENT_QUERY, TWO_THRESHOLD_QUERY, INJURY_QUERY):
+    for query in (EFFICIENT_QUERY, INJURY_QUERY):
         notes = execute_natural_query(query).metadata.get("notes") or []
         human = [
             note
