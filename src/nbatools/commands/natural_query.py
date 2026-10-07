@@ -352,6 +352,7 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._player_game_context import apply_player_game_context
 from nbatools.commands._playoff_record_route_utils import (
     _DECADE_SUPERLATIVE,
+    _PLAYER_SERIES,
     detect_by_decade_intent,
     detect_by_round_intent,
     detect_how_did_playoffs,
@@ -2400,7 +2401,16 @@ def _build_parse_state(query: str) -> dict:
     if (
         re.search(r"\bseries\b", q)
         and not re.search(r"\bgames?\b", q)
-        and re.search(r"\b(?:playoffs?|postseason)\b", q)
+        and (
+            re.search(r"\b(?:playoffs?|postseason)\b", q)
+            # "LeBron series wins", "how many series has he won": only
+            # playoff series have results.
+            or re.search(
+                r"\bseries\s+(?:wins?|won|losses|lost|records?)\b|\bhow\s+many\s+series\b"
+                r"|\b(?:won|lost)\s+(?:a\s+|\d+\s+)?series\b",
+                q,
+            )
+        )
     ):
         # "how many playoff series have the Lakers won": series won and lost
         # come from the playoff history, not a filter to winning games.
@@ -3167,8 +3177,10 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         (player or player_a or player_b)
         and parsed.get("playoff_round_filter")
-        # Player appearance counts have their own typed boundary.
+        # Player appearance counts have their own typed boundary, and series
+        # results ("LeBron first round series record") come from team rows.
         and not re.search(r"\bappearances?\b|\bpicks?\b|\bdraft(?:ed)?\b", q)
+        and not (player and _PLAYER_SERIES.search(q))
     ):
         # Player rows carry no playoff round, so "LeBron 2016 finals" must not
         # answer with the whole postseason.

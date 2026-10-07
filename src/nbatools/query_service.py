@@ -1253,6 +1253,10 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
         return
     row = result.summary.iloc[0]
     team = row["team_name"]
+    player = row.get("player_name") if "player_name" in result.summary else None
+    if isinstance(player, str) and player:
+        _add_player_series_phrase(metadata, row, series, player)
+        return
     games = f"{int(row['wins'])}-{int(row['losses'])}"
     won, lost = int(row.get("series_won", 0)), int(row.get("series_lost", 0))
     first, last = row["season_start"], row["season_end"]
@@ -1291,6 +1295,30 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
 
 
 _PLAYOFF_DATA_START = "1996-97"
+
+
+def _add_player_series_phrase(metadata: dict, row: Any, series: Any, player: str) -> None:
+    """ "LeBron James won 1 of 1 playoff series in 2025-26 (5-1 in games)."."""
+    won, lost = int(row.get("series_won", 0)), int(row.get("series_lost", 0))
+    games = f"{int(row['wins'])}-{int(row['losses'])}"
+    first, last = row["season_start"], row["season_end"]
+    span = f"in {first}" if first == last else f"from {first} to {last}"
+    round_label = row.get("playoff_round")
+    stage = (
+        _ROUND_PROSE.get(round_label, str(round_label).lower())
+        if isinstance(round_label, str) and round_label
+        else "playoff"
+    )
+    vs = ""
+    if metadata.get("opponent") and "opponent_team_name" in series:
+        vs = f" against the {series['opponent_team_name'].iloc[0]}"
+    total = won + lost
+    open_series = int((series["result"] == "In progress").sum()) if "result" in series else 0
+    pending = f", with {open_series} in progress" if open_series else ""
+    metadata["answer_phrase"] = (
+        f"{player} won {won} of {total} {stage} series{vs} {span} "
+        f"({games} in those games){pending}."
+    )
 
 
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
