@@ -297,9 +297,28 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         elif not team and re.search(r"\bplayers?\b", q):
             # "which player has the most Finals appearances"
             route_kwargs["player_board"] = True
-        elif not team and _PLAYOFF_RUN_OF_SEASONS.search(q):
-            # "most consecutive playoff appearances": teams by their longest run.
-            route_kwargs["rank_by"] = "longest_streak"
+        elif not team:
+            ranked = re.search(r"\b(?:most|longest|fewest|least|how\s+many)\b", q)
+            if re.search(r"\bdroughts?\b", q):
+                # "which team has the longest playoff drought"
+                route_kwargs["rank_by"] = "longest_drought"
+            elif _PLAYOFF_RUN_OF_SEASONS.search(q):
+                # "most consecutive playoff appearances": teams by their longest run.
+                route_kwargs["rank_by"] = "longest_streak"
+            elif re.search(r"\bmiss(?:ed|es|ing)?\b", q):
+                # "which teams missed the playoffs": the teams that did.
+                route_kwargs["rank_by"] = "missed"
+            if (
+                not ranked
+                and not (season or start_season or end_season)
+                and (route_kwargs.get("rank_by") == "missed" or _MADE_THE_STAGE.search(q))
+            ):
+                # "which teams made / missed the playoffs" lists one postseason.
+                route_kwargs.update(
+                    season=default_end_season("Playoffs"), start_season=None, end_season=None
+                )
+            if not ranked and not top_n:
+                route_kwargs["limit"] = None
         return "playoff_appearances", route_kwargs
 
     # -- Playoff matchup history: team_a vs team_b --

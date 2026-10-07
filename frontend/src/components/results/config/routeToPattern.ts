@@ -253,7 +253,27 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           },
         ];
       }
-      if (firstRow && "longest_streak" in firstRow) {
+      if (firstRow && "longest_drought" in firstRow) {
+        return [
+          {
+            type: "leaderboard",
+            sectionKey: "leaderboard",
+            metricKey: "longest_drought",
+            sentenceMetricLabel: "seasons without the playoffs",
+          },
+        ];
+      }
+      if (firstRow && "missed" in firstRow && !("appearances" in firstRow)) {
+        return [
+          {
+            type: "leaderboard",
+            sectionKey: "leaderboard",
+            metricKey: "missed",
+            sentenceMetricLabel: "seasons missing the playoffs",
+          },
+        ];
+      }
+      if (firstRow && "longest_streak" in firstRow && !("player_name" in firstRow)) {
         // "most consecutive playoff appearances": teams by their longest run.
         return [
           {

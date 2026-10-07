@@ -127,3 +127,48 @@ def test_consecutive_board_ranks_franchise_runs():
     rows = result.result.to_dict()["sections"]["leaderboard"]
     assert {row["team_abbr"] for row in rows} == _playoff_teams()
     assert {row["longest_streak"] for row in rows} == {1}
+
+
+def _teams(season: str, kind: str) -> set[str]:
+    return set(pd.read_csv(RAW / "team_game_stats" / f"{season}_{kind}.csv")["team_name"])
+
+
+def test_which_teams_missed_the_playoffs_lists_the_teams_that_missed():
+    missed = _teams("2025-26", "regular_season") - _teams("2025-26", "playoffs")
+    result = _ok("which teams missed the playoffs")
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert {row["team_name"] for row in rows} == missed
+    assert result.metadata["answer_phrase"].startswith(f"{len(missed)} teams missed the playoffs")
+
+
+def test_which_teams_made_the_playoffs_lists_the_latest_postseason():
+    result = _ok("which teams made the playoffs")
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert {row["team_name"] for row in rows} == _teams("2025-26", "playoffs")
+
+
+def test_league_drought_ranks_droughts_not_runs():
+    result = _ok("which team has the longest playoff drought")
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert "longest_drought" in rows[0]
+    # Teams that never reached the fixture's one postseason tie at 3 seasons.
+    missed = _teams("2025-26", "regular_season") - _teams("2025-26", "playoffs")
+    assert {row["team_name"] for row in rows if row["longest_drought"] == 3} == missed
+    assert "longest drought without reaching the playoffs" in result.metadata["answer_phrase"]
+
+
+def test_tied_runs_name_every_team():
+    phrase = _ok("most consecutive playoff appearances").metadata["answer_phrase"]
+    assert "the Denver Nuggets and the Los Angeles Lakers share" in phrase.replace("The ", "the ")
+
+
+def test_player_run_and_miss_questions_use_his_seasons():
+    games = pd.concat(
+        pd.read_csv(path) for path in (RAW / "player_game_stats").glob("*_regular_season.csv")
+    )
+    seasons = set(games[games["player_name"] == "LeBron James"]["season"])
+    assert len(seasons) == 3
+    missed = _ok("LeBron missed the playoffs").metadata["answer_phrase"]
+    assert "LeBron James missed the playoffs in 2 of 3 seasons" in missed
+    run = _ok("LeBron consecutive playoff appearances").metadata["answer_phrase"]
+    assert "longest run" in run and "1 season in the playoffs (2025-26)" in run

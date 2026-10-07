@@ -1285,6 +1285,70 @@ def _seasons_word(n: int) -> str:
     return f"{n} {'season' if n == 1 else 'seasons'}"
 
 
+def _possessive(name: str) -> str:
+    return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+
+def _span_text(first: Any, last: Any) -> str:
+    return f"from {first} to {last}" if first != last else f"in {first}"
+
+
+def _run_span(start: Any, end: Any) -> str:
+    return f"({start})" if start == end else f"({start} to {end})"
+
+
+def _named_list(names: list[str], limit: int = 6) -> str:
+    shown = names[:limit]
+    if len(names) > limit:
+        return ", ".join(shown) + f" and {len(names) - limit} others"
+    if len(shown) == 1:
+        return shown[0]
+    return ", ".join(shown[:-1]) + f" and {shown[-1]}"
+
+
+def _run_phrase(subject: str, row: Any, stage: str, span: str, query_text: str) -> str | None:
+    """Last appearance, run, drought or misses for one team or player row."""
+    if _DROUGHT_WORDS.search(query_text):
+        since = int(row["seasons_since_last"])
+        if since:
+            verb = "have" if subject.startswith("The ") else "has"
+            current = f"{subject} {verb} missed {stage} the last {_seasons_word(since)}"
+        else:
+            current = (
+                f"{subject} reached {stage} in {row['last_appearance']}, "
+                "so there is no current drought"
+            )
+        longest = int(row["longest_drought"])
+        worst = (
+            f"; the longest drought {span} was {_seasons_word(longest)} "
+            f"{_run_span(row['longest_drought_start'], row['longest_drought_end'])}"
+            if longest
+            else f"; no drought {span}"
+        )
+        return f"{current}{worst}."
+    if _RUN_WORDS.search(query_text):
+        longest = int(row["longest_streak"])
+        if not longest:
+            return f"{subject} did not reach {stage} {span}."
+        current = int(row["current_streak"])
+        length = "1 season" if longest == 1 else f"{longest} straight seasons"
+        return (
+            f"{_possessive(subject)} longest run {span} was {length} in {stage} "
+            f"{_run_span(row['longest_streak_start'], row['longest_streak_end'])}; "
+            f"the current run is {_seasons_word(current)}."
+        )
+    if _LAST_WORDS.search(query_text) and not re.search(r"\blast\s+\d+", query_text):
+        if row["last_appearance"] is None or pd.isna(row["last_appearance"]):
+            return f"{subject} did not reach {stage} {span}."
+        return f"{subject} last reached {stage} in {row['last_appearance']}."
+    if _MISS_WORDS.search(query_text):
+        return (
+            f"{subject} missed {stage} in {int(row['missed'])} of "
+            f"{int(row['seasons_played'])} seasons {span}."
+        )
+    return None
+
+
 def _add_appearances_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """Headline for playoff appearances: counts, last, runs, droughts, players."""
     if metadata.get("route") != "playoff_appearances":
@@ -1292,93 +1356,103 @@ def _add_appearances_answer_metadata(metadata: dict[str, Any], result: Any) -> N
     query_text = str(metadata.get("query_text") or "").lower()
     if isinstance(result, LeaderboardResult):
         board = result.leaders
-        if board.empty or "appearances" not in board or "player_name" not in board:
-            if not board.empty and "longest_streak" in board:
-                top = board.iloc[0]
-                stage = _APPEARANCE_STAGE.get(str(top.get("round")), "the playoffs")
-                longest = int(top["longest_streak"])
-                seasons = "1 season" if longest == 1 else f"{longest} straight seasons"
-                metadata["answer_phrase"] = (
-                    f"The {top['team_name']} have the longest run: {seasons} in {stage} "
-                    f"({top['streak_start']} to {top['streak_end']})."
-                )
+        if board.empty:
             return
         top = board.iloc[0]
         stage = _APPEARANCE_STAGE.get(str(top.get("round")), "the playoffs")
-        span = top.get("seasons") or top.get("season")
+        span_label = top.get("seasons") if "seasons" in board else top.get("season")
+        span = f"from {span_label}" if " to " in str(span_label) else f"in {span_label}"
+        for column, verb in (
+            ("longest_streak", "the longest run of seasons in"),
+            ("longest_drought", "the longest drought without reaching"),
+        ):
+            if column in board and "player_name" not in board:
+                value = int(top[column])
+                leaders = board[board[column] == value]
+                names = _named_list([f"the {name}" for name in leaders["team_name"]])
+                names = names[0].upper() + names[1:]
+                length = _seasons_word(value)
+                if len(leaders) == 1:
+                    metadata["answer_phrase"] = (
+                        f"{names} have {verb} {stage} {span}: {length} "
+                        f"{_run_span(top['run_start'], top['run_end'])}."
+                    )
+                else:
+                    metadata["answer_phrase"] = (
+                        f"{names} share {verb} {stage} {span}, {length} each."
+                    )
+                return
+        if "missed" in board and "player_name" not in board:
+            if "season" in board:
+                names = _named_list([f"the {name}" for name in board["team_name"]], limit=40)
+                count = len(board)
+                metadata["answer_phrase"] = (
+                    f"{count} {'team' if count == 1 else 'teams'} missed {stage} in "
+                    f"{span_label}: {names}."
+                )
+            else:
+                most = int(top["missed"])
+                leaders = board[board["missed"] == most]
+                names = _named_list([f"the {name}" for name in leaders["team_name"]])
+                names = names[0].upper() + names[1:]
+                metadata["answer_phrase"] = (
+                    f"{names} missed {stage} the most {span}: {_seasons_word(most)}."
+                )
+            return
+        if "appearances" not in board:
+            return
+        if "player_name" not in board:
+            if "season" in board and not re.search(r"\bmost\b", query_text):
+                names = _named_list([f"the {name}" for name in board["team_name"]], limit=40)
+                count = len(board)
+                metadata["answer_phrase"] = (
+                    f"{count} {'team' if count == 1 else 'teams'} reached {stage} in "
+                    f"{span_label}: {names}."
+                )
+            return
         if (metadata.get("route_kwargs") or {}).get("player") or metadata.get("player"):
+            subject = str(top["player_name"])
+            if "longest_streak" in board:
+                run = _run_phrase(subject, top, stage, span, query_text)
+                if run:
+                    metadata["answer_phrase"] = run
+                    return
             count = int(top["appearances"])
             if count == 0:
-                metadata["answer_phrase"] = f"{top['player_name']} did not reach {stage} ({span})."
+                metadata["answer_phrase"] = f"{subject} did not reach {stage} ({span_label})."
                 return
             times = "1 season" if count == 1 else f"{count} seasons"
             metadata["answer_phrase"] = (
-                f"{top['player_name']} reached {stage} in {times} ({top['appearance_seasons']})."
+                f"{subject} reached {stage} in {times} ({top['appearance_seasons']})."
             )
             return
         most = int(top["appearances"])
         leaders = board[board["appearances"] == most]
-        names = ", ".join(leaders["player_name"].head(6))
-        metadata["answer_phrase"] = f"Most seasons reaching {stage} ({span}): {names}, with {most}."
+        metadata["answer_phrase"] = (
+            f"Most seasons reaching {stage} ({span_label}): "
+            f"{_named_list(list(leaders['player_name']))}, with {most}."
+        )
         return
     if not isinstance(result, SummaryResult) or result.summary.empty:
         return
     row = result.summary.iloc[0]
     if "last_appearance" not in row:
         return
-    team = row["team_name"]
+    subject = f"The {row['team_name']}"
     stage = _APPEARANCE_STAGE.get(str(row.get("round")), "the playoffs")
     first, last = row["season_start"], row["season_end"]
-    span = f"from {first} to {last}" if first != last else f"in {first}"
+    span = _span_text(first, last)
+    run = _run_phrase(subject, row, stage, span, query_text)
+    if run:
+        metadata["answer_phrase"] = run
+        return
     count = int(row["appearances"])
-    if _DROUGHT_WORDS.search(query_text):
-        since = int(row["seasons_since_last"])
-        current = (
-            f"they have missed {stage} the last {_seasons_word(since)}"
-            if since
-            else f"no current drought (they reached {stage} in {last})"
-        )
-        longest = int(row["longest_drought"])
-        worst = (
-            f"; the longest drought {span} was {_seasons_word(longest)} "
-            f"({row['longest_drought_start']} to {row['longest_drought_end']})"
-            if longest
-            else ""
-        )
-        metadata["answer_phrase"] = f"The {team}: {current}{worst}."
-        return
-    if _RUN_WORDS.search(query_text):
-        longest = int(row["longest_streak"])
-        if not longest:
-            metadata["answer_phrase"] = f"The {team} did not reach {stage} {span}."
-            return
-        current = int(row["current_streak"])
-        metadata["answer_phrase"] = (
-            f"The {team}' longest run {span} was {longest} straight seasons in {stage} "
-            f"({row['longest_streak_start']} to {row['longest_streak_end']}); "
-            f"their current run is {_seasons_word(current)}."
-        ).replace(" 1 straight seasons", " 1 season")
-        return
-    if _LAST_WORDS.search(query_text) and not re.search(r"\blast\s+\d+", query_text):
-        if row["last_appearance"] is None:
-            metadata["answer_phrase"] = f"The {team} did not reach {stage} {span}."
-        else:
-            metadata["answer_phrase"] = (
-                f"The {team} last reached {stage} in {row['last_appearance']}."
-            )
-        return
-    if _MISS_WORDS.search(query_text):
-        missed = int(row["missed"])
-        metadata["answer_phrase"] = (
-            f"The {team} missed {stage} in {missed} of {int(row['seasons_played'])} seasons {span}."
-        )
-        return
-    if first == last:
+    if first == last or not count:
         reached = "reached" if count else "did not reach"
-        metadata["answer_phrase"] = f"The {team} {reached} {stage} in {first}."
+        metadata["answer_phrase"] = f"{subject} {reached} {stage} {span}."
         return
     times = "time" if count == 1 else "times"
-    metadata["answer_phrase"] = f"The {team} reached {stage} {count} {times} {span}."
+    metadata["answer_phrase"] = f"{subject} reached {stage} {count} {times} {span}."
 
 
 _MAX_LISTED_SERIES = 5

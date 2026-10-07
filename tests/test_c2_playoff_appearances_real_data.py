@@ -103,3 +103,11 @@ def test_lebron_finals_appearances():
     result = _query("how many finals appearances does LeBron have")
     row = result.result.to_dict()["sections"]["leaderboard"][0]
     assert row["appearances"] == 10
+
+
+def test_longest_playoff_drought_board_is_led_by_the_kings():
+    rows = _query("which team has the longest playoff drought").result.to_dict()["sections"][
+        "leaderboard"
+    ]
+    assert rows[0]["team_abbr"] == "SAC"
+    assert rows[0]["longest_drought"] == 16
