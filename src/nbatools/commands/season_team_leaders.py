@@ -592,7 +592,7 @@ def build_result(
 
     if team is not None and not df.empty:
         # "Lakers best scoring season": rank one team's seasons.
-        df = df[df["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        df = df[team_value_mask(df, team)].copy()
 
     if df.empty:
         return NoResult(

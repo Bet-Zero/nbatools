@@ -185,4 +185,5 @@ def player_rows_prefilter(frames: list[pd.DataFrame], player: str) -> list[pd.Da
 def player_game_ids(df: pd.DataFrame, player: str, *, team: str | None = None) -> pd.DataFrame:
     """``game_id``/``team_abbr`` pairs for the one player ``player`` names."""
     rows = select_player_rows(df, player, team=team)
-    return rows.loc[:, ["game_id", "team_abbr"]].drop_duplicates()
+    columns = ["game_id", "team_abbr", *(["team_id"] if "team_id" in rows.columns else [])]
+    return rows.loc[:, columns].drop_duplicates()

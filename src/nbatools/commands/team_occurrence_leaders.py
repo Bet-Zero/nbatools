@@ -32,6 +32,7 @@ from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
     load_team_games_for_seasons,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
@@ -377,11 +378,7 @@ def build_result(
 
     # Filter to specific team if requested
     if team:
-        team_upper = team.upper()
-        team_mask = pd.Series(False, index=basic.index)
-        for col in ["team_abbr", "team_name"]:
-            if col in basic.columns:
-                team_mask |= basic[col].astype(str).str.upper() == team_upper
+        team_mask = team_value_mask(basic, team)
         if not team_mask.any():
             return NoResult(query_class="leaderboard", reason="no_match")
         basic = basic[team_mask].copy()

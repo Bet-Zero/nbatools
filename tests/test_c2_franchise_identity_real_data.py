@@ -79,3 +79,22 @@ def test_grizzlies_vs_thunder_meetings_in_2000_01_are_vancouver_vs_seattle():
     ][0]
     assert summary["wins"] + summary["losses"] == len(meetings)
     assert summary["wins"] == int((meetings["wl"] == "W").sum())
+
+
+def test_thunder_record_without_durant_in_2007_08_is_seattle_games_he_missed():
+    team = _team_games("2007-08")
+    team = team[pd.to_numeric(team["team_id"]) == OKC]
+    players = data_read_csv(
+        "raw/player_game_stats/2007-08_regular_season.csv", dtype={"game_id": str}
+    )
+    played = set(players[pd.to_numeric(players["player_id"]) == 201142]["game_id"])
+    missed = team[~team["game_id"].isin(played)]
+    assert 0 < len(missed) < len(team)
+
+    summary = _query("Thunder record without Kevin Durant in 2007-08").result.to_dict()["sections"][
+        "summary"
+    ][0]
+    assert (summary["wins"], summary["losses"]) == (
+        int((missed["wl"] == "W").sum()),
+        int((missed["wl"] == "L").sum()),
+    )

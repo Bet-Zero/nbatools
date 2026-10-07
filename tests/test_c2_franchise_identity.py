@@ -64,3 +64,41 @@ def test_caveat_names_the_earlier_seasons():
         "includes the franchise's seasons as the Seattle SuperSonics"
     )
     assert franchise_caveat(rows[team_value_mask(rows, "SEA")], "SEA") is None
+
+
+def test_with_and_without_a_player_keep_his_earlier_franchise_games(monkeypatch):
+    # Independent check of #384: "Thunder record without Durant" counted his
+    # Seattle games as games without him once the team sample kept them.
+    from nbatools.commands import data_utils
+
+    team = pd.DataFrame(
+        {
+            "game_id": [1, 2, 3, 4],
+            "season": ["2007-08", "2007-08", "2008-09", "2008-09"],
+            "team_abbr": ["SEA", "SEA", "OKC", "OKC"],
+            "team_name": ["Seattle SuperSonics"] * 2 + ["Oklahoma City Thunder"] * 2,
+            "team_id": [OKC] * 4,
+        }
+    )
+    durant = pd.DataFrame(
+        {
+            "game_id": [1, 3],
+            "player_id": [201142, 201142],
+            "player_name": ["Kevin Durant"] * 2,
+            "team_abbr": ["SEA", "OKC"],
+            "team_name": ["Seattle SuperSonics", "Oklahoma City Thunder"],
+            "team_id": [OKC, OKC],
+            "season": ["2007-08", "2008-09"],
+        }
+    )
+    monkeypatch.setattr(data_utils, "load_player_games_for_seasons", lambda s, t: durant)
+    sample = team[team_value_mask(team, "OKC")]
+    seasons = ["2007-08", "2008-09"]
+    without = data_utils.filter_without_player(
+        sample, "Kevin Durant", seasons, "Regular Season", team="OKC"
+    )
+    with_him = data_utils.filter_with_player(
+        sample, "Kevin Durant", seasons, "Regular Season", team="OKC"
+    )
+    assert without["game_id"].tolist() == [2, 4]
+    assert with_him["game_id"].tolist() == [1, 3]

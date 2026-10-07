@@ -888,7 +888,7 @@ def build_record_leaderboard_result(
     agg = apply_win_bounds(agg, min_wins, max_wins)
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
-        agg = agg[agg["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        agg = agg[team_value_mask(agg, team)].copy()
 
     if agg.empty:
         return _empty_sample_result("leaderboard")

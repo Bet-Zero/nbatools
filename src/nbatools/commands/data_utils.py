@@ -2552,7 +2552,8 @@ def filter_without_player(
 
     if team:
         # Only exclude games where the player was on the same team
-        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        # Franchise-aware: Durant's Seattle games are Thunder games with him.
+        team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
     else:
@@ -2577,7 +2578,8 @@ def filter_with_player(
         return df.iloc[0:0].copy() if strict_team_match else df.copy()
 
     if team:
-        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        # Franchise-aware: Durant's Seattle games are Thunder games with him.
+        team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
     else:
