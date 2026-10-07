@@ -779,6 +779,12 @@ Examples:
 - `Lakers Celtics playoff matchup history`
 - `Heat Knicks playoff series record`
 - `Lakers playoff series record vs Celtics`
+- `LeBron playoff series record`, `how many playoff series has LeBron won`,
+  `LeBron Finals series record`, `LeBron series wins against the Celtics`: the
+  series his teams played in which he appeared, every playoff season served
+  (since 1996-97) unless a span is named; game records are the team's
+  (one player at a time; a single-game condition such as "when he scores 30"
+  is refused rather than dropped)
 
 Adjacent team-team phrasing is supported only inside explicit playoff
 series/history contexts. `Heat Knicks playoff series record` is treated as a

@@ -230,13 +230,22 @@ def _resolve_playoff_span_defaults(
     return _resolve_season_defaults(season, start_season, end_season, "Playoffs")
 
 
+# "LeBron playoff series record", "how many playoff series has LeBron won",
+# "LeBron series wins": series results, not a game summary or a series
+# situation ("game 7s", "up 3-1 in a series").
+_PLAYER_SERIES = re.compile(
+    r"(?<!season\s)(?<!regular\s)\bseries\s+(?:records?|wins?|won|losses|lost|history|results)\b"
+    r"|\bhow\s+many\s+(?:playoff\s+|postseason\s+)?series\b"
+    r"|\b(?:won|lost|win|lose)\s+(?:a\s+|\d+\s+)?(?:playoff\s+|postseason\s+)?series\b"
+)
+
 _PAIR_TIME_WORDS_RE = re.compile(
     r"\b(?:19|20)\d{2}s?\b|\b\d{2}s\b|\b(?:this|these|current|last|past|since|"
     r"recent|recently|decade|era|season|seasons|year|years)\b"
 )
 
 
-def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
+def try_playoff_record_route(parsed: dict) -> tuple[str | None, dict] | None:
     """Try to resolve a playoff/record/decade-bucketed route.
 
     Covers:
@@ -324,6 +333,58 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             if not ranked and not top_n:
                 route_kwargs["limit"] = None
         return "playoff_appearances", route_kwargs
+
+    # -- A player's playoff series: "LeBron playoff series record" --
+    if (
+        (player or (team and not opponent and not playoff_round_filter))
+        and not (player_a or player_b or team_a or team_b)
+        and _PLAYER_SERIES.search(q)
+    ):
+        blocked = None
+        if (
+            parsed.get("threshold_conditions")
+            or parsed.get("min_value") is not None
+            or parsed.get("max_value") is not None
+        ):
+            # "series record when LeBron scores 30": a game condition has no
+            # series meaning (one game, every game?), and dropping it answers
+            # a different question.
+            blocked = "series_game_condition"
+        elif player:
+            from nbatools.commands.entity_resolution import resolve_players_in_query
+
+            if len(set(resolve_players_in_query(q))) > 1:
+                # "LeBron and Curry playoff series record": one player's
+                # series would silently drop the other.
+                blocked = "multi_player_series"
+        if blocked:
+            return None, {
+                "season": season,
+                "start_season": start_season,
+                "end_season": end_season,
+                "season_type": season_type,
+                "unsupported_filters": [blocked],
+            }
+        if not (season or start_season or end_season) or (
+            parsed.get("season_defaulted") and not _PAIR_TIME_WORDS_RE.search(q)
+        ):
+            # No time words: every playoff season served, not the latest.
+            from nbatools.commands._seasons import resolve_career
+
+            season = None
+            start_season, end_season = resolve_career("Playoffs")
+        ps_season, ps_start, ps_end = _resolve_playoff_span_defaults(
+            season, start_season, end_season
+        )
+        return "playoff_history", {
+            "team": team,
+            "player": player,
+            "season": ps_season,
+            "start_season": ps_start,
+            "end_season": ps_end,
+            "playoff_round": playoff_round_filter,
+            "opponent": opponent,
+        }
 
     # -- Playoff matchup history: team_a vs team_b --
     if (

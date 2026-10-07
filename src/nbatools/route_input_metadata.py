@@ -838,9 +838,11 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         route="playoff_history",
         implementation_module="nbatools.commands.playoff_history",
         implementation_function="build_playoff_history_result",
-        description="Summarize one team's playoff history.",
-        required_kwargs=("team",),
+        description="Summarize one team's playoff history, or a player's playoff series.",
+        required_kwargs=(),
         optional_kwargs=(
+            "team",
+            "player",
             "season",
             "start_season",
             "end_season",

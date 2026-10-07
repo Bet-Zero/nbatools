@@ -541,7 +541,8 @@ def _round_data_caveat(seasons: list[str]) -> str | None:
 
 def build_playoff_history_result(
     *,
-    team: str,
+    team: str | None = None,
+    player: str | None = None,
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -571,9 +572,30 @@ def build_playoff_history_result(
     except FileNotFoundError:
         return NoResult(query_class="summary", reason="no_data")
 
+    player_name = None
+    if player:
+        # "LeBron playoff series record": every series a team of his played
+        # in which he appeared at least once.
+        df, player_name = _player_series_games(df, seasons, player)
+        if player_name is None:
+            return NoResult(
+                query_class="summary", reason="no_match", notes=[f"No player named {player}"]
+            )
+        team = team or ""
+    if not team and not player:
+        raise ValueError("playoff history needs a team or a player")
+
     # Filter to the requested team
     t = team.upper()
-    df = df[team_value_mask(df, t)].copy()
+    if t:
+        df = df[team_value_mask(df, t)].copy()
+    if player_name and df.empty:
+        span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
+        return NoResult(
+            query_class="summary",
+            reason="no_match",
+            notes=[f"{player_name} played no playoff games {span}"],
+        )
 
     if df.empty:
         span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
@@ -593,8 +615,13 @@ def build_playoff_history_result(
     df = _add_decade_column(df)
 
     caveats: list[str] = []
-    if franchise_note := franchise_caveat(df, team):
+    if t and (franchise_note := franchise_caveat(df, team)):
         caveats.append(franchise_note)
+    if player_name:
+        caveats.append(
+            f"series {player_name}'s teams played in which he appeared in at least one game; "
+            "game records are the team's"
+        )
     round_caveat = _round_data_caveat(seasons)
     if round_caveat:
         caveats.append(round_caveat)
@@ -618,7 +645,11 @@ def build_playoff_history_result(
     season_min = df["season"].min()
     season_max = df["season"].max()
 
+    if player_name:
+        # A traded player's teams, latest name per franchise.
+        team_name = ", ".join(dict.fromkeys(df.sort_values("game_date")["team_name"].astype(str)))
     summary_row = {
+        **({"player_name": player_name} if player_name else {}),
         "team_name": team_name,
         "season_start": season_min,
         "season_end": season_max,
@@ -664,6 +695,46 @@ def build_playoff_history_result(
         current_through=current_through,
         caveats=caveats,
     )
+
+
+def _player_series_games(
+    df: pd.DataFrame, seasons: list[str], player: str
+) -> tuple[pd.DataFrame, str | None]:
+    """The team playoff rows of every series the player appeared in, and his name."""
+    from nbatools.commands._player_identity import player_ids_for_name, select_player_rows
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    if not player_ids_for_name(player):
+        return df.iloc[0:0], None
+    games = load_player_games_for_seasons(seasons, "Playoffs", player=player)
+    games = select_player_rows(games, player, notes=[])
+    if games.empty:
+        from nbatools.commands._player_identity import canonical_player_names_by_id
+
+        ids = list(player_ids_for_name(player))
+        return df.iloc[0:0], canonical_player_names_by_id().get(ids[0], player)
+    name = str(games["player_name"].mode().iloc[0])
+
+    def key(frame: pd.DataFrame, team_col: str, opp_col: str) -> pd.Series:
+        return (
+            frame["season"].astype(str)
+            + "|"
+            + pd.to_numeric(frame[team_col], errors="coerce").astype("Int64").astype(str)
+            + "|"
+            + pd.to_numeric(frame[opp_col], errors="coerce").astype("Int64").astype(str)
+        )
+
+    if "opponent_team_id" in games:
+        played = set(key(games, "team_id", "opponent_team_id"))
+    else:
+        # The opponent comes from the team row of the same game.
+        rows = df[["game_id", "team_id", "opponent_team_id"]].copy()
+        rows["team_id"] = pd.to_numeric(rows["team_id"], errors="coerce")
+        merged = games.assign(team_id=pd.to_numeric(games["team_id"], errors="coerce")).merge(
+            rows, on=["game_id", "team_id"], how="inner"
+        )
+        played = set(key(merged, "team_id", "opponent_team_id"))
+    return df[key(df, "team_id", "opponent_team_id").isin(played)].copy(), name
 
 
 def _build_season_breakdown(df: pd.DataFrame, *, playoff_round: str | None = None) -> pd.DataFrame:
