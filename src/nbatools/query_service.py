@@ -1287,6 +1287,46 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
 _PLAYOFF_DATA_START = "1996-97"
 
 
+def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
+    Boston Celtics (8 times) and the New York Knicks (5)."."""
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    request = next(
+        (
+            note
+            for note in metadata.get("notes") or []
+            if isinstance(note, str) and note.startswith("opponent_record_list:")
+        ),
+        None,
+    )
+    match = request and re.search(r"(\d+)\+ (wins|losses)", request)
+    opponent = (result.metadata or {}).get("opponent_name")
+    if not match or not opponent:
+        return
+    minimum, stat = int(match.group(1)), match.group(2)
+    board = result.leaders
+    k = len(board)
+    listed = []
+    for i, row in enumerate(board.head(5).itertuples()):
+        n = int(getattr(row, stat))
+        listed.append(
+            f"the {row.team_name} ({'once' if n == 1 else f'{n} times'})"
+            if i == 0
+            else f"the {row.team_name} ({n})"
+        )
+    if k > 5:
+        listed.append(f"{k - 5} more")
+    joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
+    context = _count_context(metadata, player=False)
+    teams = "1 team" if k == 1 else f"{k} teams"
+    often = {1: "", 2: " at least twice"}.get(minimum, f" at least {minimum} times")
+    if stat == "wins":
+        metadata["answer_phrase"] = f"{teams} beat the {opponent}{often} {context}: {joined}."
+    else:
+        metadata["answer_phrase"] = f"The {opponent} beat {teams}{often} {context}: {joined}."
+
+
 def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """Headline for "which team has won the most titles since 2000"."""
     if metadata.get("route") != "playoff_appearances" or not isinstance(result, LeaderboardResult):
@@ -2278,6 +2318,7 @@ def _finalize_natural_query_result(
     _add_titles_leaderboard_answer_metadata(metadata, result)
     _add_appearances_answer_metadata(metadata, result)
     _add_series_comebacks_answer_metadata(metadata, result)
+    _add_opponent_record_list_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

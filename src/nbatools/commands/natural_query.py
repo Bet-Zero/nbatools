@@ -1928,8 +1928,67 @@ _BEAT_VERB = re.compile(
 _LOSE_TO = re.compile(r"\b(?:lose|loses|lost|losing)\s+to\b(?=\s+(?:the\s+)?[a-z])")
 
 
+# "which teams beat the Lakers", "teams the Lakers lost to", "who did the
+# Celtics beat": a board of the teams with wins (or losses) against that team.
+# The subject is lazy up to the verb; a margin ("beat by 20") stays a game list.
+_WHO_BEAT = re.compile(
+    r"^(?:(?:which|what)\s+teams?|teams?|who)\s+(?:that\s+|who\s+)?(?:have\s+|has\s+)?"
+    r"(?:ever\s+|also\s+)?(?:beat|beaten|defeated|won\s+against)\s+(?P<rest>(?:the\s+)?[a-z].*)$"
+)
+_WHO_DID_BEAT = re.compile(
+    r"^(?:(?:which|what)\s+teams?\s+(?:did|have|has)|teams?|who\s+(?:did|have|has))\s+"
+    r"(?P<team>(?:the\s+)?[a-z][a-z0-9.' -]*?)\s+(?:ever\s+)?(?P<verb>beat|beaten|defeat|defeated"
+    r"|lose\s+(?:to|against)|lost\s+(?:to|against)|won\s+against)\b(?P<rest>.*)$"
+)
+_MOST_TAIL = re.compile(r"\s+(?:the\s+)?most(?:\s+(?:times|often))?\b")
+
+
+_TIMES_TAIL = re.compile(
+    r"\s+(?:(?:at\s+least\s+)?(?P<n>\d+|two|three|four|five)\s+(?:or\s+more\s+)?times"
+    r"|(?P<twice>twice))\b"
+)
+_TIMES_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5}
+
+
+def _who_beat(q: str) -> tuple[str, tuple[str, int] | None]:
+    """Rewrite "which teams beat X" into the opponent record board. Return
+    the rewritten text and, when every team with one is listed (no "most"),
+    the stat and minimum count ("beat the Lakers twice": 2)."""
+    if re.search(
+        r"\bmargin\b|\bby\s+\d|\bby\s+double|\b(?:buzzer|clock|odds|spread|players?)\b", q
+    ):
+        return q, None
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    match = _WHO_BEAT.match(q)
+    if match:
+        stat, rest = "wins", match.group("rest")
+        named = rest
+    else:
+        match = _WHO_DID_BEAT.match(q)
+        if not match:
+            return q, None
+        stat = "wins" if match.group("verb").startswith(("lose", "lost")) else "losses"
+        named = match.group("team")
+        rest = f"{named}{match.group('rest')}"
+    if re.search(r"\b(?:and|or)\b|,", rest) or not detect_team_in_text(named):
+        # Two teams, or a player ("who did LeBron beat"): not this board.
+        return q, None
+    listed = _MOST_TAIL.search(rest) is None
+    rest = _MOST_TAIL.sub("", rest)
+    minimum = 1
+    times = _TIMES_TAIL.search(rest)
+    if times:
+        n = times.group("n")
+        minimum = 2 if times.group("twice") else int(_TIMES_WORDS.get(n, n))
+        rest = rest[: times.start()] + rest[times.end() :]
+    rest = " ".join(rest.split())
+    return f"which teams have the most {stat} against {rest}", ((stat, minimum) if listed else None)
+
+
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
+    q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
     q = _SHORT_YEAR.sub(_expand_short_year, q)
@@ -2464,6 +2523,7 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        "opponent_record_list": opponent_record_list,
         "season": season,
         "start_season": start_season,
         "end_season": end_season,
@@ -6968,6 +7028,23 @@ def _finalize_route(parsed: dict) -> dict:
     return out
 
 
+def _opponent_record_list(out: dict, request: tuple[str, int] | None) -> None:
+    """ "which teams beat the Lakers": every team with a win against them,
+    most first, rather than a top-10 cut that pads with winless teams."""
+    if not request or out.get("route") != "team_record_leaderboard":
+        return
+    stat, minimum = request
+    kwargs = out.setdefault("route_kwargs", {})
+    if kwargs.get("stat") != stat or not kwargs.get("opponent"):
+        return
+    kwargs["limit"] = 30
+    kwargs["min_wins" if stat == "wins" else "min_losses"] = minimum
+    out["notes"] = [
+        *(out.get("notes") or []),
+        f"opponent_record_list: teams with {minimum}+ {stat}",
+    ]
+
+
 def _finalize_route_inner(parsed: dict) -> dict:
     """Route a parse state; playoff series situations ride on every route."""
     rerouted = _round_as_situation(parsed)
@@ -7018,6 +7095,7 @@ def _finalize_route_inner(parsed: dict) -> dict:
             _series_situation_totals(out, q)
         elif not situation:
             _span_totals(out, q)
+            _opponent_record_list(out, parsed.get("opponent_record_list"))
     if refused or not situation:
         if refused:
             out["confidence"] = compute_parse_confidence(out)

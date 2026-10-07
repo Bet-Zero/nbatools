@@ -30,3 +30,27 @@ def test_beat_and_lose_to_count_wins_and_losses_against_the_opponent():
         f"have won {wins} games against the Boston Celtics in the 2025-26 regular season."
     )
     assert f"have lost {losses} games against the Boston Celtics" in lost.metadata["count_phrase"]
+
+
+@pytest.mark.fixture_data
+@pytest.mark.parametrize(
+    ("query", "road_only"),
+    [
+        ("how many times did the Lakers lose", False),
+        ("how often do the Lakers lose", False),
+        ("how many times did the Lakers lose on the road", True),
+    ],
+)
+def test_did_they_lose_counts_losses(query, road_only):
+    import pandas as pd
+
+    games = pd.read_csv(
+        "qa/fixtures/query_engine_sample/data/raw/team_game_stats/2025-26_regular_season.csv"
+    )
+    games = games[games["team_abbr"] == "LAL"]
+    if road_only:
+        games = games[games["is_home"] == 0]
+    losses = int((games["wl"] == "L").sum())
+    result = execute_natural_query(query)
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == losses
+    assert f"have lost {losses} games" in result.metadata["count_phrase"]
