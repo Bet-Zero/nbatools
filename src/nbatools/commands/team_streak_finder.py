@@ -5,6 +5,7 @@ import math
 import pandas as pd
 
 from nbatools.commands._condition_utils import attach_opponent_stats, normalize_stat_conditions
+from nbatools.commands._franchise import franchise_caveat
 from nbatools.commands._streak_runs import best_runs_per_entity
 from nbatools.commands.data_utils import describe_opponent_filter
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -406,6 +407,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if team is not None and (franchise_note := franchise_caveat(filtered, team)):
+        caveats.append(franchise_note)
     if current_short_of is not None:
         caveats.append(f"the current streak is shorter than {current_short_of} games")
     if no_active_streak:

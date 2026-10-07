@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._franchise import franchise_caveat
 from nbatools.commands._seasons import (
     EARLIEST_SEASON,
     default_end_season,
@@ -34,7 +35,7 @@ from nbatools.commands._seasons import (
     resolve_seasons,
     season_to_int,
 )
-from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.data_utils import load_team_games_for_seasons, team_value_mask
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import (
     ComparisonResult,
@@ -371,12 +372,7 @@ def apply_series_situation_filter(
 
 
 def _team_match(df: pd.DataFrame, team: str, prefix: str = "") -> pd.Series:
-    wanted = team.upper()
-    mask = pd.Series(False, index=df.index)
-    for column in (f"{prefix}team_abbr", f"{prefix}team_name"):
-        if column in df.columns:
-            mask |= df[column].astype(str).str.upper().eq(wanted)
-    return mask
+    return team_value_mask(df, team, prefix=prefix)
 
 
 def build_series_comebacks_result(
@@ -577,10 +573,7 @@ def build_playoff_history_result(
 
     # Filter to the requested team
     t = team.upper()
-    df = df[
-        df["team_abbr"].astype(str).str.upper().eq(t)
-        | df["team_name"].astype(str).str.upper().eq(t)
-    ].copy()
+    df = df[team_value_mask(df, t)].copy()
 
     if df.empty:
         span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
@@ -591,12 +584,7 @@ def build_playoff_history_result(
         )
 
     if opponent:
-        o = opponent.upper()
-        mask = pd.Series(False, index=df.index)
-        if "opponent_team_abbr" in df.columns:
-            mask = mask | df["opponent_team_abbr"].astype(str).str.upper().eq(o)
-        if "opponent_team_name" in df.columns:
-            mask = mask | df["opponent_team_name"].astype(str).str.upper().eq(o)
+        mask = team_value_mask(df, opponent, prefix="opponent_")
         df = df[mask].copy()
         if df.empty:
             return NoResult(query_class="summary", reason="no_match")
@@ -605,6 +593,8 @@ def build_playoff_history_result(
     df = _add_decade_column(df)
 
     caveats: list[str] = []
+    if franchise_note := franchise_caveat(df, team):
+        caveats.append(franchise_note)
     round_caveat = _round_data_caveat(seasons)
     if round_caveat:
         caveats.append(round_caveat)
@@ -757,10 +747,7 @@ def build_record_by_decade_result(
         return NoResult(query_class="summary", reason="no_data")
 
     t = team.upper()
-    df = df[
-        df["team_abbr"].astype(str).str.upper().eq(t)
-        | df["team_name"].astype(str).str.upper().eq(t)
-    ].copy()
+    df = df[team_value_mask(df, t)].copy()
 
     if df.empty:
         span = f"in {seasons[0]}" if len(seasons) == 1 else f"from {seasons[0]} to {seasons[-1]}"
@@ -771,12 +758,7 @@ def build_record_by_decade_result(
         )
 
     if opponent:
-        o = opponent.upper()
-        mask = pd.Series(False, index=df.index)
-        if "opponent_team_abbr" in df.columns:
-            mask = mask | df["opponent_team_abbr"].astype(str).str.upper().eq(o)
-        if "opponent_team_name" in df.columns:
-            mask = mask | df["opponent_team_name"].astype(str).str.upper().eq(o)
+        mask = team_value_mask(df, opponent, prefix="opponent_")
         df = df[mask].copy()
         if df.empty:
             return NoResult(query_class="summary", reason="no_match")
@@ -846,25 +828,11 @@ def build_matchup_by_decade_result(
     a_upper, b_upper = team_a.upper(), team_b.upper()
 
     a_df = df[
-        (
-            df["team_abbr"].astype(str).str.upper().eq(a_upper)
-            | df["team_name"].astype(str).str.upper().eq(a_upper)
-        )
-        & (
-            df["opponent_team_abbr"].astype(str).str.upper().eq(b_upper)
-            | df["opponent_team_name"].astype(str).str.upper().eq(b_upper)
-        )
+        (team_value_mask(df, a_upper)) & (team_value_mask(df, b_upper, prefix="opponent_"))
     ].copy()
 
     b_df = df[
-        (
-            df["team_abbr"].astype(str).str.upper().eq(b_upper)
-            | df["team_name"].astype(str).str.upper().eq(b_upper)
-        )
-        & (
-            df["opponent_team_abbr"].astype(str).str.upper().eq(a_upper)
-            | df["opponent_team_name"].astype(str).str.upper().eq(a_upper)
-        )
+        (team_value_mask(df, b_upper)) & (team_value_mask(df, a_upper, prefix="opponent_"))
     ].copy()
 
     if a_df.empty and b_df.empty:
@@ -1007,34 +975,38 @@ def build_playoff_appearances_result(
                 notes=[f"No {round_label} games found in the specified span"],
             )
 
-    # Count appearances: distinct seasons per team at this stage
-    appearances = df.groupby(["team_abbr", "team_name"])["season"].nunique().reset_index()
-    appearances.columns = ["team_abbr", "team_name", "appearances"]
+    # Count appearances: distinct seasons per franchise at this stage, named
+    # as the franchise was last known in the span (Seattle seasons count for
+    # the Thunder).
+    df = df.sort_values(["season", "game_date"])
+    key = "team_id" if "team_id" in df.columns else "team_abbr"
+    appearances = (
+        df.groupby(key)
+        .agg(
+            team_abbr=("team_abbr", "last"),
+            team_name=("team_name", "last"),
+            appearances=("season", "nunique"),
+        )
+        .reset_index(drop=True)
+    )
 
     if team:
         # Single-team summary
         t = team.upper()
-        team_rows = appearances[
-            appearances["team_abbr"].astype(str).str.upper().eq(t)
-            | appearances["team_name"].astype(str).str.upper().eq(t)
-        ]
-        if team_rows.empty:
+        team_df = df[team_value_mask(df, t)]
+        if team_df.empty:
             return NoResult(query_class="summary", reason="no_match")
 
-        row = team_rows.iloc[0]
+        row = team_df.iloc[-1]
         summary_row = {
             "team_name": row["team_name"],
-            "appearances": int(row["appearances"]),
+            "appearances": int(team_df["season"].nunique()),
             "round": round_label,
             "season_start": df["season"].min(),
             "season_end": df["season"].max(),
         }
 
         # Breakdown: which seasons they appeared
-        team_df = df[
-            df["team_abbr"].astype(str).str.upper().eq(t)
-            | df["team_name"].astype(str).str.upper().eq(t)
-        ]
         season_detail = (
             team_df.groupby("season")
             .agg(
@@ -1049,6 +1021,8 @@ def build_playoff_appearances_result(
             season_detail["win_pct"] = (season_detail["wins"] / season_detail["games"]).round(3)
 
         caveats.append(f"{round_label} appearances for {row['team_name']}")
+        if franchise_note := franchise_caveat(team_df, t):
+            caveats.append(franchise_note)
         current_through = compute_current_through_for_seasons(seasons, "Playoffs")
 
         return SummaryResult(
@@ -1372,25 +1346,11 @@ def build_playoff_matchup_history_result(
 
     # Team A games vs Team B in playoffs
     a_df = df[
-        (
-            df["team_abbr"].astype(str).str.upper().eq(a_upper)
-            | df["team_name"].astype(str).str.upper().eq(a_upper)
-        )
-        & (
-            df["opponent_team_abbr"].astype(str).str.upper().eq(b_upper)
-            | df["opponent_team_name"].astype(str).str.upper().eq(b_upper)
-        )
+        (team_value_mask(df, a_upper)) & (team_value_mask(df, b_upper, prefix="opponent_"))
     ].copy()
 
     b_df = df[
-        (
-            df["team_abbr"].astype(str).str.upper().eq(b_upper)
-            | df["team_name"].astype(str).str.upper().eq(b_upper)
-        )
-        & (
-            df["opponent_team_abbr"].astype(str).str.upper().eq(a_upper)
-            | df["opponent_team_name"].astype(str).str.upper().eq(a_upper)
-        )
+        (team_value_mask(df, b_upper)) & (team_value_mask(df, a_upper, prefix="opponent_"))
     ].copy()
 
     if a_df.empty and b_df.empty:

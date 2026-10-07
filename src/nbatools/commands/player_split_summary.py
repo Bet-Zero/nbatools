@@ -5,7 +5,7 @@ import pandas as pd
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
-from nbatools.commands.data_utils import describe_opponent_filter
+from nbatools.commands.data_utils import describe_opponent_filter, team_value_mask
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
@@ -69,17 +69,11 @@ def apply_base_filters(
 
     if team:
         team_upper = team.upper()
-        out = out[
-            out["team_abbr"].astype(str).str.upper().eq(team_upper)
-            | out["team_name"].astype(str).str.upper().eq(team_upper)
-        ].copy()
+        out = out[team_value_mask(out, team_upper)].copy()
 
     if opponent:
         opp_upper = opponent.upper()
-        out = out[
-            out["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-            | out["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
-        ].copy()
+        out = out[team_value_mask(out, opp_upper, prefix="opponent_")].copy()
 
     if stat:
         stat = stat.lower()

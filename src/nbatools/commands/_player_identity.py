@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._franchise import team_value_mask
 from nbatools.commands.entity_resolution import (
     _normalize_for_matching,
     canonical_player_names_by_id,
@@ -73,12 +74,7 @@ def canonicalize_player_names(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _team_mask(df: pd.DataFrame, team: str) -> pd.Series:
-    team_upper = str(team).upper()
-    mask = pd.Series(False, index=df.index)
-    for column in ("team_abbr", "team_name"):
-        if column in df.columns:
-            mask |= df[column].astype(str).str.upper().eq(team_upper)
-    return mask
+    return team_value_mask(df, team)
 
 
 def _season_span(rows: pd.DataFrame) -> str:

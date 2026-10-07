@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.data_utils import team_value_mask
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.playoff_history import (
     apply_series_situation_filter,
@@ -127,10 +128,7 @@ def build_result(
         df = df[df["game_date"] <= pd.to_datetime(end_date)].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        opp_mask = pd.Series(False, index=df.index)
-        if "opponent_team_abbr" in df.columns:
-            opp_mask = opp_mask | df["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
+        opp_mask = team_value_mask(df, opponent, prefix="opponent_")
         df = df[opp_mask].copy()
 
     if home_only and "is_home" in df.columns:
