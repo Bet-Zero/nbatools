@@ -1386,7 +1386,9 @@ def resolve_team(text: str) -> ResolutionResult:
 _COPULA_WAS = re.compile(
     r"(?<!\w)was(?=\s+(?:not\s+)?(?:out|outs|injured|hurt|sidelined|available"
     r"|unavailable|active|inactive|healthy|playing|played|resting|rested|benched"
-    r"|suspended|missing|missed|ejected|sick|the|a|an|his|her|their|its)\b)"
+    r"|suspended|missing|missed|ejected|sick|the|a|an|his|her|their|its"
+    # "was LeBron's team beaten by the Nuggets", "was Boston swept".
+    r"|beaten|defeated|swept|eliminated|blown|upset|routed|[a-z]+'s)\b)"
 )
 
 
