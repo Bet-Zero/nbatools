@@ -93,6 +93,11 @@ def test_76ers_after_beat_and_lost_to(query, outcome):
         "how many teams has LeBron beaten",
         "how many teams have the Celtics beaten in a row",
         "how many teams have the Lakers beaten more than the Celtics",
+        # A margin or an exact count, and "didn't": the games route counted games.
+        "how many teams did the Lakers lose to by 10",
+        "how many teams beat the Lakers by 20",
+        "how many teams did the Celtics lose to exactly once",
+        "how many teams didn't the Lakers beat",
     ],
 )
 def test_team_counts_the_board_cannot_give_refuse(query):
