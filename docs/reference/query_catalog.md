@@ -674,6 +674,22 @@ Examples:
 - `longest Bucks streak with 15+ threes`
 - `Thunder consecutive games with 110+ points`
 - `Celtics 5 straight games scoring 120+`
+- `Celtics longest streak holding opponents under 100`
+- `Lakers winning streaks of 5 or more games` (every run that long)
+
+### Streak counts
+
+A stated length with "how many" counts every separate run at least that
+long (a 12-game streak is one 10+ game streak). Without a team or player it
+counts the teams or players who had a run that long. "how many games was
+the longest streak" stays a streak answer. A stated span ("since 2024")
+replaces the three-season default.
+
+- `how many 10 game winning streaks do the Celtics have`
+- `how many times did the Lakers win 5 straight this season`
+- `how many times has Curry had 5 straight games with a three`
+- `how many players have had 5 straight 20 point games this season`
+- `how many teams have had a 10 game winning streak this season`
 
 ---
 

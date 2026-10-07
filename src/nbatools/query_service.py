@@ -839,6 +839,9 @@ def _build_count_phrase(
         )
         return f"{entity} {verb} {count} {game_word} {context}."
 
+    if parsed.get("streak_count"):
+        return _streak_count_phrase(count, parsed, metadata, games)
+
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
         min_value = metadata.get("min_value")
@@ -954,6 +957,56 @@ def _build_count_phrase(
     else:
         verb = "have recorded" if team_subject else "has recorded"
     return f"{entity} {verb} {count} {count_noun} {context}."
+
+
+def _streak_count_phrase(count: int, parsed: dict, metadata: dict, streaks: Any) -> str:
+    """ "The Boston Celtics have had 2 winning streaks of 10+ games ..."."""
+    kwargs = parsed.get("route_kwargs") or {}
+    special = kwargs.get("special_condition")
+    bounds = normalize_stat_conditions(kwargs.get("conditions"))
+    if kwargs.get("stat"):
+        bounds = [
+            {
+                "stat": kwargs["stat"],
+                "min_value": kwargs.get("min_value"),
+                "max_value": kwargs.get("max_value"),
+            },
+            *bounds,
+        ]
+    games_with = ""
+    if len(bounds) == 1:
+        games_with = _occurrence_label(bounds[0])
+    elif bounds:
+        games_with = _compound_occurrence_label(bounds)
+    length = f"{kwargs.get('min_streak_length')}+"
+    if special in ("wins", "losses"):
+        noun = "winning streak" if special == "wins" else "losing streak"
+        tail = f"of {length} games"
+        if games_with:
+            tail += f" ({games_with.replace('games with', 'every game with', 1)})"
+    else:
+        noun = "streak"
+        condition = {
+            "made_three": "with a made three",
+            "triple_double": "with a triple-double",
+            "double_double": "with a double-double",
+        }.get(special or "")
+        if condition is None:
+            condition = (
+                games_with.replace("games ", "", 1) if games_with else "meeting the condition"
+            )
+        tail = f"of {length} straight games {condition}"
+    player = bool(parsed.get("player"))
+    context = _count_context(metadata, player=player)
+    if kwargs.get("team") is None and kwargs.get("player") is None:
+        unit = "team" if parsed.get("route") == "team_streak_finder" else "player"
+        subject = f"1 {unit} has" if count == 1 else f"{count} {unit}s have"
+        return f"{subject} had a {noun} {tail} {context}."
+    entity = metadata.get("player") or _team_subject(metadata, streaks) or "Result"
+    verb = "has had" if player else "have had"
+    if count != 1:
+        noun = noun.replace("streak", "streaks", 1)
+    return f"{entity} {verb} {count} {noun} {tail} {context}."
 
 
 def _team_subject(metadata: dict, games: Any = None) -> str | None:
@@ -1790,6 +1843,21 @@ def _apply_count_intent(
                 caveats=result.caveats,
             )
         return _count_no_result(result)
+
+    if isinstance(result, StreakResult):
+        if not parsed.get("streak_count"):
+            return result
+        return CountResult(
+            count=len(result.streaks),
+            games=result.streaks,
+            result_status=result.result_status,
+            result_reason=result.result_reason,
+            current_through=result.current_through,
+            metadata=result.metadata,
+            notes=result.notes,
+            caveats=result.caveats,
+            detail_section="streak",
+        )
 
     if isinstance(result, FinderResult):
         stat_total = _stat_total_count(parsed, result.games) if allow_stat_total else None

@@ -331,7 +331,10 @@ def build_result(
             )
         ]
     else:
-        rows = _extract_streak_rows(filtered, mask, team_name=team, condition=condition)
+        # Name the team as its latest game in range does, not by the code
+        # it was asked for with ("Boston Celtics", not "BOS").
+        latest = filtered.sort_values(["game_date", "game_id"])["team_name"].iloc[-1]
+        rows = _extract_streak_rows(filtered, mask, team_name=latest, condition=condition)
         if current:
             rows = [row for row in rows if row["is_active"]]
 
@@ -349,7 +352,7 @@ def build_result(
     if no_active_streak:
         # The answer to "current streak" when the latest game missed is zero,
         # anchored on that game, not "no matching games".
-        rows = [_no_active_streak_row(filtered, team, condition)]
+        rows = [_no_active_streak_row(filtered, latest, condition)]
     if current and not rows:
         return NoResult(
             query_class="streak",

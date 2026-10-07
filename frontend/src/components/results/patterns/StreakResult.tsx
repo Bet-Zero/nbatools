@@ -287,6 +287,15 @@ function heroSentence(
   rows: SectionRow[],
   metadata: ResultMetadata | undefined,
 ): string {
+  const countPhrase = metadata?.count_phrase;
+  if (
+    typeof metadata?.primary_count === "number" &&
+    typeof countPhrase === "string" &&
+    countPhrase.trim()
+  ) {
+    // A count of streaks answers with the count, not the longest run.
+    return countPhrase.trim();
+  }
   const subject = sentenceSubject(entityName, kind);
   if (statusText(row) === "Active") {
     return `${subject} is on a ${gameCountForSentence(row)} streak of ${activeConditionPhrase(
