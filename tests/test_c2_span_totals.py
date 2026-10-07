@@ -40,8 +40,12 @@ def test_span_most_is_a_total(query, stat):
     assert parse_query(query)["route_kwargs"]["stat"] == stat
 
 
-def test_single_season_board_is_unchanged():
-    kwargs = parse_query("most points in a single season since 2000")["route_kwargs"]
+@pytest.mark.parametrize(
+    "query",
+    ["most points in a single season since 2000", "most points in any season since 2023"],
+)
+def test_single_season_board_is_unchanged(query):
+    kwargs = parse_query(query)["route_kwargs"]
     assert kwargs["stat"] == "pts" and kwargs["per_season"] is True
 
 

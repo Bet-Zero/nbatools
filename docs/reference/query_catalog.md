@@ -291,6 +291,10 @@ Examples:
 - `how many Celtics games with 120+ points and 15+ threes since 2022`
 - `count Lakers home wins vs Warriors since 2021`
 - `how often have the Lakers held opponents under 100 points this year`
+- `how many times did the Lakers win by 20` (a bare margin of 10 or more is a
+  floor: every 20+ win; `won by 1` and `won by exactly 20` stay exact)
+- `how many times did the Lakers beat the Celtics by 20`,
+  `how many times did the Celtics lose to the Knicks by 10 or more`
 
 ### Boolean count
 

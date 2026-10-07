@@ -813,6 +813,24 @@ def _stat_total_count(parsed: dict, games: Any) -> int | None:
     return int(games[stat].sum())
 
 
+def _margin_text(kwargs: dict) -> str:
+    """ " by 20+ points", " by exactly 1 point", " by 3 to 5 points"."""
+    low, high = kwargs.get("min_value"), kwargs.get("max_value")
+
+    def points(value: Any) -> str:
+        return f"{_count_threshold_text(value)} point{'' if value == 1 else 's'}"
+
+    if low is not None and high is not None:
+        if low == high:
+            return f" by exactly {points(low)}"
+        return f" by {_count_threshold_text(low)} to {points(high)}"
+    if low is not None:
+        return f" by {_count_threshold_text(low)}+ points"
+    if high is not None:
+        return f" by {points(high).replace(' point', ' or fewer point', 1)}"
+    return ""
+
+
 def _build_count_phrase(
     count: int,
     parsed: dict,
@@ -848,7 +866,7 @@ def _build_count_phrase(
         and not player
         and parsed.get("route") == "game_finder"
         and (outcome.get("wins_only") or outcome.get("losses_only"))
-        and not outcome.get("stat")
+        and outcome.get("stat") in (None, "win_margin", "loss_margin")
         and not normalize_stat_conditions(outcome.get("conditions"))
         and not parsed.get("occurrence_event")
     ):
@@ -876,7 +894,8 @@ def _build_count_phrase(
             last_n_scope=parsed.get("last_n_scope"),
         )
         subject = _team_subject(metadata, games) or "The team"
-        return f"{subject} have {verb} {count} {times}{against} {context}."
+        margin = _margin_text(outcome) if outcome.get("stat") else ""
+        return f"{subject} have {verb} {count} {times}{margin}{against} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
