@@ -124,7 +124,7 @@ _MADE_THE_STAGE = re.compile(
 _OPPONENT_STAGE_CLAUSE = re.compile(
     # Only after an opponent word: "teams that missed the playoffs in 2024-25"
     # on its own is the subject of the question.
-    r"\b(?:against|vs\.?|versus|over|beat|beating|beats|facing|playing|played)\s+"
+    r"\b(?:against|vs\.?|versus|over|beat|beating|beats|beaten|facing|playing|played)\s+"
     r"(?:the\s+)?(?:teams?|opponents?|clubs?|squads?)\s+(?:that|which|who|to)\s+(?:\w+\s+){0,2}?"
     r"(?:made|make|reached|reach|qualified|missed|miss)\b[^,;]*"
 )

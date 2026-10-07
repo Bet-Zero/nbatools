@@ -842,6 +842,42 @@ def _build_count_phrase(
     if parsed.get("streak_count"):
         return _streak_count_phrase(count, parsed, metadata, games)
 
+    outcome = parsed.get("route_kwargs") or {}
+    if (
+        team
+        and not player
+        and parsed.get("route") == "game_finder"
+        and (outcome.get("wins_only") or outcome.get("losses_only"))
+        and not outcome.get("stat")
+        and not normalize_stat_conditions(outcome.get("conditions"))
+        and not parsed.get("occurrence_event")
+    ):
+        # "how many times did the Lakers beat the Celtics": wins, not "games".
+        verb = "won" if outcome.get("wins_only") else "lost"
+        times = "game" if count == 1 else "games"
+        opponent = outcome.get("opponent")
+        against = ""
+        if (
+            isinstance(opponent, str)
+            and opponent
+            and games is not None
+            and hasattr(games, "columns")
+        ):
+            names = games.get("opponent_team_name")
+            label = names.mode().iloc[0] if names is not None and not names.empty else opponent
+            against = f" against the {label}"
+        quality = outcome.get("opponent_quality")
+        if not against and isinstance(quality, dict) and quality.get("surface_term"):
+            against = f" against {quality['surface_term']}"
+        context = _count_context(
+            metadata,
+            player=False,
+            last_n=parsed.get("last_n"),
+            last_n_scope=parsed.get("last_n_scope"),
+        )
+        subject = _team_subject(metadata, games) or "The team"
+        return f"{subject} have {verb} {count} {times}{against} {context}."
+
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
         min_value = metadata.get("min_value")

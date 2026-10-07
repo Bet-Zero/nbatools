@@ -260,3 +260,10 @@ def test_playoff_team_clauses_after_playing_or_opponents_filter_opponents(query,
     assert parsed["route"] == route
     assert parsed["route_kwargs"]["season_type"] == "Regular Season"
     assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == term
+
+
+def test_beaten_playoff_teams_is_an_opponent_filter_not_an_appearance():
+    parsed = parse_query("how many times have the Lakers beaten teams that made the playoffs")
+    assert parsed["route"] == "game_finder"
+    assert parsed["route_kwargs"]["wins_only"] is True
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"

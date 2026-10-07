@@ -1918,8 +1918,20 @@ def _expand_short_year(match: re.Match) -> str:
     return f"{full}{match.group(2)}"
 
 
+# "how many times did the Lakers beat the Celtics": a win over that opponent.
+_BEAT_VERB = re.compile(
+    r"\b(?:beat|beats|beaten|beating|defeat|defeats|defeated|defeating)\b"
+    r"(?=\s+(?:the\s+)?[a-z])"
+)
+
+# "how many times did the Lakers lose to the Celtics": a loss against them.
+_LOSE_TO = re.compile(r"\b(?:lose|loses|lost|losing)\s+to\b(?=\s+(?:the\s+)?[a-z])")
+
+
 def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(normalize_text(query))
+    q = _BEAT_VERB.sub("won against", q)
+    q = _LOSE_TO.sub("lost against", q)
     q = _SHORT_YEAR.sub(_expand_short_year, q)
     if not _STAT_BAND.search(q):
         q = _BARE_DECADE.sub(lambda m: f"the {19 if int(m.group(1)) >= 5 else 20}{m.group(1)}0s", q)
