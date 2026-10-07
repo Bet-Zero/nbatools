@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from nbatools.commands._franchise import franchise_caveat
+from nbatools.commands._franchise import franchise_caveat, name_by_latest_franchise
 from nbatools.commands._seasons import (
     EARLIEST_SEASON,
     default_end_season,
@@ -1432,6 +1432,7 @@ def _titles_leaderboard(
     """Teams ranked by Finals series won, from Finals game rows."""
     finals = df[df["playoff_round_code"] == "04"]
     rows = []
+    finals = name_by_latest_franchise(finals)
     for (abbr, name), team_games in finals.groupby(["team_abbr", "team_name"]):
         series = _build_series_table(team_games)
         won = series[series["result"] == "Won"]
@@ -1532,6 +1533,8 @@ def build_record_by_decade_leaderboard_result(
     if "wl" in df.columns:
         df["_is_win"] = (df["wl"] == "W").astype(int)
 
+    # One franchise is one row per decade across a relocation or rename.
+    df = name_by_latest_franchise(df)
     agg = df.groupby(["team_abbr", "team_name", "decade"], as_index=False).agg(
         games_played=("game_id", "nunique"),
         wins=("_is_win", "sum"),
@@ -1775,6 +1778,8 @@ def build_playoff_round_record_result(
     if "wl" in df.columns:
         df["_is_win"] = (df["wl"] == "W").astype(int)
 
+    # One franchise is one row across a relocation or rename.
+    df = name_by_latest_franchise(df)
     agg = df.groupby(["team_id", "team_name", "team_abbr"], as_index=False).agg(
         games_played=("game_id", "nunique"),
         wins=("_is_win", "sum"),

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._franchise import name_by_latest_franchise
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands._single_season_boards import (
     apply_win_bounds,
@@ -265,6 +266,8 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         work["_is_win"] = (work["wl"] == "W").astype(int)
         agg_spec["wins"] = ("_is_win", "sum")
 
+    # One franchise is one row across a relocation or rename.
+    work = name_by_latest_franchise(work)
     grouped = work.groupby(["team_id", "team_name", "team_abbr"], as_index=False).agg(**agg_spec)
 
     # Compute losses and win_pct from wins

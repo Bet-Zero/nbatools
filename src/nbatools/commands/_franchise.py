@@ -66,3 +66,24 @@ def franchise_caveat(df: pd.DataFrame, team: str | None) -> str | None:
     if not names:
         return None
     return f"includes the franchise's seasons as the {' and the '.join(names)}"
+
+
+def name_by_latest_franchise(df: pd.DataFrame) -> pd.DataFrame:
+    """Label every row with its franchise's latest name in ``df``.
+
+    Multi-season boards group by abbreviation and name; without this the
+    Seattle and Oklahoma City seasons of one franchise rank as two teams.
+    """
+    columns = [c for c in ("team_abbr", "team_name") if c in df.columns]
+    if df.empty or "team_id" not in df.columns or not columns:
+        return df
+    order = [c for c in ("season", "game_date", "game_id") if c in df.columns]
+    ordered = df.sort_values(order) if order else df
+    ids = pd.to_numeric(ordered["team_id"], errors="coerce")
+    latest = ordered.assign(_fid=ids).groupby("_fid")[columns].last()
+    out = df.copy()
+    keys = pd.to_numeric(out["team_id"], errors="coerce")
+    for column in columns:
+        mapped = keys.map(latest[column])
+        out[column] = mapped.where(mapped.notna(), out[column])
+    return out
