@@ -919,6 +919,8 @@ def build_playoff_appearances_result(
     ascending: bool = False,
     titles: bool = False,
     player_titles: bool = False,
+    player_board: bool = False,
+    rank_by: str = "appearances",
 ) -> LeaderboardResult | SummaryResult | NoResult:
     """Count playoff appearances, optionally filtered by round stage.
 
@@ -938,14 +940,9 @@ def build_playoff_appearances_result(
 
     if titles and (player or player_titles):
         return _player_titles_result(seasons, player=player, limit=limit)
-    if player or player_titles:
-        return NoResult(
-            query_class="leaderboard",
-            reason="filter_not_supported",
-            notes=[
-                "player playoff-appearance counts are not supported because "
-                "the current route has team-grain data only"
-            ],
+    if player or player_titles or player_board:
+        return _player_appearances_result(
+            seasons, player=player, playoff_round=playoff_round, limit=limit
         )
 
     try:
@@ -963,14 +960,16 @@ def build_playoff_appearances_result(
     if round_caveat:
         caveats.append(round_caveat)
 
+    latest_postseason = df["season"].max()
+
     # Apply round filter
     round_label = "Playoffs"
     if playoff_round:
         round_label = round_code_to_label(playoff_round)
         df = df[df["playoff_round_code"] == playoff_round].copy()
-        if df.empty:
+        if df.empty and not team:
             return NoResult(
-                query_class="leaderboard" if not team else "summary",
+                query_class="leaderboard",
                 reason="no_match",
                 notes=[f"No {round_label} games found in the specified span"],
             )
@@ -994,16 +993,26 @@ def build_playoff_appearances_result(
         # Single-team summary
         t = team.upper()
         team_df = df[team_value_mask(df, t)]
-        if team_df.empty:
+        regular = _team_regular_seasons(seasons, t)
+        if team_df.empty and regular.empty:
             return NoResult(query_class="summary", reason="no_match")
-
-        row = team_df.iloc[-1]
+        named = team_df if not team_df.empty else regular
+        row = named.sort_values("season").iloc[-1]
+        appeared = sorted(team_df["season"].unique())
+        # Seasons the franchise played, up to the latest postseason in range:
+        # a season whose playoffs have not started is not a miss.
+        played = sorted(
+            season_
+            for season_ in set(regular["season"]) | set(appeared)
+            if season_ <= latest_postseason
+        )
         summary_row = {
             "team_name": row["team_name"],
-            "appearances": int(team_df["season"].nunique()),
+            "appearances": len(appeared),
             "round": round_label,
-            "season_start": df["season"].min(),
-            "season_end": df["season"].max(),
+            "season_start": played[0] if played else seasons[0],
+            "season_end": played[-1] if played else seasons[-1],
+            **_appearance_runs(appeared, played),
         }
 
         # Breakdown: which seasons they appeared
@@ -1035,6 +1044,9 @@ def build_playoff_appearances_result(
     if titles:
         return _titles_leaderboard(df, seasons, limit=limit, caveats=caveats)
 
+    if rank_by == "longest_streak":
+        return _appearance_streak_board(df, seasons, latest_postseason, round_label, limit, caveats)
+
     # Leaderboard: all teams ranked by appearances
     result = (
         appearances.sort_values(
@@ -1061,6 +1073,208 @@ def build_playoff_appearances_result(
         leaders=result,
         current_through=current_through,
         caveats=caveats,
+    )
+
+
+def _appearance_streak_board(
+    df: pd.DataFrame,
+    seasons: list[str],
+    latest_postseason: str,
+    round_label: str,
+    limit: int,
+    caveats: list[str],
+) -> LeaderboardResult | NoResult:
+    """Franchises ranked by their longest run of consecutive appearances."""
+    try:
+        regular = load_team_games_for_seasons(seasons, "Regular Season")
+    except FileNotFoundError:
+        return NoResult(query_class="leaderboard", reason="no_data")
+    regular = regular[regular["season"] <= latest_postseason]
+    appeared = df.groupby("team_id")["season"].unique()
+    rows = []
+    for team_id, games in regular.sort_values(["season", "game_date"]).groupby("team_id"):
+        played = sorted(games["season"].unique())
+        runs = _appearance_runs(sorted(appeared.get(team_id, [])), played)
+        if not runs["longest_streak"]:
+            continue
+        rows.append(
+            {
+                "team_abbr": games["team_abbr"].iloc[-1],
+                "team_name": games["team_name"].iloc[-1],
+                "longest_streak": runs["longest_streak"],
+                "streak_start": runs["longest_streak_start"],
+                "streak_end": runs["longest_streak_end"],
+                "current_streak": runs["current_streak"],
+                "round": round_label,
+            }
+        )
+    if not rows:
+        return NoResult(query_class="leaderboard", reason="no_match")
+    board = pd.DataFrame(rows).sort_values(["longest_streak", "team_name"], ascending=[False, True])
+    if len(board) > limit:
+        cutoff = board["longest_streak"].iloc[limit - 1]
+        board = board[board["longest_streak"] >= cutoff]
+    board = board.reset_index(drop=True)
+    board.insert(0, "rank", range(1, len(board) + 1))
+    caveats.append(f"longest run of consecutive {round_label} appearances per franchise")
+    if season_to_int(seasons[0]) <= DATA_START_YEAR:
+        caveats.append("runs are counted from 1996-97, where the data starts")
+    return LeaderboardResult(
+        leaders=board,
+        current_through=compute_current_through_for_seasons(seasons, "Playoffs"),
+        caveats=caveats,
+    )
+
+
+def _team_regular_seasons(seasons: list[str], team: str) -> pd.DataFrame:
+    """The franchise's regular-season rows (season, team name) in ``seasons``."""
+    try:
+        games = load_team_games_for_seasons(seasons, "Regular Season")
+    except FileNotFoundError:
+        return pd.DataFrame(columns=["season", "team_name"])
+    rows = games[team_value_mask(games, team)]
+    return rows.sort_values(["season", "game_date"]).drop_duplicates("season", keep="last")[
+        ["season", "team_name"]
+    ]
+
+
+def _appearance_runs(appeared: list[str], played: list[str]) -> dict:
+    """Last appearance, misses, and runs of consecutive appearances or misses.
+
+    ``played`` is every season the franchise played in range, in order; a run
+    breaks at any played season without an appearance.
+    """
+    hit = set(appeared)
+    longest = longest_drought = 0
+    run_start = drought_start = None
+    best = (None, None)
+    worst = (None, None)
+    for season_ in played:
+        if season_ in hit:
+            run_start = run_start or season_
+            length = played.index(season_) - played.index(run_start) + 1
+            if length > longest:
+                longest, best = length, (run_start, season_)
+            drought_start = None
+        else:
+            drought_start = drought_start or season_
+            length = played.index(season_) - played.index(drought_start) + 1
+            if length > longest_drought:
+                longest_drought, worst = length, (drought_start, season_)
+            run_start = None
+    current = 0
+    for season_ in reversed(played):
+        if season_ not in hit:
+            break
+        current += 1
+    since_last = 0
+    for season_ in reversed(played):
+        if season_ in hit:
+            break
+        since_last += 1
+    return {
+        "last_appearance": appeared[-1] if appeared else None,
+        "missed": sum(season_ not in hit for season_ in played),
+        "seasons_played": len(played),
+        "longest_streak": longest,
+        "longest_streak_start": best[0],
+        "longest_streak_end": best[1],
+        "current_streak": current,
+        "longest_drought": longest_drought,
+        "longest_drought_start": worst[0],
+        "longest_drought_end": worst[1],
+        "seasons_since_last": since_last,
+    }
+
+
+def _player_appearances_result(
+    seasons: list[str], *, player: str | None, playoff_round: str | None, limit: int
+) -> LeaderboardResult | NoResult:
+    """Seasons a player played at least one game at that playoff stage.
+
+    The round comes from the team's playoff games (rounds before 2001-02 are
+    read from each team's series order), joined on the player's game and team.
+    """
+    from nbatools.commands._player_identity import player_ids_for_name, select_player_rows
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    if player and not player_ids_for_name(player):
+        return NoResult(
+            query_class="leaderboard", reason="no_match", notes=[f"No player named {player}"]
+        )
+    try:
+        team_games = _load_playoff_games(seasons)
+        games = load_player_games_for_seasons(seasons, "Playoffs", player=player)
+    except FileNotFoundError:
+        return NoResult(query_class="leaderboard", reason="no_data")
+    notes: list[str] = []
+    if player:
+        games = select_player_rows(games, player, notes=notes)
+    rounds = team_games[["game_id", "team_id", "playoff_round_code"]].drop_duplicates()
+    rounds = rounds.assign(game_id=_game_id_text(rounds["game_id"]))
+    games = games.assign(game_id=_game_id_text(games["game_id"]))
+    games = games.merge(rounds, on=["game_id", "team_id"], how="inner")
+    round_label = "Playoffs"
+    if playoff_round:
+        round_label = round_code_to_label(playoff_round)
+        games = games[games["playoff_round_code"] == playoff_round]
+    if "minutes" in games.columns:
+        # A box-score line with no minutes is a DNP, not an appearance.
+        minutes = pd.to_numeric(games["minutes"], errors="coerce")
+        games = games[minutes.fillna(0) > 0]
+    rows = []
+    for player_id, seasons_played in games.groupby("player_id"):
+        by_season = seasons_played.sort_values("season").drop_duplicates("season", keep="last")
+        rows.append(
+            {
+                "player_id": player_id,
+                "player_name": str(seasons_played["player_name"].mode().iloc[0]),
+                "appearances": len(by_season),
+                "round": round_label,
+                "appearance_seasons": ", ".join(by_season["season"]),
+                "appearance_teams": ", ".join(by_season["team_abbr"].astype(str)),
+            }
+        )
+    board = pd.DataFrame(rows)
+    if player and board.empty:
+        from nbatools.commands._player_identity import canonical_player_names_by_id
+
+        ids = list(player_ids_for_name(player))
+        name = canonical_player_names_by_id().get(ids[0], player) if ids else player
+        board = pd.DataFrame(
+            [
+                {
+                    "player_name": name,
+                    "appearances": 0,
+                    "round": round_label,
+                    "appearance_seasons": "",
+                    "appearance_teams": "",
+                }
+            ]
+        )
+    if board.empty:
+        return NoResult(query_class="leaderboard", reason="no_match")
+    ranked = board.sort_values(["appearances", "player_name"], ascending=[False, True])
+    if not player and len(ranked) > limit:
+        # Never cut a tie at the last place kept.
+        cutoff = ranked["appearances"].iloc[limit - 1]
+        ranked = ranked[ranked["appearances"] >= cutoff]
+    result = ranked.drop(columns=["player_id"], errors="ignore").reset_index(drop=True)
+    result.insert(0, "rank", range(1, len(result) + 1))
+    caveats = [
+        f"a {round_label} appearance is a season with at least one {round_label} game played"
+    ]
+    if season_to_int(seasons[0]) < DATA_START_YEAR:
+        caveats.append("playoff data starts in 1996-97; earlier seasons are not counted")
+    if len(seasons) > 1:
+        result["seasons"] = f"{seasons[0]} to {seasons[-1]}"
+        caveats.append(f"across {seasons[0]} to {seasons[-1]}")
+    else:
+        result["season"] = seasons[0]
+    return LeaderboardResult(
+        leaders=result,
+        current_through=compute_current_through_for_seasons(seasons, "Playoffs"),
+        caveats=caveats + notes,
     )
 
 

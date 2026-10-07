@@ -100,10 +100,38 @@ def detect_playoff_appearance_intent(text: str) -> bool:
         re.search(
             r"\b(?:playoff|postseason|finals?|conference\s+finals?|"
             r"(?:first|1st|second|2nd|third|3rd)\s+round|semifinal)"
-            r"\s+appearance",
+            r"\s+(?:appearance|berth|trip|drought)",
             t,
         )
+        or _MADE_THE_STAGE.search(_OPPONENT_STAGE_CLAUSE.sub(" ", t))
+        or _PLAYOFF_RUN_OF_SEASONS.search(t)
     )
+
+
+# "how many times have the Lakers made the playoffs", "when did the Knicks
+# last make the conference finals", "LeBron reached the Finals": a season
+# reached that stage. Not "made the playoffs as the 8 seed" games or records.
+_STAGE = (
+    r"(?:the\s+)?(?:nba\s+)?(?:playoffs|postseason|finals|conference\s+finals|"
+    r"(?:second|2nd|third|3rd)\s+round|semifinals|semis)"
+)
+_MADE_THE_STAGE = re.compile(
+    r"\b(?:made|make|makes|making|reached|reach|reaches|reaching|qualified\s+for|"
+    r"qualify\s+for|went\s+to|go\s+to|gone\s+to|been\s+to|missed|miss|missing)\s+"
+    r"(?:it\s+to\s+)?" + _STAGE + r"\b(?!\s+(?:games?|record|stats?|series))"
+)
+# "against teams that made the playoffs" names opponents, not an appearance.
+_OPPONENT_STAGE_CLAUSE = re.compile(
+    r"\b(?:teams?|opponents?|clubs?|squads?)\s+(?:that|which|who|to)\s+(?:\w+\s+){0,2}?"
+    r"(?:made|make|reached|reach|qualified|missed|miss)\b[^,;]*"
+)
+# "most consecutive playoff appearances", "Lakers playoff streak", "longest
+# streak of making the playoffs"
+_PLAYOFF_RUN_OF_SEASONS = re.compile(
+    r"\b(?:playoff|postseason|finals)\s+(?:streak|drought)s?\b"
+    r"|\bconsecutive\s+(?:playoff|postseason|finals)\s+(?:appearances|seasons|trips|berths)\b"
+    r"|\b(?:straight|consecutive)\s+(?:seasons?|years?)\s+(?:making|in)\s+" + _STAGE
+)
 
 
 def detect_playoff_history_intent(text: str) -> bool:
@@ -244,6 +272,12 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
 
     # -- Playoff appearance routing --
     if playoff_appearance_intent and not player_a and not player_b:
+        if not (season or start_season or end_season) and re.search(
+            r"\b(?:this|current)\s+(?:season|year|postseason|playoffs)\b", q
+        ):
+            # "did the Nuggets make the playoffs this season": the latest
+            # postseason, not every season since 1996-97.
+            season = default_end_season("Playoffs")
         pa_season, pa_start, pa_end = _resolve_season_defaults(
             season, start_season, end_season, "Playoffs"
         )
@@ -257,7 +291,15 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "ascending": False,
         }
         if player:
-            route_kwargs["unsupported_filters"] = ["player_playoff_appearances"]
+            # "how many Finals appearances does LeBron have": seasons he played
+            # at least one game at that stage.
+            route_kwargs["player"] = player
+        elif not team and re.search(r"\bplayers?\b", q):
+            # "which player has the most Finals appearances"
+            route_kwargs["player_board"] = True
+        elif not team and _PLAYOFF_RUN_OF_SEASONS.search(q):
+            # "most consecutive playoff appearances": teams by their longest run.
+            route_kwargs["rank_by"] = "longest_streak"
         return "playoff_appearances", route_kwargs
 
     # -- Playoff matchup history: team_a vs team_b --

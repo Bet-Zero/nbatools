@@ -110,10 +110,10 @@ function PlayoffTeamHistoryResult({
     <section className={styles.pattern} aria-label="Playoff history result">
       <ResultHero
         sentence={
-          variant === "appearances"
-            ? appearanceSentence(team.name, data.result?.metadata, summary)
-            : typeof answerPhrase === "string" && answerPhrase.trim()
-              ? answerPhrase.trim()
+          typeof answerPhrase === "string" && answerPhrase.trim()
+            ? answerPhrase.trim()
+            : variant === "appearances"
+              ? appearanceSentence(team.name, data.result?.metadata, summary)
               : historySentence(team.name, data.result?.metadata, summary)
         }
         subjectIllustration={teamIdentity(team)}

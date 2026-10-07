@@ -441,33 +441,17 @@ class TestLeaderboardCountEntityGrain:
         from nbatools.commands.natural_query import parse_query
 
         parsed = parse_query("How many Finals appearances does LeBron have?")
-        parsed["route_kwargs"].pop("unsupported_filters", None)
+        # The route answers the appearance count itself (count intent off);
+        # these cases pin the count layer's entity-grain guard on its own.
+        parsed["count_intent"] = True
         return parsed
 
-    def test_player_appearance_boundary_refuses_before_execution(self):
+    def test_player_appearance_question_reaches_the_player_builder(self):
         qr = execute_natural_query("How many Finals appearances does LeBron have?")
 
         assert qr.route == "playoff_appearances"
-        assert isinstance(qr.result, NoResult)
-        assert qr.result.query_class == "count"
-        assert qr.result_status == "no_result"
-        assert qr.result_reason == "filter_not_supported"
-        assert qr.to_dict()["sections"] == {}
-        assert qr.metadata["unsupported_filters"] == ["player_playoff_appearances"]
-        assert "primary_count" not in qr.metadata
-        assert "count_phrase" not in qr.metadata
-
-    def test_player_appearance_raw_cli_has_no_count_or_leaderboard(self):
-        from nbatools.commands.natural_query import render_query_result
-
-        query = "How many Finals appearances does LeBron have?"
-        qr = execute_natural_query(query)
-        output = _capture(render_query_result, qr, query, pretty=False)
-
-        assert "NO_RESULT" in output
-        assert "filter_not_supported" in output
-        assert "\nCOUNT\n" not in output
-        assert "\nLEADERBOARD\n" not in output
+        assert qr.result_reason != "filter_not_supported"
+        assert not qr.metadata.get("unsupported_filters")
 
     def test_wrong_grain_leaderboard_cannot_become_player_zero(self, monkeypatch):
         parsed = self._parsed_player_appearance_query()

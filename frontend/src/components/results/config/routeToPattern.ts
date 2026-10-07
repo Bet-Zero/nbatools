@@ -253,6 +253,17 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           },
         ];
       }
+      if (firstRow && "longest_streak" in firstRow) {
+        // "most consecutive playoff appearances": teams by their longest run.
+        return [
+          {
+            type: "leaderboard",
+            sectionKey: "leaderboard",
+            metricKey: "longest_streak",
+            sentenceMetricLabel: "straight playoff seasons",
+          },
+        ];
+      }
       if ((data.result?.sections?.leaderboard?.length ?? 0) > 0) {
         return [
           {

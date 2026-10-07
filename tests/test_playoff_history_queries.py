@@ -239,7 +239,7 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         result = self._parse("lakers finals appearances since 2000")
         assert result["route"] == "playoff_appearances", result["route"]
 
-    def test_player_playoff_appearances_route_to_typed_boundary(self):
+    def test_player_playoff_appearances_route_with_the_player(self):
         queries = [
             "How many Finals appearances does LeBron have?",
             "LeBron Finals appearances",
@@ -251,9 +251,8 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
 
                 assert result["route"] == "playoff_appearances"
                 assert result["player"] == "LeBron James"
-                assert result["route_kwargs"]["unsupported_filters"] == [
-                    "player_playoff_appearances"
-                ]
+                assert result["route_kwargs"]["player"] == "LeBron James"
+                assert "unsupported_filters" not in result["route_kwargs"]
 
     def test_playoff_history_routes(self):
         """'Celtics playoff history' → playoff_history."""
@@ -737,7 +736,7 @@ class TestPlayoffRoundRecordBuildResult(unittest.TestCase):
 
 
 class TestPlayoffAppearanceBoundaries(unittest.TestCase):
-    def test_structured_player_playoff_appearances_refuses_wrong_grain(self):
+    def test_structured_player_playoff_appearances_reach_the_player_builder(self):
         from nbatools.query_service import execute_structured_query
 
         qr = execute_structured_query(
@@ -748,9 +747,7 @@ class TestPlayoffAppearanceBoundaries(unittest.TestCase):
             playoff_round="04",
         )
 
-        assert qr.result_status == "no_result"
-        assert qr.result_reason == "filter_not_supported"
-        assert qr.to_dict()["sections"] == {}
+        assert qr.result_reason != "filter_not_supported"
 
 
 @pytest.mark.needs_data
