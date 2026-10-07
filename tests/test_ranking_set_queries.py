@@ -326,7 +326,7 @@ class TestParseQueryHistoricalOpponentRanking:
     def test_most_steals_in_playoffs_since_2010(self):
         parsed = parse_query("most steals in playoffs since 2010")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] in ("stl", "stl_per_game")
+        assert parsed["route_kwargs"]["stat"] == "stl_total"
         assert parsed["route_kwargs"]["season_type"] == "Playoffs"
         assert parsed["route_kwargs"]["start_season"] is not None
 

@@ -451,7 +451,8 @@ class TestNaturalQueryRouting:
     def test_parse_most_steals_playoffs(self):
         parsed = parse_query("most steals in playoffs since 2020")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "stl"
+        # Over several seasons "most steals" is the total (C2 span totals).
+        assert parsed["route_kwargs"]["stat"] == "stl_total"
         assert parsed["route_kwargs"]["season_type"] == "Playoffs"
 
     def test_parse_best_efg_last_3_seasons(self):

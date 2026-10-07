@@ -512,6 +512,11 @@ Ranking semantics:
 - existing public per-game semantics remain unchanged for aliases such as
   points per game, rebounds per game, assists per game, steals per game,
   blocks per game, turnovers per game, plus-minus per game, and made threes
+- over a span of seasons, "most" a counting stat (points, rebounds, assists,
+  threes, steals, blocks, turnovers) ranks the total: `most career points`,
+  `most playoff points all time`, `most rebounds in the 2010s`, `all time
+  scoring leaders`; "per game" or "average" keeps the rate, and one-season
+  questions and single-season boards are unchanged
 
 ### Team leaderboards
 
