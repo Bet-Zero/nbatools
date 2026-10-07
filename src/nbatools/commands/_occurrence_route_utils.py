@@ -354,6 +354,18 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     return None
 
 
+# "players with 25 points and 10 rebounds", "players with a triple double":
+# every player who had such a game, most often first. A bare "players with 30
+# points" names no game and stays out (a game or a season total).
+_PLAYERS_WITH = re.compile(
+    r"^(?:(?:show|list|give)(?:\s+me)?\s+)?(?:all\s+)?(?:the\s+)?players\s+with\b"
+)
+
+
+def wants_players_with_list(text: str) -> bool:
+    return bool(_PLAYERS_WITH.search(text))
+
+
 def wants_occurrence_leaderboard(text: str) -> bool:
     """Detect if the query is asking for an occurrence leaderboard.
 
@@ -365,6 +377,8 @@ def wants_occurrence_leaderboard(text: str) -> bool:
     event = extract_occurrence_event(text) or extract_compound_occurrence_event(text)
     if event is None:
         return False
+    if wants_players_with_list(text):
+        return True
 
     return bool(
         re.search(
@@ -379,6 +393,13 @@ def wants_occurrence_leaderboard(text: str) -> bool:
 # ---------------------------------------------------------------------------
 # Route helpers — called from _finalize_route() in natural_query.py
 # ---------------------------------------------------------------------------
+
+
+def _player_board_limit(q: str, top_n: int | None) -> int | None:
+    """ "players with ...": every player who did it, unless a top N is asked."""
+    if top_n:
+        return top_n
+    return None if wants_players_with_list(q) else 10
 
 
 def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
@@ -566,7 +587,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "losses_only": losses_only,
             "start_date": start_date,
             "end_date": end_date,
-            "limit": top_n or 10,
+            "limit": _player_board_limit(q, top_n),
         }
 
     # -----------------------------------------------------------------------
@@ -578,7 +599,12 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and not player
         and not player_a
         and not player_b
-        and not re.match(r"games_\d", detect_player_leaderboard_stat(q) or "")
+        and (
+            # "most 30 point games" ranks on the season board; "players with
+            # 30 point games" lists every player who had one.
+            wants_players_with_list(q)
+            or not re.match(r"games_\d", detect_player_leaderboard_stat(q) or "")
+        )
     ):
         occ_season = season
         occ_start = start_season
@@ -628,7 +654,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
                 "losses_only": losses_only,
                 "start_date": start_date,
                 "end_date": end_date,
-                "limit": top_n or 10,
+                "limit": _player_board_limit(q, top_n),
             }
         return "player_occurrence_leaders", {
             "stat": occurrence_event.get("stat"),
@@ -645,7 +671,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "losses_only": losses_only,
             "start_date": start_date,
             "end_date": end_date,
-            "limit": top_n or 10,
+            "limit": _player_board_limit(q, top_n),
         }
 
     return None

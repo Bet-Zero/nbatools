@@ -15,7 +15,8 @@ At the pinned base:
   "Efficient" - which this repo already reads as True Shooting % - was dropped
   without a word.
 - ``players with 25 points and 10 rebounds`` came back as an unrouted error
-  whose metadata still carried a rebounds stat.
+  whose metadata still carried a rebounds stat (it now lists every player
+  with a game meeting both).
 - ``most 40-point games while the player was injured`` returned a Washington
   Wizards game list: "was" resolved to the Wizards and the injury clause was
   discarded.
@@ -181,26 +182,18 @@ def test_efficiency_alias_is_existing_repository_behavior():
 TWO_THRESHOLD_QUERY = "players with 25 points and 10 rebounds"
 
 
-def test_two_threshold_request_refuses_holding_both_thresholds():
+def test_two_threshold_request_lists_players_meeting_both_thresholds():
+    # Was a whole-question refusal (a one-condition answer was the silent
+    # reduction). It now answers whole: every player with a game meeting both,
+    # counted by the condition pair, never by one of them alone.
     executed = execute_natural_query(TWO_THRESHOLD_QUERY)
 
-    assert COMPOUND_EVENT_UNEXECUTABLE in _blockers(executed.metadata)
-    _no_answer_was_returned(executed)
-    # Whole or not at all: a one-entry list here would be the silent reduction
-    # this boundary exists to remove.
-    assert executed.metadata.get("requested_event_conditions") == [
-        _condition("pts", 25.0),
-        _condition("reb", 10.0),
-    ]
-
-
-def test_two_threshold_request_publishes_no_single_metric():
-    executed = execute_natural_query(TWO_THRESHOLD_QUERY)
-
-    # The base surfaced an unrouted error still carrying `reb`, which reads as
-    # a partial answer to a question nothing executed.
+    assert executed.result_status == "ok"
+    assert executed.route == "player_occurrence_leaders"
+    assert COMPOUND_EVENT_UNEXECUTABLE not in _blockers(executed.metadata)
+    rows = _leaderboard_rows(executed)
+    assert rows and all(row["games_pts_25+_reb_10+"] >= 1 for row in rows)
     assert executed.metadata.get("stat") is None
-    assert executed.metadata.get("requested_stat") is None
 
 
 def test_two_threshold_parse_reads_both_conditions():
