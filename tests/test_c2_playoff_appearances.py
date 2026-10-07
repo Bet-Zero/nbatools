@@ -195,3 +195,12 @@ def test_teams_that_missed_as_the_subject_is_a_question():
 def test_against_teams_that_made_the_playoffs_stays_an_opponent_filter():
     result = execute_natural_query("Lakers record against teams that made the playoffs")
     assert result.metadata["route"] == "team_record"
+
+
+def test_a_stated_top_n_never_cuts_a_tie_at_the_fewest():
+    missed = _teams("2025-26", "regular_season") - _teams("2025-26", "playoffs")
+    result = _ok("top 2 teams with the fewest playoff appearances")
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    assert {row["team_name"] for row in rows} == missed
+    for name in missed:
+        assert name in result.metadata["answer_phrase"]

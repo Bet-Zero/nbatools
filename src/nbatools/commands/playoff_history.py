@@ -967,7 +967,7 @@ def build_playoff_appearances_result(
     if playoff_round:
         round_label = round_code_to_label(playoff_round)
         df = df[df["playoff_round_code"] == playoff_round].copy()
-        if df.empty and not team and rank_by not in ("missed", "longest_drought"):
+        if df.empty and not team and not ascending and rank_by not in ("missed", "longest_drought"):
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
@@ -1069,14 +1069,14 @@ def build_playoff_appearances_result(
             appearances = franchises.reset_index(drop=True)
 
     # Leaderboard: all teams ranked by appearances
-    result = (
-        appearances.sort_values(
-            by=["appearances", "team_name"],
-            ascending=[ascending, True],
-        )
-        .head(limit)
-        .reset_index(drop=True)
-    )
+    ranked = appearances.sort_values(by=["appearances", "team_name"], ascending=[ascending, True])
+    if limit is not None and len(ranked) > limit:
+        # Never cut a tie at the last place kept ("fewest Finals appearances"
+        # can tie a dozen franchises at zero).
+        cutoff = ranked["appearances"].iloc[limit - 1]
+        keep = ranked["appearances"] <= cutoff if ascending else ranked["appearances"] >= cutoff
+        ranked = ranked[keep]
+    result = ranked.reset_index(drop=True)
     result.insert(0, "rank", range(1, len(result) + 1))
     result["round"] = round_label
     if len(seasons) > 1:

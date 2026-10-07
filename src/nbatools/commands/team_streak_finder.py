@@ -375,6 +375,7 @@ def build_result(
     out["end_date"] = out["end_date"].dt.date.astype(str)
     out.insert(0, "rank", range(1, len(out) + 1))
 
+    listed_of = len(out)
     if limit is not None:
         out = out.head(limit).copy()
 
@@ -407,6 +408,8 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
+    if team is not None and len(out) < listed_of:
+        caveats.append(f"showing the {len(out)} longest of {listed_of} streaks")
     if team is not None and (franchise_note := franchise_caveat(filtered, team)):
         caveats.append(franchise_note)
     if current_short_of is not None:
