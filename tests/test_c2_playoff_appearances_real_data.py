@@ -111,3 +111,23 @@ def test_longest_playoff_drought_board_is_led_by_the_kings():
     ]
     assert rows[0]["team_abbr"] == "SAC"
     assert rows[0]["longest_drought"] == 16
+
+
+def test_fewest_playoff_appearances_counts_from_raw_rows():
+    played: dict[int, set] = {}
+    appeared: dict[int, set] = {}
+    for season in SEASONS:
+        regular = _rows("team_game_stats", season, "regular_season")
+        playoffs = _rows("team_game_stats", season, "playoffs")
+        for team_id in pd.to_numeric(regular["team_id"]).unique():
+            played.setdefault(int(team_id), set()).add(season)
+        if not playoffs.empty:
+            playoffs = playoffs[~playoffs["game_id"].str.zfill(10).str.startswith("005")]
+            for team_id in pd.to_numeric(playoffs["team_id"]).unique():
+                appeared.setdefault(int(team_id), set()).add(season)
+    fewest = min(len(appeared.get(team_id, set())) for team_id in played)
+
+    rows = _query("fewest playoff appearances from 1996-97 to 2024-25").result.to_dict()[
+        "sections"
+    ]["leaderboard"]
+    assert rows[0]["appearances"] == fewest

@@ -313,3 +313,23 @@ def test_league_count_in_a_row(query, outcome, length, season):
     )
     count, _, _ = _count(query)
     assert count == expected
+
+
+def test_plural_streaks_without_a_length_list_every_run():
+    runs = _run_lengths(_team("LAL", "2024-25", SEASON)["wl"] == "W")
+    result = execute_natural_query("Lakers winning streaks since 2024")
+    rows = result.result.to_dict()["sections"]["streak"]
+    expected = sorted((run for run in runs if run >= 2), reverse=True)[:25]
+    assert [row["streak_length"] for row in rows] == expected
+
+
+def test_a_cut_streak_list_says_how_many_runs_there_were():
+    runs = _run_lengths(_team("LAL", *DEFAULT_WINDOW)["wl"] == "W")
+    long_runs = [run for run in runs if run >= 2]
+    result = execute_natural_query("Lakers winning streaks")
+    rows = result.result.to_dict()["sections"]["streak"]
+    if len(long_runs) > 25:
+        assert len(rows) == 25
+        assert f"showing the 25 longest of {len(long_runs)} streaks" in result.result.caveats
+    else:
+        assert len(rows) == len(long_runs)

@@ -1466,7 +1466,12 @@ def extract_team_streak_request(text: str) -> dict | None:
 
 
 def _longest_unless_length(length: int | None, normalized: str) -> bool:
-    """A stated length without "longest" asks for every run that long."""
+    """A stated length without "longest" asks for every run that long.
+
+    Plural "winning streaks" with no length and no "longest" lists them too.
+    """
+    if length is None and re.search(r"\bstreaks\b", normalized):
+        return bool(re.search(r"\b(?:longest|most|best)\b", normalized))
     return length is None or bool(re.search(r"\blongest\b", normalized))
 
 
@@ -1508,13 +1513,18 @@ def _team_streak_request_base(normalized: str) -> dict | None:
         # "Lakers current winning streak", "Celtics winning streak at home",
         # "5 straight wins" (every run of 5 or more)
         length = _outcome_streak_length(normalized)
+        longest = _longest_unless_length(length, normalized)
+        if length is None and not longest and not _CURRENT_STREAK.search(normalized):
+            # "Lakers winning streaks since 2024": every run, and one game is
+            # not a streak.
+            length = 2
         request = {
             "special_condition": outcome,
             "stat": None,
             "min_value": None,
             "max_value": None,
             "min_streak_length": length,
-            "longest": _longest_unless_length(length, normalized),
+            "longest": longest,
         }
     return request
 

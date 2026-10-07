@@ -967,7 +967,7 @@ def build_playoff_appearances_result(
     if playoff_round:
         round_label = round_code_to_label(playoff_round)
         df = df[df["playoff_round_code"] == playoff_round].copy()
-        if df.empty and not team and rank_by not in ("missed", "longest_drought"):
+        if df.empty and not team and not ascending and rank_by not in ("missed", "longest_drought"):
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
@@ -1049,15 +1049,34 @@ def build_playoff_appearances_result(
             df, seasons, latest_postseason, round_label, limit, caveats, rank_by
         )
 
+    if ascending:
+        # "fewest playoff appearances": franchises that played in range and
+        # never reached the stage rank first, with zero.
+        try:
+            regular = load_team_games_for_seasons(seasons, "Regular Season")
+            regular = regular[regular["season"] <= latest_postseason]
+        except FileNotFoundError:
+            regular = pd.DataFrame()
+        if not regular.empty and "team_id" in regular.columns:
+            regular = regular.sort_values(["season", "game_date"])
+            franchises = regular.groupby("team_id").agg(
+                team_abbr=("team_abbr", "last"), team_name=("team_name", "last")
+            )
+            counts = (
+                df.groupby("team_id")["season"].nunique() if not df.empty else pd.Series(dtype=int)
+            )
+            franchises["appearances"] = counts.reindex(franchises.index).fillna(0).astype(int)
+            appearances = franchises.reset_index(drop=True)
+
     # Leaderboard: all teams ranked by appearances
-    result = (
-        appearances.sort_values(
-            by=["appearances", "team_name"],
-            ascending=[ascending, True],
-        )
-        .head(limit)
-        .reset_index(drop=True)
-    )
+    ranked = appearances.sort_values(by=["appearances", "team_name"], ascending=[ascending, True])
+    if limit is not None and len(ranked) > limit:
+        # Never cut a tie at the last place kept ("fewest Finals appearances"
+        # can tie a dozen franchises at zero).
+        cutoff = ranked["appearances"].iloc[limit - 1]
+        keep = ranked["appearances"] <= cutoff if ascending else ranked["appearances"] >= cutoff
+        ranked = ranked[keep]
+    result = ranked.reset_index(drop=True)
     result.insert(0, "rank", range(1, len(result) + 1))
     result["round"] = round_label
     if len(seasons) > 1:
