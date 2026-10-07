@@ -486,6 +486,7 @@ Examples:
 
 - `top scorers this season`
 - `highest ts% among players`
+- `best three point shooters`, `best free throw shooters`, `Lakers best three point shooters`: 3P% / FT% with the attempt floor (a bare `best shooters` is not guessed)
 - `most 30 point games`
 - player season boards need 20 games for a per-game average or rate (capped at half the most games anyone has played, so early-season boards are not empty); season totals (`most total points this season`) need one game
 - `how many players scored 2000 points`, `players with 1,000 points this season`,

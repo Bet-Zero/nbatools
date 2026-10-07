@@ -213,6 +213,9 @@ _TEAM_LEADER_STAT_NOUNS = {
 }
 
 
+_TEAM_LEADER_RATES = frozenset({"fg_pct", "fg3_pct", "ft_pct", "ts_pct", "efg_pct"})
+
+
 def detect_team_leader_stat(text: str) -> str | None:
     """Return the stat for a team-scoped player-leader ask, else None.
 
@@ -235,6 +238,18 @@ def detect_team_leader_stat(text: str) -> str | None:
     m = re.search(r"\bleader\s+in\s+([a-z0-9 %]+)", text)
     if m:
         return detect_stat(m.group(1))
+    if re.search(
+        r"\b(?:best|top|leading|highest|worst|lowest)\b.*?"
+        r"\b(?:shooters?|percentage|pct)\b|%",
+        text,
+    ) and not re.search(r"\bgames?\b|\bnights?\b|\bstretch", text):
+        # "Lakers best three point shooters", "Lakers best free throw
+        # percentage": the team's players ranked by the shooting rate.
+        from nbatools.commands._leaderboard_utils import detect_player_leaderboard_stat
+
+        stat = detect_player_leaderboard_stat(text)
+        if stat in _TEAM_LEADER_RATES:
+            return stat
     return None
 
 

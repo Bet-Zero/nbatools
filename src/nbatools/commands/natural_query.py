@@ -4427,7 +4427,9 @@ def _route_parsed_query(parsed: dict) -> dict:
             "limit": top_n or 5,
             "season_type": season_type,
             "min_games": min_games or 1,
-            "ascending": team_leader_stat in LOWER_IS_BETTER_STATS,
+            # "Lakers worst free throw shooters" ranks from the bottom.
+            "ascending": (team_leader_stat in LOWER_IS_BETTER_STATS)
+            != bool(re.search(r"\b(?:worst|lowest|bottom)\b", q)),
             "start_date": start_date,
             "end_date": end_date,
             "start_season": start_season,
