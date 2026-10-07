@@ -483,6 +483,14 @@ _BARE_YEAR = re.compile(
     rf"\b(?:in|during|for)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b"
     r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b))"
     rf"|\b(?:the\s+)?({_YEAR})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
+    # "Lakers record 2024", "LeBron stats 2016": a year closing the question.
+    rf"|(?<![\d/-])\b({_YEAR})\s*[?.!]?\s*$"
+)
+# "how many players scored 2000", "players with over 2000": a closing number
+# that a stat word owns is a value, not a year.
+_TRAILING_YEAR_IS_A_VALUE = re.compile(
+    r"\b(?:scored|scores?|scoring|had|has|have|with|over|under|least|than|above|below|"
+    r"top|reach(?:ed|es)?|surpass(?:ed|es)?|pass(?:ed|es)?|exceed(?:ed|s)?)\s*$"
 )
 # "since the 2019 season", "before 2025": a range word owns the year.
 _BARE_YEAR_RANGE_WORD = re.compile(
@@ -517,9 +525,11 @@ def extract_bare_year_season(text: str) -> tuple[int, str] | None:
         text[: match.start()]
     ):
         return None
+    if match.group(3) and _TRAILING_YEAR_IS_A_VALUE.search(text[: match.start()]):
+        return None
     from nbatools.commands._seasons import int_to_season
 
-    year = int(match.group(1) or match.group(2))
+    year = int(match.group(1) or match.group(2) or match.group(3))
     return year, int_to_season(year - 1)
 
 

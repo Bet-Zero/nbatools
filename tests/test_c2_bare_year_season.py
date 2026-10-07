@@ -34,6 +34,14 @@ def _span(query: str) -> tuple:
         ("LeBron 2019 stats", "2018-19"),
         ("Celtics playoff record in 2024", "2023-24"),
         ("Celtics conference finals record in 2024", "2023-24"),
+        # A year closing the question ("Lakers record 2024") was dropped and
+        # the current season answered.
+        ("Lakers record 2024", "2023-24"),
+        ("LeBron stats 2016", "2015-16"),
+        ("Lakers playoff record 2016", "2015-16"),
+        ("Jokic triple doubles 2025?", "2024-25"),
+        ("Celtics vs Lakers 2024", "2023-24"),
+        ("top scorers 2024", "2023-24"),
     ],
 )
 def test_lone_year_names_the_season_that_ended_in_it(query, season):
@@ -62,10 +70,16 @@ def test_ranges_seasons_and_dates_are_unchanged(query, expected):
     assert _span(query) == expected
 
 
-@pytest.mark.parametrize("query", ["LeBron games scoring 2019 points"])
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron games scoring 2019 points",
+        "how many players scored 2000",
+    ],
+)
 def test_stat_values_are_not_years(query):
     parsed = parse_query(query)
-    assert not any("read 2019" in note for note in parsed.get("notes") or [])
+    assert not any("read 20" in note for note in parsed.get("notes") or [])
 
 
 def _notes(query: str) -> list[str]:
@@ -141,3 +155,10 @@ def test_playoff_year_has_no_default_season_note():
     notes = _notes("LeBron playoff stats in 2026")
     assert any("read 2026 as the 2025-26 season" in note for note in notes)
     assert not any("no season specified" in note for note in notes)
+
+
+def test_trailing_year_answers_a_leaderboard():
+    # The leaderboard grammar accepts the closing year it now reads.
+    parsed = parse_query("top scorers 2024")
+    assert parsed["route"] == "season_leaders"
+    assert not parsed["route_kwargs"].get("unsupported_filters")

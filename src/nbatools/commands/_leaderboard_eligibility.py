@@ -614,6 +614,8 @@ _SEASON = (
     r"(?:seasons?|years?|playoffs|postseasons?)\b",
     r"\b\d{4}\s*-\s*\d{2,4}\b",
     r"\b(?:in|for|during|from)\s+\d{4}\b",
+    # "top scorers 2024": a year closing the question.
+    r"\b(?:19|20)\d{2}\s*[?.!]?\s*$",
     r"\bsince\s+\d{4}\b",
     # "from 2010 to 2019", "between 2010 and 2019", "in the 2010s".
     r"\b(?:from|between)?\s*\d{4}\s*(?:to|and|through|thru|until|-)\s*\d{4}\b",
