@@ -1079,21 +1079,49 @@ def canonicalize_margin_phrases(text: str) -> str:
     # "Lakers losses to the Celtics", "Lakers defeats to Boston", "Lakers wins
     # over the Celtics": the named team's games against the other ("to"/"over"
     # read the other team as the subject, and "defeats" as wins).
+    # With a margin after the opponent ("losses to the Celtics by 10 or
+    # more", "games beaten by 10 by the Celtics") the verb form keeps it.
+    opp = r"(?P<opp>(?:the\s+)?[a-z0-9][a-z0-9.'-]*(?:\s+[a-z][a-z0-9.'-]*){0,2}?)"
+    margin_after = rf"\s+by\s+(?=(?:{bounds})(?:$|\s|[,.?!;]))"
+    text = re.sub(
+        rf"\b(?:losses|loss|defeats|defeat)\s+(?:to|against|at\s+the\s+hands\s+of)\s+{opp}"
+        + margin_after,
+        lambda m: f"lost to {m.group('opp')} by ",
+        text,
+    )
+    text = re.sub(
+        rf"\b(?:wins|win|victories|victory)\s+(?:over|against)\s+{opp}" + margin_after,
+        lambda m: f"beat {m.group('opp')} by ",
+        text,
+    )
+    text = re.sub(
+        rf"\b(?P<games>games?)\s+beaten\s+by\s+(?P<margin>(?:{bounds}))\s+by\s+{opp}"
+        r"(?=$|\s|[,.?!;])",
+        lambda m: f"{m.group('games')} lost to {m.group('opp')} by {m.group('margin')}",
+        text,
+    )
     text = re.sub(
         r"\b(?:losses|loss|defeats|defeat)\s+(?:to|at\s+the\s+hands\s+of)\b", "losses against", text
     )
-    # "wins over 120 points" / "over .500" keep the strict "over".
-    text = re.sub(r"\b(?:wins|win|victories|victory)\s+over\b(?!\s*\.?\d)", "wins against", text)
+    # "wins over 120 points" / "over .500" keep the strict "over" ("76ers" is
+    # a team, not a number).
+    text = re.sub(
+        r"\b(?:wins|win|victories|victory)\s+over\b(?!\s*\.?\d+(?![\da-z]))",
+        "wins against",
+        text,
+    )
     text = re.sub(r"\bvictories\b", "wins", text)
+    text = re.sub(r"\bvictory\s+(?=against\b)", "win ", text)
     # "Lakers games beaten by the Celtics (by 20)": the games they lost; a
     # number or margin word after "by" is the losing margin.
     text = re.sub(
-        r"\b(games?)\s+beaten\s+by\s+(?=\d|(?:at\s+(?:least|most)|more\s+than|less\s+than|"
+        r"\b(games?)\s+beaten\s+by\s+(?=\d+(?![\da-z])|(?:at\s+(?:least|most)|more\s+than|less\s+than|"
         r"fewer\s+than|over|under|double|single|between|exactly)\b)",
         r"\1 lost by ",
         text,
     )
-    text = re.sub(r"\b(games?)\s+beaten\s+by\s+(?=(?:the\s+)?[a-z])", r"\1 lost to ", text)
+    # A number left here is a team ("76ers"): margins were read above.
+    text = re.sub(r"\b(games?)\s+beaten\s+by\s+(?=(?:the\s+)?[a-z0-9])", r"\1 lost against ", text)
     # "were the Lakers beaten by the Celtics (by 20)": a loss, not a win.
     if re.search(r"\b(?:were|was|got|get|gets|been|be|being)\b", text):
         text = re.sub(rf"\bbeaten\s+by\s+(?=(?:{bounds})(?:$|\s|[,.?!;]))", "lost by ", text)

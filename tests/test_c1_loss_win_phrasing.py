@@ -103,3 +103,43 @@ def _losses_by(team: str, floor: int) -> int:
 def test_games_beaten_by_a_margin_word(query, floor):
     rows = execute_natural_query(query).result.to_dict()["sections"]["finder"]
     assert len(rows) == _losses_by("LAL", floor)
+
+
+def _against_by(team: str, opponent: str, wl: str, floor: int) -> int:
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    mine = games[
+        (games["team_abbr"] == team)
+        & (games["opponent_team_abbr"] == opponent)
+        & (games["wl"] == wl)
+    ]
+    return int((mine["plus_minus"].abs() >= floor).sum())
+
+
+@pytest.mark.parametrize(
+    ("query", "wl", "floor"),
+    [
+        ("Lakers losses to the Celtics by 10 or more", "L", 10),
+        ("Lakers losses to the Celtics by more than 10", "L", 11),
+        ("Lakers wins over the Celtics by 10 or more", "W", 10),
+        ("Lakers games beaten by 10 by the Celtics", "L", 10),
+        ("Lakers games beaten by double digits by the Celtics", "L", 10),
+    ],
+)
+def test_a_margin_beside_the_opponent_is_kept(query, wl, floor):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert (kwargs["team"], kwargs["opponent"]) == ("LAL", "BOS")
+    rows = execute_natural_query(query).result.to_dict()["sections"]["finder"]
+    assert len(rows) == _against_by("LAL", "BOS", wl, floor)
+
+
+@pytest.mark.parametrize(
+    ("query", "outcome"),
+    [
+        ("Lakers games beaten by 76ers", "losses_only"),
+        ("Lakers wins over 76ers", "wins_only"),
+        ("Lakers victory over 76ers", "wins_only"),
+    ],
+)
+def test_76ers_is_a_team_not_a_number(query, outcome):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["opponent"] == "PHI" and kwargs[outcome] is True
