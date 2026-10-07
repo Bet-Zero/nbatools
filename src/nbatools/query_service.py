@@ -862,9 +862,10 @@ def _build_count_phrase(
 
     outcome = parsed.get("route_kwargs") or {}
     if (
-        team
-        and not player
-        and parsed.get("route") == "game_finder"
+        (
+            (team and not player and parsed.get("route") == "game_finder")
+            or (player and parsed.get("route") == "player_game_finder")
+        )
         and (outcome.get("wins_only") or outcome.get("losses_only"))
         and outcome.get("stat") in (None, "win_margin", "loss_margin")
         and not normalize_stat_conditions(outcome.get("conditions"))
@@ -882,8 +883,9 @@ def _build_count_phrase(
             and hasattr(games, "columns")
         ):
             names = games.get("opponent_team_name")
-            label = names.mode().iloc[0] if names is not None and not names.empty else opponent
-            against = f" against the {label}"
+            label = names.mode().iloc[0] if names is not None and not names.empty else None
+            context_name = (metadata.get("opponent_context") or {}).get("team_name")
+            against = f" against the {label or context_name or opponent}"
         quality = outcome.get("opponent_quality")
         if not against and isinstance(quality, dict) and quality.get("surface_term"):
             against = f" against {quality['surface_term']}"
@@ -893,11 +895,12 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
-        subject = _team_subject(metadata, games) or "The team"
+        subject = player or _team_subject(metadata, games) or "The team"
+        have = "has" if player else "have"
         margin = _margin_text(outcome) if outcome.get("stat") else ""
         venue = " at home" if outcome.get("home_only") else ""
         venue = " on the road" if outcome.get("away_only") else venue
-        return f"{subject} have {verb} {count} {times}{margin}{against}{venue} {context}."
+        return f"{subject} {have} {verb} {count} {times}{margin}{against}{venue} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
@@ -1003,13 +1006,16 @@ def _build_count_phrase(
             opponent = f" against {metadata['opponent']}"
         return f"{subject} had {article} {occurrence}{role or ''}{opponent} {context}."
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
+    if count == 1 and count_noun.startswith("games with "):
+        # "1 game with 30+ points", not "1 games".
+        count_noun = "game with " + count_noun[len("games with ") :]
     context = _count_context(
         metadata,
         player=bool(player),
         last_n=parsed.get("last_n"),
         last_n_scope=parsed.get("last_n_scope"),
     )
-    if count_noun.startswith("games with "):
+    if count_noun.startswith(("games with ", "game with ")):
         verb = "have had" if team_subject else "has had"
     else:
         verb = "have recorded" if team_subject else "has recorded"
