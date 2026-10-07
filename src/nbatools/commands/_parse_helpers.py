@@ -2896,7 +2896,8 @@ def detect_wins_losses(text: str) -> tuple[bool, bool]:
         # "how many times did the Lakers lose (on the road)", "how often do
         # they lose": the question's verb is the outcome.
         or (
-            re.search(r"\b(?:did|do|does)\s+(?:(?:the\s+)?[\w.']+\s+){1,3}?lose\b", text)
+            re.search(r"\bhow\s+(?:many|often)\b", text)
+            and re.search(r"\b(?:did|do|does)\s+(?:(?:the\s+)?[\w.']+\s+){1,3}?lose\b", text)
             and not wins_only
         )
     )

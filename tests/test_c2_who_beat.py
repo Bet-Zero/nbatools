@@ -110,3 +110,64 @@ def test_headline_for_the_teams_a_team_beat():
     phrase = execute_natural_query("who did the Celtics beat in 2024-25").metadata["answer_phrase"]
     assert phrase.startswith("The Boston Celtics beat ")
     assert "in the 2024-25 regular season" in phrase
+
+
+def _home_record_vs(opponent: str, home: bool) -> pd.DataFrame:
+    """Each team's record against ``opponent`` in ``opponent``'s home (or road) games."""
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    games = games[
+        (games["opponent_team_abbr"] == opponent) & (games["is_home"] == (0 if home else 1))
+    ]
+    wins = games.assign(win=games["wl"] == "W").groupby("team_abbr")["win"]
+    return pd.DataFrame({"wins": wins.sum(), "losses": wins.size() - wins.sum()})
+
+
+def test_at_home_is_the_named_teams_home():
+    record = _home_record_vs("LAL", home=True)
+    beat_them = {t: (int(r.wins), int(r.losses)) for t, r in record.iterrows() if r.wins >= 1}
+    assert _rows("which teams beat the Lakers at home") == beat_them
+    assert _rows("who did the Lakers lose to at home") == beat_them
+    they_beat = {t: (int(r.wins), int(r.losses)) for t, r in record.iterrows() if r.losses >= 1}
+    assert _rows("who did the Lakers beat at home") == they_beat
+    phrase = execute_natural_query("which teams beat the Lakers at home").metadata["answer_phrase"]
+    assert "beat the Los Angeles Lakers in their home games" in phrase
+
+
+@pytest.mark.parametrize(
+    ("query", "minimum"),
+    [
+        ("which teams beat the Lakers more than twice", 3),
+        ("which teams beat the Lakers 3 or more times", 3),
+        ("which teams beat the Lakers twice", 2),
+    ],
+)
+def test_repeat_counts(query, minimum):
+    record = _record_vs("LAL", "2025-26_regular_season.csv")
+    expected = {t: (int(r.wins), int(r.losses)) for t, r in record.iterrows() if r.wins >= minimum}
+    assert _rows(query) == expected
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "which teams beat the Lakers only once",
+        "who beat the Lakers last",
+        "who beat the Lakers by the most",
+        "who did the Lakers beat in their last game",
+    ],
+)
+def test_exact_last_and_margin_questions_are_not_the_board(query):
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    assert "which teams have the most" not in parsed["normalized_query"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["did the Lakers lose their last game", "did the Lakers lose in their last 5 games"],
+)
+def test_yes_no_lose_question_keeps_every_game(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert not kwargs.get("losses_only")

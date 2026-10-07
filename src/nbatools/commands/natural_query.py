@@ -1944,19 +1944,27 @@ _MOST_TAIL = re.compile(r"\s+(?:the\s+)?most(?:\s+(?:times|often))?\b")
 
 
 _TIMES_TAIL = re.compile(
-    r"\s+(?:(?:at\s+least\s+)?(?P<n>\d+|two|three|four|five)\s+(?:or\s+more\s+)?times"
-    r"|(?P<twice>twice))\b"
+    r"\s+(?:(?P<more>more\s+than|over)\s+|at\s+least\s+)?"
+    r"(?:(?P<n>\d+|two|three|four|five)\s+(?:or\s+more\s+)?times|(?P<twice>twice))\b"
 )
 _TIMES_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5}
+# A single game, an exact count or a margin ranking is not this board.
+_NOT_A_TEAM_BOARD = re.compile(
+    r"\bmargin\b|\bby\s+(?:\d|double|the\s+most|the\s+biggest)|"
+    r"\b(?:buzzer|clock|odds|spread|players?|overtime|ot)\b|"
+    r"\b(?:only|exactly|just)\s+(?:once|twice|\d+|one|two|three)\b|\bevery\s+(?:time|game)\b|"
+    r"\blast\s+(?:game|night|time|\d+\s+games|meeting)\b|\blast\s*$|\bmost\s+recent(?:ly)?\b|"
+    r"\b(?:yesterday|tonight|today)\b"
+)
 
 
-def _who_beat(q: str) -> tuple[str, tuple[str, int] | None]:
+def _who_beat(q: str) -> tuple[str, dict | None]:
     """Rewrite "which teams beat X" into the opponent record board. Return
-    the rewritten text and, when every team with one is listed (no "most"),
-    the stat and minimum count ("beat the Lakers twice": 2)."""
-    if re.search(
-        r"\bmargin\b|\bby\s+\d|\bby\s+double|\b(?:buzzer|clock|odds|spread|players?)\b", q
-    ):
+    the rewritten text and the request: the stat, the minimum count when
+    every team with one is listed ("beat the Lakers twice": 2; None for "the
+    most"), and that home/away is the named team's ("who did the Lakers beat
+    at home" is their home games, the listed teams' road games)."""
+    if _NOT_A_TEAM_BOARD.search(q):
         return q, None
     from nbatools.commands._matchup_utils import detect_team_in_text
 
@@ -1971,19 +1979,23 @@ def _who_beat(q: str) -> tuple[str, tuple[str, int] | None]:
         stat = "wins" if match.group("verb").startswith(("lose", "lost")) else "losses"
         named = match.group("team")
         rest = f"{named}{match.group('rest')}"
-    if re.search(r"\b(?:and|or)\b|,", rest) or not detect_team_in_text(named):
-        # Two teams, or a player ("who did LeBron beat"): not this board.
-        return q, None
-    listed = _MOST_TAIL.search(rest) is None
-    rest = _MOST_TAIL.sub("", rest)
     minimum = 1
     times = _TIMES_TAIL.search(rest)
     if times:
         n = times.group("n")
         minimum = 2 if times.group("twice") else int(_TIMES_WORDS.get(n, n))
+        if times.group("more"):
+            minimum += 1
         rest = rest[: times.start()] + rest[times.end() :]
-    rest = " ".join(rest.split())
-    return f"which teams have the most {stat} against {rest}", ((stat, minimum) if listed else None)
+    if re.search(r"\b(?:and|or)\b|,", rest) or not detect_team_in_text(named):
+        # Two teams, or a player ("who did LeBron beat"): not this board.
+        return q, None
+    listed = _MOST_TAIL.search(rest) is None
+    rest = " ".join(_MOST_TAIL.sub("", rest).split())
+    return f"which teams have the most {stat} against {rest}", {
+        "stat": stat,
+        "minimum": minimum if listed else None,
+    }
 
 
 def _build_parse_state(query: str) -> dict:
@@ -7028,21 +7040,25 @@ def _finalize_route(parsed: dict) -> dict:
     return out
 
 
-def _opponent_record_list(out: dict, request: tuple[str, int] | None) -> None:
+def _opponent_record_list(out: dict, request: dict | None) -> None:
     """ "which teams beat the Lakers": every team with a win against them,
     most first, rather than a top-10 cut that pads with winless teams."""
     if not request or out.get("route") != "team_record_leaderboard":
         return
-    stat, minimum = request
+    stat, minimum = request["stat"], request["minimum"]
     kwargs = out.setdefault("route_kwargs", {})
     if kwargs.get("stat") != stat or not kwargs.get("opponent"):
         return
-    kwargs["limit"] = 30
-    kwargs["min_wins" if stat == "wins" else "min_losses"] = minimum
-    out["notes"] = [
-        *(out.get("notes") or []),
-        f"opponent_record_list: teams with {minimum}+ {stat}",
-    ]
+    # "at home" is the named team's home: the listed teams' road games.
+    kwargs["home_only"], kwargs["away_only"] = kwargs.get("away_only"), kwargs.get("home_only")
+    venue = "home" if kwargs["away_only"] else "road" if kwargs["home_only"] else None
+    note = f"opponent_record_list: teams with {minimum or 0}+ {stat}"
+    if venue:
+        note += f"; {venue}"
+    if minimum:
+        kwargs["limit"] = 30
+        kwargs["min_wins" if stat == "wins" else "min_losses"] = minimum
+    out["notes"] = [*(out.get("notes") or []), note]
 
 
 def _finalize_route_inner(parsed: dict) -> dict:

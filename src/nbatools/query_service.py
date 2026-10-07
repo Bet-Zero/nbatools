@@ -1306,31 +1306,44 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         ),
         None,
     )
-    match = request and re.search(r"(\d+)\+ (wins|losses)", request)
-    opponent = (result.metadata or {}).get("opponent_name")
-    if not match or not opponent:
+    match = request and re.search(r"(\d+)\+ (wins|losses)(?:; (home|road))?", request)
+    opponent = (result.metadata or {}).get("opponent_name") or (
+        metadata.get("opponent_context") or {}
+    ).get("team_name")
+    if not match or not opponent or int(match.group(1)) < 1:
+        # "the most" is a ranking; the board answers it.
         return
-    minimum, stat = int(match.group(1)), match.group(2)
+    minimum, stat, venue = int(match.group(1)), match.group(2), match.group(3)
     board = result.leaders
     k = len(board)
-    listed = []
-    for i, row in enumerate(board.head(5).itertuples()):
-        n = int(getattr(row, stat))
-        listed.append(
-            f"the {row.team_name} ({'once' if n == 1 else f'{n} times'})"
-            if i == 0
-            else f"the {row.team_name} ({n})"
-        )
-    if k > 5:
-        listed.append(f"{k - 5} more")
+    counts = [int(n) for n in board[stat].head(5)]
+    names = [f"the {name}" for name in board["team_name"].head(5)]
+    if all(n == 1 for n in counts):
+        listed = names + ([f"{k - 5} more"] if k > 5 else [])
+        each = " (once each)" if k > 1 else " (once)"
+    else:
+        listed = [
+            f"{name} ({n} times)" if i == 0 else f"{name} ({n})"
+            for i, (name, n) in enumerate(zip(names, counts))
+        ] + ([f"{k - 5} more"] if k > 5 else [])
+        each = ""
     joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
     context = _count_context(metadata, player=False)
+    where = {"home": " at home", "road": " on the road"}.get(venue or "", "")
     teams = "1 team" if k == 1 else f"{k} teams"
     often = {1: "", 2: " at least twice"}.get(minimum, f" at least {minimum} times")
     if stat == "wins":
-        metadata["answer_phrase"] = f"{teams} beat the {opponent}{often} {context}: {joined}."
+        # The named team's home: "beat the Lakers at home" is in Los Angeles.
+        place = {"home": " in their home games", "road": " in their road games"}.get(
+            venue or "", ""
+        )
+        metadata["answer_phrase"] = (
+            f"{teams} beat the {opponent}{place}{often} {context}: {joined}{each}."
+        )
     else:
-        metadata["answer_phrase"] = f"The {opponent} beat {teams}{often} {context}: {joined}."
+        metadata["answer_phrase"] = (
+            f"The {opponent} beat {teams}{where}{often} {context}: {joined}{each}."
+        )
 
 
 def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
