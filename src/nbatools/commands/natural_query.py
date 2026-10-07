@@ -1921,7 +1921,7 @@ def _expand_short_year(match: re.Match) -> str:
 # "how many times did the Lakers beat the Celtics": a win over that opponent.
 _BEAT_VERB = re.compile(
     r"\b(?:beat|beats|beaten|beating|defeat|defeats|defeated|defeating)\b"
-    r"(?=\s+(?:the\s+)?[a-z])"
+    r"(?=\s+(?:the\s+)?[a-z])(?!\s+(?:the\s+)?(?:buzzer|clock|odds|spread|shot\s+clock)\b)"
 )
 
 # "how many times did the Lakers lose to the Celtics": a loss against them.
