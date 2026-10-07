@@ -237,7 +237,8 @@ class TestParseCareerQuery:
         assert parsed["route"] == "season_leaders"
         assert parsed["route_kwargs"]["start_season"] == EARLIEST_SEASON
         assert parsed["route_kwargs"]["end_season"] == LATEST_REGULAR_SEASON
-        assert parsed["route_kwargs"]["stat"] == "ast"
+        # Career leaders rank the career total (C2 span totals).
+        assert parsed["route_kwargs"]["stat"] == "ast_total"
         assert parsed["route_kwargs"]["season"] is None
 
     def test_alltime_scoring_leaders(self):

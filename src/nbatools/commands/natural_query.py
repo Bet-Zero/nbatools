@@ -5784,6 +5784,37 @@ def _series_situation_totals(out: dict, q: str) -> None:
     ]
 
 
+_SPAN_MOST = re.compile(r"\bmost\b|\b(?:all[\s-]?time|career)\b[\w\s]*\bleaders?\b")
+_SINGLE_SEASON_WORDS = re.compile(
+    r"\b(?:single|one)\s+season\b|\bin\s+a\s+season\b|\bper\s+season\b|\bseason\s+high"
+)
+
+
+def _span_totals(out: dict, q: str) -> None:
+    """ "most career points", "most playoff points all time": a total.
+
+    Over several seasons the most points is the cumulative list (LeBron's
+    career total), not the best scoring average; a stated "per game" or
+    "average" keeps the rate, and single-season boards keep their own rule.
+    """
+    route_kwargs = out.get("route_kwargs") or {}
+    if out.get("route") != "season_leaders" or _PER_GAME_WORDS.search(q):
+        return
+    if route_kwargs.get("stat") not in _SITUATION_TOTAL_STATS or route_kwargs.get("per_season"):
+        return
+    start, end = route_kwargs.get("start_season"), route_kwargs.get("end_season")
+    if not (start and end and start != end) or not _SPAN_MOST.search(q):
+        return
+    if _SINGLE_SEASON_WORDS.search(q):
+        return
+    out["route_kwargs"] = {**route_kwargs, "stat": f"{route_kwargs['stat']}_total"}
+    out["stat"] = out["route_kwargs"]["stat"]
+    out["notes"] = [
+        *(out.get("notes") or []),
+        "default: totals over the span; ask per game for averages",
+    ]
+
+
 # Routes that answer a playoff round themselves; everything else filters game
 # rows by the round as a series situation ("round_04", "game_7@04").
 _ROUND_NATIVE_ROUTES = {
@@ -6985,6 +7016,8 @@ def _finalize_route_inner(parsed: dict) -> dict:
             refused = True
         if situation and board is None:
             _series_situation_totals(out, q)
+        elif not situation:
+            _span_totals(out, q)
     if refused or not situation:
         if refused:
             out["confidence"] = compute_parse_confidence(out)

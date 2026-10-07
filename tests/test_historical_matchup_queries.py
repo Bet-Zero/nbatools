@@ -150,7 +150,8 @@ class TestParseHistoricalOpponentLeaderboards:
         assert parsed["route"] == "season_leaders"
         assert parsed["route_kwargs"]["opponent"] == "LAL"
         assert parsed["route_kwargs"]["start_season"] == "2018-19"
-        assert parsed["route_kwargs"]["stat"] == "pts"
+        # "most points ... since 2018" is the total over the span.
+        assert parsed["route_kwargs"]["stat"] == "pts_total"
 
     def test_best_ts_vs_team_last_n_seasons(self):
         parsed = parse_query("best ts% vs Celtics over the last 3 seasons")

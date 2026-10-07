@@ -46,7 +46,7 @@ pytestmark = [pytest.mark.query]
             True,
             True,
         ),
-        ("most points in the 2010s", "season_leaders", "pts", "2010-11", None, False),
+        ("most points in the 2010s", "season_leaders", "pts_total", "2010-11", None, False),
     ],
 )
 def test_named_decade_stat_questions(query, route, stat, start, per_season, ascending):
