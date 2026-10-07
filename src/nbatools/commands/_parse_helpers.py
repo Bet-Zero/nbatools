@@ -242,7 +242,13 @@ def detect_team_leader_stat(text: str) -> str | None:
         r"\b(?:best|top|leading|highest|worst|lowest)\b.*?"
         r"\b(?:shooters?|percentage|pct)\b|%",
         text,
-    ) and not re.search(r"\bgames?\b|\bnights?\b|\bstretch", text):
+    ) and not re.search(
+        # Game lists, team seasons ("Lakers best 3P% season") and player groups
+        # the team board cannot apply ("bench", "starters", "rookies").
+        r"\bgames?\b|\bnights?\b|\bstretch|(?:%|percentage|pct|shooting)\s+seasons?\b|\bbench\b"
+        r"|\bstart(?:ers?|ing)\b|\breserves?\b|\brookies?\b|\bsophomores?\b",
+        text,
+    ):
         # "Lakers best three point shooters", "Lakers best free throw
         # percentage": the team's players ranked by the shooting rate.
         from nbatools.commands._leaderboard_utils import detect_player_leaderboard_stat

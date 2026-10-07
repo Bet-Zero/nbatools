@@ -106,6 +106,9 @@ from nbatools.commands._occurrence_route_utils import (
     wants_occurrence_leaderboard,
 )
 from nbatools.commands._parse_helpers import (
+    _TEAM_LEADER_RATES as _TEAM_LEADER_RATES,
+)
+from nbatools.commands._parse_helpers import (
     STREAK_SPECIAL_PATTERNS as STREAK_SPECIAL_PATTERNS,
 )
 from nbatools.commands._parse_helpers import (
@@ -4421,20 +4424,29 @@ def _route_parsed_query(parsed: dict) -> dict:
         # top players for the stat, leader first.
         route = "season_leaders"
         notes.append(f"team_scoped_leader: top {team} players ranked by the requested stat")
+        span = bool(start_season and end_season)
         route_kwargs = {
-            "season": season or default_season_for_context(season_type),
+            # "Lakers leading scorer since 2023" is the span, not one season
+            # beside it (both together found no data).
+            "season": None if span else season or default_season_for_context(season_type),
             "stat": team_leader_stat,
             "limit": top_n or 5,
             "season_type": season_type,
             "min_games": min_games or 1,
-            # "Lakers worst free throw shooters" ranks from the bottom.
+            # "Lakers worst free throw shooters" ranks a shooting rate from the
+            # bottom; a scorer or rebounder board stays leader first.
             "ascending": (team_leader_stat in LOWER_IS_BETTER_STATS)
-            != bool(re.search(r"\b(?:worst|lowest|bottom)\b", q)),
+            != bool(
+                team_leader_stat in _TEAM_LEADER_RATES
+                and re.search(r"\b(?:worst|lowest|bottom)\b", q)
+            ),
             "start_date": start_date,
             "end_date": end_date,
             "start_season": start_season,
             "end_season": end_season,
             "team": team,
+            # "Lakers best three point shooters vs the Celtics" (it was dropped).
+            "opponent": opponent,
             "last_n": last_n,
         }
     elif (

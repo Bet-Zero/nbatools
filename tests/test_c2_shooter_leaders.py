@@ -64,3 +64,63 @@ def test_bare_best_shooters_is_not_guessed():
     except ValueError:
         return
     assert parsed["route_kwargs"].get("stat") not in ("fg3_pct", "ft_pct", "pts")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers best three point percentage season",
+        "Lakers best fg% seasons",
+        "Lakers best 3pt% season since 2023",
+    ],
+)
+def test_team_seasons_stay_team_season_boards(query):
+    assert parse_query(query)["route"] == "season_team_leaders"
+
+
+def test_team_shooters_keep_the_opponent():
+    parsed = parse_query("Lakers best three point shooters vs Celtics")
+    assert parsed["route_kwargs"]["opponent"] == "BOS"
+    result = execute_natural_query("Lakers best three point shooters vs Celtics")
+    # A few games against one team: the attempt floor scales to the sample.
+    assert result.result_status == "ok"
+    assert result.result.to_dict()["sections"]["leaderboard"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers bench best 3pt shooters",
+        "Lakers starters worst ft%",
+        "Lakers worst fg% rookies",
+    ],
+)
+def test_player_groups_the_team_board_cannot_apply_stay_off_it(query):
+    assert parse_query(query)["route_kwargs"].get("stat") not in (None,) and (
+        parse_query(query)["route"] != "season_leaders"
+    )
+
+
+def test_worst_flips_only_shooting_rates():
+    assert parse_query("Lakers leading scorer worst")["route_kwargs"]["ascending"] is False
+    assert parse_query("Lakers worst free throw shooters")["route_kwargs"]["ascending"] is True
+
+
+def test_team_leaders_over_a_span():
+    for query in (
+        "Lakers best three point shooters since 2023",
+        "Lakers leading scorer since 2023",
+    ):
+        result = execute_natural_query(query)
+        assert result.result_status == "ok"
+        assert result.result.to_dict()["sections"]["leaderboard"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["best three point shooters last 10 games", "best three point shooters in December"],
+)
+def test_window_boards_scale_the_attempt_floor(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "ok"
+    assert result.result.to_dict()["sections"]["leaderboard"]

@@ -724,8 +724,17 @@ def _apply_default_guardrails(
         and not _is_playoff_season_type(season_type)
     )
 
-    def _capped(floor: int, column: str) -> int:
-        if not early_season or column not in df.columns:
+    # A window or one opponent ("vs the Celtics", "last 10 games", "in
+    # December") is a few games: a season's attempt floor left the board
+    # empty, so attempts scale the same way.
+    small_sample = (
+        not df.empty
+        and (date_window_active or opponent_active)
+        and not _is_playoff_season_type(season_type)
+    )
+
+    def _capped(floor: int, column: str, *, attempts: bool = False) -> int:
+        if not (early_season or (attempts and small_sample)) or column not in df.columns:
             return floor
         most = pd.to_numeric(df[column], errors="coerce").max()
         if pd.isna(most):
@@ -740,9 +749,9 @@ def _apply_default_guardrails(
         fg3a_floor = 20 * num_seasons
         fta_floor = 10 * num_seasons
     else:
-        fga_floor = _capped(200 * num_seasons, "fga_total")
-        fg3a_floor = _capped(100 * num_seasons, "fg3a_total")
-        fta_floor = _capped(50 * num_seasons, "fta_total")
+        fga_floor = _capped(200 * num_seasons, "fga_total", attempts=True)
+        fg3a_floor = _capped(100 * num_seasons, "fg3a_total", attempts=True)
+        fta_floor = _capped(50 * num_seasons, "fta_total", attempts=True)
     return _apply_attempt_floors(
         df, target_col, fga_floor=fga_floor, fg3a_floor=fg3a_floor, fta_floor=fta_floor
     )
