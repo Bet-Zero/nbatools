@@ -172,7 +172,6 @@ def test_trailing_year_answers_a_leaderboard():
         "Lakers record when allowing 2000",
         "Lakers record when giving up 2000",
         "scoring leaders min minutes 2000",
-        "LeBron game 2000",
         # A second year, a range end or a comparison.
         "Lakers record 2010 2016",
         "Lakers record 2016 compared to 2024",
@@ -207,3 +206,19 @@ def test_leaderboard_refuses_a_closing_year_the_parser_set_aside(query):
     # The board must not answer the current season for a year it never read.
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs.get("unsupported_filters") == ["leaderboard_request_unclear"]
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        # A game noun, "from" without a year, "total" and Minnesota's "min"
+        # leave the closing year a season.
+        ("Kobe 81 point game 2006", "2005-06"),
+        ("LeBron best game 2016", "2015-16"),
+        ("LeBron points from three 2016", "2015-16"),
+        ("LeBron points total 2016", "2015-16"),
+        ("min record 2016", "2015-16"),
+    ],
+)
+def test_ordinary_closing_years_stay_seasons(query, season):
+    assert _span(query)[0] == season
