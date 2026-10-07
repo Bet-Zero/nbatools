@@ -362,30 +362,66 @@ _PLAYERS_WITH = re.compile(
 )
 
 
-# Words that make the numbers something other than one game's: a per-game
-# average ("25 and 10 per game"), a season total ("1000 points this season
-# total"), a ranking ("the most 30 point games" keeps its top-10 board) or a
-# team record ("50 wins").
-_NOT_A_GAME_LIST = re.compile(
-    r"(?<!\bin\s)\b(?:per|a|an|each)\s+(?:game|contest|night)\b|\baverag(?:e|ed|es|ing)\b"
-    r"|\b[prabs]pg\b|\bper\s+\d+\b"
-    r"|\btotals?\b|\b(?:combined|cumulative|overall|aggregate|sum)\b"
-    r"|\b(?:per|a|in\s+a|for\s+the|on\s+the|over\s+the|across\s+the|during\s+the|single)"
-    r"\s+(?:season|year)\b"
-    r"|\b(?:most|fewest|least|top|leaders?|leading|rank(?:ed|ing)?|best|worst|highest"
-    r"|lowest|greatest|number\s+of|count|how\s+many)\b"
-    r"|\b\d+\s+(?:wins|losses|victories|win|loss)\b|\brecord\b"
-    # "players with 5 triple doubles": a count of them, not one.
-    r"|\b\d+\s+(?:triple|double)[\s-]?doubles?\b"
+# The whole question must read as game conditions plus filters the
+# occurrence board applies; anything else ("per game", "in 5 games", "three
+# 30 point games", "two seasons ago", "in the finals") keeps its old route.
+_GAME_STAT = (
+    r"(?:points?|pts|rebounds?|rebs?|boards|assists?|asts?|steals?|stls?|blocks?|blks?"
+    r"|threes|three[\s-]pointers|3[\s-]pointers|3s|turnovers?|tov)"
 )
-# The most a player has had in one NBA game, rounded up: a larger number is a
-# season total, not a game condition.
+_GAME_ATOM = (
+    rf"(?:(?:\d{{1,3}}\+?(?:\s+or\s+more)?|no|zero)[\s-]+{_GAME_STAT}"
+    r"|(?:triple|double)[\s-]doubles?)"
+)
+_GAME_CONDITIONS = re.compile(
+    rf"(?:an?\s+)?{_GAME_ATOM}(?:\s*(?:,|and|&)?\s*{_GAME_ATOM})*"
+    r"(?:\s+games?)?(?:\s+in\s+(?:a|one|a\s+single)\s+game)?"
+)
+_YEAR = r"(?:19|20)\d{2}(?:-\d{2})?"
+_MONTH = (
+    r"(?:january|february|march|april|may|june|july|august|september|october|november"
+    r"|december)"
+)
+# One filter clause of each kind, at most.
+_GAME_LIST_FILTERS = {
+    "span": (
+        rf"(?:this|last)\s+season|since\s+{_YEAR}|(?:in|during)\s+(?:the\s+)?{_YEAR}"
+        rf"(?:\s+season)?|(?:from|between)\s+{_YEAR}\s+(?:to|and|through)\s+{_YEAR}"
+    ),
+    "season_type": r"(?:in|during)\s+the\s+(?:playoffs|regular\s+season)",
+    "location": r"at\s+home|on\s+the\s+road|away(?:\s+from\s+home)?",
+    "outcome": r"in\s+(?:wins|losses|a\s+win|a\s+loss)|(?:and|in)\s+an?\s+(?:win|loss)",
+    "opponent": r"(?:vs\.?|versus|against)\s+(?:the\s+)?[a-z.']+(?:\s+[a-z.']+){0,2}",
+    "month": rf"in\s+{_MONTH}",
+}
 _SINGLE_GAME_CEILING = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+
+
+def _only_game_list_filters(rest: str) -> bool:
+    seen: set[str] = set()
+    rest = rest.strip()
+    while rest:
+        for kind, pattern in _GAME_LIST_FILTERS.items():
+            m = re.match(rf"(?:and\s+)?(?:{pattern})(?:\s+|$)", rest)
+            if m:
+                if kind in seen:
+                    return False
+                seen.add(kind)
+                rest = rest[m.end() :].strip()
+                break
+        else:
+            return False
+    return True
 
 
 def wants_players_with_list(text: str) -> bool:
     """ "players with 25 points and 10 rebounds": every player with such a game."""
-    if not _PLAYERS_WITH.search(text) or _NOT_A_GAME_LIST.search(text):
+    prefix = _PLAYERS_WITH.search(text)
+    if not prefix:
+        return False
+    body = text[prefix.end() :].strip(" ?.!")
+    m = _GAME_CONDITIONS.match(body)
+    if not m or not _only_game_list_filters(body[m.end() :]):
         return False
     conditions = extract_compound_occurrence_event(text) or [extract_occurrence_event(text) or {}]
     for cond in conditions:

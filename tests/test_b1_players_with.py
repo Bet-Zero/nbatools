@@ -136,6 +136,20 @@ def test_a_bare_stat_bound_is_not_read_as_games():
         "players with 10 double doubles",
         "players with the greatest number of triple doubles",
         "players with the highest number of 30 point games",
+        # Third check round: anything outside game conditions plus one filter
+        # of each kind (span, season type, location, outcome, opponent, month).
+        "players with 25 points and 10 rebounds nightly",
+        "players with 25 points and 10 rebounds altogether",
+        "players with 25 points and 10 rebounds in 5 games",
+        "players with three 30 point games",
+        "players with 3 30 point games",
+        "players with 10 or more 30 point games",
+        "players with 3 or more triple doubles",
+        "players with 30 point games two seasons ago",
+        "players with 30 point games in the finals",
+        "players with 40 point games this season and last season",
+        "players with a 30 point game and a 10 assist game",
+        "players with 30 point games off the bench",
     ],
 )
 def test_averages_totals_and_records_are_not_read_as_game_lists(query):
