@@ -1402,6 +1402,16 @@ def _add_appearances_answer_metadata(metadata: dict[str, Any], result: Any) -> N
         if "appearances" not in board:
             return
         if "player_name" not in board:
+            if re.search(r"\b(?:fewest|least)\b", query_text):
+                fewest = int(top["appearances"])
+                leaders = board[board["appearances"] == fewest]
+                names = _named_list([f"the {name}" for name in leaders["team_name"]])
+                names = names[0].upper() + names[1:]
+                times = "time" if fewest == 1 else "times"
+                metadata["answer_phrase"] = (
+                    f"{names} reached {stage} the fewest times {span}: {fewest} {times}."
+                )
+                return
             if "season" in board and not re.search(r"\bmost\b", query_text):
                 names = _named_list([f"the {name}" for name in board["team_name"]], limit=40)
                 count = len(board)

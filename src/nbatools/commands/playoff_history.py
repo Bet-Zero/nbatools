@@ -1049,6 +1049,25 @@ def build_playoff_appearances_result(
             df, seasons, latest_postseason, round_label, limit, caveats, rank_by
         )
 
+    if ascending:
+        # "fewest playoff appearances": franchises that played in range and
+        # never reached the stage rank first, with zero.
+        try:
+            regular = load_team_games_for_seasons(seasons, "Regular Season")
+            regular = regular[regular["season"] <= latest_postseason]
+        except FileNotFoundError:
+            regular = pd.DataFrame()
+        if not regular.empty and "team_id" in regular.columns:
+            regular = regular.sort_values(["season", "game_date"])
+            franchises = regular.groupby("team_id").agg(
+                team_abbr=("team_abbr", "last"), team_name=("team_name", "last")
+            )
+            counts = (
+                df.groupby("team_id")["season"].nunique() if not df.empty else pd.Series(dtype=int)
+            )
+            franchises["appearances"] = counts.reindex(franchises.index).fillna(0).astype(int)
+            appearances = franchises.reset_index(drop=True)
+
     # Leaderboard: all teams ranked by appearances
     result = (
         appearances.sort_values(

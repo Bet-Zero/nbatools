@@ -172,3 +172,26 @@ def test_player_run_and_miss_questions_use_his_seasons():
     assert "LeBron James missed the playoffs in 2 of 3 seasons" in missed
     run = _ok("LeBron consecutive playoff appearances").metadata["answer_phrase"]
     assert "longest run" in run and "1 season in the playoffs (2025-26)" in run
+
+
+def test_fewest_appearances_ranks_from_zero():
+    missed = _teams("2025-26", "regular_season") - _teams("2025-26", "playoffs")
+    result = _ok("fewest playoff appearances")
+    rows = result.result.to_dict()["sections"]["leaderboard"]
+    zeros = {row["team_name"] for row in rows if row["appearances"] == 0}
+    assert zeros == missed
+    assert [row["appearances"] for row in rows] == sorted(row["appearances"] for row in rows)
+    assert "fewest times" in result.metadata["answer_phrase"]
+
+
+def test_teams_that_missed_as_the_subject_is_a_question():
+    missed = _teams("2025-26", "regular_season") - _teams("2025-26", "playoffs")
+    rows = _ok("teams that missed the playoffs in 2025-26").result.to_dict()["sections"][
+        "leaderboard"
+    ]
+    assert {row["team_name"] for row in rows} == missed
+
+
+def test_against_teams_that_made_the_playoffs_stays_an_opponent_filter():
+    result = execute_natural_query("Lakers record against teams that made the playoffs")
+    assert result.metadata["route"] == "team_record"

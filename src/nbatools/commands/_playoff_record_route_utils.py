@@ -122,7 +122,10 @@ _MADE_THE_STAGE = re.compile(
 )
 # "against teams that made the playoffs" names opponents, not an appearance.
 _OPPONENT_STAGE_CLAUSE = re.compile(
-    r"\b(?:teams?|opponents?|clubs?|squads?)\s+(?:that|which|who|to)\s+(?:\w+\s+){0,2}?"
+    # Only after an opponent word: "teams that missed the playoffs in 2024-25"
+    # on its own is the subject of the question.
+    r"\b(?:against|vs\.?|versus|over|beat|beating|beats|facing|playing|played)\s+"
+    r"(?:the\s+)?(?:teams?|opponents?|clubs?|squads?)\s+(?:that|which|who|to)\s+(?:\w+\s+){0,2}?"
     r"(?:made|make|reached|reach|qualified|missed|miss)\b[^,;]*"
 )
 # "most consecutive playoff appearances", "Lakers playoff streak", "longest
@@ -288,7 +291,8 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "end_season": pa_end,
             "playoff_round": playoff_round_filter,
             "limit": top_n or 10,
-            "ascending": False,
+            # "fewest playoff appearances" ranks from the bottom.
+            "ascending": bool(re.search(r"\b(?:fewest|least)\b", q)),
         }
         if player:
             # "how many Finals appearances does LeBron have": seasons he played
