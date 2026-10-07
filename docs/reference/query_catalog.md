@@ -785,11 +785,19 @@ Examples:
 - `best second round record`
 - `best second-round record since 2010`
 
-Playoff appearances are currently team-grain only: named-team questions return
-a team summary and unscoped questions return a team leaderboard. Player-scoped
-appearance questions such as `How many Finals appearances does LeBron have?`
-return `no_result` / `filter_not_supported`; the product does not substitute a
-team leaderboard or infer a player count from team participation.
+- `how many times have the Lakers made the playoffs since 2000`
+- `did the Celtics make the playoffs this season`
+- `when did the Knicks last make the conference finals`
+- `Lakers consecutive playoff appearances` / `Kings playoff drought`
+- `most consecutive playoff appearances`
+- `how many Finals appearances does LeBron have` / `which player has the most Finals appearances`
+
+An appearance is a season with at least one game at that stage (play-in games
+excluded). Teams count per franchise (Seattle seasons count for the Thunder).
+A player's appearance needs a game he played (minutes > 0). Runs and droughts
+count the seasons the franchise played, up to the latest postseason in range,
+from 1996-97 where the data starts. "against teams that made the playoffs"
+stays an opponent filter.
 
 ### By-decade / era-bucket queries
 

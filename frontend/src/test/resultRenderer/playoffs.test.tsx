@@ -57,6 +57,80 @@ describe("ResultRenderer playoff patterns", () => {
   });
 
 
+  it("headlines a team appearance answer with the engine's answer phrase", () => {
+    const data = makeResponse({
+      query: "Spurs consecutive playoff appearances",
+      route: "playoff_appearances",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Spurs consecutive playoff appearances",
+          route: "playoff_appearances",
+          answer_phrase:
+            "The San Antonio Spurs' longest run from 1996-97 to 2024-25 was 22 straight seasons in the playoffs (1997-98 to 2018-19); their current run is 0 seasons.",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "San Antonio Spurs",
+              appearances: 23,
+              round: "Playoffs",
+              season_start: "1996-97",
+              season_end: "2024-25",
+              longest_streak: 22,
+            },
+          ],
+          by_season: [{ season: "2018-19", games: 7, wins: 3, losses: 4 }],
+        },
+        current_through: "2025-06-22",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText(/longest run from 1996-97 to 2024-25 was 22 straight seasons/)).toBeInTheDocument();
+  });
+
+  it("ranks franchises by their longest run of appearances", () => {
+    const data = makeResponse({
+      query: "most consecutive playoff appearances",
+      route: "playoff_appearances",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "most consecutive playoff appearances",
+          route: "playoff_appearances",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_abbr: "SAS",
+              team_name: "San Antonio Spurs",
+              longest_streak: 22,
+              run_start: "1997-98",
+              run_end: "2018-19",
+              current_streak: 0,
+              round: "Playoffs",
+            },
+          ],
+        },
+        current_through: "2025-06-22",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getAllByText("San Antonio Spurs").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("22").length).toBeGreaterThan(0);
+  });
+
   it("renders playoff history as a hero plus season table", () => {
     const data = makeResponse({
       query: "Lakers playoff history",

@@ -2251,36 +2251,59 @@ cases:
 
   - id: a03_player_finals_appearances_boundary
     query: "How many Finals appearances does LeBron have?"
-    category: unsupported_boundary
+    category: playoff_history
     priority: p0
     acceptance:
       family: playoff_history
-      variant: nearby_unsupported
-      concept: player_round_appearances_boundary
+      variant: sentence
+      concept: player_round_appearances
       public_surface: true
       review_required: true
-      review_role: boundary
+      review_role: representative
       no_broad_fallback: true
       intent_model: playoff_appearances
       qualifier_model:
         - player_scope
         - finals
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: playoff_appearances
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: player_playoff_appearances
-    review_notes: "Player-scoped playoff appearances must refuse instead of converting team-grain rows to zero."
+      - path: result.sections.leaderboard.0.player_name
+        equals: LeBron James
+      - path: result.sections.leaderboard.0.appearances
+        equals: 10
+    review_notes: "Seasons with at least one Finals game played: 2007, 2011-2018 and 2020 (10). It refused as team-grain only until C2 player appearances; the count is the player's own, never team rows (C2, agent change)."
     manual_review:
       status: unreviewed
       tags:
         - entity_grain_boundary
-        - no_broad_fallback
-      notes: "Review the typed refusal and absence of leaderboard/count answer rows."
+      notes: "Review LeBron's 10 Finals appearances."
+
+  - id: c2_spurs_consecutive_playoff_appearances
+    query: "most consecutive playoff appearances"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: SAS
+      - path: result.sections.leaderboard.0.longest_streak
+        equals: 22
+    review_notes: "Spurs made 22 straight playoffs, 1997-98 through 2018-19 (C2, agent change)."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff_history
+      notes: "Review the consecutive playoff appearance board."
 
   - id: most_finals_appearances_since_1980
     query: "most Finals appearances since 1980"

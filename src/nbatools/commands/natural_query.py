@@ -5428,6 +5428,11 @@ def _route_parsed_query(parsed: dict) -> dict:
         # "total rebounds leaders" ranks `reb_total`; publishing the detector's
         # `reb` would name the per-game board that did not run.
         out["stat"] = route_kwargs["stat"]
+    if count_intent and route == "playoff_appearances":
+        # "how many Finals appearances does LeBron have" is the appearance
+        # count itself, not a count of leaderboard rows.
+        count_intent = False
+        out["count_intent"] = False
     if count_intent and route in ("player_streak_finder", "team_streak_finder"):
         if _counts_streaks(route_kwargs):
             # "how many 10 game winning streaks": every qualifying run counts.
