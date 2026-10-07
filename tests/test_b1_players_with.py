@@ -64,6 +64,23 @@ def _answered(query: str) -> list[tuple[str, int]]:
         ),
         ("players with 30 point games", lambda g: (g.season == "2025-26") & (g.pts >= 30)),
         (
+            "players with 30 point games vs the west",
+            lambda g: (
+                (g.season == "2025-26")
+                & (g.pts >= 30)
+                & g.opponent_team_abbr.isin(["DEN", "GSW", "LAL"])
+            ),
+        ),
+        (
+            "players with 30 point games against the celtics at home",
+            lambda g: (
+                (g.season == "2025-26")
+                & (g.pts >= 30)
+                & (g.opponent_team_abbr == "BOS")
+                & (g.is_home == 1)
+            ),
+        ),
+        (
             "players with 30 point games at home",
             lambda g: (g.season == "2025-26") & (g.pts >= 30) & (g.is_home == 1),
         ),
@@ -150,6 +167,17 @@ def test_a_bare_stat_bound_is_not_read_as_games():
         "players with 40 point games this season and last season",
         "players with a 30 point game and a 10 assist game",
         "players with 30 point games off the bench",
+        # An opponent name never absorbs the next clause.
+        "players with 30 point games vs celtics in finals",
+        "players with 30 point games vs the celtics off the bench",
+        # Fourth check round: an opponent is a named team or group, no free words.
+        "players with 30 point games against the west in finals",
+        "players with 30 point games against the lakers on christmas",
+        "players with 25 points and 10 rebounds vs boston per game",
+        "players with 30 point games against teams two seasons",
+        "players with 25 points and 10 rebounds against everyone combined",
+        "players with 30 point games vs the celtics off bench",
+        "players with a 30 point game against the best team",
     ],
 )
 def test_averages_totals_and_records_are_not_read_as_game_lists(query):

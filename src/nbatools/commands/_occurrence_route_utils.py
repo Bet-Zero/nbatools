@@ -391,17 +391,31 @@ _GAME_LIST_FILTERS = {
     "season_type": r"(?:in|during)\s+the\s+(?:playoffs|regular\s+season)",
     "location": r"at\s+home|on\s+the\s+road|away(?:\s+from\s+home)?",
     "outcome": r"in\s+(?:wins|losses|a\s+win|a\s+loss)|(?:and|in)\s+an?\s+(?:win|loss)",
-    "opponent": r"(?:vs\.?|versus|against)\s+(?:the\s+)?[a-z.']+(?:\s+[a-z.']+){0,2}",
+    # A named team, conference, division or quality group; no free words.
+    "opponent": r"(?:vs\.?|versus|against)\s+(?:the\s+)?(?:{teams}|"
+    r"(?:east|west|eastern|western)(?:\s+conference)?(?:\s+teams)?|"
+    r"(?:atlantic|central|southeast|northwest|pacific|southwest|midwest)(?:\s+division)?"
+    r"(?:\s+teams)?|"
+    r"(?:winning|losing|good|bad|playoff|non[\s-]playoff|above[\s-]\.500|below[\s-]\.500"
+    r"|over[\s-]\.500|under[\s-]\.500|\.500)\s+teams)",
     "month": rf"in\s+{_MONTH}",
 }
 _SINGLE_GAME_CEILING = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
 
 
+def _game_list_filters() -> dict[str, str]:
+    from nbatools.commands.entity_resolution import TEAM_ALIASES
+
+    teams = "|".join(re.escape(alias) for alias in sorted(TEAM_ALIASES, key=len, reverse=True))
+    return {kind: p.replace("{teams}", teams) for kind, p in _GAME_LIST_FILTERS.items()}
+
+
 def _only_game_list_filters(rest: str) -> bool:
+    filters = _game_list_filters()
     seen: set[str] = set()
     rest = rest.strip()
     while rest:
-        for kind, pattern in _GAME_LIST_FILTERS.items():
+        for kind, pattern in filters.items():
             m = re.match(rf"(?:and\s+)?(?:{pattern})(?:\s+|$)", rest)
             if m:
                 if kind in seen:
