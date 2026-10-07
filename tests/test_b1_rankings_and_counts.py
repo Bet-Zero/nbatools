@@ -308,7 +308,8 @@ def test_attempt_minimum_changes_who_qualifies():
 @pytest.mark.fixture_data
 @pytest.mark.parametrize(
     "query",
-    ["most points minimum 100 attempts", "team best 3 point percentage minimum 100 attempts"],
+    # Team shooting rates now read the minimum (tests/test_b1_team_attempt_minimums.py).
+    ["most points minimum 100 attempts", "teams with the most points minimum 1000 attempts"],
 )
 def test_attempt_minimum_outside_player_rates_still_refuses(query):
     result = execute_natural_query(query)

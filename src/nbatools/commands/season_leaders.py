@@ -659,7 +659,7 @@ _RATE_ATTEMPT_COLUMN = {
     "ft_pct": "fta_total",
 }
 _ATTEMPT_STAT_COLUMN = {"fga": "fga_total", "fg3a": "fg3a_total", "fta": "fta_total"}
-_ATTEMPT_LABEL = {
+ATTEMPT_LABEL = {
     "fga_total": "field-goal attempts",
     "fg3a_total": "three-point attempts",
     "fta_total": "free-throw attempts",
@@ -673,13 +673,13 @@ def attempt_qualifier_column(target_col: str, attempt_stat: str | None) -> str |
     return _RATE_ATTEMPT_COLUMN.get(target_col)
 
 
-def _apply_attempt_qualifier(
+def apply_attempt_qualifier(
     df: pd.DataFrame,
     attempt_col: str,
     min_attempts: float,
     per_game: bool,
 ) -> pd.DataFrame:
-    """Keep players who reached the stated attempt minimum.
+    """Keep players (or teams) who reached the stated attempt minimum.
 
     A stated minimum is the qualification rule: it replaces the default
     attempt floor and the default games floor, so "minimum 100 attempts"
@@ -1271,7 +1271,7 @@ def build_result(
         if attempt_col not in df.columns:
             raise ValueError(f"Column '{attempt_col}' not available for the attempt minimum")
         df = df[df["games_played"] >= min_games].copy()
-        df = _apply_attempt_qualifier(df, attempt_col, min_attempts, min_attempts_per_game)
+        df = apply_attempt_qualifier(df, attempt_col, min_attempts, min_attempts_per_game)
     else:
         df = _apply_default_guardrails(
             df,
@@ -1346,7 +1346,7 @@ def build_result(
         )
     if attempt_col is not None:
         amount = f"{min_attempts:g}"
-        unit = _ATTEMPT_LABEL[attempt_col] + (" per game" if min_attempts_per_game else "")
+        unit = ATTEMPT_LABEL[attempt_col] + (" per game" if min_attempts_per_game else "")
         games_rule = f" and {min_games}+ games" if min_games > 1 else ""
         caveats.append(f"qualified: at least {amount} {unit}{games_rule}")
     if date_window_active:

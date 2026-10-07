@@ -12,6 +12,11 @@ from nbatools.commands._single_season_boards import (
 )
 from nbatools.commands.data_utils import safe_divide
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
+from nbatools.commands.season_leaders import (
+    ATTEMPT_LABEL,
+    apply_attempt_qualifier,
+    attempt_qualifier_column,
+)
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 from nbatools.data_source import data_exists, data_read_csv
 
@@ -368,6 +373,7 @@ def _apply_default_guardrails(
     date_window_active: bool = False,
     opponent_active: bool = False,
     num_seasons: int = 1,
+    attempt_floors: bool = True,
 ) -> pd.DataFrame:
     effective_min_games = max(
         min_games,
@@ -379,6 +385,9 @@ def _apply_default_guardrails(
         ),
     )
     df = df[df["games_played"] >= effective_min_games].copy()
+    if not attempt_floors:
+        # A stated attempt minimum is the qualification rule.
+        return df
 
     fga_floor = 400 * num_seasons
     fg3a_floor = 150 * num_seasons
@@ -437,6 +446,9 @@ def build_result(
     team: str | None = None,
     min_wins: int | None = None,
     max_wins: int | None = None,
+    min_attempts: float | None = None,
+    min_attempts_per_game: bool = False,
+    attempt_stat: str | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         # "most team points in a single season": one row per team season.
@@ -458,6 +470,13 @@ def build_result(
 
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
+    attempt_col = None
+    if min_attempts is not None:
+        if min_attempts <= 0:
+            raise ValueError("min_attempts must be greater than 0")
+        attempt_col = attempt_qualifier_column(_normalize_stat(stat), attempt_stat)
+        if attempt_col is None:
+            raise ValueError(f"A shot-attempt minimum does not apply to {stat}")
     if min_games < 1:
         raise ValueError("min_games must be at least 1")
 
@@ -569,7 +588,10 @@ def build_result(
         date_window_active=date_window_active or game_filter_active,
         opponent_active=bool(opponent),
         num_seasons=len(seasons),
+        attempt_floors=attempt_col is None,
     )
+    if attempt_col is not None:
+        df = apply_attempt_qualifier(df, attempt_col, min_attempts, min_attempts_per_game)
 
     df = apply_win_bounds(df, min_wins, max_wins)
 
@@ -624,6 +646,9 @@ def build_result(
     bounds = win_bounds_caveat(min_wins, max_wins)
     if bounds:
         caveats.append(bounds)
+    if attempt_col is not None:
+        unit = ATTEMPT_LABEL[attempt_col] + (" per game" if min_attempts_per_game else "")
+        caveats.append(f"qualified: at least {min_attempts:g} {unit}")
     if date_window_active:
         caveats.append("leaderboard computed from game-log window; season-advanced stats excluded")
     if multi_season:
