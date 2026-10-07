@@ -382,6 +382,12 @@ def build_result(
         if not team_mask.any():
             return NoResult(query_class="leaderboard", reason="no_match")
         basic = basic[team_mask].copy()
+        # One franchise is one row: name its earlier seasons (Seattle, New
+        # Jersey) as the team was last known in range.
+        latest = basic.sort_values(["game_date", "game_id"]).iloc[-1]
+        for column in ("team_abbr", "team_name"):
+            if column in basic.columns:
+                basic[column] = latest[column]
 
     # Determine which games qualify
     qualifying_mask = _flag_compound_conditions(basic, normalized_conditions)

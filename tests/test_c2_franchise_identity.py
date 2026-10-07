@@ -102,3 +102,36 @@ def test_with_and_without_a_player_keep_his_earlier_franchise_games(monkeypatch)
     )
     assert without["game_id"].tolist() == [2, 4]
     assert with_him["game_id"].tolist() == [1, 3]
+
+
+def test_team_occurrence_count_is_one_row_per_franchise(monkeypatch):
+    from nbatools.commands import team_occurrence_leaders
+
+    games = pd.DataFrame(
+        {
+            "game_id": [1, 2, 3, 4],
+            "game_date": ["2008-01-01", "2008-01-03", "2009-01-01", "2009-01-03"],
+            "season": ["2007-08", "2007-08", "2008-09", "2008-09"],
+            "season_type": ["Regular Season"] * 4,
+            "team_abbr": ["SEA", "SEA", "OKC", "OKC"],
+            "team_name": ["Seattle SuperSonics"] * 2 + ["Oklahoma City Thunder"] * 2,
+            "team_id": [OKC] * 4,
+            "opponent_team_abbr": ["BKN"] * 4,
+            "opponent_team_name": ["Brooklyn Nets"] * 4,
+            "opponent_team_id": [BKN] * 4,
+            "is_home": [1, 0, 1, 0],
+            "is_away": [0, 1, 0, 1],
+            "wl": ["W", "L", "W", "W"],
+            "pts": [121, 99, 125, 130],
+        }
+    )
+    monkeypatch.setattr(
+        team_occurrence_leaders, "load_team_games_for_seasons", lambda s, t: games.copy()
+    )
+    result = team_occurrence_leaders.build_result(
+        stat="pts", min_value=120, team="OKC", start_season="2007-08", end_season="2008-09"
+    )
+    rows = result.leaders.to_dict("records")
+    assert len(rows) == 1
+    assert rows[0]["team_abbr"] == "OKC"
+    assert rows[0]["games_played"] == 4
