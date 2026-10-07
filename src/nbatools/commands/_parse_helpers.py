@@ -1726,13 +1726,13 @@ _OPPONENT_QUALITY_PREFIX_PATTERN = (
 
 _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
     rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}(?:playoff|postseason)\s+teams\b",
-    r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:made|make|qualified\s+for|qualify\s+for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
+    r"\b(?:against|vs\.?|versus|playing|facing|beating|over)\s+(?:the\s+)?(?:teams?|opponents?)\s+(?:that|which|who)\s+(?:made|make|qualified\s+for|qualify\s+for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
     rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}playoff\s+qualifiers\b",
 ]
 
 _NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
     rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}(?:non[- ]playoff|non[- ]postseason)\s+teams\b",
-    r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:missed|miss)\s+(?:the\s+)?(?:playoffs|postseason)\b",
+    r"\b(?:against|vs\.?|versus|playing|facing|beating|over)\s+(?:the\s+)?(?:teams?|opponents?)\s+(?:that|which|who)\s+(?:missed|miss)\s+(?:the\s+)?(?:playoffs|postseason)\b",
 ]
 
 
