@@ -868,9 +868,14 @@ _MARGIN_BOUNDS = (
     (r"single[- ]digits?", "max", 9),
     (rf"(\d+){_PTS_WORD}\s*(?:to|-|–)\s*(\d+){_PTS_WORD}", "range", 0),
     (rf"between\s+(\d+){_PTS_WORD}\s+and\s+(\d+){_PTS_WORD}", "range", 0),
-    # A bare number is that margin exactly: "won by 1", "lost by 20".
-    (rf"(\d+){_PTS_WORD}", "exact", 0),
+    (rf"exactly\s+(\d+){_PTS_WORD}", "exact", 0),
+    # A bare number: "won by 1", "lost by 3" name that margin exactly, while
+    # "won by 20", "beat them by 15" mean a blowout of at least that much.
+    (rf"(\d+){_PTS_WORD}", "bare", 0),
 )
+# From 10 up a bare margin reads as "at least": "how many times did they win
+# by 20" counts every 20+ win, not only the games decided by exactly 20.
+_BARE_MARGIN_FLOOR = 10
 _MARGIN_LEAD = (
     r"\b((?:winning|losing)\s+streaks?|won|wins?|winning|beat|beats|beaten|lost|loses|lose|losing|loss(?:es)?"
     r"|decided)\s+by\s+"
@@ -927,6 +932,23 @@ def _margin_phrase(direction: str, value, lead: str = "") -> str:
     return f"{value} or fewer {stat}"
 
 
+def _bound_phrase(tail: str, lead: str) -> str | None:
+    for pattern, direction, adjust in _MARGIN_BOUNDS:
+        bound = re.fullmatch(pattern, tail)
+        if bound is None:
+            continue
+        if direction == "range":
+            value = tuple(sorted(int(g) for g in bound.groups()))
+        elif bound.groups():
+            value = int(bound.group(1)) + adjust
+        else:
+            value = adjust
+        if direction == "bare":
+            direction = "min" if value >= _BARE_MARGIN_FLOOR else "exact"
+        return _margin_phrase(direction, value, lead)
+    return None
+
+
 def canonicalize_margin_phrases(text: str) -> str:
     """Rewrite final-margin wording into a "game margin" bound.
 
@@ -951,23 +973,24 @@ def canonicalize_margin_phrases(text: str) -> str:
             # A lead at halftime or in a quarter: no period scores are
             # loaded, so mark it for the unsupported boundary.
             return f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
-        tail = m.group(2)
-        for pattern, direction, adjust in _MARGIN_BOUNDS:
-            bound = re.fullmatch(pattern, tail)
-            if bound is None:
-                continue
-            if direction == "range":
-                value = tuple(sorted(int(g) for g in bound.groups()))
-            elif bound.groups():
-                value = int(bound.group(1)) + adjust
-            else:
-                value = adjust
-            lead = m.group(1)
-            # "with" would read as a teammate ("with 3 ..."); "at" reads as
-            # nothing else.
-            word = "" if lead == "decided" else f"{lead} "
-            return f"{word}at {_margin_phrase(direction, value, lead)}"
-        return m.group(0)
+        lead = m.group(1)
+        phrase = _bound_phrase(m.group(2), lead)
+        if phrase is None:
+            return m.group(0)
+        # "with" would read as a teammate ("with 3 ..."); "at" reads as
+        # nothing else.
+        word = "" if lead == "decided" else f"{lead} "
+        return f"{word}at {phrase}"
+
+    def opponent_by_phrase(m: re.Match) -> str:
+        if _MARGIN_NOT_FINAL.match(m.string[m.end() :]):
+            return f"{m.group(0)} {IN_GAME_LEAD_MARKER}"
+        verb, opponent = m.group(1), m.group(2)
+        lead = "lost" if verb.startswith(("lose", "lost", "losing")) else "beat"
+        phrase = _bound_phrase(m.group(3), lead)
+        if phrase is None:
+            return m.group(0)
+        return f"{verb} {opponent} at {phrase}"
 
     # "a win margin of 10+" says "won by 10+".
     text = re.sub(
@@ -981,6 +1004,20 @@ def canonicalize_margin_phrases(text: str) -> str:
         r"\b(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+team)\s+"
         r"(won|wins?|winning|beat|beats|lost|loses|lose|losing)\s+by\s+",
         lambda m: f"{_OPPOSITE_OUTCOME[m.group(1)]} by ",
+        text,
+    )
+    # "were the Lakers beaten by the Celtics (by 20)": a loss, not a win.
+    if re.search(r"\b(?:were|was|got|get|gets|been|be|being)\b", text):
+        text = re.sub(rf"\bbeaten\s+by\s+(?=(?:{bounds})(?:$|\s|[,.?!;]))", "lost by ", text)
+        text = re.sub(r"\bbeaten\s+by\s+(?=(?:the\s+)?[a-z0-9])", "lost to ", text)
+    # "beat the Celtics by 20", "lost to Boston by 10 or more": the margin
+    # follows the opponent.
+    text = re.sub(
+        r"\b(beat|beats|beaten|beating|defeat|defeats|defeated|defeating"
+        r"|(?:lose|loses|lost|losing)\s+to)\s+"
+        r"((?:the\s+)?[a-z0-9][a-z0-9.'-]*(?:\s+[a-z][a-z0-9.'-]*){0,2}?)\s+by\s+"
+        rf"({bounds})(?=$|\s|[,.?!;])(?!\s*%)(?!\s+(?:made\s+)?{_OPP_STAT_WORD})",
+        opponent_by_phrase,
         text,
     )
     text = re.sub(

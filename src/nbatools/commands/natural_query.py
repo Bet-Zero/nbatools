@@ -5786,7 +5786,7 @@ def _series_situation_totals(out: dict, q: str) -> None:
 
 _SPAN_MOST = re.compile(r"\bmost\b|\b(?:all[\s-]?time|career)\b[\w\s]*\bleaders?\b")
 _SINGLE_SEASON_WORDS = re.compile(
-    r"\b(?:single|one)\s+season\b|\bin\s+a\s+season\b|\bper\s+season\b|\bseason\s+high"
+    r"\b(?:single|one)\s+season\b|\bin\s+(?:a|any|one)\s+season\b|\bper\s+season\b|\bseason\s+high"
 )
 
 
