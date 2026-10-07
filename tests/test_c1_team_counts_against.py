@@ -79,3 +79,59 @@ def test_results_against_with_the_subject_last(query, outcome, count):
 def test_76ers_after_beat_and_lost_to(query, outcome):
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs["opponent"] == "PHI" and kwargs[outcome] is True
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The board would count a different set (or the games route games).
+        "how many teams did the Lakers never beat",
+        "how many teams have the Lakers not beaten",
+        "how many teams did the Lakers beat with 120 points",
+        "how many teams have the Lakers beaten the most",
+        "how many teams beat the Lakers and Celtics",
+        "how many teams has LeBron beaten",
+        "how many teams have the Celtics beaten in a row",
+        "how many teams have the Lakers beaten more than the Celtics",
+    ],
+)
+def test_team_counts_the_board_cannot_give_refuse(query):
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "team", "wl", "minimum"),
+    [
+        ("how many teams did the Celtics lose to more than once", "BOS", "L", 2),
+        ("how many teams did the Lakers beat 3 times or more", "LAL", "W", 3),
+    ],
+)
+def test_once_and_times_or_more(query, team, wl, minimum):
+    sections = execute_natural_query(query).result.to_dict()["sections"]
+    assert sections["count"] == [{"count": _teams(team, wl, minimum)}]
+
+
+def test_streak_team_counts_keep_their_route():
+    assert (
+        execute_natural_query("how many teams have won 8 straight this season").result_status
+        == "ok"
+    )
+
+
+def test_subject_last_keeps_the_margin():
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    mine = games[
+        (games["team_abbr"] == "LAL")
+        & (games["opponent_team_abbr"] == "BOS")
+        & (games["wl"] == "L")
+        & (games["plus_minus"].abs() >= 10)
+    ]
+    query = "how many losses against the Celtics do the Lakers have by 10 or more"
+    assert execute_natural_query(query).result.to_dict()["sections"]["count"] == [
+        {"count": len(mine)}
+    ]
+
+
+def test_zero_teams_reads_as_a_sentence():
+    phrase = execute_natural_query("how many teams did the 76ers beat").metadata["count_phrase"]
+    assert phrase.endswith("beat no teams in the 2025-26 regular season.")
