@@ -6309,6 +6309,10 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
     )
     for key in ("season", "start_season", "end_season"):
         rerouted[key] = kwargs[key]
+    # The parser read "50 wins ranked by point differential" as a points
+    # threshold; publish the stat the board ranks, and the wins bound only in
+    # its own kwargs and caveat, not as a bound on that stat.
+    rerouted.update(stat=stat, min_value=None, max_value=None)
     rerouted["notes"] = notes + [note]
     return rerouted
 

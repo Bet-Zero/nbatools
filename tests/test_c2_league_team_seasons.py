@@ -177,6 +177,23 @@ def test_best_defensive_seasons_by_opponent_points():
     assert len({row["season"] for row in rows}) > 1
 
 
+@pytest.mark.fixture_data
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("teams with at least 3 wins ranked by point differential", "plus_minus_per_game"),
+        ("best defensive seasons by opponent points", "opponent_pts_per_game"),
+        ("seasons with at least 40 wins ranked by losses", "losses"),
+    ],
+)
+def test_metadata_names_the_ranked_stat_not_the_wins_bound(query, stat):
+    # The page headlines the column metadata["stat"] names; the parser's own
+    # reading ("pts", or "40" as a bound on losses) must not leak into it.
+    metadata = execute_natural_query(query).to_dict()["metadata"]
+    assert metadata["stat"] == stat
+    assert metadata["min_value"] is None and metadata["max_value"] is None
+
+
 @pytest.mark.parametrize(
     ("query", "without"),
     [
