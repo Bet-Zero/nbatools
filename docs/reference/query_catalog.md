@@ -90,6 +90,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 ### 2.2 Time/context filters
 
 - explicit season: `2025-26`
+- lone year: `in 2024`, `2024 record`, `Lakers record 2024` (a year closing the question) all
+  name the 2023-24 season, the one that ended in that year; a number a stat word owns
+  (`how many players scored 2000`) is not read as a year
 - season range: `from 2021-22 to 2023-24`
 - since season/year: `since 2020`, `since 2020-21`
 - last N seasons: `last 3 seasons`

@@ -70,7 +70,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
 )
-from nbatools.commands._parse_helpers import SERIES_SITUATION_PATTERNS
+from nbatools.commands._parse_helpers import SERIES_SITUATION_PATTERNS, TRAILING_YEAR
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 # Stable ids reported in ``unsupported_filters``. Each one needs different
@@ -786,6 +786,12 @@ def _claimed_ranges(
     for keys, patterns in _SLOT_CLAIMS:
         if _slot_resolved(parsed, keys):
             claim(patterns)
+    bare_year = parsed.get("bare_year_season")
+    closing = TRAILING_YEAR.search(text)
+    if bare_year and closing and int(closing.group(1)) == bare_year[0]:
+        # "top scorers 2024": only the closing year the parser read as the
+        # season; one it set aside stays residual.
+        ranges.append(closing.span())
     # The season-type qualifier is captured separately upstream.
     if str(parsed.get("season_type") or "").lower() != "regular season":
         claim(_SEASON_TYPE)
