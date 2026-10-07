@@ -5,7 +5,11 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands._single_season_boards import best_single_seasons
+from nbatools.commands._single_season_boards import (
+    apply_win_bounds,
+    best_single_seasons,
+    win_bounds_caveat,
+)
 from nbatools.commands.data_utils import safe_divide
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
@@ -431,6 +435,8 @@ def build_result(
     last_n: int | None = None,
     per_season: bool = False,
     team: str | None = None,
+    min_wins: int | None = None,
+    max_wins: int | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         # "most team points in a single season": one row per team season.
@@ -565,6 +571,8 @@ def build_result(
         num_seasons=len(seasons),
     )
 
+    df = apply_win_bounds(df, min_wins, max_wins)
+
     if team is not None and not df.empty:
         # "Lakers best scoring season": rank one team's seasons.
         df = df[df["team_abbr"].astype(str).str.upper() == team.upper()].copy()
@@ -582,6 +590,8 @@ def build_result(
         for col in _leaderboard_context_columns(target_col)
         if col in df.columns and col not in out_cols
     )
+    if (min_wins is not None or max_wins is not None) and "wins" not in out_cols:
+        out_cols.append("wins")
     missing = [c for c in out_cols if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required output columns: {missing}")
@@ -611,6 +621,9 @@ def build_result(
         current_through = compute_current_through(seasons[0], season_type)
 
     caveats: list[str] = []
+    bounds = win_bounds_caveat(min_wins, max_wins)
+    if bounds:
+        caveats.append(bounds)
     if date_window_active:
         caveats.append("leaderboard computed from game-log window; season-advanced stats excluded")
     if multi_season:

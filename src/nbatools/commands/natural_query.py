@@ -5226,7 +5226,12 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and names_other_player_availability(q, route_kwargs["player"])
+        and names_other_player_availability(
+            q,
+            route_kwargs["player"],
+            # The player routes apply without_player; with_player refuses.
+            (route_kwargs.get("without_player"),),
+        )
     ):
         # "in games LeBron plays 35 minutes and Luka sits": the player route
         # reads only its own player, so the second clause would be dropped.
@@ -6064,6 +6069,254 @@ def _team_best_seasons(parsed: dict, out: dict) -> dict | None:
     )
 
 
+# "teams with at least 50 wins", "seasons with 40 or more wins": a bound on
+# each team season's wins. Group 1 is a floor, group 2 a ceiling.
+class _WinBound:
+    """``body`` after a verb, ending in its wins noun: "with 50 wins" or "won 50
+    games" ("with 50 games" counts games played, not wins)."""
+
+    def __init__(self, body: str, tail: str = "") -> None:
+        self.patterns = (
+            re.compile(rf"\b(?:with|had|having|of)\s+{body}\s*(?:wins|victories)\b{tail}"),
+            re.compile(rf"\b(?:won|winning)\s+{body}\s*(?:wins|victories|games)\b{tail}"),
+        )
+
+    def search(self, q: str) -> re.Match | None:
+        found = [m for m in (p.search(q) for p in self.patterns) if m]
+        return min(found, key=lambda m: m.start()) if found else None
+
+
+_WIN_FLOOR = _WinBound(
+    r"(?:(?P<lead>at\s+least|more\s+than|over)\s+)?(?P<n>\d{1,2})\+?(?:\s+or\s+more)?"
+)
+_WIN_TEAMS = re.compile(r"\b(\d{1,2})[\s-]+win\b(?=\s+(?:teams?|seasons?)\b)")
+_WIN_CEILING = _WinBound(
+    r"(?:(?P<under>fewer\s+than|less\s+than|under)\s+(?P<u>\d{1,2})"
+    r"|(?:at\s+most|no\s+more\s+than)\s+(?P<m>\d{1,2})"
+    r"|(?P<o>\d{1,2})\s+or\s+(?:fewer|less))"
+)
+_WIN_CEILING_TAIL = _WinBound(r"(?P<t>\d{1,2})", r"\s+or\s+(?:fewer|less)\b")
+_WIN_RANGE = _WinBound(r"between\s+(?P<a>\d{1,2})\s+and\s+(?P<b>\d{1,2})")
+# Team-season stats a league season board ranks: (pattern, stat).
+_LEAGUE_SEASON_STATS = (
+    (r"\bnet\s+rating\b", "net_rating"),
+    (r"\b(?:offensive|off)\s+rating\b", "off_rating"),
+    (r"\b(?:defensive|def)\s+rating\b", "def_rating"),
+    (r"\bpoint\s+differential\b|\bdifferential\b|\bmargin\b", "plus_minus_per_game"),
+    # Bare "plus minus" is a player stat unless teams are named.
+    (r"\bplus[\s/-]?minus\b", "plus_minus"),
+    (
+        r"\b(?:opponent|opp)\s+(?:points|ppg|scoring)\b|\bpoints\s+allowed\b",
+        "opponent_pts_per_game",
+    ),
+    (r"\bpace\b", "pace"),
+    (r"\btrue\s+shooting\b", "ts_pct"),
+    (r"\b(?:three|3)[\s-]?(?:point|pt)?\s+(?:shooting|percentage)\b", "fg3_pct"),
+    (r"\bfree[\s-]?throw\s+(?:shooting|percentage)\b", "ft_pct"),
+    (r"\bthrees\b|\b(?:three|3)[\s-]?pointers\b", "fg3m"),
+    (r"\bturnovers\b", "tov"),
+    (r"\brebounds\b|\brebounding\b", "reb"),
+    (r"\bassists\b", "ast"),
+    (r"\bsteals\b", "stl"),
+    (r"\bblocks\b", "blk"),
+    (r"\b(?:points|scoring|ppg)\b", "pts"),
+    (r"\bwins\b", "wins"),
+    (r"\blosses\b", "losses"),
+    (r"\brecords?\b|\bwin(?:ning)?\s*(?:%|percentage|pct)", "win_pct"),
+    (r"\bdefensive\b", "def_rating"),
+    (r"\boffensive\b", "off_rating"),
+    (r"\bshooting\b", "fg_pct"),
+)
+# Words a league season board reads besides its stat, bound and span.
+_LEAGUE_SEASON_WORDS = frozenset(
+    "teams team seasons season single a an the with by ranked sorted ordered "
+    "best worst most fewest least highest lowest top greatest which what who "
+    "had have has show list me and in of all time ever nba history since from "
+    "to through until between during this last current regular playoffs playoff "
+    "postseason per game that did were was are".split()
+)
+_LEAGUE_SEASON_SPAN = re.compile(
+    r"(?<!\d)(?:19|20)\d{2}(?:-\d{2})?s?(?!\d)|\ball[\s-]time\b|\bnba\s+history\b"
+    r"|\bregular[\s-]season\b"
+)
+_TEAM_ONLY_SEASON_STATS = frozenset(
+    {
+        "net_rating",
+        "off_rating",
+        "def_rating",
+        "plus_minus_per_game",
+        "opponent_pts_per_game",
+        "pace",
+        "wins",
+        "losses",
+        "win_pct",
+    }
+)
+_ADJECTIVE_STAT = {"def_rating": "opponent_pts_per_game", "off_rating": "pts"}
+_WIN_COUNT = re.compile(
+    r"\b(?:most|fewest|least|how\s+many|number\s+of|count\s+of)\s+"
+    r"(?:\d{1,2}\+?[\s-]+win\b|(?:seasons|teams|times)\s+(?:with|of|winning|that\s+won)\b)"
+)
+_LEAGUE_SEASON_SPAN_COUNT = re.compile(
+    r"\b(?:last|past|previous)\s+(?:\d+\s+)?seasons\b"
+    r"|(?<!\btop\s)(?<!\bbest\s)(?<!\bworst\s)\b\d+\s+seasons\b"
+)
+
+
+def _league_season_limit(top_n: int | None, q: str) -> int:
+    """ "best 50 win teams": the 50 is the wins floor, not the row count."""
+    if top_n and re.search(rf"\b(?:best|top|worst)\s+{top_n}[\s-]+win\b", q):
+        return 10
+    return top_n or 10
+
+
+def _win_bounds(q: str) -> tuple[int | None, int | None, str]:
+    """The wins floor and ceiling a question sets, and ``q`` without them."""
+
+    def cut(m: re.Match) -> str:
+        return q[: m.start()] + " " + q[m.end() :]
+
+    low = high = None
+    m = _WIN_RANGE.search(q)
+    if m:
+        low, high = sorted(int(n) for n in (m.group("a"), m.group("b")))
+        return low, high, cut(m)
+    m = _WIN_CEILING_TAIL.search(q) or _WIN_CEILING.search(q)
+    if m:
+        groups = m.groupdict()
+        if groups.get("u"):
+            high = int(groups["u"]) - 1
+        else:
+            high = int(next(groups[k] for k in ("t", "m", "o") if groups.get(k)))
+        q = cut(m)
+    m = _WIN_FLOOR.search(q)
+    if m:
+        low = int(m.group("n")) + (1 if m.group("lead") in ("more than", "over") else 0)
+        q = cut(m)
+    else:
+        m = _WIN_TEAMS.search(q)
+        if m:
+            low = int(m.group(1))
+            q = cut(m)
+    return low, high, q
+
+
+def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
+    """ "teams with at least 50 wins ranked by net rating", "seasons with the
+    most wins", "best point differential seasons": rank team seasons league-wide.
+    """
+    q = parsed["normalized_query"]
+    if out.get("route") not in ("season_team_leaders", "team_record_leaderboard", "season_leaders"):
+        return None
+    if parsed.get("player") or parsed.get("team") or parsed.get("team_a") or parsed.get("team_b"):
+        return None
+    if _PLAYER_SUBJECT.search(q) or re.search(r"\bplayers?\b|\bfranchises?\b", q):
+        return None
+    if _WIN_COUNT.search(q):
+        # "teams with the most 50 win seasons": a count of seasons, not a list.
+        return None
+    low, high, text = _win_bounds(q)
+    bare = text
+    seasons_board = bool(re.search(r"\bseasons\b", q)) and not _LEAGUE_SEASON_SPAN_COUNT.search(q)
+    if low is None and high is None and not seasons_board:
+        return None
+    if low is not None and high is not None and low > high:
+        return None
+    found: list[str] = []
+    for pattern, stat in _LEAGUE_SEASON_STATS:
+        if re.search(pattern, text):
+            text = re.sub(pattern, " ", text)
+            if pattern.endswith("ive\\b") and found == [_ADJECTIVE_STAT[stat]]:
+                # "best defensive teams by opponent points": the adjective
+                # describes the stat the question names.
+                continue
+            found.append(stat)
+    stats = list(dict.fromkeys("plus_minus_per_game" if s == "plus_minus" else s for s in found))
+    if len(stats) > 1:
+        return None
+    stat = stats[0] if stats else ("wins" if low is not None or high is not None else None)
+    if stat is None:
+        return None
+    if not (
+        (stat in _TEAM_ONLY_SEASON_STATS and "plus_minus" not in found)
+        or low is not None
+        or high is not None
+        or re.search(r"\bteams?\b", q)
+    ):
+        # "best scoring seasons" asks about players.
+        return None
+    if (low is not None or high is not None) and (
+        (out.get("route_kwargs") or {}).get("season_type") or "Regular Season"
+    ) != "Regular Season":
+        # "teams with 50 wins ... in the playoffs": the wins are the regular
+        # season's, which a playoff board does not count.
+        return None
+    text = _LEAGUE_SEASON_SPAN.sub(" ", text)
+    text = re.sub(r"\btop\s+\d+\b", " ", text)
+    if any(word not in _LEAGUE_SEASON_WORDS for word in re.findall(r"[a-z0-9%+'-]+", text)):
+        # "teams with 50 wins at home": a filter this board does not read.
+        return None
+    route_kwargs = out.get("route_kwargs") or {}
+    season_type = route_kwargs.get("season_type") or "Regular Season"
+    start, end = route_kwargs.get("start_season"), route_kwargs.get("end_season")
+    season = route_kwargs.get("season")
+    notes = [n for n in out.get("notes") or [] if not n.startswith("unsupported_boundary")]
+    if start:
+        season = None
+    elif not _NAMED_SEASON_WORDS.search(q):
+        from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
+
+        season = None
+        start, end = resolve_career(season_type)
+        notes.append(f"default: every season since {EARLIEST_SEASON}")
+    if season is None and not start:
+        return None
+    lower_better = (
+        stat == "losses" or _ranks_lower_is_better(stat) or stat == "opponent_pts_per_game"
+    )
+    if re.search(r"\b(?:most|highest)\b", bare):
+        ascending = False
+    elif re.search(r"\b(?:fewest|lowest)\b|(?<!\bat\s)\bleast\b", bare):
+        ascending = True
+    elif re.search(r"\b(?:best|greatest)\b|\btop\b", bare):
+        ascending = lower_better and stat != "losses"
+    elif re.search(r"\bworst\b", bare):
+        ascending = not lower_better or stat == "losses"
+    else:
+        # "teams with fewer than 20 wins": the fewest first.
+        ascending = (lower_better and stat != "losses") or (
+            stat == "wins" and high is not None and low is None
+        )
+    record = stat in ("wins", "losses", "win_pct")
+    kwargs = {
+        "season": season,
+        "start_season": start,
+        "end_season": end,
+        "season_type": season_type,
+        "stat": stat,
+        "limit": _league_season_limit(parsed.get("top_n"), q),
+        "ascending": ascending,
+        "per_season": bool(start),
+        "min_wins": low,
+        "max_wins": high,
+    }
+    note = "single_season: each team season ranked on its own" if start else "team_season_board"
+    rerouted = dict(out)
+    rerouted.update(
+        route="team_record_leaderboard" if record else "season_team_leaders",
+        intent="leaderboard",
+        route_kwargs=kwargs,
+    )
+    for key in ("season", "start_season", "end_season"):
+        rerouted[key] = kwargs[key]
+    # The parser read "50 wins ranked by point differential" as a points
+    # threshold; publish the stat the board ranks, and the wins bound only in
+    # its own kwargs and caveat, not as a bound on that stat.
+    rerouted.update(stat=stat, min_value=None, max_value=None)
+    rerouted["notes"] = notes + [note]
+    return rerouted
+
+
 # "Curry best 3 point shooting game", "LeBron top 5 games", "worst shooting
 # night": a list of that player's games ranked by one stat.
 _PLAYER_GAME_LIST = re.compile(
@@ -6271,7 +6524,8 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             conditions.append({"stat": rate, "min_value": None, "max_value": value - 0.0001})
     if conditions:
         route_kwargs["conditions"] = conditions
-    stat = shooting or route_kwargs.get("stat") or "pts"
+    # "LeBron top 5 games" with no stat named: the top-games scoring shorthand.
+    stat = shooting or route_kwargs.get("stat") or SCORING_SHORTHAND
     route_kwargs.pop("career_intent", None)
     from inspect import signature
 
@@ -6522,7 +6776,22 @@ def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
 
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
-    out = _finalize_route_inner(parsed)
+    try:
+        out = _finalize_route_inner(parsed)
+    except ValueError:
+        # "50 win teams", "best defensive seasons": no base route; the league
+        # season board may still read the whole question.
+        base = dict(parsed)
+        base.update(route="season_team_leaders", notes=[])
+        base["route_kwargs"] = {
+            key: parsed.get(key) for key in ("season", "start_season", "end_season")
+        } | {"season_type": parsed.get("season_type") or "Regular Season"}
+        league = _league_team_seasons(parsed, base)
+        if league is None:
+            raise
+        league["confidence"] = compute_parse_confidence(league)
+        league["alternates"] = generate_alternates(league)
+        return league
     decade = _decade_stat_board(parsed, out)
     if decade is not None:
         return decade
@@ -6551,6 +6820,9 @@ def _finalize_route(parsed: dict) -> dict:
     best = _player_best_seasons(parsed, out) or _team_best_seasons(parsed, out)
     if best is not None:
         return best
+    league = _league_team_seasons(parsed, out)
+    if league is not None:
+        return league
     if not parsed.get("single_season_intent") or not out.get("route"):
         return out
     route_kwargs = dict(out.get("route_kwargs") or {})

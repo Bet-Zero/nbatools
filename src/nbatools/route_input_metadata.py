@@ -271,6 +271,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "last_n",
             "per_season",
             "team",
+            "min_wins",
+            "max_wins",
         ),
         aliases={"limit": ("top_n is a natural-parser slot; direct route calls use limit",)},
         allowed_values={"season_type": SEASON_TYPE_VALUES},
@@ -516,6 +518,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "end_date",
             "per_season",
             "team",
+            "min_wins",
+            "max_wins",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "stat": RECORD_STAT_VALUES},
         examples=(
