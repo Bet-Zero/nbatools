@@ -1341,7 +1341,7 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         ),
         None,
     )
-    match = request and re.search(r"([\d.]+)\+ \w+ \((\w+)\)", request)
+    match = request and re.search(r"([\d.]+)\+ \w+ \((\w+)\)((?:\|[^|]+)*)$", request)
     if not match:
         return
     if isinstance(result, LeaderboardResult):
@@ -1354,7 +1354,18 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     noun = _SEASON_TOTAL_NOUNS.get(column)
     if noun is None:
         return
-    line = f"{float(match.group(1)):,.0f}+ {noun}"
+    value = float(match.group(1))
+    # "over 1500" is a strict floor.
+    line = f"{value:,.0f}+ {noun}" if value.is_integer() else f"more than {int(value):,} {noun}"
+    result_meta = getattr(result, "metadata", None) or {}
+    opponent = result_meta.get("opponent_name") or (metadata.get("opponent_context") or {}).get(
+        "team_abbr"
+    )
+    filters = [
+        part.replace("{opponent}", f"the {opponent}" if opponent else "that opponent")
+        for part in match.group(3).split("|")
+        if part
+    ]
     # "in a season since 2010": one row per player season.
     per_season = any(
         isinstance(note, str) and note.startswith("single_season")
@@ -1366,6 +1377,8 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         context = f"in a single season from {start} to {end}"
     elif start and end and not metadata.get("season"):
         context = f"combined {context}"
+    if filters:
+        context = " ".join(filters) + " " + context
     players = int(rows["player_id"].nunique()) if "player_id" in rows else len(rows)
     team_name = (getattr(result, "metadata", None) or {}).get("team_name") or (
         (metadata.get("team_context") or {}).get("team_name")
@@ -1384,8 +1397,9 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
             where = f" in {row['season']}" if per_season and "season" in row else ""
             listed.append(f"{row['player_name']} ({int(row[column]):,}{where})")
         if len(rows) > 5:
-            more = "seasons" if per_season else ""
-            listed.append(f"{len(rows) - 5} more {more}".strip())
+            extra = len(rows) - 5
+            more = ("season" if extra == 1 else "seasons") if per_season else ""
+            listed.append(f"{extra} more {more}".strip())
         joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
         subject = f"1 {who}{unit} has" if players == 1 else f"{players} {who}{unit}s have"
         metadata["answer_phrase"] = f"{subject} {line} {context}: {joined}."

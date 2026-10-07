@@ -126,3 +126,58 @@ def test_game_sized_numbers_keep_their_routes(query):
     except ValueError:
         return
     assert "min_total" not in parsed["route_kwargs"]
+
+
+def test_thousands_comma_is_one_number():
+    kwargs = parse_query("players with 1,500 points")["route_kwargs"]
+    assert kwargs["min_total"] == 1500.0
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Single-game wording, or a number just above a game record.
+        "players who scored 101 points in a single game",
+        "who scored 120 points in one game",
+        "how many players had 12 steals",
+        "players with 31 assists",
+        "who scored 105 points last night",
+        # A repeat, window, game total or second condition the list would drop.
+        "players with 1500 points in each of the last 2 seasons",
+        "players with 1500 points in both 2024-25 and 2025-26",
+        "players with 1500 points in multiple seasons",
+        "players with 1000 points in their first 60 games",
+        "players with 1000 points before the all star break",
+        "players in games with 250 total points",
+        "players with 1500 points or 600 rebounds",
+    ],
+)
+def test_wording_a_total_list_cannot_honour_stays_off_it(query):
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    assert "min_total" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    ("query", "words"),
+    [
+        ("players with 1000 points at home", "at home"),
+        ("players with 1000 points on the road", "on the road"),
+        ("players with 800 points in wins", "in wins"),
+        ("players with 300 points against the Celtics", "against the Boston Celtics"),
+        ("players with 500 points in March", "from 2026-03-01 to 2026-03-31"),
+    ],
+)
+def test_headline_names_the_filters_applied(query, words):
+    assert words in execute_natural_query(query).metadata["answer_phrase"]
+
+
+def test_strict_floor_and_team_in_a_season_headlines():
+    phrase = execute_natural_query("players with over 1500 points").metadata["answer_phrase"]
+    assert "more than 1,500 points" in phrase
+    phrase = execute_natural_query(
+        "how many Lakers players have 1000 points in a season since 2024"
+    ).metadata["answer_phrase"]
+    assert phrase.startswith("3 Los Angeles Lakers players have")

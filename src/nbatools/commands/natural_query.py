@@ -6930,6 +6930,18 @@ def _player_wins_board(parsed: dict, out: dict) -> dict | None:
 # The most anyone has had in one NBA game. "players with 2000 points" asks for a
 # season total: no game ever reached the number.
 _SINGLE_GAME_RECORD = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+# The smallest number read as a total. Just above the record ("12 steals",
+# "31 assists") a total is no likelier than a typo for a game; leave it there.
+_SEASON_TOTAL_FLOOR = {"pts": 150, "reb": 100, "ast": 50, "stl": 25, "blk": 25, "fg3m": 25}
+# Wording a season-total list cannot honour: a single game ("in one game",
+# "last night"), a per-season repeat ("in each of the last 2 seasons", "in
+# both"), a game-count window ("first 60 games", "before the all star break"),
+# game totals ("games with 250 total points") or a second condition ("or").
+_SEASON_TOTAL_REFUSES = re.compile(
+    r"\b(?:per\s+game|a\s+game|one\s+game|single[-\s]game|in\s+a\s+night|last\s+night|"
+    r"tonight|yesterday|average|averag(?:ed|ing)|each|both|every|multiple|several|and|or|"
+    r"\d+\s+games?|all[-\s]?star|break|games?\s+with)\b"
+)
 # Filters a season-total threshold list cannot apply; any of them keeps the
 # question on its own route.
 _SEASON_TOTAL_STOPS = (
@@ -6993,10 +7005,17 @@ def _season_total_threshold_board(parsed: dict) -> dict | None:
     """
     q = parsed["normalized_query"]
     stat, value = parsed.get("stat"), parsed.get("min_value")
+    if re.search(r"\b\d{1,3},\d{3}\b", q):
+        # "players with 1,500 points": the threshold reader took "500".
+        q = re.sub(r"\b(\d{1,3}),(\d{3})\b", r"\1\2", q)
+        value = None
     if value is None:
         stat, value = _season_total_wording(q, stat)
-    record = _SINGLE_GAME_RECORD.get(stat or "")
-    if record is None or value is None or value <= record:
+    floor = _SEASON_TOTAL_FLOOR.get(stat or "")
+    if floor is None or value is None or value < floor:
+        return None
+    if _SEASON_TOTAL_REFUSES.search(q):
+        # The list would drop it and answer a different question.
         return None
     if len(parsed.get("threshold_conditions") or []) > 1:
         return None
@@ -7009,9 +7028,6 @@ def _season_total_threshold_board(parsed: dict) -> dict | None:
     if not (_PLAYER_SUBJECT.search(q) or re.search(r"\bwho\b", q)) or re.search(
         r"\bteams?\b|\bfranchises?\b", q
     ):
-        return None
-    if re.search(r"\b(?:per\s+game|a\s+game|average|averag(?:ed|ing))\b", q):
-        # "players averaging 2000 points" is not a total.
         return None
     season_type = parsed.get("season_type") or "Regular Season"
     from nbatools.commands._seasons import int_to_season
@@ -7062,8 +7078,33 @@ def _season_total_threshold_board(parsed: dict) -> dict | None:
         # "2000 points in a season since 2010": each player season on its own.
         kwargs["per_season"] = True
         notes.append("single_season: each player season ranked on its own")
-    label = f"{value:g}+ {stat} ({kwargs['stat']})"
-    notes.append(f"season_total_list: players with {label}")
+    # Not ":g": "over 1500" is 1500.0001 and must stay a strict floor.
+    amount = format(value, "f").rstrip("0").rstrip(".")
+    label = f"{amount}+ {stat} ({kwargs['stat']})"
+    # The headline names every filter the list applied.
+    where = [
+        text
+        for flag, text in (
+            (kwargs["home_only"], "at home"),
+            (kwargs["away_only"], "on the road"),
+            (kwargs["wins_only"], "in wins"),
+            (kwargs["losses_only"], "in losses"),
+            (kwargs["opponent"], "against {opponent}"),
+        )
+        if flag
+    ]
+    start, end = kwargs["start_date"], kwargs["end_date"]
+    if start or end:
+        where.append(
+            f"on {start}"
+            if start == end
+            else f"from {start} to {end}"
+            if start and end
+            else f"since {start}"
+            if start
+            else f"through {end}"
+        )
+    notes.append(f"season_total_list: players with {label}" + "".join(f"|{w}" for w in where))
     out = dict(parsed)
     out.update(route="season_leaders", intent="leaderboard", route_kwargs=kwargs, notes=notes)
     for key in ("season", "start_season", "end_season"):

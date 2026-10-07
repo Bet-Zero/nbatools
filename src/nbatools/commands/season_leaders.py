@@ -929,6 +929,7 @@ def build_result(
     notes: list[str] = []
     multi_season = len(seasons) > 1
     team_display_name: str | None = None
+    opponent_display_name: str | None = None
 
     # Validate params
     if limit <= 0:
@@ -1023,6 +1024,10 @@ def build_result(
     if opponent:
         opp_mask = team_value_mask(basic, opponent, prefix="opponent_")
         basic = basic[opp_mask].copy()
+        if "opponent_team_name" in basic.columns and not basic.empty:
+            opponent_display_name = str(
+                basic.sort_values("game_date")["opponent_team_name"].iloc[-1]
+            )
 
     # "most points in game 7s": the player's games in that series situation.
     basic = apply_series_situation_filter(basic, seasons, series_situation)
@@ -1412,7 +1417,14 @@ def build_result(
         current_through=current_through,
         notes=notes,
         caveats=caveats,
-        metadata={"team_name": team_display_name} if team_display_name else {},
+        metadata={
+            key: value
+            for key, value in (
+                ("team_name", team_display_name),
+                ("opponent_name", opponent_display_name),
+            )
+            if value
+        },
     )
 
 

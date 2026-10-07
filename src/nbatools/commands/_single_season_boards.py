@@ -34,8 +34,12 @@ def best_single_seasons(
     frames: list[pd.DataFrame] = []
     caveats: list[str] = []
     empty: pd.DataFrame | None = None
+    metadata: dict = {}
     for one in seasons:
         result = build(**{**kwargs, "season": one, "start_season": None, "end_season": None})
+        if isinstance(result, LeaderboardResult):
+            # Display names a season board found ("Los Angeles Lakers").
+            metadata.update(result.metadata or {})
         if isinstance(result, LeaderboardResult) and result.leaders.empty:
             empty = result.leaders
         if not isinstance(result, LeaderboardResult) or result.leaders.empty:
@@ -72,6 +76,7 @@ def best_single_seasons(
         leaders=combined,
         current_through=compute_current_through_for_seasons(seasons, kwargs["season_type"]),
         caveats=caveats,
+        metadata=metadata,
     )
 
 
