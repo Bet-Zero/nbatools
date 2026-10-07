@@ -58,6 +58,10 @@ def _answered(query: str) -> list[tuple[str, int]]:
             "players with a 25 point 10 rebound game",
             lambda g: (g.season == "2025-26") & (g.pts >= 25) & (g.reb >= 10),
         ),
+        (
+            "players with 25 points and 10 rebounds in a game",
+            lambda g: (g.season == "2025-26") & (g.pts >= 25) & (g.reb >= 10),
+        ),
         ("players with 30 point games", lambda g: (g.season == "2025-26") & (g.pts >= 30)),
         (
             "players with 30 point games at home",
@@ -121,6 +125,17 @@ def test_a_bare_stat_bound_is_not_read_as_games():
         "players with 30 point games per season",
         # A team record is not a game filter.
         "players with 50 wins and 30 point games",
+        # Second check round: rate, total and count wording.
+        "players with 25 points and 10 rebounds ppg",
+        "players with 25 points and 10 rebounds per 36 minutes",
+        "players with 25 points and 10 rebounds for the year",
+        "players with 25 points and 10 rebounds over the season",
+        "players with 25 points and 10 rebounds combined",
+        "players with 25 points and 10 rebounds overall",
+        "players with 5 triple doubles",
+        "players with 10 double doubles",
+        "players with the greatest number of triple doubles",
+        "players with the highest number of 30 point games",
     ],
 )
 def test_averages_totals_and_records_are_not_read_as_game_lists(query):

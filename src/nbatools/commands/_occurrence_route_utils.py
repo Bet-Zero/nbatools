@@ -367,10 +367,16 @@ _PLAYERS_WITH = re.compile(
 # total"), a ranking ("the most 30 point games" keeps its top-10 board) or a
 # team record ("50 wins").
 _NOT_A_GAME_LIST = re.compile(
-    r"\b(?:per|a|an|each)\s+(?:game|contest|night)\b|\baverag(?:e|ed|es|ing)\b"
-    r"|\btotals?\b|\b(?:per|a|in\s+a|for\s+the|on\s+the|single)\s+season\b"
-    r"|\b(?:most|fewest|least|top|leaders?|leading|rank(?:ed|ing)?|best|worst)\b"
+    r"(?<!\bin\s)\b(?:per|a|an|each)\s+(?:game|contest|night)\b|\baverag(?:e|ed|es|ing)\b"
+    r"|\b[prabs]pg\b|\bper\s+\d+\b"
+    r"|\btotals?\b|\b(?:combined|cumulative|overall|aggregate|sum)\b"
+    r"|\b(?:per|a|in\s+a|for\s+the|on\s+the|over\s+the|across\s+the|during\s+the|single)"
+    r"\s+(?:season|year)\b"
+    r"|\b(?:most|fewest|least|top|leaders?|leading|rank(?:ed|ing)?|best|worst|highest"
+    r"|lowest|greatest|number\s+of|count|how\s+many)\b"
     r"|\b\d+\s+(?:wins|losses|victories|win|loss)\b|\brecord\b"
+    # "players with 5 triple doubles": a count of them, not one.
+    r"|\b\d+\s+(?:triple|double)[\s-]?doubles?\b"
 )
 # The most a player has had in one NBA game, rounded up: a larger number is a
 # season total, not a game condition.
