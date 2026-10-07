@@ -261,7 +261,8 @@ def _recommended_min_games(
     date_window_active: bool = False,
     opponent_active: bool = False,
 ) -> int:
-    if target_col == "games_played":
+    if target_col == "games_played" or target_col.endswith("_total"):
+        # A season total needs no qualifying sample: "most total points".
         return 1
     if date_window_active or opponent_active:
         if target_col in COUNT_LEADERBOARD_STATS:
@@ -706,15 +707,31 @@ def _apply_default_guardrails(
         # season needs one game, a span three; shooting floors are absolute.
         df = df[df["games_played"] >= max(min_games, 1 if num_seasons == 1 else 3)].copy()
         return _apply_attempt_floors(df, target_col, fga_floor=20, fg3a_floor=10, fta_floor=10)
-    effective_min_games = max(
-        min_games,
-        _recommended_min_games(
-            target_col,
-            season_type=season_type,
-            date_window_active=date_window_active,
-            opponent_active=opponent_active,
-        ),
+    recommended = _recommended_min_games(
+        target_col,
+        season_type=season_type,
+        date_window_active=date_window_active,
+        opponent_active=opponent_active,
     )
+    # Early in a regular season nobody has 20 games or 200 shots: the season
+    # floors are at most half of what the leader in this sample has. Window,
+    # opponent and playoff samples keep their own small fixed floors.
+    early_season = (
+        not df.empty
+        and not date_window_active
+        and not opponent_active
+        and not _is_playoff_season_type(season_type)
+    )
+
+    def _capped(floor: int, column: str) -> int:
+        if not early_season or column not in df.columns:
+            return floor
+        most = pd.to_numeric(df[column], errors="coerce").max()
+        if pd.isna(most):
+            return floor
+        return min(floor, max(1, math.ceil(0.5 * most)))
+
+    effective_min_games = max(min_games, _capped(recommended, "games_played"))
     df = df[df["games_played"] >= effective_min_games].copy()
 
     if _is_playoff_season_type(season_type):
@@ -722,9 +739,9 @@ def _apply_default_guardrails(
         fg3a_floor = 20 * num_seasons
         fta_floor = 10 * num_seasons
     else:
-        fga_floor = 200 * num_seasons
-        fg3a_floor = 100 * num_seasons
-        fta_floor = 50 * num_seasons
+        fga_floor = _capped(200 * num_seasons, "fga_total")
+        fg3a_floor = _capped(100 * num_seasons, "fg3a_total")
+        fta_floor = _capped(50 * num_seasons, "fta_total")
     return _apply_attempt_floors(
         df, target_col, fga_floor=fga_floor, fg3a_floor=fg3a_floor, fta_floor=fta_floor
     )

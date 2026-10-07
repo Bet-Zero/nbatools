@@ -480,6 +480,7 @@ Examples:
 - `top scorers this season`
 - `highest ts% among players`
 - `most 30 point games`
+- player season boards need 20 games for a per-game average or rate (capped at half the most games anyone has played, so early-season boards are not empty); season totals (`most total points this season`) need one game
 - `players with 25 points and 10 rebounds` / `players with 30 point games` / `players with a triple double` (every player with a qualifying game, most often first, no top-10 cut; a bare `players with 30 points` is not read as games)
 - `best rebounders last 3 seasons`
 - `top scorers since 2020`
