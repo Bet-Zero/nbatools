@@ -2257,7 +2257,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     # the number ("drops 12 assists") keeps that stat instead of points.
     verb_pattern = (
         rf"\b(?:scores?|scored|drops?|dropped|puts?\s+up|put\s+up)\s+"
-        rf"(\d{{1,3}})(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
+        rf"(\d{{1,3}})(?!\d)(?:\s*\+)?(?:\s+{STAT_PATTERN})?"
     )
     # "Lakers record when scoring 120", "LeBron splits scoring 30+": the
     # participle reads the same way, except as a ranking adjective ("top

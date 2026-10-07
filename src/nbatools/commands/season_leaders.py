@@ -905,6 +905,7 @@ def build_result(
     series_situation: str | None = None,
     per_season: bool = False,
     player: str | list[str] | None = None,
+    min_total: float | None = None,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         # A record over a few games of a season in progress is not a season;
@@ -927,6 +928,8 @@ def build_result(
 
     notes: list[str] = []
     multi_season = len(seasons) > 1
+    team_display_name: str | None = None
+    opponent_display_name: str | None = None
 
     # Validate params
     if limit <= 0:
@@ -1021,6 +1024,10 @@ def build_result(
     if opponent:
         opp_mask = team_value_mask(basic, opponent, prefix="opponent_")
         basic = basic[opp_mask].copy()
+        if "opponent_team_name" in basic.columns and not basic.empty:
+            opponent_display_name = str(
+                basic.sort_values("game_date")["opponent_team_name"].iloc[-1]
+            )
 
     # "most points in game 7s": the player's games in that series situation.
     basic = apply_series_situation_filter(basic, seasons, series_situation)
@@ -1045,6 +1052,9 @@ def build_result(
         teams = [team] if isinstance(team, str) else list(team)
         wanted = {str(value).upper() for value in teams}
         basic = basic[basic["team_abbr"].astype(str).str.upper().isin(wanted)].copy()
+        if len(wanted) == 1 and "team_name" in basic.columns and not basic.empty:
+            # Headlines name the team ("3 Los Angeles Lakers players").
+            team_display_name = str(basic.sort_values("game_date")["team_name"].iloc[-1])
         if basic.empty:
             return NoResult(
                 query_class="leaderboard",
@@ -1302,7 +1312,13 @@ def build_result(
         wanted = {_name_key(name) for name in ([player] if isinstance(player, str) else player)}
         df = df[df["player_name"].map(_name_key).isin(wanted)].copy()
 
-    if df.empty:
+    if min_total is not None and not df.empty:
+        # "how many players scored 2000 points": every player at the line,
+        # not a top-N cut.
+        df = df[df[target_col] >= min_total].copy()
+        limit = max(limit, len(df), 1)
+
+    if df.empty and min_total is None:
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
@@ -1352,6 +1368,8 @@ def build_result(
         current_through = compute_current_through(seasons[0], season_type)
 
     caveats: list[str] = []
+    if min_total is not None:
+        caveats.append(f"every player with at least {min_total:g} ({target_col})")
     if win_pct_floor is not None:
         caveats.append(
             "record: games played that the player's team won or lost; "
@@ -1399,6 +1417,14 @@ def build_result(
         current_through=current_through,
         notes=notes,
         caveats=caveats,
+        metadata={
+            key: value
+            for key, value in (
+                ("team_name", team_display_name),
+                ("opponent_name", opponent_display_name),
+            )
+            if value
+        },
     )
 
 

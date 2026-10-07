@@ -488,6 +488,11 @@ Examples:
 - `highest ts% among players`
 - `most 30 point games`
 - player season boards need 20 games for a per-game average or rate (capped at half the most games anyone has played, so early-season boards are not empty); season totals (`most total points this season`) need one game
+- `how many players scored 2000 points`, `players with 1,000 points this season`,
+  `players with 500 rebounds`, `how many Lakers players have 1000 points`,
+  `players with 2000 points in a season since 2010`: every player whose season
+  total (or combined total over a named span) reaches a number no single game
+  has; `how many` counts players and lists them
 - `players with 25 points and 10 rebounds` / `players with 30 point games` / `players with a triple double` (every player with a qualifying game, most often first, no top-10 cut; a bare `players with 30 points` is not read as games)
 - `best rebounders last 3 seasons`
 - `top scorers since 2020`
