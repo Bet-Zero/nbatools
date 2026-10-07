@@ -103,3 +103,43 @@ def test_a_bare_stat_bound_is_not_read_as_games():
     # silently read as either.
     with pytest.raises(ValueError):
         parse_query("players with 30 points")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Per-game averages, not single games.
+        "players with 25 points and 10 rebounds per game",
+        "players with 20 points and 10 rebounds on average",
+        "players with 25 points and 10 rebounds a game",
+        "players with 20 points and 5 assists per contest",
+        # Season totals, not single games.
+        "players with 1000 points and 500 assists",
+        "players with 2000 points and 500 rebounds this season",
+        "players with 25 points and 10 rebounds total",
+        "players with 30 points and 10 assists in a season",
+        "players with 30 point games per season",
+        # A team record is not a game filter.
+        "players with 50 wins and 30 point games",
+    ],
+)
+def test_averages_totals_and_records_are_not_read_as_game_lists(query):
+    # Independent check of PR #380: each of these was answered as a count of
+    # single games. They keep their earlier refusal instead.
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    assert parsed["route"] != "player_occurrence_leaders"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "players with the most 30 point games",
+        "players with most triple doubles",
+        "players with the most 25 point 10 rebound games",
+    ],
+)
+def test_a_ranking_keeps_its_top_ten(query):
+    assert parse_query(query)["route_kwargs"]["limit"] == 10

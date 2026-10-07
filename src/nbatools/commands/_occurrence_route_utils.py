@@ -362,8 +362,31 @@ _PLAYERS_WITH = re.compile(
 )
 
 
+# Words that make the numbers something other than one game's: a per-game
+# average ("25 and 10 per game"), a season total ("1000 points this season
+# total"), a ranking ("the most 30 point games" keeps its top-10 board) or a
+# team record ("50 wins").
+_NOT_A_GAME_LIST = re.compile(
+    r"\b(?:per|a|an|each)\s+(?:game|contest|night)\b|\baverag(?:e|ed|es|ing)\b"
+    r"|\btotals?\b|\b(?:per|a|in\s+a|for\s+the|on\s+the|single)\s+season\b"
+    r"|\b(?:most|fewest|least|top|leaders?|leading|rank(?:ed|ing)?|best|worst)\b"
+    r"|\b\d+\s+(?:wins|losses|victories|win|loss)\b|\brecord\b"
+)
+# The most a player has had in one NBA game, rounded up: a larger number is a
+# season total, not a game condition.
+_SINGLE_GAME_CEILING = {"pts": 100, "reb": 55, "ast": 30, "stl": 11, "blk": 17, "fg3m": 14}
+
+
 def wants_players_with_list(text: str) -> bool:
-    return bool(_PLAYERS_WITH.search(text))
+    """ "players with 25 points and 10 rebounds": every player with such a game."""
+    if not _PLAYERS_WITH.search(text) or _NOT_A_GAME_LIST.search(text):
+        return False
+    conditions = extract_compound_occurrence_event(text) or [extract_occurrence_event(text) or {}]
+    for cond in conditions:
+        value = cond.get("min_value")
+        if value is not None and value > _SINGLE_GAME_CEILING.get(cond.get("stat"), 100):
+            return False
+    return True
 
 
 def wants_occurrence_leaderboard(text: str) -> bool:
