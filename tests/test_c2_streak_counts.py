@@ -243,3 +243,42 @@ def test_a_stated_span_replaces_the_three_season_default(query, start):
     result = execute_natural_query(query)
     assert result.metadata.get("start_season") == start
     assert not any("three-season window" in note for note in result.metadata.get("notes") or [])
+
+
+def test_named_team_streak_count_names_the_team():
+    _, metadata, sections = _count("how many 10 game winning streaks do the Celtics have")
+    assert metadata["count_phrase"].startswith("The Boston Celtics have had")
+    assert {row["team_name"] for row in sections["streak"]} == {"Boston Celtics"}
+
+
+def test_streaks_of_n_or_more_double_doubles():
+    games = _player("Nikola Jokić", *DEFAULT_WINDOW)
+    flags = (games[["pts", "reb", "ast", "stl", "blk"]] >= 10).sum(axis=1) >= 2
+    expected = sorted((run for run in _run_lengths(flags) if run >= 5), reverse=True)
+    result = execute_natural_query("Jokic streaks of 5 or more straight double doubles")
+    rows = result.result.to_dict()["sections"]["streak"]
+    assert [row["streak_length"] for row in rows] == expected
+
+
+def test_count_of_made_three_streaks_with_the_subject_after_the_condition():
+    runs = _run_lengths(_player("Stephen Curry", *DEFAULT_WINDOW)["fg3m"] >= 1)
+    count, metadata, _ = _count("how many streaks of 5 straight games with a three does Curry have")
+    assert metadata["route"] == "player_streak_finder"
+    assert count == sum(run >= 5 for run in runs)
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("how many teams won 8 straight last season", "2024-25"),
+        ("how many teams have won 8 straight this season", SEASON),
+    ],
+)
+def test_league_count_with_won_n_straight(query, season):
+    games = _games("team_game_stats", season)
+    expected = sum(
+        max(_run_lengths(team["wl"] == "W"), default=0) >= 8 for _, team in games.groupby("team_id")
+    )
+    count, metadata, _ = _count(query)
+    assert metadata["route"] == "team_streak_finder"
+    assert count == expected

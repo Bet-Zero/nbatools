@@ -1162,8 +1162,9 @@ _STREAK_LENGTH = re.compile(
     r"|\b(\d+)\s+games?\s+in\s+a\s+row\b"
     r"|\b(\d+)\+?[- ]games?\b(?=\s+(?:[\w+-]+\s+){0,3}?streak)"
     # "winning streaks of 5 or more games", "streaks of at least 10 games"
+    # The span stops before the noun so the condition after it stays readable.
     r"|(?:(?<=streak\s)|(?<=streaks\s))of\s+(?:at\s+least\s+)?(\d+)(?:\+|\s+or\s+(?:more|longer))?"
-    r"(?:\s+(?:straight|consecutive))?\s+games?\b"
+    r"(?=(?:\s+(?:straight|consecutive))?\s+(?:games?|(?:triple|double)[- ]doubles)\b)"
 )
 
 

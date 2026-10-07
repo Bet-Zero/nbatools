@@ -2311,6 +2311,9 @@ def _build_parse_state(query: str) -> dict:
                 player = player_without_absence.resolved
 
     wins_only, losses_only = detect_wins_losses(q)
+    if team_streak_request and team_streak_request.get("special_condition") in ("wins", "losses"):
+        # "how many teams won 8 straight": the outcome is the streak itself.
+        wins_only = losses_only = False
     if (
         re.search(r"\bseries\b", q)
         and not re.search(r"\bgames?\b", q)
@@ -2349,6 +2352,17 @@ def _build_parse_state(query: str) -> dict:
         and with_player.upper() == player.upper()
     ):
         player = None
+
+    if (
+        streak_request
+        and with_player
+        and player
+        and not team
+        and with_player.upper() == player.upper()
+    ):
+        # "streaks of 5 straight games with a three does Curry have": the
+        # "with" phrase is the streak condition, not Curry as his own teammate.
+        with_player = None
 
     if team == "MIN" and re.search(r"\bmin(?:imum)?\s+\d+", q):
         team = None

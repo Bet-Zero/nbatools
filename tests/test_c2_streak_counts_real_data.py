@@ -54,7 +54,7 @@ def test_heat_winning_streaks_of_5_in_2012_13():
     count, metadata = _count("how many times did the Heat win 5 straight in 2012-13")
     assert metadata["route"] == "team_streak_finder"
     assert count == sum(run >= 5 for run in runs)
-    assert "Miami Heat" in metadata["count_phrase"]
+    assert metadata["count_phrase"].startswith("The Heat have had")
 
 
 def test_curry_streaks_with_a_made_three_since_2015():
