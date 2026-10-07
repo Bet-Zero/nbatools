@@ -9362,6 +9362,21 @@ cases:
         - qualified_rate
       notes: "Review that every listed player has 200+ free-throw attempts."
 
+  - id: b1_team_three_point_pct_minimum_attempts
+    query: "teams with the best 3 point percentage minimum 3000 attempts this season"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3_pct
+      - path: result.caveats.0
+        equals: "qualified: at least 3000 three-point attempts"
+    review_notes: "A stated attempt minimum on the team shooting board keeps teams with 3000+ three-point attempts. It refused as an unsupported concept (B1, agent change)."
+
   - id: b1_most_games_played
     query: "most games played this season"
     category: leaderboard

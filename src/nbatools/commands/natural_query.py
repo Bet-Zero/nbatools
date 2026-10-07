@@ -431,7 +431,7 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
 # unsupported" answer preempted the specific one, so the reader was told the
 # question was unrecognizable rather than that only the season total exists.
 #
-# The player shooting-percentage leaderboard executes the qualifier
+# The player and team shooting-percentage leaderboards execute the qualifier
 # (``min_attempts``); every other route still refuses it rather than drop it.
 _ATTEMPT_QUALIFIER = re.compile(
     r"\bmin(?:imum)?\s+\d+\s+attempts\b|\b\d+\s+attempts?\s+per\s+game\b"
@@ -451,17 +451,23 @@ def _unexecuted_attempt_qualifier_note(q: str, route: str, route_kwargs: dict) -
     """Refuse a shot-attempt minimum the selected route would drop."""
     if not (extract_min_attempts(q) or _ATTEMPT_QUALIFIER.search(q)):
         return None
-    if route == "season_leaders" and route_kwargs.get("min_attempts") is not None:
+    if (
+        route in ("season_leaders", "season_team_leaders")
+        and route_kwargs.get("min_attempts") is not None
+    ):
         return None
     return (
-        "unsupported_boundary: a shot-attempt minimum applies only to player "
-        "shooting-percentage leaderboards; no result was executed without it"
+        "unsupported_boundary: a shot-attempt minimum applies only to player and "
+        "team shooting-percentage leaderboards; no result was executed without it"
     )
 
 
-def _min_attempts_kwargs(parsed: dict, stat: str | None) -> dict:
-    """The attempt qualifier as season_leaders kwargs, for shooting rates only."""
-    from nbatools.commands.season_leaders import ALLOWED_STATS, PERCENTAGE_STATS
+def _min_attempts_kwargs(parsed: dict, stat: str | None, *, team: bool = False) -> dict:
+    """The attempt qualifier as leaderboard kwargs, for shooting rates only."""
+    if team:
+        from nbatools.commands.season_team_leaders import ALLOWED_STATS, PERCENTAGE_STATS
+    else:
+        from nbatools.commands.season_leaders import ALLOWED_STATS, PERCENTAGE_STATS
 
     qualifier = parsed.get("min_attempts")
     if not qualifier or ALLOWED_STATS.get(str(stat or "").lower()) not in PERCENTAGE_STATS:
@@ -4724,6 +4730,7 @@ def _route_parsed_query(parsed: dict) -> dict:
                 "losses_only": losses_only,
                 "last_n": last_n,
             }
+            route_kwargs.update(_min_attempts_kwargs(parsed, leaderboard_stat, team=True))
         elif "team" in q or "teams" in q:
             leaderboard_stat = season_leaderboard_stat(parsed)
             route = "season_team_leaders"
@@ -4745,6 +4752,7 @@ def _route_parsed_query(parsed: dict) -> dict:
                 "losses_only": losses_only,
                 "last_n": last_n,
             }
+            route_kwargs.update(_min_attempts_kwargs(parsed, leaderboard_stat, team=True))
         else:
             leaderboard_stat = season_leaderboard_stat(parsed)
 

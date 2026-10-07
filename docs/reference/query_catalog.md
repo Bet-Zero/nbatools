@@ -531,6 +531,7 @@ Examples:
 - `opponent points per game leaders`
 - points allowed / opponent PPG leaderboards rank opponent scoring allowed, not defensive rating
 - `best team 3 point percentage` (team stat alias → fg3_pct)
+- `teams with the best 3 point percentage minimum 3000 attempts` / `best team free throw percentage minimum 25 attempts per game` (a stated attempt minimum, season total or per game, replaces the default attempt floor; caveat `qualified: at least ...`; a minimum on a non-rate team stat still refuses)
 - `team fg%` (team stat alias → fg_pct)
 - `team ft%` (team stat alias → ft_pct)
 - `What teams have the best net rating this year?`
@@ -544,7 +545,8 @@ Leaderboard no-match behavior:
 - rolling/date-window team advanced rating leaderboards and undefined skill concepts
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
   shot creation, salary/contract questions, multi-player co-occurrence, and
-  per-game attempt minimums are unsupported boundaries; they return a typed
+  attempt minimums on anything but a shooting-rate leaderboard are unsupported
+  boundaries; they return a typed
   `no_result` / `filter_not_supported` response with
   `metadata.unsupported_filters=["unsupported_concept"]` and no answer rows
 - rookie leaderboards (`rookie scoring leaders`, `rookie assist leaders this
