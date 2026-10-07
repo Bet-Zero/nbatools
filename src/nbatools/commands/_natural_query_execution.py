@@ -714,6 +714,18 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "no broader player, team, finder, or leaderboard answer was substituted "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "series_game_condition":
+        return (
+            "a playoff series record cannot take a single-game condition such as "
+            "'when he scores 30'; ask for the series record alone, or for the record "
+            f"in those games (blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "multi_player_series":
+        return (
+            "playoff series records answer one player at a time; ask for each "
+            "player separately, such as 'LeBron playoff series record' "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "multi_player_availability":
         return (
             "multi-player availability filters are not supported with current data; "

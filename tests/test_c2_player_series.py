@@ -76,3 +76,26 @@ def test_series_record_spans_every_playoff_season():
 )
 def test_other_series_readings_keep_their_routes(query, route):
     assert parse_query(query)["route"] == route
+
+
+@pytest.mark.parametrize(
+    ("query", "blocked"),
+    [
+        # A second player would be dropped from one player's series.
+        ("LeBron and Curry playoff series record", "multi_player_series"),
+        ("LeBron and Jokic series wins", "multi_player_series"),
+        # A game condition has no series meaning; dropping it answers the
+        # whole record (and "when LeBron scores" swapped the Lakers for him).
+        ("LeBron playoff series record when scoring 30", "series_game_condition"),
+        (
+            "how many playoff series have the Lakers won when LeBron scores 30",
+            "series_game_condition",
+        ),
+        ("Lakers playoff series record when scoring 120", "series_game_condition"),
+    ],
+)
+def test_series_record_refuses_rather_than_drop_a_clause(query, blocked):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(f"blocked: {blocked}" in note for note in result.metadata["notes"])

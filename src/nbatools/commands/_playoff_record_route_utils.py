@@ -245,7 +245,7 @@ _PAIR_TIME_WORDS_RE = re.compile(
 )
 
 
-def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
+def try_playoff_record_route(parsed: dict) -> tuple[str | None, dict] | None:
     """Try to resolve a playoff/record/decade-bucketed route.
 
     Covers:
@@ -340,6 +340,31 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         and not (player_a or player_b or team_a or team_b)
         and _PLAYER_SERIES.search(q)
     ):
+        blocked = None
+        if (
+            parsed.get("threshold_conditions")
+            or parsed.get("min_value") is not None
+            or parsed.get("max_value") is not None
+        ):
+            # "series record when LeBron scores 30": a game condition has no
+            # series meaning (one game, every game?), and dropping it answers
+            # a different question.
+            blocked = "series_game_condition"
+        elif player:
+            from nbatools.commands.entity_resolution import resolve_players_in_query
+
+            if len(set(resolve_players_in_query(q))) > 1:
+                # "LeBron and Curry playoff series record": one player's
+                # series would silently drop the other.
+                blocked = "multi_player_series"
+        if blocked:
+            return None, {
+                "season": season,
+                "start_season": start_season,
+                "end_season": end_season,
+                "season_type": season_type,
+                "unsupported_filters": [blocked],
+            }
         if not (season or start_season or end_season) or (
             parsed.get("season_defaulted") and not _PAIR_TIME_WORDS_RE.search(q)
         ):
