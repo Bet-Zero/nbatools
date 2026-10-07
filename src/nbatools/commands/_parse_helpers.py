@@ -884,6 +884,28 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
+    # "vs .500 teams", "wins over .500 or better teams", "teams .500 or
+    # better": a .500-or-better record, the "winning teams" bar.
+    text = re.sub(
+        r"(?:\bteams?\s+)?(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:better|above|higher)(?:\s+teams?)?\b",
+        "winning teams",
+        text,
+    )
+    # ".500 or below", "teams at .500 or worse": the bar that includes .500.
+    text = re.sub(
+        r"(?:\bteams?\s+)?(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:worse|below|lower)(?:\s+teams?)?\b",
+        "teams .500 or worse",
+        text,
+    )
+    text = re.sub(
+        r"(?<!over\s)(?<!above\s)(?<!under\s)(?<!below\s)(?<![\w.])\.500\s+teams?\b",
+        "winning teams",
+        text,
+    )
+    # "wins over .500 teams": "over" is the preposition, the .500 bar.
+    text = re.sub(
+        r"\b(wins?|victor(?:y|ies))\s+over\s+\.500\s+teams?\b", r"\1 against winning teams", text
+    )
     return re.sub(r"\b(over|above|under|below)\s+\.500\s+(teams?)\b", r"\2 \1 .500", text)
 
 
@@ -2963,6 +2985,10 @@ _OPPONENT_QUALITY_PATTERNS = [
     (
         rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:over|above)\s+\.500\b",
         "teams over .500",
+    ),
+    (
+        rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+\.500\s+or\s+worse\b",
+        "teams .500 or worse",
     ),
     (
         rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:under|below)\s+\.500\b",

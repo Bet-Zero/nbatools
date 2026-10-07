@@ -206,6 +206,17 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
         },
         shipped=True,
     ),
+    "teams .500 or worse": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct <= .500",
+        {
+            "metric": "win_pct",
+            "operator": "<=",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
     "teams under .500": OpponentQualityTerm(
         "Latest regular-season standings snapshot: win_pct < .500",
         {

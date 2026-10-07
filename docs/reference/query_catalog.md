@@ -156,7 +156,7 @@ If a feature is not reflected here, it should not be assumed shipped.
   Team-only phrases like `Celtics bench scoring` remain an explicit unsupported
   boundary and return `no_result` / `filter_not_supported` rather than a team
   total or an unfiltered leaderboard.)
-- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against top 10 teams`, `against top 5 teams`, `against top seeded teams`, `against playoff teams`, `against non-playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against winning teams`, `against losing teams`, `against teams over .500`, `against teams under .500`, `against bad teams`, `against top-10 defenses`
+- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against top 10 teams`, `against top 5 teams`, `against top seeded teams`, `against playoff teams`, `against non-playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against winning teams`, `against losing teams`, `against teams over .500`, `against teams under .500`, `vs .500 teams` / `teams .500 or better` (the winning-teams bar), `teams .500 or below` / `.500 or worse` (win% at or under .500), `against bad teams`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
   unsupported routes return `no_result` / `filter_not_supported` and never
@@ -1058,8 +1058,8 @@ Current behavior:
 - execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
 - team-record opponent-quality filters cover `top 10 teams`, `top 5 teams`,
   `top seeded teams`, `winning teams`, `losing teams`, `teams over .500`,
-  `teams under .500`, `playoff teams`, `non-playoff teams`, `good teams`, and
-  `bad teams`
+  `teams under .500`, `teams .500 or worse`, `playoff teams`, `non-playoff teams`,
+  `good teams`, and `bad teams`
 - conference-plus-quality team-record filters such as `West playoff teams`,
   `Eastern Conference playoff teams`, and `East top 10 teams` are supported by
   intersecting the conference and quality opponent-team sets

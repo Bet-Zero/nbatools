@@ -40,7 +40,9 @@ def normalize_text(text: str) -> str:
 
 
 BOOLEAN_OR_PATTERN = re.compile(
-    r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than))", flags=re.IGNORECASE
+    # "or more", "or better", ".500 or above" are bounds, not alternatives.
+    r"\s+or\s+(?!(?:more|fewer|less|better|worse|higher|lower|above|below)\b(?!\s+than))",
+    flags=re.IGNORECASE,
 )
 
 
