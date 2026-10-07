@@ -807,6 +807,7 @@ def build_record_leaderboard_result(
     team: str | None = None,
     min_wins: int | None = None,
     max_wins: int | None = None,
+    min_losses: int | None = None,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -877,6 +878,10 @@ def build_record_leaderboard_result(
     # Minimum games guardrail: at least 1 game per season for record queries
     # Playoff teams skip seasons, so a playoff span keeps every team that played.
     min_games = 1 if season_type == "Playoffs" else max(1, len(seasons))
+    if opponent and stat in ("wins", "losses"):
+        # "most wins against the Lakers since 2000": a count, and teams meet
+        # one opponent only a few times a season.
+        min_games = 1
     condition_min_games = 0
     if conditions and team is None and stat not in ("wins", "losses") and not agg.empty:
         # "best record when scoring 120+": a 1-0 team in a stat-condition
@@ -888,6 +893,8 @@ def build_record_leaderboard_result(
         min_games = max(min_games, condition_min_games)
     agg = agg[agg["games_played"] >= min_games].copy()
     agg = apply_win_bounds(agg, min_wins, max_wins)
+    if min_losses is not None:
+        agg = agg[agg["losses"] >= min_losses].copy()
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
         agg = agg[team_value_mask(agg, team)].copy()
@@ -940,12 +947,26 @@ def build_record_leaderboard_result(
 
     if condition_min_games > 1:
         caveats.append(f"teams with at least {condition_min_games} games in this sample")
-    bounds = win_bounds_caveat(min_wins, max_wins)
-    if bounds:
-        caveats.append(bounds)
+    if opponent and (min_wins or min_losses) and max_wins is None:
+        # "which teams beat the Lakers (twice)": every team with that many.
+        n = min_wins or min_losses
+        side = ("win" if min_wins else "loss") if n == 1 else ("wins" if min_wins else "losses")
+        caveats.append(f"teams with at least {n} {side} vs {describe_opponent_filter(opponent)}")
+    else:
+        bounds = win_bounds_caveat(min_wins, max_wins)
+        if bounds:
+            caveats.append(bounds)
+
+    extra: dict = {}
+    if isinstance(opponent, str) and "opponent_team_name" in df.columns:
+        # The opponent's latest name, for a headline ("beat the Lakers").
+        names = df.sort_values("game_date")["opponent_team_name"] if "game_date" in df else None
+        if names is not None and not names.empty:
+            extra["opponent_name"] = str(names.iloc[-1])
 
     return LeaderboardResult(
         leaders=result,
         current_through=current_through,
         caveats=caveats,
+        metadata=extra,
     )

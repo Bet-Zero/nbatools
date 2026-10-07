@@ -548,6 +548,9 @@ Examples:
 - `What team has the highest offensive rating this season?`
 - `best defensive rating teams this season`
 - `fastest pace teams this season`
+- `which teams beat the Lakers this season` (every team with a win against
+  them), `which teams beat the Lakers twice`, `who did the Celtics beat in 2024-25`,
+  `teams the Lakers lost to`, `which teams have beaten the Celtics the most`
 
 Leaderboard no-match behavior:
 

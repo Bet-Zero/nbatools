@@ -862,9 +862,10 @@ def _build_count_phrase(
 
     outcome = parsed.get("route_kwargs") or {}
     if (
-        team
-        and not player
-        and parsed.get("route") == "game_finder"
+        (
+            (team and not player and parsed.get("route") == "game_finder")
+            or (player and parsed.get("route") == "player_game_finder")
+        )
         and (outcome.get("wins_only") or outcome.get("losses_only"))
         and outcome.get("stat") in (None, "win_margin", "loss_margin")
         and not normalize_stat_conditions(outcome.get("conditions"))
@@ -882,8 +883,9 @@ def _build_count_phrase(
             and hasattr(games, "columns")
         ):
             names = games.get("opponent_team_name")
-            label = names.mode().iloc[0] if names is not None and not names.empty else opponent
-            against = f" against the {label}"
+            label = names.mode().iloc[0] if names is not None and not names.empty else None
+            context_name = (metadata.get("opponent_context") or {}).get("team_name")
+            against = f" against the {label or context_name or opponent}"
         quality = outcome.get("opponent_quality")
         if not against and isinstance(quality, dict) and quality.get("surface_term"):
             against = f" against {quality['surface_term']}"
@@ -893,11 +895,12 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
-        subject = _team_subject(metadata, games) or "The team"
+        subject = player or _team_subject(metadata, games) or "The team"
+        have = "has" if player else "have"
         margin = _margin_text(outcome) if outcome.get("stat") else ""
         venue = " at home" if outcome.get("home_only") else ""
         venue = " on the road" if outcome.get("away_only") else venue
-        return f"{subject} have {verb} {count} {times}{margin}{against}{venue} {context}."
+        return f"{subject} {have} {verb} {count} {times}{margin}{against}{venue} {context}."
 
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
@@ -1003,13 +1006,16 @@ def _build_count_phrase(
             opponent = f" against {metadata['opponent']}"
         return f"{subject} had {article} {occurrence}{role or ''}{opponent} {context}."
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
+    if count == 1 and count_noun.startswith("games with "):
+        # "1 game with 30+ points", not "1 games".
+        count_noun = "game with " + count_noun[len("games with ") :]
     context = _count_context(
         metadata,
         player=bool(player),
         last_n=parsed.get("last_n"),
         last_n_scope=parsed.get("last_n_scope"),
     )
-    if count_noun.startswith("games with "):
+    if count_noun.startswith(("games with ", "game with ")):
         verb = "have had" if team_subject else "has had"
     else:
         verb = "have recorded" if team_subject else "has recorded"
@@ -1285,6 +1291,59 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
 
 
 _PLAYOFF_DATA_START = "1996-97"
+
+
+def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
+    Boston Celtics (8 times) and the New York Knicks (5)."."""
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    request = next(
+        (
+            note
+            for note in metadata.get("notes") or []
+            if isinstance(note, str) and note.startswith("opponent_record_list:")
+        ),
+        None,
+    )
+    match = request and re.search(r"(\d+)\+ (wins|losses)(?:; (home|road))?", request)
+    opponent = (result.metadata or {}).get("opponent_name") or (
+        metadata.get("opponent_context") or {}
+    ).get("team_name")
+    if not match or not opponent or int(match.group(1)) < 1:
+        # "the most" is a ranking; the board answers it.
+        return
+    minimum, stat, venue = int(match.group(1)), match.group(2), match.group(3)
+    board = result.leaders
+    k = len(board)
+    counts = [int(n) for n in board[stat].head(5)]
+    names = [f"the {name}" for name in board["team_name"].head(5)]
+    if all(n == 1 for n in counts):
+        listed = names + ([f"{k - 5} more"] if k > 5 else [])
+        each = " (once each)" if k > 1 else " (once)"
+    else:
+        listed = [
+            f"{name} ({n} times)" if i == 0 else f"{name} ({n})"
+            for i, (name, n) in enumerate(zip(names, counts))
+        ] + ([f"{k - 5} more"] if k > 5 else [])
+        each = ""
+    joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
+    context = _count_context(metadata, player=False)
+    where = {"home": " at home", "road": " on the road"}.get(venue or "", "")
+    teams = "1 team" if k == 1 else f"{k} teams"
+    often = {1: "", 2: " at least twice"}.get(minimum, f" at least {minimum} times")
+    if stat == "wins":
+        # The named team's home: "beat the Lakers at home" is in Los Angeles.
+        place = {"home": " in their home games", "road": " in their road games"}.get(
+            venue or "", ""
+        )
+        metadata["answer_phrase"] = (
+            f"{teams} beat the {opponent}{place}{often} {context}: {joined}{each}."
+        )
+    else:
+        metadata["answer_phrase"] = (
+            f"The {opponent} beat {teams}{where}{often} {context}: {joined}{each}."
+        )
 
 
 def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
@@ -2278,6 +2337,7 @@ def _finalize_natural_query_result(
     _add_titles_leaderboard_answer_metadata(metadata, result)
     _add_appearances_answer_metadata(metadata, result)
     _add_series_comebacks_answer_metadata(metadata, result)
+    _add_opponent_record_list_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
