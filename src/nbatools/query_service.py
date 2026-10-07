@@ -1410,7 +1410,13 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
     Boston Celtics (8 times) and the New York Knicks (5)."."""
-    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+    if isinstance(result, CountResult):
+        board = result.games
+    elif isinstance(result, LeaderboardResult):
+        board = result.leaders
+    else:
+        return
+    if board.empty and not (isinstance(result, CountResult) and result.count == 0):
         return
     request = next(
         (
@@ -1421,15 +1427,27 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         None,
     )
     match = request and re.search(r"(\d+)\+ (wins|losses)(?:; (home|road))?", request)
-    opponent = (result.metadata or {}).get("opponent_name") or (
-        metadata.get("opponent_context") or {}
-    ).get("team_name")
+    opponent_context = metadata.get("opponent_context") or {}
+    opponent = (
+        (result.metadata or {}).get("opponent_name")
+        or opponent_context.get("team_name")
+        or opponent_context.get("team_abbr")
+    )
     if not match or not opponent or int(match.group(1)) < 1:
         # "the most" is a ranking; the board answers it.
         return
     minimum, stat, venue = int(match.group(1)), match.group(2), match.group(3)
-    board = result.leaders
     k = len(board)
+    if k == 0:
+        # "how many teams did the 76ers beat" with no such games: a zero.
+        context = _count_context(metadata, player=False)
+        metadata["answer_phrase"] = (
+            f"No team beat the {opponent} {context}."
+            if stat == "wins"
+            else f"The {opponent} beat no teams {context}."
+        )
+        metadata["count_phrase"] = metadata["answer_phrase"]
+        return
     counts = [int(n) for n in board[stat].head(5)]
     names = [f"the {name}" for name in board["team_name"].head(5)]
     if all(n == 1 for n in counts):
@@ -1458,6 +1476,9 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         metadata["answer_phrase"] = (
             f"The {opponent} beat {teams}{where}{often} {context}: {joined}{each}."
         )
+    if isinstance(result, CountResult):
+        # "how many teams have the Lakers beaten": the same sentence.
+        metadata["count_phrase"] = metadata["answer_phrase"]
 
 
 def _add_titles_leaderboard_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
@@ -2324,6 +2345,9 @@ def _apply_count_intent(
         detail = leaders
     elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
         entity_count = len(result.leaders)
+        if parsed.get("opponent_record_list"):
+            # "how many teams have the Lakers beaten": the teams come with it.
+            detail = result.leaders
     elif player_name:
         if "player_name" not in result.leaders.columns:
             missing_entity_reason = "filter_not_supported"

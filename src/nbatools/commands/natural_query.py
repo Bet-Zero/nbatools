@@ -1925,11 +1925,12 @@ def _expand_short_year(match: re.Match) -> str:
 # "how many times did the Lakers beat the Celtics": a win over that opponent.
 _BEAT_VERB = re.compile(
     r"\b(?:beat|beats|beaten|beating|defeat|defeats|defeated|defeating)\b"
-    r"(?=\s+(?:the\s+)?[a-z])(?!\s+(?:the\s+)?(?:buzzer|clock|odds|spread|shot\s+clock)\b)"
+    r"(?=\s+(?:the\s+)?(?:[a-z]|\d+[a-z]))"
+    r"(?!\s+(?:the\s+)?(?:buzzer|clock|odds|spread|shot\s+clock)\b)"
 )
 
 # "how many times did the Lakers lose to the Celtics": a loss against them.
-_LOSE_TO = re.compile(r"\b(?:lose|loses|lost|losing)\s+to\b(?=\s+(?:the\s+)?[a-z])")
+_LOSE_TO = re.compile(r"\b(?:lose|loses|lost|losing)\s+to\b(?=\s+(?:the\s+)?(?:[a-z]|\d+[a-z]))")
 
 
 # "which teams beat the Lakers", "teams the Lakers lost to", "who did the
@@ -1937,19 +1938,36 @@ _LOSE_TO = re.compile(r"\b(?:lose|loses|lost|losing)\s+to\b(?=\s+(?:the\s+)?[a-z
 # The subject is lazy up to the verb; a margin ("beat by 20") stays a game list.
 _WHO_BEAT = re.compile(
     r"^(?:(?:which|what)\s+teams?|teams?|who)\s+(?:that\s+|who\s+)?(?:have\s+|has\s+)?"
-    r"(?:ever\s+|also\s+)?(?:beat|beaten|defeated|won\s+against)\s+(?P<rest>(?:the\s+)?[a-z].*)$"
+    r"(?:ever\s+|also\s+)?(?:beat|beaten|defeated|won\s+against)\s+"
+    r"(?P<rest>(?:the\s+)?(?:[a-z]|\d+[a-z]).*)$"
 )
 _WHO_DID_BEAT = re.compile(
     r"^(?:(?:which|what)\s+teams?\s+(?:did|have|has)|teams?|who\s+(?:did|have|has))\s+"
     r"(?P<team>(?:the\s+)?[a-z][a-z0-9.' -]*?)\s+(?:ever\s+)?(?P<verb>beat|beaten|defeat|defeated"
     r"|lose\s+(?:to|against)|lost\s+(?:to|against)|won\s+against)\b(?P<rest>.*)$"
 )
+# A count the board cannot give: negation ("never beat", "not beaten"), a
+# game condition ("with 120 points", "when scoring"), a streak, the spread or
+# a comparison ("more than the Celtics").
+_NOT_A_TEAM_COUNT = re.compile(
+    r"\b(?:never|not|haven't|hasn't|didn't|without|with|when|while|whenever|scor\w*|"
+    r"points?|in\s+a\s+row|straight|consecutive|spread|more\s+than\s+(?:the|[a-z]+s)\b|"
+    r"overtime|ot)\b"
+)
+# "how many teams have the Lakers beaten", "how many different teams did
+# Boston lose to": the count of the same board.
+_HOW_MANY_TEAMS = re.compile(
+    r"^how\s+many\s+(?:different\s+|distinct\s+|other\s+)?teams?\s+"
+    r"(?:(?:did|have|has)\s+|(?=(?:ever\s+)?(?:beat|beaten|defeated|won\s+against)\b))"
+)
 _MOST_TAIL = re.compile(r"\s+(?:the\s+)?most(?:\s+(?:times|often))?\b")
 
 
 _TIMES_TAIL = re.compile(
     r"\s+(?:(?P<more>more\s+than|over)\s+|at\s+least\s+)?"
-    r"(?:(?P<n>\d+|two|three|four|five)\s+(?:or\s+more\s+)?times|(?P<twice>twice))\b"
+    r"(?:(?P<n>\d+|two|three|four|five)\s+(?:or\s+more\s+)?times(?:\s+or\s+more)?"
+    r"|(?P<twice>twice)"
+    r"|(?P<once>once))\b"
 )
 _TIMES_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5}
 # A single game, an exact count or a margin ranking is not this board.
@@ -1972,6 +1990,26 @@ def _who_beat(q: str) -> tuple[str, dict | None]:
         return q, None
     from nbatools.commands._matchup_utils import detect_team_in_text
 
+    original = q
+    counted = bool(_HOW_MANY_TEAMS.match(q))
+    if counted:
+        # "how many teams have beaten the Lakers" / "... have the Lakers beaten".
+        verb_first = re.match(
+            r"(?:ever\s+)?(?:beat|beaten|defeated|won\s+against)\b",
+            q[_HOW_MANY_TEAMS.match(q).end() :],
+        )
+        rewritten = _HOW_MANY_TEAMS.sub(
+            "which teams have " if verb_first else "which teams did ", q
+        )
+        if not (_WHO_BEAT.match(rewritten) or _WHO_DID_BEAT.match(rewritten)):
+            # "how many teams have won 8 straight": not a beat / lost-to board.
+            return q, None
+        if _NOT_A_TEAM_COUNT.search(q):
+            # "how many teams did the Lakers never beat", "beat with 120
+            # points": the board would count a different set, and the games
+            # route counts games. Refuse.
+            return q, {"unsupported": True}
+        q = rewritten
     match = _WHO_BEAT.match(q)
     if match:
         stat, rest = "wins", match.group("rest")
@@ -1979,7 +2017,7 @@ def _who_beat(q: str) -> tuple[str, dict | None]:
     else:
         match = _WHO_DID_BEAT.match(q)
         if not match:
-            return q, None
+            return original, ({"unsupported": True} if counted else None)
         stat = "wins" if match.group("verb").startswith(("lose", "lost")) else "losses"
         named = match.group("team")
         rest = f"{named}{match.group('rest')}"
@@ -1987,23 +2025,51 @@ def _who_beat(q: str) -> tuple[str, dict | None]:
     times = _TIMES_TAIL.search(rest)
     if times:
         n = times.group("n")
-        minimum = 2 if times.group("twice") else int(_TIMES_WORDS.get(n, n))
+        minimum = (
+            2 if times.group("twice") else 1 if times.group("once") else int(_TIMES_WORDS.get(n, n))
+        )
         if times.group("more"):
             minimum += 1
         rest = rest[: times.start()] + rest[times.end() :]
     if re.search(r"\b(?:and|or)\b|,", rest) or not detect_team_in_text(named):
         # Two teams, or a player ("who did LeBron beat"): not this board.
-        return q, None
+        return original, ({"unsupported": True} if counted else None)
     listed = _MOST_TAIL.search(rest) is None
     rest = " ".join(_MOST_TAIL.sub("", rest).split())
+    if counted and not listed:
+        return original, {"unsupported": True}
     return f"which teams have the most {stat} against {rest}", {
         "stat": stat,
         "minimum": minimum if listed else None,
+        "count": counted,
     }
 
 
+# "how many losses to the Celtics do the Lakers have": the Lakers' games lost
+# to Boston (the opponent came before the subject and was read as it).
+_HOW_MANY_RESULTS_AGAINST = re.compile(
+    r"^how\s+many\s+(?P<kind>losses|wins|victories|defeats)\s+(?:against|to|over|vs\.?|versus)\s+"
+    r"(?P<opp>.+?)\s+(?:do|does|did|have|has)\s+"
+    r"(?P<team>.+?)\s+(?:have|had|got|get)\b(?P<rest>.*)$"
+)
+
+
+def _results_against_subject_first(q: str) -> str:
+    match = _HOW_MANY_RESULTS_AGAINST.match(q)
+    if not match:
+        return q
+    if re.search(r"\bspread\b", match.group("opp")):
+        return q
+    # "lost to" / "beat" keep a margin that follows ("... by 10 or more").
+    verb = "lost to" if match.group("kind") in ("losses", "defeats") else "beat"
+    return (
+        f"how many games have {match.group('team')} {verb} {match.group('opp')}"
+        f"{match.group('rest')}"
+    )
+
+
 def _build_parse_state(query: str) -> dict:
-    q = canonicalize_sample_phrases(normalize_text(query))
+    q = canonicalize_sample_phrases(_results_against_subject_first(normalize_text(query)))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
@@ -2629,7 +2695,8 @@ def _build_parse_state(query: str) -> dict:
         "half": half,
         "summary_intent": summary_intent,
         "finder_intent": finder_intent,
-        "count_intent": count_intent,
+        "count_intent": count_intent
+        or bool(opponent_record_list and opponent_record_list.get("count")),
         "record_intent": record_intent,
         "range_intent": range_intent,
         "career_intent": career_intent,
@@ -2648,7 +2715,12 @@ def _build_parse_state(query: str) -> dict:
         "season_high_intent": season_high_intent,
         "top_team_game_intent": top_team_game_intent,
         "distinct_player_count": distinct_player_count,
-        "distinct_team_count": distinct_team_count,
+        # "how many teams have the Lakers beaten" counts the listed teams.
+        "distinct_team_count": distinct_team_count
+        or bool(opponent_record_list and opponent_record_list.get("count")),
+        "team_count_unsupported": bool(
+            opponent_record_list and opponent_record_list.get("unsupported")
+        ),
         "opponent_player": opponent_player,
         "with_player": with_player,
         "without_player": without_player,
@@ -7182,6 +7254,17 @@ def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
 
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
+    if parsed.get("team_count_unsupported"):
+        # "how many teams did the Lakers never beat": the games route would
+        # count games, not teams.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["team_count_unsupported"]
+        refused["notes"] = [
+            "unsupported_boundary: teams are counted for plain beat / lost-to questions "
+            '("how many teams have the Lakers beaten"); this one adds a condition the '
+            "count cannot apply"
+        ]
+        return refused
     totals = _season_total_threshold_board(parsed)
     if totals is not None:
         return totals
@@ -7281,7 +7364,7 @@ def _finalize_route(parsed: dict) -> dict:
 def _opponent_record_list(out: dict, request: dict | None) -> None:
     """ "which teams beat the Lakers": every team with a win against them,
     most first, rather than a top-10 cut that pads with winless teams."""
-    if not request or out.get("route") != "team_record_leaderboard":
+    if not request or request.get("unsupported") or out.get("route") != "team_record_leaderboard":
         return
     stat, minimum = request["stat"], request["minimum"]
     kwargs = out.setdefault("route_kwargs", {})
