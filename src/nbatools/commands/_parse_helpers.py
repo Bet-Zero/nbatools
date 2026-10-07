@@ -1407,7 +1407,7 @@ _OUTCOME_STREAK_OF = re.compile(
     r"\b(?:streak\s+of|straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(win|loss)(?:es|s)?\b"
     r"|\b(win|loss)(?:es|s)?\s+in\s+a\s+row\b"
     # "how many times did the Lakers win 5 straight", "lost 3 in a row"
-    r"|\b(win|won|los)(?:e|t|ing)?\s+\d+\s+(?:straight|consecutive|in\s+a\s+row)\b"
+    r"|\b(win|won|los)(?:e|t|ing)?\s+\d+\s+(?:games?\s+)?(?:straight|consecutive|in\s+a\s+row)\b"
 )
 # "streak of games without a loss" is unbeaten: the outcome is the other one.
 _NOT_OUTCOME = re.compile(r"\b(?:without|no|zero)\s+(?:a\s+|any\s+)?(win|los)(?:s|ses|ing)?\b")
@@ -1415,7 +1415,8 @@ _NOT_OUTCOME = re.compile(r"\b(?:without|no|zero)\s+(?:a\s+|any\s+)?(win|los)(?:
 _OUTCOME_LENGTH = re.compile(
     r"\b(\d+)\s+(?:straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(?:win|loss)(?:es|s)?\b"
     r"|\b(\d+)\s+(?:wins|losses)\s+in\s+a\s+row\b"
-    r"|\b(?:win|won|lose|lost|losing|winning)\s+(\d+)\s+(?:straight|consecutive|in\s+a\s+row)\b"
+    r"|\b(?:win|won|lose|lost|losing|winning)\s+(\d+)\s+(?:games?\s+)?"
+    r"(?:straight|consecutive|in\s+a\s+row)\b"
 )
 
 

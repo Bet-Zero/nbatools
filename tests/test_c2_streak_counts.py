@@ -282,3 +282,34 @@ def test_league_count_with_won_n_straight(query, season):
     count, metadata, _ = _count(query)
     assert metadata["route"] == "team_streak_finder"
     assert count == expected
+
+
+@pytest.mark.parametrize(
+    ("query", "abbr", "outcome", "length", "season"),
+    [
+        ("how many times did the Knicks win 6 games in a row this season", "NYK", "W", 6, SEASON),
+        ("how many times did the Lakers lose 2 in a row in 2024-25", "LAL", "L", 2, "2024-25"),
+    ],
+)
+def test_win_n_games_in_a_row(query, abbr, outcome, length, season):
+    runs = _run_lengths(_team(abbr, season)["wl"] == outcome)
+    count, metadata, _ = _count(query)
+    assert metadata["route"] == "team_streak_finder"
+    assert count == sum(run >= length for run in runs)
+
+
+@pytest.mark.parametrize(
+    ("query", "outcome", "length", "season"),
+    [
+        ("how many teams lost 5 in a row in 2024-25", "L", 5, "2024-25"),
+        ("how many teams have won 5 in a row this season", "W", 5, SEASON),
+    ],
+)
+def test_league_count_in_a_row(query, outcome, length, season):
+    games = _games("team_game_stats", season)
+    expected = sum(
+        max(_run_lengths(team["wl"] == outcome), default=0) >= length
+        for _, team in games.groupby("team_id")
+    )
+    count, _, _ = _count(query)
+    assert count == expected

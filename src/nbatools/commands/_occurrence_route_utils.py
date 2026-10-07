@@ -862,6 +862,7 @@ def try_league_game_finder_route(parsed: dict) -> tuple[str, dict] | None:
 # "who has the longest 30 point streak this season", "longest winning streak".
 _STREAK_GRAMMAR = (
     r"\b(?:streaks?|straight|consecutive|longest|most|current|active|ongoing|running)\b",
+    r"\bgames?\s+in\s+a\s+row\b|\bin\s+a\s+row\b",
     r"\b(?:win(?:ning|s)?|won|los(?:ing|s|e|t))\b",
     r"\b(?:who|which|what|players?|teams?|of|the|a|an|in|is|are|league|nba)\b",
 )
