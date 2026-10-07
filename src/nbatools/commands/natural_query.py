@@ -1958,8 +1958,10 @@ _NOT_A_TEAM_COUNT = re.compile(
 # Boston lose to": the count of the same board.
 _HOW_MANY_TEAMS = re.compile(
     r"^how\s+many\s+(?:different\s+|distinct\s+|other\s+)?teams?\s+"
-    r"(?:(?:did|have|has)\s+|(?=(?:ever\s+)?(?:beat|beaten|defeated|won\s+against)\b))"
+    r"(?:(?:did|have|has|didn't|haven't|hasn't|didnt|havent|hasnt)\s+"
+    r"|(?=(?:ever\s+)?(?:beat|beaten|defeated|won\s+against)\b))"
 )
+_BEAT_OR_LOSE = re.compile(r"\b(?:beat|beaten|defeat(?:ed)?|won\s+against|lose|lost)\b")
 _MOST_TAIL = re.compile(r"\s+(?:the\s+)?most(?:\s+(?:times|often))?\b")
 
 
@@ -1986,12 +1988,14 @@ def _who_beat(q: str) -> tuple[str, dict | None]:
     every team with one is listed ("beat the Lakers twice": 2; None for "the
     most"), and that home/away is the named team's ("who did the Lakers beat
     at home" is their home games, the listed teams' road games)."""
+    counted = bool(_HOW_MANY_TEAMS.match(q))
     if _NOT_A_TEAM_BOARD.search(q):
-        return q, None
+        # "how many teams did the Lakers lose to by 10", "... exactly once":
+        # the games route would count games; refuse the team count.
+        return q, ({"unsupported": True} if counted and _BEAT_OR_LOSE.search(q) else None)
     from nbatools.commands._matchup_utils import detect_team_in_text
 
     original = q
-    counted = bool(_HOW_MANY_TEAMS.match(q))
     if counted:
         # "how many teams have beaten the Lakers" / "... have the Lakers beaten".
         verb_first = re.match(
