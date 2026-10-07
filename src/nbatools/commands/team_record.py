@@ -24,6 +24,7 @@ from nbatools.commands._condition_utils import (
     apply_stat_conditions,
     attach_opponent_stats,
 )
+from nbatools.commands._franchise import franchise_caveat
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands._single_season_boards import (
     apply_win_bounds,
@@ -54,6 +55,7 @@ from nbatools.commands.data_utils import (
     period_coverage_failure,
     period_window_label,
     sample_season_span,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_summary import _build_game_log_section
@@ -155,10 +157,7 @@ def _apply_game_filters(
 
     if team:
         t = team.upper()
-        out = out[
-            out["team_abbr"].astype(str).str.upper().eq(t)
-            | out["team_name"].astype(str).str.upper().eq(t)
-        ].copy()
+        out = out[team_value_mask(out, t)].copy()
 
     if opponent:
         out = out[build_opponent_mask(out, opponent)].copy()
@@ -568,6 +567,8 @@ def build_team_record_result(
     game_log = _build_game_log_section(df) if without_player or with_player or last_n else None
 
     caveats: list[str] = []
+    if franchise_note := franchise_caveat(df, team):
+        caveats.append(franchise_note)
     used_seasons = sample_season_span(df, seasons, last_n)
     if len(used_seasons) > 1:
         caveats.append(
@@ -887,7 +888,7 @@ def build_record_leaderboard_result(
     agg = apply_win_bounds(agg, min_wins, max_wins)
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
-        agg = agg[agg["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        agg = agg[team_value_mask(agg, team)].copy()
 
     if agg.empty:
         return _empty_sample_result("leaderboard")

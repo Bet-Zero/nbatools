@@ -8,7 +8,10 @@ import pandas as pd
 
 from nbatools.commands._parse_helpers import build_on_off_note
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import load_team_player_on_off_summary_for_seasons
+from nbatools.commands.data_utils import (
+    load_team_player_on_off_summary_for_seasons,
+    team_value_mask,
+)
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import NoResult, SummaryResult
 
@@ -65,10 +68,7 @@ def _filter_team(df: pd.DataFrame, team: str | None) -> pd.DataFrame:
         return df.copy()
     target = str(team).strip().upper()
     work = df.copy()
-    return work.loc[
-        work["team_abbr"].astype(str).str.upper().eq(target)
-        | work["team_name"].astype(str).str.upper().eq(target)
-    ].copy()
+    return work.loc[team_value_mask(work, target)].copy()
 
 
 def _filter_presence_state(df: pd.DataFrame, presence_state: str) -> pd.DataFrame:

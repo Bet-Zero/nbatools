@@ -26,6 +26,7 @@ from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
     period_coverage_failure,
     period_window_label,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_occurrence_leaders import _flag_special_event
@@ -114,10 +115,7 @@ def _apply_filters(
 
     if team:
         team_upper = team.upper()
-        out = out[
-            out["team_abbr"].astype(str).str.upper().eq(team_upper)
-            | out["team_name"].astype(str).str.upper().eq(team_upper)
-        ].copy()
+        out = out[team_value_mask(out, team_upper)].copy()
 
     if opponent:
         out = out[build_opponent_mask(out, opponent)].copy()

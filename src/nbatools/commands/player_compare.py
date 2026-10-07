@@ -13,6 +13,7 @@ from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
     load_player_games_for_seasons,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
@@ -69,10 +70,7 @@ def filter_player_games(
 
     if team:
         team_upper = team.upper()
-        out = out[
-            out["team_abbr"].astype(str).str.upper().eq(team_upper)
-            | out["team_name"].astype(str).str.upper().eq(team_upper)
-        ].copy()
+        out = out[team_value_mask(out, team_upper)].copy()
 
     if opponent:
         out = out[build_opponent_mask(out, opponent)].copy()

@@ -8,6 +8,11 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._franchise import (  # noqa: F401
+    franchise_earlier_names,
+    franchise_team_id,
+    team_value_mask,
+)
 from nbatools.commands._nba_alignment import historical_alignment
 from nbatools.commands._player_identity import (
     canonicalize_player_names,
@@ -687,6 +692,10 @@ def build_opponent_mask(
         mask = mask | df["opponent_team_abbr"].astype(str).str.upper().isin(values)
     if "opponent_team_name" in df.columns:
         mask = mask | df["opponent_team_name"].astype(str).str.upper().isin(values)
+    # "vs the Thunder" includes the games against them as Seattle.
+    franchises = {fid for value in values if (fid := franchise_team_id(value)) is not None}
+    if franchises and "opponent_team_id" in df.columns:
+        mask = mask | pd.to_numeric(df["opponent_team_id"], errors="coerce").isin(franchises)
     return mask
 
 
@@ -2543,7 +2552,8 @@ def filter_without_player(
 
     if team:
         # Only exclude games where the player was on the same team
-        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        # Franchise-aware: Durant's Seattle games are Thunder games with him.
+        team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
     else:
@@ -2568,7 +2578,8 @@ def filter_with_player(
         return df.iloc[0:0].copy() if strict_team_match else df.copy()
 
     if team:
-        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        # Franchise-aware: Durant's Seattle games are Thunder games with him.
+        team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
     else:

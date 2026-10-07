@@ -15,6 +15,7 @@ from nbatools.commands.data_utils import (
     load_player_game_starter_roles_for_seasons,
     safe_divide,
     select_player_clutch_stats_for_base,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.playoff_history import (
@@ -1018,12 +1019,7 @@ def build_result(
         basic = basic[basic["game_date"] <= end_ts].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        opp_mask = pd.Series(False, index=basic.index)
-        if "opponent_team_abbr" in basic.columns:
-            opp_mask = opp_mask | basic["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-        if "opponent_team_name" in basic.columns:
-            opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
+        opp_mask = team_value_mask(basic, opponent, prefix="opponent_")
         basic = basic[opp_mask].copy()
 
     # "most points in game 7s": the player's games in that series situation.

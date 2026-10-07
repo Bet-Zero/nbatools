@@ -10,7 +10,7 @@ from nbatools.commands._single_season_boards import (
     best_single_seasons,
     win_bounds_caveat,
 )
-from nbatools.commands.data_utils import safe_divide
+from nbatools.commands.data_utils import safe_divide, team_value_mask
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.season_leaders import (
     ATTEMPT_LABEL,
@@ -533,12 +533,7 @@ def build_result(
         basic = basic[basic["game_date"] <= end_ts].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        opp_mask = pd.Series(False, index=basic.index)
-        if "opponent_team_abbr" in basic.columns:
-            opp_mask = opp_mask | basic["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-        if "opponent_team_name" in basic.columns:
-            opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
+        opp_mask = team_value_mask(basic, opponent, prefix="opponent_")
         basic = basic[opp_mask].copy()
 
     if home_only and "is_home" in basic.columns:
@@ -597,7 +592,7 @@ def build_result(
 
     if team is not None and not df.empty:
         # "Lakers best scoring season": rank one team's seasons.
-        df = df[df["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        df = df[team_value_mask(df, team)].copy()
 
     if df.empty:
         return NoResult(
