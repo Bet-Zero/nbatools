@@ -74,6 +74,11 @@ def test_at_or_above_and_below_500(query, term):
         "Lakers record when shooting 50% or better",
         "LeBron games with fg pct .500 or better",
         "win% .500 or higher",
+        # Not a counting-stat floor the reader applies.
+        "LeBron games with plus minus 10 or better",
+        "Curry 40 percent or better from three",
+        "LeBron 3 or better steals",
+        "LeBron last 10 games or better",
     ],
 )
 def test_other_or_better_rates_still_refuse(query):

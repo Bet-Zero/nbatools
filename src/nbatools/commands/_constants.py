@@ -56,10 +56,12 @@ _TEAM_500_WORSE = re.compile(
     r"|(?<![\w.])\.500\s+or\s+(?:worse|below|lower)\s+teams?\b"
     r"|\bteams?\s+at\s+or\s+(?:below|worse\s+than)\s+\.500\b"
 )
-# "30 points or better", "120 or higher": a whole-number floor the threshold
-# reader takes as "or more" (a ".500 or better" shooting rate is not read).
+# "30 points or better", "15 threes or better", "scoring 120 or higher": a
+# counting-stat floor the threshold reader takes as "or more". Rates, plus
+# minus, percents and game windows are not read that way, so they still refuse.
 _WHOLE_NUMBER_BOUND = re.compile(
-    r"(?<![\d.])(\d+)((?:\s+[a-z]+){0,2})\s+or\s+(?:(better|higher|above)|(worse|lower|below))\b"
+    r"(?:(?<![\d.])(\d+)(\s+(?:made\s+)?(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes|3s"
+    r"|turnovers?))|(?<=\bscoring\s)(\d+)())\s+or\s+(?:(better|higher|above)|(worse|lower|below))\b"
 )
 
 
@@ -72,7 +74,11 @@ def _or_bounds_read(text: str) -> str:
     # The bar's own name says "or worse"; it is one opponent group.
     text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
     return _WHOLE_NUMBER_BOUND.sub(
-        lambda m: f"{m.group(1)}{m.group(2)} or {'more' if m.group(3) else 'fewer'}", text
+        lambda m: (
+            f"{m.group(1) or m.group(3)}{m.group(2) or ''} or "
+            + ("more" if m.group(5) else "fewer")
+        ),
+        text,
     )
 
 
