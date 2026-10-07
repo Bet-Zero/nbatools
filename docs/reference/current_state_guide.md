@@ -329,6 +329,7 @@ complete answer. Unsupported routes keep explicit boundary notes.
   them.
 - Opponent-quality filters such as `top 10 teams`, `top 5 teams`,
   `winning teams`, `losing teams`, `teams over .500`, `teams under .500`,
+  `teams .500 or worse`,
   `playoff teams`, `non-playoff teams`, `good teams`, and `bad teams` execute
   on supported single-entity summary/finder/record routes by resolving the
   phrase to concrete opponent teams from trusted standings or team-advanced

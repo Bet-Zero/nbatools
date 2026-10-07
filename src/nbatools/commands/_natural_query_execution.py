@@ -29,7 +29,12 @@ from nbatools.commands._condition_utils import (
     primary_condition_from_kwargs,
     stat_conditions_cover,
 )
-from nbatools.commands._constants import BOOLEAN_OR_PATTERN, contains_boolean_or, normalize_text
+from nbatools.commands._constants import (
+    BOOLEAN_OR_PATTERN,
+    canonicalize_500_team_bars,
+    contains_boolean_or,
+    normalize_text,
+)
 from nbatools.commands._parse_helpers import (
     build_opponent_quality_note,
     canonicalize_adjective_game_lists,
@@ -1139,7 +1144,14 @@ def _split_or_clauses(text: str) -> list[str]:
     text = canonicalize_adjective_game_lists(normalize_text(text))
     if not contains_boolean_or(text):
         return [text]
+    # ".500 or better teams" is one opponent bar, never two clauses.
+    text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
+    return [
+        part.replace("teams_500_or_worse", "teams .500 or worse") for part in _split_on_or(text)
+    ]
 
+
+def _split_on_or(text: str) -> list[str]:
     raw_parts = BOOLEAN_OR_PATTERN.split(text)
     parts = [normalize_text(p) for p in raw_parts if normalize_text(p)]
     return parts if parts else [text]

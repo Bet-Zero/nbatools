@@ -1063,6 +1063,8 @@ def resolve_opponent_quality_teams(
                 mask = win_pct > float(value)
             elif operator == "<":
                 mask = win_pct < float(value)
+            elif operator == "<=":
+                mask = win_pct <= float(value)
             else:
                 raise ValueError(f"Unsupported win_pct operator: {operator}")
             teams = df.loc[mask, "team_abbr"]

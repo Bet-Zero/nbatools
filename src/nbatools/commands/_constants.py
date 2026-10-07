@@ -43,9 +43,51 @@ BOOLEAN_OR_PATTERN = re.compile(
     r"\s+or\s+(?!(?:more|fewer|less)\b(?!\s+than))", flags=re.IGNORECASE
 )
 
+# "teams .500 or better", ".500 or worse teams", "teams at or above .500": the
+# winning-teams bar or the bar that includes .500. Only beside "teams": a
+# shooting or win-percentage ".500 or better" is not an opponent.
+_TEAM_500_BETTER = re.compile(
+    r"\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:better|above|higher)\b"
+    r"|(?<![\w.])\.500\s+or\s+(?:better|above|higher)\s+teams?\b"
+    r"|\bteams?\s+at\s+or\s+(?:above|better\s+than)\s+\.500\b"
+)
+_TEAM_500_WORSE = re.compile(
+    r"\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:worse|below|lower)\b"
+    r"|(?<![\w.])\.500\s+or\s+(?:worse|below|lower)\s+teams?\b"
+    r"|\bteams?\s+at\s+or\s+(?:below|worse\s+than)\s+\.500\b"
+)
+# "30 points or better", "15 threes or better", "scoring 120 or higher": a
+# counting-stat floor the threshold reader takes as "or more". Rates, plus
+# minus, percents and game windows are not read that way, so they still refuse.
+_WHOLE_NUMBER_BOUND = re.compile(
+    r"(?:(?<![\d.])(\d+)(\s+(?:made\s+)?(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes|3s"
+    r"|turnovers?))|(?<=\bscoring\s)(\d+)())\s+or\s+(?:(better|higher|above)|(worse|lower|below))\b"
+)
+
+
+def canonicalize_500_team_bars(text: str) -> str:
+    text = _TEAM_500_BETTER.sub("winning teams", text)
+    return _TEAM_500_WORSE.sub("teams .500 or worse", text)
+
+
+def _or_bounds_read(text: str) -> str:
+    # The bar's own name says "or worse"; it is one opponent group.
+    text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
+    return _WHOLE_NUMBER_BOUND.sub(
+        lambda m: (
+            f"{m.group(1) or m.group(3)}{m.group(2) or ''} or "
+            + ("more" if m.group(5) else "fewer")
+        ),
+        text,
+    )
+
 
 def contains_boolean_or(text: str) -> bool:
-    return bool(BOOLEAN_OR_PATTERN.search(canonicalize_trailing_ceilings(normalize_text(text))))
+    return bool(
+        BOOLEAN_OR_PATTERN.search(
+            _or_bounds_read(canonicalize_trailing_ceilings(normalize_text(text)))
+        )
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -124,15 +124,20 @@ def test_bare_number_ceiling(query, record):
 @pytest.mark.parametrize(
     "query",
     [
-        # ".500 or below" includes .500, which no reader handles yet.
+        # ".500 or below" includes .500: the "teams .500 or worse" bar (it
+        # refused before that bar existed).
         "Lakers record against teams at .500 or below",
         "Lakers record vs teams .500 or below",
     ],
 )
-def test_500_or_below_still_refuses(query):
+def test_500_or_below_reads_the_bar_that_includes_500(query):
+    from nbatools.commands.natural_query import parse_query
     from nbatools.query_service import execute_natural_query
 
-    assert execute_natural_query(query).result_status == "no_result"
+    quality = parse_query(query)["route_kwargs"]["opponent_quality"]
+    assert quality["surface_term"] == "teams .500 or worse"
+    assert quality["definition"]["operator"] == "<="
+    assert execute_natural_query(query).result_status == "ok"
 
 
 def test_held_to_reads_only_the_subjects_points():
