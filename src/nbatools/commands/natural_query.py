@@ -2419,6 +2419,8 @@ def _build_parse_state(query: str) -> dict:
         and explicit_single_season is None
         and explicit_range_start is None
         and explicit_range_end is None
+        # "since 2024", "in the 2010s", "last 5 seasons" name a span too.
+        and not (start_season and end_season)
         and start_date is None
         and end_date is None
     ):
@@ -2677,6 +2679,18 @@ def _is_aggregation_sibling(ranked: str | None, detected: str | None) -> bool:
     if not ranked or not detected or ranked == detected:
         return False
     return ranked in (f"{detected}_total", f"{detected}_per_game")
+
+
+def _counts_streaks(route_kwargs: dict) -> bool:
+    """A count of streaks needs a stated length and no "longest"/"current".
+
+    A league ranking keeps each entity's best run, so its count is how many
+    players or teams had a run that long.
+    """
+    if not route_kwargs.get("min_streak_length") or route_kwargs.get("current"):
+        return False
+    league = route_kwargs.get("team") is None and route_kwargs.get("player") is None
+    return league or not route_kwargs.get("longest")
 
 
 def _route_parsed_query(parsed: dict) -> dict:
@@ -3758,7 +3772,12 @@ def _route_parsed_query(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     # Distinct player/team count routing
     # ---------------------------------------------------------------------------
-    elif distinct_player_count and (
+    elif (
+        distinct_player_count
+        # "how many players have had 5 straight 20 point games" counts
+        # players with a streak that long (league streak route below).
+        and not (streak_request and streak_request.get("min_streak_length"))
+    ) and (
         occurrence_event
         or (stat and (min_value is not None or max_value is not None))
         or len(parsed.get("compound_occurrence_conditions") or []) >= 2
@@ -5395,6 +5414,16 @@ def _route_parsed_query(parsed: dict) -> dict:
         # "total rebounds leaders" ranks `reb_total`; publishing the detector's
         # `reb` would name the per-game board that did not run.
         out["stat"] = route_kwargs["stat"]
+    if count_intent and route in ("player_streak_finder", "team_streak_finder"):
+        if _counts_streaks(route_kwargs):
+            # "how many 10 game winning streaks": every qualifying run counts.
+            route_kwargs["limit"] = None
+            out["streak_count"] = True
+        else:
+            # "how many games was the Lakers longest winning streak" asks for
+            # the streak itself; its length is the answer.
+            count_intent = False
+            out["count_intent"] = False
     out["intent"] = route_to_intent(route, count_intent=count_intent)
 
     if clutch:

@@ -508,13 +508,16 @@ class CountResult:
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
     caveats: list[str] = field(default_factory=list)
+    # The counted rows' section: games ("finder") or, for "how many 10 game
+    # winning streaks", the streaks themselves ("streak").
+    detail_section: str = "finder"
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
         parts.append("COUNT\n")
         parts.append(f"count\n{self.count}\n")
         if not self.games.empty:
-            parts.append("FINDER\n")
+            parts.append(f"{self.detail_section.upper()}\n")
             parts.append(self.games.to_csv(index=False))
         return "".join(parts)
 
@@ -533,7 +536,7 @@ class CountResult:
         if self.current_through is not None:
             d["current_through"] = self.current_through
         if not self.games.empty:
-            d["sections"]["finder"] = _df_to_records(self.games)
+            d["sections"][self.detail_section] = _df_to_records(self.games)
         return d
 
     def to_sections_dict(self) -> dict[str, str]:
@@ -541,5 +544,5 @@ class CountResult:
             "COUNT": f"count\n{self.count}",
         }
         if not self.games.empty:
-            sections["FINDER"] = self.games.to_csv(index=False).strip()
+            sections[self.detail_section.upper()] = self.games.to_csv(index=False).strip()
         return sections

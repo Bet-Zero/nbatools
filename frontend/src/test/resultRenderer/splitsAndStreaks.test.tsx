@@ -394,6 +394,68 @@ describe("ResultRenderer split and streak patterns", () => {
   });
 
 
+  it("renders a count of streaks with the count headline and the counted streaks", () => {
+    const data = makeResponse({
+      query: "how many 10 game winning streaks do the Celtics have",
+      route: "team_streak_finder",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          query_text: "how many 10 game winning streaks do the Celtics have",
+          route: "team_streak_finder",
+          query_class: "count",
+          primary_count: 2,
+          count_phrase:
+            "The Boston Celtics have had 2 winning streaks of 10+ games from 2023-24 to 2025-26 in the regular season.",
+          min_streak_length: 10,
+          team_context: { team_id: 1610612738, team_abbr: "BOS", team_name: "Boston Celtics" },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          count: [{ count: 2 }],
+          streak: [
+            {
+              rank: 1,
+              team_name: "BOS",
+              condition: "wins",
+              streak_length: 15,
+              games: 15,
+              start_date: "2026-01-03",
+              end_date: "2026-02-02",
+              is_active: 0,
+              wins: 15,
+              losses: 0,
+            },
+            {
+              rank: 2,
+              team_name: "BOS",
+              condition: "wins",
+              streak_length: 11,
+              games: 11,
+              start_date: "2024-12-03",
+              end_date: "2024-12-28",
+              is_active: 0,
+              wins: 11,
+              losses: 0,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Boston Celtics have had 2 winning streaks of 10+ games from 2023-24 to 2025-26 in the regular season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
+  });
+
   it("renders team streaks with team identity and hides repetitive completed status", () => {
     const data = makeResponse({
       query: "Lakers longest win streak",

@@ -67,6 +67,10 @@ export type PatternConfig =
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
+  if (isCountResult(data) && Array.isArray(data.result?.sections?.streak)) {
+    // "how many 10 game winning streaks": the counted rows are streaks.
+    return [{ type: "streak", sectionKey: "streak" }];
+  }
   if (isCountResult(data)) {
     return [
       {

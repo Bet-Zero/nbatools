@@ -1138,6 +1138,9 @@ def extract_last_n(text: str) -> int | None:
 STREAK_SPECIAL_PATTERNS = {
     "made_three": [
         r"\bconsecutive\s+games?\s+with\s+(?:a|an|at\s+least\s+one)?\s*(?:made\s+three|made\s+3|3pm|three-pointer|three pointer)\b",  # noqa: E501
+        # "most consecutive games with a three": "a"/"at least one" makes a
+        # bare "three" one made three, not a count of 3.
+        r"\bgames?\s+(?:in\s+a\s+row\s+)?(?:with|making|hitting)\s+(?:a|at\s+least\s+one)\s+(?:three|3)(?:[- ]?pointers?)?\b(?![- ]?(?:point|pt)\b)",  # noqa: E501
         r"\blongest\s+streak\s+of\s+(?:a|an|at\s+least\s+one)?\s*(?:made\s+three|made\s+3|3pm|three-pointer|three pointer)\b",  # noqa: E501
     ],
     "triple_double": [
@@ -1146,7 +1149,7 @@ STREAK_SPECIAL_PATTERNS = {
 }
 
 
-_STREAK_WORD = re.compile(r"\b(streak|straight|consecutive|in\s+a\s+row)\b")
+_STREAK_WORD = re.compile(r"\b(streaks?|straight|consecutive|in\s+a\s+row)\b")
 # "current"/"active" asks for the streak alive at the latest game, not a
 # season-scope word ("current season").
 _CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
@@ -1154,9 +1157,13 @@ _CURRENT_STREAK = re.compile(r"\b(?:current|active|ongoing)\b(?!\s+season)")
 # "3 straight 30 point games", "5 games in a row", "a 3 game winning streak".
 # Each match spans only the length words, so removing it keeps the condition.
 _STREAK_LENGTH = re.compile(
-    r"\b(\d+)\s+(?:straight|consecutive)\b(?=\s+(?:[\w+-]+\s+){0,3}?games?\b)"
+    r"\b(\d+)\s+(?:straight|consecutive)\b"
+    r"(?=\s+(?:[\w+-]+\s+){0,3}?(?:games?|(?:triple|double)[- ]doubles)\b)"
     r"|\b(\d+)\s+games?\s+in\s+a\s+row\b"
-    r"|\b(\d+)[- ]games?\b(?=\s+(?:[\w+-]+\s+){0,3}?streak)"
+    r"|\b(\d+)\+?[- ]games?\b(?=\s+(?:[\w+-]+\s+){0,3}?streak)"
+    # "winning streaks of 5 or more games", "streaks of at least 10 games"
+    r"|(?:(?<=streak\s)|(?<=streaks\s))of\s+(?:at\s+least\s+)?(\d+)(?:\+|\s+or\s+(?:more|longer))?"
+    r"(?:\s+(?:straight|consecutive))?\s+games?\b"
 )
 
 
@@ -1398,6 +1405,8 @@ _OUTCOME_STREAK = re.compile(r"\b(win(?:ning)?|los(?:ing|s))\s+streaks?\b")
 _OUTCOME_STREAK_OF = re.compile(
     r"\b(?:streak\s+of|straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(win|loss)(?:es|s)?\b"
     r"|\b(win|loss)(?:es|s)?\s+in\s+a\s+row\b"
+    # "how many times did the Lakers win 5 straight", "lost 3 in a row"
+    r"|\b(win|won|los)(?:e|t|ing)?\s+\d+\s+(?:straight|consecutive|in\s+a\s+row)\b"
 )
 # "streak of games without a loss" is unbeaten: the outcome is the other one.
 _NOT_OUTCOME = re.compile(r"\b(?:without|no|zero)\s+(?:a\s+|any\s+)?(win|los)(?:s|ses|ing)?\b")
@@ -1405,6 +1414,7 @@ _NOT_OUTCOME = re.compile(r"\b(?:without|no|zero)\s+(?:a\s+|any\s+)?(win|los)(?:
 _OUTCOME_LENGTH = re.compile(
     r"\b(\d+)\s+(?:straight|consecutive)\s+(?:[a-z0-9+-]+\s+){0,4}?(?:win|loss)(?:es|s)?\b"
     r"|\b(\d+)\s+(?:wins|losses)\s+in\s+a\s+row\b"
+    r"|\b(?:win|won|lose|lost|losing|winning)\s+(\d+)\s+(?:straight|consecutive|in\s+a\s+row)\b"
 )
 
 
@@ -1417,7 +1427,7 @@ def _streak_outcome(normalized: str) -> str | None:
     if match is None:
         return None
     word = next(group for group in match.groups() if group)
-    return "wins" if word.startswith("win") else "losses"
+    return "wins" if word.startswith(("win", "won")) else "losses"
 
 
 def _outcome_streak_length(normalized: str) -> int | None:
@@ -1478,6 +1488,20 @@ def _team_streak_request_base(normalized: str) -> dict | None:
                 "longest": True,
                 "team_condition_only": True,
             }
+    if request is None and not _streak_outcome(normalized):
+        # "Celtics longest streak holding opponents under 100": the only bound
+        # is on the opponent; the own-stat readers above miss a bare number.
+        opponent = extract_opponent_points_allowed_conditions(normalized)
+        if len(opponent) == 1:
+            request = {
+                "special_condition": None,
+                "stat": opponent[0]["stat"],
+                "min_value": opponent[0]["min_value"],
+                "max_value": opponent[0]["max_value"],
+                "min_streak_length": _streak_length(normalized)[0],
+                "longest": bool(re.search(r"\b(?:longest|most\s+consecutive)\b", normalized)),
+                "team_condition_only": True,
+            }
     if request is None and (outcome := _streak_outcome(normalized)):
         # "Lakers current winning streak", "Celtics winning streak at home",
         # "5 straight wins" (every run of 5 or more)
@@ -1536,6 +1560,9 @@ def _with_opponent_stat_conditions(request: dict | None, normalized: str) -> dic
             stat = None
     extra = []
     for cond in opponent:
+        if not request.get("special_condition") and cond["stat"] == stat:
+            # The opponent bound is already the streak's primary condition.
+            continue
         if (
             not request.get("special_condition")
             and stat is not None
