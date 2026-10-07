@@ -1533,8 +1533,9 @@ def build_record_by_decade_leaderboard_result(
     if "wl" in df.columns:
         df["_is_win"] = (df["wl"] == "W").astype(int)
 
-    # One franchise is one row per decade across a relocation or rename.
-    df = name_by_latest_franchise(df)
+    # One franchise is one row per decade, named as it was last known in that
+    # decade (1990s Seattle SuperSonics, 2000s Oklahoma City Thunder).
+    df = pd.concat([name_by_latest_franchise(part) for _, part in df.groupby("decade", sort=False)])
     agg = df.groupby(["team_abbr", "team_name", "decade"], as_index=False).agg(
         games_played=("game_id", "nunique"),
         wins=("_is_win", "sum"),

@@ -182,3 +182,33 @@ def test_league_occurrence_board_is_one_row_per_franchise(monkeypatch):
     )
     rows = result.leaders.to_dict("records")
     assert [(row["team_abbr"], row["games_played"]) for row in rows] == [("OKC", 4)]
+
+
+def test_decade_board_names_each_decade_as_the_team_was_then(monkeypatch):
+    from nbatools.commands import playoff_history
+
+    games = pd.DataFrame(
+        {
+            "game_id": ["1", "2", "3", "4"],
+            "game_date": ["1999-01-01", "2000-01-01", "2008-01-01", "2009-01-01"],
+            "season": ["1998-99", "1999-00", "2007-08", "2008-09"],
+            "season_type": ["Regular Season"] * 4,
+            "team_abbr": ["SEA", "SEA", "SEA", "OKC"],
+            "team_name": ["Seattle SuperSonics"] * 3 + ["Oklahoma City Thunder"],
+            "team_id": [OKC] * 4,
+            "opponent_team_abbr": ["NJN"] * 4,
+            "opponent_team_name": ["New Jersey Nets"] * 4,
+            "opponent_team_id": [BKN] * 4,
+            "wl": ["W", "W", "L", "W"],
+        }
+    )
+    monkeypatch.setattr(playoff_history, "load_team_games_for_seasons", lambda s, t: games.copy())
+    result = playoff_history.build_record_by_decade_leaderboard_result(
+        start_season="1998-99", end_season="2008-09"
+    )
+    names = {
+        (row["decade"], row["team_name"], row["games_played"])
+        for row in result.leaders.to_dict("records")
+    }
+    assert ("1990s", "Seattle SuperSonics", 2) in names
+    assert ("2000s", "Oklahoma City Thunder", 2) in names
