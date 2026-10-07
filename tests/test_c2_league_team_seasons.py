@@ -175,3 +175,57 @@ def test_best_defensive_seasons_by_opponent_points():
     allowed = [row["opponent_pts_per_game"] for row in rows]
     assert allowed == sorted(allowed)
     assert len({row["season"] for row in rows}) > 1
+
+
+@pytest.mark.parametrize(
+    ("query", "without"),
+    [
+        ("How has Anthony Davis rebounded when LeBron James didn't play?", "LeBron James"),
+        ("How has Tyrese Maxey played when Joel Embiid was out this season?", "Joel Embiid"),
+    ],
+)
+def test_the_applied_absence_is_not_a_second_player(query, without):
+    # Raw QA cases anthony_davis_without_lebron_summary and
+    # maxey_without_embiid_summary: the absent teammate is the filter the
+    # summary applies, not another player's clause it would drop.
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["without_player"] == without
+    assert not kwargs.get("unsupported_filters")
+
+
+def test_a_second_absence_still_refuses():
+    kwargs = parse_query("Anthony Davis without LeBron when Reaves sits")["route_kwargs"]
+    assert "multi_player_availability" in kwargs["unsupported_filters"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "teams with the most 50 win seasons",
+        "which team has the most 50 win seasons",
+        "seasons with the most 50 win teams",
+        "most 50 win seasons",
+        "most seasons with 50 wins",
+        "fewest seasons with 50 wins",
+        "how many 60 win teams",
+    ],
+)
+def test_counting_win_seasons_is_not_a_list(query):
+    # A count of qualifying seasons is not answered by listing them.
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    assert parsed["route_kwargs"].get("min_wins") is None
+
+
+def test_bare_plus_minus_seasons_stay_a_player_board():
+    assert parse_query("best plus minus seasons")["route"] == "season_leaders"
+    kwargs = parse_query("team seasons with the best plus minus")["route_kwargs"]
+    assert kwargs["stat"] == "plus_minus_per_game"
+
+
+def test_the_wins_number_is_not_the_row_count():
+    kwargs = parse_query("best 50 win teams")["route_kwargs"]
+    assert (kwargs["limit"], kwargs["min_wins"]) == (10, 50)
+    assert parse_query("top 5 50 win teams")["route_kwargs"]["limit"] == 5

@@ -5226,7 +5226,12 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and names_other_player_availability(q, route_kwargs["player"])
+        and names_other_player_availability(
+            q,
+            route_kwargs["player"],
+            # The player routes apply without_player; with_player refuses.
+            (route_kwargs.get("without_player"),),
+        )
     ):
         # "in games LeBron plays 35 minutes and Luka sits": the player route
         # reads only its own player, so the second clause would be dropped.
@@ -6097,10 +6102,9 @@ _LEAGUE_SEASON_STATS = (
     (r"\bnet\s+rating\b", "net_rating"),
     (r"\b(?:offensive|off)\s+rating\b", "off_rating"),
     (r"\b(?:defensive|def)\s+rating\b", "def_rating"),
-    (
-        r"\bpoint\s+differential\b|\bdifferential\b|\bmargin\b|\bplus[\s/-]?minus\b",
-        "plus_minus_per_game",
-    ),
+    (r"\bpoint\s+differential\b|\bdifferential\b|\bmargin\b", "plus_minus_per_game"),
+    # Bare "plus minus" is a player stat unless teams are named.
+    (r"\bplus[\s/-]?minus\b", "plus_minus"),
     (
         r"\b(?:opponent|opp)\s+(?:points|ppg|scoring)\b|\bpoints\s+allowed\b",
         "opponent_pts_per_game",
@@ -6149,10 +6153,21 @@ _TEAM_ONLY_SEASON_STATS = frozenset(
     }
 )
 _ADJECTIVE_STAT = {"def_rating": "opponent_pts_per_game", "off_rating": "pts"}
+_WIN_COUNT = re.compile(
+    r"\b(?:most|fewest|least|how\s+many|number\s+of|count\s+of)\s+"
+    r"(?:\d{1,2}\+?[\s-]+win\b|(?:seasons|teams|times)\s+(?:with|of|winning|that\s+won)\b)"
+)
 _LEAGUE_SEASON_SPAN_COUNT = re.compile(
     r"\b(?:last|past|previous)\s+(?:\d+\s+)?seasons\b"
     r"|(?<!\btop\s)(?<!\bbest\s)(?<!\bworst\s)\b\d+\s+seasons\b"
 )
+
+
+def _league_season_limit(top_n: int | None, q: str) -> int:
+    """ "best 50 win teams": the 50 is the wins floor, not the row count."""
+    if top_n and re.search(rf"\b(?:best|top|worst)\s+{top_n}[\s-]+win\b", q):
+        return 10
+    return top_n or 10
 
 
 def _win_bounds(q: str) -> tuple[int | None, int | None, str]:
@@ -6197,6 +6212,9 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
         return None
     if _PLAYER_SUBJECT.search(q) or re.search(r"\bplayers?\b|\bfranchises?\b", q):
         return None
+    if _WIN_COUNT.search(q):
+        # "teams with the most 50 win seasons": a count of seasons, not a list.
+        return None
     low, high, text = _win_bounds(q)
     bare = text
     seasons_board = bool(re.search(r"\bseasons\b", q)) and not _LEAGUE_SEASON_SPAN_COUNT.search(q)
@@ -6213,14 +6231,14 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
                 # describes the stat the question names.
                 continue
             found.append(stat)
-    stats = list(dict.fromkeys(found))
+    stats = list(dict.fromkeys("plus_minus_per_game" if s == "plus_minus" else s for s in found))
     if len(stats) > 1:
         return None
     stat = stats[0] if stats else ("wins" if low is not None or high is not None else None)
     if stat is None:
         return None
     if not (
-        stat in _TEAM_ONLY_SEASON_STATS
+        (stat in _TEAM_ONLY_SEASON_STATS and "plus_minus" not in found)
         or low is not None
         or high is not None
         or re.search(r"\bteams?\b", q)
@@ -6276,7 +6294,7 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
         "end_season": end,
         "season_type": season_type,
         "stat": stat,
-        "limit": parsed.get("top_n") or 10,
+        "limit": _league_season_limit(parsed.get("top_n"), q),
         "ascending": ascending,
         "per_season": bool(start),
         "min_wins": low,
@@ -6502,7 +6520,8 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             conditions.append({"stat": rate, "min_value": None, "max_value": value - 0.0001})
     if conditions:
         route_kwargs["conditions"] = conditions
-    stat = shooting or route_kwargs.get("stat") or "pts"
+    # "LeBron top 5 games" with no stat named: the top-games scoring shorthand.
+    stat = shooting or route_kwargs.get("stat") or SCORING_SHORTHAND
     route_kwargs.pop("career_intent", None)
     from inspect import signature
 

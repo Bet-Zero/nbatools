@@ -628,21 +628,28 @@ def _states_player_condition(tail: str) -> bool:
     return bool(re.match(_MINUTES_BOUND_TAIL, tail) or _states_own_stat(tail))
 
 
-def names_other_player_availability(text: str, player: str | None) -> bool:
+def names_other_player_availability(
+    text: str, player: str | None, read: tuple[str | None, ...] = ()
+) -> bool:
     """True when ``text`` states availability for a player other than ``player``.
 
     A pronoun or a team ("and he plays well", "and the Lakers play at home")
-    is not another player. Any other subject counts, including a name the
+    is not another player, nor is one named in ``read`` (the with/without
+    player the route already applies). Any other subject counts, including a name the
     resolver can't match ("and Davis sits"): dropping that clause would
     answer about the first player alone.
     """
     own_words = set(player.lower().split()) if player else set()
+    applied = {name.upper() for name in read if name}
     for m in _AVAILABILITY_CLAUSE.finditer(text):
         subject = re.sub(r"^(?:the|his|their)\s+", "", m.group(1).strip())
         if not subject or subject in _NON_PLAYER_SUBJECTS or subject in TEAM_ALIASES:
             continue
         other = detect_player(subject)
         if other is None and set(subject.split()) <= own_words:
+            continue
+        if other is not None and other.upper() in applied:
+            # "when LeBron didn't play": already read as with/without_player.
             continue
         if other is None or player is None or other.upper() != player.upper():
             return True
