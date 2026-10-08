@@ -900,6 +900,61 @@ def canonicalize_bound_phrases(text: str) -> str:
     return re.sub(r"\b(over|above|under|below)\s+\.500\s+(teams?)\b", r"\2 \1 .500", text)
 
 
+# "top 3 assist games", "best 5 rebounding games": the "games by <stat>" form.
+# With a condition ("top 3 assist games with 20 points") the number was read
+# as an assist bar (a league board), and "top 3 rebounding games with 20
+# points" found nothing.
+_RANKED_STAT_GAMES = re.compile(
+    r"\b(?P<rank>top|best|highest|biggest)\s+(?P<n>\d+)\s+"
+    r"(?P<stat>scoring|points|rebounding|rebound|assists?|passing|steals?|blocks?|"
+    r"shot[\s-]blocking|threes|three[\s-]point|3[\s-]?(?:point|pt))\s+games\b"
+)
+# Only with a single game condition later on: the bare league form ("top 5
+# scoring games") has its own game board, and "with 2 steals and 2 blocks",
+# "120 points allowed", "where / while ..." already read (or refuse) as written.
+_RANKED_STAT_CONDITION = re.compile(
+    r"(?<!\bteams\s)(?<!\bopponents\s)"
+    r"\b(?:with|when|in\s+(?:games|\d+[\s-]+(?:point|rebound|assist|three)))\b"
+)
+_RANKED_STAT_KEEP = re.compile(
+    r"\band\b|\ballowed\b|\bgiven\s+up\b|\bopponents?\b|\bopp\b|\bwhere\b|\bwhile\b"
+    # An opponent bar ("against teams over .500 with 20 points") reads as written.
+    r"|\.500\b|\b(?:winning|losing)\s+(?:teams|records?)\b"
+)
+_RANKED_STAT_WORDS = {
+    "scoring": "points",
+    "points": "points",
+    "rebounding": "rebounds",
+    "rebound": "rebounds",
+    "passing": "assists",
+    "shot blocking": "blocks",
+    "shot-blocking": "blocks",
+}
+
+
+def _ranked_stat_games(match: re.Match) -> str:
+    stat = match.group("stat")
+    if stat.startswith(("three", "3")) or stat == "threes":
+        word = "threes"
+    elif stat.rstrip("s") in ("assist", "steal", "block"):
+        word = stat.rstrip("s") + "s"
+    else:
+        word = _RANKED_STAT_WORDS[stat]
+    # "biggest 3" / "highest 3": the row count reads after "top".
+    rank = "top" if match.group("rank") in ("biggest", "highest") else match.group("rank")
+    return f"{rank} {match.group('n')} games by {word}"
+
+
+def canonicalize_ranked_stat_games(text: str) -> str:
+    match = _RANKED_STAT_GAMES.search(text)
+    if not match:
+        return text
+    tail = text[match.end() :]
+    if not _RANKED_STAT_CONDITION.search(tail) or _RANKED_STAT_KEEP.search(tail):
+        return text
+    return text[: match.start()] + _ranked_stat_games(match) + tail
+
+
 def canonicalize_adjective_game_lists(text: str) -> str:
     # "30 point games with 10 assists" -> "games with 30 points and 10 assists":
     # the list form every condition reader handles. Only before another
