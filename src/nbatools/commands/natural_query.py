@@ -2128,6 +2128,15 @@ _OPPONENT_COUNT_SCOPE = re.compile(
 _OPPONENT_COUNT_PLAYER_VERB = re.compile(r"^(?:face|faced)$")
 
 
+def _dates_over_seasons(parsed: dict) -> bool:
+    """ "in March from 2023-24 to 2025-26": the date window is read in one
+    season only, so a multi-season span with dates is not applied."""
+    start, end = parsed.get("start_season"), parsed.get("end_season")
+    return bool(
+        (parsed.get("start_date") or parsed.get("end_date")) and start and end and start != end
+    )
+
+
 def _opponent_count_supported(match: re.Match) -> bool:
     from nbatools.commands._matchup_utils import detect_team_in_text
 
@@ -7411,7 +7420,7 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
     rest = _SEASON_SPAN.sub(" ", q)
     for pattern, _ in _RECORD_BARS:
         rest = pattern.sub(" ", rest)
-    if not _RECORD_BAR_SCOPE.match(rest):
+    if not _RECORD_BAR_SCOPE.match(rest) or _dates_over_seasons(parsed):
         # "in the East", "that made the playoffs", "on back to backs", "every
         # season", "and 10 home losses": the board would drop the condition.
         refused = _single_season_refusal(parsed)
@@ -7479,7 +7488,9 @@ def _finalize_route(parsed: dict) -> dict:
             "count cannot apply"
         ]
         return refused
-    if parsed.get("opponent_count_unsupported"):
+    if parsed.get("opponent_count_unsupported") or (
+        parsed.get("distinct_opponent_count") and _dates_over_seasons(parsed)
+    ):
         # "how many teams did LeBron play for", "... play twice", "... when
         # LeBron scored 30": distinct opponents would drop the condition.
         refused = _single_season_refusal(parsed)

@@ -330,3 +330,24 @@ def test_opponent_over_under_500_wordings(query, keep):
 )
 def test_beaten_teams_with_a_bar_refuse(query):
     assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A month is read in one season only; over a span it would be the last.
+        "which teams had a winning record from 2023-24 to 2025-26 in March",
+        "which teams had a losing record in March over the last 3 seasons",
+        "how many teams did the Warriors play in February over the last 2 seasons",
+        "how many teams did LeBron score 30 against in March from 2023-24 to 2025-26",
+    ],
+)
+def test_month_over_a_span_refuses(query):
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+def test_500_bar_over_the_last_seasons_is_one_bar():
+    # "over the last 2 seasons" is a span, not an opponent word.
+    records = _span_records(["2024-25", "2025-26"])
+    expected = set(records[records["W"] >= records["L"]].index)
+    assert _teams("which teams were .500 or better over the last 2 seasons") == expected

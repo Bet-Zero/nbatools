@@ -83,7 +83,8 @@ _POPULATION_500_BAR = re.compile(
 
 
 _OPPONENT_CONTEXT = re.compile(
-    r"\b(?:against|vs\.?|versus|beat|beaten|beating|over|opponents?|facing|faced|play(?:ed|ing)?)\b"
+    r"\b(?:against|vs\.?|versus|beat|beaten|beating|over(?!\s+(?:the\s+)?(?:last|past)\b)|"
+    r"opponents?|facing|faced|play(?:ed|ing)?)\b"
 )
 
 
