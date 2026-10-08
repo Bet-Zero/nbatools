@@ -2080,6 +2080,41 @@ _HOW_MANY_OPPONENTS = re.compile(
 )
 
 
+# "vs teams that are over .500", "against teams with a losing record": the
+# opponent bars "teams over / under .500" (the filter was dropped: 47-13).
+_OPPONENT_RECORD_BAR = re.compile(
+    r"\b(?P<lead>vs\.?|versus|against|facing|over)\s+(?:the\s+)?(?:teams|opponents)\s+"
+    r"(?:(?:that|who|which)\s+(?:are|were|finished|have\s+been)\s+"
+    r"(?:(?P<over>over|above)|under|below)\s+\.500"
+    r"|with\s+(?:a\s+)?(?:(?P<winning>winning)|losing)\s+records?)\b"
+)
+
+
+def _canonicalize_opponent_record_bars(q: str) -> str:
+    return _OPPONENT_RECORD_BAR.sub(
+        lambda m: (
+            f"{m.group('lead')} teams "
+            + ("over" if m.group("over") or m.group("winning") else "under")
+            + " .500"
+        ),
+        q,
+    )
+
+
+# A named season span ("from 2023-24 to 2025-26", "over the last 2 seasons"):
+# the parse applies it, so the scope checks below read it as one scope.
+_SEASON_SPAN = re.compile(
+    r"\b(?:from|between)\s+\d{4}(?:-\d{2})?\s+(?:to|and|through)\s+\d{4}(?:-\d{2})?\b"
+    r"|\b(?:(?:over|in|during)\s+)?(?:the\s+)?(?:last|past)\s+\d+\s+seasons\b"
+)
+# "how many teams that are .500 or better have the Lakers beaten": the beat
+# board does not take a bar on the listed teams (it counted 60 games).
+_BAR_TEAMS_BEATEN = re.compile(
+    r"^(?:how\s+many|which|what)\s+(?:winning\s+teams|losing\s+teams|teams\s+(?:over|under|"
+    r"above|below)\s+\.500|teams\s+\.500\s+or\s+worse|teams\s+(?:that|who)\b.*?\.500)"
+)
+
+
 # What may follow "how many teams did the Lakers play": a season, a span,
 # dates, home/road or the playoffs. "played for", "twice", "when LeBron scored
 # 30" or "in games with ..." are other questions; they refuse.
@@ -2096,7 +2131,7 @@ _OPPONENT_COUNT_PLAYER_VERB = re.compile(r"^(?:face|faced)$")
 def _opponent_count_supported(match: re.Match) -> bool:
     from nbatools.commands._matchup_utils import detect_team_in_text
 
-    rest = match.group("rest")
+    rest = _SEASON_SPAN.sub(" ", match.group("rest"))
     if not _OPPONENT_COUNT_SCOPE.match(rest):
         return False
     if detect_team_in_text(match.group("team")):
@@ -2116,7 +2151,9 @@ def _build_parse_state(query: str) -> dict:
             f"how many games did {opponents_counted.group('team')} play"
             f"{opponents_counted.group('rest')}"
         )
-    q = canonicalize_sample_phrases(_results_against_subject_first(normalize_text(query)))
+    q = canonicalize_sample_phrases(
+        _canonicalize_opponent_record_bars(_results_against_subject_first(normalize_text(query)))
+    )
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
@@ -2746,7 +2783,12 @@ def _build_parse_state(query: str) -> dict:
         or bool(opponent_record_list and opponent_record_list.get("count")),
         # "how many teams did LeBron score 30 against": his distinct opponents.
         "distinct_opponent_count": bool(opponents_counted)
-        or bool(distinct_team_count and player and not opponent and _AGAINST_TAIL.search(q)),
+        or bool(
+            distinct_team_count
+            and player
+            and not opponent
+            and _AGAINST_TAIL.search(_SEASON_SPAN.sub(" ", q))
+        ),
         "opponent_count_unsupported": opponent_count_unsupported
         # A player's team count is only his opponents ("... against").
         or bool(
@@ -2754,7 +2796,7 @@ def _build_parse_state(query: str) -> dict:
             and player
             and not opponents_counted
             and not opponent
-            and not _AGAINST_TAIL.search(q)
+            and not _AGAINST_TAIL.search(_SEASON_SPAN.sub(" ", q))
         ),
         "record_intent": record_intent,
         "range_intent": range_intent,
@@ -2779,7 +2821,8 @@ def _build_parse_state(query: str) -> dict:
         or bool(opponent_record_list and opponent_record_list.get("count")),
         "team_count_unsupported": bool(
             opponent_record_list and opponent_record_list.get("unsupported")
-        ),
+        )
+        or bool(_BAR_TEAMS_BEATEN.match(q) and _BEAT_OR_LOSE.search(q)),
         "opponent_player": opponent_player,
         "with_player": with_player,
         "without_player": without_player,
@@ -7365,7 +7408,7 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
     bar = next((name for pattern, name in _RECORD_BARS if pattern.search(q)), None)
     if bar is None:
         return None
-    rest = q
+    rest = _SEASON_SPAN.sub(" ", q)
     for pattern, _ in _RECORD_BARS:
         rest = pattern.sub(" ", rest)
     if not _RECORD_BAR_SCOPE.match(rest):

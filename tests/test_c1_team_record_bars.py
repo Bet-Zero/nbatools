@@ -255,3 +255,78 @@ def test_player_opponent_count_with_scope(query, season, venue):
 def test_team_count_headline_names_venue():
     result = execute_natural_query("how many teams scored 130 at home")
     assert "130+ points at home" in result.metadata["count_phrase"]
+
+
+def _span_records(seasons, venue=None) -> pd.DataFrame:
+    games = pd.concat([pd.read_csv(RAW / f"{s}_regular_season.csv") for s in seasons])
+    if venue == "home":
+        games = games[games["is_home"] == 1]
+    return games.groupby("team_abbr")["wl"].value_counts().unstack(fill_value=0)
+
+
+@pytest.mark.parametrize(
+    ("query", "seasons", "venue"),
+    [
+        ("how many teams had a winning record from 2023-24 to 2025-26", None, None),
+        ("which teams had a winning record from 2024-25 to 2025-26 at home", None, "home"),
+        ("how many teams had a winning record over the last 2 seasons", None, None),
+        ("how many teams had a winning record between 2023-24 and 2024-25", None, None),
+    ],
+)
+def test_record_bar_over_a_named_span(query, seasons, venue):
+    span = {
+        "2023-24 to 2025-26": ["2023-24", "2024-25", "2025-26"],
+        "2024-25 to 2025-26": ["2024-25", "2025-26"],
+        "last 2 seasons": ["2024-25", "2025-26"],
+        "2023-24 and 2024-25": ["2023-24", "2024-25"],
+    }
+    seasons = next(v for k, v in span.items() if k in query)
+    records = _span_records(seasons, venue)
+    expected = set(records[records["W"] > records["L"]].index)
+    result = execute_natural_query(query)
+    rows = result.result.to_dict()["sections"]
+    board = rows.get("leaderboard") or []
+    assert {row["team_abbr"] for row in board} == expected
+
+
+def test_opponent_count_over_a_named_span():
+    games = pd.concat(
+        [pd.read_csv(RAW / f"{s}_regular_season.csv") for s in ("2023-24", "2024-25", "2025-26")]
+    )
+    expected = games[games["team_abbr"] == "GSW"]["opponent_team_abbr"].nunique()
+    result = execute_natural_query("how many teams did the Warriors play from 2023-24 to 2025-26")
+    assert result.result.to_dict()["sections"]["count"] == [{"count": expected}]
+
+
+@pytest.mark.parametrize(
+    ("query", "keep"),
+    [
+        ("Lakers record vs teams that are over .500", lambda r: r["W"] > r["L"]),
+        ("Lakers record vs teams that were under .500", lambda r: r["W"] < r["L"]),
+        ("Lakers record against teams with a winning record", lambda r: r["W"] > r["L"]),
+        ("Lakers record against teams with a losing record", lambda r: r["W"] < r["L"]),
+    ],
+)
+def test_opponent_over_under_500_wordings(query, keep):
+    games = pd.read_csv(RAW / "2025-26_regular_season.csv")
+    records = _records()
+    opponents = set(records[keep(records)].index)
+    lakers = games[(games["team_abbr"] == "LAL") & games["opponent_team_abbr"].isin(opponents)]
+    summary = execute_natural_query(query).result.to_dict()["sections"]["summary"][0]
+    assert (summary["wins"], summary["losses"]) == (
+        int((lakers["wl"] == "W").sum()),
+        int((lakers["wl"] == "L").sum()),
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The beat board takes no bar on the listed teams (it counted 60 games).
+        "how many teams that are .500 or better have the Lakers beaten",
+        "which teams that are .500 or better have the Lakers beaten",
+        "how many winning teams did the Lakers beat",
+    ],
+)
+def test_beaten_teams_with_a_bar_refuse(query):
+    assert execute_natural_query(query).result_status == "no_result"
