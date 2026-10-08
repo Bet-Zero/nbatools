@@ -1157,6 +1157,45 @@ def _split_on_or(text: str) -> list[str]:
     return parts if parts else [text]
 
 
+# A clause naming its own time ("30 points in 2024-25 or 10 assists in the
+# playoffs") keeps it.
+_CLAUSE_SCOPE = re.compile(
+    r"\b(?:playoffs?|postseason|regular\s+season|(?:19|20)\d{2}|since|seasons?|career|"
+    r"all[-\s]?time|years?)\b"
+)
+# "LeBron stats in games with 30 points or 10 assists": a summary, not a list.
+_SUMMARY_WORDS = re.compile(r"\b(?:stats|averages?|averaging|record|splits?|summary)\b")
+_OR_RANK_WORDS = (
+    (re.compile(r"\b(?:top|best|highest|biggest)\s+(?:\d+\s+)?scoring\s+games?\b"), "pts"),
+    (re.compile(r"\b(?:top|best|highest|biggest)\s+(?:\d+\s+)?rebounding\s+games?\b"), "reb"),
+    (
+        re.compile(r"\b(?:top|best|highest|biggest)\s+(?:\d+\s+)?(?:assist|passing)\s+games?\b"),
+        "ast",
+    ),
+    (re.compile(r"\bgames?\s+by\s+(points|rebounds|assists|steals|blocks|threes)\b"), None),
+    (
+        re.compile(
+            r"\b(?:most|highest)\s+(points|rebounds|assists|steals|blocks|threes)\b"
+            r"(?=.*\bgames?\b)"
+        ),
+        None,
+    ),
+)
+
+
+def _or_rank_stat(text: str) -> str | None:
+    """The stat a ranked OR game list is ordered by ("top 5 scoring games")."""
+    for pattern, stat in _OR_RANK_WORDS:
+        match = pattern.search(text)
+        if match:
+            if stat:
+                return stat
+            from nbatools.commands._parse_helpers import detect_stat
+
+            return detect_stat(match.group(1))
+    return None
+
+
 def _execute_or_query_build_result(query: str) -> tuple:
     """Build a structured result for OR queries.
 
@@ -1185,6 +1224,7 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return result, parsed
 
     base = _build_parse_state(query)
+    conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
     full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))
     clause_parsed = []
@@ -1194,11 +1234,53 @@ def _execute_or_query_build_result(query: str) -> tuple:
             clause_state["season"] = None
             clause_state["start_season"] = None
             clause_state["end_season"] = None
-        clause_parsed.append(_merge_inherited_context(base, clause_state))
+        # "LeBron 30 points or 10 assists in the playoffs / since 2024": a scope
+        # written once (usually at the end) belongs to every clause that names
+        # none of its own ("30 points in 2024-25 or 10 assists in 2025-26"
+        # keeps each).
+        if not _CLAUSE_SCOPE.search(clause):
+            if base.get("season_type") and base["season_type"] != "Regular Season":
+                clause_state["season_type"] = base["season_type"]
+            if base.get("start_season") and base.get("end_season"):
+                clause_state.update(
+                    season=None,
+                    start_season=base["start_season"],
+                    end_season=base["end_season"],
+                    season_defaulted=False,
+                )
+            elif base.get("season") and not base.get("season_defaulted"):
+                clause_state.update(
+                    season=base["season"],
+                    start_season=None,
+                    end_season=None,
+                    season_defaulted=False,
+                )
+        has_condition = (
+            clause_state.get("min_value") is not None
+            or clause_state.get("max_value") is not None
+            or bool(clause_state.get("occurrence_event"))
+        )
+        if (
+            has_condition
+            and not base.get("summary_intent")
+            and not base.get("count_intent")
+            and not _SUMMARY_WORDS.search(normalize_text(query))
+        ):
+            # An OR clause with a stat condition is a game list ("LeBron 30
+            # points since 2024" alone reads as a span summary). A clause with
+            # no condition ("or better", "or 2024-25") still refuses below.
+            clause_state["finder_intent"] = True
+        merged = _merge_inherited_context(base, clause_state)
+        if not has_condition and not (merged.get("route_kwargs") or {}).get("conditions"):
+            # "Lakers or Celtics over 130 points": a clause with no condition
+            # would list every game of that team. ("top 3 games by assists
+            # with 20 points" carries its bound in the route's conditions.)
+            conditionless = True
+        clause_parsed.append(merged)
 
     allowed_routes = {"player_game_finder", "game_finder"}
     routes = {item["route"] for item in clause_parsed}
-    if len(routes) != 1 or list(routes)[0] not in allowed_routes:
+    if conditionless or len(routes) != 1 or list(routes)[0] not in allowed_routes:
         raise ValueError(
             "Top-level OR is currently supported for finder-style queries, for example: "
             "'Jokic over 25 points or over 10 rebounds' or "
@@ -1207,10 +1289,11 @@ def _execute_or_query_build_result(query: str) -> tuple:
 
     results = []
     for item in clause_parsed:
+        # Each clause keeps every game: a capped list per clause ("top 25 by
+        # points", "top 25 by assists") merged into an arbitrary subset.
+        kwargs = {**item["route_kwargs"], "limit": None}
         results.append(
-            _execute_build_result(
-                item["route"], item["route_kwargs"], item.get("extra_conditions", [])
-            )
+            _execute_build_result(item["route"], kwargs, item.get("extra_conditions", []))
         )
 
     parsed = dict(base)
@@ -1223,7 +1306,25 @@ def _execute_or_query_build_result(query: str) -> tuple:
             parsed["conditions"] = boolean_conditions
             parsed["route_kwargs"]["conditions"] = boolean_conditions
 
-    return _combine_or_results(results), parsed
+    combined = _combine_or_results(results)
+    rank_stat = _or_rank_stat(normalize_text(query))
+    if rank_stat and isinstance(combined, FinderResult) and rank_stat in combined.games:
+        # "LeBron top 5 scoring games with 30 points or 10 assists": the
+        # ranking stat orders the merged list (it was by date).
+        games = combined.games.sort_values(rank_stat, ascending=False, kind="stable")
+        if "rank" in games:
+            games = games.drop(columns="rank")
+            games.insert(0, "rank", range(1, len(games) + 1))
+        combined = FinderResult(games=games.reset_index(drop=True))
+    top_n = base.get("top_n")
+    if base.get("last_n") and base.get("last_n_scope") == "qualifying":
+        # "LeBron's last 10 games with 20 points or 10 assists": the 10 most
+        # recent games meeting either (each clause kept its own 10).
+        top_n = min(top_n or base["last_n"], base["last_n"])
+    if top_n and isinstance(combined, FinderResult) and len(combined.games) > top_n:
+        # "LeBron's last 10 games with 30 points or 10 assists": the asked cap.
+        combined = FinderResult(games=combined.games.head(top_n).reset_index(drop=True))
+    return combined, parsed
 
 
 def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
