@@ -1207,10 +1207,11 @@ def _execute_or_query_build_result(query: str) -> tuple:
 
     results = []
     for item in clause_parsed:
+        # Each clause keeps every game: a capped list per clause ("top 25 by
+        # points", "top 25 by assists") merged into an arbitrary subset.
+        kwargs = {**item["route_kwargs"], "limit": None}
         results.append(
-            _execute_build_result(
-                item["route"], item["route_kwargs"], item.get("extra_conditions", [])
-            )
+            _execute_build_result(item["route"], kwargs, item.get("extra_conditions", []))
         )
 
     parsed = dict(base)
@@ -1223,7 +1224,16 @@ def _execute_or_query_build_result(query: str) -> tuple:
             parsed["conditions"] = boolean_conditions
             parsed["route_kwargs"]["conditions"] = boolean_conditions
 
-    return _combine_or_results(results), parsed
+    combined = _combine_or_results(results)
+    top_n = base.get("top_n")
+    if base.get("last_n") and base.get("last_n_scope") == "qualifying":
+        # "LeBron's last 10 games with 20 points or 10 assists": the 10 most
+        # recent games meeting either (each clause kept its own 10).
+        top_n = min(top_n or base["last_n"], base["last_n"])
+    if top_n and isinstance(combined, FinderResult) and len(combined.games) > top_n:
+        # "LeBron's last 10 games with 30 points or 10 assists": the asked cap.
+        combined = FinderResult(games=combined.games.head(top_n).reset_index(drop=True))
+    return combined, parsed
 
 
 def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):

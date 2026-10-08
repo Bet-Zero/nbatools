@@ -7491,6 +7491,9 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "window_size",
         "stretch_metric",
         "last_n",
+        # "how many of his last 10 games had 20 points or 10 assists": the
+        # window (or qualifying) reading carries to every clause.
+        "last_n_scope",
         "split_type",
         "role",
         "rest_days",
