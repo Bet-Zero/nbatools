@@ -87,3 +87,34 @@ def test_a_span_applies_to_every_clause():
     games = games[games["player_name"] == "LeBron James"]
     either = games[(games["pts"] >= 30) | (games["ast"] >= 10)]
     assert sorted(_ids("LeBron 30 points or 10 assists since 2024")) == sorted(either["game_id"])
+
+
+def test_each_clause_keeps_its_own_season_and_season_type():
+    frames = {
+        name: pd.read_csv(RAW / f"{name}.csv")
+        for name in ("2024-25_regular_season", "2025-26_regular_season", "2025-26_playoffs")
+    }
+    lebron = {k: v[v["player_name"] == "LeBron James"] for k, v in frames.items()}
+    mixed = int((lebron["2024-25_regular_season"]["pts"] >= 30).sum()) + int(
+        (lebron["2025-26_regular_season"]["ast"] >= 10).sum()
+    )
+    assert len(_ids("LeBron 30 points in 2024-25 or 10 assists in 2025-26")) == mixed
+    types = int((lebron["2025-26_regular_season"]["pts"] >= 30).sum()) + int(
+        (lebron["2025-26_playoffs"]["ast"] >= 10).sum()
+    )
+    assert (
+        len(_ids("LeBron 30 points in the regular season or 10 assists in the playoffs")) == types
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A clause with no condition would list every game of that team.
+        "Lakers or Celtics over 130 points",
+        # Stats over the games are a summary, not a list.
+        "LeBron stats in games with 30 points or 10 assists since 2024",
+    ],
+)
+def test_or_questions_that_are_not_game_lists_refuse(query):
+    assert execute_natural_query(query).result_status == "no_result"

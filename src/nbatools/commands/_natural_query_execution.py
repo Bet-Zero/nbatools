@@ -1157,6 +1157,14 @@ def _split_on_or(text: str) -> list[str]:
     return parts if parts else [text]
 
 
+# A clause naming its own time ("30 points in 2024-25 or 10 assists in the
+# playoffs") keeps it.
+_CLAUSE_SCOPE = re.compile(
+    r"\b(?:playoffs?|postseason|regular\s+season|(?:19|20)\d{2}|since|seasons?|career|"
+    r"all[-\s]?time|years?)\b"
+)
+# "LeBron stats in games with 30 points or 10 assists": a summary, not a list.
+_SUMMARY_WORDS = re.compile(r"\b(?:stats|averages?|averaging|record|splits?|summary)\b")
 _OR_RANK_WORDS = (
     (re.compile(r"\b(?:top|best|highest|biggest)\s+(?:\d+\s+)?scoring\s+games?\b"), "pts"),
     (re.compile(r"\b(?:top|best|highest|biggest)\s+(?:\d+\s+)?rebounding\s+games?\b"), "reb"),
@@ -1216,6 +1224,7 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return result, parsed
 
     base = _build_parse_state(query)
+    conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
     full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))
     clause_parsed = []
@@ -1226,27 +1235,41 @@ def _execute_or_query_build_result(query: str) -> tuple:
             clause_state["start_season"] = None
             clause_state["end_season"] = None
         # "LeBron 30 points or 10 assists in the playoffs / since 2024": a scope
-        # written once (usually at the end) belongs to every clause, not just
-        # the last one.
-        if base.get("season_type") and base["season_type"] != "Regular Season":
-            clause_state["season_type"] = base["season_type"]
-        if base.get("start_season") and base.get("end_season"):
-            clause_state.update(
-                season=None,
-                start_season=base["start_season"],
-                end_season=base["end_season"],
-                season_defaulted=False,
-            )
-        elif base.get("season") and not base.get("season_defaulted"):
-            clause_state.update(
-                season=base["season"], start_season=None, end_season=None, season_defaulted=False
-            )
+        # written once (usually at the end) belongs to every clause that names
+        # none of its own ("30 points in 2024-25 or 10 assists in 2025-26"
+        # keeps each).
+        if not _CLAUSE_SCOPE.search(clause):
+            if base.get("season_type") and base["season_type"] != "Regular Season":
+                clause_state["season_type"] = base["season_type"]
+            if base.get("start_season") and base.get("end_season"):
+                clause_state.update(
+                    season=None,
+                    start_season=base["start_season"],
+                    end_season=base["end_season"],
+                    season_defaulted=False,
+                )
+            elif base.get("season") and not base.get("season_defaulted"):
+                clause_state.update(
+                    season=base["season"],
+                    start_season=None,
+                    end_season=None,
+                    season_defaulted=False,
+                )
         has_condition = (
             clause_state.get("min_value") is not None
             or clause_state.get("max_value") is not None
             or bool(clause_state.get("occurrence_event"))
         )
-        if has_condition and not base.get("summary_intent") and not base.get("count_intent"):
+        if not has_condition:
+            # "Lakers or Celtics over 130 points": a clause with no condition
+            # would list every game of that team.
+            conditionless = True
+        if (
+            has_condition
+            and not base.get("summary_intent")
+            and not base.get("count_intent")
+            and not _SUMMARY_WORDS.search(normalize_text(query))
+        ):
             # An OR clause with a stat condition is a game list ("LeBron 30
             # points since 2024" alone reads as a span summary). A clause with
             # no condition ("or better", "or 2024-25") still refuses below.
@@ -1255,7 +1278,7 @@ def _execute_or_query_build_result(query: str) -> tuple:
 
     allowed_routes = {"player_game_finder", "game_finder"}
     routes = {item["route"] for item in clause_parsed}
-    if len(routes) != 1 or list(routes)[0] not in allowed_routes:
+    if conditionless or len(routes) != 1 or list(routes)[0] not in allowed_routes:
         raise ValueError(
             "Top-level OR is currently supported for finder-style queries, for example: "
             "'Jokic over 25 points or over 10 rebounds' or "
