@@ -2131,11 +2131,24 @@ _OPPONENT_COUNT_SCOPE = re.compile(
 _OPPONENT_COUNT_PLAYER_VERB = re.compile(r"^(?:face|faced)$")
 
 
+_YEARLESS_WINDOW = re.compile(
+    r"\b(?:january|february|march|april|may|june|july|august|september|october|november|"
+    r"december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)(?!\w)"
+    # "Mar. 3, 2025", "Jan. 2025", "March 2025": the window names its year.
+    r"(?!\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2})(?!\.?\s*,?\s*(?:19|20)\d{2})"
+    r"|\ball[\s-]star\s+break\b"
+)
+
+
 def _dates_over_seasons(parsed: dict) -> bool:
     """ "in March from 2023-24 to 2025-26": the date window is read in one
     season only, so a multi-season span with dates is not applied."""
     start, end = parsed.get("start_season"), parsed.get("end_season")
     if not (start and end and start != end):
+        return False
+    if not _YEARLESS_WINDOW.search(parsed.get("normalized_query") or ""):
+        # "since January 2025", "from March 2024 to March 2026": the window
+        # names its year, so it is one window, not one per season.
         return False
     from nbatools.commands._date_utils import _season_for_date
 
@@ -7694,6 +7707,17 @@ def _finalize_route(parsed: dict) -> dict:
             'season, span, dates, home/road or the playoffs ("how many teams did the '
             'Lakers play", "how many teams has LeBron faced"); this one asks something '
             "else"
+        ]
+        return refused
+    if _dates_over_seasons(parsed) and not parsed.get("series_comeback"):
+        # "Lakers record in March from 2023-24 to 2025-26": the month is read
+        # in one season only (1-2 for 6-4); no route repeats it per season.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["date_window_per_season"]
+        refused["notes"] = [
+            "unsupported_boundary: a month or window repeated in each season of a span is "
+            'not supported; ask for one season, or a single window such as "since '
+            'January 2025"'
         ]
         return refused
     totals = _season_total_threshold_board(parsed)

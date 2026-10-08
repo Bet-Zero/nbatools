@@ -1389,6 +1389,14 @@ _COPULA_WAS = re.compile(
     r"|suspended|missing|missed|ejected|sick|the|a|an|his|her|their|its"
     # "was LeBron's team beaten by the Nuggets", "was Boston swept".
     r"|beaten|defeated|swept|eliminated|blown|upset|routed|[a-z]+'s)\b)"
+    # "how many games was LeBron over 30 points", "how often was Jokic held
+    # under 20": the copula after a count or a question word. "how many times
+    # WAS scored 120" keeps the team (a team verb or noun follows).
+    r"|(?:(?<=\bgames\s)|(?<=\btimes\s)|(?<=\bnights\s)|(?<=\boften\s)|(?<=\bwhen\s)"
+    r"|(?<=\bwhere\s)|(?<=\bever\s))was\b"
+    r"(?!\s+(?:scored|scores|scoring|score|won|wins?|winning|lost|loses?|losses|losing|beat|"
+    r"games?|home|road|away|record|allowed|team|vs\.?|versus|against|at|in|on|over|under|"
+    r"above|below|by|had|has|have|played|plays?|roster|offense|defense)\b)"
 )
 
 
