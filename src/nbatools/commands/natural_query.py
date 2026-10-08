@@ -6643,6 +6643,22 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
         return None
     text = _LEAGUE_SEASON_SPAN.sub(" ", text)
     text = re.sub(r"\btop\s+\d+\b", " ", text)
+    if re.search(r"(?<!between\s)\b\d{4}(?:-\d{2})?\s+and\s+\d{4}(?:-\d{2})?\b", q):
+        # "teams with 40 wins in 2024-25 and 2025-26" read the first season only.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["two_named_seasons"]
+        refused["notes"] = [
+            'unsupported_boundary: two seasons joined by "and" are not one span; ask '
+            '"from 2024-25 to 2025-26" or for each season'
+        ]
+        return refused
+    if parsed.get("start_season"):
+        # "in the last 2 seasons": the parse already holds the span.
+        text = re.sub(
+            r"\b(?:over\s+)?(?:the\s+)?(?:last|past|previous)\s+(?:\d+|two|three|four|five)\s+seasons\b",
+            " ",
+            text,
+        )
     if any(word not in _LEAGUE_SEASON_WORDS for word in re.findall(r"[a-z0-9%+'-]+", text)):
         # "teams with 50 wins at home": a filter this board does not read.
         return None
@@ -6653,6 +6669,11 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
     notes = [n for n in out.get("notes") or [] if not n.startswith("unsupported_boundary")]
     if start:
         season = None
+    elif season is None and re.search(r"\b(?:this|current)\s+(?:season|year)\b", q):
+        # "teams with 40 wins this season".
+        from nbatools.commands._seasons import default_end_season
+
+        season = default_end_season(season_type)
     elif not _NAMED_SEASON_WORDS.search(q):
         from nbatools.commands._seasons import EARLIEST_SEASON, resolve_career
 
@@ -6691,6 +6712,11 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
         "max_wins": high,
     }
     note = "single_season: each team season ranked on its own" if start else "team_season_board"
+    bar_note = []
+    if stat == "wins" and (low is not None or high is not None) and not parsed.get("top_n"):
+        # "teams with 50 wins": every team season at the bound, not a top 10.
+        kwargs["limit"] = 10000
+        bar_note = [f"record_bar: wins:{'' if low is None else low}:{'' if high is None else high}"]
     rerouted = dict(out)
     rerouted.update(
         route="team_record_leaderboard" if record else "season_team_leaders",
@@ -6703,7 +6729,7 @@ def _league_team_seasons(parsed: dict, out: dict) -> dict | None:
     # threshold; publish the stat the board ranks, and the wins bound only in
     # its own kwargs and caveat, not as a bound on that stat.
     rerouted.update(stat=stat, min_value=None, max_value=None)
-    rerouted["notes"] = notes + [note]
+    rerouted["notes"] = notes + [note] + bar_note
     return rerouted
 
 
@@ -7485,8 +7511,82 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
     return out
 
 
+# "how many teams have 50 wins", "how many teams won 40 games last season":
+# the count of the win-total board (unrouted before).
+_HOW_MANY_TEAMS_WON = re.compile(
+    r"^how\s+many\s+(?:different\s+)?teams\s+(?:(?P<verb>have|had|has|got|reached|recorded|"
+    r"finished\s+with|ended\s+with|with)|(?P<won>won|win))\s+(?P<rest>.*)$"
+)
+
+
+def _team_win_total_count(parsed: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    match = _HOW_MANY_TEAMS_WON.match(q)
+    if not match or not re.search(r"\bwins?\b|\bwon\b", q):
+        return None
+    if re.search(r"\bin\s+a\s+row\b|\bstraight\b|\bconsecutive\b|\bstreaks?\b", q):
+        # "how many teams won 5 games in a row": the streak board's.
+        return None
+    lead = "teams that won" if match.group("won") else "teams with"
+    rest = match.group("rest")
+    if (
+        match.group("verb") in ("have", "has", "got")
+        # "have had / have won 40": ever, not this season.
+        and not re.match(r"(?:had|won|ever|been)\b", rest)
+        # "a 40 win season" is any season.
+        and not re.search(r"\bwin\s+seasons?\b", rest)
+        and not _NAMED_SEASON_WORDS.search(q)
+        # The parse fills a default span; only words name a season here.
+        and not re.search(
+            r"\b(?:19|20)\d{2}\b|\bsince\b|\bseasons\b|\bcareer\b|\ball[\s-]time\b|"
+            r"\bever\b|\bhistory\b|\bthis\s+year\b",
+            q,
+        )
+    ):
+        # "how many teams have 40 wins": this season, as "how many teams have
+        # a winning record" is.
+        rest += " this season"
+    rewritten = re.sub(r"\bthis\s+year\b", "this season", f"{lead} {rest}")
+    low, high, _ = _win_bounds(rewritten)
+    if low is None and high is None:
+        return None
+    try:
+        inner = _finalize_route(_build_parse_state(rewritten))
+    except ValueError:
+        inner = {}
+    kwargs = inner.get("route_kwargs") or {}
+    two_seasons = re.search(r"(?<!between\s)\b\d{4}(?:-\d{2})?\s+and\s+\d{4}(?:-\d{2})?\b", q)
+    if (
+        two_seasons
+        or inner.get("route") != "team_record_leaderboard"
+        or (kwargs.get("min_wins") is None and kwargs.get("max_wins") is None)
+    ):
+        # "how many teams have 40 wins at home": a filter the board does not read.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["win_total_condition"]
+        refused["notes"] = [
+            "unsupported_boundary: teams by win total take a season or a span; this one "
+            "adds a condition the season board cannot apply"
+        ]
+        return refused
+    out = dict(inner)
+    out.update(
+        count_intent=True,
+        distinct_team_count=True,
+        normalized_query=q,
+    )
+    if re.match(r"^how\s+many\s+(?:different|distinct)\b", q) and kwargs.get("per_season"):
+        # "how many different teams have had 40 wins": franchises, not seasons.
+        out["notes"] = list(out.get("notes") or []) + ["distinct_teams"]
+    out["confidence"] = compute_parse_confidence(out)
+    return out
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
+    win_totals = _team_win_total_count(parsed)
+    if win_totals is not None:
+        return win_totals
     if parsed.get("team_count_unsupported"):
         # "how many teams did the Lakers never beat": the games route would
         # count games, not teams.
