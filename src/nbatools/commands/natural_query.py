@@ -2093,7 +2093,25 @@ _OPPONENT_RECORD_BAR = re.compile(
 )
 
 
+# "facing the Celtics", "when facing winning teams": the opponent lead
+# "against" (no filter was read: 47-13). "wins over winning teams": the same
+# (it counted every win).
+_FACING = re.compile(
+    r"\b(?:when\s+|while\s+)?facing\b"
+    # "facing elimination" is a series situation; "facing a deficit", "a back
+    # to back", "double teams" are not opponents.
+    r"(?!\s+(?:elimination|a\s+deficit|deficits?|a\s+back|back|double|zone|pressure|"
+    r"adversity|a\s+must|must|a\s+\d|\d)\b)"
+)
+_WINS_OVER_QUALITY = re.compile(
+    r"\b(wins?|victories|won|have|had)\s+over\s+(?=(?:the\s+)?(?:winning|losing|playoff|non[\s-]playoff|"
+    r"good|bad|top|best|contenders|teams?\s+(?:over|above|under|below|that|who|with)|opponents?)\b)"
+)
+
+
 def _canonicalize_opponent_record_bars(q: str) -> str:
+    q = _FACING.sub("against", q)
+    q = _WINS_OVER_QUALITY.sub(r"\1 against ", q)
     return _OPPONENT_RECORD_BAR.sub(
         lambda m: (
             f"{m.group('lead')} teams "
