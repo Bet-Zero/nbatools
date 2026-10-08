@@ -846,6 +846,26 @@ def _build_count_phrase(
     entity = player or _team_subject(metadata, games) or "Result"
     team_subject = bool(team and not player)
 
+    opponent_count = bool(parsed.get("distinct_opponent_count"))
+    if opponent_count:
+        # "how many teams did the Lakers play": "... have played 5 teams ...".
+        verb = "have" if team_subject else "has"
+        noun = "team" if count == 1 else "teams"
+        context = " ".join(
+            filter(
+                None,
+                [_venue_and_dates(metadata, parsed), _count_context(metadata, player=bool(player))],
+            )
+        )
+        if not (
+            parsed.get("conditions")
+            or parsed.get("threshold_conditions")
+            or parsed.get("occurrence_event")
+            or parsed.get("min_value") is not None
+            or parsed.get("max_value") is not None
+        ):
+            return f"{entity} {verb} played {count} {noun} {context}."
+
     if parsed.get("boolean_query_used"):
         game_word = "matching game" if count == 1 else "matching games"
         verb = "have had" if team_subject else "has had"
@@ -975,8 +995,21 @@ def _build_count_phrase(
         )
     else:
         occurrence = _occurrence_label(parsed.get("stat"))
-    if parsed.get("distinct_player_count") and not player:
-        # The count is players, not games: "18 players have had a game with 30+ points".
+    if opponent_count:
+        # "how many teams did LeBron score 30 against": "LeBron James has had
+        # a game with 30+ points against 5 teams ...".
+        if occurrence.startswith("games with "):
+            occurrence = "game with " + occurrence[len("games with ") :]
+        return f"{entity} {verb} had a {occurrence} against {count} {noun} {context}."
+    team_count = bool(
+        parsed.get("distinct_team_count")
+        and not team
+        and not player
+        and metadata.get("route") != "team_record_leaderboard"
+    )
+    if (parsed.get("distinct_player_count") and not player) or team_count:
+        # The count is players (or teams), not games: "18 players have had a
+        # game with 30+ points", "4 teams have had a game with 120+ points".
         context = _count_context(
             metadata,
             player=False,
@@ -986,7 +1019,8 @@ def _build_count_phrase(
         min_occurrences = parsed.get("min_occurrences")
         if occurrence.startswith("games with ") and not (min_occurrences or 0) > 1:
             occurrence = "game with " + occurrence[len("games with ") :]
-        subject = "1 player has" if count == 1 else f"{count} players have"
+        noun = "team" if team_count else "player"
+        subject = f"1 {noun} has" if count == 1 else f"{count} {noun}s have"
         if (min_occurrences or 0) > 1:
             # "16 players have had 20+ games with at most 10 points".
             article = f"{min_occurrences}+"
@@ -1092,6 +1126,25 @@ def _team_subject(metadata: dict, games: Any = None) -> str | None:
             return f"The {team_name}"
     team = _clean_text(metadata.get("team"))
     return f"The {team}" if team else None
+
+
+def _venue_and_dates(metadata: dict, parsed: dict | None = None) -> str:
+    """ "at home from 2026-03-01 to 2026-03-31": the home/road and date
+    window a count or list was taken over ("" when neither applies)."""
+    source = parsed or {}
+    parts = []
+    if source.get("home_only") or metadata.get("home_only"):
+        parts.append("at home")
+    elif source.get("away_only") or metadata.get("away_only"):
+        parts.append("on the road")
+    start, end = metadata.get("start_date"), metadata.get("end_date")
+    if start and end:
+        parts.append(f"from {start} to {end}")
+    elif start:
+        parts.append(f"since {start}")
+    elif end:
+        parts.append(f"through {end}")
+    return " ".join(parts)
 
 
 def _count_context(
@@ -1405,6 +1458,71 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         metadata["answer_phrase"] = f"{subject} {line} {context}: {joined}."
     if metadata.get("query_class") == "count":
         metadata["count_phrase"] = metadata["answer_phrase"]
+
+
+_RECORD_BAR_WORDS = {
+    "winning": "a winning record",
+    "losing": "a losing record",
+    "at_least_500": "a record of .500 or better",
+    "at_most_500": "a record of .500 or worse",
+}
+
+
+def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "3 teams have a winning record in the 2025-26 regular season: the Los
+    Angeles Lakers (47-13), ..."."""
+    request = next(
+        (
+            note
+            for note in metadata.get("notes") or []
+            if isinstance(note, str) and note.startswith("record_bar:")
+        ),
+        None,
+    )
+    if not request:
+        return
+    bar, _, venue = request.split(":", 1)[1].strip().partition(" ")
+    words = _RECORD_BAR_WORDS.get(bar)
+    if words and venue:
+        words = f"{words} {venue}"
+    if isinstance(result, CountResult):
+        board = result.games
+    elif isinstance(result, LeaderboardResult):
+        board = result.leaders
+    else:
+        return
+    if words is None:
+        return
+    context = " ".join(
+        filter(
+            None,
+            [
+                _venue_and_dates(
+                    {"start_date": metadata.get("start_date"), "end_date": metadata.get("end_date")}
+                ),
+                _count_context(metadata, player=False),
+            ],
+        )
+    )
+    k = len(board)
+    if k == 0:
+        phrase = f"No team has {words} {context}."
+    else:
+        names = board["team_name"] if "team_name" in board else board.get("team_abbr")
+        listed = [
+            f"the {name} ({int(wins)}-{int(losses)})"
+            for name, wins, losses in zip(
+                names.head(6), board["wins"].head(6), board["losses"].head(6)
+            )
+        ]
+        if k > 6:
+            listed.append(f"{k - 6} more")
+        joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
+        subject = "1 team has" if k == 1 else f"{k} teams have"
+        phrase = f"{subject} {words} {context}: {joined}."
+    metadata["answer_phrase"] = phrase
+    if isinstance(result, CountResult):
+        metadata["count_phrase"] = phrase
 
 
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
@@ -2307,6 +2425,21 @@ def _apply_count_intent(
             detail_section="streak",
         )
 
+    if isinstance(result, FinderResult) and parsed.get("distinct_opponent_count"):
+        games = result.games
+        if "opponent_team_abbr" in games:
+            # "how many teams did the Lakers play": distinct opponents.
+            return CountResult(
+                count=int(games["opponent_team_abbr"].nunique()),
+                games=games,
+                result_status=result.result_status,
+                result_reason=result.result_reason,
+                current_through=result.current_through,
+                metadata=result.metadata,
+                notes=result.notes,
+                caveats=result.caveats,
+            )
+
     if isinstance(result, FinderResult):
         stat_total = _stat_total_count(parsed, result.games) if allow_stat_total else None
         if stat_total is not None:
@@ -2345,7 +2478,7 @@ def _apply_count_intent(
         detail = leaders
     elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
         entity_count = len(result.leaders)
-        if parsed.get("opponent_record_list"):
+        if parsed.get("opponent_record_list") or route_kwargs.get("record_bar"):
             # "how many teams have the Lakers beaten": the teams come with it.
             detail = result.leaders
     elif player_name:
@@ -2488,6 +2621,7 @@ def _finalize_natural_query_result(
     _add_series_comebacks_answer_metadata(metadata, result)
     _add_opponent_record_list_answer_metadata(metadata, result)
     _add_season_total_answer_metadata(metadata, result)
+    _add_record_bar_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

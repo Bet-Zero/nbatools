@@ -70,9 +70,18 @@ def canonicalize_500_team_bars(text: str) -> str:
     return _TEAM_500_WORSE.sub("teams .500 or worse", text)
 
 
+# "how many teams are .500 or better", "a record of .500 or worse": one
+# record bar, never two clauses.
+_POPULATION_500_BAR = re.compile(
+    r"\b(?:are|were|is|was|finished|finish|ended|end|stand|of)\s+(?:at\s+)?\.500\s+or\s+"
+    r"(?:better|above|higher|worse|below|lower)\b"
+)
+
+
 def _or_bounds_read(text: str) -> str:
     # The bar's own name says "or worse"; it is one opponent group.
     text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
+    text = _POPULATION_500_BAR.sub(lambda m: m.group(0).replace(" or ", "_or_"), text)
     return _WHOLE_NUMBER_BOUND.sub(
         lambda m: (
             f"{m.group(1) or m.group(3)}{m.group(2) or ''} or "

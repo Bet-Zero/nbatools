@@ -808,6 +808,7 @@ def build_record_leaderboard_result(
     min_wins: int | None = None,
     max_wins: int | None = None,
     min_losses: int | None = None,
+    record_bar: str | None = None,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -895,6 +896,17 @@ def build_record_leaderboard_result(
     agg = apply_win_bounds(agg, min_wins, max_wins)
     if min_losses is not None:
         agg = agg[agg["losses"] >= min_losses].copy()
+    if record_bar is not None:
+        # "teams with a winning record" (more wins than losses), "a losing
+        # record", "teams .500 or better": every team at the bar, uncut.
+        bars = {
+            "winning": agg["wins"] > agg["losses"],
+            "losing": agg["wins"] < agg["losses"],
+            "at_least_500": agg["wins"] >= agg["losses"],
+            "at_most_500": agg["wins"] <= agg["losses"],
+        }
+        agg = agg[bars[record_bar]].copy()
+        limit = max(limit, len(agg), 1)
     if team is not None:
         # "Lakers best record in a single season": rank one team's seasons.
         agg = agg[team_value_mask(agg, team)].copy()

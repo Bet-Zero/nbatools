@@ -2072,7 +2072,51 @@ def _results_against_subject_first(q: str) -> str:
     )
 
 
+# "how many teams did the Lakers play / have the Celtics faced": the distinct
+# opponents of their games (it counted the games).
+_HOW_MANY_OPPONENTS = re.compile(
+    r"^how\s+many\s+(?:different\s+|distinct\s+)?(?:teams|opponents)\s+(?:did|have|has)\s+"
+    r"(?P<team>.+?)\s+(?P<verb>play|played|face|faced)\b(?P<rest>.*)$"
+)
+
+
+# What may follow "how many teams did the Lakers play": a season, a span,
+# dates, home/road or the playoffs. "played for", "twice", "when LeBron scored
+# 30" or "in games with ..." are other questions; they refuse.
+_OPPONENT_COUNT_SCOPE = re.compile(
+    r"^(?:\s+(?:against|in|the|at|home|on|road|away|this|last|season|seasons|year|years|since|"
+    r"playoffs|postseason|regular|before|after|all|star|break|between|and|from|to|through|"
+    r"until|ever|so|far|of|during|january|february|march|april|may|june|july|october|"
+    r"november|december|\d{4}(?:-\d{2})?|\d{4}s))*\s*\??$"
+)
+# A player's "how many teams did he play" is ambiguous (for or against);
+# "faced" or "against" says it.
+_OPPONENT_COUNT_PLAYER_VERB = re.compile(r"^(?:face|faced)$")
+
+
+def _opponent_count_supported(match: re.Match) -> bool:
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    rest = match.group("rest")
+    if not _OPPONENT_COUNT_SCOPE.match(rest):
+        return False
+    if detect_team_in_text(match.group("team")):
+        return True
+    return bool(
+        _OPPONENT_COUNT_PLAYER_VERB.match(match.group("verb")) or re.match(r"\s+against\b", rest)
+    )
+
+
 def _build_parse_state(query: str) -> dict:
+    opponents_counted = _HOW_MANY_OPPONENTS.match(normalize_text(query))
+    opponent_count_unsupported = bool(
+        opponents_counted and not _opponent_count_supported(opponents_counted)
+    )
+    if opponents_counted:
+        query = (
+            f"how many games did {opponents_counted.group('team')} play"
+            f"{opponents_counted.group('rest')}"
+        )
     q = canonicalize_sample_phrases(_results_against_subject_first(normalize_text(query)))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
@@ -2701,6 +2745,18 @@ def _build_parse_state(query: str) -> dict:
         "finder_intent": finder_intent,
         "count_intent": count_intent
         or bool(opponent_record_list and opponent_record_list.get("count")),
+        # "how many teams did LeBron score 30 against": his distinct opponents.
+        "distinct_opponent_count": bool(opponents_counted)
+        or bool(distinct_team_count and player and not opponent and _AGAINST_TAIL.search(q)),
+        "opponent_count_unsupported": opponent_count_unsupported
+        # A player's team count is only his opponents ("... against").
+        or bool(
+            distinct_team_count
+            and player
+            and not opponents_counted
+            and not opponent
+            and not _AGAINST_TAIL.search(q)
+        ),
         "record_intent": record_intent,
         "range_intent": range_intent,
         "career_intent": career_intent,
@@ -7256,6 +7312,107 @@ def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
     return refused
 
 
+_AGAINST_TAIL = re.compile(r"\b(?:against|vs\.?|versus)\s*\??$")
+
+
+# "teams with a winning record", "how many teams are over .500": a record bar
+# on the team board (every team at it, uncut). A bar after "vs" / "against" /
+# "beat" is an opponent filter, not this.
+_RECORD_BARS = (
+    (re.compile(r"\bwinning\s+records?\b|\b(?:over|above)\s+\.500\b"), "winning"),
+    (re.compile(r"\blosing\s+records?\b|\b(?:under|below)\s+\.500\b"), "losing"),
+    (
+        re.compile(
+            r"(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:better|above|higher)\b|\bat\s+least\s+\.500\b"
+        ),
+        "at_least_500",
+    ),
+    (re.compile(r"(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:worse|below|lower)\b"), "at_most_500"),
+    (re.compile(r"\bwinning\s+teams\b"), "winning"),
+    (re.compile(r"\blosing\s+teams\b"), "losing"),
+)
+_RECORD_BAR_NOT_A_POPULATION = re.compile(
+    r"\b(?:vs\.?|versus|against|beat|beaten|played|play|facing|faced|opponents?|when|"
+    r"players?|with\s+(?:the|a)\s+(?:best|worst)|games?)\b"
+)
+
+
+# Words a record-bar question may carry besides the bar itself.
+_RECORD_BAR_SCOPE = re.compile(
+    r"^(?:\s*(?:how|many|which|what|who|list|show|me|all|the|teams?|franchises?|nba|league|"
+    r"have|has|had|having|with|a|an|are|were|is|was|there|finished|finish|ended|end|record|"
+    r"records|currently|now|in|at|home|on|road|away|this|last|season|year|years|seasons|since|"
+    r"playoffs|postseason|regular|before|after|star|break|between|and|from|to|through|until|"
+    r"so|far|of|during|january|february|march|april|may|june|july|october|november|december|"
+    r"\d{4}(?:-\d{2})?|\d{4}s|[?.,]))*\s*$"
+)
+
+
+def _team_record_bar_board(parsed: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    if not re.search(r"\bteams?\b|\bfranchises?\b", q) or _RECORD_BAR_NOT_A_POPULATION.search(q):
+        return None
+    if any(
+        parsed.get(key)
+        for key in ("team", "player", "opponent", "team_a", "team_b", "opponent_quality", "last_n")
+    ):
+        return None
+    bar = next((name for pattern, name in _RECORD_BARS if pattern.search(q)), None)
+    if bar is None:
+        return None
+    rest = q
+    for pattern, _ in _RECORD_BARS:
+        rest = pattern.sub(" ", rest)
+    if not _RECORD_BAR_SCOPE.match(rest):
+        # "in the East", "that made the playoffs", "on back to backs", "every
+        # season", "and 10 home losses": the board would drop the condition.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["record_bar_condition"]
+        refused["notes"] = [
+            "unsupported_boundary: teams by record take a season, a span, dates, home/road "
+            "or the playoffs; this one adds a condition the record board cannot apply"
+        ]
+        return refused
+    season_type = parsed.get("season_type") or "Regular Season"
+    season = parsed.get("season")
+    if not (season or parsed.get("start_season")):
+        season = default_season_for_context(season_type)
+    kwargs = {
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": season_type,
+        "stat": "win_pct",
+        "limit": 30,
+        "ascending": bar in ("losing", "at_most_500"),
+        "record_bar": bar,
+        "home_only": bool(parsed.get("home_only")),
+        "away_only": bool(parsed.get("away_only")),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+    }
+    counted = bool(re.match(r"^how\s+many\b", q))
+    out = dict(parsed)
+    out.update(
+        route="team_record_leaderboard",
+        intent="leaderboard",
+        route_kwargs=kwargs,
+        count_intent=counted or bool(parsed.get("count_intent")),
+        distinct_team_count=counted,
+        notes=list(parsed.get("notes") or [])
+        + [
+            f"record_bar: {bar}"
+            + (" at home" if kwargs["home_only"] else " on the road" if kwargs["away_only"] else "")
+        ],
+    )
+    # Response metadata reads the season from the parse state.
+    for key in ("season", "start_season", "end_season"):
+        out[key] = kwargs[key]
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     if parsed.get("team_count_unsupported"):
@@ -7269,9 +7426,24 @@ def _finalize_route(parsed: dict) -> dict:
             "count cannot apply"
         ]
         return refused
+    if parsed.get("opponent_count_unsupported"):
+        # "how many teams did LeBron play for", "... play twice", "... when
+        # LeBron scored 30": distinct opponents would drop the condition.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["opponent_count_unsupported"]
+        refused["notes"] = [
+            "unsupported_boundary: teams played are counted as distinct opponents over a "
+            'season, span, dates, home/road or the playoffs ("how many teams did the '
+            'Lakers play", "how many teams has LeBron faced"); this one asks something '
+            "else"
+        ]
+        return refused
     totals = _season_total_threshold_board(parsed)
     if totals is not None:
         return totals
+    record_bar = _team_record_bar_board(parsed)
+    if record_bar is not None:
+        return record_bar
     try:
         out = _finalize_route_inner(parsed)
     except ValueError:
