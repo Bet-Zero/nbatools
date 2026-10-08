@@ -58,3 +58,32 @@ def test_last_n_window_carries_to_every_clause():
     expected = int(((window["pts"] >= 20) | (window["ast"] >= 10)).sum())
     result = execute_natural_query("how many of LeBron's last 10 games had 20 points or 10 assists")
     assert result.result.to_dict()["sections"]["count"] == [{"count": expected}]
+
+
+def test_ranked_or_list_orders_by_the_ranking_stat():
+    games = _lebron()
+    either = games[(games["pts"] >= 30) | (games["ast"] >= 10)]
+    top = either.sort_values("pts", ascending=False)["pts"].head(5).tolist()
+    rows = execute_natural_query(
+        "LeBron top 5 scoring games with 30 points or 10 assists"
+    ).result.to_dict()["sections"]["finder"]
+    assert [row["pts"] for row in rows] == top
+
+
+def test_playoffs_apply_to_every_clause():
+    games = pd.read_csv(RAW / "2025-26_playoffs.csv")
+    games = games[games["player_name"] == "LeBron James"]
+    either = games[(games["pts"] >= 30) | (games["ast"] >= 10)]
+    assert sorted(_ids("LeBron 30 points or 10 assists in the playoffs")) == sorted(
+        either["game_id"]
+    )
+
+
+def test_a_span_applies_to_every_clause():
+    frames = [
+        pd.read_csv(RAW / f"{season}_regular_season.csv") for season in ("2024-25", "2025-26")
+    ]
+    games = pd.concat(frames)
+    games = games[games["player_name"] == "LeBron James"]
+    either = games[(games["pts"] >= 30) | (games["ast"] >= 10)]
+    assert sorted(_ids("LeBron 30 points or 10 assists since 2024")) == sorted(either["game_id"])
