@@ -130,6 +130,9 @@ from nbatools.commands._parse_helpers import (
     build_role_filter_note as build_role_filter_note,
 )
 from nbatools.commands._parse_helpers import (
+    canonicalize_ranked_stat_games as canonicalize_ranked_stat_games,
+)
+from nbatools.commands._parse_helpers import (
     canonicalize_sample_phrases as canonicalize_sample_phrases,
 )
 from nbatools.commands._parse_helpers import (
@@ -2170,9 +2173,8 @@ def _build_parse_state(query: str) -> dict:
             f"how many games did {opponents_counted.group('team')} play"
             f"{opponents_counted.group('rest')}"
         )
-    q = canonicalize_sample_phrases(
-        _canonicalize_opponent_record_bars(_results_against_subject_first(normalize_text(query)))
-    )
+    q = canonicalize_ranked_stat_games(_canonicalize_opponent_record_bars(normalize_text(query)))
+    q = canonicalize_sample_phrases(_results_against_subject_first(q))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
@@ -6782,6 +6784,83 @@ def _percent_rate(source: str | None, default: str) -> str:
     return "fg_pct" if source == "field" else "fg3_pct"
 
 
+# "Lakers highest scoring games since 2024", "Lakers top 3 scoring games with
+# 15 threes from 2023-24 to 2025-26": a span sent the team's list to its
+# summary (one row, no games).
+_TEAM_GAME_LIST = re.compile(
+    r"\b(?:top|highest|biggest|best)\b(?:\s+\d+)?\s+(?P<adj>scoring|rebounding|assist|passing|"
+    r"three[\s-]point|3[\s-]?(?:point|pt))\s+games\b"
+    r"|\b(?:top|highest|biggest|best)\b(?:\s+\d+)?\s+games\s+by\s+(?P<by>[a-z]+(?:\s+[a-z]+)?)"
+)
+_TEAM_GAME_LIST_ADJ = {
+    "scoring": "pts",
+    "rebounding": "reb",
+    "assist": "ast",
+    "passing": "ast",
+}
+
+
+def accepted_stats():
+    from nbatools.commands.game_finder import ALLOWED_STATS
+
+    return ALLOWED_STATS
+
+
+def _team_game_list(parsed: dict, out: dict) -> dict | None:
+    if out.get("route") != "game_summary":
+        return None
+    route_kwargs = dict(out.get("route_kwargs") or {})
+    q = parsed["normalized_query"]
+    if not route_kwargs.get("team") or not route_kwargs.get("start_season"):
+        return None
+    match = _TEAM_GAME_LIST.search(q)
+    if not match or _PLAYER_GAME_LIST_BLOCKERS.search(q):
+        return None
+    if route_kwargs.get("unsupported_filters") or re.search(
+        r"\b(?:summary|stats|averages?|splits?)\b"
+        # The opponent's stat ("points allowed", "opponent scoring") is not
+        # the team's own.
+        r"|\ballowed\b|\bgiven\s+up\b|\bopponents?\b|\bopp\b",
+        q,
+    ):
+        return None
+    # Only a stat the words name ranks the list: "best games" or "games by
+    # month" stay the summary.
+    adj = match.group("adj")
+    if adj:
+        stat = _TEAM_GAME_LIST_ADJ.get(adj, "fg3m")
+    elif re.match(r"(?:point\s+)?differential|plus[\s-]?minus", match.group("by")):
+        stat = "plus_minus"
+    else:
+        stat = detect_stat(match.group("by"))
+        if stat is None:
+            return None
+    from inspect import signature
+
+    from nbatools.commands.game_finder import build_result as finder
+
+    accepted = set(signature(finder).parameters)
+    if any(
+        value not in (None, False, "", [], (), {})
+        for key, value in route_kwargs.items()
+        if key not in accepted
+    ):
+        # A filter the game list cannot apply: keep the summary.
+        return None
+    kwargs = {key: value for key, value in route_kwargs.items() if key in accepted}
+    if stat not in accepted_stats():
+        return None
+    kwargs.update(stat=stat, sort_by="stat", limit=parsed.get("top_n") or 10, ascending=False)
+    apply_player_game_context("game_finder", kwargs, q)
+    rerouted = dict(out)
+    rerouted.update(route="game_finder", intent="finder", route_kwargs=kwargs)
+    rerouted.update(stat=kwargs["stat"], min_value=kwargs.get("min_value"))
+    rerouted["notes"] = list(out.get("notes") or []) + [
+        f"game_list: {route_kwargs['team']} games ranked by {kwargs['stat']}"
+    ]
+    return rerouted
+
+
 def _player_game_list(parsed: dict, out: dict) -> dict | None:
     """ "Curry best 3 point shooting game": that player's games, best first.
 
@@ -6962,6 +7041,11 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         limit=parsed.get("top_n") or 10,
         ascending=bool(re.search(r"\b(?:worst|lowest)\b", q)),
     )
+    if shooting is None and not league:
+        # "top 3 games by assists with 20 points from 2023-24 to 2025-26":
+        # the summary route held no bound; read the game condition here.
+        apply_player_game_context("player_game_finder", kwargs, q)
+        stat = kwargs.get("stat") or stat
     rerouted = dict(out)
     rerouted.update(route="player_game_finder", intent="finder", route_kwargs=kwargs)
     rerouted.update(stat=stat, min_value=kwargs.get("min_value"))
@@ -7656,7 +7740,7 @@ def _finalize_route(parsed: dict) -> dict:
             'player\'s decade by name ("LeBron points per game in the 2010s")'
         ]
         return refused
-    games = _player_game_list(parsed, out)
+    games = _player_game_list(parsed, out) or _team_game_list(parsed, out)
     if games is not None:
         return games
     best = _player_best_seasons(parsed, out) or _team_best_seasons(parsed, out)

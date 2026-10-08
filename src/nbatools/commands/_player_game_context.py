@@ -260,6 +260,29 @@ def _stat_word(word: str) -> str | None:
     return detect_stat(word)
 
 
+# Player and team game lists rank the same way ("Celtics top 3 games by
+# points with 15 threes" dropped the threes; "by threes with 120 points"
+# ranked by points).
+_RANKED_ROUTES = frozenset({"player_game_finder", "game_finder"})
+
+
+# A team list's "120 points allowed" / "15 threes given up" bound is the
+# opponent's; the ranking readers below take only the team's own stats.
+_OPPONENT_BOUND = re.compile(r"\ballowed\b|\bgiven\s+up\b|\bopponents?\b|\bopp\b")
+
+
+def _team_ranking_unread(route: str | None, text: str) -> bool:
+    return route == "game_finder" and bool(_OPPONENT_BOUND.search(text))
+
+
+def _allowed_stats(route: str | None):
+    if route == "game_finder":
+        from nbatools.commands.game_finder import ALLOWED_STATS
+    else:
+        from nbatools.commands.player_game_finder import ALLOWED_STATS
+    return ALLOWED_STATS
+
+
 def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank by the stat a rank word names and keep the game conditions.
 
@@ -267,7 +290,9 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
     and refused; "top 5 games by assists with 30 points" dropped the 30
     points; "fewest points in a 30 minute game" dropped the minutes.
     """
-    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+    if route not in _RANKED_ROUTES or route_kwargs.get("sort_by") != "stat":
+        return
+    if _team_ranking_unread(route, text):
         return
     ranked = {_stat_word(m.group("a") or m.group("b")) for m in _RANKED_BY.finditer(text)} - {None}
     if len(ranked) != 1:
@@ -289,15 +314,14 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
             events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
     if not events:
         return
-    if any(e["min_value"] >= _EVENT_CEILING.get(e["stat"], float("inf")) for e in events) or any(
+    ceiling = _EVENT_CEILING if route == "player_game_finder" else {}
+    if any(e["min_value"] >= ceiling.get(e["stat"], float("inf")) for e in events) or any(
         a["stat"] == b["stat"] and not _same_bound(a, b) for a in events for b in events
     ):
         # "a 120 point game" is the team's total, not the player's; leave
         # the parse's reading (and its refusal) in place.
         return
-    from nbatools.commands.player_game_finder import ALLOWED_STATS
-
-    if ranking not in ALLOWED_STATS:
+    if ranking not in _allowed_stats(route):
         return
     kept = [
         c
@@ -327,7 +351,9 @@ def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> Non
     the ranking slot: the list was ordered by assists, or refused because
     points went unused. The bound stays a condition and points rank.
     """
-    if route != "player_game_finder" or route_kwargs.get("sort_by") != "stat":
+    if route not in _RANKED_ROUTES or route_kwargs.get("sort_by") != "stat":
+        return
+    if _team_ranking_unread(route, text):
         return
     if not _RANKING_WORDS.search(text):
         return
@@ -348,9 +374,7 @@ def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> Non
     ]
     if len(candidates) != 1:
         return
-    from nbatools.commands.player_game_finder import ALLOWED_STATS
-
-    if candidates[0] not in ALLOWED_STATS:
+    if candidates[0] not in _allowed_stats(route):
         return
     route_kwargs["conditions"] = conditions
     route_kwargs["stat"] = candidates[0]

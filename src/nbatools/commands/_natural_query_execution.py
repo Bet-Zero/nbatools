@@ -38,6 +38,7 @@ from nbatools.commands._constants import (
 from nbatools.commands._parse_helpers import (
     build_opponent_quality_note,
     canonicalize_adjective_game_lists,
+    canonicalize_ranked_stat_games,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
@@ -1141,7 +1142,7 @@ def _combine_or_results(results: list):
 def _split_or_clauses(text: str) -> list[str]:
     # "30 point games with 10 assists or 10 rebounds" repeats its first
     # clause in each alternative before the split.
-    text = canonicalize_adjective_game_lists(normalize_text(text))
+    text = canonicalize_adjective_game_lists(canonicalize_ranked_stat_games(normalize_text(text)))
     if not contains_boolean_or(text):
         return [text]
     # ".500 or better teams" is one opponent bar, never two clauses.
@@ -1307,7 +1308,7 @@ def _execute_or_query_build_result(query: str) -> tuple:
             parsed["route_kwargs"]["conditions"] = boolean_conditions
 
     combined = _combine_or_results(results)
-    rank_stat = _or_rank_stat(normalize_text(query))
+    rank_stat = _or_rank_stat(canonicalize_ranked_stat_games(normalize_text(query)))
     if rank_stat and isinstance(combined, FinderResult) and rank_stat in combined.games:
         # "LeBron top 5 scoring games with 30 points or 10 assists": the
         # ranking stat orders the merged list (it was by date).
