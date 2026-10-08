@@ -2132,9 +2132,19 @@ def _dates_over_seasons(parsed: dict) -> bool:
     """ "in March from 2023-24 to 2025-26": the date window is read in one
     season only, so a multi-season span with dates is not applied."""
     start, end = parsed.get("start_season"), parsed.get("end_season")
-    return bool(
-        (parsed.get("start_date") or parsed.get("end_date")) and start and end and start != end
-    )
+    if not (start and end and start != end):
+        return False
+    from nbatools.commands._date_utils import _season_for_date
+
+    def season_of(day: str) -> str:
+        stamp = pd.Timestamp(day)
+        return _season_for_date(stamp.year, stamp.month)
+
+    # One window across the span ("since January 2025") is applied as is;
+    # a month repeated in each season starts after the first or ends before
+    # the last.
+    first, last = parsed.get("start_date"), parsed.get("end_date")
+    return bool((first and season_of(first) > start) or (last and season_of(last) < end))
 
 
 def _opponent_count_supported(match: re.Match) -> bool:

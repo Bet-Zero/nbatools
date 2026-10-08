@@ -351,3 +351,14 @@ def test_500_bar_over_the_last_seasons_is_one_bar():
     records = _span_records(["2024-25", "2025-26"])
     expected = set(records[records["W"] >= records["L"]].index)
     assert _teams("which teams were .500 or better over the last 2 seasons") == expected
+
+
+def test_one_window_across_seasons_answers():
+    # "since January 2025" is one window over two seasons, not a repeated month.
+    games = pd.concat(
+        [pd.read_csv(RAW / f"{s}_regular_season.csv") for s in ("2024-25", "2025-26")]
+    )
+    games = games[pd.to_datetime(games["game_date"]) >= "2025-01-01"]
+    records = games.groupby("team_abbr")["wl"].value_counts().unstack(fill_value=0)
+    expected = set(records[records["W"] > records["L"]].index)
+    assert _teams("which teams had a winning record since January 2025") == expected
