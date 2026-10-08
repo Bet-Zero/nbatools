@@ -70,6 +70,19 @@ def test_ranked_or_list_orders_by_the_ranking_stat():
     assert [row["pts"] for row in rows] == top
 
 
+def test_ranked_by_stat_keeps_the_clause_condition():
+    # "top 3 games by assists with 20 points" stores its bound in the route's
+    # conditions rather than min_value; the clause must not read as unbounded.
+    games = _lebron()
+    either = games[(games["pts"] >= 20) | (games["reb"] >= 10)]
+    top = either.sort_values("ast", ascending=False)["ast"].head(3).tolist()
+    rows = execute_natural_query(
+        "LeBron top 3 games by assists with 20 points or 10 rebounds"
+    ).result.to_dict()["sections"]["finder"]
+    assert [row["ast"] for row in rows] == top
+    assert set(row["game_id"] for row in rows) <= set(either["game_id"])
+
+
 def test_playoffs_apply_to_every_clause():
     games = pd.read_csv(RAW / "2025-26_playoffs.csv")
     games = games[games["player_name"] == "LeBron James"]

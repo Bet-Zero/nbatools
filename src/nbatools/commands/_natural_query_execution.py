@@ -1260,10 +1260,6 @@ def _execute_or_query_build_result(query: str) -> tuple:
             or clause_state.get("max_value") is not None
             or bool(clause_state.get("occurrence_event"))
         )
-        if not has_condition:
-            # "Lakers or Celtics over 130 points": a clause with no condition
-            # would list every game of that team.
-            conditionless = True
         if (
             has_condition
             and not base.get("summary_intent")
@@ -1274,7 +1270,13 @@ def _execute_or_query_build_result(query: str) -> tuple:
             # points since 2024" alone reads as a span summary). A clause with
             # no condition ("or better", "or 2024-25") still refuses below.
             clause_state["finder_intent"] = True
-        clause_parsed.append(_merge_inherited_context(base, clause_state))
+        merged = _merge_inherited_context(base, clause_state)
+        if not has_condition and not (merged.get("route_kwargs") or {}).get("conditions"):
+            # "Lakers or Celtics over 130 points": a clause with no condition
+            # would list every game of that team. ("top 3 games by assists
+            # with 20 points" carries its bound in the route's conditions.)
+            conditionless = True
+        clause_parsed.append(merged)
 
     allowed_routes = {"player_game_finder", "game_finder"}
     routes = {item["route"] for item in clause_parsed}
