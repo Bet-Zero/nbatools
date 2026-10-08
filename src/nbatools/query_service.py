@@ -1021,6 +1021,9 @@ def _build_count_phrase(
             occurrence = "game with " + occurrence[len("games with ") :]
         noun = "team" if team_count else "player"
         subject = f"1 {noun} has" if count == 1 else f"{count} {noun}s have"
+        if team_count and (window := _venue_and_dates(metadata, parsed)):
+            # "4 teams have had a game with 130+ points at home in ...".
+            context = f"{window} {context}"
         if (min_occurrences or 0) > 1:
             # "16 players have had 20+ games with at most 10 points".
             article = f"{min_occurrences}+"

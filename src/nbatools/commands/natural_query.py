@@ -2085,9 +2085,8 @@ _HOW_MANY_OPPONENTS = re.compile(
 # 30" or "in games with ..." are other questions; they refuse.
 _OPPONENT_COUNT_SCOPE = re.compile(
     r"^(?:\s+(?:against|in|the|at|home|on|road|away|this|last|season|seasons|year|years|since|"
-    r"playoffs|postseason|regular|before|after|all|star|break|between|and|from|to|through|"
-    r"until|ever|so|far|of|during|january|february|march|april|may|june|july|october|"
-    r"november|december|\d{4}(?:-\d{2})?|\d{4}s))*\s*\??$"
+    r"playoffs|postseason|regular|after|all|star|break|ever|so|far|of|january|february|march|"
+    r"april|may|june|july|october|november|december|\d{4}(?:-\d{2})?|\d{4}s))*\s*\??$"
 )
 # A player's "how many teams did he play" is ambiguous (for or against);
 # "faced" or "against" says it.
@@ -7312,7 +7311,11 @@ def _decade_superlative_stat(parsed: dict, out: dict) -> dict | None:
     return refused
 
 
-_AGAINST_TAIL = re.compile(r"\b(?:against|vs\.?|versus)\s*\??$")
+_AGAINST_TAIL = re.compile(
+    r"\b(?:against|vs\.?|versus)(?=(?:\s+(?:in|the|at|home|on|road|away|this|last|season|"
+    r"seasons|year|since|playoffs|postseason|regular|after|all|star|break|so|far|january|"
+    r"february|march|april|may|june|july|october|november|december|\d{4}(?:-\d{2})?))*\s*\??$)"
+)
 
 
 # "teams with a winning record", "how many teams are over .500": a record bar
@@ -7328,7 +7331,9 @@ _RECORD_BARS = (
         "at_least_500",
     ),
     (re.compile(r"(?:\bat\s+)?(?<![\w.])\.500\s+or\s+(?:worse|below|lower)\b"), "at_most_500"),
-    (re.compile(r"\bwinning\s+teams\b"), "winning"),
+    # "winning teams" is the glossary's .500-or-better bar (as an opponent
+    # filter too); "teams .500 or better" arrives here in that form.
+    (re.compile(r"\bwinning\s+teams\b"), "at_least_500"),
     (re.compile(r"\blosing\s+teams\b"), "losing"),
 )
 _RECORD_BAR_NOT_A_POPULATION = re.compile(
@@ -7340,10 +7345,10 @@ _RECORD_BAR_NOT_A_POPULATION = re.compile(
 # Words a record-bar question may carry besides the bar itself.
 _RECORD_BAR_SCOPE = re.compile(
     r"^(?:\s*(?:how|many|which|what|who|list|show|me|all|the|teams?|franchises?|nba|league|"
-    r"have|has|had|having|with|a|an|are|were|is|was|there|finished|finish|ended|end|record|"
-    r"records|currently|now|in|at|home|on|road|away|this|last|season|year|years|seasons|since|"
-    r"playoffs|postseason|regular|before|after|star|break|between|and|from|to|through|until|"
-    r"so|far|of|during|january|february|march|april|may|june|july|october|november|december|"
+    r"have|has|had|having|with|a|an|are|were|is|was|there|that|who|finished|finish|ended|end|"
+    r"record|records|currently|now|in|at|home|on|road|away|this|last|season|year|years|seasons|"
+    r"since|playoffs|postseason|regular|after|star|break|so|far|of|january|february|march|"
+    r"april|may|june|july|october|november|december|win|winning|percentage|pct|"
     r"\d{4}(?:-\d{2})?|\d{4}s|[?.,]))*\s*$"
 )
 
@@ -7377,6 +7382,11 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
     season = parsed.get("season")
     if not (season or parsed.get("start_season")):
         season = default_season_for_context(season_type)
+    start_date, end_date = parsed.get("start_date"), parsed.get("end_date")
+    if (start_date or end_date) and season:
+        # "in October" was read before the season was known (today's year);
+        # read it within the board's season.
+        start_date, end_date = extract_date_range(q, season)
     kwargs = {
         "season": season,
         "start_season": parsed.get("start_season"),
@@ -7388,8 +7398,8 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
         "record_bar": bar,
         "home_only": bool(parsed.get("home_only")),
         "away_only": bool(parsed.get("away_only")),
-        "start_date": parsed.get("start_date"),
-        "end_date": parsed.get("end_date"),
+        "start_date": start_date,
+        "end_date": end_date,
     }
     counted = bool(re.match(r"^how\s+many\b", q))
     out = dict(parsed)
@@ -7405,8 +7415,8 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
             + (" at home" if kwargs["home_only"] else " on the road" if kwargs["away_only"] else "")
         ],
     )
-    # Response metadata reads the season from the parse state.
-    for key in ("season", "start_season", "end_season"):
+    # Response metadata reads the season and dates from the parse state.
+    for key in ("season", "start_season", "end_season", "start_date", "end_date"):
         out[key] = kwargs[key]
     out["confidence"] = compute_parse_confidence(out)
     out["alternates"] = generate_alternates(out)

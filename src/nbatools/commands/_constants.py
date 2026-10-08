@@ -47,12 +47,16 @@ BOOLEAN_OR_PATTERN = re.compile(
 # winning-teams bar or the bar that includes .500. Only beside "teams": a
 # shooting or win-percentage ".500 or better" is not an opponent.
 _TEAM_500_BETTER = re.compile(
-    r"\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:better|above|higher)\b"
+    r"\b(?:teams?|opponents?)\s+(?:that|who|which)\s+(?:are|were|finished|have\s+been)\s+"
+    r"(?:at\s+)?\.500\s+or\s+(?:better|above|higher)\b"
+    r"|\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:better|above|higher)\b"
     r"|(?<![\w.])\.500\s+or\s+(?:better|above|higher)\s+teams?\b"
     r"|\bteams?\s+at\s+or\s+(?:above|better\s+than)\s+\.500\b"
 )
 _TEAM_500_WORSE = re.compile(
-    r"\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:worse|below|lower)\b"
+    r"\b(?:teams?|opponents?)\s+(?:that|who|which)\s+(?:are|were|finished|have\s+been)\s+"
+    r"(?:at\s+)?\.500\s+or\s+(?:worse|below|lower)\b"
+    r"|\bteams?\s+(?:at\s+)?\.500\s+or\s+(?:worse|below|lower)\b"
     r"|(?<![\w.])\.500\s+or\s+(?:worse|below|lower)\s+teams?\b"
     r"|\bteams?\s+at\s+or\s+(?:below|worse\s+than)\s+\.500\b"
 )
@@ -78,10 +82,17 @@ _POPULATION_500_BAR = re.compile(
 )
 
 
+_OPPONENT_CONTEXT = re.compile(
+    r"\b(?:against|vs\.?|versus|beat|beaten|beating|over|opponents?|facing|faced|play(?:ed|ing)?)\b"
+)
+
+
 def _or_bounds_read(text: str) -> str:
     # The bar's own name says "or worse"; it is one opponent group.
     text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
-    text = _POPULATION_500_BAR.sub(lambda m: m.group(0).replace(" or ", "_or_"), text)
+    if not _OPPONENT_CONTEXT.search(text):
+        # Beside an opponent word the bar is the opponents' (read above).
+        text = _POPULATION_500_BAR.sub(lambda m: m.group(0).replace(" or ", "_or_"), text)
     return _WHOLE_NUMBER_BOUND.sub(
         lambda m: (
             f"{m.group(1) or m.group(3)}{m.group(2) or ''} or "
