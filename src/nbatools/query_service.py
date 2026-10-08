@@ -1471,6 +1471,17 @@ _RECORD_BAR_WORDS = {
 }
 
 
+def _win_total_words(bar: str) -> str | None:
+    """ "wins:50:" -> "50+ wins"; "wins::19" -> "at most 19 wins"."""
+    match = re.fullmatch(r"wins:(\d*):(\d*)", bar)
+    if not match:
+        return None
+    low, high = match.groups()
+    if low and high:
+        return f"between {low} and {high} wins"
+    return f"{low}+ wins" if low else f"at most {high} wins"
+
+
 def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "3 teams have a winning record in the 2025-26 regular season: the Los
     Angeles Lakers (47-13), ..."."""
@@ -1485,7 +1496,7 @@ def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> No
     if not request:
         return
     bar, _, venue = request.split(":", 1)[1].strip().partition(" ")
-    words = _RECORD_BAR_WORDS.get(bar)
+    words = _RECORD_BAR_WORDS.get(bar) or _win_total_words(bar)
     if words and venue:
         words = f"{words} {venue}"
     if isinstance(result, CountResult):
@@ -1512,17 +1523,32 @@ def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> No
         phrase = f"No team has {words} {context}."
     else:
         names = board["team_name"] if "team_name" in board else board.get("team_abbr")
+        span = metadata.get("start_season") and metadata.get("start_season") != metadata.get(
+            "end_season"
+        )
+        seasons = board["season"] if "season" in board and span else None
         listed = [
-            f"the {name} ({int(wins)}-{int(losses)})"
-            for name, wins, losses in zip(
-                names.head(6), board["wins"].head(6), board["losses"].head(6)
+            f"the {name}"
+            + (f" in {seasons.iloc[i]}" if seasons is not None else "")
+            + f" ({int(wins)}-{int(losses)})"
+            for i, (name, wins, losses) in enumerate(
+                zip(names.head(6), board["wins"].head(6), board["losses"].head(6))
             )
         ]
         if k > 6:
             listed.append(f"{k - 6} more")
         joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
-        subject = "1 team has" if k == 1 else f"{k} teams have"
-        phrase = f"{subject} {words} {context}: {joined}."
+        noun = "team season" if seasons is not None else "team"
+        subject = f"1 {noun} has" if k == 1 else f"{k} {noun}s have"
+        if seasons is not None and "distinct_teams" in (metadata.get("notes") or []):
+            # "how many different teams": franchises, with the seasons named.
+            teams = int(board["team_id"].nunique()) if "team_id" in board else k
+            subject = (
+                "1 team has had" if teams == 1 else f"{teams} different teams have had"
+            ) + f" {k} {noun}{'' if k == 1 else 's'} with"
+            phrase = f"{subject} {words} {context}: {joined}."
+        else:
+            phrase = f"{subject} {words} {context}: {joined}."
     metadata["answer_phrase"] = phrase
     if isinstance(result, CountResult):
         metadata["count_phrase"] = phrase
@@ -2481,7 +2507,15 @@ def _apply_count_intent(
         detail = leaders
     elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
         entity_count = len(result.leaders)
-        if parsed.get("opponent_record_list") or route_kwargs.get("record_bar"):
+        if "distinct_teams" in (parsed.get("notes") or []) and "team_id" in result.leaders:
+            # "how many different teams have had 40 wins": franchises.
+            entity_count = int(result.leaders["team_id"].nunique())
+        if (
+            parsed.get("opponent_record_list")
+            or route_kwargs.get("record_bar")
+            or route_kwargs.get("min_wins") is not None
+            or route_kwargs.get("max_wins") is not None
+        ):
             # "how many teams have the Lakers beaten": the teams come with it.
             detail = result.leaders
     elif player_name:
