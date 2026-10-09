@@ -7713,6 +7713,166 @@ def _team_win_total_count(parsed: dict) -> dict | None:
     return out
 
 
+# "did any Lakers player score 40", "Lakers players with 40 point games",
+# "how many Lakers players scored 40", "anyone on the Lakers score 30": the
+# team's players' games (it read the team's points: 153, 141, ...).
+_TEAM_PLAYERS_SUBJECT = re.compile(
+    r"\b(?:any|which|what|how\s+many)\s+(?:[a-z0-9.']+\s+){0,3}?players?\b"
+    r"|\b(?:[a-z0-9.']+\s+)players?\s+(?:with|who|that|had|scored|to|over|under|above|below|"
+    r"at\s+least)\b"
+    r"|\b(?:anyone|anybody|someone|somebody)\s+(?:on|from|for)\s+(?:the\s+)?[a-z0-9.' ]+"
+    r"|\bplayers?\s+\d+"
+)
+
+
+def _team_players_threshold(parsed: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    team = parsed.get("team")
+    if not team or parsed.get("player") or parsed.get("team_a") or parsed.get("team_b"):
+        return None
+    if not _TEAM_PLAYERS_SUBJECT.search(q):
+        return None
+    stat, low, high = parsed.get("stat"), parsed.get("min_value"), parsed.get("max_value")
+    event = parsed.get("occurrence_event") or {}
+    if (low is None and high is None) and event.get("stat"):
+        # "Lakers players with 40 point games".
+        stat, low, high = event["stat"], event.get("min_value"), event.get("max_value")
+    if stat is None or (low is None and high is None):
+        return None
+    if re.search(r"\baverag\w*|\bper\s+game\b|\bppg\b", q):
+        # "how many Lakers players average 20 points": a season average, not a
+        # game (the game route counted team games: 60).
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["team_players_average"]
+        refused["notes"] = [
+            "unsupported_boundary: players by scoring average are not listed yet; ask for "
+            'games ("Lakers players with 20 point games") or totals'
+        ]
+        return refused
+    if (
+        parsed.get("summary_intent")
+        or parsed.get("record_intent")
+        or re.search(r"\brecord\b|\bmost\b|\bleaders?\b", q)
+    ):
+        # "Lakers players who average 20", "Lakers record when any player
+        # scores 40": other boards read these.
+        return None
+    unread = [
+        key
+        for key in (
+            "without_player",
+            "with_player",
+            "quarter",
+            "half",
+            "back_to_back",
+            "streak_request",
+            "opponent_quality",
+            "opponent_conference",
+            "opponent_division",
+            "team_a",
+            "team_b",
+            "role",
+            "one_possession",
+            "nationally_televised",
+            "rest_days",
+        )
+        if parsed.get(key)
+    ]
+    compound = parsed.get("compound_occurrence_conditions") or []
+    thresholds = parsed.get("threshold_conditions") or []
+    if (
+        unread
+        or len(compound) > 1
+        or len({c.get("stat") for c in thresholds}) > 1
+        # "N times" is a repeat count; "how many times ..." is the games count.
+        or (re.search(r"\btimes\b", q) and not re.match(r"^how\s+many\s+times\b", q))
+        or re.search(
+            r"\btwice\b|\bat\s+least\s+\d+\s+(?:\d+\s+point\s+)?games\b|"
+            r"\b\d+\s+\d+\s+point\s+games\b|\bin\s+a\s+row\b|\bconsecutive\b|\bstraight\b|"
+            r"\bovertime\b|\bquarter\b|\bhalf\b|\band\s+(?:the\s+)?[a-z]+\s+players?\b|"
+            # Modifiers the parse may not hold: refuse rather than drop them.
+            r"\bfirst\s+\d+\b|\bchristmas\b|\bbench\b|\bstart(?:er|ers|ing)\b|"
+            r"\bpercent\b|%|\bshooting\b|\bblowouts?\b|\bclose\b|\bvs\.?\s+last\b",
+            q,
+        )
+        # A three-point count beside another stat ("30 with 5 threes / 3-pointers").
+        or (
+            stat != "fg3m"
+            and re.search(r"\bthrees?\b|\b3s\b|\b3pm\b|\b(?:3|three)[\s-]?pointers?\b", q)
+        )
+    ):
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["team_players_condition"]
+        refused["notes"] = [
+            "unsupported_boundary: a team's players' games take one stat bound with a "
+            "season, span, opponent, home/road, wins/losses or dates; this one adds a "
+            "condition that list cannot apply"
+        ]
+        return refused
+    if parsed.get("last_n") or parsed.get("min_occurrences"):
+        # "did any Lakers player score 40 last game": the team's last game is
+        # not each player's last game; refuse rather than guess.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["team_players_window"]
+        refused["notes"] = [
+            "unsupported_boundary: a team's players are listed over a season or span; a "
+            "last-N window or repeated occurrence of the team is not supported"
+        ]
+        return refused
+    from inspect import signature
+
+    from nbatools.commands.player_game_finder import ALLOWED_STATS
+    from nbatools.commands.player_game_finder import build_result as finder
+
+    if stat not in ALLOWED_STATS:
+        return None
+    season_type = parsed.get("season_type") or "Regular Season"
+    season = parsed.get("season")
+    if not (season or parsed.get("start_season")):
+        season = default_season_for_context(season_type)
+    kwargs = {
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": season_type,
+        "team": team,
+        "opponent": parsed.get("opponent"),
+        "home_only": bool(parsed.get("home_only")),
+        "away_only": bool(parsed.get("away_only")),
+        "wins_only": bool(parsed.get("wins_only")),
+        "losses_only": bool(parsed.get("losses_only")),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "stat": stat,
+        "min_value": low,
+        "max_value": high,
+        "sort_by": "stat",
+        "limit": 200,
+    }
+    accepted = set(signature(finder).parameters)
+    kwargs = {k: v for k, v in kwargs.items() if k in accepted}
+    counted = bool(re.match(r"^how\s+many\b", q))
+    # "how many times has a Lakers player scored 40": games, not players.
+    games_counted = bool(re.match(r"^how\s+many\s+(?:times|games)\b", q))
+    if counted:
+        # The count reads every row, not a capped list.
+        kwargs["limit"] = 100000
+    out = dict(parsed)
+    out.update(
+        route="player_game_finder",
+        intent="finder",
+        route_kwargs=kwargs,
+        count_intent=counted or bool(parsed.get("count_intent")),
+        distinct_player_count=counted and not games_counted,
+        notes=list(parsed.get("notes") or []) + [f"team_players: {team} players' games"],
+    )
+    for key in ("season", "start_season", "end_season"):
+        out[key] = kwargs.get(key)
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     win_totals = _team_win_total_count(parsed)
@@ -7766,6 +7926,9 @@ def _finalize_route(parsed: dict) -> dict:
     totals = _season_total_threshold_board(parsed)
     if totals is not None:
         return totals
+    team_players = _team_players_threshold(parsed)
+    if team_players is not None:
+        return team_players
     record_bar = _team_record_bar_board(parsed)
     if record_bar is not None:
         return record_bar
