@@ -2377,6 +2377,21 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
+            # "did LeBron score more than 22 last game": the verb names the
+            # stat ("score over 22" already read; this one parsed no bound).
+            # "30 points more than 5 times" counts games.
+            rf"(?<!\bno )(?<!\bnot ){STAT_PATTERN}\s+more than\s+{_NUM}(?![\d.])"
+            r"(?!\s+(?:times?|games?)\b)",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+(?:less|fewer) than\s+{_NUM}(?![\d.])"
+            r"(?!\s+(?:times?|games?)\b)",
+            "max",
+            0.0001,
+        ),
+        (
             rf"{STAT_PATTERN}\s+under\s+{_NUM}",
             "max",
             0.0001,

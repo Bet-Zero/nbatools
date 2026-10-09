@@ -1554,7 +1554,7 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
         return
     request = json.loads(note.split(":", 1)[1])
     row = result.games.iloc[0]
-    passed = True
+    met = []
     shown = []
     for check in request.get("checks") or []:
         stat = check.get("stat")
@@ -1562,11 +1562,15 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
             return
         value = float(row[stat])
         low, high = check.get("min_value"), check.get("max_value")
-        passed &= (low is None or value >= low) and (high is None or value <= high)
+        met.append((low is None or value >= low) and (high is None or value <= high))
         word = _YES_NO_STAT_WORDS.get(stat)
         if word is None:
             return
         shown.append(f"{compact_number(value)} {word}")
+    # "30 points or 10 assists": either check passing is a yes.
+    passed = any(met) if request.get("any") else all(met)
+    # "did he score 20 or score 30": one value shown once.
+    shown = list(dict.fromkeys(shown))
     event = request.get("event")
     if event in ("triple_double", "double_double"):
         cats = [c for c in ("pts", "reb", "ast", "stl", "blk") if c in row.index]
