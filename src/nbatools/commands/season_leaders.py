@@ -702,6 +702,7 @@ def _apply_default_guardrails(
     opponent_active: bool = False,
     num_seasons: int = 1,
     series_situation: bool = False,
+    floor_out: list[int] | None = None,
 ) -> pd.DataFrame:
     if series_situation:
         # A team plays at most a few game 7s or closeout games a season: one
@@ -742,6 +743,8 @@ def _apply_default_guardrails(
         return min(floor, max(1, math.ceil(0.5 * most)))
 
     effective_min_games = max(min_games, _capped(recommended, "games_played"))
+    if floor_out is not None:
+        floor_out.append(effective_min_games)
     df = df[df["games_played"] >= effective_min_games].copy()
 
     if _is_playoff_season_type(season_type):
@@ -915,6 +918,7 @@ def build_result(
     per_season: bool = False,
     player: str | list[str] | None = None,
     min_total: float | None = None,
+    exact_min_games: bool = False,
 ) -> LeaderboardResult | NoResult:
     if per_season and not season and start_season and end_season:
         # A record over a few games of a season in progress is not a season;
@@ -1304,7 +1308,12 @@ def build_result(
             raise ValueError(f"Column '{attempt_col}' not available for the attempt minimum")
         df = df[df["games_played"] >= min_games].copy()
         df = apply_attempt_qualifier(df, attempt_col, min_attempts, min_attempts_per_game)
+    elif exact_min_games:
+        # "players who average 25 vs the Celtics": every player's average over
+        # the games he played, with no qualifying floor.
+        df = df[df["games_played"] >= min_games].copy()
     else:
+        floor_out: list[int] = []
         df = _apply_default_guardrails(
             df,
             target_col,
@@ -1314,7 +1323,10 @@ def build_result(
             opponent_active=bool(opponent),
             num_seasons=len(seasons),
             series_situation=bool(series_situation),
+            floor_out=floor_out,
         )
+        if min_total is not None and target_col.endswith("_per_game") and floor_out:
+            notes.append(f"qualified: at least {floor_out[0]} games")
 
     if player is not None and not df.empty:
         # "LeBron best scoring season": rank one player's qualified seasons.

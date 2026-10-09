@@ -7529,6 +7529,207 @@ def _season_total_threshold_board(parsed: dict) -> dict | None:
     return out
 
 
+# "how many players average 25 points", "players averaging 10 rebounds",
+# "Lakers players averaging 20", "who averages 8 assists": every qualified
+# player whose per-game average reaches the number (it counted single games).
+_AVERAGE_WORDING = re.compile(
+    r"\baverag(?:e|es|ed|ing)\b|\bper\s+game\b|\b(?:ppg|rpg|apg|spg|bpg)\b"
+)
+_AVERAGE_STAT_WORDS = {
+    "pts": r"points?|pts|ppg",
+    "reb": r"rebounds?|boards?|rebs|rpg",
+    "ast": r"assists?|asts|dimes|apg",
+    "stl": r"steals?|stls|spg",
+    "blk": r"blocks?|blks|bpg",
+    "fg3m": r"threes?|3s|3pm|(?:three|3)[- ]?pointers?",
+}
+_AVERAGE_STAT_WORD = "|".join(_AVERAGE_STAT_WORDS.values())
+_MONTH_NAMES = (
+    r"(?:january|february|march|april|may|june|july|august|september|october|november|"
+    r"december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)"
+)
+_AVERAGE_OP = (
+    r"(?:(?P<op>over|more\s+than|above|at\s+least|under|below|less\s+than|fewer\s+than|"
+    r"up\s+to)\s+)?"
+)
+_AVERAGE_BOUND = (
+    _AVERAGE_OP
+    + r"(?P<num>\d+(?:\.\d+)?|\.\d+)\s*(?P<plus>\+)?\s*(?:or\s+(?:more|better|higher)\s+)?"
+)
+# "players averaging 25.5 points", "over 10 rpg", "at least 1.5 steals".
+_AVERAGE_STAT_BOUND = re.compile(
+    rf"(?<![\w.]){_AVERAGE_BOUND}(?P<stat>{_AVERAGE_STAT_WORD})\b(?!\s+(?:or\s+)?(?:more|fewer)\s+than)"
+)
+# "Lakers players averaging 20", "rookies averaging 15 this season": points.
+# Only when the number closes the question or a time/place word follows; any
+# other word after it ("20 minutes", "3 turnovers", "25 PER") is its own stat.
+_AVERAGE_BARE_BOUND = re.compile(
+    rf"\baverag(?:e|es|ed|ing)\s+{_AVERAGE_OP}(?P<num>\d{{1,2}}(?:\.\d+)?|\.\d+)"
+    r"(?P<plus>\+)?(?:\s+or\s+(?:more|better|higher))?"
+    r"(?=\s*(?:$|[?.!,]|(?:this|last|since|for|at\s+home|on\s+the\s+road|vs\.?|versus|"
+    r"against|during|a\s+game|per\s+game|a\s+night)\b"
+    # "in the playoffs", "in 2024-25", "in December", "in wins"; not "in
+    # assists", "in the paint", "from three", "at the line".
+    rf"|(?:in|from)\s+(?:the\s+)?(?:playoffs|postseason|regular\s+season|wins|losses|"
+    rf"(?:19|20)\d{{2}}|{_MONTH_NAMES})\b))"
+)
+_AVERAGE_STATS = frozenset(_AVERAGE_STAT_WORDS)
+_AVERAGE_REFUSES = re.compile(
+    r"\b(?:and|or(?!\s+(?:more|better|higher)\b)|a\s+game\s+with|single[-\s]game|in\s+a\s+night|"
+    r"last\s+\d+(?!\s+(?:seasons?|years?)\b)|\d+\s+games?|career|all[-\s]?time|in\s+a\s+season|"
+    r"each\s+season|every\s+season|per\s+(?:\d+|minute)|shooting|on\s+\d+(?:\.\d+)?\s*%|"
+    r"between|bench|reserves?|conference|division|east(?:ern)?|west(?:ern)?|minutes?|mpg|"
+    # "this season vs last season": a comparison of two samples.
+    r"(?:vs\.?|versus|compared\s+(?:to|with))\s+(?:last|this|the\s+previous|previous)\s+"
+    r"(?:season|year)|"
+    # "players under 25 averaging 20 points": an age.
+    r"years?\s+old|age|ages|aged|younger|older|(?:under|over)\s+\d+\s+(?:who\s+)?averag\w*)\b"
+)
+# "who averages 30 points in a game": one game, not the season's average.
+_AVERAGE_ONE_GAME = re.compile(r"\bin\s+(?:a|one|any)\s+(?:single\s+)?game\b")
+
+
+def _average_bound(q: str) -> tuple[str, float, str | None] | None:
+    """The stat, number and operator of an average threshold, or None."""
+    bounds = list(_AVERAGE_STAT_BOUND.finditer(q))
+    if bounds:
+        if len(bounds) != 1:
+            return None
+        m = bounds[0]
+        stat = next(
+            key
+            for key, words in _AVERAGE_STAT_WORDS.items()
+            if re.fullmatch(words, m.group("stat"))
+        )
+    else:
+        m = _AVERAGE_BARE_BOUND.search(q)
+        if not m:
+            return None
+        stat = "pts"
+    op = re.sub(r"\s+", " ", m.group("op")) if m.group("op") else None
+    return stat, float(m.group("num")), op
+
+
+def _season_average_threshold_board(parsed: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    if not _AVERAGE_WORDING.search(q) or _AVERAGE_ONE_GAME.search(q):
+        return None
+    bound = _average_bound(q)
+    if bound is None:
+        return None
+    stat, value, op = bound
+    team_players = bool(parsed.get("team")) and bool(
+        re.search(r"\bplayers?\b|\bwho\b", q) or _POSITION_SUBJECT.search(q)
+    )
+    if not (
+        _PLAYER_SUBJECT.search(q)
+        or _POSITION_SUBJECT.search(q)
+        or re.search(r"^who\b|\bwho\s+(?:has\s+)?averag", q)
+        or team_players
+    ):
+        return None
+    stops = [k for k in _SEASON_TOTAL_STOPS if k not in ("occurrence_event",)]
+    if (
+        any(parsed.get(key) not in (None, False, "", [], {}) for key in stops)
+        or _AVERAGE_REFUSES.search(q)
+        or op in ("under", "below", "less than", "fewer than", "up to")
+        or len({c.get("stat") for c in parsed.get("threshold_conditions") or []}) > 1
+        or (parsed.get("team") and not team_players)
+    ):
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["season_average_condition"]
+        refused["notes"] = [
+            "unsupported_boundary: players by scoring average take one stat at or above a "
+            "number with a season, span, team, position, opponent, home/road, wins/losses "
+            "or dates; this one adds a condition or bound the average list cannot apply"
+        ]
+        return refused
+    strict = op in ("over", "more than", "above")
+    season_type = parsed.get("season_type") or "Regular Season"
+    season = parsed.get("season")
+    if not (season or parsed.get("start_season")):
+        season = default_season_for_context(season_type)
+    kwargs = {
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": season_type,
+        "stat": f"{stat}_per_game",
+        "limit": 10,
+        "ascending": False,
+        # "over 25 points": a strict floor (an average of exactly 25 is out).
+        "min_total": value + 1e-9 if strict else value,
+        "team": parsed.get("team"),
+        "opponent": parsed.get("opponent"),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "home_only": bool(parsed.get("home_only")),
+        "away_only": bool(parsed.get("away_only")),
+        "wins_only": bool(parsed.get("wins_only")),
+        "losses_only": bool(parsed.get("losses_only")),
+        "rookies_only": bool(_ROOKIE_SUBJECT.search(q)),
+        "role": detect_role(q),
+    }
+    position = _POSITION_SUBJECT.search(q)
+    if position:
+        kwargs["position"] = re.sub(r"\s+", " ", position.group(1))
+    if any(
+        kwargs[key]
+        for key in (
+            "opponent",
+            "start_date",
+            "end_date",
+            "home_only",
+            "away_only",
+            "wins_only",
+            "losses_only",
+        )
+    ):
+        # "players averaging 25 vs the Celtics": a few games each; every player's
+        # average over the games he played counts (a 3-game floor dropped them).
+        kwargs.update(min_games=1, exact_min_games=True)
+    amount = (">" if strict else "") + format(value, "f").rstrip("0").rstrip(".")
+    where = [
+        text
+        for flag, text in (
+            (kwargs["home_only"], "at home"),
+            (kwargs["away_only"], "on the road"),
+            (kwargs["wins_only"], "in wins"),
+            (kwargs["losses_only"], "in losses"),
+            (kwargs["opponent"], "against {opponent}"),
+        )
+        if flag
+    ]
+    start, end = kwargs["start_date"], kwargs["end_date"]
+    if start or end:
+        where.append(
+            f"from {start} to {end}"
+            if start and end
+            else f"since {start}"
+            if start
+            else f"through {end}"
+        )
+    counted = bool(re.match(r"^how\s+many\b", q))
+    out = dict(parsed)
+    out.update(
+        route="season_leaders",
+        intent="leaderboard",
+        route_kwargs=kwargs,
+        count_intent=counted or bool(parsed.get("count_intent")),
+        distinct_player_count=counted,
+        notes=list(parsed.get("notes") or [])
+        + [
+            f"season_total_list: players with {amount}+ {stat} ({kwargs['stat']})"
+            + "".join(f"|{w}" for w in where)
+        ],
+    )
+    for key in ("season", "start_season", "end_season"):
+        out[key] = kwargs[key]
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 # A decade ranked by something other than its record.
 _DECADE_STAT_CUE = re.compile(
     r"\b(?:scor\w*|offens\w*|defens\w*|differential|rating|points?|pointers?|threes?|"
@@ -7955,6 +8156,9 @@ def _finalize_route(parsed: dict) -> dict:
     totals = _season_total_threshold_board(parsed)
     if totals is not None:
         return totals
+    averages = _season_average_threshold_board(parsed)
+    if averages is not None:
+        return averages
     team_players = _team_players_threshold(parsed)
     if team_players is not None:
         return team_players
