@@ -905,7 +905,7 @@ def canonicalize_bound_phrases(text: str) -> str:
 # as an assist bar (a league board), and "top 3 rebounding games with 20
 # points" found nothing.
 _RANKED_STAT_GAMES = re.compile(
-    r"\b(?P<rank>top|best|highest|biggest)\s+(?P<n>\d+)\s+"
+    r"\b(?P<rank>top|best|highest|biggest|lowest|fewest|(?<!\bat\s)least|worst)\s+(?P<n>\d+)\s+"
     r"(?P<stat>scoring|points|rebounding|rebound|assists?|passing|steals?|blocks?|"
     r"shot[\s-]blocking|threes|three[\s-]point|3[\s-]?(?:point|pt))\s+games\b"
 )
@@ -940,8 +940,11 @@ def _ranked_stat_games(match: re.Match) -> str:
         word = stat.rstrip("s") + "s"
     else:
         word = _RANKED_STAT_WORDS[stat]
-    # "biggest 3" / "highest 3": the row count reads after "top".
-    rank = "top" if match.group("rank") in ("biggest", "highest") else match.group("rank")
+    # "biggest 3" / "highest 3": the row count reads after "top"; "fewest /
+    # least / worst 3" after "lowest".
+    rank = {"biggest": "top", "highest": "top", "fewest": "lowest", "least": "lowest"}.get(
+        match.group("rank"), match.group("rank")
+    )
     return f"{rank} {match.group('n')} games by {word}"
 
 
@@ -950,7 +953,15 @@ def canonicalize_ranked_stat_games(text: str) -> str:
     if not match:
         return text
     tail = text[match.end() :]
-    if not _RANKED_STAT_CONDITION.search(tail) or _RANKED_STAT_KEEP.search(tail):
+    low = match.group("rank") in ("lowest", "fewest", "least", "worst")
+    if low and match.group("stat") in ("scoring", "points"):
+        # "lowest 3 scoring games" reads as written.
+        return text
+    if low:
+        # "lowest 3 assist games": the 3 is the row count, not a 3-assist bar.
+        if _RANKED_STAT_KEEP.search(tail):
+            return text
+    elif not _RANKED_STAT_CONDITION.search(tail) or _RANKED_STAT_KEEP.search(tail):
         return text
     return text[: match.start()] + _ranked_stat_games(match) + tail
 
