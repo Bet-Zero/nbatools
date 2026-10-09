@@ -845,6 +845,28 @@ def _build_count_phrase(
     team = metadata.get("team")
     entity = player or _team_subject(metadata, games) or "Result"
     team_subject = bool(team and not player)
+    if (
+        team_subject
+        and not parsed.get("distinct_player_count")
+        and any(str(n).startswith("team_players:") for n in parsed.get("notes") or [])
+    ):
+        # "how many times has a Lakers player scored 40": the players' games.
+        entity = f"{entity.removeprefix('The ')} players"
+        team_players_window = " ".join(
+            filter(
+                None,
+                [
+                    _venue_and_dates(metadata, parsed),
+                    "in wins" if parsed.get("wins_only") else "",
+                    "in losses" if parsed.get("losses_only") else "",
+                    f"against {metadata['opponent']}"
+                    if isinstance(metadata.get("opponent"), str) and metadata.get("opponent")
+                    else "",
+                ],
+            )
+        )
+    else:
+        team_players_window = ""
 
     opponent_count = bool(parsed.get("distinct_opponent_count"))
     if opponent_count:
@@ -1020,6 +1042,25 @@ def _build_count_phrase(
         if occurrence.startswith("games with ") and not (min_occurrences or 0) > 1:
             occurrence = "game with " + occurrence[len("games with ") :]
         noun = "team" if team_count else "player"
+        if (
+            not team_count
+            and team
+            and any(str(n).startswith("team_players:") for n in parsed.get("notes") or [])
+        ):
+            # "1 Los Angeles Lakers player has had a game with 40+ points".
+            name = _team_subject(metadata, games) or str(team)
+            noun = f"{name.removeprefix('The ')} player"
+            window = _venue_and_dates(metadata, parsed)
+            outcome = (
+                "in wins"
+                if parsed.get("wins_only")
+                else "in losses"
+                if parsed.get("losses_only")
+                else ""
+            )
+            if window or outcome:
+                # "... a game with 30+ points on the road in losses in the 2025-26 ...".
+                context = " ".join(filter(None, [window, outcome, context]))
         subject = f"1 {noun} has" if count == 1 else f"{count} {noun}s have"
         if team_count and (window := _venue_and_dates(metadata, parsed)):
             # "4 teams have had a game with 130+ points at home in ...".
@@ -1056,6 +1097,8 @@ def _build_count_phrase(
         verb = "have had" if team_subject else "has had"
     else:
         verb = "have recorded" if team_subject else "has recorded"
+    if team_players_window:
+        context = f"{team_players_window} {context}"
     return f"{entity} {verb} {count} {count_noun} {context}."
 
 
@@ -2533,6 +2576,24 @@ def _apply_count_intent(
             notes=result.notes,
             caveats=result.caveats,
             detail_section="streak",
+        )
+
+    if (
+        isinstance(result, FinderResult)
+        and parsed.get("distinct_player_count")
+        and any(str(n).startswith("team_players:") for n in parsed.get("notes") or [])
+        and "player_id" in result.games
+    ):
+        # "how many Lakers players scored 40": players, not games.
+        return CountResult(
+            count=int(result.games["player_id"].nunique()),
+            games=result.games,
+            result_status=result.result_status,
+            result_reason=result.result_reason,
+            current_through=result.current_through,
+            metadata=result.metadata,
+            notes=result.notes,
+            caveats=result.caveats,
         )
 
     if isinstance(result, FinderResult) and parsed.get("distinct_opponent_count"):
