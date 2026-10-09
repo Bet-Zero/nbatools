@@ -1221,12 +1221,24 @@ def _or_yes_no_last_game(query: str, clauses: list[str]) -> tuple | None:
         return None
     request = json.loads(note.split(":", 1)[1])
     notes.remove(note)
+    if re.search(
+        r"\bplay-in\b|\bthe\s+play\s+in\b|\bplay\s+in\s+(?:games?|tournament)\b",
+        normalize_text(query),
+    ):
+        # The play-in is not the regular-season last game the check reads.
+        return None
     checks = []
     states = [_build_parse_state(clause) for clause in clauses]
     for state in states:
-        if any(
-            state.get(key) and state.get(key) != parsed.get(key)
-            for key in ("player", "team", "opponent")
+        if (
+            any(
+                state.get(key) and state.get(key) != parsed.get(key)
+                for key in ("player", "team", "opponent")
+            )
+            # "did the Lakers lose or did LeBron score 40": a team clause on
+            # a player's game (or a player clause on a team's).
+            or (parsed.get("player") and not state.get("player") and state.get("team"))
+            or (not parsed.get("player") and state.get("player"))
         ):
             # "did LeBron or AD score 30 last game", "did the Lakers or Celtics
             # win": two subjects' last games, not two checks on one game (the
@@ -1235,7 +1247,25 @@ def _or_yes_no_last_game(query: str, clauses: list[str]) -> tuple | None:
                 "A yes/no about the last game takes one player or team; ask about each "
                 "one's last game separately."
             )
-    for state in states:
+    clause_outcomes = []
+    for clause, state in zip(clauses, states, strict=True):
+        # "did the Lakers win or score 120 last game": the result is a check.
+        outcome = (
+            "W"
+            if state.get("wins_only") or re.search(r"\b(?:win|won)\b", clause)
+            else "L"
+            if state.get("losses_only") or re.search(r"\b(?:lose|lost)\b", clause)
+            else None
+        )
+        clause_outcomes.append(outcome)
+    for state, outcome in zip(states, clause_outcomes, strict=True):
+        if outcome and not (
+            state.get("threshold_conditions")
+            or state.get("min_value") is not None
+            or state.get("max_value") is not None
+        ):
+            checks.append({"outcome": outcome})
+            continue
         if not (
             state.get("threshold_conditions")
             or state.get("min_value") is not None
@@ -1268,8 +1298,12 @@ def _or_yes_no_last_game(query: str, clauses: list[str]) -> tuple | None:
             checks = []
             break
         checks.append({key: bounds[0].get(key) for key in ("stat", "min_value", "max_value")})
-    if checks and not request.get("outcome") and not request.get("event"):
-        notes.append("yes_no_last_game: " + json.dumps({**request, "checks": checks, "any": True}))
+    outcome_checked = any("outcome" in c for c in checks)
+    if checks and (outcome_checked or not request.get("outcome")) and not request.get("event"):
+        notes.append(
+            "yes_no_last_game: "
+            + json.dumps({**request, "outcome": None, "checks": checks, "any": True})
+        )
     parsed["notes"] = notes
     # The clauses are checks on the listed game, not filters choosing it.
     parsed["extra_conditions"] = []

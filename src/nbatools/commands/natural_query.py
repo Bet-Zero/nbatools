@@ -8381,6 +8381,33 @@ def _yes_no_last_words(q: str) -> str:
     return q
 
 
+# Words that may follow "play" in "did LeBron play (in the Lakers') last
+# game / last night"; anything else ("play well", "play the whole game",
+# "play point guard") is a different question.
+_PLAYED_TAIL_WORDS = frozenset(
+    {"in", "for", "the", "his", "her", "their", "last", "latest", "most", "recent", "game"}
+    | {"night", "yesterday", "team's", "teams"}
+)
+
+
+def _played_last_game(q: str) -> bool:
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    m = re.search(r"\bplay(?:ed|s)?\b(?!-in)", q)
+    if not m or re.search(
+        r"\bplay-in\b|\bthe\s+play\s+in\b|\bplay\s+in\s+(?:games?|tournament)\b", q
+    ):
+        return False
+    for word in re.findall(r"[a-z0-9.'-]+", q[m.end() :]):
+        if word in _PLAYED_TAIL_WORDS or re.fullmatch(r"(?:19|20)\d{2}(?:-\d{2})?|of|season", word):
+            # "... in his last game of 2023-24".
+            continue
+        if detect_team_in_text(re.sub(r"'s?$|s'$", "", word)) or detect_team_in_text(word):
+            continue
+        return False
+    return True
+
+
 def _yes_no_last_game(out: dict) -> dict:
     """ "did LeBron score 30 last game": list that one game and check it.
 
@@ -8439,6 +8466,15 @@ def _yes_no_last_game(out: dict) -> dict:
             outcome = "L"
         elif re.search(r"\b(?:win|won)\b", q):
             outcome = "W"
+    if (
+        not checks
+        and outcome is None
+        and not event
+        and out["route"] in ("player_game_summary", "player_game_finder")
+        and _played_last_game(q)
+    ):
+        # "did LeBron play last night": his last game against his team's.
+        event = "played"
     if not checks and outcome is None and not event:
         return out
     route = out["route"]

@@ -1570,6 +1570,53 @@ _YES_NO_STAT_WORDS = {
 }
 
 
+def _yes_no_played(metadata: dict[str, Any], row: Any, scope: list) -> str | None:
+    """ "did LeBron play last night": his last game against his team's last.
+
+    "Yes: LeBron James played in the Los Angeles Lakers' last game
+    (2026-10-06 vs the Miami Heat): 22 points, 10 rebounds and 8 assists."
+    """
+    if scope or "team_abbr" not in row.index or "season" not in row.index:
+        return None
+    from nbatools.commands._seasons import resolve_seasons
+    from nbatools.commands.data_utils import load_team_games_for_seasons
+
+    end = metadata.get("end_season") or metadata.get("season") or row["season"]
+    try:
+        seasons = resolve_seasons(None, str(row["season"]), str(end))
+        team_games = load_team_games_for_seasons(
+            seasons, str(metadata.get("season_type") or row.get("season_type") or "Regular Season")
+        )
+    except (FileNotFoundError, ValueError):
+        return None
+    return _played_phrase(metadata.get("player") or row.get("player_name"), row, team_games)
+
+
+def _played_phrase(player: Any, row: Any, team_games: Any) -> str | None:
+    games = team_games[team_games["team_abbr"] == row["team_abbr"]]
+    if games.empty:
+        return None
+    games = games.assign(_date=pd.to_datetime(games["game_date"])).sort_values("_date")
+    last = games.iloc[-1]
+    team = last.get("team_name") or row.get("team_name") or row.get("team_abbr")
+    day = str(last["_date"].date())
+    opponent = last.get("opponent_team_name")
+    where = f"({day}" + (f" vs the {opponent}" if isinstance(opponent, str) else "") + ")"
+    # The player rows list the games he appeared in.
+    if pd.Timestamp(row["game_date"]) == last["_date"]:
+        line = ", ".join(
+            f"{compact_number(float(row[c]))} {w}"
+            for c, w in (("pts", "points"), ("reb", "rebounds"), ("ast", "assists"))
+            if c in row.index and pd.notna(row[c])
+        )
+        line = " and".join(line.rsplit(",", 1)) if line.count(",") else line
+        return f"Yes: {player} played in the {team}' last game {where}: {line}."
+    return (
+        f"No: {player} did not play in the {team}' last game {where}; his last game was "
+        f"{pd.Timestamp(row['game_date']).date()}."
+    )
+
+
 def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "did LeBron score 30 last game": "No: LeBron James had 22 points in
     his last game (2026-10-06 vs the Miami Heat)."""
@@ -1590,6 +1637,13 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
     met = []
     shown = []
     for check in request.get("checks") or []:
+        if check.get("outcome"):
+            # "did the Lakers win or score 120": the result is one check.
+            if "wl" not in row.index:
+                return
+            met.append(row["wl"] == check["outcome"])
+            shown.insert(0, "won" if row["wl"] == "W" else "lost")
+            continue
         stat = check.get("stat")
         if stat not in row.index or pd.isna(row[stat]):
             return
@@ -1605,6 +1659,11 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
     # "did he score 20 or score 30": one value shown once.
     shown = list(dict.fromkeys(shown))
     event = request.get("event")
+    if event == "played":
+        phrase = _yes_no_played(metadata, row, request.get("scope") or [])
+        if phrase:
+            metadata["answer_phrase"] = phrase
+        return
     if event in ("triple_double", "double_double"):
         cats = [c for c in ("pts", "reb", "ast", "stl", "blk") if c in row.index]
         tens = sum(1 for c in cats if pd.notna(row[c]) and float(row[c]) >= 10)
