@@ -1264,6 +1264,13 @@ _STAT_PERFORMANCE_WORDS = (
 _PERFORMANCE_WORDS = rf"\b(?:wins?|won|losses|lost)\b|{_STAT_PERFORMANCE_WORDS}"
 
 
+_YES_NO_LEAD = r"(?:did|does|do|was|were|is|has|have|had)\b"
+_LAST_SINGLE_GAME = (
+    r"\b(?:his|her|their|its|the)?\s*(?:last|latest|most\s+recent)\s+"
+    r"(?:game|night|outing|contest|time\s+out)\b|\blast\s+night\b"
+)
+
+
 def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = None) -> str:
     """Say whether a last-N phrase is a time window or a qualifying count.
 
@@ -1277,6 +1284,10 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
     """
     match = re.search(_LAST_N_GAMES, text)
     if not match:
+        if re.match(_YES_NO_LEAD, text) and re.search(_LAST_SINGLE_GAME, text):
+            # "did LeBron score 30 last game": that game, then the check (it
+            # answered with his last 30-point game).
+            return "window"
         return "qualifying"
     # Without a game result or stat condition both readings select the same
     # games, so equivalent phrasings keep one parse state.

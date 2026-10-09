@@ -1397,6 +1397,14 @@ _COPULA_WAS = re.compile(
     r"(?!\s+(?:scored|scores|scoring|score|won|wins?|winning|lost|loses?|losses|losing|beat|"
     r"games?|home|road|away|record|allowed|team|vs\.?|versus|against|at|in|on|over|under|"
     r"above|below|by|had|has|have|played|plays?|roster|offense|defense)\b)"
+    # "was LeBron over 30 points last game": a player's bound at the start of
+    # a yes/no question. "was games over 120" / "was scored ..." keep the team.
+    r"|^was(?!\s+(?:scored|scores|won|wins?|lost|loses?|losses|games?|home|road|away|record|"
+    r"team|vs\.?|versus|against|at|in|on|over|under|offense|defense|roster|last|points?|"
+    r"pts|rebounds?|assists?|turnovers?|threes?|3s|steals?|blocks?|margin|opponents?|fg|"
+    r"ft|three|3pt|free|field|ppg|rpg|apg|pace|net|offensive|defensive|plus|total|"
+    r"average|avg|record|win|winning|season|first|second)\b)"
+    r"(?=(?:\s+[a-z.'-]+){1,3}\s+(?:over|under|above|below|held|at\s+least)\b)"
 )
 
 
