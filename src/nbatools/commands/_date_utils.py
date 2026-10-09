@@ -309,11 +309,63 @@ def uses_fuzzy_date_term(text: str) -> bool:
     return bool(re.search(r"\blast\s+\d+\s+days?\b", text))
 
 
+# "Jan. 2025", "January, 2025": the year belongs to the month (they were read
+# as the month in the current season: 2026-01-01 for "since Jan. 2025").
+_MONTH_PUNCT_YEAR = re.compile(
+    r"\b(january|february|march|april|may|june|july|august|september|october|november|"
+    r"december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)(?:\.\s*,?|\s*,)\s*((?:19|20)\d{2})\b(?!-\d)"
+)
+
+
+_MONTH_WORDS = (
+    r"(january|february|march|april|may|june|july|august|september|october|november|"
+    r"december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)"
+)
+# "from January 2024 to March 2025", "Jan 2025 - Mar 2025", "between January
+# 2025 and March 2026". "March 2024 and March 2025" (no "between") is two
+# months, not a span.
+_MONTH_YEAR_RANGE = re.compile(
+    rf"(?:\bbetween\s+(?<![\d-]){_MONTH_WORDS}\s+((?:19|20)\d{{2}})(?!-\d)\s*"
+    r"(?:and|to|through|thru|until|-)"
+    rf"|(?:\bfrom\s+|\b)(?<![\d-]){_MONTH_WORDS}\s+((?:19|20)\d{{2}})(?!-\d)\s*"
+    r"(?:to|through|thru|until|-))"
+    rf"\s*{_MONTH_WORDS}\s+((?:19|20)\d{{2}})\b(?!-\d)"
+)
+
+
+def _month_num(word: str) -> int | None:
+    for name, num in MONTH_NAME_TO_NUM.items():
+        if name.startswith(word[:3]):
+            return num
+    return None
+
+
+def _month_year_range(text: str) -> tuple[str, str] | None:
+    """ "from January 2024 to March 2025": the first day of the first month to
+    the last day of the last (the dates were dropped)."""
+    m = _MONTH_YEAR_RANGE.search(text)
+    if not m:
+        return None
+    first_word, first_year = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+    first, last = _month_num(first_word), _month_num(m.group(5))
+    if first is None or last is None:
+        return None
+    start_year, end_year = int(first_year), int(m.group(6))
+    if (end_year, last) < (start_year, first):
+        return None
+    end_day = monthrange(end_year, last)[1]
+    return f"{start_year}-{first:02d}-01", f"{end_year}-{last:02d}-{end_day:02d}"
+
+
 def extract_date_range(
     text: str,
     season: str | None,
     anchor_date: pd.Timestamp | None = None,
 ) -> tuple[str | None, str | None]:
+    text = _MONTH_PUNCT_YEAR.sub(r"\1 \2", text)
+    month_range = _month_year_range(text)
+    if month_range is not None:
+        return month_range
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
         return _infer_all_star_break_start(season), None
 

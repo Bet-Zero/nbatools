@@ -2158,6 +2158,16 @@ _YEARLESS_WINDOW = re.compile(
 )
 
 
+_MONTH_NAME = (
+    r"(?:january|february|march|april|may|june|july|august|september|october|november|"
+    r"december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)"
+)
+_TWO_MONTHS = re.compile(
+    rf"(?<!between\s){_MONTH_NAME}\s+(?:19|20)\d{{2}}\s+and\s+(?:in\s+)?{_MONTH_NAME}\s+"
+    r"(?:19|20)\d{2}\b"
+)
+
+
 def _dates_over_seasons(parsed: dict) -> bool:
     """ "in March from 2023-24 to 2025-26": the date window is read in one
     season only, so a multi-season span with dates is not applied."""
@@ -2204,8 +2214,12 @@ def _build_parse_state(query: str) -> dict:
             f"how many games did {opponents_counted.group('team')} play"
             f"{opponents_counted.group('rest')}"
         )
+    from nbatools.commands._date_utils import _MONTH_PUNCT_YEAR
+
     q = canonicalize_ranked_stat_games(
-        _canonicalize_opponent_record_bars(_yes_no_last_words(normalize_text(query)))
+        _canonicalize_opponent_record_bars(
+            _yes_no_last_words(_MONTH_PUNCT_YEAR.sub(r"\1 \2", normalize_text(query)))
+        )
     )
     q = canonicalize_sample_phrases(_results_against_subject_first(q))
     q, opponent_record_list = _who_beat(q)
@@ -7727,6 +7741,15 @@ def _finalize_route(parsed: dict) -> dict:
             'season, span, dates, home/road or the playoffs ("how many teams did the '
             'Lakers play", "how many teams has LeBron faced"); this one asks something '
             "else"
+        ]
+        return refused
+    if _TWO_MONTHS.search(parsed.get("normalized_query") or ""):
+        # "in March 2024 and March 2025": two windows; the parse read the first.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["two_date_windows"]
+        refused["notes"] = [
+            "unsupported_boundary: two separate months are not one window; ask for each "
+            'month, or a range ("from January 2025 to March 2025")'
         ]
         return refused
     if _dates_over_seasons(parsed) and not parsed.get("series_comeback"):
