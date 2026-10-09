@@ -82,7 +82,6 @@ def test_season_totals_keep_their_board():
         "how many Lakers players scored 30 in the 4th quarter",
         "how many Lakers players scored 30 against winning teams",
         "how many Lakers and Celtics players scored 30",
-        "how many Lakers players average 20 points",
         # Opponent conference/division and modifiers the list cannot apply.
         "how many Lakers players scored 30 against the Atlantic division",
         "Lakers players with 30 points against the west",

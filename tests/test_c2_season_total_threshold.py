@@ -125,7 +125,8 @@ def test_game_sized_numbers_keep_their_routes(query):
         parsed = parse_query(query)
     except ValueError:
         return
-    assert "min_total" not in parsed["route_kwargs"]
+    kwargs = parsed["route_kwargs"]
+    assert "min_total" not in kwargs or kwargs["stat"].endswith("_per_game")
 
 
 def test_thousands_comma_is_one_number():

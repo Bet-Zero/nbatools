@@ -1427,6 +1427,12 @@ _SEASON_TOTAL_NOUNS = {
     "stl_total": "steals",
     "blk_total": "blocks",
     "fg3m_total": "threes",
+    "pts_per_game": "points per game",
+    "reb_per_game": "rebounds per game",
+    "ast_per_game": "assists per game",
+    "stl_per_game": "steals per game",
+    "blk_per_game": "blocks per game",
+    "fg3m_per_game": "threes per game",
 }
 
 
@@ -1440,7 +1446,7 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         ),
         None,
     )
-    match = request and re.search(r"([\d.]+)\+ \w+ \((\w+)\)((?:\|[^|]+)*)$", request)
+    match = request and re.search(r"(>?)([\d.]+)\+ \w+ \((\w+)\)((?:\|[^|]+)*)$", request)
     if not match:
         return
     if isinstance(result, LeaderboardResult):
@@ -1449,20 +1455,26 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
         rows = result.games
     else:
         return
-    column = match.group(2)
+    column = match.group(3)
     noun = _SEASON_TOTAL_NOUNS.get(column)
     if noun is None:
         return
-    value = float(match.group(1))
+    value = float(match.group(2))
     # "over 1500" is a strict floor.
-    line = f"{value:,.0f}+ {noun}" if value.is_integer() else f"more than {int(value):,} {noun}"
+    per_game = column.endswith("_per_game")
+    if per_game:
+        # "3 players average 25+ points per game"; "over 25" is "more than 25".
+        line = f"more than {value:g} {noun}" if match.group(1) else f"{value:g}+ {noun}"
+    else:
+        line = f"{value:,.0f}+ {noun}" if value.is_integer() else f"more than {int(value):,} {noun}"
     result_meta = getattr(result, "metadata", None) or {}
-    opponent = result_meta.get("opponent_name") or (metadata.get("opponent_context") or {}).get(
-        "team_abbr"
-    )
+    opponent_context = metadata.get("opponent_context") or {}
+    opponent_name = result_meta.get("opponent_name") or opponent_context.get("team_name")
+    # An empty board names no team: "against BOS", not "against the BOS".
+    opponent = f"the {opponent_name}" if opponent_name else opponent_context.get("team_abbr")
     filters = [
-        part.replace("{opponent}", f"the {opponent}" if opponent else "that opponent")
-        for part in match.group(3).split("|")
+        part.replace("{opponent}", opponent or "that opponent")
+        for part in match.group(4).split("|")
         if part
     ]
     # "in a season since 2010": one row per player season.
@@ -1482,25 +1494,46 @@ def _add_season_total_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     team_name = (getattr(result, "metadata", None) or {}).get("team_name") or (
         (metadata.get("team_context") or {}).get("team_name")
     )
-    who = f"{team_name} " if team_name else ""
+    team_abbr = (metadata.get("team_context") or {}).get("team_abbr")
+    # An empty board names no team: "No LAL player ...".
+    who = f"{team_name} " if team_name else f"{team_abbr} " if team_abbr else ""
     population = re.search(
-        r"\b(rookie|sophomore|guard|forward|center|starter|bench player)s?\b",
+        r"\b(rookie|sophomore|guard|forward|center|starter|bench player|wing|big)s?\b",
         str(metadata.get("query_text") or "").lower(),
     )
     unit = population.group(1) if population else "player"
+    # "how many players averaged 25 points in 2024-25": past tense back.
+    past = bool(re.search(r"\baveraged\b", str(metadata.get("query_text") or "").lower()))
+    qualified = next(
+        (
+            note.split(": ", 1)[1]
+            for note in getattr(result, "notes", None) or []
+            if isinstance(note, str) and note.startswith("qualified: at least")
+        ),
+        None,
+    )
+    if per_game and qualified:
+        # The season board's games floor: "(at least 20 games)".
+        context = f"{context} ({qualified})"
     if players == 0:
-        metadata["answer_phrase"] = f"No {who}{unit} has {line} {context}."
+        verb = ("averaged" if past else "averages") if per_game else "has"
+        metadata["answer_phrase"] = f"No {who}{unit} {verb} {line} {context}."
     else:
         listed = []
         for _, row in rows.head(5).iterrows():
             where = f" in {row['season']}" if per_season and "season" in row else ""
-            listed.append(f"{row['player_name']} ({int(row[column]):,}{where})")
+            shown = f"{float(row[column]) + 1e-9:.1f}" if per_game else f"{int(row[column]):,}"
+            listed.append(f"{row['player_name']} ({shown}{where})")
         if len(rows) > 5:
             extra = len(rows) - 5
             more = ("season" if extra == 1 else "seasons") if per_season else ""
             listed.append(f"{extra} more {more}".strip())
         joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
-        subject = f"1 {who}{unit} has" if players == 1 else f"{players} {who}{unit}s have"
+        if per_game:
+            one, many = ("averaged", "averaged") if past else ("averages", "average")
+            subject = f"1 {who}{unit} {one}" if players == 1 else f"{players} {who}{unit}s {many}"
+        else:
+            subject = f"1 {who}{unit} has" if players == 1 else f"{players} {who}{unit}s have"
         metadata["answer_phrase"] = f"{subject} {line} {context}: {joined}."
     if metadata.get("query_class") == "count":
         metadata["count_phrase"] = metadata["answer_phrase"]
