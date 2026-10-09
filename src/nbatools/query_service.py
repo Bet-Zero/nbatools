@@ -1482,6 +1482,87 @@ def _win_total_words(bar: str) -> str | None:
     return f"{low}+ wins" if low else f"at most {high} wins"
 
 
+_YES_NO_STAT_WORDS = {
+    "pts": "points",
+    "reb": "rebounds",
+    "ast": "assists",
+    "fg3m": "threes",
+    "stl": "steals",
+    "blk": "blocks",
+    "tov": "turnovers",
+    "minutes": "minutes",
+}
+
+
+def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "did LeBron score 30 last game": "No: LeBron James had 22 points in
+    his last game (2026-10-06 vs the Miami Heat)."""
+    import json
+
+    note = next(
+        (
+            n
+            for n in metadata.get("notes") or []
+            if isinstance(n, str) and n.startswith("yes_no_last_game:")
+        ),
+        None,
+    )
+    if not note or not isinstance(result, FinderResult) or result.games.empty:
+        return
+    request = json.loads(note.split(":", 1)[1])
+    row = result.games.iloc[0]
+    passed = True
+    shown = []
+    for check in request.get("checks") or []:
+        stat = check.get("stat")
+        if stat not in row.index or pd.isna(row[stat]):
+            return
+        value = float(row[stat])
+        low, high = check.get("min_value"), check.get("max_value")
+        passed &= (low is None or value >= low) and (high is None or value <= high)
+        word = _YES_NO_STAT_WORDS.get(stat)
+        if word is None:
+            return
+        shown.append(f"{compact_number(value)} {word}")
+    event = request.get("event")
+    if event in ("triple_double", "double_double"):
+        cats = [c for c in ("pts", "reb", "ast", "stl", "blk") if c in row.index]
+        tens = sum(1 for c in cats if pd.notna(row[c]) and float(row[c]) >= 10)
+        passed &= tens >= (3 if event == "triple_double" else 2)
+        shown.append(
+            "/".join(compact_number(float(row[c])) for c in ("pts", "reb", "ast") if c in row.index)
+            + " (points/rebounds/assists)"
+        )
+    outcome = request.get("outcome")
+    if outcome:
+        if "wl" not in row.index:
+            return
+        passed &= row["wl"] == outcome
+        shown.insert(0, "won" if row["wl"] == "W" else "lost")
+    subject = metadata.get("player") or _team_subject(metadata, result.games) or "They"
+    owner = "his" if metadata.get("player") else "their"
+    day = str(pd.Timestamp(row["game_date"]).date()) if "game_date" in row.index else ""
+    opponent = row.get("opponent_team_name") if hasattr(row, "get") else None
+    where = f" ({day}" + (f" vs the {opponent}" if isinstance(opponent, str) else "") + ")"
+    scope = request.get("scope") or []
+    game = "last playoff game" if "playoffs" in scope else "last game"
+    if "home" in scope:
+        game = game.replace("last", "last home")
+    elif "road" in scope:
+        game = game.replace("last", "last road")
+    if "opponent" in scope and isinstance(opponent, str):
+        # The last game against that team, not the last game overall.
+        game += f" against the {opponent}"
+        where = f" ({day})"
+    if shown and shown[0] in ("won", "lost"):
+        lead = shown.pop(0)
+        body = f"{lead} {owner} {game}" + (f" with {' and '.join(shown)}" if shown else "")
+    else:
+        body = f"had {' and '.join(shown)} in {owner} {game}"
+    phrase = f"{'Yes' if passed else 'No'}: {subject} {body}{where}."
+    metadata["answer_phrase"] = phrase
+
+
 def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "3 teams have a winning record in the 2025-26 regular season: the Los
     Angeles Lakers (47-13), ..."."""
@@ -2659,6 +2740,7 @@ def _finalize_natural_query_result(
     _add_opponent_record_list_answer_metadata(metadata, result)
     _add_season_total_answer_metadata(metadata, result)
     _add_record_bar_answer_metadata(metadata, result)
+    _add_yes_no_last_game_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

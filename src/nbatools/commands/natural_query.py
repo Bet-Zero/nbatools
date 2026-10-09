@@ -2204,7 +2204,9 @@ def _build_parse_state(query: str) -> dict:
             f"how many games did {opponents_counted.group('team')} play"
             f"{opponents_counted.group('rest')}"
         )
-    q = canonicalize_ranked_stat_games(_canonicalize_opponent_record_bars(normalize_text(query)))
+    q = canonicalize_ranked_stat_games(
+        _canonicalize_opponent_record_bars(_yes_no_last_words(normalize_text(query)))
+    )
     q = canonicalize_sample_phrases(_results_against_subject_first(q))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
@@ -7932,8 +7934,141 @@ def _finalize_route_inner(parsed: dict) -> dict:
     return out
 
 
+_YES_NO_LAST_GAME = re.compile(r"^(?:did|does|do|was|were|is|has|have|had)\b")
+# Stats the answer can phrase; another bound keeps its own reading.
+_YES_NO_STATS = frozenset({"pts", "reb", "ast", "fg3m", "stl", "blk", "tov", "minutes"})
+# "did any Lakers player ...", "did LeBron and AD both ...": not one subject's row.
+_YES_NO_NOT_ONE_ROW = re.compile(r"\b(?:any|anyone|anybody|someone|players?|both|either)\b")
+# Other words for the single last game, read as "last game" in a yes/no question.
+_YES_NO_LAST_WORDS = (
+    (
+        re.compile(
+            r"\b(?:most\s+recent|latest)\s+(?:game|outing|contest)\b|\blast\s+(?:outing|contest)\b"
+        ),
+        "last game",
+    ),
+    (re.compile(r"\blast\s+(?:playoff|postseason)\s+game\b"), "last game in the playoffs"),
+    (re.compile(r"\blast\s+home\s+game\b"), "last game at home"),
+    (re.compile(r"\blast\s+(?:road|away)\s+game\b"), "last game on the road"),
+    (re.compile(r"\blast\s+night\b"), "last game"),
+)
+
+
+def _yes_no_last_words(q: str) -> str:
+    if not _YES_NO_LAST_GAME.match(q):
+        return q
+    for pattern, words in _YES_NO_LAST_WORDS:
+        q = pattern.sub(words, q)
+    return q
+
+
+def _yes_no_last_game(out: dict) -> dict:
+    """ "did LeBron score 30 last game": list that one game and check it.
+
+    The condition picked which game ("his last 30-point game"); now the last
+    game is listed whatever it holds, and the check rides in a note the
+    answer reads ("No: LeBron James had 22 points in his last game ...").
+    """
+    kwargs = out.get("route_kwargs") or {}
+    q = out.get("normalized_query") or ""
+    if (
+        out.get("route") not in ("player_game_finder", "game_finder", "player_game_summary")
+        or kwargs.get("last_n") != 1
+        or out.get("last_n_scope") != "window"
+        or not _YES_NO_LAST_GAME.match(q)
+        or _YES_NO_NOT_ONE_ROW.search(q)
+        or kwargs.get("unsupported_filters")
+    ):
+        return out
+    checks: list[dict] = []
+    for bound in [
+        {
+            "stat": kwargs.get("stat"),
+            "min_value": kwargs.get("min_value"),
+            "max_value": kwargs.get("max_value"),
+        },
+        {
+            "stat": out.get("stat"),
+            "min_value": out.get("min_value"),
+            "max_value": out.get("max_value"),
+        },
+        *(kwargs.get("conditions") or []),
+        *(out.get("threshold_conditions") or []),
+    ]:
+        if not bound.get("stat") or (
+            bound.get("min_value") is None and bound.get("max_value") is None
+        ):
+            continue
+        if not any(c["stat"] == bound["stat"] for c in checks):
+            checks.append(
+                {
+                    "stat": bound["stat"],
+                    "min_value": bound.get("min_value"),
+                    "max_value": bound.get("max_value"),
+                }
+            )
+    if any(c["stat"] not in _YES_NO_STATS for c in checks):
+        # "did the Lakers win by 10 last game": a bound the answer cannot phrase.
+        return out
+    event = kwargs.get("special_event")
+    if event not in (None, "triple_double", "double_double"):
+        return out
+    outcome = "W" if kwargs.get("wins_only") else "L" if kwargs.get("losses_only") else None
+    if outcome is None and not checks and not event:
+        # "did the Lakers lose / win last game".
+        if re.search(r"\b(?:lose|lost)\b", q):
+            outcome = "L"
+        elif re.search(r"\b(?:win|won)\b", q):
+            outcome = "W"
+    if not checks and outcome is None and not event:
+        return out
+    route = out["route"]
+    new_kwargs = dict(kwargs)
+    if route == "player_game_summary":
+        # "did LeBron win last game": his last game, listed.
+        from inspect import signature
+
+        from nbatools.commands.player_game_finder import build_result as finder
+
+        accepted = set(signature(finder).parameters)
+        new_kwargs = {k: v for k, v in kwargs.items() if k in accepted}
+        new_kwargs.update(limit=1)
+        route = "player_game_finder"
+    cleared = {
+        "min_value": None,
+        "max_value": None,
+        "conditions": None,
+        "wins_only": False,
+        "losses_only": False,
+        "special_event": None,
+    }
+    # Only keys the route already takes ("special_event" is a player key).
+    new_kwargs.update({k: v for k, v in cleared.items() if k in new_kwargs})
+    new_kwargs.update(last_n_scope="window", sort_by="game_date")
+    if checks:
+        new_kwargs["stat"] = None
+    rerouted = dict(out)
+    rerouted.update(route=route, route_kwargs=new_kwargs)
+    scope = []
+    if kwargs.get("opponent"):
+        scope.append("opponent")
+    if kwargs.get("home_only"):
+        scope.append("home")
+    if kwargs.get("away_only"):
+        scope.append("road")
+    if (kwargs.get("season_type") or "") == "Playoffs":
+        scope.append("playoffs")
+    import json
+
+    rerouted["notes"] = list(out.get("notes") or []) + [
+        "yes_no_last_game: "
+        + json.dumps({"checks": checks, "outcome": outcome, "event": event, "scope": scope})
+    ]
+    return rerouted
+
+
 def parse_query(query: str) -> dict:
-    return _finalize_route(_build_parse_state(query))
+    return _yes_no_last_game(_finalize_route(_build_parse_state(query)))
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:
