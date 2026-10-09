@@ -195,8 +195,34 @@ def _clear_covered_event_refusal(route_kwargs: dict, own: list[dict]) -> None:
         route_kwargs.pop(key, None)
 
 
+# "Celtics fewest points allowed", "games with the most points allowed": a
+# team list ranked by the opponent's score (it ranked the team's own points).
+_ALLOWED_RANK = re.compile(
+    r"\b(?P<dir>fewest|lowest|least|most|highest)\s+(?:\d+\s+)?(?:points?|pts)\s+"
+    r"(?:allowed|given\s+up|conceded)\b"
+    r"|\b(?P<dir2>fewest|lowest|least|most|highest)\s+opponents?'?\s+(?:points?|scoring)\b"
+)
+
+
+def _apply_allowed_ranking(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route != "game_finder" or route_kwargs.get("stat") not in (None, "pts"):
+        return
+    m = _ALLOWED_RANK.search(text)
+    if (
+        not m
+        or route_kwargs.get("min_value") is not None
+        or route_kwargs.get("max_value") is not None
+    ):
+        return
+    word = m.group("dir") or m.group("dir2")
+    route_kwargs["stat"] = "opponent_pts"
+    route_kwargs["sort_by"] = "stat"
+    route_kwargs["ascending"] = word in ("fewest", "lowest", "least")
+
+
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Read team/opponent bounds and the ranking stat of a player game list."""
+    _apply_allowed_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
@@ -211,15 +237,37 @@ _RANKED_STAT = (
     rf"[\s-]+(?:scoring|shooting|efficient|plus[\s-]?minus|{STAT_PATTERN})\b"
     r"(?![\s-]+(?:allowed|given))"
 )
-_ASCENDING_RANK = re.compile(rf"\b(?:lowest|fewest|(?<!\bat )least){_RANKED_STAT}")
-_DESCENDING_RANK = re.compile(rf"\b(?:highest|most|top|best|biggest|largest){_RANKED_STAT}")
+# A count before an adjective form ("lowest 3 scoring games"); "best 50
+# point games" is a 50-point bound, not a count.
+_COUNT_BEFORE_ADJ = r"\s+\d+(?=\s+(?:scoring|rebounding|passing|assist|shooting)\b)"
+# "lowest 3 scoring games", "worst 3 scoring games": a count may sit between
+# the rank word and the stat (it ranked highest first).
+_ASCENDING_RANK = re.compile(
+    rf"\b(?:lowest|fewest|(?<!\bat )least)(?:{_COUNT_BEFORE_ADJ})?{_RANKED_STAT}"
+)
+_WORST_RANK = re.compile(rf"\bworst(?:{_COUNT_BEFORE_ADJ})?{_RANKED_STAT}")
+# Stats where a high value is the bad one: "worst turnover games" is the most.
+_HIGH_IS_BAD = frozenset({"tov", "pf"})
+_DESCENDING_RANK = re.compile(
+    rf"\b(?:highest|most|top|best|biggest|largest)(?:{_COUNT_BEFORE_ADJ})?{_RANKED_STAT}"
+)
 
 
 def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -> None:
     """A player or team game list ranked by a stat runs lowest first when asked."""
     if route not in ("player_game_finder", "game_finder") or route_kwargs.get("sort_by") != "stat":
         return
-    if _ASCENDING_RANK.search(text) and not _DESCENDING_RANK.search(text):
+    if _DESCENDING_RANK.search(text):
+        return
+    low_by = re.search(r"\b(lowest|fewest|least|worst)(?:\s+\d+)?\s+games?\s+by\b", text)
+    if (
+        _ASCENDING_RANK.search(text)
+        or (_WORST_RANK.search(text) and route_kwargs.get("stat") not in _HIGH_IS_BAD)
+        # "lowest 3 games by assists"; "worst games by turnovers" is the most.
+        or (
+            low_by and not (low_by.group(1) == "worst" and route_kwargs.get("stat") in _HIGH_IS_BAD)
+        )
+    ):
         route_kwargs["ascending"] = True
 
 
@@ -229,7 +277,7 @@ _RANKING_WORDS = re.compile(r"\b(?:highest|most|top|best|biggest|largest|lowest|
 
 _RANK_WORD = r"(?:highest|most|top|best|biggest|largest|lowest|fewest|(?<!\bat )least)"
 _RANKED_BY = re.compile(
-    rf"\b{_RANK_WORD}[\s-]+(?P<a>scoring|plus[\s-]?minus|{STAT_PATTERN})\b"
+    rf"\b{_RANK_WORD}(?:{_COUNT_BEFORE_ADJ})?[\s-]+(?P<a>scoring|plus[\s-]?minus|{STAT_PATTERN})\b"
     rf"|\bby\s+(?:the\s+)?(?:{_RANK_WORD}\s+)?(?P<b>scoring|plus[\s-]?minus|{STAT_PATTERN})\b"
 )
 # "with 30 points", "in a game with at least 30 points", "30 point games",
@@ -244,6 +292,14 @@ _EVENT_PATTERNS = (
         rf"\bwith\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b{_NOT_A_FLOOR}"
     ),
     re.compile(rf"\b(?P<n>\d+)\+?[\s-]+(?P<w>{STAT_PATTERN}|minutes?)[\s-]+games?\b"),
+    # "while shooting 5 threes", "where they made 15 threes", "when he had 10
+    # assists": the condition was dropped.
+    re.compile(
+        r"\b(?:while|when|where)\s+(?P<subj>he\s+|she\s+|they\s+|the\s+\w+\s+)?"
+        r"(?:shooting|shot|making|made|hitting|hit|scoring|scored|having|had|grabbing|grabbed|"
+        r"recording|recorded|dishing|dished|posting|posted)\s+(?:at\s+least\s+)?"
+        rf"(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b{_NOT_A_FLOOR}"
+    ),
 )
 
 
@@ -283,6 +339,33 @@ def _allowed_stats(route: str | None):
     return ALLOWED_STATS
 
 
+_RANK_BEFORE = re.compile(
+    r"\b(?:highest|most|top|best|biggest|largest|lowest|fewest|(?<!\bat\s)least|worst)\s*$"
+)
+
+
+def _not_own_event(route: str | None, m: re.Match, text: str, team: str | None = None) -> bool:
+    """A match that is not the subject's own game condition.
+
+    "lowest 3 rebounding games": the 3 is the row count, not a bound. "LeBron
+    ... when they / the Lakers made 12 threes": the team's number, which the
+    team context already reads; on a team list, "the opponent" is theirs.
+    """
+    if _RANK_BEFORE.search(text[: m.start()]):
+        return True
+    subject = (m.groupdict().get("subj") or "").strip()
+    if not subject:
+        return False
+    if route == "player_game_finder":
+        return subject not in ("he", "she")
+    if subject == "they":
+        return False
+    # "Celtics games where the Celtics made 20 threes": the team's own name.
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    return not (team and detect_team_in_text(subject) == team)
+
+
 def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank by the stat a rank word names and keep the game conditions.
 
@@ -303,6 +386,8 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
     for pattern in _EVENT_PATTERNS:
         for m in pattern.finditer(text):
             if any(m.start() < e and s < m.end() for s, e in claimed):
+                continue
+            if _not_own_event(route, m, text, route_kwargs.get("team")):
                 continue
             stat = _stat_word(m.group("w"))
             if stat is None:
