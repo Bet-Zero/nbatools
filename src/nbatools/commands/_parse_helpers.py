@@ -1262,9 +1262,57 @@ _QUALIFYING_CLAUSE = (
     r"grabbing|dishing|recording|having|posting|putting\s+up|making|he|she|they|"
     r"the\s+\w+\s+(?:scored|had|made|won|lost))\b"
 )
+# A number written straight before a stat word and a game noun is a game
+# threshold, not a count of games: "LeBron's last 30 point game", "last 10
+# assist game", "Lakers last 130 point game", "last 30 point and 10 assist
+# game". Without the noun the number stays a count ("last 10 pts", "last 10
+# threes", "last 10 points per game"); "3 point" stays a count too ("last 3
+# point games" was never a threes threshold).
+_THRESHOLD_STAT_WORD = (
+    r"(?:points?|pts?|pt|rebounds?|rebs?|boards?|assists?|asts?|dimes?|"
+    r"steals?|stls?|blocks?|blks?|threes?(?![- ]?(?:points?|pt)\b)|3s|3pm|"
+    r"three[- ]?pointers?|3[- ]?pointers?|turnovers?)\b"
+)
+_THRESHOLD_GAME_NOUN = r"(?:games?|performances?|outings?)\b"
+
+
+def _stat_threshold_after_number(noun: str = _THRESHOLD_GAME_NOUN) -> str:
+    return (
+        r"(?<!\b3(?=\s*[- ]?\s*(?:points?|pts?|pt)\b))"
+        rf"\+?\s*[- ]?\s*{_THRESHOLD_STAT_WORD}"
+        rf"(?:[\s+-]+(?:\d+\+?|and|{_THRESHOLD_STAT_WORD}))*[\s-]+{noun}"
+    )
+
+
+_STAT_THRESHOLD_AFTER_NUMBER = _stat_threshold_after_number()
 _LAST_N_GAMES = (
     r"\blast\s+\d+(?!\s+(?:seasons?|weeks?|days?|months?|minutes?))"
+    rf"(?!\d|{_STAT_THRESHOLD_AFTER_NUMBER})"
     r"(?:\s+(?:games?|contests?|outings?))?\b"
+)
+# "LeBron's last 30 point game", "Jokic's last triple double", "when did
+# LeBron last score 30": the single most recent game that meets it.
+_SINGLE_GAME_NOUN = r"(?:game|performance|outing)\b(?!s)"
+# "when did LeBron last score 30", "the last time Jokic had a triple double":
+# a game condition follows within a few words ("when did the Lakers last make
+# the playoffs" is a season question).
+_LAST_TIME_CONDITION = (
+    # Not a streak ("won 10 straight") or a count of games, seasons or picks
+    # ("won 60 games", "missed 10 games", "a top 3 pick", "started 10-0").
+    r"(?!.*\b(?:straight|in\s+a\s+row|consecutive|streaks?)\b)"
+    r"(?=(?:\s+[\w.'-]+){0,5}?\s+(?:(?<![\d-])\d{1,3}(?![\d-])"
+    r"(?!\s+(?:games?|seasons?|years?|picks?|times|wins|losses|straight)\b)"
+    r"|(?:a\s+)?(?:triple|double)[- ]double))"
+)
+_LAST_SINGLE_QUALIFYING_GAME = (
+    r"\b(?:last|latest|most\s+recent)\s+(?:"
+    rf"\d+(?={_stat_threshold_after_number(_SINGLE_GAME_NOUN)})"
+    r"|triple[- ]double\b(?!s)|double[- ]double\b(?!s))"
+    r"|\bwhen\s+(?:did|was|has|have)\b.*\blast\s+(?:scor\w*|had|have|record\w*|post\w*|"
+    r"drop\w*|put\s+up|made|make|hit|grab\w*|dish\w*|got|get)\b"
+    + _LAST_TIME_CONDITION
+    + r"|\bthe\s+last\s+time\b(?!\s+out\b)"
+    + _LAST_TIME_CONDITION
 )
 _POSSESSIVE_WINDOW = r"\bof\s+(?:the\s+)?(?:[\w.-]+\s+){0,2}[\w.-]+(?:'s|s'|')\s*$"
 _STAT_PERFORMANCE_WORDS = (
@@ -1371,14 +1419,18 @@ def extract_last_n(text: str) -> int | None:
     for term, last_n in FUZZY_LAST_N_TERMS.items():
         if re.search(rf"\b{re.escape(term)}\b", text):
             return last_n
+    if re.search(_LAST_SINGLE_QUALIFYING_GAME, text):
+        return 1
 
+    not_span = r"(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))"
+    not_threshold = rf"(?!\d|{_STAT_THRESHOLD_AFTER_NUMBER})\b"
     patterns = [
         r"\blast\s+(\d+)\s+games?\b",
         r"\bpast\s+(\d+)\s+games?\b",
         r"\brecent\s+(\d+)\s+games?\b",
-        r"\blast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
-        r"\bpast\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
-        r"\brecent\s+(\d+)(?!\s+(?:seasons?|years?|playoffs|postseasons?|weeks?|days?|months?))\b",
+        # "LeBron's 3 most recent 30 point games", "his latest 3 ...".
+        r"\b(\d+)\s+most\s+recent\b",
+        rf"\b(?:last|past|recent|latest)\s+(\d+){not_span}{not_threshold}",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)

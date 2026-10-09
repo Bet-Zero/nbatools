@@ -106,6 +106,11 @@ from nbatools.commands._occurrence_route_utils import (
     wants_occurrence_leaderboard,
 )
 from nbatools.commands._parse_helpers import (
+    _STAT_THRESHOLD_AFTER_NUMBER,
+    extract_min_attempts,
+    text_without_min_attempts,
+)
+from nbatools.commands._parse_helpers import (
     _TEAM_LEADER_RATES as _TEAM_LEADER_RATES,
 )
 from nbatools.commands._parse_helpers import (
@@ -275,10 +280,6 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     extract_last_n_seasons as extract_last_n_seasons,
-)
-from nbatools.commands._parse_helpers import (
-    extract_min_attempts,
-    text_without_min_attempts,
 )
 from nbatools.commands._parse_helpers import (
     extract_min_games as extract_min_games,
@@ -2109,6 +2110,32 @@ _WINS_OVER_QUALITY = re.compile(
 )
 
 
+_GAME_NOUN_AHEAD = r"(?=[\s-]+(?:games?|performances?|outings?)\b)"
+_THRESHOLD_GAME_SPELLINGS = (
+    # "30 pt game", "5 three pointer game": the spellings the threshold reader
+    # knows ("30 point game", "5 three game").
+    (re.compile(rf"\b(\d+\+?)\s*[- ]?\s*pt\b{_GAME_NOUN_AHEAD}"), r"\1 point"),
+    (
+        re.compile(rf"\b(\d+\+?)\s*[- ]?\s*(?:three|3)[- ]?pointers?\b{_GAME_NOUN_AHEAD}"),
+        r"\1 three",
+    ),
+    # "his last 30 point outing / performance" is a game.
+    (
+        re.compile(
+            r"\b(\d+\+?\s*[- ]?\s*(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes?|3s)"
+            r"(?:\s+and\s+\d+\+?\s*[- ]?\s*[a-z]+)?)[\s-]+(?:performance|outing)(s?)\b"
+        ),
+        r"\1 game\2",
+    ),
+)
+
+
+def _threshold_game_words(q: str) -> str:
+    for pattern, replacement in _THRESHOLD_GAME_SPELLINGS:
+        q = pattern.sub(replacement, q)
+    return q
+
+
 def _canonicalize_opponent_record_bars(q: str) -> str:
     q = _FACING.sub("against", q)
     q = _WINS_OVER_QUALITY.sub(r"\1 against ", q)
@@ -2218,7 +2245,9 @@ def _build_parse_state(query: str) -> dict:
 
     q = canonicalize_ranked_stat_games(
         _canonicalize_opponent_record_bars(
-            _yes_no_last_words(_MONTH_PUNCT_YEAR.sub(r"\1 \2", normalize_text(query)))
+            _yes_no_last_words(
+                _threshold_game_words(_MONTH_PUNCT_YEAR.sub(r"\1 \2", normalize_text(query)))
+            )
         )
     )
     q = canonicalize_sample_phrases(_results_against_subject_first(q))
@@ -8253,8 +8282,41 @@ def _yes_no_last_game(out: dict) -> dict:
     return rerouted
 
 
+_RANKING_WORDS = re.compile(
+    r"\b(?:top|best|worst|highest|lowest|most(?!\s+recent)|fewest|least|biggest|largest|"
+    r"smallest|greatest|ranked|sorted|order(?:ed)?)\b"
+    # "by points" ranks; "by LeBron" names the player.
+    rf"|\bby\s+(?:the\s+)?(?:most\s+)?(?:{STAT_PATTERN})\b"
+)
+
+
+def _last_n_in_date_order(parsed: dict) -> dict:
+    """List "his last 3 30 point games" newest first, not by points.
+
+    The N most recent qualifying games (or, with no N, "his last 30 point
+    games") were ranked by the stat; a ranking word ("top 3 scoring games
+    in his last 20") keeps the ranking.
+    """
+    kwargs = parsed.get("route_kwargs") or {}
+    if (
+        parsed.get("route") in {"player_game_finder", "game_finder"}
+        and (
+            kwargs.get("last_n")
+            or re.search(
+                rf"\b(?:last|latest|most\s+recent)\s+\d+{_STAT_THRESHOLD_AFTER_NUMBER}",
+                parsed.get("normalized_query") or "",
+            )
+        )
+        and kwargs.get("sort_by") == "stat"
+        and not _RANKING_WORDS.search(parsed.get("normalized_query") or "")
+    ):
+        kwargs["sort_by"] = "game_date"
+        kwargs["ascending"] = False
+    return parsed
+
+
 def parse_query(query: str) -> dict:
-    return _yes_no_last_game(_finalize_route(_build_parse_state(query)))
+    return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:
