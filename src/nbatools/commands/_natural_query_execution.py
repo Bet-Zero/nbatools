@@ -1197,6 +1197,86 @@ def _or_rank_stat(text: str) -> str | None:
     return None
 
 
+def _or_yes_no_last_game(query: str, clauses: list[str]) -> tuple | None:
+    """ "did LeBron score 30 or 10 assists last game": check his last game.
+
+    The OR path listed his last game meeting either clause (2026-09-26, not
+    his last game). The whole question already reads as that one game; each
+    clause becomes a check and either one passing is a yes. A clause the
+    answer cannot phrase lists the game with no yes or no.
+    """
+    import json
+
+    from nbatools.commands.natural_query import _YES_NO_STATS, _build_parse_state, parse_query
+
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return None
+    notes = list(parsed.get("notes") or [])
+    note = next(
+        (n for n in notes if isinstance(n, str) and n.startswith("yes_no_last_game:")), None
+    )
+    if note is None:
+        return None
+    request = json.loads(note.split(":", 1)[1])
+    notes.remove(note)
+    checks = []
+    states = [_build_parse_state(clause) for clause in clauses]
+    for state in states:
+        if any(
+            state.get(key) and state.get(key) != parsed.get(key)
+            for key in ("player", "team", "opponent")
+        ):
+            # "did LeBron or AD score 30 last game", "did the Lakers or Celtics
+            # win": two subjects' last games, not two checks on one game (the
+            # OR path listed one subject's game meeting the condition).
+            raise ValueError(
+                "A yes/no about the last game takes one player or team; ask about each "
+                "one's last game separately."
+            )
+    for state in states:
+        if not (
+            state.get("threshold_conditions")
+            or state.get("min_value") is not None
+            or state.get("max_value") is not None
+            or state.get("special_event")
+            or state.get("occurrence_event")
+        ):
+            # "did the Lakers win or score 120 last game": a clause with no
+            # number to check.
+            raise ValueError(
+                "Each part of an OR about the last game needs a number to check "
+                '("30 points or 10 assists"); this one has a part without one.'
+            )
+        bounds = [
+            c
+            for c in state.get("threshold_conditions") or []
+            if c.get("min_value") is not None or c.get("max_value") is not None
+        ]
+        if not bounds and (
+            state.get("min_value") is not None or state.get("max_value") is not None
+        ):
+            # "10 assists last game": a bare count carries its bound on the state.
+            bounds = [state]
+        if (
+            len(bounds) != 1
+            or bounds[0].get("stat") not in _YES_NO_STATS
+            or state.get("special_event")
+            or state.get("occurrence_event")
+        ):
+            checks = []
+            break
+        checks.append({key: bounds[0].get(key) for key in ("stat", "min_value", "max_value")})
+    if checks and not request.get("outcome") and not request.get("event"):
+        notes.append("yes_no_last_game: " + json.dumps({**request, "checks": checks, "any": True}))
+    parsed["notes"] = notes
+    # The clauses are checks on the listed game, not filters choosing it.
+    parsed["extra_conditions"] = []
+    result = _execute_build_result(parsed["route"], parsed["route_kwargs"], [])
+    return result, parsed
+
+
 def _execute_or_query_build_result(query: str) -> tuple:
     """Build a structured result for OR queries.
 
@@ -1223,6 +1303,10 @@ def _execute_or_query_build_result(query: str) -> tuple:
             parsed["route"], parsed["route_kwargs"], parsed.get("extra_conditions", [])
         )
         return result, parsed
+
+    yes_no = _or_yes_no_last_game(query, clauses)
+    if yes_no is not None:
+        return yes_no
 
     base = _build_parse_state(query)
     conditionless = False
