@@ -220,9 +220,123 @@ def _apply_allowed_ranking(route: str | None, route_kwargs: dict, text: str) -> 
     route_kwargs["ascending"] = word in ("fewest", "lowest", "least")
 
 
+_OPP_RANK_STAT = r"(?P<stat>[a-z0-9-]+(?:\s+(?:throws?|pointers?|goals?))?)"
+_OPP_RANK_STAT2 = _OPP_RANK_STAT.replace("stat", "stat2")
+_OPP_STAT_RANK = re.compile(
+    # "Lakers games with the most opponent turnovers", "top 5 games by
+    # opponent rebounds", "fewest opponents' threes".
+    rf"(?<!\bat\s)\b(?P<dir>most|fewest|least|lowest|highest|top|bottom)\s+(?:\d+\s+)?"
+    rf"(?:games?\s+by\s+(?:the\s+)?(?:most\s+)?)?opponents?(?:'s?|s')?\s+{_OPP_RANK_STAT}"
+    # "where (the) opponents had / made the most threes".
+    r"|\b(?:the\s+)?(?:opponents?|other\s+team|opposing\s+team)\s+(?:had|made|hit|grabbed|"
+    rf"committed|shot|recorded|got)\s+the\s+(?P<dir2>most|fewest|least)\s+{_OPP_RANK_STAT2}"
+    # "games where they forced the most turnovers" (not "the opponent forced").
+    r"|\b(?:they|we|games?)\s+forced\s+the\s+(?P<dir3>most|fewest|least)\s+turnovers\b"
+)
+
+
+# "at least 15 opponent turnovers", "over 120 opponent points": a bound on the
+# opponent's number, not a ranking.
+_OPP_STAT_BOUND = re.compile(
+    r"\b(?P<op>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+"
+    r"(?P<num>\d+)\s+opponents?(?:'s?|s')?\s+(?P<stat>[a-z0-9-]+)"
+    r"|\b(?P<num2>\d+)\+\s*opponents?(?:'s?|s')?\s+(?P<stat2>[a-z0-9-]+)"
+)
+_OPP_BOUND_MODE = {
+    "at least": ("min", 0.0),
+    "at most": ("max", 0.0),
+    "over": ("min", 0.0001),
+    "more than": ("min", 0.0001),
+    "under": ("max", 0.0001),
+    "fewer than": ("max", 0.0001),
+    "less than": ("max", 0.0001),
+}
+
+
+def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str) -> None:
+    """ "Lakers games with at least 15 opponent turnovers": an opponent bound
+    (the team's own turnovers were filtered)."""
+    if route != "game_finder":
+        return
+    from nbatools.commands.game_finder import ALLOWED_STATS
+
+    bounds = []
+    for m in _OPP_STAT_BOUND.finditer(text):
+        stat = _stat_word(m.group("stat") or m.group("stat2") or "")
+        if not stat or f"opponent_{stat}" not in ALLOWED_STATS:
+            continue
+        mode, eps = _OPP_BOUND_MODE[re.sub(r"\s+", " ", m.group("op") or "at least")]
+        value = float(m.group("num") or m.group("num2"))
+        bounds.append(
+            {
+                "stat": f"opponent_{stat}",
+                "min_value": value + eps if mode == "min" else None,
+                "max_value": value - eps if mode == "max" else None,
+            }
+        )
+    if not bounds:
+        return
+    bases = {b["stat"][len("opponent_") :] for b in bounds}
+    conditions = [c for c in _kwargs_conditions(route_kwargs) if c["stat"] not in bases]
+    route_kwargs["conditions"] = conditions + bounds
+    if route_kwargs.get("stat") in bases:
+        # The bound was read as the team's own: it moves to the opponent's.
+        route_kwargs.update(
+            stat=bounds[-1]["stat"],
+            min_value=bounds[-1]["min_value"],
+            max_value=bounds[-1]["max_value"],
+        )
+        if route_kwargs.get("sort_by") == "stat" and not _RANKING_WORDS.search(text):
+            route_kwargs["sort_by"] = "game_date"
+
+
+def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Rank a team's games by the opponent's number ("most opponent
+    turnovers" ranked the team's own turnovers)."""
+    if route != "game_finder" or route_kwargs.get("conditions"):
+        return
+    m = _OPP_STAT_RANK.search(text)
+    if not m:
+        return
+    word = m.group("dir") or m.group("dir2") or m.group("dir3")
+    if m.group("dir3"):
+        stat = "tov"
+    else:
+        stat = _stat_word(m.group("stat") or m.group("stat2") or "")
+    from nbatools.commands.game_finder import ALLOWED_STATS
+
+    if not stat or f"opponent_{stat}" not in ALLOWED_STATS:
+        return
+    from nbatools.commands.natural_query import _build_parse_state
+
+    # "most opponent turnovers with 120 points": the team's own bound stays a
+    # condition (it was dropped).
+    conditions = _kwargs_conditions(route_kwargs) if route_kwargs.get("stat") != stat else []
+    rest = _build_parse_state(text[: m.start()] + " " + text[m.end() :])
+    found = list(rest.get("threshold_conditions") or [])
+    if (
+        not found
+        and rest.get("stat")
+        and (rest.get("min_value") is not None or rest.get("max_value") is not None)
+    ):
+        found = [rest]
+    for item in found:
+        bound = {k: item.get(k) for k in ("stat", "min_value", "max_value")}
+        if bound["stat"] and not any(c["stat"] == bound["stat"] for c in conditions):
+            conditions.append(bound)
+    if conditions:
+        route_kwargs["conditions"] = conditions
+    route_kwargs["min_value"] = route_kwargs["max_value"] = None
+    route_kwargs["stat"] = f"opponent_{stat}"
+    route_kwargs["sort_by"] = "stat"
+    route_kwargs["ascending"] = word in ("fewest", "least", "lowest", "bottom")
+
+
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Read team/opponent bounds and the ranking stat of a player game list."""
     _apply_allowed_ranking(route, route_kwargs, text)
+    _apply_opponent_stat_bounds(route, route_kwargs, text)
+    _apply_opponent_stat_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
@@ -378,6 +492,8 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
     """
     if route not in _RANKED_ROUTES or route_kwargs.get("sort_by") != "stat":
         return
+    if _opponent_ranked(route, route_kwargs):
+        return
     if _team_ranking_unread(route, text):
         return
     ranked = {_stat_word(m.group("a") or m.group("b")) for m in _RANKED_BY.finditer(text)} - {None}
@@ -435,6 +551,17 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
 _GAMES_BY_STAT = re.compile(r"\bgames?\s+by\s+(?:the\s+)?(?:most\s+)?([a-z0-9]+)")
 
 
+def _opponent_ranked(route: str | None, route_kwargs: dict) -> bool:
+    """Already ranked by the opponent's number ("most opponent turnovers"); an
+    opponent bound in the slot ("when the Celtics scored 120") is not."""
+    return (
+        route == "game_finder"
+        and str(route_kwargs.get("stat") or "").startswith("opponent_")
+        and route_kwargs.get("min_value") is None
+        and route_kwargs.get("max_value") is None
+    )
+
+
 def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank a filtered game list by the stat the question ranks by.
 
@@ -443,6 +570,8 @@ def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> Non
     points went unused. The bound stays a condition and points rank.
     """
     if route not in _RANKED_ROUTES or route_kwargs.get("sort_by") != "stat":
+        return
+    if _opponent_ranked(route, route_kwargs):
         return
     if _team_ranking_unread(route, text):
         return

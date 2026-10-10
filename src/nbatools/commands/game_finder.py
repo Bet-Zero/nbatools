@@ -4,6 +4,7 @@ from nbatools.commands._condition_utils import (
     TEAM_GAME_EXTRA_STATS,
     apply_stat_conditions,
     attach_opponent_stats,
+    normalize_stat_conditions,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
@@ -329,7 +330,14 @@ def build_result(
         "efg_pct",
         "ts_pct",
     ]
-    output_cols = [c for c in output_cols if c in df.columns]
+    # The opponent's number a list ranks or filters by ("most opponent
+    # turnovers", "when the opponent made 15 threes") is shown with the row.
+    shown_opponent = [
+        name
+        for name in [stat_col, *(c.get("stat") for c in normalize_stat_conditions(conditions))]
+        if name and str(name).startswith("opponent_") and name not in output_cols
+    ]
+    output_cols = [c for c in [*output_cols, *dict.fromkeys(shown_opponent)] if c in df.columns]
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
