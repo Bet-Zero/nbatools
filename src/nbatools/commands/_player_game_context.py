@@ -324,7 +324,10 @@ _RANKED_ROUTES = frozenset({"player_game_finder", "game_finder"})
 
 # A team list's "120 points allowed" / "15 threes given up" bound is the
 # opponent's; the ranking readers below take only the team's own stats.
-_OPPONENT_BOUND = re.compile(r"\ballowed\b|\bgiven\s+up\b|\bopponents?\b|\bopp\b")
+# "fewest points allowed" ranks the opponent's score (_apply_allowed_ranking).
+# "top scoring games when the opponent made 15 threes" ranks the team's own
+# points with the opponent's bound kept as a condition.
+_OPPONENT_BOUND = re.compile(r"\ballowed\b|\bgiven\s+up\b")
 
 
 def _team_ranking_unread(route: str | None, text: str) -> bool:
@@ -429,6 +432,9 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
     route_kwargs["max_value"] = None
 
 
+_GAMES_BY_STAT = re.compile(r"\bgames?\s+by\s+(?:the\s+)?(?:most\s+)?([a-z0-9]+)")
+
+
 def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank a filtered game list by the stat the question ranks by.
 
@@ -451,12 +457,33 @@ def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> Non
     )
 
     filtered = {c["stat"] for c in conditions}
+    adjacent = None
+    if route == "game_finder":
+        # "Lakers highest scoring games when the opponent scored 120": the rank
+        # word sits on the team's own points, though the opponent's bound is
+        # on points too.
+        ranked = next(
+            (
+                m
+                for rx in (_DESCENDING_RANK, _ASCENDING_RANK, _WORST_RANK)
+                if (m := rx.search(text))
+            ),
+            None,
+        )
+        if ranked:
+            adjacent = _stat_word(re.split(r"[\s-]+", ranked.group(0).strip())[-1])
+        by_stat = _GAMES_BY_STAT.search(text)
+        if adjacent is None and by_stat and _RANKING_WORDS.search(text[: by_stat.start()]):
+            # "top 3 games by points" (how "top 3 scoring games" is rewritten).
+            adjacent = _stat_word(by_stat.group(1))
     filtered |= {s.split("_", 1)[1] for s in filtered if _is_context_stat(s)}
     candidates = [
         metric
         for metric in named_metrics({"normalized_query": text})
         if metric not in filtered and not occurrence_count_column_condition(metric)
     ]
+    if adjacent and adjacent not in {c["stat"] for c in conditions}:
+        candidates = [adjacent]
     if len(candidates) != 1:
         return
     if candidates[0] not in _allowed_stats(route):

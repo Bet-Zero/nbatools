@@ -2084,6 +2084,76 @@ _HOW_MANY_OPPONENTS = re.compile(
 )
 
 
+# "Lakers top 3 scoring games where the Celtics made 15 threes": the clause
+# names the other team, so it is the Lakers' games against the Celtics with
+# the opponent's number (the Celtics became the subject: their own games).
+_OTHER_TEAM_CLAUSE = re.compile(
+    r"\b(?P<lead>when|where|while|whenever|in\s+games?\s+(?:where|when)|in\s+which)\s+"
+    r"(?:the\s+)?(?P<name>[a-z0-9.']+(?:\s+[a-z0-9.']+){0,2}?)\s+"
+    r"(?P<verb>made|makes?|scored|scores?|had|has|have|hit|hits|shot|shoots|grabbed|grabs|"
+    r"committed|commits|recorded|records|put\s+up|puts\s+up)\b"
+    # A number follows: "had a winning record" / "had Tatum" are not stat clauses.
+    r"(?=\s+(?:at\s+least\s+|over\s+|more\s+than\s+|under\s+|fewer\s+than\s+|less\s+than\s+)?\d)"
+)
+_CLAUSE_OPPONENT_LEAD = re.compile(r"\b(?:against|vs\.?|versus|facing)\s+(?:the\s+)?$")
+_AT_LEAD = re.compile(r"(?:\bat|@)\s*(?:the\s+)?$")
+# "Lakers vs Celtics when ...", "compare the Lakers and Celtics": two sides
+# compared, not a team and its opponent.
+_TWO_TEAM_JOIN = re.compile(r"^\s*(?:the\s+)?(?:vs\.?|versus|and|&|,)?\s*(?:the\s+)?$")
+
+
+def _teams_in_order(text: str) -> list[tuple[int, int, str]]:
+    """Each team named in *text* (start, end, abbreviation), first mention first."""
+    from nbatools.commands._matchup_utils import TEAM_ALIASES
+
+    found: dict[str, tuple[int, int]] = {}
+    taken: list[tuple[int, int]] = []
+    for key in sorted(TEAM_ALIASES, key=len, reverse=True):
+        for m in re.finditer(rf"\b{re.escape(key)}\b", text):
+            if any(a < m.end() and m.start() < b for a, b in taken):
+                continue
+            taken.append((m.start(), m.end()))
+            team = TEAM_ALIASES[key]
+            if team not in found or m.start() < found[team][0]:
+                found[team] = (m.start(), m.end())
+    return sorted((start, end, team) for team, (start, end) in found.items())
+
+
+def _other_team_clause(q: str) -> str:
+    from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    m = _OTHER_TEAM_CLAUSE.search(q)
+    if not m:
+        return q
+    other = detect_team_in_text(m.group("name"))
+    prefix = q[: m.start()]
+    if not other or detect_player(prefix):
+        return q
+    ordered = _teams_in_order(prefix)
+    if not ordered or any(_AT_LEAD.search(prefix[:start]) for start, _, _ in ordered):
+        # "Lakers games at the Celtics" is not read as an opponent yet.
+        return q
+    if len(ordered) >= 2 and _TWO_TEAM_JOIN.match(prefix[ordered[0][1] : ordered[1][0]]):
+        # "Lakers vs Celtics when the Celtics scored 120": two sides compared.
+        return q
+    subjects = [t for start, _, t in ordered if not _CLAUSE_OPPONENT_LEAD.search(prefix[:start])]
+    opponents = [t for start, _, t in ordered if _CLAUSE_OPPONENT_LEAD.search(prefix[:start])]
+    if not subjects or other in subjects[1:]:
+        # "Lakers Celtics head to head when the Celtics scored 120".
+        return q
+    if other == subjects[0]:
+        # "Celtics games against the Lakers when the Celtics scored 110": the
+        # subject's own number ("they"; the name was read as the opponent).
+        if not opponents:
+            return q
+        return f"{prefix}{m.group('lead')} they {m.group('verb')}{q[m.end() :]}"
+    if opponents and other not in opponents:
+        return q
+    lead = "" if opponents else f"against the {m.group('name')} "
+    clause = f"{m.group('lead')} the opponent {m.group('verb')}"
+    return f"{prefix}{lead}{clause}{q[m.end() :]}"
+
+
 # "vs teams that are over .500", "against teams with a losing record": the
 # opponent bars "teams over / under .500" (the filter was dropped: 47-13).
 _OPPONENT_RECORD_BAR = re.compile(
@@ -2250,7 +2320,7 @@ def _build_parse_state(query: str) -> dict:
             )
         )
     )
-    q = canonicalize_sample_phrases(_results_against_subject_first(q))
+    q = canonicalize_sample_phrases(_results_against_subject_first(_other_team_clause(q)))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
