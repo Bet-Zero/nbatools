@@ -2119,6 +2119,104 @@ def _teams_in_order(text: str) -> list[tuple[int, int, str]]:
     return sorted((start, end, team) for team, (start, end) in found.items())
 
 
+def _team_mentions(text: str) -> list[tuple[int, int, str]]:
+    """Every team mention in *text* (start, end, abbreviation), in order."""
+    from nbatools.commands._matchup_utils import TEAM_ALIASES
+
+    taken: list[tuple[int, int, str]] = []
+    for key in sorted(TEAM_ALIASES, key=len, reverse=True):
+        for m in re.finditer(rf"\b{re.escape(key)}\b", text):
+            if any(a < m.end() and m.start() < b for a, b, _ in taken):
+                continue
+            taken.append((m.start(), m.end(), TEAM_ALIASES[key]))
+    return sorted(taken)
+
+
+_PLAYER_TEAM_CACHE: dict[tuple[str, str, str], str | None] = {}
+
+
+def _player_latest_team(name: str) -> str | None:
+    """The one team a player played for in the latest season (None when he
+    played for more than one, or none)."""
+    from nbatools.commands._seasons import default_end_season
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+    from nbatools.data_source import data_source_cache_key
+
+    season = default_end_season("Regular Season")
+    # The source and its published generation: a new generation re-reads.
+    key = (name, season, data_source_cache_key())
+    if key not in _PLAYER_TEAM_CACHE:
+        try:
+            games = load_player_games_for_seasons([season], "Regular Season")
+        except (FileNotFoundError, ValueError, KeyError):
+            return None
+        teams = set(games.loc[games["player_name"] == name, "team_abbr"].astype(str))
+        _PLAYER_TEAM_CACHE[key] = teams.pop() if len(teams) == 1 else None
+    return _PLAYER_TEAM_CACHE[key]
+
+
+# Other seasons than the latest: a player's team there is not looked up.
+_OTHER_SEASON_WORDS = re.compile(
+    r"\b(?:(?:19|20)\d{2}|career|all[-\s]?time|ever|since|seasons|last\s+season|"
+    r"previous\s+season|last\s+year|past)\b"
+)
+# "teams that beat the Lakers at Boston": the team after these is an opponent.
+_AT_OPPONENT_LEAD = re.compile(
+    r"\b(?:against|vs\.?|versus|facing|beat|beats|beating|beaten\s+by|defeated|defeat|"
+    r"lost\s+to|lose\s+to|losses\s+to|loss\s+to|fell\s+to)\s+(?:the\s+)?$"
+)
+
+
+# Team words that are also other words: "at min 30", "at was".
+_AT_SKIP = frozenset({"la", "min", "was"})
+
+
+def _at_team(q: str) -> str:
+    """ "Lakers games at the Celtics", "LeBron stats @ Boston": road games
+    against that team (the Celtics became the subject). "Celtics record at
+    Boston" / "Tatum points against the Lakers at Boston": home games."""
+    from nbatools.commands._matchup_utils import detect_player
+
+    for start, end, team in reversed(_team_mentions(q)):
+        at = _AT_LEAD.search(q[:start])
+        if not at or q[start:end] in _AT_SKIP:
+            continue
+        before = q[: at.start()].rstrip()
+        compared = re.split(r"\b(?:vs\.?|versus|and)\b", before)
+        two_players = len(compared) > 1 and detect_player(compared[-1])
+        two_teams = (
+            len(compared) > 1
+            and bool(_team_mentions(compared[0]))
+            and bool(_team_mentions(compared[-1]))
+        )
+        if two_players or two_teams:
+            # "LeBron vs Tatum at Boston", "Lakers vs Celtics at Boston": two
+            # sides compared, one venue for each.
+            continue
+        named = [(s, t) for s, _, t in _team_mentions(before)]
+        subjects = [t for s, t in named if not _AT_OPPONENT_LEAD.search(before[:s])]
+        opponents = [t for s, t in named if _AT_OPPONENT_LEAD.search(before[:s])]
+        player = detect_player(before)
+        if player and _OTHER_SEASON_WORDS.search(q):
+            # "Butler averages at Miami in 2023-24": his team then is not read.
+            continue
+        own = _player_latest_team(player) if player else (subjects[0] if subjects else None)
+        if own is None:
+            # No subject ("most points at Boston"): left as it was.
+            continue
+        if team == own:
+            venue = "at home"
+        elif team in opponents:
+            venue = "on the road"
+        elif opponents:
+            # A third team: not read.
+            continue
+        else:
+            venue = f"on the road against the {q[start:end]}"
+        q = f"{before} {venue}{q[end:]}"
+    return q
+
+
 def _other_team_clause(q: str) -> str:
     from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
 
@@ -2320,7 +2418,7 @@ def _build_parse_state(query: str) -> dict:
             )
         )
     )
-    q = canonicalize_sample_phrases(_results_against_subject_first(_other_team_clause(q)))
+    q = canonicalize_sample_phrases(_results_against_subject_first(_other_team_clause(_at_team(q))))
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
