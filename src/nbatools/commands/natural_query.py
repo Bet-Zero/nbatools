@@ -8625,7 +8625,120 @@ def _last_n_in_date_order(parsed: dict) -> dict:
     return parsed
 
 
+# "how many games since LeBron's last 30 point game / since LeBron scored
+# 30 / since the Lakers lost": his games after the most recent one.
+_GAMES_SINCE = re.compile(
+    r"^how\s+many\s+games\s+(?:has\s+it\s+been\s+|have\s+there\s+been\s+|ago\s+)?"
+    r"since\s+(?P<rest>.+?)\s*\??$"
+)
+_SINCE_WINDOW = re.compile(
+    r"^(?:the\s+)?(?:(?:19|20)\d{2}\b|january|february|march|april|may|june|july|august|"
+    r"september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec|"
+    r"all[-\s]?star|christmas|thanksgiving|new\s+year|opening\s+(?:night|day)|"
+    r"trade\s+deadline|start|beginning|last\s+(?:season|year|month|week)|this\s+"
+    r"(?:season|year|month)|playoffs|postseason|season|week|month)\b"
+)
+_SINCE_EVENT = re.compile(
+    r"^(?P<subject>.+?)\s+(?:last\s+)?(?P<verb>scored|had|recorded|posted|dropped|put\s+up|made|"
+    r"hit|grabbed|dished|got|won|lost)\b(?P<tail>.*)$"
+)
+
+
+def _games_since(query: str) -> dict | None:
+    m = _GAMES_SINCE.match(normalize_text(query))
+    if not m:
+        return None
+    rest = m.group("rest")
+    if re.search(r"\s(?:has|have|did|do|does)\s", f" {rest} ") or _SINCE_WINDOW.match(rest):
+        # "how many games since january (has) LeBron scored 30": a date window,
+        # counted by the normal reading.
+        return None
+    event = _SINCE_EVENT.match(rest)
+    if event and event.group("verb") in ("won", "lost") and not event.group("tail").strip():
+        # "since the Lakers lost": their last loss.
+        noun = "loss" if event.group("verb") == "lost" else "win"
+        rest = f"{event.group('subject')} last {noun}"
+    elif event and not re.search(r"\blast\s+\d", rest):
+        # "since LeBron scored 30": the last time he did.
+        rest = f"the last time {event.group('subject')} {event.group('verb')}{event.group('tail')}"
+    state = _build_parse_state(rest)
+    if state.get("start_date") or state.get("end_date"):
+        # A date window in the condition: the normal reading counts it.
+        return None
+    named_season = None
+    if not state.get("season_defaulted"):
+        if state.get("start_season") and state.get("end_season"):
+            named_season = f"{state['start_season']} to {state['end_season']}"
+        elif state.get("season"):
+            named_season = state["season"]
+    parsed = _finalize_route(state)
+    kwargs = parsed.get("route_kwargs") or {}
+    condition = (
+        kwargs.get("min_value") is not None
+        or kwargs.get("max_value") is not None
+        or kwargs.get("conditions")
+        or kwargs.get("special_event")
+        or kwargs.get("wins_only")
+        or kwargs.get("losses_only")
+    )
+    two_subjects = re.search(r"\b(?:both|either|together)\b", rest) or any(
+        detect_player(part) and detect_player(part) != kwargs.get("player")
+        for part in re.split(r"\band\b|,", rest)[1:]
+    )
+    bounds = list(kwargs.get("conditions") or [])
+    if kwargs.get("min_value") is not None or kwargs.get("max_value") is not None:
+        bounds.append({"stat": kwargs.get("stat")})
+    if (
+        two_subjects
+        # "since the Lakers won by 20": a bound the answer cannot name.
+        or any(b.get("stat") not in _YES_NO_STATS for b in bounds)
+        or parsed.get("route") not in ("player_game_finder", "game_finder")
+        or kwargs.get("last_n") != 1
+        or parsed.get("last_n_scope") == "window"
+        or not condition
+        or kwargs.get("unsupported_filters")
+    ):
+        refused = _single_season_refusal(_build_parse_state(query))
+        refused["route_kwargs"]["unsupported_filters"] = ["games_since"]
+        refused["notes"] = [
+            "unsupported_boundary: games since are counted after a game condition "
+            '("how many games since LeBron\'s last 30 point game", "since the Lakers lost"); '
+            "this one names no game condition the list can read"
+        ]
+        return refused
+    import json
+
+    out = dict(parsed)
+    out["normalized_query"] = normalize_text(query)
+    out["notes"] = list(parsed.get("notes") or []) + [
+        "games_since: "
+        + json.dumps(
+            {
+                "stat": kwargs.get("stat"),
+                "min_value": kwargs.get("min_value"),
+                "max_value": kwargs.get("max_value"),
+                "conditions": kwargs.get("conditions") or [],
+                "event": kwargs.get("special_event"),
+                "opponent": bool(kwargs.get("opponent")),
+                "named_season": named_season,
+                "home": bool(kwargs.get("home_only")),
+                "road": bool(kwargs.get("away_only")),
+                "outcome": "W"
+                if kwargs.get("wins_only")
+                else "L"
+                if kwargs.get("losses_only")
+                else None,
+                "season_type": kwargs.get("season_type"),
+            }
+        )
+    ]
+    return out
+
+
 def parse_query(query: str) -> dict:
+    since = _games_since(query)
+    if since is not None:
+        return since
     return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
 
 

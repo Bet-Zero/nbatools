@@ -1307,7 +1307,9 @@ _LAST_TIME_CONDITION = (
 _LAST_SINGLE_QUALIFYING_GAME = (
     r"\b(?:last|latest|most\s+recent)\s+(?:"
     rf"\d+(?={_stat_threshold_after_number(_SINGLE_GAME_NOUN)})"
-    r"|triple[- ]double\b(?!s)|double[- ]double\b(?!s))"
+    r"|triple[- ]double\b(?!s)|double[- ]double\b(?!s)"
+    # "the Lakers' last loss / win": the most recent one.
+    r"|(?:win|victory|loss|defeat)\b(?![\s-]+(?:streak|percentage|pct|total)))"
     r"|\bwhen\s+(?:did|was|has|have)\b.*\blast\s+(?:scor\w*|had|have|record\w*|post\w*|"
     r"drop\w*|put\s+up|made|make|hit|grab\w*|dish\w*|got|get)\b"
     + _LAST_TIME_CONDITION

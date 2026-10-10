@@ -1617,6 +1617,126 @@ def _played_phrase(player: Any, row: Any, team_games: Any) -> str | None:
     )
 
 
+_SINCE_EVENT_WORDS = {"triple_double": "triple-double", "double_double": "double-double"}
+
+
+def _since_bound_text(stat: str, low: Any, high: Any) -> str | None:
+    """ "30+ points", "more than 30 points", "fewer than 15 points"."""
+    word = _YES_NO_STAT_WORDS.get(stat)
+    if word is None or (low is None and high is None):
+        return None
+    if low is not None and high is None:
+        if float(low).is_integer():
+            return f"{compact_number(float(low))}+ {word}"
+        return f"more than {compact_number(float(int(low)))} {word}"
+    if low is None:
+        if float(high).is_integer():
+            return f"{compact_number(float(high))} or fewer {word}"
+        return f"fewer than {compact_number(float(int(high) + 1))} {word}"
+    return f"{compact_number(float(low))} to {compact_number(float(high))} {word}"
+
+
+def _add_games_since_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "how many games since LeBron's last 30 point game": "LeBron James has
+    played 1 game since his last game with 30+ points (32 points on 2026-09-26
+    vs the New York Knicks)." Every game he has played since counts."""
+    import json
+
+    note = next(
+        (
+            n
+            for n in metadata.get("notes") or []
+            if isinstance(n, str) and n.startswith("games_since:")
+        ),
+        None,
+    )
+    if not note or not isinstance(result, FinderResult) or result.games.empty:
+        return
+    request = json.loads(note.split(":", 1)[1])
+    row = result.games.iloc[0]
+    from nbatools.commands._seasons import default_end_season, resolve_seasons
+    from nbatools.commands.data_utils import (
+        load_player_games_for_seasons,
+        load_team_games_for_seasons,
+    )
+
+    bounds = list(request.get("conditions") or [])
+    if request.get("min_value") is not None or request.get("max_value") is not None:
+        bounds.insert(
+            0,
+            {
+                "stat": request.get("stat"),
+                "min_value": request.get("min_value"),
+                "max_value": request.get("max_value"),
+            },
+        )
+    texts = []
+    for bound in bounds:
+        text = _since_bound_text(bound.get("stat"), bound.get("min_value"), bound.get("max_value"))
+        if text is None:
+            return
+        if text not in texts:
+            texts.append(text)
+    player = metadata.get("player")
+    season_type = request.get("season_type") or "Regular Season"
+    try:
+        # Every game since, through the latest season served.
+        seasons = resolve_seasons(None, str(row["season"]), default_end_season(season_type))
+        if player:
+            games = load_player_games_for_seasons(seasons, season_type)
+            games = games[games["player_name"] == row["player_name"]]
+        else:
+            games = load_team_games_for_seasons(seasons, season_type)
+            games = games[games["team_abbr"] == row["team_abbr"]]
+    except (FileNotFoundError, ValueError, KeyError):
+        return
+    since = int((pd.to_datetime(games["game_date"]) > pd.Timestamp(row["game_date"])).sum())
+    event, outcome = request.get("event"), request.get("outcome")
+    result_word = {"W": "win", "L": "loss"}.get(outcome or "")
+    if texts:
+        what = "game with " + " and ".join(texts)
+        if result_word:
+            what += f" in a {result_word}"
+        shown = ", ".join(
+            f"{compact_number(float(row[stat]))} {_YES_NO_STAT_WORDS[stat]}"
+            for stat in dict.fromkeys(b.get("stat") for b in bounds)
+            if stat in row.index
+        )
+        shown = f"{shown} " if shown else ""
+    elif event:
+        what = _SINCE_EVENT_WORDS.get(event, event.replace("_", " "))
+        if result_word:
+            what += f" in a {result_word}"
+        shown = ""
+    elif result_word:
+        what = result_word
+        shown = ""
+    else:
+        return
+    if season_type == "Playoffs":
+        what = f"playoff {what}"
+    opponent = row.get("opponent_team_name")
+    if request.get("opponent") and isinstance(opponent, str):
+        what += f" against the {opponent}"
+    if request.get("home"):
+        what += " at home"
+    elif request.get("road"):
+        what += " on the road"
+    if request.get("named_season"):
+        # "since his last 30 point game in 2024-25": that season's last one.
+        what += f" in {request['named_season']}"
+    subject = player or _team_subject(metadata, result.games) or "They"
+    owner = "his" if player else "their"
+    verb = "has played" if player else "have played"
+    day = str(pd.Timestamp(row["game_date"]).date())
+    against = f" vs the {opponent}" if isinstance(opponent, str) else ""
+    games_word = "game" if since == 1 else "games"
+    metadata["answer_phrase"] = (
+        f"{subject} {verb} {since} {games_word} since {owner} last {what} "
+        f"({shown}on {day}{against})."
+    )
+
+
 def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "did LeBron score 30 last game": "No: LeBron James had 22 points in
     his last game (2026-10-06 vs the Miami Heat)."""
@@ -2898,6 +3018,7 @@ def _finalize_natural_query_result(
     _add_season_total_answer_metadata(metadata, result)
     _add_record_bar_answer_metadata(metadata, result)
     _add_yes_no_last_game_metadata(metadata, result)
+    _add_games_since_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
