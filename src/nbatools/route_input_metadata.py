@@ -78,7 +78,8 @@ TEAM_SAMPLE_FILTERS = COMMON_SAMPLE_FILTERS + (
 )
 
 SEASON_TYPE_VALUES = ("Regular Season", "Playoffs")
-SPLIT_VALUES = ("home_away", "wins_losses")
+SPLIT_VALUES = ("home_away", "wins_losses", "month")
+RANK_ORDER_VALUES = ("asc", "desc")
 SORT_BY_VALUES = ("game_date", "stat")
 RECORD_STAT_VALUES = ("wins", "losses", "win_pct")
 PRESENCE_STATE_VALUES = ("on", "off", "both")
@@ -542,7 +543,10 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         route="player_split_summary",
         implementation_module="nbatools.commands.player_split_summary",
         implementation_function="build_result",
-        description="Summarize a player sample by home/away or wins/losses buckets.",
+        description=(
+            "Summarize a player sample by home/away, wins/losses or calendar-month buckets; "
+            'a month split can be ranked ("best month").'
+        ),
         required_kwargs=("split",),
         optional_kwargs=(
             "season",
@@ -556,15 +560,24 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "min_value",
             "max_value",
             "last_n",
+            "rank_stat",
+            "rank_order",
         ),
-        allowed_values={"season_type": SEASON_TYPE_VALUES, "split": SPLIT_VALUES},
+        allowed_values={
+            "season_type": SEASON_TYPE_VALUES,
+            "split": SPLIT_VALUES,
+            "rank_order": RANK_ORDER_VALUES,
+        },
         examples=({"split": "home_away", "player": "Nikola Jokic", "season": "2025-26"},),
     ),
     "team_split_summary": RouteInputMetadata(
         route="team_split_summary",
         implementation_module="nbatools.commands.team_split_summary",
         implementation_function="build_result",
-        description="Summarize a team sample by home/away or wins/losses buckets.",
+        description=(
+            "Summarize a team sample by home/away, wins/losses or calendar-month buckets; "
+            'a month split can be ranked ("best month").'
+        ),
         required_kwargs=("split",),
         optional_kwargs=(
             "season",
@@ -577,8 +590,14 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "min_value",
             "max_value",
             "last_n",
+            "rank_stat",
+            "rank_order",
         ),
-        allowed_values={"season_type": SEASON_TYPE_VALUES, "split": SPLIT_VALUES},
+        allowed_values={
+            "season_type": SEASON_TYPE_VALUES,
+            "split": SPLIT_VALUES,
+            "rank_order": RANK_ORDER_VALUES,
+        },
         examples=({"split": "wins_losses", "team": "BOS", "season": "2025-26"},),
     ),
     "player_streak_finder": RouteInputMetadata(

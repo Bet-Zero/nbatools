@@ -239,9 +239,8 @@ def test_team_span_list_ranks_by_the_named_stat(query, rank):
 @pytest.mark.parametrize(
     "query",
     [
-        # No stat named, a split, or "summary": the team summary stays.
+        # No stat named, or "summary": the team summary stays.
         "Lakers best games since 2024",
-        "Lakers games by month since 2024",
         "Lakers top 3 games by margin since 2024",
         "Lakers highest scoring games since 2024 summary",
         "Lakers stats since 2024",
@@ -253,6 +252,11 @@ def test_team_span_list_ranks_by_the_named_stat(query, rank):
 )
 def test_team_span_summaries_stay(query):
     assert execute_natural_query(query).route == "game_summary"
+
+
+def test_team_span_by_month_is_a_month_split():
+    # Not a ranked game list: the games divided by calendar month.
+    assert execute_natural_query("Lakers games by month since 2024").route == "team_split_summary"
 
 
 def test_team_span_list_by_point_differential():

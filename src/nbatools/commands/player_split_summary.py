@@ -2,6 +2,14 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._month_split import (
+    MONTH_KEY_COLUMN,
+    add_requested_stat,
+    assign_month_buckets,
+    order_month_buckets,
+    rank_column,
+    sample_stat,
+)
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
@@ -43,10 +51,11 @@ ALLOWED_STATS = {
     "reb_pct": "reb_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
+    "month": (),
 }
 
 
@@ -158,14 +167,17 @@ def build_result(
     last_n: int | None = None,
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    rank_stat: str | None = None,
+    rank_order: str | None = None,
     **sample_filters,
 ) -> SplitSummaryResult | NoResult:
-    """Split one player's sample by home/away or wins/losses.
+    """Split one player's sample by home/away, wins/losses or month.
 
     The sample is exactly what the player summary would describe: dates,
     opponent, the other location/outcome flag, stat conditions, teammate
     availability, role, schedule context and the last-N window all apply
-    first, then the split divides those games.
+    first, then the split divides those games. A month split can be ranked
+    by ``rank_stat`` ("best month").
     """
     split = split.lower()
     if split not in ALLOWED_SPLITS:
@@ -184,7 +196,7 @@ def build_result(
         player=player,
         team=team,
         opponent=opponent,
-        stat=stat,
+        stat=sample_stat(stat, min_value, max_value) if split == "month" else stat,
         min_value=min_value,
         max_value=max_value,
         conditions=conditions,
@@ -212,6 +224,8 @@ def build_result(
     if split == "home_away":
         # is_home is 0/1 in some sources and bool in others; compare numerically.
         df["bucket"] = df["is_home"].astype(int).eq(1).map({True: "home", False: "away"})
+    elif split == "month":
+        df = assign_month_buckets(df)
     else:
         df["bucket"] = df["wl"].map({"W": "wins", "L": "losses"})
 
@@ -238,25 +252,42 @@ def build_result(
 
     bucket_rows = []
     for bucket_name, bucket_df in split_df.groupby("bucket", sort=False):
-        bucket_rows.append(_summarize_bucket(bucket_df, bucket_name))
+        row = _summarize_bucket(bucket_df, bucket_name)
+        if split == "month":
+            row = add_requested_stat(row, bucket_df, stat)
+            row = add_requested_stat(row, bucket_df, rank_stat)
+        bucket_rows.append(row)
 
     split_comparison = pd.DataFrame(bucket_rows)
 
     grouped_adv = compute_grouped_sample_advanced_metrics(context_df, "bucket")
     split_comparison = split_comparison.merge(grouped_adv, on="bucket", how="left")
 
-    bucket_order = {
-        "home": 0,
-        "away": 1,
-        "wins": 0,
-        "losses": 1,
-    }
-    split_comparison["_sort"] = split_comparison["bucket"].map(bucket_order).fillna(999)
-    split_comparison = (
-        split_comparison.sort_values(["_sort", "bucket"])
-        .drop(columns="_sort")
-        .reset_index(drop=True)
-    )
+    if split == "month":
+        month_keys = dict(zip(split_df["bucket"], split_df[MONTH_KEY_COLUMN], strict=False))
+        ranked_by = rank_column(rank_stat, "pts_avg") if rank_order else None
+        split_comparison = order_month_buckets(
+            split_comparison,
+            month_keys,
+            rank_column=ranked_by,
+            rank_order=rank_order,
+        )
+        if ranked_by:
+            summary["ranked_by"] = ranked_by
+            summary["rank_order"] = rank_order
+    else:
+        bucket_order = {
+            "home": 0,
+            "away": 1,
+            "wins": 0,
+            "losses": 1,
+        }
+        split_comparison["_sort"] = split_comparison["bucket"].map(bucket_order).fillna(999)
+        split_comparison = (
+            split_comparison.sort_values(["_sort", "bucket"])
+            .drop(columns="_sort")
+            .reset_index(drop=True)
+        )
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 

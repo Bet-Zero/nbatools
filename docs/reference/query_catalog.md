@@ -172,7 +172,7 @@ If a feature is not reflected here, it should not be assumed shipped.
   `team_record_leaderboard` queries in `2024-25` and `2025-26`; missing or
   untrusted coverage returns `no_result` / `filter_not_supported`, not a broad
   full-season record)
-- split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
+- split views: `home vs away`, `home versus away`, `home vs road`, `home and away record`, `wins vs losses`, `wins versus losses`, `in wins and losses`, `by month`, `month by month`, `monthly`, `best month`, `worst month`, `best scoring / shooting / 3 point shooting month`, `which month did he score the most`
 
 ### 2.4 Threshold language
 
@@ -467,6 +467,19 @@ Examples:
 - `Jokic home away split last 20 games`
 - `Jokic wins vs losses`
 - `How does Anthony Edwards shoot in wins versus losses?`
+- `LeBron points per game by month`, `Curry 3 point shooting by month`
+- `best month for LeBron` (most points per game), `LeBron best 3 point shooting month`,
+  `which month did LeBron have the most 30 point games`
+
+A month split has one row per calendar month of one year (`March 2026`), so a
+span keeps each year's months apart. Rates are the month's totals (makes over
+attempts); counting stats show the per-game average and the month's total. A
+ranked month ("best month") answers with the top month and names every tie;
+months with none of the filtered games are not rows, so "fewest" qualifying
+games is not read off the split. "which month did he score the most points" ranks the
+month's total ("average the most" ranks per game). Comparisons (`LeBron vs
+Curry by month`), leaders (`Lakers leading scorer by month`) and a team asked
+about in a player's games refuse rather than drop the month.
 
 ### Team split
 
@@ -475,6 +488,10 @@ Examples:
 - `Celtics home vs away`
 - `Celtics wins vs losses`
 - `Lakers playoff home vs away since 2020`
+- `Lakers home vs road`, `Lakers home and away record`
+- `Lakers record by month`, `Lakers best month` / `worst month` (by record;
+  ties on percentage go to more wins / more losses), `Lakers highest scoring
+  month`, `which month did the Lakers win the most games` (every game counts)
 
 ---
 

@@ -177,6 +177,9 @@ from nbatools.commands._parse_helpers import (
     detect_lineup_query as detect_lineup_query,
 )
 from nbatools.commands._parse_helpers import (
+    detect_month_rank as detect_month_rank,
+)
+from nbatools.commands._parse_helpers import (
     detect_multi_player_aggregate as detect_multi_player_aggregate,
 )
 from nbatools.commands._parse_helpers import (
@@ -695,6 +698,7 @@ _ROUTE_KWARG_BACKED_FILTERS = {
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
+    "month": (),
 }
 _SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
 
@@ -835,6 +839,10 @@ def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: di
     if detected_special_event and executed_special_event != detected_special_event:
         markers.append("special_event")
 
+    if parsed.get("split_type") == "month" and route not in _SPLIT_AXIS_ROUTES:
+        # "LeBron vs Curry by month", "Lakers leading scorer by month".
+        markers.append("month_split")
+
     axis_fields: tuple[str, ...] = ()
     if route in _SPLIT_AXIS_ROUTES:
         split_type = route_kwargs.get("split") or parsed.get("split_type")
@@ -847,6 +855,57 @@ def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: di
             markers.append(field)
 
     return markers
+
+
+def _month_rank_kwargs(parsed: dict, split_type: str | None) -> dict:
+    """ "best month": rank the month split by the question's stat; "free throw
+    shooting by month in 30 point games" shows the rate beside the bound."""
+    if split_type != "month":
+        return {}
+    month_rank = parsed.get("month_rank")
+    if month_rank:
+        return {"rank_stat": month_rank["stat"], "rank_order": month_rank["order"]}
+    if parsed.get("month_stat"):
+        return {"rank_stat": parsed["month_stat"]}
+    return {}
+
+
+# Counting stats "which month did he score the most points" ranks by total.
+_MONTH_TOTAL_STATS = {
+    "pts", "reb", "ast", "stl", "blk", "tov", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta",
+    "oreb", "dreb", "pf", "minutes",
+}  # fmt: skip
+_MONTH_LEADER_WORDS = re.compile(
+    r"\b(?:leading|leaders?|leads?|led)\b|^\s*(?:who|whom)\b"
+    r"|\bwho\s+(?:led|leads?|scored|had|has|was|is|got|averaged|averages)\b"
+    r"|\bwhich\s+(?:\w+\s+)?players?\b"
+)
+# "Lakers best month in games LeBron scored 30": the player only names the
+# games; the team is the subject.
+_MONTH_CONDITION_LEAD = re.compile(
+    r"\b(?:in\s+games?(?:\s+(?:where|when|that|in\s+which))?|when|while|where|if|after|once)\s+"
+    # "in LeBron's 30 point games".
+    r"|\bin\s+(?=[a-z.\-]+(?:'s|s')\s)"
+)
+
+
+def _month_split_blocked(q: str, *, player: str | None, team: str | None, comparison: bool) -> bool:
+    """A month split only divides one player's or one team's games.
+
+    Comparisons ("LeBron vs Curry by month"), leaders ("Lakers leading scorer
+    by month") and a team asked about in a player's games ("Lakers best month
+    in games LeBron scored 30") have no month split; they refuse rather than
+    drop the month or answer for the wrong subject.
+    """
+    from nbatools.commands._matchup_utils import detect_player
+
+    if comparison or _MONTH_LEADER_WORDS.search(q):
+        return True
+    if player and team:
+        lead = _MONTH_CONDITION_LEAD.search(q)
+        if lead and not detect_player(q[: lead.start()]) and detect_player(q[lead.end() :]):
+            return True
+    return False
 
 
 def _team_record_availability_intent(
@@ -1724,6 +1783,7 @@ __all__ = [
     "detect_half",
     "detect_season_high_intent",
     "detect_season_type",
+    "detect_month_rank",
     "detect_split_type",
     "detect_stat",
     "detect_wins_losses",
@@ -1848,6 +1908,19 @@ _SEASON_SHOOTING_PATTERNS = (
     (r"\bfree[\s-]?throw\s+shooting\s+seasons?\b", "ft_pct"),
     (r"\bshooting\s+seasons?\b", "fg_pct"),
 )
+
+
+_MONTH_SHOOTING_PATTERNS = tuple(
+    (pattern.replace(r"\s+seasons?\b", r"\b"), stat) for pattern, stat in _SEASON_SHOOTING_PATTERNS
+)
+
+
+def _month_shooting_stat(q: str) -> tuple[str, tuple[int, int]] | None:
+    for pattern, stat in _MONTH_SHOOTING_PATTERNS:
+        match = re.search(pattern, q)
+        if match:
+            return stat, match.span()
+    return None
 
 
 def _season_shooting_stat(q: str) -> str | None:
@@ -3217,8 +3290,70 @@ def _build_parse_state(query: str) -> dict:
         streak_default_window = False
         pre_streak_scope = None
 
+    # "best month", "best 3 point shooting month", "which month did he score
+    # the most": a ranked month split. The wording's stat ("scoring", "3 point
+    # shooting") is the ranking; otherwise an unbounded stat the question names
+    # is, and a stat that only filters the games ("in 30 point games") is not.
+    month_rank = detect_month_rank(q) if split_type == "month" else None
+    shooting = _month_shooting_stat(q) if split_type == "month" else None
+    if shooting and not threshold_conditions:
+        # "Curry 3 point shooting by month": the shooting rate, and its "3" is
+        # not a points bound. A bound elsewhere ("in 30 point games") keeps
+        # its own stat.
+        start, end = shooting[1]
+        if min_value is None or extract_min_value(q[:start] + q[end:], stat) is None:
+            stat, min_value = shooting[0], None
+    month_stat = shooting[0] if shooting and shooting[0] != stat else None
+    if month_rank:
+        if month_rank["span"] and not threshold_conditions:
+            start, end = month_rank["span"]
+            min_value = extract_min_value(q[:start] + q[end:], stat)
+        bounded = bool(min_value is not None or max_value is not None or threshold_conditions)
+        rank_stat = month_rank["stat"]
+        if rank_stat and not bounded:
+            stat = rank_stat
+        elif month_rank.get("needs_stat"):
+            # "which month did he have the most 30 point games" counts the
+            # qualifying games; "which month did they win the most" the wins.
+            if bounded:
+                rank_stat = "games"
+            elif stat:
+                rank_stat = stat
+                if stat in _MONTH_TOTAL_STATS and not re.search(
+                    r"\b(?:average|averaged|averages|avg|per\s+game|ppg|rpg|apg)\b", q
+                ):
+                    # "which month did he score the most points": the month's
+                    # total, not its per-game average.
+                    rank_stat = f"{stat}_sum"
+            elif re.search(r"\b(?:win|wins|won)\b", q):
+                rank_stat = "wins"
+            elif re.search(r"\b(?:lose|losses|lost)\b", q):
+                rank_stat = "losses"
+        elif not rank_stat and stat and not bounded:
+            rank_stat = stat
+        if (month_rank.get("needs_stat") and rank_stat is None) or (
+            # Months with none of the games are not in the split, so "fewest"
+            # cannot be read off it.
+            rank_stat == "games" and month_rank["order"] == "asc"
+        ):
+            month_rank = None
+            split_type = None
+        else:
+            if rank_stat in ("wins", "losses"):
+                # "which month did they win the most": every game counts, the
+                # wins are the ranking, not a filter.
+                wins_only = losses_only = False
+            month_rank = {"order": month_rank["order"], "stat": rank_stat}
+
+    month_split_blocked = split_type == "month" and _month_split_blocked(
+        q, player=player, team=team, comparison=bool(player_a or player_b or team_a or team_b)
+    )
+
     return {
         "normalized_query": q,
+        "month_rank": month_rank,
+        "month_stat": month_stat,
+        "month_split_blocked": month_split_blocked,
         "opponent_record_list": opponent_record_list,
         "season": season,
         "start_season": start_season,
@@ -3523,7 +3658,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     min_games = parsed.get("min_games")
     top_n = parsed.get("top_n")
     game_top_n = parsed.get("game_top_n")
-    split_type = parsed["split_type"]
+    split_type = None if parsed.get("month_split_blocked") else parsed["split_type"]
     home_only = parsed["home_only"]
     away_only = parsed["away_only"]
     wins_only = parsed["wins_only"]
@@ -4795,6 +4930,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "max_value": max_value,
             "last_n": last_n,
             "special_event": special_event,
+            **_month_rank_kwargs(parsed, split_type),
         }
     elif split_type and team and not team_a and not team_b:
         route = "team_split_summary"
@@ -4817,6 +4953,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "min_value": min_value,
             "max_value": max_value,
             "last_n": last_n,
+            **_month_rank_kwargs(parsed, split_type),
         }
     elif player_a and player_b and bare_player_vs_player:
         route = "player_compare"

@@ -2078,9 +2078,69 @@ def default_season_for_context(season_type: str) -> str:
     return default_end_season(season_type)
 
 
+# "by month", "month by month", "monthly", "each month", "split by month".
+# "this month" / "last month" are date windows, not splits.
+_MONTH_SPLIT_RE = re.compile(
+    r"\b(?:by|per|each|every|in\s+each|for\s+each)\s+(?:calendar\s+)?month\b"
+    r"|\bmonth[\s-]+(?:by|to)[\s-]+month\b|\bmonthly\b"
+    r"|\bmonth(?:ly)?\s+splits?\b|\bsplits?\s+by\s+month\b"
+)
+# "best month", "worst month", "best scoring month", "best 3 point shooting
+# month": the adjective names the stat when the question names none.
+_MONTH_RANK_STATS = {
+    "scoring": "pts",
+    "rebounding": "reb",
+    "passing": "ast",
+    "shooting": "fg_pct",
+}
+_MONTH_RANK_RE = re.compile(
+    r"\b(?P<word>best|worst|top|greatest|highest|lowest|biggest)\s+"
+    r"(?:(?P<kind>3[\s-]?(?:point|pt)|three[\s-]?(?:point|pt)|free[\s-]?throw)\s+)?"
+    r"(?:(?P<adj>scoring|shooting|rebounding|passing)\s+)?months?\b"
+)
+_WHICH_MONTH_RE = re.compile(r"\b(?:which|what)\s+month\b")
+_FEWEST_RE = re.compile(r"\b(?:fewest|least|lowest|worst|fewer|minimum)\b")
+
+
+def detect_month_rank(text: str) -> dict | None:
+    """ "best month for LeBron" -> {"order": "desc", "stat": None}.
+
+    ``stat`` is what the wording itself names ("scoring" is points, "3 point
+    shooting" is three-point percentage); None leaves it to the question's
+    stat or the route default. "which month did he score the most" ranks by
+    the named stat; "which month" with no stat is not a ranking.
+    """
+    match = _MONTH_RANK_RE.search(text)
+    if match:
+        word, kind, adj = match.group("word"), match.group("kind"), match.group("adj")
+        if word in ("highest", "lowest", "biggest") and not adj:
+            return None
+        if kind and adj != "shooting":
+            return None
+        stat = _MONTH_RANK_STATS.get(adj) if adj else None
+        if kind and adj == "shooting":
+            stat = "ft_pct" if kind.startswith("free") else "fg3_pct"
+        order = "asc" if word in ("worst", "lowest") else "desc"
+        # The "3" of "3 point shooting" is not a points bound.
+        span = match.span() if kind else None
+        return {"order": order, "stat": stat, "span": span}
+    if _WHICH_MONTH_RE.search(text):
+        order = "asc" if _FEWEST_RE.search(text) else "desc"
+        return {"order": order, "stat": None, "needs_stat": True, "span": None}
+    return None
+
+
 def detect_split_type(text: str) -> str | None:
-    if re.search(r"\bhome\s+(?:vs\.?|versus)\s+away\b|\bhome\s+away\b|\baway\s+home\b", text):
+    if re.search(
+        r"\bhome\s+(?:vs\.?|versus|and|&|or)\s+(?:away|road)\b|\bhome\s*[/-]?\s*(?:away|road)\b"
+        r"|\b(?:away|road)\s+(?:vs\.?|versus|and|&|or)\s+home\b|\b(?:away|road)\s*[/-]?\s*home\b"
+        r"|\bat\s+home\s+(?:vs\.?|versus|and|&|or)\s+on\s+the\s+road\b"
+        r"|\bon\s+the\s+road\s+(?:vs\.?|versus|and|&|or)\s+at\s+home\b",
+        text,
+    ):
         return "home_away"
+    if _MONTH_SPLIT_RE.search(text) or detect_month_rank(text):
+        return "month"
     if re.search(
         r"\bwins?\s+(?:vs\.?|versus)\s+loss(?:es)?\b|\bwins?\s+loss(?:es)?\b|\bwins_losses\b|\bin\s+wins\s+(?:and|&)\s+loss(?:es)?\b",
         text,

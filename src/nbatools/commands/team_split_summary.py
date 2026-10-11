@@ -2,6 +2,14 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._month_split import (
+    MONTH_KEY_COLUMN,
+    add_requested_stat,
+    assign_month_buckets,
+    order_month_buckets,
+    rank_column,
+    sample_stat,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import describe_opponent_filter, team_value_mask
@@ -31,10 +39,11 @@ ALLOWED_STATS = {
     "ts_pct": "ts_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
+    "month": (),
 }
 
 
@@ -137,13 +146,16 @@ def build_result(
     last_n: int | None = None,
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
+    rank_stat: str | None = None,
+    rank_order: str | None = None,
     **sample_filters,
 ) -> SplitSummaryResult | NoResult:
-    """Split one team's sample by home/away or wins/losses.
+    """Split one team's sample by home/away, wins/losses or month.
 
     The sample is exactly what the team summary would describe (dates,
     opponent, the other location/outcome flag, stat conditions, teammate
-    availability, last-N window); the split then divides those games.
+    availability, last-N window); the split then divides those games. A
+    month split can be ranked by ``rank_stat`` ("best month" is the record).
     """
     split = split.lower()
     if split not in ALLOWED_SPLITS:
@@ -160,7 +172,7 @@ def build_result(
         season_type=season_type,
         team=team,
         opponent=opponent,
-        stat=stat,
+        stat=sample_stat(stat, min_value, max_value) if split == "month" else stat,
         min_value=min_value,
         max_value=max_value,
         conditions=conditions,
@@ -178,6 +190,18 @@ def build_result(
     team_name = df["team_name"].mode().iloc[0] if "team_name" in df.columns else team
     season_min = df["season"].min()
     season_max = df["season"].max()
+
+    if split == "month":
+        return _month_split_result(
+            df,
+            team_name=team_name,
+            season_type=season_type,
+            seasons=seasons,
+            opponent=opponent,
+            stat=stat,
+            rank_stat=rank_stat,
+            rank_order=rank_order,
+        )
 
     if split == "home_away":
         bucket_a_name = "home"
@@ -210,8 +234,15 @@ def build_result(
         ]
     )
 
-    current_through = compute_current_through_for_seasons(seasons, season_type)
+    return SplitSummaryResult(
+        summary=summary,
+        split_comparison=split_comparison,
+        current_through=compute_current_through_for_seasons(seasons, season_type),
+        caveats=_caveats(seasons, opponent),
+    )
 
+
+def _caveats(seasons: list[str], opponent) -> list[str]:
     caveats: list[str] = []
     if len(seasons) > 1:
         caveats.append(
@@ -221,12 +252,50 @@ def build_result(
     if opponent:
         # "against winning teams" passes a list of opponents.
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
+    return caveats
 
+
+def _month_split_result(
+    df: pd.DataFrame,
+    *,
+    team_name: str | None,
+    season_type: str,
+    seasons: list[str],
+    opponent,
+    stat: str | None,
+    rank_stat: str | None,
+    rank_order: str | None,
+) -> SplitSummaryResult:
+    """One row per calendar month; "best month" ranks by record by default."""
+    df = assign_month_buckets(df)
+    rows = []
+    for bucket, bucket_df in df.groupby("bucket", sort=False):
+        row = add_requested_stat(_summarize_bucket(bucket_df, bucket), bucket_df, stat)
+        rows.append(add_requested_stat(row, bucket_df, rank_stat))
+    month_keys = dict(zip(df["bucket"], df[MONTH_KEY_COLUMN], strict=False))
+    ranked_by = rank_column(rank_stat, "win_pct") if rank_order else None
+    split_comparison = order_month_buckets(
+        pd.DataFrame(rows),
+        month_keys,
+        rank_column=ranked_by,
+        rank_order=rank_order,
+    )
+    summary_row = {
+        "team_name": team_name,
+        "season_start": df["season"].min(),
+        "season_end": df["season"].max(),
+        "season_type": season_type,
+        "split": "month",
+        "games_total": int(len(df)),
+    }
+    if ranked_by:
+        summary_row["ranked_by"] = ranked_by
+        summary_row["rank_order"] = rank_order
     return SplitSummaryResult(
-        summary=summary,
+        summary=pd.DataFrame([summary_row]),
         split_comparison=split_comparison,
-        current_through=current_through,
-        caveats=caveats,
+        current_through=compute_current_through_for_seasons(seasons, season_type),
+        caveats=_caveats(seasons, opponent),
     )
 
 

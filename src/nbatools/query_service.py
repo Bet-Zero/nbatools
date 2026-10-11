@@ -1954,6 +1954,112 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
     metadata["count_phrase"] = metadata["answer_phrase"]
 
 
+_MONTH_RATE_LABELS = {
+    "fg_pct": "field goal percentage",
+    "fg3_pct": "3-point percentage",
+    "ft_pct": "free throw percentage",
+    "efg_pct": "effective field goal percentage",
+    "ts_pct": "true shooting percentage",
+    "usg_pct": "usage rate",
+    "ast_pct": "assist percentage",
+    "reb_pct": "rebound percentage",
+    "tov_pct": "turnover percentage",
+}
+_MONTH_SHOOTING_RATES = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
+_MONTH_COUNT_LABELS = {
+    "games": "qualifying games",
+    "wins": "wins",
+    "losses": "losses",
+}
+
+
+def _join_names(names: list[str]) -> str:
+    if len(names) <= 1:
+        return "".join(names)
+    return ", ".join(names[:-1]) + f" and {names[-1]}"
+
+
+def _add_month_rank_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "LeBron James's month with the most points per game in the 2025-26
+    regular season: November 2025 (30.0 in 3 games)."; ties are all named."""
+    if not isinstance(result, SplitSummaryResult):
+        return
+    summary, table = result.summary, result.split_comparison
+    if summary is None or summary.empty or table is None or table.empty:
+        return
+    head = summary.iloc[0]
+    column = head.get("ranked_by")
+    order = head.get("rank_order")
+    if not isinstance(column, str) or column not in table.columns or order not in ("asc", "desc"):
+        return
+    top = table.iloc[0]
+    if pd.isna(top[column]):
+        return
+    same = table[column] == top[column]
+    if column == "win_pct":
+        tie = "losses" if order == "asc" else "wins"
+        same &= table[tie] == top[tie]
+    tied = table[same]
+    months = list(tied["bucket"].astype(str))
+
+    player = _clean_text(head.get("player_name"))
+    team = _clean_text(head.get("team_name"))
+    if player:
+        subject = f"{player}'s"
+    elif team:
+        subject = f"The {team}'" if team.endswith("s") else f"The {team}'s"
+    else:
+        return
+    applied = [f for f in metadata.get("applied_filters") or [] if isinstance(f, dict)]
+    window = next((f.get("value") for f in applied if f.get("kind") == "window"), None)
+    context = _count_context(
+        metadata,
+        player=bool(player),
+        last_n=int(window) if str(window or "").isdigit() else None,
+        last_n_scope="window",
+    )
+    filters = [f for f in applied if f.get("kind") not in ("season", "window")]
+    if filters and column != "games":
+        # The filters show beside the answer; say the ranking is within them.
+        context = f"among the filtered games {context}"
+    most = "fewest" if order == "asc" else "most"
+    each = " each" if len(months) > 1 else ""
+
+    if column == "win_pct":
+        best = "worst" if order == "asc" else "best"
+        record = f"{int(top['wins'])}-{int(top['losses'])}"
+        lead = f"{subject} {best} month by record {context}"
+        value = f"{record}{each}"
+    elif column.endswith("_sum"):
+        # "which month did he score the most points": the month's total.
+        stat = column.removesuffix("_sum")
+        lead = f"{subject} month with the {most} {stat_phrase_label(stat)} {context}"
+        value = f"{float(top[column]):g}{each}"
+        if len(months) == 1:
+            games = int(top["games"])
+            value += f" in {games} game" + ("" if games == 1 else "s")
+    elif column in _MONTH_COUNT_LABELS:
+        lead = f"{subject} month with the {most} {_MONTH_COUNT_LABELS[column]} {context}"
+        value = f"{int(top[column])}{each}"
+    else:
+        stat = column.removesuffix("_avg")
+        if stat in _MONTH_RATE_LABELS:
+            high = "lowest" if order == "asc" else "highest"
+            lead = f"{subject} month with the {high} {_MONTH_RATE_LABELS[stat]} {context}"
+            # Shooting rates are fractions; usage and the other rates are
+            # already percentages.
+            scale = 100 if stat in _MONTH_SHOOTING_RATES else 1
+            number = float(top[column]) * scale
+            value = f"{number:.1f}%{each}"
+        else:
+            lead = f"{subject} month with the {most} {stat_phrase_label(stat)} per game {context}"
+            value = f"{float(top[column]):.1f}{each}"
+        if len(months) == 1:
+            games = int(top["games"])
+            value += f" in {games} game" + ("" if games == 1 else "s")
+    metadata["answer_phrase"] = f"{lead}: {_join_names(months)} ({value})."
+
+
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
     Boston Celtics (8 times) and the New York Knicks (5)."."""
@@ -3089,6 +3195,7 @@ def _finalize_natural_query_result(
     _add_series_comebacks_answer_metadata(metadata, result)
     _add_opponent_record_list_answer_metadata(metadata, result)
     _add_missed_games_metadata(metadata, result)
+    _add_month_rank_answer_metadata(metadata, result)
     _add_season_total_answer_metadata(metadata, result)
     _add_record_bar_answer_metadata(metadata, result)
     _add_yes_no_last_game_metadata(metadata, result)
@@ -3571,6 +3678,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     _add_player_stretch_answer_metadata(metadata, result)
     _add_playoff_history_answer_metadata(metadata, result)
     _add_titles_leaderboard_answer_metadata(metadata, result)
+    _add_month_rank_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
