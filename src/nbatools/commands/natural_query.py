@@ -8879,11 +8879,155 @@ def _team_players_threshold(parsed: dict) -> dict | None:
     return out
 
 
+# "how many games has LeBron missed", "games LeBron missed this season": his
+# team's games he did not play (it counted the games he played).
+_MISSED_GAMES = re.compile(
+    r"\bmiss(?:ed|es|ing)?\b(?!\s+(?:shots?|threes?|free|field|layups?|dunks?|the\s+playoffs|"
+    r"playoffs|the\s+postseason|a\s+shot|the\s+cut|\d|time|out\s+on))"
+)
+
+
+# Only these shapes, with the missing player as the subject: "how many
+# (home) games has/did X miss", "games X (has) missed", "X missed games".
+_MISSED_SHAPES = (
+    re.compile(
+        r"^how\s+many\s+(?:(?:home|road|away|playoff|regular\s+season)\s+)?games\s+"
+        r"(?:has|have|did|does|had)\s+(?P<who>.+?)\s+(?:miss|missed)\b(?P<rest>.*)$"
+    ),
+    re.compile(
+        r"^(?:(?:which|what)\s+)?(?:(?:home|road|away|playoff)\s+)?games\s+(?:has\s+|have\s+|did\s+)?"
+        r"(?P<who>.+?)\s+(?:has\s+|have\s+)?(?:miss|missed)\b(?P<rest>.*)$"
+    ),
+    re.compile(r"^(?P<who>.+?)\s+missed\s+games\b(?P<rest>.*)$"),
+    re.compile(
+        r"^(?:the\s+)?number\s+of\s+games\s+(?P<who>.+?)\s+(?:has\s+|have\s+)?missed\b(?P<rest>.*)$"
+    ),
+    re.compile(r"^(?P<who>.+?)\s+games\s+missed\b(?P<rest>.*)$"),
+)
+# Season and span wording, read by the parse: taken out before the check.
+_MISSED_SEASON_WORDS = re.compile(
+    r"\b\d{4}(?:-\d{2})?(?:\s+(?:and|to|through)\s+\d{4}(?:-\d{2})?)?\b"
+    r"|\b(?:regular\s+season|season|seasons|playoffs|postseason)\b"
+)
+# Anything else asked about those games is not a missed-games count.
+_MISSED_NOT_A_COUNT = re.compile(
+    r"\b(?:shots?|free\s+throws?|threes?|3s|field\s+goals?|layups?|dunks?|misses|points?|"
+    r"rebounds?|assists?|stats?|average\w*|per\s+game|more\s+than|fewer\s+than|over|under|"
+    r"at\s+least|consecutive|in\s+a\s+row|straight|streak|record|win|wins|won|lose|lost|"
+    r"loss(?:es)?|how\s+did|when|while|with|without|and|all[\s-]?star|break|christmas)\b|\d+"
+)
+
+
+def _missed_games(parsed: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    player = parsed.get("player")
+    if not player or not _MISSED_GAMES.search(q) or not re.search(r"\bgames?\b", q):
+        return None
+    if any(
+        parsed.get(k)
+        for k in (
+            "player_a",
+            "player_b",
+            "team_a",
+            "team_b",
+            "last_n",
+            "with_player",
+            "without_player",
+            "opponent_player",
+        )
+    ):
+        return None
+    shape = next((m for rx in _MISSED_SHAPES if (m := rx.match(q))), None)
+    if shape is None:
+        return None
+    who = shape.group("who")
+    if len(who.split()) > 3 or _team_mentions(who) or _MISSED_NOT_A_COUNT.search(who):
+        # "how many games did the Lakers win when LeBron missed": not his count.
+        return None
+    rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", shape.group("rest")))
+    if _MISSED_NOT_A_COUNT.search(rest):
+        return None
+    if re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season"):
+        # "in 2024-25 and 2025-26": the parse keeps one season; ask for a span.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["missed_games_seasons"]
+        refused["notes"] = [
+            "unsupported_boundary: two named seasons are not read together; ask for a span "
+            '("from 2024-25 to 2025-26")'
+        ]
+        return refused
+    from nbatools.commands._seasons import resolve_seasons
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    season_type = parsed.get("season_type") or "Regular Season"
+    season = parsed.get("season")
+    if not (season or parsed.get("start_season")):
+        season = default_season_for_context(season_type)
+    seasons = resolve_seasons(season, parsed.get("start_season"), parsed.get("end_season"))
+    refused = None
+    try:
+        rows = load_player_games_for_seasons(seasons, season_type, player=player)
+        rows = rows[rows["player_name"] == player]
+    except FileNotFoundError:
+        rows = None
+    teams = sorted(set(rows["team_abbr"])) if rows is not None else []
+    if len(teams) != 1 or (parsed.get("team") and parsed["team"] != teams[0]):
+        # Traded (or not found): the games he missed are not one team's.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["missed_games_team"]
+        refused["notes"] = [
+            "unsupported_boundary: games missed are counted over one team's season; this "
+            "player played for more than one team (or none) in that span"
+        ]
+        return refused
+    kwargs = {
+        "season": season,
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": season_type,
+        "team": teams[0],
+        "opponent": parsed.get("opponent"),
+        "home_only": bool(parsed.get("home_only")),
+        "away_only": bool(parsed.get("away_only")),
+        "wins_only": bool(parsed.get("wins_only")),
+        "losses_only": bool(parsed.get("losses_only")),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "without_player": player,
+        "sort_by": "game_date",
+        "limit": 100000,
+    }
+    out = dict(parsed)
+    out.update(
+        route="game_finder",
+        intent="finder",
+        route_kwargs=kwargs,
+        # Answered as a count with the games listed ("games LeBron missed":
+        # none is an answer, not an empty sample).
+        count_intent=True,
+        player=None,
+        team=teams[0],
+        notes=list(parsed.get("notes") or [])
+        + [
+            f"missed_games: {teams[0]} games {player} did not play"
+            + ("; home" if kwargs["home_only"] else "; road" if kwargs["away_only"] else "")
+        ],
+    )
+    for key in ("season", "start_season", "end_season"):
+        out[key] = kwargs[key]
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     win_totals = _team_win_total_count(parsed)
     if win_totals is not None:
         return win_totals
+    missed = _missed_games(parsed)
+    if missed is not None:
+        return missed
     if parsed.get("team_count_unsupported"):
         # "how many teams did the Lakers never beat": the games route would
         # count games, not teams.
