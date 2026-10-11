@@ -94,6 +94,58 @@ describe("ResultRenderer split and streak patterns", () => {
   });
 
 
+  it("answers a ranked month split with the month", () => {
+    const data = makeResponse({
+      query: "Lakers best month",
+      route: "team_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers best month",
+          route: "team_split_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          split_type: "month",
+          answer_phrase:
+            "The Los Angeles Lakers' best month by record in the 2025-26 regular season: November 2025 (12-2).",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              season_start: "2025-26",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              split: "month",
+              games_total: 28,
+              ranked_by: "win_pct",
+              rank_order: "desc",
+            },
+          ],
+          split_comparison: [
+            { bucket: "November 2025", games: 14, wins: 12, losses: 2, win_pct: 0.857, pts_avg: 118.2 },
+            { bucket: "December 2025", games: 14, wins: 8, losses: 6, win_pct: 0.571, pts_avg: 112.4 },
+          ],
+        },
+        current_through: "2026-01-01",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Los Angeles Lakers' best month by record in the 2025-26 regular season: November 2025 (12-2).",
+      ),
+    ).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Split buckets" });
+    expect(within(table).getByText("November 2025")).toBeInTheDocument();
+    expect(within(table).getByText("12-2")).toBeInTheDocument();
+  });
+
   it("renders team split summaries with team identity", () => {
     const data = makeResponse({
       query: "Lakers home vs away",

@@ -150,7 +150,10 @@ export default function SplitResult({
   return (
     <section className={styles.pattern} aria-label="Split result">
       <ResultHero
-        sentence={heroSentence(entity.name, splitName, data.result?.metadata, summaryRow)}
+        sentence={
+          rankedAnswer(data.result?.metadata, summaryRow) ??
+          heroSentence(entity.name, splitName, data.result?.metadata, summaryRow)
+        }
         subjectIllustration={heroIdentity(entity, resolvedSubject)}
         tone={resolvedSubject === "team" ? "team" : "accent"}
         teamAccentAbbr={resolvedSubject === "team" ? entity.teamAbbr : null}
@@ -347,6 +350,14 @@ function heroSentence(
     : `${possessive(entityName)} ${splitName.toLowerCase()} split.`;
 }
 
+// "best month for LeBron": the ranked split answers with the month itself.
+function rankedAnswer(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow,
+): string | null {
+  return textValue(row, "ranked_by") ? metadataText(metadata, "answer_phrase") : null;
+}
+
 function possessive(name: string): string {
   return name.endsWith("s") ? `${name}'` : `${name}'s`;
 }
@@ -420,6 +431,7 @@ function splitLabel(value: string | null): string {
   if (!value) return "Split";
   const labels: Record<string, string> = {
     home_away: "Home/Away",
+    month: "Month",
     on_off: "On/Off",
     wins_losses: "Wins/Losses",
   };
