@@ -8514,6 +8514,125 @@ def _team_player_board(parsed: dict, out: dict) -> dict | None:
     return result
 
 
+# "Lakers biggest win", "worst losses", "closest games", "largest margin of
+# victory": games ranked by the final margin (they were listed by date).
+_N = r"(?:\d{1,2}\s+)?(?:(?:road|home|away|playoff|postseason|regular[\s-]season)\s+)?"
+_MARGIN_RANKS = (
+    (
+        re.compile(
+            rf"\b(?:biggest|largest|widest|most\s+lopsided)\s+{_N}(?:wins?|victor(?:y|ies)|"
+            r"blowout\s+wins?|margins?\s+of\s+victory|win(?:ning)?\s+margins?)\b"
+        ),
+        ("win_margin", False, "wins_only"),
+    ),
+    (
+        re.compile(
+            rf"\b(?:smallest|narrowest|slimmest)\s+{_N}(?:margins?\s+of\s+victory|win(?:ning)?\s+margins?)\b"
+            rf"|\b(?:closest|narrowest|tightest)\s+{_N}(?:wins?|victor(?:y|ies))\b"
+        ),
+        ("win_margin", True, "wins_only"),
+    ),
+    (
+        re.compile(
+            rf"\b(?:biggest|largest|worst|widest|most\s+lopsided)\s+{_N}(?:loss(?:es)?|defeats?|"
+            r"blowout\s+loss(?:es)?|margins?\s+of\s+defeat|los(?:s|ing)\s+margins?)\b"
+        ),
+        ("loss_margin", False, "losses_only"),
+    ),
+    (
+        re.compile(rf"\b(?:closest|narrowest|tightest)\s+{_N}(?:loss(?:es)?|defeats?)\b"),
+        ("loss_margin", True, "losses_only"),
+    ),
+    (
+        re.compile(rf"\b(?:closest|tightest)\s+{_N}games?\b"),
+        ("margin", True, None),
+    ),
+    (
+        # "biggest blowouts": the team's own (wins).
+        re.compile(rf"\b(?:biggest|largest)\s+{_N}blowouts?\b(?!\s+(?:wins?|loss))"),
+        ("win_margin", False, "wins_only"),
+    ),
+)
+_MARGIN_ROUTES = {
+    "game_finder": "game_finder",
+    "game_summary": "game_finder",
+    "player_game_finder": "player_game_finder",
+    "player_game_summary": "player_game_finder",
+}
+
+
+def _margin_ranking(parsed: dict, out: dict) -> dict | None:
+    q = parsed["normalized_query"]
+    found = next(((m, spec) for rx, spec in _MARGIN_RANKS if (m := rx.search(q))), None)
+    route = out.get("route")
+    if found is None or route not in _MARGIN_ROUTES:
+        return None
+    kwargs = dict(out.get("route_kwargs") or {})
+    if kwargs.get("unsupported_filters") or parsed.get("count_intent"):
+        return None
+    m, (stat, ascending, side) = found
+    if (
+        kwargs.get("stat")
+        and kwargs.get("sort_by") == "stat"
+        and (kwargs.get("min_value") is None and kwargs.get("max_value") is None)
+        and kwargs["stat"] not in ("pts", "plus_minus")
+    ):
+        # Already ranked by another stat the question names.
+        return None
+    conditions = [dict(c) for c in kwargs.get("conditions") or []]
+    if (
+        not conditions
+        and kwargs.get("stat")
+        and (kwargs.get("min_value") is not None or kwargs.get("max_value") is not None)
+    ):
+        conditions = [
+            {
+                "stat": kwargs["stat"],
+                "min_value": kwargs.get("min_value"),
+                "max_value": kwargs.get("max_value"),
+            }
+        ]
+    number = re.search(r"\d+", m.group(0))
+    if (
+        side == "wins_only"
+        and kwargs.get("losses_only")
+        or (side == "losses_only" and kwargs.get("wins_only"))
+    ):
+        return None
+    if side:
+        kwargs[side] = True
+    kwargs.update(
+        stat=stat,
+        min_value=None,
+        max_value=None,
+        sort_by="stat",
+        ascending=ascending,
+        limit=int(number.group(0)) if number else kwargs.get("limit") or 25,
+    )
+    if conditions:
+        kwargs["conditions"] = conditions
+    new_route = _MARGIN_ROUTES[route]
+    if new_route != route:
+        from inspect import signature
+
+        from nbatools.commands.game_finder import build_result as team_finder
+        from nbatools.commands.player_game_finder import build_result as player_finder
+
+        finder = team_finder if new_route == "game_finder" else player_finder
+        accepted = set(signature(finder).parameters)
+        if any(v for k, v in kwargs.items() if k not in accepted):
+            # "LeBron biggest wins on back to backs": a filter the game list
+            # cannot apply; left as it was rather than dropped.
+            return None
+        kwargs = {k: v for k, v in kwargs.items() if k in accepted}
+    result = dict(out)
+    result.update(route=new_route, intent="finder", route_kwargs=kwargs)
+    result["notes"] = list(out.get("notes") or []) + [f"margin_rank: {stat}"]
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
+    return result
+
+
 # "how many teams have 50 wins", "how many teams won 40 games last season":
 # the count of the win-total board (unrouted before).
 _HOW_MANY_TEAMS_WON = re.compile(
@@ -8866,6 +8985,9 @@ def _finalize_route(parsed: dict) -> dict:
     head_to_head = _head_to_head_record_bar(parsed, out)
     if head_to_head is not None:
         return head_to_head
+    margin = _margin_ranking(parsed, out)
+    if margin is not None:
+        return margin
     games = _player_game_list(parsed, out) or _team_game_list(parsed, out)
     if games is not None:
         return games
