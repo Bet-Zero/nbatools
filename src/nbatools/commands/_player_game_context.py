@@ -636,8 +636,37 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     opponents = {
         str(o).upper() for o in ([opponent] if isinstance(opponent, str) else opponent or [])
     }
+    items = team_subject_stat_conditions(text)
+    from nbatools.commands.natural_query import (
+        _OTHER_SEASON_WORDS,
+        _player_latest_team,
+        _team_mentions,
+    )
+
+    named = {item["team"] for item in items}
+    # Named only inside the clause ("when the Celtics scored 120"); "LeBron
+    # stats with the Celtics when the Celtics scored 120" names his team.
+    outside = {
+        team
+        for start, end, team in _team_mentions(text)
+        if not any(item["start"] <= start and end <= item["end"] for item in items)
+    }
+    his = None
+    if own_team and own_team in named and own_team not in outside and not opponents:
+        his = (
+            None
+            if _OTHER_SEASON_WORDS.search(text)
+            else _player_latest_team(route_kwargs["player"])
+        )
+    if his and own_team != his:
+        # "LeBron games when the Celtics scored 120": the team in the clause
+        # is his opponent, not his team (it filtered him to Celtics games).
+        route_kwargs["team"] = None
+        route_kwargs["opponent"] = own_team
+        opponents = {own_team}
+        own_team = his
     found = []
-    for item in team_subject_stat_conditions(text):
+    for item in items:
         team = item["team"]
         if team == "LA":
             # Only an LA team: the player's own when he plays for one, else
