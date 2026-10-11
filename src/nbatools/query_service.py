@@ -1903,6 +1903,57 @@ def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> No
         metadata["count_phrase"] = phrase
 
 
+def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """ "LeBron James missed 6 Los Angeles Lakers games in the 2023-24 regular
+    season."""
+    note = next(
+        (
+            n
+            for n in metadata.get("notes") or []
+            if isinstance(n, str) and n.startswith("missed_games:")
+        ),
+        None,
+    )
+    if not note or not isinstance(result, CountResult):
+        return
+    match = re.match(r"missed_games: (\S+) games (.+) did not play(?:; (home|road))?$", note)
+    if not match:
+        return
+    team_context = metadata.get("team_context") or {}
+    games_df = getattr(result, "games", None)
+    listed_name = (
+        games_df["team_name"].iloc[0]
+        if games_df is not None and not games_df.empty and "team_name" in games_df
+        else None
+    )
+    team = team_context.get("team_name") or listed_name or team_context.get("team_abbr")
+    team = team or match.group(1)
+    player = match.group(2)
+    opponent_context = metadata.get("opponent_context") or {}
+    opponent = opponent_context.get("team_name") or opponent_context.get("team_abbr")
+    context = " ".join(
+        filter(
+            None,
+            [
+                f"against the {opponent}" if opponent else "",
+                _venue_and_dates(
+                    {"start_date": metadata.get("start_date"), "end_date": metadata.get("end_date")}
+                ),
+                _count_context(metadata, player=False),
+            ],
+        )
+    )
+    n = int(result.count)
+    venue = f"{match.group(3)} " if match.group(3) else ""
+    games = "game" if n == 1 else "games"
+    metadata["answer_phrase"] = (
+        f"{player} did not miss a {team} {venue}game {context}."
+        if n == 0
+        else f"{player} missed {n} {team} {venue}{games} {context}."
+    )
+    metadata["count_phrase"] = metadata["answer_phrase"]
+
+
 def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     """ "2 teams beat the Los Angeles Lakers in the 2025-26 regular season: the
     Boston Celtics (8 times) and the New York Knicks (5)."."""
@@ -3037,6 +3088,7 @@ def _finalize_natural_query_result(
     _add_appearances_answer_metadata(metadata, result)
     _add_series_comebacks_answer_metadata(metadata, result)
     _add_opponent_record_list_answer_metadata(metadata, result)
+    _add_missed_games_metadata(metadata, result)
     _add_season_total_answer_metadata(metadata, result)
     _add_record_bar_answer_metadata(metadata, result)
     _add_yes_no_last_game_metadata(metadata, result)
