@@ -534,6 +534,9 @@ def build_result(
         "reb_pct",
         "tov_pct",
     ]
+    if stat_col in ("margin", "win_margin", "loss_margin") and stat_col not in output_cols:
+        # "LeBron biggest wins": the team's final margin the list ranks by.
+        output_cols.append(stat_col)
     output_cols = [c for c in output_cols if c in df.columns]
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
