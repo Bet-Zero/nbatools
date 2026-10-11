@@ -75,7 +75,9 @@ def extract_occurrence_event(text: str) -> dict | None:
         (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(steals?|stl)\b", "stl"),
         (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(blocks?|blk)\b", "blk"),
         (
-            r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(threes?|3pm|3s|fg3m|three-pointers?)\b",
+            # Not "8 three point attempts" (attempts, not makes).
+            r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(threes?|3pm|3s|fg3m|three-pointers?)\b"
+            r"(?![\s-]+(?:point|pointers?|attempts?|attempted|tries)\b)",
             "fg3m",
         ),
         (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(turnovers?|tov)\b", "tov"),
