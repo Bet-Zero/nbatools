@@ -464,6 +464,13 @@ def _unexecuted_attempt_qualifier_note(q: str, route: str, route_kwargs: dict) -
         and route_kwargs.get("min_attempts") is not None
     ):
         return None
+    applied = {route_kwargs.get("stat")} | {
+        c.get("stat") for c in route_kwargs.get("conditions") or [] if isinstance(c, dict)
+    }
+    if any(str(stat or "").split("_")[-1] in ("fga", "fta", "fg3a") for stat in applied):
+        # "LeBron games with 10 free throw attempts": the attempts are the
+        # route's own bound or ranking, not a dropped qualifier.
+        return None
     return (
         "unsupported_boundary: a shot-attempt minimum applies only to player and "
         "team shooting-percentage leaderboards; no result was executed without it"
@@ -2377,7 +2384,103 @@ _THRESHOLD_GAME_SPELLINGS = (
 def _threshold_game_words(q: str) -> str:
     for pattern, replacement in _THRESHOLD_GAME_SPELLINGS:
         q = pattern.sub(replacement, q)
-    return q
+    return _stat_spellings(q)
+
+
+_NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+    "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
+    "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
+}  # fmt: skip
+_RATE_AFTER = (
+    r"(?:%|percent|percentage|pct|rate|shooting|shooters?|line|range|attempts?|attempted|"
+    r"tries|makes?|made|field|shots?|missed|misses|missing|taken|fg%?|fga|fgm|ft%?)"
+)
+# Stat spellings the readers miss ("5 3-pointers", "10 free throws", "five
+# threes" read no bound and answered every game; "5 3 point games" and "10
+# 3-point attempts" read a 3-point floor). Each is rewritten to the form the
+# readers know.
+_STAT_SPELLINGS = (
+    (re.compile(r"\b(free|field)-(throws?|goals?)\b"), r"\1 \2"),
+    # "3pt fg%", "3pt fga", "3pt fgm": the three-point rate, attempts, makes.
+    (
+        re.compile(
+            r"\b(?:3|three)[\s-]*(?:pt|point)\s+(?:fg\s*%|fg\s+pct|fg\s+percentage|field\s+goal\s+"
+            r"(?:%|pct|percentage))"
+        ),
+        "3 point percentage",
+    ),
+    (re.compile(r"\b(?:3|three)[\s-]*(?:pt|point)\s+fga\b"), "three point attempts"),
+    (re.compile(r"\b(?:3|three)[\s-]*(?:pt|point)\s+fgm\b"), "threes"),
+    # Three-point attempts: "10 3-point attempts", "3pt attempts", "3pa".
+    (
+        re.compile(
+            r"\b(?:3|three)(?:[\s-]*(?:pointers?|point(?:ers?)?)|-?pts?)\s+(?:attempts?|attempted|tries)\b"
+        ),
+        "three point attempts",
+    ),
+    # "5 3 point games", "5 three-point games": made threes, not a 3-point floor
+    # ("top 3 three point games" is a count of games to list).
+    (
+        re.compile(
+            r"(?<!\btop\s)(?<!\bbest\s)(?<!\bworst\s)(?<!\blowest\s)(?<!\bhighest\s)"
+            r"(?<!\bbottom\s)(?<!\bfewest\s)(?<!\bleast\s)(?<!\bfirst\s)(?<!\blast\s)"
+            r"(?<!\bbiggest\s)\b(\d+\+?)\s+(?:3|three)[\s-]*point\s+(?=games?\b)"
+        ),
+        r"\1 three ",
+    ),
+    # Made threes: "3-pointers", "three pointers", "3pt", "3 point shots"; one
+    # is "a three".
+    (
+        re.compile(
+            r"(?<!\btop\s)(?<!\blast\s)(?<!\bfirst\s)(?<!\bpast\s)(?<!\bbottom\s)"
+            r"(?<!\bby\s)\b(?:(?:3|three)[\s-]*pointer(?P<plural>s)?|3-?pt|3-?ptrs?|three-?pt"
+            r"|(?:3|three)[\s-]*point\s+(?:shots?|field\s+goals?|baskets?|buckets?))\b"
+            rf"(?!\s*{_RATE_AFTER}\b)(?!\s*%)"
+        ),
+        lambda m: "three" if m.group(0).endswith("pointer") else "threes",
+    ),
+    # Bare "free throws" / "field goals" are makes ("10 free throws").
+    (re.compile(rf"\bfree\s+throws\b(?!\s+{_RATE_AFTER}\b)(?!\s*%)"), "free throws made"),
+    # Not "two point field goals" (no such column).
+    (
+        re.compile(rf"(?<!\bpoint\s)(?<!\bpt\s)\bfield\s+goals\b(?!\s+{_RATE_AFTER}\b)(?!\s*%)"),
+        "field goals made",
+    ),
+)
+# "five threes", "ten rebounds", "twenty-five points": the number in digits.
+_NUMBER_BEFORE_STAT = re.compile(
+    r"\b(?P<tens>twenty|thirty|forty|fifty|sixty)(?:[\s-]+(?P<unit>one|two|three|four|five|six|"
+    r"seven|eight|nine))?\b(?=\s+(?:made\s+)?(?:points?|rebounds?|assists?|steals?|blocks?|"
+    r"threes|3s|turnovers?|boards|dimes|free\s+throws|field\s+goals)\b)"
+    r"|\b(?P<word>one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|"
+    r"fifteen|sixteen|seventeen|eighteen|nineteen)\b"
+    r"(?=\s+(?:made\s+)?(?:rebounds?|assists?|steals?|blocks?|threes|3s|turnovers?|boards|dimes|"
+    r"free\s+throws|field\s+goals|points|point\s+(?:games?|performances?|outings?))\b)"
+)
+
+
+# A shooting rate the attempt qualifier would qualify.
+_RATE_ASKED = re.compile(
+    r"%|\bpercent(?:age)?s?\b|\bpct\b|\bshooting\b|\bshooters?\b|\befficien\w*|"
+    r"\befg\b|\bts\b|\bmin(?:imum)?\b|\bqualif\w*"
+)
+
+
+def _number_word(m: re.Match) -> str:
+    if m.group("word") == "three" and re.match(r"\s+point\b", m.string[m.end() :]):
+        # "three point games" is the three-point line, not a 3-point floor.
+        return m.group(0)
+    if m.group("word"):
+        return str(_NUMBER_WORDS[m.group("word")])
+    return str(_NUMBER_WORDS[m.group("tens")] + _NUMBER_WORDS.get(m.group("unit") or "", 0))
+
+
+def _stat_spellings(q: str) -> str:
+    for pattern, replacement in _STAT_SPELLINGS:
+        q = pattern.sub(replacement, q)
+    return _NUMBER_BEFORE_STAT.sub(_number_word, q)
 
 
 # "which teams are over .500 against the Celtics": each team's record against
@@ -2672,6 +2775,17 @@ def _build_parse_state(query: str) -> dict:
     # three point attempts" qualifies the ranking, it does not name its metric.
     q_metric = text_without_min_attempts(q)
     stat = detect_stat(q_metric)
+    if (
+        min_attempts
+        and min_attempts.get("attempt_stat")
+        and not (stat and stat.endswith("_pct"))
+        and not _RATE_ASKED.search(q)
+    ):
+        # "Curry games with 10 free throw attempts": with no rate asked, the
+        # attempts are the stat itself (the bound was dropped).
+        min_attempts = None
+        q_metric = q
+        stat = detect_stat(q)
     last_n = extract_last_n(q)
     min_games = extract_min_games(q)
     top_n = extract_top_n(q)
