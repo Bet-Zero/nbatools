@@ -36,6 +36,7 @@ from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
     load_player_games_for_seasons,
+    team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
@@ -326,6 +327,7 @@ def build_result(
     player: str | None = None,
     role: str | None = None,
     min_occurrences: int | None = None,
+    team: str | None = None,
     **_context_filters: Any,
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
@@ -451,6 +453,13 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="filter_not_supported", notes=[role_note])
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
+
+    if team:
+        # "which Laker has the most triple doubles": the games each player
+        # played for that team.
+        basic = basic[team_value_mask(basic, team)].copy()
+        if basic.empty:
+            return NoResult(query_class="leaderboard", reason="no_match")
 
     # Filter to specific player if requested
     identity_notes: list[str] = []

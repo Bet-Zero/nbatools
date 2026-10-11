@@ -2661,7 +2661,9 @@ def _build_parse_state(query: str) -> dict:
             )
         )
     )
-    q = canonicalize_sample_phrases(_results_against_subject_first(_other_team_clause(_at_team(q))))
+    q = canonicalize_sample_phrases(
+        _results_against_subject_first(_other_team_clause(_at_team(_team_singular(q))))
+    )
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
@@ -8355,6 +8357,163 @@ def _head_to_head_record_bar(parsed: dict, out: dict) -> dict | None:
     return result
 
 
+# "which Laker has the most triple doubles", "most 30 point games by a
+# Celtic": one of the team's players (the singular was not read as a team).
+_TEAM_SINGULARS = {
+    "laker": "lakers", "celtic": "celtics", "knick": "knicks", "warrior": "warriors",
+    "bull": "bulls", "cavalier": "cavaliers", "cav": "cavs", "maverick": "mavericks",
+    "mav": "mavs", "nugget": "nuggets", "piston": "pistons", "rocket": "rockets",
+    "pacer": "pacers", "clipper": "clippers", "pelican": "pelicans", "sixer": "sixers",
+    "76er": "76ers", "blazer": "blazers", "trail blazer": "trail blazers", "spur": "spurs",
+    "raptor": "raptors", "hornet": "hornets", "hawk": "hawks", "wizard": "wizards",
+    "grizzly": "grizzlies", "timberwolf": "timberwolves",
+}  # fmt: skip
+# Only leads that name some one player: "no / every / each Laker" would be
+# read as "some Laker" (the opposite), and "a Laker game" is a team game.
+_TEAM_SINGULAR = re.compile(
+    r"\b(?P<lead>a|an|which|what|any|one)\s+"
+    r"(?P<name>" + "|".join(sorted(_TEAM_SINGULARS, key=len, reverse=True)) + r")\b(?!')"
+    r"(?!\s+games?\b)"
+)
+
+
+def _team_singular(q: str) -> str:
+    def rewrite(m: re.Match) -> str:
+        before = q[: m.start()]
+        if (
+            re.search(r"\bgames?\b", before)
+            and not q.startswith("how many")
+            and not re.search(r"\d+\+?\s*[- ]?\s*[a-z]+\s+games?\b|\bdoubles?\b", before)
+        ):
+            # "best shooting games by a Laker": a game list the boards do not
+            # build for one team's players; left as it was.
+            return m.group(0)
+        return f"{m.group('lead')} {_TEAM_SINGULARS[m.group('name')]} player"
+
+    return _TEAM_SINGULAR.sub(rewrite, q)
+
+
+# "which Lakers player has the most 30 point games", "who has the most triple
+# doubles for the Celtics": a board of that team's players (it listed team
+# games, or the whole league).
+_TEAM_PLAYER_SUBJECT = re.compile(
+    r"\b(?:which|what)\s+(?:[a-z0-9.']+\s+){0,2}?players?\b"
+    r"|\b(?:by|for|from)\s+an?\s+[a-z0-9.' ]+?\s+player\b"
+    r"|\bplayers?\s+(?:with|who|has|had|have|that)\b"
+    r"|\bwho\s+(?:has|had|have|leads?|led|scored|recorded|got|made|hit)\b"
+    r"|\bleaders?\b|\bleading\b"
+)
+_TEAM_PLAYER_MOST = re.compile(r"\b(?:most|leads?|led|leaders?|leading)\b")
+_SINGLE_GAME_WORDS = re.compile(
+    r"\bin\s+(?:a|one|any)\s+(?:single\s+)?game\b|\bsingle[\s-]game\b|\bgame[\s-]high\b"
+)
+_TEAM_PLAYER_UNREAD = re.compile(
+    r"\bfewest\b|\bleast\b|\bstreaks?\b|\bin\s+a\s+row\b|\bstraight\b|\bconsecutive\b"
+    r"|\bsame\s+game\b|\btogether\b|\bcombined\b"
+)
+_TEAM_PLAYER_CONTEXT_KEYS = (
+    "season",
+    "start_season",
+    "end_season",
+    "season_type",
+    "opponent",
+    "home_only",
+    "away_only",
+    "wins_only",
+    "losses_only",
+    "start_date",
+    "end_date",
+)
+
+
+def _team_player_board(parsed: dict, out: dict) -> dict | None:
+    team = parsed.get("team")
+    if not team or any(parsed.get(k) for k in ("player", "team_a", "team_b", "player_a")):
+        return None
+    q = parsed["normalized_query"]
+    if not (_TEAM_PLAYER_SUBJECT.search(q) and _TEAM_PLAYER_MOST.search(q)):
+        return None
+    if re.search(r"\b(?:lead(?:s|ing)?|led)\s+the\s+(?:league|nba)\b", q) and not re.search(
+        r"\bplayers?\b|\bwho\b", q
+    ):
+        # "are the Lakers leading the league in rebounds": the team's rank.
+        return None
+    mentions = [(a, b, t) for a, b, t in _team_mentions(q) if q[a:b] != "min"]
+    others = {t for a, b, t in mentions if t != team}
+    if others - {parsed.get("opponent")} or not any(
+        t == team
+        and not re.search(
+            r"(?:\bat|\bin|@|\bvs\.?|\bversus|\bagainst|\bover)\s+(?:the\s+)?$", q[:a]
+        )
+        for a, b, t in mentions
+    ):
+        # "who scored the most points at boston", "for the Lakers and Celtics",
+        # "min minutes": the team is not the players' own one team (a named
+        # opponent is fine: "most points against the Celtics").
+        return None
+    if _TEAM_PLAYER_UNREAD.search(q):
+        return None
+    single_game = bool(_SINGLE_GAME_WORDS.search(q))
+    route, kwargs = out.get("route"), dict(out.get("route_kwargs") or {})
+    if kwargs.get("unsupported_filters"):
+        return None
+    if route == "player_occurrence_leaders":
+        if kwargs.get("team"):
+            return None
+        kwargs["team"] = team
+        result = dict(out)
+        result["route_kwargs"] = kwargs
+        return result
+    if route not in ("game_finder", "game_summary"):
+        return None
+    event = {} if single_game else parsed.get("occurrence_event") or {}
+    base = {key: kwargs.get(key) for key in _TEAM_PLAYER_CONTEXT_KEYS if key in kwargs}
+    base["team"] = team
+    base["limit"] = 10
+    if event.get("special_event"):
+        new_route = "player_occurrence_leaders"
+        base["special_event"] = event["special_event"]
+    elif event.get("stat"):
+        new_route = "player_occurrence_leaders"
+        base.update(
+            stat=event["stat"], min_value=event.get("min_value"), max_value=event.get("max_value")
+        )
+    elif (
+        kwargs.get("stat")
+        and kwargs.get("min_value") is None
+        and kwargs.get("max_value") is None
+        and not kwargs.get("conditions")
+    ):
+        stat = kwargs["stat"]
+        if single_game:
+            # "which Lakers player scored the most points in a game".
+            from nbatools.commands.player_game_finder import ALLOWED_STATS as GAME_STATS
+
+            if stat not in GAME_STATS:
+                return None
+            new_route = "player_game_finder"
+            base.update(stat=stat, sort_by="stat")
+        else:
+            # Season leaders, per game as the league board reads them ("most
+            # total points": the total).
+            from nbatools.commands.season_leaders import ALLOWED_STATS as LEADER_STATS
+
+            if re.search(r"\btotal\b", q):
+                stat = f"{stat}_total"
+            if stat not in LEADER_STATS:
+                return None
+            new_route = "season_leaders"
+            base.update(stat=stat, min_games=1)
+    else:
+        return None
+    result = dict(out)
+    result.update(route=new_route, intent="leaderboard", route_kwargs=base)
+    result["notes"] = list(out.get("notes") or []) + [f"team_players: {team} players"]
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
+    return result
+
+
 # "how many teams have 50 wins", "how many teams won 40 games last season":
 # the count of the win-total board (unrouted before).
 _HOW_MANY_TEAMS_WON = re.compile(
@@ -8431,9 +8590,11 @@ def _team_win_total_count(parsed: dict) -> dict | None:
 # team's players' games (it read the team's points: 153, 141, ...).
 _TEAM_PLAYERS_SUBJECT = re.compile(
     r"\b(?:any|which|what|how\s+many)\s+(?:[a-z0-9.']+\s+){0,3}?players?\b"
-    r"|\b(?:[a-z0-9.']+\s+)players?\s+(?:with|who|that|had|scored|to|over|under|above|below|"
+    r"|\b(?:[a-z0-9.']+\s+)players?\s+(?:with|who|that|had|have|has|scored|scores?|hit|hits|"
+    r"made|make|makes|recorded|record|posted|got|get|grabbed|dished|to|over|under|above|below|"
     r"at\s+least)\b"
     r"|\b(?:anyone|anybody|someone|somebody)\s+(?:on|from|for)\s+(?:the\s+)?[a-z0-9.' ]+"
+    r"|\b(?:by|from)\s+an?\s+[a-z0-9.' ]+?\s+player\b"
     r"|\bplayers?\s+\d+"
 )
 
@@ -8450,7 +8611,12 @@ def _team_players_threshold(parsed: dict) -> dict | None:
     if (low is None and high is None) and event.get("stat"):
         # "Lakers players with 40 point games".
         stat, low, high = event["stat"], event.get("min_value"), event.get("max_value")
-    if stat is None or (low is None and high is None):
+    special = event.get("special_event")
+    if special and low is None and high is None:
+        # "Celtics players with a triple double", "how many triple doubles do
+        # Celtics players have": the team's players' games (refused before).
+        stat = None
+    elif stat is None or (low is None and high is None):
         return None
     if re.search(r"\baverag\w*|\bper\s+game\b|\bppg\b", q):
         # "how many Lakers players average 20 points": a season average, not a
@@ -8537,7 +8703,7 @@ def _team_players_threshold(parsed: dict) -> dict | None:
     from nbatools.commands.player_game_finder import ALLOWED_STATS
     from nbatools.commands.player_game_finder import build_result as finder
 
-    if stat not in ALLOWED_STATS:
+    if stat is not None and stat not in ALLOWED_STATS:
         return None
     season_type = parsed.get("season_type") or "Regular Season"
     season = parsed.get("season")
@@ -8562,11 +8728,19 @@ def _team_players_threshold(parsed: dict) -> dict | None:
         "sort_by": "stat",
         "limit": 200,
     }
+    if stat is None:
+        kwargs.update(special_event=special, sort_by="game_date")
     accepted = set(signature(finder).parameters)
     kwargs = {k: v for k, v in kwargs.items() if k in accepted}
     counted = bool(re.match(r"^how\s+many\b", q))
     # "how many times has a Lakers player scored 40": games, not players.
-    games_counted = bool(re.match(r"^how\s+many\s+(?:times|games)\b", q))
+    games_counted = bool(
+        re.match(
+            r"^how\s+many\s+(?:times\b|games\b|(?:triple|double)[\s-]?doubles\b"
+            r"|(?:(?!players?\b)[a-z0-9+.-]+\s+){1,4}?games\b)",
+            q,
+        )
+    )
     if counted:
         # The count reads every row, not a capped list.
         kwargs["limit"] = 100000
@@ -8673,6 +8847,9 @@ def _finalize_route(parsed: dict) -> dict:
     decade_stat = _decade_superlative_stat(parsed, out)
     if decade_stat is not None:
         return decade_stat
+    team_board = _team_player_board(parsed, out)
+    if team_board is not None:
+        return team_board
     if parsed.get("player") and (
         _DECADE_SUPERLATIVE.search(parsed["normalized_query"])
         or re.search(r"\bby\s+decade\b|\bwhich\s+decade\b", parsed["normalized_query"])
