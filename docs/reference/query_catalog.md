@@ -111,7 +111,8 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 ### 2.3 Sample filters
 
-- opponent (team): `vs Lakers`, `against Celtics`
+- opponent (team): `vs Lakers`, `against Celtics`, `over the Celtics` after a subject (`who led the Lakers in scoring over the Celtics`, `LeBron points over the Celtics`; a number after `over` is a threshold)
+- a city after a team subject: `Lakers record in Boston`, `which Laker scored the most points in Boston` (road games there; the team's own city is home; a player `in Miami` is left as it was)
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
 - whole-game player presence for team records: `Lakers record with Luka`, `Lakers record w/ Luka`, `How many games did the Lakers win with Reaves available?`
