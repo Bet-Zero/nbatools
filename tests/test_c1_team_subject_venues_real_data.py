@@ -15,8 +15,21 @@ def test_lakers_scoring_over_the_celtics_2023_24():
     rows = load_player_games_for_seasons(["2023-24"], "Regular Season")
     rows = rows[(rows["team_abbr"] == "LAL") & (rows["opponent_team_abbr"] == "BOS")]
     expected = rows.groupby("player_id")["pts"].mean().sort_values(ascending=False)
-    result = execute_natural_query("who led the Lakers in scoring over the Celtics in 2023-24")
-    board = result.result.to_dict()["sections"]["leaderboard"]
+    from nbatools.commands.natural_query import parse_query
+
+    query = "who led the Lakers in scoring over the Celtics in 2023-24"
+    result = execute_natural_query(query)
+    sections = result.result.to_dict()["sections"]
+    parsed = parse_query(query)
+    assert "leaderboard" in sections, (
+        result.route,
+        result.result_status,
+        getattr(result, "result_reason", None),
+        parsed["normalized_query"],
+        parsed["route_kwargs"],
+        result.metadata.get("notes"),
+    )
+    board = sections["leaderboard"]
     assert result.route == "season_leaders"
     assert board[0]["pts_per_game"] == pytest.approx(expected.iloc[0], abs=1e-3)
 
