@@ -685,6 +685,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "limit",
             "min_games",
             "player",
+            "team",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "special_event": SPECIAL_EVENT_VALUES},
         examples=(
