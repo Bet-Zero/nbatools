@@ -1837,6 +1837,15 @@ def _add_record_bar_answer_metadata(metadata: dict[str, Any], result: Any) -> No
         return
     bar, _, venue = request.split(":", 1)[1].strip().partition(" ")
     words = _RECORD_BAR_WORDS.get(bar) or _win_total_words(bar)
+    opponent_context = metadata.get("opponent_context") or {}
+    opponent = (
+        (getattr(result, "metadata", None) or {}).get("opponent_name")
+        or opponent_context.get("team_name")
+        or opponent_context.get("team_abbr")
+    )
+    if words and opponent:
+        # "which teams have a winning record against the Lakers".
+        words = f"{words} against the {opponent}"
     if words and venue:
         words = f"{words} {venue}"
     if isinstance(result, CountResult):
@@ -1903,8 +1912,6 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         board = result.leaders
     else:
         return
-    if board.empty and not (isinstance(result, CountResult) and result.count == 0):
-        return
     request = next(
         (
             note
@@ -1913,6 +1920,14 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         ),
         None,
     )
+    if (
+        board.empty
+        and not (isinstance(result, CountResult) and result.count == 0)
+        and "; bar=" not in (request or "")
+    ):
+        # A barred board is answered when empty ("which losing teams beat the
+        # Lakers": none).
+        return
     match = request and re.search(r"(\d+)\+ (wins|losses)(?:; (home|road))?", request)
     opponent_context = metadata.get("opponent_context") or {}
     opponent = (
@@ -1924,14 +1939,21 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
         # "the most" is a ranking; the board answers it.
         return
     minimum, stat, venue = int(match.group(1)), match.group(2), match.group(3)
+    bar = re.search(r"; bar=(.+)$", request)
+    # "which winning teams have the Lakers beaten": the bar rides on "teams".
+    term = bar.group(1) if bar else ""
+    noun = term.removeprefix("teams ") if term.startswith("teams ") else ""
+    adjective = term.removesuffix(" teams") if term.endswith(" teams") else ""
+    pre = f"{adjective} " if adjective else ""
+    post = f" {noun}" if noun else ""
     k = len(board)
     if k == 0:
         # "how many teams did the 76ers beat" with no such games: a zero.
         context = _count_context(metadata, player=False)
         metadata["answer_phrase"] = (
-            f"No team beat the {opponent} {context}."
+            f"No {pre}team{post} beat the {opponent} {context}."
             if stat == "wins"
-            else f"The {opponent} beat no teams {context}."
+            else f"The {opponent} beat no {pre}teams{post} {context}."
         )
         metadata["count_phrase"] = metadata["answer_phrase"]
         return
@@ -1949,7 +1971,7 @@ def _add_opponent_record_list_answer_metadata(metadata: dict[str, Any], result: 
     joined = listed[0] if len(listed) == 1 else ", ".join(listed[:-1]) + f" and {listed[-1]}"
     context = _count_context(metadata, player=False)
     where = {"home": " at home", "road": " on the road"}.get(venue or "", "")
-    teams = "1 team" if k == 1 else f"{k} teams"
+    teams = f"1 {pre}team{post}" if k == 1 else f"{k} {pre}teams{post}"
     often = {1: "", 2: " at least twice"}.get(minimum, f" at least {minimum} times")
     if stat == "wins":
         # The named team's home: "beat the Lakers at home" is in Los Angeles.

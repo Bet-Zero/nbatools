@@ -322,14 +322,28 @@ def test_opponent_over_under_500_wordings(query, keep):
 @pytest.mark.parametrize(
     "query",
     [
-        # The beat board takes no bar on the listed teams (it counted 60 games).
+        # A bar on the listed teams (refused before; it had counted 60 games).
         "how many teams that are .500 or better have the Lakers beaten",
         "which teams that are .500 or better have the Lakers beaten",
         "how many winning teams did the Lakers beat",
     ],
 )
-def test_beaten_teams_with_a_bar_refuse(query):
-    assert execute_natural_query(query).result_status == "no_result"
+def test_beaten_teams_with_a_bar_answer(query):
+    import pandas as pd
+
+    raw = "qa/fixtures/query_engine_sample/data/raw"
+    standings = pd.read_csv(f"{raw}/standings_snapshots/2025-26_regular_season.csv")
+    winning = set(standings.loc[standings["win_pct"] >= 0.5, "team_abbr"])
+    games = pd.read_csv(f"{raw}/team_game_stats/2025-26_regular_season.csv")
+    beaten = games[
+        (games["opponent_team_abbr"] == "LAL")
+        & (games["wl"] == "L")
+        & games["team_abbr"].isin(winning)
+    ]
+    rows = execute_natural_query(query).result.to_dict()["sections"]["leaderboard"]
+    assert {r["team_abbr"]: r["losses"] for r in rows} == beaten[
+        "team_abbr"
+    ].value_counts().to_dict()
 
 
 @pytest.mark.parametrize(

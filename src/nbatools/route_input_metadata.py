@@ -525,6 +525,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "max_wins",
             "min_losses",
             "record_bar",
+            "team_quality",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "stat": RECORD_STAT_VALUES},
         examples=(

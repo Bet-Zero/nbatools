@@ -54,7 +54,9 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
     period_coverage_failure,
     period_window_label,
+    resolve_opponent_quality_tokens,
     sample_season_span,
+    season_opponent_token,
     team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -809,6 +811,7 @@ def build_record_leaderboard_result(
     max_wins: int | None = None,
     min_losses: int | None = None,
     record_bar: str | None = None,
+    team_quality: dict | None = None,
 ) -> LeaderboardResult | NoResult:
     """Rank teams by record stats (wins, losses, win_pct).
 
@@ -848,6 +851,16 @@ def build_record_leaderboard_result(
             df, conditions, TEAM_RECORD_FILTER_STATS, prepare_stat_column=_prepare_condition_column
         )
 
+    if team_quality is not None:
+        # "which winning teams have the Lakers beaten": a listed team counts
+        # only in the seasons it met the bar.
+        tokens = set(resolve_opponent_quality_tokens(team_quality, seasons, season_type))
+        keys = [
+            season_opponent_token(str(season_value), team_id)
+            for season_value, team_id in zip(df["season"], df["team_id"])
+        ]
+        df = df[[key in tokens for key in keys]].copy()
+
     # Apply global filters
     df = _apply_game_filters(
         df,
@@ -860,7 +873,10 @@ def build_record_leaderboard_result(
         end_date=end_date,
     )
 
-    if df.empty:
+    # "which teams have a winning record against the Lakers": an empty board
+    # is the answer (no team), not a missing sample.
+    barred = record_bar is not None or team_quality is not None
+    if df.empty and not barred:
         return _empty_sample_result("leaderboard")
 
     # Group by team and compute record
@@ -911,7 +927,7 @@ def build_record_leaderboard_result(
         # "Lakers best record in a single season": rank one team's seasons.
         agg = agg[team_value_mask(agg, team)].copy()
 
-    if agg.empty:
+    if agg.empty and not barred:
         return _empty_sample_result("leaderboard")
 
     # Determine sort column

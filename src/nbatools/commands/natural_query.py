@@ -1986,12 +1986,88 @@ _NOT_A_TEAM_BOARD = re.compile(
 )
 
 
+# "which winning teams have the Lakers beaten", "which teams have the Lakers
+# beaten that are over .500": a bar on the listed teams (refused, or dropped
+# and every team beaten listed). The glossary term each one names.
+_LISTED_BAR_TERMS = (
+    (r"winning\s+teams", "winning teams"),
+    (r"losing\s+teams", "losing teams"),
+    (r"playoff\s+teams", "playoff teams"),
+    (r"teams\s+(?:over|above)\s+\.500", "teams over .500"),
+    (r"teams\s+(?:under|below)\s+\.500", "teams under .500"),
+    (r"teams\s+\.500\s+or\s+(?:worse|below|lower)", "teams .500 or worse"),
+    (r"teams\s+(?:with|that\s+(?:have|had))\s+(?:a\s+)?winning\s+records?", "teams over .500"),
+    (r"teams\s+(?:with|that\s+(?:have|had))\s+(?:a\s+)?losing\s+records?", "teams under .500"),
+    (r"teams\s+(?:that|who)\s+(?:are|were|finished)\s+(?:over|above)\s+\.500", "teams over .500"),
+    (r"teams\s+(?:that|who)\s+(?:are|were|finished)\s+(?:under|below)\s+\.500", "teams under .500"),
+    (r"teams\s+(?:that|who)\s+made\s+the\s+playoffs", "playoff teams"),
+)
+_LISTED_BAR_LEAD = re.compile(
+    r"^(?P<lead>how\s+many|which|what)\s+(?P<mod>(?:different|distinct|other)\s+)?(?P<bar>"
+    + "|".join(f"(?:{pattern})" for pattern, _ in _LISTED_BAR_TERMS)
+    + r")(?=\s)"
+)
+_LISTED_BAR_TAIL = (
+    (
+        re.compile(r"\s+(?:that|who|which)\s+(?:are|were|finished)\s+(?:over|above)\s+\.500\b"),
+        "teams over .500",
+    ),
+    (
+        re.compile(r"\s+(?:that|who|which)\s+(?:are|were|finished)\s+(?:under|below)\s+\.500\b"),
+        "teams under .500",
+    ),
+    (
+        re.compile(
+            r"\s+(?:with|(?:that|who|which)\s+(?:have|had))\s+(?:a\s+)?winning\s+records?\b"
+        ),
+        "teams over .500",
+    ),
+    (
+        re.compile(r"\s+(?:with|(?:that|who|which)\s+(?:have|had))\s+(?:a\s+)?losing\s+records?\b"),
+        "teams under .500",
+    ),
+    (re.compile(r"\s+(?:that|who|which)\s+made\s+the\s+playoffs\b"), "playoff teams"),
+)
+
+
+def _listed_team_bar(q: str) -> tuple[str, str | None]:
+    """Strip a bar on the teams a beat / lost-to board lists; return its term."""
+    if not _BEAT_OR_LOSE.search(q):
+        return q, None
+    match = _LISTED_BAR_LEAD.match(q)
+    if match:
+        bar = match.group("bar")
+        term = next(t for pattern, t in _LISTED_BAR_TERMS if re.fullmatch(pattern, bar))
+        mod = match.group("mod") or ""
+        return f"{match.group('lead')} {mod}teams{q[match.end() :]}", term
+    if not re.match(r"^(?:how\s+many|which|what)\s+(?:(?:different|distinct|other)\s+)?teams\b", q):
+        return q, None
+    for pattern, term in _LISTED_BAR_TAIL:
+        tail = pattern.search(q)
+        if tail:
+            return q[: tail.start()] + q[tail.end() :], term
+    return q, None
+
+
 def _who_beat(q: str) -> tuple[str, dict | None]:
     """Rewrite "which teams beat X" into the opponent record board. Return
     the rewritten text and the request: the stat, the minimum count when
     every team with one is listed ("beat the Lakers twice": 2; None for "the
     most"), and that home/away is the named team's ("who did the Lakers beat
     at home" is their home games, the listed teams' road games)."""
+    barred, team_bar = _listed_team_bar(q)
+    if team_bar is not None:
+        rewritten, request = _who_beat(barred)
+        if request and not request.get("unsupported"):
+            from nbatools.commands._glossary import OPPONENT_QUALITY_TERMS
+
+            request["team_quality"] = {
+                "type": "team_quality",
+                "surface_term": team_bar,
+                "definition": dict(OPPONENT_QUALITY_TERMS[team_bar].resolved_definition),
+            }
+            return rewritten, request
+        return q, request
     counted = bool(_HOW_MANY_TEAMS.match(q))
     if _NOT_A_TEAM_BOARD.search(q):
         # "how many teams did the Lakers lose to by 10", "... exactly once":
@@ -2273,7 +2349,7 @@ _FACING = re.compile(
     r"adversity|a\s+must|must|a\s+\d|\d)\b)"
 )
 _WINS_OVER_QUALITY = re.compile(
-    r"\b(wins?|victories|won|have|had)\s+over\s+(?=(?:the\s+)?(?:winning|losing|playoff|non[\s-]playoff|"
+    r"\b(wins?|victories|won|have|had|records?)\s+over\s+(?=(?:the\s+)?(?:winning|losing|playoff|non[\s-]playoff|"
     r"good|bad|top|best|contenders|teams?\s+(?:over|above|under|below|that|who|with)|opponents?)\b)"
 )
 
@@ -2304,7 +2380,71 @@ def _threshold_game_words(q: str) -> str:
     return q
 
 
+# "which teams are over .500 against the Celtics": each team's record against
+# them (unread before), the head-to-head bar below.
+_ARE_OVER_500_AGAINST = re.compile(
+    r"\b(?:are|were|finished|have\s+been)\s+(?:(?P<over>over|above)|under|below)\s+\.500\s+"
+    r"(?=(?:against|vs\.?|versus)\b)"
+)
+
+
+_VS_AHEAD = r"(?=\s+(?:against|vs\.?|versus)\b)"
+_BETTER = r"(?:(?P<better>better|above|higher)|worse|below|lower)"
+# ".500 or better against the Knicks", "a record over .500 against the
+# Lakers", "a better than .500 record vs Boston": the head-to-head bars in
+# the forms the reader below knows ("an or" read as a top-level OR).
+_HEAD_TO_HEAD_SPELLINGS = (
+    (
+        re.compile(
+            rf"\b(?:are|were|is|was|finished|have\s+been)\s+(?:at\s+)?\.500\s+or\s+{_BETTER}{_VS_AHEAD}"
+        ),
+        lambda m: f"have a record at {'least' if m.group('better') else 'most'} .500",
+    ),
+    (
+        re.compile(
+            r"\b(?P<lead>with|have|has|had)\s+an?\s+(?:record\s+of\s+)?(?:at\s+)?\.500\s+or\s+"
+            rf"{_BETTER}(?:\s+record)?{_VS_AHEAD}"
+        ),
+        lambda m: f"{m.group('lead')} a record at {'least' if m.group('better') else 'most'} .500",
+    ),
+    (
+        re.compile(rf"\bteams\s+(?:at\s+)?\.500\s+or\s+{_BETTER}{_VS_AHEAD}"),
+        lambda m: f"teams with a record at {'least' if m.group('better') else 'most'} .500",
+    ),
+    (
+        re.compile(
+            r"\b(?P<lead>with|have|has|had)\s+an?\s+(?:record\s+(?:of\s+)?(?:(?P<over>over|above|"
+            r"better\s+than)|under|below|worse\s+than)\s+\.500|(?:(?P<over2>better)|worse)\s+than\s+"
+            rf"\.500\s+record){_VS_AHEAD}"
+        ),
+        lambda m: (
+            f"{m.group('lead')} a "
+            f"{'winning' if m.group('over') or m.group('over2') else 'losing'} record"
+        ),
+    ),
+    # "against opponents over .500": the opponent bar's "teams" form.
+    (
+        re.compile(
+            r"\b(?P<lead>against|vs\.?|versus|over|facing)\s+(?:the\s+)?opponents\s+"
+            r"(?=(?:(?:that|who)\s+(?:are|were)\s+)?(?:over|above|under|below)\s+\.500|"
+            r"with\s+(?:a\s+)?(?:winning|losing)\s+records?)"
+        ),
+        lambda m: f"{m.group('lead')} teams ",
+    ),
+    # "Lakers record over .500 teams".
+    (
+        re.compile(r"\b(records?)\s+(?:over|above)\s+\.500\s+teams?\b"),
+        lambda m: f"{m.group(1)} against teams over .500",
+    ),
+)
+
+
 def _canonicalize_opponent_record_bars(q: str) -> str:
+    for pattern, replacement in _HEAD_TO_HEAD_SPELLINGS:
+        q = pattern.sub(replacement, q)
+    q = _ARE_OVER_500_AGAINST.sub(
+        lambda m: f"have a {'winning' if m.group('over') else 'losing'} record ", q
+    )
     q = _FACING.sub("against", q)
     q = _WINS_OVER_QUALITY.sub(r"\1 against ", q)
     return _OPPONENT_RECORD_BAR.sub(
@@ -8040,6 +8180,67 @@ def _team_record_bar_board(parsed: dict) -> dict | None:
     return out
 
 
+# "which teams have a winning record against the Lakers": the bar is on each
+# team's record against that opponent (the board listed every opponent).
+_HEAD_TO_HEAD_LEAD = r"\s+(?:against|vs\.?|versus)\b"
+_HEAD_TO_HEAD_BARS = (
+    (re.compile(rf"\bwinning\s+records?{_HEAD_TO_HEAD_LEAD}"), "winning"),
+    (re.compile(rf"\blosing\s+records?{_HEAD_TO_HEAD_LEAD}"), "losing"),
+    (
+        re.compile(
+            rf"(?<![\w.])\.500\s+or\s+(?:better|above|higher){_HEAD_TO_HEAD_LEAD}"
+            rf"|\bat\s+least\s+\.500{_HEAD_TO_HEAD_LEAD}"
+        ),
+        "at_least_500",
+    ),
+    (
+        re.compile(
+            rf"(?<![\w.])\.500\s+or\s+(?:worse|below|lower){_HEAD_TO_HEAD_LEAD}"
+            rf"|\bat\s+most\s+\.500{_HEAD_TO_HEAD_LEAD}"
+        ),
+        "at_most_500",
+    ),
+)
+
+
+def _head_to_head_record_bar(parsed: dict, out: dict) -> dict | None:
+    kwargs = out.get("route_kwargs") or {}
+    if (
+        out.get("route") != "team_record_leaderboard"
+        or not kwargs.get("opponent")
+        or kwargs.get("team")
+        or kwargs.get("record_bar")
+    ):
+        return None
+    q = parsed["normalized_query"]
+    bar = next((name for pattern, name in _HEAD_TO_HEAD_BARS if pattern.search(q)), None)
+    if bar is None:
+        return None
+    kwargs = dict(kwargs)
+    kwargs.update(
+        stat="win_pct",
+        record_bar=bar,
+        limit=30,
+        ascending=bar in ("losing", "at_most_500"),
+    )
+    counted = bool(re.match(r"^how\s+many\b", q))
+    result = dict(out)
+    result.update(
+        route_kwargs=kwargs,
+        count_intent=counted or bool(out.get("count_intent")),
+        distinct_team_count=counted or bool(out.get("distinct_team_count")),
+        notes=[note for note in out.get("notes") or [] if not str(note).startswith("record_bar:")]
+        + [
+            f"record_bar: {bar}"
+            + (" at home" if kwargs.get("home_only") else "")
+            + (" on the road" if kwargs.get("away_only") else "")
+        ],
+    )
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
+    return result
+
+
 # "how many teams have 50 wins", "how many teams won 40 games last season":
 # the count of the win-total board (unrouted before).
 _HOW_MANY_TEAMS_WON = re.compile(
@@ -8371,6 +8572,9 @@ def _finalize_route(parsed: dict) -> dict:
             'player\'s decade by name ("LeBron points per game in the 2010s")'
         ]
         return refused
+    head_to_head = _head_to_head_record_bar(parsed, out)
+    if head_to_head is not None:
+        return head_to_head
     games = _player_game_list(parsed, out) or _team_game_list(parsed, out)
     if games is not None:
         return games
@@ -8441,6 +8645,10 @@ def _opponent_record_list(out: dict, request: dict | None) -> None:
     note = f"opponent_record_list: teams with {minimum or 0}+ {stat}"
     if venue:
         note += f"; {venue}"
+    team_quality = request.get("team_quality")
+    if team_quality:
+        kwargs["team_quality"] = team_quality
+        note += f"; bar={team_quality['surface_term']}"
     if minimum:
         kwargs["limit"] = 30
         kwargs["min_wins" if stat == "wins" else "min_losses"] = minimum

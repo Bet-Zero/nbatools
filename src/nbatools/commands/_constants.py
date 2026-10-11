@@ -88,7 +88,21 @@ _OPPONENT_CONTEXT = re.compile(
 )
 
 
+# ".500 or better against the Knicks", "a .500 or better record": one record
+# bar (head to head, or on the team board), never two clauses.
+# Only a team-record subject ("teams (are) .500 or better", "a (record of)
+# .500 or better"): "Jokic shot .500 or better vs the Lakers" stays a refusal.
+_RECORD_500_BAR = re.compile(
+    r"\b(?:teams\s+(?:(?:that|who)\s+)?(?:(?:are|were|finished|have\s+been)\s+)?(?:at\s+)?"
+    r"|(?:have|has|had|with)\s+(?:a\s+record\s+of|an?)\s+(?:at\s+)?)"
+    r"\.500\s+or\s+(?:better|above|higher|worse|below|lower)"
+    r"(?=\s+record\b|\s+(?:against|vs\.?|versus)\b)"
+    r"|\ba\s+\.500\s+or\s+(?:better|above|higher|worse|below|lower)(?=\s+record\b)"
+)
+
+
 def _or_bounds_read(text: str) -> str:
+    text = _RECORD_500_BAR.sub(lambda m: m.group(0).replace(" or ", "_or_"), text)
     # The bar's own name says "or worse"; it is one opponent group.
     text = canonicalize_500_team_bars(text).replace("teams .500 or worse", "teams_500_or_worse")
     if not _OPPONENT_CONTEXT.search(text):
