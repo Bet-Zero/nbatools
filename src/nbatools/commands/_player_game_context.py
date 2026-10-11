@@ -220,18 +220,33 @@ def _apply_allowed_ranking(route: str | None, route_kwargs: dict, text: str) -> 
     route_kwargs["ascending"] = word in ("fewest", "lowest", "least")
 
 
-_OPP_RANK_STAT = r"(?P<stat>[a-z0-9-]+(?:\s+(?:throws?|pointers?|goals?))?)"
-_OPP_RANK_STAT2 = _OPP_RANK_STAT.replace("stat", "stat2")
+# An opponent stat after "opponent": one word, or the multi-word ones
+# ("free throw attempts", "3 pointers", "field goals").
+_OPP_STAT_WORDS = (
+    r"(?:(?:effective\s+field\s+goal|true\s+shooting|field[\s-]+goal|free[\s-]+throw"
+    r"|(?:3|three)[\s-]*(?:point|pt)|fg|ft|3p|efg|ts)\s*(?:percentage|pct|%)"
+    r"|free[\s-]+throws?(?:\s+(?:attempts|made|makes))?"
+    r"|(?:3|three)[\s-]*(?:pointers?|pt|point)(?:\s+(?:attempts|shots|made|makes))?"
+    r"|field[\s-]+goals?(?:\s+(?:attempts|made|makes))?"
+    r"|(?:offensive|defensive)\s+rebounds?"
+    r"|[a-z0-9-]+)"
+)
+_OPP_WORD = r"opponents?(?:'s?|s')?"
 _OPP_STAT_RANK = re.compile(
     # "Lakers games with the most opponent turnovers", "top 5 games by
     # opponent rebounds", "fewest opponents' threes".
     rf"(?<!\bat\s)\b(?P<dir>most|fewest|least|lowest|highest|top|bottom)\s+(?:\d+\s+)?"
-    rf"(?:games?\s+by\s+(?:the\s+)?(?:most\s+)?)?opponents?(?:'s?|s')?\s+{_OPP_RANK_STAT}"
+    rf"(?:games?\s+by\s+(?:the\s+)?(?:most\s+)?)?{_OPP_WORD}\s+(?P<stat>{_OPP_STAT_WORDS})"
     # "where (the) opponents had / made the most threes".
     r"|\b(?:the\s+)?(?:opponents?|other\s+team|opposing\s+team)\s+(?:had|made|hit|grabbed|"
-    rf"committed|shot|recorded|got)\s+the\s+(?P<dir2>most|fewest|least)\s+{_OPP_RANK_STAT2}"
-    # "games where they forced the most turnovers" (not "the opponent forced").
-    r"|\b(?:they|we|games?)\s+forced\s+the\s+(?P<dir3>most|fewest|least)\s+turnovers\b"
+    rf"committed|shot|recorded|got)\s+the\s+(?P<dir2>most|fewest|least)\s+(?P<stat2>{_OPP_STAT_WORDS})"
+    # "games where they / the Lakers forced the most turnovers" (not "the
+    # opponent forced").
+    r"|(?<![\w'])(?:the\s+)?(?!(?:opponents?|other|opposing|team)\b)[a-z0-9.']+\s+forced\s+"
+    r"the\s+(?P<dir3>most|fewest|least)\s+turnovers\b"
+    # "ranked / sorted by opponent points".
+    rf"|\b(?:ranked|sorted|ordered)\s+by\s+(?:the\s+)?{_OPP_WORD}\s+(?P<stat4>{_OPP_STAT_WORDS})"
+    r"(?P<asc4>,?\s+(?:ascending|lowest\s+first|fewest\s+first|least\s+first))?"
 )
 
 
@@ -239,8 +254,12 @@ _OPP_STAT_RANK = re.compile(
 # opponent's number, not a ranking.
 _OPP_STAT_BOUND = re.compile(
     r"\b(?P<op>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+"
-    r"(?P<num>\d+)\s+opponents?(?:'s?|s')?\s+(?P<stat>[a-z0-9-]+)"
-    r"|\b(?P<num2>\d+)\+\s*opponents?(?:'s?|s')?\s+(?P<stat2>[a-z0-9-]+)"
+    rf"(?P<num>\d+)\s+{_OPP_WORD}\s+(?P<stat>{_OPP_STAT_WORDS})"
+    rf"|\b(?P<num2>\d+)\+\s*{_OPP_WORD}\s+(?P<stat2>{_OPP_STAT_WORDS})"
+    # "120 points allowed", "at most 10 threes given up": the opponent's.
+    r"|(?:\b(?P<op3>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?"
+    r"\b(?P<num3>\d+)(?:\+|\s+or\s+(?P<orx>more|fewer|less))?\s+"
+    rf"(?P<stat3>{_OPP_STAT_WORDS})\s+(?:allowed|given\s+up)\b"
 )
 _OPP_BOUND_MODE = {
     "at least": ("min", 0.0),
@@ -251,6 +270,146 @@ _OPP_BOUND_MODE = {
     "fewer than": ("max", 0.0001),
     "less than": ("max", 0.0001),
 }
+# Spellings the stat reader misses.
+_OPP_STAT_SPELLINGS = (
+    (re.compile(r"free throw attempts|free throws? (?:attempts|shots)"), "fta"),
+    (re.compile(r"free throws?(?: made| makes)?"), "ftm"),
+    (re.compile(r"(?:3|three) ?(?:pointers?|pt|point) (?:attempts|shots)"), "fg3a"),
+    (re.compile(r"(?:3|three) ?(?:pointers?|pt|point)(?: made| makes)?"), "fg3m"),
+    (re.compile(r"field goals? attempts|field goal attempts"), "fga"),
+    (re.compile(r"field goals?(?: made| makes)?"), "fgm"),
+    (re.compile(r"defensive rebounds?"), "dreb"),
+)
+
+
+def _opponent_stat(word: str) -> str | None:
+    """The opponent column a stat word names ("free throws" -> opponent_ftm)."""
+    from nbatools.commands.game_finder import ALLOWED_STATS
+
+    words = re.sub(r"[\s-]+", " ", word.strip())
+    stat = next((s for rx, s in _OPP_STAT_SPELLINGS if rx.fullmatch(words)), None)
+    stat = stat or _stat_word(words)
+    return f"opponent_{stat}" if stat and f"opponent_{stat}" in ALLOWED_STATS else None
+
+
+# "held the opponent to 100", "held them to under 90 points and 10 threes":
+# ceilings on the opponent's numbers, each item read with its own stat.
+_HELD = re.compile(r"\bheld\s+(?:the\s+)?(?:opponents?|other\s+team|them)\s+to\s+")
+_HELD_ITEM = re.compile(
+    r"(?P<op>under\s+|fewer\s+than\s+|less\s+than\s+|at\s+most\s+)?(?P<num>\d+)"
+    r"(?:\s+or\s+(?:fewer|less|under))?(?:\s+made)?"
+    rf"(?:\s+(?P<stat>{_OPP_STAT_WORDS}))?"
+)
+# What may follow a bare "held them to 100": the points ceiling ends there.
+_HELD_POINTS_END = re.compile(
+    r"\s*(?:$|[,.?!]|(?:in|on|at|this|last|since|and|with|when|while|during|vs|versus|against|"
+    r"games?|from|before|after|over)\b)"
+)
+_HELD_JOIN = re.compile(r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)(?=(?:under|fewer|less|at\s+most|\d))")
+_HELD_NOT_A_STAT = re.compile(r"\s*(?:%|percent\b|pct\b|shooting\b|from\b)")
+
+
+class _Span:
+    """A bound's text span, read like a match by the callers below."""
+
+    def __init__(self, start: int, end: int) -> None:
+        self._span = (start, end)
+
+    def span(self) -> tuple[int, int]:
+        return self._span
+
+    def group(self, _name: str) -> None:
+        return None
+
+
+def _held_bounds(text: str) -> list[tuple[_Span, dict]]:
+    found: list[tuple[_Span, dict]] = []
+    for lead in _HELD.finditer(text):
+        pos, items = lead.end(), []
+        while True:
+            item = _HELD_ITEM.match(text, pos)
+            if not item or _HELD_NOT_A_STAT.match(text, item.end("num")):
+                # "held them to 40% shooting": a rate this reader leaves alone.
+                items = []
+                break
+            words = item.group("stat")
+            stat = _opponent_stat(words) if words else "opponent_pts"
+            end = item.end()
+            if stat is None:
+                # "held them to 100 in wins": points, when nothing stat-like
+                # follows the number; anything else is left to the readers.
+                if not _HELD_POINTS_END.match(text, item.end("num")):
+                    items = []
+                    break
+                stat, end = "opponent_pts", item.end("num")
+            if stat.endswith("_pct"):
+                items = []
+                break
+            strict = bool(item.group("op")) and not item.group("op").startswith("at")
+            value = float(item.group("num"))
+            items.append(
+                {"stat": stat, "min_value": None, "max_value": value - (0.0001 if strict else 0.0)}
+            )
+            pos = end
+            join = _HELD_JOIN.match(text, pos)
+            if not join:
+                break
+            pos = join.end()
+        if items:
+            found.extend((_Span(lead.start(), pos), bound) for bound in items)
+    return found
+
+
+def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
+    found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
+    for m in _OPP_STAT_BOUND.finditer(text):
+        stat = _opponent_stat(m.group("stat") or m.group("stat2") or m.group("stat3") or "")
+        op = m.group("op") or m.group("op3")
+        if not stat:
+            continue
+        if not op and m.group("orx"):
+            op = "at least" if m.group("orx") == "more" else "at most"
+        mode, eps = _OPP_BOUND_MODE[re.sub(r"\s+", " ", op or "at least")]
+        value = float(m.group("num") or m.group("num2") or m.group("num3"))
+        if stat.endswith("_pct") and value > 1:
+            # "at least 50 opponent field goal percentage": the rate as a fraction.
+            value /= 100
+        found.append(
+            (
+                m,
+                {
+                    "stat": stat,
+                    "min_value": value + eps if mode == "min" else None,
+                    "max_value": value - eps if mode == "max" else None,
+                },
+            )
+        )
+    return found
+
+
+def _own_bounds(text: str, spans: list[tuple[int, int]]) -> list[dict]:
+    """The team's own bounds, read with the opponent phrases taken out ("at
+    least 15 turnovers and at least 15 opponent turnovers": the own floor was
+    dropped as a misreading of the opponent's)."""
+    from nbatools.commands.natural_query import _build_parse_state
+
+    rest = text
+    for start, end in sorted(spans, reverse=True):
+        rest = rest[:start] + " " + rest[end:]
+    state = _build_parse_state(rest)
+    found = list(state.get("threshold_conditions") or [])
+    if (
+        not found
+        and state.get("stat")
+        and (state.get("min_value") is not None or state.get("max_value") is not None)
+    ):
+        found = [state]
+    own = []
+    for item in found:
+        bound = {k: item.get(k) for k in ("stat", "min_value", "max_value")}
+        if bound["stat"] and not any(c["stat"] == bound["stat"] for c in own):
+            own.append(bound)
+    return own
 
 
 def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str) -> None:
@@ -258,28 +417,29 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
     (the team's own turnovers were filtered)."""
     if route != "game_finder":
         return
-    from nbatools.commands.game_finder import ALLOWED_STATS
-
-    bounds = []
-    for m in _OPP_STAT_BOUND.finditer(text):
-        stat = _stat_word(m.group("stat") or m.group("stat2") or "")
-        if not stat or f"opponent_{stat}" not in ALLOWED_STATS:
-            continue
-        mode, eps = _OPP_BOUND_MODE[re.sub(r"\s+", " ", m.group("op") or "at least")]
-        value = float(m.group("num") or m.group("num2"))
-        bounds.append(
-            {
-                "stat": f"opponent_{stat}",
-                "min_value": value + eps if mode == "min" else None,
-                "max_value": value - eps if mode == "max" else None,
-            }
-        )
-    if not bounds:
+    found = _opponent_bounds(text)
+    if not found:
         return
+    bounds = [bound for _, bound in found]
+    spans = [m.span() for m, _ in found]
+    ranked = _OPP_STAT_RANK.search(text)
+    if ranked:
+        spans.append(ranked.span())
+    own = _own_bounds(text, spans)
+    route_kwargs["conditions"] = own + bounds
+    # "Lakers games with 120 points allowed" was refused as a 120-point event
+    # the list cannot run; it is the opponent's bound, now applied.
+    _clear_covered_event_refusal(
+        route_kwargs,
+        own
+        + [
+            {**bound, "stat": bound["stat"][len("opponent_") :]}
+            for m, bound in found
+            if m.group("stat3")
+        ],
+    )
     bases = {b["stat"][len("opponent_") :] for b in bounds}
-    conditions = [c for c in _kwargs_conditions(route_kwargs) if c["stat"] not in bases]
-    route_kwargs["conditions"] = conditions + bounds
-    if route_kwargs.get("stat") in bases:
+    if route_kwargs.get("stat") in bases or not route_kwargs.get("stat"):
         # The bound was read as the team's own: it moves to the opponent's.
         route_kwargs.update(
             stat=bounds[-1]["stat"],
@@ -293,43 +453,33 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
 def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank a team's games by the opponent's number ("most opponent
     turnovers" ranked the team's own turnovers)."""
-    if route != "game_finder" or route_kwargs.get("conditions"):
+    if route != "game_finder":
         return
     m = _OPP_STAT_RANK.search(text)
     if not m:
         return
-    word = m.group("dir") or m.group("dir2") or m.group("dir3")
+    word = m.group("dir") or m.group("dir2") or m.group("dir3") or "most"
     if m.group("dir3"):
-        stat = "tov"
+        stat = "opponent_tov"
     else:
-        stat = _stat_word(m.group("stat") or m.group("stat2") or "")
-    from nbatools.commands.game_finder import ALLOWED_STATS
-
-    if not stat or f"opponent_{stat}" not in ALLOWED_STATS:
+        stat = _opponent_stat(m.group("stat") or m.group("stat2") or m.group("stat4") or "")
+    if not stat:
         return
-    from nbatools.commands.natural_query import _build_parse_state
-
-    # "most opponent turnovers with 120 points": the team's own bound stays a
-    # condition (it was dropped).
-    conditions = _kwargs_conditions(route_kwargs) if route_kwargs.get("stat") != stat else []
-    rest = _build_parse_state(text[: m.start()] + " " + text[m.end() :])
-    found = list(rest.get("threshold_conditions") or [])
-    if (
-        not found
-        and rest.get("stat")
-        and (rest.get("min_value") is not None or rest.get("max_value") is not None)
-    ):
-        found = [rest]
-    for item in found:
-        bound = {k: item.get(k) for k in ("stat", "min_value", "max_value")}
-        if bound["stat"] and not any(c["stat"] == bound["stat"] for c in conditions):
-            conditions.append(bound)
+    # "most opponent turnovers with 120 points": the team's own bounds stay
+    # conditions (they were dropped), and opponent bounds stay too.
+    found = _opponent_bounds(text)
+    conditions = _own_bounds(text, [m.span()] + [b.span() for b, _ in found])
+    conditions += [bound for _, bound in found]
     if conditions:
         route_kwargs["conditions"] = conditions
+    else:
+        route_kwargs.pop("conditions", None)
     route_kwargs["min_value"] = route_kwargs["max_value"] = None
-    route_kwargs["stat"] = f"opponent_{stat}"
+    route_kwargs["stat"] = stat
     route_kwargs["sort_by"] = "stat"
-    route_kwargs["ascending"] = word in ("fewest", "least", "lowest", "bottom")
+    route_kwargs["ascending"] = word in ("fewest", "least", "lowest", "bottom") or bool(
+        m.group("asc4")
+    )
 
 
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:

@@ -474,6 +474,10 @@ def authorize_compound_event_route(
     for metric in named_metrics(parsed):
         if metric in accounted:
             continue
+        if route in GAME_FINDER_ROUTES and metric.removesuffix("_per_game") in accounted:
+            # "games with 120 points allowed": the opponent's points, applied on
+            # each game (named as a per-game metric).
+            continue
         if occurrence_count_column_condition(metric):
             # A count column names the same event the conditions already state.
             continue

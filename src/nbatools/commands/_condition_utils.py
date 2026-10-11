@@ -160,7 +160,12 @@ OPPONENT_STAT_BASES = (
     "blk",
     "tov",
 )
-OPPONENT_STATS = {f"opponent_{base}": f"opponent_{base}" for base in OPPONENT_STAT_BASES}
+#: Shooting rates a team game list can rank or bound the opponent by
+#: ("highest opponent field goal percentage"); team rows carry them.
+OPPONENT_RATE_BASES = ("fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct")
+OPPONENT_STATS = {
+    f"opponent_{base}": f"opponent_{base}" for base in (*OPPONENT_STAT_BASES, *OPPONENT_RATE_BASES)
+}
 #: Final-margin stats from the team plus-minus: ``margin`` is either team's
 #: ("decided by 3 or fewer"); ``win_margin`` and ``loss_margin`` exist only on
 #: wins or losses ("won by 10+", "lost by 20+"), so no bound matches the other.
