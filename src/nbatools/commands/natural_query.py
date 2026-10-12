@@ -7535,7 +7535,7 @@ _LEAGUE_LIST_UNREAD = re.compile(
 _LEAGUE_LIST_BOUND_TAIL = re.compile(
     r"\s*(?:\+|\s+or\s+(?:more|fewer|less))?\s*(?:points?|pts|rebounds?|reb|assists?|ast|"
     r"threes?|3s|3pm|turnovers?|tov|minutes?|mins?|steals?|stl|blocks?|blk|fouls?|"
-    r"made\s+threes|free\s+throws?|field\s+goals?|(?:win\s+)?margin)\b|\s+or\s+more\b"
+    r"made\s+threes|free\s+throws?|field\s+goals?|(?:(?:win|game|loss)\s+)?margin)\b|\s+or\s+more\b"
 )
 # Seasons and dates in a league game list's tail.
 _LEAGUE_LIST_DATES = re.compile(
@@ -7642,10 +7642,10 @@ def _team_game_list(parsed: dict, out: dict) -> dict | None:
 def _league_game_list_refusal(parsed: dict) -> dict:
     # The board under it would answer a different question (season points).
     refused = _single_season_refusal(parsed)
-    refused["route_kwargs"]["unsupported_filters"] = ["league_game_list_group"]
+    refused["route_kwargs"]["unsupported_filters"] = ["league_game_list_unread"]
     refused["notes"] = [
-        "unsupported_boundary: league game lists rank every player's games; a group "
-        'such as "the top 10 scorers" is not a filter they apply'
+        "unsupported_boundary: league game lists rank every player's games; a group or "
+        'number they do not read ("the top 10 scorers", "with 20 shots") is not applied'
     ]
     return refused
 
@@ -7741,6 +7741,13 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         # Seasons, dates and percent bounds are read by the parse already.
         plain = _LEAGUE_LIST_DATES.sub(lambda m: " " * len(m.group(0)), q)
         plain = _GAME_LIST_PERCENT_BOUND.sub(lambda m: " " * len(m.group(0)), plain)
+        if route_kwargs.get("series_situation") or parsed.get("series_situation"):
+            # "in game 7", "when up 3-1": the series situation reads them.
+            plain = re.sub(
+                r"\bgames?\s+[1-7]\b|\b[0-4]\s*-\s*[0-4]\b",
+                lambda m: " " * len(m.group(0)),
+                plain,
+            )
         for number in re.finditer(r"\b\d+(?:\.\d+)?\b", plain):
             if re.fullmatch(r"(?:19|20)\d\d", number.group(0)) or (
                 head and number.end() <= head.end()

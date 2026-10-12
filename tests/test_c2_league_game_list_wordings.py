@@ -54,6 +54,30 @@ def test_a_season_or_date_is_not_an_unread_number(query, season):
     assert parsed["route_kwargs"]["season"] == season
 
 
+@pytest.mark.parametrize(
+    ("query", "situation"),
+    [
+        ("best shooting games in game 7", "game_7"),
+        ("best shooting games when up 3-1", "score_3_1"),
+        ("best shooting games when down 2-0", "score_0_2"),
+    ],
+)
+def test_a_series_situation_is_not_an_unread_number(query, situation):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["route_kwargs"]["series_situation"] == situation
+
+
+def test_a_margin_is_not_an_unread_number():
+    kwargs = parse_query("best shooting games in games decided by 10")["route_kwargs"]
+    assert {"stat": "margin", "min_value": 10.0, "max_value": None} in kwargs["conditions"]
+
+
+def test_an_attempt_count_the_list_does_not_read_refuses():
+    kwargs = parse_query("best shooting games with 20 shots")["route_kwargs"]
+    assert kwargs["unsupported_filters"] == ["league_game_list_unread"]
+
+
 def test_the_tail_keeps_its_filters():
     kwargs = parse_query("best free throw shooting games since 2020")["route_kwargs"]
     assert (kwargs["start_season"], kwargs["end_season"]) == ("2020-21", "2025-26")
