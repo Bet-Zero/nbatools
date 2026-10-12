@@ -179,8 +179,48 @@ PLAYER_GAME_CONTEXT_STATS = {
     for side in ("team", "opponent")
     for base in PLAYER_GAME_CONTEXT_BASES
 }
+#: The team's best single-player line in the game ("Lakers record when a
+#: player scores 40"): the most any one of its players had, from player rows
+#: of the same game.
+TOP_PLAYER_BASES = ("pts", "reb", "ast", "stl", "blk", "fg3m", "fgm", "ftm", "tov")
+TOP_PLAYER_STATS = {f"top_player_{base}": f"top_player_{base}" for base in TOP_PLAYER_BASES}
 #: Stats read from a team game row beyond its own box score.
-TEAM_GAME_EXTRA_STATS = {**OPPONENT_STATS, **MARGIN_STATS}
+TEAM_GAME_EXTRA_STATS = {**OPPONENT_STATS, **MARGIN_STATS, **TOP_PLAYER_STATS}
+
+
+def attach_top_player_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
+    """Add the ``top_player_<stat>`` columns named in *wanted* to team rows."""
+    names = [n for n in TOP_PLAYER_STATS if n in set(wanted) and n not in df.columns]
+    needed = {"game_id", "team_id", "season", "season_type"}
+    if not names or df.empty or not needed.issubset(df.columns):
+        return df
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    bases = [n[len("top_player_") :] for n in names]
+    frames = []
+    for season_type, part in df.groupby("season_type"):
+        seasons = sorted(str(s) for s in part["season"].dropna().unique())
+        try:
+            players = load_player_games_for_seasons(seasons, str(season_type))
+        except FileNotFoundError:
+            continue
+        frames.append(players[["game_id", "team_id", *bases]])
+    out = df.copy()
+    if not frames:
+        for name in names:
+            out[name] = float("nan")
+        return out
+    players = pd.concat(frames, ignore_index=True)
+    for base in bases:
+        players[base] = pd.to_numeric(players[base], errors="coerce")
+    top = players.groupby(["game_id", "team_id"], as_index=False)[bases].max()
+    top = top.rename(columns={b: f"top_player_{b}" for b in bases})
+    key_types = {k: out[k].dtype for k in ("game_id", "team_id")}
+    for key, dtype in key_types.items():
+        top[key] = top[key].astype(dtype)
+    merged = out.merge(top, on=["game_id", "team_id"], how="left")
+    merged.index = out.index
+    return merged
 
 
 def attach_margin_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
@@ -220,6 +260,7 @@ def attach_opponent_stats(
     """
     wanted = {stat} | {c["stat"] for c in normalize_stat_conditions(conditions)}
     df = attach_margin_stats(df, wanted)
+    df = attach_top_player_stats(df, wanted)
     columns = [
         name
         for name in sorted(s for s in wanted if s in OPPONENT_STATS)

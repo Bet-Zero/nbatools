@@ -590,7 +590,7 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _refuse_game_clock(route, route_kwargs, text)
     _refuse_other_player_stat(route, route_kwargs, text)
     _refuse_team_shooting(route, route_kwargs, text)
-    _refuse_any_player_stat(route, route_kwargs, text)
+    _apply_any_player_stat(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
@@ -675,23 +675,88 @@ def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) 
 
 
 # "Lakers record when a player scores 40", "best record when someone has 40":
-# one of the team's players, which read the team's own points. Not read yet,
-# so refuse rather than answer with the team's points or every game.
+# one of the team's players, which read the team's own points. A floor reads
+# the team's best single-player line in the game; anything else refuses.
 _ANY_PLAYER_STAT = re.compile(
-    r"\b(?:when|if|while|where|whenever)\s+"
-    r"(?:(?:a|any|one|some)\s+(?:[a-z.']+\s+)?player|someone|anyone|anybody|somebody)"
-    r"(?:\s+(?:on|from|for)\s+(?:the\s+)?[a-z.']+)?\s+"
+    r"\b(?:when|if|while|where|whenever|in\s+games?\s+(?:where|when))\s+"
+    r"(?:(?:a|any|one|some)\s+(?:(?P<team1>[a-z.']+)\s+)?player|someone|anyone|anybody|somebody)"
+    r"(?:\s+(?:on|from|for)\s+(?:the\s+)?(?P<team2>[a-z.']+(?:\s+[a-z.']+)?))?\s+"
     r"(?:scores?|scored|has|had|gets?|got|records?|recorded|grabs?|grabbed|makes?|made"
-    r"|hits?|dishes|dished|puts?\s+up)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+    r"|hits?|dishes|dished|puts?\s+up)\s+"
+    r"(?P<pre>at\s+least\s+|over\s+|more\s+than\s+|under\s+|below\s+|fewer\s+than\s+"
+    r"|less\s+than\s+|at\s+most\s+)?(?P<n>\d+)(?P<plus>\+)?"
+    r"(?:\s+(?P<post>or\s+(?:more|fewer|less)))?"
+    r"(?:\s+(?P<w>[a-z0-9-]+(?:\s+pointers?)?))?"
 )
+# Words after the number that end the clause rather than name a stat.
+_ANY_PLAYER_NOT_A_STAT = re.compile(
+    r"and|but|in|at|on|vs|versus|against|or|this|last|since|during|before|after|with"
+    r"|without|games?|the|home|away|while|when|for|over|from|of|a|an|\d{4}(?:-\d{2})?"
+)
+_ANY_PLAYER_ROUTES = ("team_record", "game_finder", "game_summary", "team_record_leaderboard")
 
 
-def _refuse_any_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
-    if not route or route in _PLAYER_ROUTES or not _ANY_PLAYER_STAT.search(text):
+def _any_player_bound(m: re.Match, route_team: str | None, text: str) -> dict | None:
+    """The bound a match reads, or None when it cannot be read."""
+    from nbatools.commands._condition_utils import TOP_PLAYER_BASES
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    pre = (m.group("pre") or "").strip()
+    post = m.group("post") or ""
+    if pre in ("under", "below", "fewer than", "less than", "at most") or re.search(
+        r"fewer|less", post
+    ):
+        # "when a player scores under 10" is not "the best line is under 10".
+        return None
+    named = m.group("team1") or m.group("team2")
+    if named and named != "single":
+        # "a Lakers player" is the subject's own; "a Celtics player" beside
+        # the Lakers is not read.
+        from nbatools.commands.natural_query import _team_mentions
+
+        team = detect_team_in_text(named)
+        before = [t for a, b, t in _team_mentions(text[: m.start()]) if b - a > 3]
+        if team is None or team != route_team or not before or before[0] != team:
+            return None
+    word = m.group("w")
+    stat = _stat_word(word) if word else None
+    if word and stat is None and not _ANY_PLAYER_NOT_A_STAT.fullmatch(word):
+        return None
+    stat = stat or "pts"
+    if stat not in TOP_PLAYER_BASES:
+        return None
+    value = float(m.group("n"))
+    if pre in ("over", "more than"):
+        value += 0.0001
+    return {"stat": f"top_player_{stat}", "min_value": value, "max_value": None, "base": stat}
+
+
+def _apply_any_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
+    matches = list(_ANY_PLAYER_STAT.finditer(text))
+    if not route or route in _PLAYER_ROUTES or not matches:
         return
-    blocked = list(route_kwargs.get("unsupported_filters") or [])
-    if "any_player_stat" not in blocked:
-        route_kwargs["unsupported_filters"] = [*blocked, "any_player_stat"]
+    bounds = [_any_player_bound(m, route_kwargs.get("team"), text) for m in matches]
+    if route not in _ANY_PLAYER_ROUTES or None in bounds or len(bounds) > 1:
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "any_player_stat" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "any_player_stat"]
+        return
+    bound = bounds[0]
+    base = bound.pop("base")
+    # The clause was read as the team's own stat: replace that bound.
+    conditions = [
+        c
+        for c in _kwargs_conditions(route_kwargs)
+        if not (
+            c["stat"] == base
+            and c.get("min_value") is not None
+            and abs(c["min_value"] - bound["min_value"]) < 1
+        )
+    ]
+    conditions.append(bound)
+    route_kwargs["conditions"] = conditions
+    if route_kwargs.get("stat") == base or not route_kwargs.get("stat"):
+        route_kwargs.update(stat=bound["stat"], min_value=bound["min_value"], max_value=None)
 
 
 # "LeBron games vs Celtics when the Celtics shoot 50%": a team's shooting

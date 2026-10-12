@@ -2439,6 +2439,9 @@ def _other_team_clause(q: str) -> str:
     m = _OTHER_TEAM_CLAUSE.search(q)
     if not m:
         return q
+    if re.search(r"\bplayers?$", m.group("name")):
+        # "when a Celtics player scores 40": one player, not the team's total.
+        return q
     other = detect_team_in_text(m.group("name"))
     prefix = q[: m.start()]
     if not other or detect_player(prefix):
