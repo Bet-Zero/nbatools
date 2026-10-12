@@ -339,3 +339,50 @@ def test_read_windows_still_answer(query):
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs.get("start_date") and kwargs.get("end_date")
     assert execute_natural_query(query).result_status == "ok"
+
+
+def test_team_plus_minus_is_the_score_margin():
+    from nbatools.commands.data_utils import score_margin_plus_minus
+
+    # The source column is wrong in some real games (a wrong sign, a
+    # fractional value); a game without both rows keeps the stored value.
+    rows = pd.DataFrame(
+        {
+            "game_id": [1, 1, 2, 2, 3],
+            "team_abbr": ["GSW", "LAC", "MIL", "BKN", "LAL"],
+            "pts": [115, 113, 121, 109, 100],
+            "plus_minus": [-3.0, 3.0, 12.4, -10.0, 7.0],
+        }
+    )
+    fixed = score_margin_plus_minus(rows)
+    assert fixed["plus_minus"].tolist() == [2.0, -2.0, 12.0, -12.0, 7.0]
+    assert rows["plus_minus"].tolist() == [-3.0, 3.0, 12.4, -10.0, 7.0]
+
+
+def test_corrupt_stored_margins_do_not_reach_any_answer(tmp_path, monkeypatch):
+    import shutil
+
+    shutil.copytree(RAW.parent.parent, tmp_path, dirs_exist_ok=True)
+    path = tmp_path / "data" / "raw" / "team_game_stats" / "2025-26_regular_season.csv"
+    games = pd.read_csv(path)
+    games["plus_minus"] = games["plus_minus"].astype(float)
+    lakers = games.index[games["team_abbr"] == "LAL"][:10]
+    games.loc[lakers, "plus_minus"] = games.loc[lakers, "plus_minus"] + 30.4
+    games.to_csv(path, index=False)
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    reset_data_source_cache()
+
+    margin = _team_margins()
+    margin = margin[margin["team_abbr"] == "LAL"]["margin"]
+    summary = execute_natural_query("Lakers point differential").result.to_dict()
+    assert summary["sections"]["summary"][0]["plus_minus_avg"] == pytest.approx(
+        margin.mean(), abs=1e-3
+    )
+    board = execute_natural_query("which team has the best point differential").result.to_dict()
+    lakers_row = next(r for r in board["sections"]["leaderboard"] if r["team_abbr"] == "LAL")
+    assert lakers_row["plus_minus_per_game"] == pytest.approx(margin.mean(), abs=1e-3)
+    top = execute_natural_query("Lakers best plus minus game").result.to_dict()
+    best = next(iter(top["sections"].values()))[0]
+    assert best["plus_minus"] == margin.max()

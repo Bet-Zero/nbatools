@@ -11,7 +11,7 @@ from nbatools.commands._single_season_boards import (
     best_single_seasons,
     win_bounds_caveat,
 )
-from nbatools.commands.data_utils import safe_divide, team_value_mask
+from nbatools.commands.data_utils import safe_divide, score_margin_plus_minus, team_value_mask
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.season_leaders import (
     ATTEMPT_LABEL,
@@ -519,7 +519,8 @@ def build_result(
     for s in seasons:
         basic_path = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
         if data_exists(basic_path):
-            frames.append(data_read_csv(basic_path))
+            # Margins (and opponent points) come from the score.
+            frames.append(score_margin_plus_minus(data_read_csv(basic_path)))
 
     if not frames:
         return NoResult(query_class="leaderboard", reason="no_data")

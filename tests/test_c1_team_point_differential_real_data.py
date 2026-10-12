@@ -7,17 +7,33 @@ import pytest
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 
 
-def test_lakers_point_differential_2023_24():
+def _margins(season: str):
     from nbatools.commands.data_utils import load_team_games_for_seasons
-    from nbatools.query_service import execute_natural_query
 
-    games = load_team_games_for_seasons(["2023-24"], "Regular Season")
+    games = load_team_games_for_seasons([season], "Regular Season")
     opp = games[["game_id", "team_abbr", "pts"]].rename(
         columns={"team_abbr": "opp_abbr", "pts": "opp_pts"}
     )
     merged = games.merge(opp, on="game_id")
-    merged = merged[(merged["team_abbr"] == "LAL") & (merged["opp_abbr"] != "LAL")]
-    margin = (merged["pts"] - merged["opp_pts"]).mean()
+    merged = merged[merged["team_abbr"] != merged["opp_abbr"]].copy()
+    merged["margin"] = merged["pts"] - merged["opp_pts"]
+    return merged
+
+
+@pytest.mark.parametrize("season", ["2021-22", "2022-23", "2023-24", "2024-25"])
+def test_team_plus_minus_is_the_score_margin(season):
+    # The stored column disagrees with the score in 9 to 20 games a season
+    # before 2024-25; the loaded margin is the score's.
+    merged = _margins(season)
+    assert (merged["plus_minus"] == merged["margin"]).all()
+
+
+def test_lakers_point_differential_2023_24():
+    from nbatools.query_service import execute_natural_query
+
+    merged = _margins("2023-24")
+    merged = merged[merged["team_abbr"] == "LAL"]
+    margin = merged["margin"].mean()
     result = execute_natural_query("Lakers point differential in 2023-24")
     row = result.result.to_dict()["sections"]["summary"][0]
     assert row["games"] == len(merged)
