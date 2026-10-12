@@ -938,6 +938,18 @@ _VERB_EVENT = re.compile(
 )
 
 
+# "ft 80% and 5 fta", "shooting 50% and 5 threes": a joined count beside a rate.
+_JOINED_EVENT = re.compile(
+    rf"\band\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN})\b{_NOT_A_FLOOR}"
+)
+
+
+_COUNT_OWNER = re.compile(r"\s+(?:from|by)\s+\w")
+_CLAUSE_JOINED_COUNT = re.compile(
+    rf"\s*(?:,\s*)?and\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN})\b{_NOT_A_FLOOR}"
+)
+
+
 def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str) -> None:
     """Keep "with 30 points" beside a shooting percentage.
 
@@ -964,8 +976,22 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
         return
     shooting = [{k: c[k] for k in ("stat", "min_value", "max_value")} for c in matches]
     events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT))
-    if not events:
-        return
+    # Only a count joined right onto a rate is the subject's ("fg 50% and 5
+    # threes"); "... and opponents score 110 and 15 threes" is another clause's.
+    ends = {m["end"] for m in matches}
+    for m in _JOINED_EVENT.finditer(text):
+        stat = _stat_word(m.group("w"))
+        if stat is None or len(text[: m.start()].rstrip()) not in ends:
+            continue
+        ends.add(m.end())
+        if not any(e["stat"] == stat for e in events):
+            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+    if not events and len(shooting) == 1:
+        if _kwargs_conditions(route_kwargs) or (
+            route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None
+        ):
+            return
+        # "LeBron games with ts 60%": a rate the parse did not read.
     conditions = shooting + events
     stats = [c["stat"] for c in conditions]
     if len(stats) != len(set(stats)):
@@ -1125,6 +1151,33 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
         found.append({**item, "stat": base, "side": "opponent"})
     if not found:
         return
+    # "when the Lakers score 120 and 30 assists": the joined count is the
+    # team's too.
+    read = {c["stat"] for c in _kwargs_conditions(route_kwargs)}
+    for item in list(found):
+        end = item["end"]
+        while m := _CLAUSE_JOINED_COUNT.match(text, end):
+            stat = _stat_word(m.group("w"))
+            if (
+                stat is None
+                or f"{item['side']}_{stat}" in read
+                or any(f["stat"] == stat and f["side"] == item["side"] for f in found)
+                or _COUNT_OWNER.match(text, m.end())
+            ):
+                # Already bounded ("allow under 110 and 30 assists"), or
+                # given to someone ("and 10 assists from LeBron").
+                break
+            found.append(
+                {
+                    **item,
+                    "stat": stat,
+                    "min_value": float(m.group("n")),
+                    "max_value": None,
+                    "start": m.start(),
+                    "end": m.end(),
+                }
+            )
+            end = m.end()
     conditions = _kwargs_conditions(route_kwargs)
     context = [c for c in conditions if _is_context_stat(c["stat"])]
     own = [c for c in conditions if not _is_context_stat(c["stat"])]
