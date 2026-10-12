@@ -173,6 +173,7 @@ If a feature is not reflected here, it should not be assumed shipped.
   `team_record_leaderboard` queries in `2024-25` and `2025-26`; missing or
   untrusted coverage returns `no_result` / `filter_not_supported`, not a broad
   full-season record)
+- ranked three-point games with a named player or team: `LeBron top 3 three point games`, `Lakers top 3 3 point games`, `Curry best 5 3pt games` rank games by threes made (the league form `top 5 three point games` reads as before)
 - split views: `home vs away`, `home versus away`, `home vs road`, `home and away record`, `wins vs losses`, `wins versus losses`, `in wins and losses`, `by month`, `month by month`, `monthly`, `best month`, `worst month`, `best scoring / shooting / 3 point shooting month`, `which month did he score the most`
 
 ### 2.4 Threshold language
