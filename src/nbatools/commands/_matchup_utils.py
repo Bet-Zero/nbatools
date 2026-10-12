@@ -660,22 +660,29 @@ def names_other_player_availability(
     return False
 
 
-# What may not follow the one absence clause: anything joining another clause.
+# A clause joined after the absence that states someone else's availability.
 _CLAUSE_JOIN = re.compile(
-    r"\s*(?:[,;/&+\-]|\b(?:and|or|but|plus|then|as|so|also|alongside|too|either|nor"
-    r"|likewise|with)\b)"
+    r"\s*(?:[,;/&+\-]|\b(?:and|or|but|plus|then|as|so|also|alongside|nor|with)\b)"
+)
+_AVAILABILITY_WORD = re.compile(
+    r"\b(?:plays?|playing|played|sits?|sitting|sat|out|rests?|resting|rested|misses|missed"
+    r"|healthy|injured|available|does|doesn't|did|didn't|too|likewise|either)\b"
 )
 
 
 def _lone_absence(text: str, m: re.Match, subject: str, player: str | None, applied: str) -> bool:
-    """True when clause ``m`` is the question's only availability statement and
-    names only the applied player: no other player anywhere outside it, no
-    clause joined after it, and no second mention of the applied player."""
+    """True when clause ``m`` is the question's only availability statement:
+    the applied player is not named again, and no third player (anyone but
+    ``player`` and ``applied``) appears anywhere outside it. A team, a
+    pronoun or another filter joined after it ("and the Sixers win", ", at
+    home") is not a second player."""
     if text[m.start() :].split(maxsplit=1)[0] == "and":
         return False
     if re.search(r"\b(?:or|both|and|nor|plus|alongside|as\s+well)\b|[,&/+;]", subject):
         return False
-    if _CLAUSE_JOIN.match(text[m.end() :]):
+    join = _CLAUSE_JOIN.match(text[m.end() :])
+    if join and _AVAILABILITY_WORD.search(text[m.end() + join.end() :]):
+        # "when Embiid sits, Harris plays": a name the resolver can't match.
         return False
     rest = text[: m.start()] + " " + text[m.end() :]
     for word in (player or "").lower().split():
@@ -684,8 +691,15 @@ def _lone_absence(text: str, m: re.Match, subject: str, player: str | None, appl
     if any(re.search(rf"\b{re.escape(w)}\b", rest) for w in named):
         # "when Joel Embiid sits and Joel scores 30".
         return False
-    for piece in re.split(r"\b(?:and|or|but|when|while|with|without|if)\b|[,;]", rest):
-        if piece.strip() and detect_player(piece.strip()) is not None:
+    known = {applied.upper()} | ({player.upper()} if player else set())
+    pieces = re.split(
+        r"\b(?:and|or|but|plus|then|as|so|also|alongside|nor|when|while|with|without|if)\b|[,;/&+]",
+        rest,
+    )
+    for piece in pieces:
+        other = detect_player(piece.strip()) if piece.strip() else None
+        if other is not None and other.upper() not in known:
+            # "when Embiid sits or George sits", "when Klay sits; Draymond sits".
             return False
     return True
 

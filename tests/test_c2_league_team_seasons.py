@@ -205,6 +205,17 @@ def test_metadata_names_the_ranked_stat_not_the_wins_bound(query, stat):
         ("maxey top 5 games when embiid sits", "Joel Embiid"),
         ("maxey when embiid sits since 2020", "Joel Embiid"),
         ("maxey when embiid sits at home", "Joel Embiid"),
+        # A nickname or unaccented name of the asked-about player is not a third player.
+        ("steph when klay thompson sits", "Klay Thompson"),
+        ("ad when lebron sits", "LeBron James"),
+        ("jokic when jamal murray sits", "Jamal Murray"),
+        ("the joker when jamal murray sits", "Jamal Murray"),
+        ("luka doncic when kyrie irving sits at home", "Kyrie Irving"),
+        # A filter joined after the absence is applied, not a second absence.
+        ("maxey when embiid sits and the sixers win", "Joel Embiid"),
+        ("maxey when embiid sits and he scores 30", "Joel Embiid"),
+        ("maxey when embiid sits and maxey scores 30", "Joel Embiid"),
+        ("maxey when embiid sits, at home", "Joel Embiid"),
     ],
 )
 def test_the_applied_absence_is_not_a_second_player(query, without):
@@ -291,6 +302,11 @@ def test_the_wins_number_is_not_the_row_count():
         "anthony davis when lebron sits & luka sits",
         "anthony davis when lebron sits + luka sits",
         "maxey when joel embiid sits and joel scores 30",
+        "maxey when embiid sits, harris plays",
+        "maxey when embiid sits with harris playing",
+        "maxey when embiid sits plus george out",
+        "curry when klay thompson sits & draymond green sits",
+        "curry when klay thompson sits draymond green sits",
     ],
 )
 def test_two_absences_never_answer_with_one(query):
