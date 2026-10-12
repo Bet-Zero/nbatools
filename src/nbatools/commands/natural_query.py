@@ -26,6 +26,8 @@ from nbatools.commands._date_utils import (
     has_explicit_calendar_date,
     invalid_explicit_date,
     seasons_for_explicit_dates,
+    unread_date_landmark,
+    unread_month_pair,
     uses_fuzzy_date_term,
 )
 from nbatools.commands._default_rules import (
@@ -2757,7 +2759,16 @@ def _dates_over_seasons(parsed: dict) -> bool:
     # a month repeated in each season starts after the first or ends before
     # the last.
     first, last = parsed.get("start_date"), parsed.get("end_date")
-    return bool((first and season_of(first) > start) or (last and season_of(last) < end))
+    # "before March in the last 3 seasons": a yearless end alone is one cut
+    # per season, not one window across them.
+    return bool(
+        (first and season_of(first) > start)
+        or (last and season_of(last) < end)
+        # "since 2022 through March 1" is one window from the named start.
+        or (
+            last and not first and not re.search(r"\bsince\b", parsed.get("normalized_query") or "")
+        )
+    )
 
 
 def _opponent_count_supported(match: re.Match) -> bool:
@@ -3972,6 +3983,48 @@ def _route_parsed_query(parsed: dict) -> dict:
         out["notes"] = [
             f"invalid_date: {invalid_date} is not a calendar date; "
             "no reduced version of the question was answered"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    # A leaderboard "since the trade deadline" keeps its own date-anchor refusal.
+    landmark = unread_date_landmark(
+        q, (parsed.get("player"), parsed.get("player_a"), parsed.get("player_b"))
+    )
+    if landmark and not _unsupported_date_anchor_boundary(parsed):
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "unsupported_filters": ["date_landmark"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            f"unsupported_boundary: {landmark} is not a date the query reads; "
+            "ask for a month or a date range"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if month_pair := unread_month_pair(q, season):
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "unsupported_filters": ["month_pair"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            f"unsupported_boundary: {month_pair} is not one span of months; "
+            "ask for each month, or a range"
         ]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
