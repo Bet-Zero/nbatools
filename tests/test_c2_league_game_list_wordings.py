@@ -78,6 +78,20 @@ def test_an_attempt_count_the_list_does_not_read_refuses():
     assert kwargs["unsupported_filters"] == ["league_game_list_unread"]
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring performances in wins by 20 or more",
+        "best rebounding performances in blowouts",
+        "highest scoring games by a team in blowouts",
+        "highest scoring games by a team in wins by 20 or more",
+    ],
+)
+def test_a_margin_never_replaces_the_counted_stat(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["unsupported_filters"] == ["game_list_stat_conflict"]
+
+
 def test_the_tail_keeps_its_filters():
     kwargs = parse_query("best free throw shooting games since 2020")["route_kwargs"]
     assert (kwargs["start_season"], kwargs["end_season"]) == ("2020-21", "2025-26")

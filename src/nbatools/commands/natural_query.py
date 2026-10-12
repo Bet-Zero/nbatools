@@ -7923,7 +7923,7 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
             return None
         canonical = q[: match.start("noun")] + "games" + q[match.end("noun") :]
         out = _reparsed_as(parsed, canonical)
-        return out if out is not None and out.get("route") == "top_player_games" else None
+        return _counting_game_list(parsed, out, "top_player_games", what)
     else:
         # "highest scoring games by a team": the team game board, in the
         # wording it reads.
@@ -7933,7 +7933,7 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
         noun = "assist" if what == "passing" else what
         canonical = f"{match.group('dir')}{count} team {noun} games" + q[match.end() :]
         out = _reparsed_as(parsed, canonical)
-        return out if out is not None and out.get("route") == "top_team_games" else None
+        return _counting_game_list(parsed, out, "top_team_games", what)
     tail = q[match.end() :]
     canonical = "best shooting games" + tail
     if canonical == q:
@@ -7983,6 +7983,31 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     out.update(stat=stat, min_value=kwargs.get("min_value"))
     out["notes"] = [note for note in out.get("notes") or [] if not note.startswith("game_list:")]
     out["notes"].append(f"game_list: {whose} ranked by {stat}")
+    return out
+
+
+_LEAGUE_GAME_LIST_COUNTS = {
+    "scoring": "pts",
+    "rebounding": "reb",
+    "assist": "ast",
+    "passing": "ast",
+}
+
+
+def _counting_game_list(parsed: dict, out: dict | None, route: str, what: str) -> dict | None:
+    """The reparsed counting list, when it ranks the stat the words name."""
+    if out is None or out.get("route") != route:
+        return None
+    if (out.get("route_kwargs") or {}).get("stat") != _LEAGUE_GAME_LIST_COUNTS[what]:
+        # "best scoring performances in wins by 20 or more": the margin took
+        # the ranked stat and its bound was lost.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["game_list_stat_conflict"]
+        refused["notes"] = [
+            "unsupported_boundary: this game list ranks one stat; a margin or second "
+            "stat beside it is not applied as a filter"
+        ]
+        return refused
     return out
 
 
