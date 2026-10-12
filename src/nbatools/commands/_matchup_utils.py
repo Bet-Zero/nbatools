@@ -629,14 +629,18 @@ def _states_player_condition(tail: str) -> bool:
 
 
 def names_other_player_availability(
-    text: str, player: str | None, read: tuple[str | None, ...] = ()
+    text: str,
+    player: str | None,
+    read: tuple[str | None, ...] = (),
+    also: tuple[str | None, ...] = (),
 ) -> bool:
     """True when ``text`` states availability for a player other than ``player``.
 
     A pronoun or a team ("and he plays well", "and the Lakers play at home")
     is not another player, nor is one named in ``read`` (the with/without
-    player the route already applies). Any other subject counts, including a name the
-    resolver can't match ("and Davis sits"): dropping that clause would
+    player the route already applies); a player in ``also`` (the opponent
+    player) is not a third player beside that absence. Any other subject
+    counts, including a name the resolver can't match ("and Davis sits"): dropping that clause would
     answer about the first player alone.
     """
     own_words = set(player.lower().split()) if player else set()
@@ -648,7 +652,11 @@ def names_other_player_availability(
         other = detect_player(subject)
         if other is None and set(subject.split()) <= own_words:
             continue
-        if other is not None and other.upper() in applied and _lone_absence(text, m, subject):
+        if (
+            other is not None
+            and other.upper() in applied
+            and _lone_absence(text, m, subject, player, other, also)
+        ):
             # "when LeBron didn't play": already read as with/without_player.
             continue
         if other is None or player is None or other.upper() != player.upper():
@@ -656,19 +664,73 @@ def names_other_player_availability(
     return False
 
 
-def _lone_absence(text: str, m: re.Match, subject: str) -> bool:
-    """True when clause ``m`` names only its one player: not "X or Y sits",
-    "X and Y sit", "X sits and Y too" or "X sits and X scores 30"."""
+# A clause joined after the absence that states someone else's availability.
+_CLAUSE_JOIN = re.compile(
+    r"\s*(?:[,;/&+\-]|\b(?:and|or|but|plus|then|as|so|also|alongside|nor|with)\b)"
+)
+_AVAILABILITY_WORD = re.compile(
+    r"\b(?:plays?|playing|played|sits?|sitting|sat|out|rests?|resting|rested|misses|missed"
+    r"|healthy|injured|available|does|doesn't|did|didn't|too|likewise|either)\b"
+)
+
+
+def _lone_absence(
+    text: str,
+    m: re.Match,
+    subject: str,
+    player: str | None,
+    applied: str,
+    also: tuple[str | None, ...] = (),
+) -> bool:
+    """True when clause ``m`` is the question's only availability statement:
+    the applied player is not named again, and no third player (anyone but
+    ``player`` and ``applied``) appears anywhere outside it. A team, a
+    pronoun or another filter joined after it ("and the Sixers win", ", at
+    home") is not a second player."""
     if text[m.start() :].split(maxsplit=1)[0] == "and":
         return False
-    if re.search(r"\b(?:or|both|and|nor)\b|[,&/]", subject):
+    if re.search(r"\b(?:or|both|and|nor|plus|alongside|as\s+well)\b|[,&/+;]", subject):
         return False
-    if re.match(r"\s*(?:,\s*)?(?:too|as\s+well|either|also)\b", text[m.end() :]):
+    join = _CLAUSE_JOIN.match(text[m.end() :])
+    if join and _joins_other_availability(text[m.end() + join.end() :], player):
+        # "when Embiid sits, Harris plays": a name the resolver can't match.
         return False
-    if re.search(r"\b(?:too|as\s+well(?:\s+as)?|either)\b", text[m.end() :]):
+    rest = text[: m.start()] + " " + text[m.end() :]
+    for word in (player or "").lower().split():
+        rest = re.sub(rf"\b{re.escape(word)}\b", " ", rest)
+    named = {w for w in applied.lower().split() if len(w) > 2} | set(subject.split())
+    if any(re.search(rf"\b{re.escape(w)}\b", rest) for w in named):
+        # "when Joel Embiid sits and Joel scores 30".
         return False
-    last = subject.split()[-1]
-    return len(re.findall(rf"\b{re.escape(last)}\b", text)) == 1
+    known = {name.upper() for name in (applied, player, *also) if name}
+    pieces = re.split(
+        r"\b(?:and|or|but|plus|then|as|so|also|alongside|nor|when|while|with|without|if)\b|[,;/&+]",
+        rest,
+    )
+    for piece in pieces:
+        other = detect_player(piece.strip()) if piece.strip() else None
+        if other is not None and other.upper() not in known:
+            # "when Embiid sits or George sits", "when Klay sits; Draymond sits".
+            return False
+    return True
+
+
+def _joins_other_availability(tail: str, player: str | None) -> bool:
+    """True when the clause joined after the absence states availability for
+    someone other than the asked-about player: "Harris plays", not "he plays
+    35 minutes", "Maxey plays 35 minutes" or "the Sixers win"."""
+    if not _AVAILABILITY_WORD.search(tail):
+        return False
+    words = re.sub(r"^\s*(?:the|his|their)\s+", "", tail.strip()).split()
+    if not words:
+        return False
+    first = words[0]
+    if first in _NON_PLAYER_SUBJECTS or first in TEAM_ALIASES:
+        return False
+    if player and first in player.lower().split():
+        return False
+    resolved = detect_player(first)
+    return not (resolved and player and resolved.upper() == player.upper())
 
 
 _NON_PLAYER_SUBJECTS = {
