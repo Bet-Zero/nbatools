@@ -7892,6 +7892,12 @@ _LEAGUE_GAME_LIST_RATES = (
 )
 
 
+_BOTH_SEASON_TYPES = re.compile(
+    r"\bregular\s+season\s+(?:and|or|plus|&|,)\s+(?:the\s+)?playoffs?\b"
+    r"|\bplayoffs?\s+(?:and|or|plus|&|,)\s+(?:the\s+)?regular\s+season\b"
+)
+
+
 def _league_game_list_frame(parsed: dict) -> dict | None:
     """A league-wide single-game list in a wording the base parse misses.
 
@@ -7906,6 +7912,24 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     if parsed.get("game_list_reparse"):
         # The canonical wording is answered as it stands.
         return None
+    tail = q[match.end() :]
+    seasons = list(re.finditer(r"\b(?:19|20)\d\d(?:\s*-\s*\d\d)?\b", tail))
+    if (
+        len(seasons) > 1
+        and not re.search(
+            r"\b(?:to|through|thru|until|till|between)\b",
+            tail[seasons[0].start() : seasons[-1].end()] + " " + tail[: seasons[0].start()][-12:],
+        )
+    ) or _BOTH_SEASON_TYPES.search(tail):
+        # "in 2024-25 and 2025-26", "regular season and playoffs": the parse
+        # keeps one of them.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["two_season_windows"]
+        refused["notes"] = [
+            "unsupported_boundary: a game list covers one season, one span or one season "
+            'type; ask for each, or a range ("from 2023-24 to 2025-26")'
+        ]
+        return refused
     team = bool(match.group("team")) or match.group("by") == "team"
     what = match.group("what")
     rate = match.group("rate")
@@ -7934,7 +7958,6 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
         canonical = f"{match.group('dir')}{count} team {noun} games" + q[match.end() :]
         out = _reparsed_as(parsed, canonical)
         return _counting_game_list(parsed, out, "top_team_games", what)
-    tail = q[match.end() :]
     canonical = "best shooting games" + tail
     if canonical == q:
         return None

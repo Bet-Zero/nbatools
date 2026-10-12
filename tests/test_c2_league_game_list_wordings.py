@@ -106,6 +106,25 @@ def test_a_bound_the_game_board_cannot_apply_refuses(query):
     assert kwargs["unsupported_filters"] == ["game_list_bound_unapplied"]
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "worst shooting games in 2024-25 and 2025-26",
+        "best scoring performances in 2023-24 or 2024-25",
+        "worst shooting games in the regular season and playoffs",
+        "highest scoring games by a team in 2023-24 and 2024-25",
+    ],
+)
+def test_two_season_windows_refuse(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["unsupported_filters"] == ["two_season_windows"]
+
+
+def test_a_season_range_is_one_window():
+    kwargs = parse_query("worst shooting games from 2021-22 to 2023-24")["route_kwargs"]
+    assert (kwargs["start_season"], kwargs["end_season"]) == ("2021-22", "2023-24")
+
+
 def test_the_tail_keeps_its_filters():
     kwargs = parse_query("best free throw shooting games since 2020")["route_kwargs"]
     assert (kwargs["start_season"], kwargs["end_season"]) == ("2020-21", "2025-26")
