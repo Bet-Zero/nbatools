@@ -83,3 +83,17 @@ def test_rate_and_joined_count(query, count):
 
 def test_team_rate_and_joined_count():
     assert _record("Lakers record with fg 50% and 15 threes") == (17, 2)
+
+
+def test_another_clauses_count_is_not_joined_to_the_rate():
+    assert _record("Lakers record when they shoot 50% and opponents score 110 and 15 threes") == (
+        1,
+        4,
+    )
+    assert _count("LeBron James games shooting 50% when opponents score 110 and 15 threes") == 5
+
+
+def test_team_clause_keeps_its_joined_count():
+    # "when the Lakers score 120 and 30 assists": the team's assists.
+    assert _count("LeBron James games when the Lakers score 120 and 30 assists") == 2
+    assert _count("LeBron James games shooting 50% when the Lakers score 120 and 30 assists") == 1
