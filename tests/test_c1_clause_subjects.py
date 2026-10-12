@@ -98,3 +98,28 @@ def test_held_to_rates_and_player_points():
 
     kwargs = parse_query("Lakers record when held to 40% shooting")["route_kwargs"]
     assert (kwargs["stat"], kwargs["max_value"]) == ("fg_pct", 0.4)
+
+
+def test_teams_without_a_named_team_are_the_subject():
+    from nbatools.commands.natural_query import parse_query
+
+    for query in ("best record when teams score 120", "team records when teams score 120 points"):
+        stats = {c["stat"] for c in parse_query(query)["route_kwargs"].get("conditions") or []}
+        assert "pts" in stats and "opponent_pts" not in stats, query
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A "held to" whose subject is not read refuses rather than answering
+        # without the bound (or with it on the wrong team).
+        "Lakers record when Davis gets held to 15",
+        "Lakers record when Boston is held to 100",
+        "Lakers record when held to 40% shooting and 100 points",
+        "Lakers record when held to under 100",
+    ],
+)
+def test_unread_held_to_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"

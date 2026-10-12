@@ -586,10 +586,26 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_opponent_stat_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
     _apply_own_team_clauses(route, route_kwargs, text)
+    _refuse_unread_held_to(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
+
+
+# "held to N" the bound rewrites did not read ("when Boston is held to 100",
+# "held to 40% shooting and 100 points"): its subject is unclear, so refuse
+# rather than answer without the bound.
+_UNREAD_HELD_TO = re.compile(
+    r"\bheld\s+to\s+(?:(?:under|below|fewer\s+than|less\s+than)\s+)?\d+(?:\.\d+)?(?!\d|(?:\s+points?)?\s+or\s+fewer\b)"
+)
+
+
+def _refuse_unread_held_to(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route and _UNREAD_HELD_TO.search(text):
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "held_to" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "held_to"]
 
 
 _BARE_OWN_CLAUSE = re.compile(
