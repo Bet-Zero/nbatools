@@ -1180,8 +1180,15 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     """
     if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
         return
-    own_team = str(route_kwargs.get("team") or "").upper()
     opponent = route_kwargs.get("opponent")
+    if (
+        isinstance(opponent, str)
+        and str(route_kwargs.get("team") or "").upper() == opponent.upper()
+    ):
+        # "LeBron games vs Celtics when the Celtics score 120": the clause's
+        # team was also taken as his; it is the opponent.
+        route_kwargs["team"] = None
+    own_team = str(route_kwargs.get("team") or "").upper()
     opponents = {
         str(o).upper() for o in ([opponent] if isinstance(opponent, str) else opponent or [])
     }

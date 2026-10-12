@@ -127,3 +127,18 @@ def test_abbreviated_subject_keeps_opponent_clause_refused(query):
 def test_abbreviated_subjects_answer_their_own_clause():
     assert _record("LAL record vs BOS when the Lakers shoot 50%")[:2] == (4, 7)
     assert _record("BOS record vs Lakers when they shoot 50%")[:2] == (8, 3)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron James games vs Celtics when the Celtics score 120",
+        "LeBron James record vs Celtics when the Celtics score 120",
+        "LeBron James games vs Boston when Boston scores 120",
+        "LeBron James games vs Celtics when Boston scores 120",
+    ],
+)
+def test_player_vs_team_when_that_team_scores(query):
+    # The clause's team is his opponent, not his team.
+    wins, losses, _ = _record(query)
+    assert (wins, losses) == (1, 3)
