@@ -938,6 +938,12 @@ _VERB_EVENT = re.compile(
 )
 
 
+# "ft 80% and 5 fta", "shooting 50% and 5 threes": a joined count beside a rate.
+_JOINED_EVENT = re.compile(
+    rf"\band\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN})\b{_NOT_A_FLOOR}"
+)
+
+
 def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str) -> None:
     """Keep "with 30 points" beside a shooting percentage.
 
@@ -963,7 +969,7 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
     if route not in ("player_game_finder", "player_game_summary", "game_finder", "team_record"):
         return
     shooting = [{k: c[k] for k in ("stat", "min_value", "max_value")} for c in matches]
-    events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT))
+    events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT, _JOINED_EVENT))
     if not events and len(shooting) == 1:
         if _kwargs_conditions(route_kwargs) or (
             route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None

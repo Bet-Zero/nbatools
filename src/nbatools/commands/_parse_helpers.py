@@ -2293,7 +2293,8 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         rf"\b(?:shoots?|shooting|shot)()\s+(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
         rf"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?{_FROM}(?!\w)",
         # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
-        rf"\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",
+        # "6 ft 50%" is a height, not a rate.
+        rf"(?<!\d)(?<!\d\s)\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",
         # "shooting 50% from the field and 40% from three": a joined rate
         # names its own area.
         rf"\band\s+(){_RATE}{_TAIL}{_AREA}(?!\s+(?:from|on|beyond)\b)(?!\w)",

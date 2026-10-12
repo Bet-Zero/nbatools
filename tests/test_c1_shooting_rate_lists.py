@@ -64,3 +64,22 @@ def test_joined_rate_needs_its_own_area():
         "lakers record when they shoot 50% and 15 threes"
     )
     assert [c["stat"] for c in found] == ["fg_pct"]
+
+
+@pytest.mark.parametrize(
+    ("query", "count"),
+    [
+        # A joined count stays beside the rate.
+        ("LeBron James games with ft 80% and 5 fta", 6),
+        ("LeBron James games with fg 50% and 5 threes", 13),
+        ("LeBron James games with ts 60% and 10 rebounds", 12),
+        ("LeBron James games with ft 80% and 25 points", 4),
+        ("LeBron James games shooting 50% and 5 threes", 13),
+    ],
+)
+def test_rate_and_joined_count(query, count):
+    assert _count(query) == count
+
+
+def test_team_rate_and_joined_count():
+    assert _record("Lakers record with fg 50% and 15 threes") == (17, 2)
