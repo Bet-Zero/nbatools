@@ -877,6 +877,7 @@ _HELD_TO = re.compile(
 _OPPONENTS_HELD_TO = re.compile(
     r"\b((?:when|if|while)\s+)(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?)\s+"
     r"(?:were|are|was|is|get|gets|got)\s+held\s+to\s+(\d+)(?:\s+points?)?\b"
+    r"(?:\s+or\s+(?:fewer|less)\b(?:\s+points?\b)?)?"
     rf"(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
 )
 # "when LeBron is held to 20": the named player's points.

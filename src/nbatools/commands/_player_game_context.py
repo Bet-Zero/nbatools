@@ -597,7 +597,9 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
 # "held to 40% shooting and 100 points"): its subject is unclear, so refuse
 # rather than answer without the bound.
 _UNREAD_HELD_TO = re.compile(
-    r"\bheld\s+to\s+(?:(?:under|below|fewer\s+than|less\s+than)\s+)?\d+(?:\.\d+)?(?!\d|(?:\s+points?)?\s+or\s+fewer\b)"
+    # "held to 100 points or less" and "held to fewer than 100 points" are read.
+    r"\bheld\s+to\s+(?:(?:under|below)\s+)?\d+(?:\.\d+)?"
+    r"(?!\d|(?:\s+points?)?\s+or\s+(?:fewer|less)\b)"
 )
 
 

@@ -123,3 +123,15 @@ def test_unread_held_to_refuses(query):
     from nbatools.query_service import execute_natural_query
 
     assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        ("Lakers record when held to 100 points or less", (6, 8)),
+        ("Lakers record when held to fewer than 100 points", (6, 8)),
+        ("Lakers record when opponents were held to 100 points or less", (41, 2)),
+    ],
+)
+def test_held_to_ceiling_wording(query, record):
+    assert _record(query) == record
