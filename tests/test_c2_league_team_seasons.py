@@ -199,6 +199,12 @@ def test_metadata_names_the_ranked_stat_not_the_wins_bound(query, stat):
     [
         ("How has Anthony Davis rebounded when LeBron James didn't play?", "LeBron James"),
         ("How has Tyrese Maxey played when Joel Embiid was out this season?", "Joel Embiid"),
+        ("How has Tyrese Maxey played when Joel Embiid didn't play this season?", "Joel Embiid"),
+        ("How does Jamal Murray score when Nikola Jokić is out?", "Nikola Jokić"),
+        ("maxey when embiid sits vs boston", "Joel Embiid"),
+        ("maxey top 5 games when embiid sits", "Joel Embiid"),
+        ("maxey when embiid sits since 2020", "Joel Embiid"),
+        ("maxey when embiid sits at home", "Joel Embiid"),
     ],
 )
 def test_the_applied_absence_is_not_a_second_player(query, without):
@@ -262,6 +268,29 @@ def test_the_wins_number_is_not_the_row_count():
         "anthony davis when lebron sits and reaves does too",
         "anthony davis when lebron sits as well as reaves",
         "anthony davis when lebron sits and lebron scores 30",
+        # Any other clause or player beside the one absence refuses.
+        "maxey when embiid sits or george sits",
+        "maxey top 5 games when embiid sits or george sits",
+        "maxey when embiid sits and george",
+        "maxey last 10 games when embiid sits and george",
+        "maxey when embiid sits plus george",
+        "maxey when embiid plus george sit",
+        "maxey when embiid alongside george sits",
+        "maxey when embiid sits, as does george",
+        "anthony davis when lebron sits as does luka",
+        "maxey when embiid is out and so is george",
+        "maxey when embiid sits and george does likewise",
+        "maxey when embiid sits and george doesn't",
+        "maxey when embiid sits but george doesn't",
+        "maxey when embiid sits but not george",
+        "anthony davis when lebron sits, luka sits",
+        "anthony davis when lebron sits then luka sits",
+        "anthony davis when lebron sits; luka sits",
+        "anthony davis when lebron sits - luka sits",
+        "anthony davis when lebron sits / luka sits",
+        "anthony davis when lebron sits & luka sits",
+        "anthony davis when lebron sits + luka sits",
+        "maxey when joel embiid sits and joel scores 30",
     ],
 )
 def test_two_absences_never_answer_with_one(query):

@@ -648,7 +648,11 @@ def names_other_player_availability(
         other = detect_player(subject)
         if other is None and set(subject.split()) <= own_words:
             continue
-        if other is not None and other.upper() in applied and _lone_absence(text, m, subject):
+        if (
+            other is not None
+            and other.upper() in applied
+            and _lone_absence(text, m, subject, player, other)
+        ):
             # "when LeBron didn't play": already read as with/without_player.
             continue
         if other is None or player is None or other.upper() != player.upper():
@@ -656,19 +660,34 @@ def names_other_player_availability(
     return False
 
 
-def _lone_absence(text: str, m: re.Match, subject: str) -> bool:
-    """True when clause ``m`` names only its one player: not "X or Y sits",
-    "X and Y sit", "X sits and Y too" or "X sits and X scores 30"."""
+# What may not follow the one absence clause: anything joining another clause.
+_CLAUSE_JOIN = re.compile(
+    r"\s*(?:[,;/&+\-]|\b(?:and|or|but|plus|then|as|so|also|alongside|too|either|nor"
+    r"|likewise|with)\b)"
+)
+
+
+def _lone_absence(text: str, m: re.Match, subject: str, player: str | None, applied: str) -> bool:
+    """True when clause ``m`` is the question's only availability statement and
+    names only the applied player: no other player anywhere outside it, no
+    clause joined after it, and no second mention of the applied player."""
     if text[m.start() :].split(maxsplit=1)[0] == "and":
         return False
-    if re.search(r"\b(?:or|both|and|nor)\b|[,&/]", subject):
+    if re.search(r"\b(?:or|both|and|nor|plus|alongside|as\s+well)\b|[,&/+;]", subject):
         return False
-    if re.match(r"\s*(?:,\s*)?(?:too|as\s+well|either|also)\b", text[m.end() :]):
+    if _CLAUSE_JOIN.match(text[m.end() :]):
         return False
-    if re.search(r"\b(?:too|as\s+well(?:\s+as)?|either)\b", text[m.end() :]):
+    rest = text[: m.start()] + " " + text[m.end() :]
+    for word in (player or "").lower().split():
+        rest = re.sub(rf"\b{re.escape(word)}\b", " ", rest)
+    named = {w for w in applied.lower().split() if len(w) > 2} | set(subject.split())
+    if any(re.search(rf"\b{re.escape(w)}\b", rest) for w in named):
+        # "when Joel Embiid sits and Joel scores 30".
         return False
-    last = subject.split()[-1]
-    return len(re.findall(rf"\b{re.escape(last)}\b", text)) == 1
+    for piece in re.split(r"\b(?:and|or|but|when|while|with|without|if)\b|[,;]", rest):
+        if piece.strip() and detect_player(piece.strip()) is not None:
+            return False
+    return True
 
 
 _NON_PLAYER_SUBJECTS = {
