@@ -296,7 +296,7 @@ def _opponent_stat(word: str) -> str | None:
 # ceilings on the opponent's numbers, each item read with its own stat.
 _HELD = re.compile(r"\bheld\s+(?:the\s+)?(?:opponents?|other\s+team|them)\s+to\s+")
 _HELD_ITEM = re.compile(
-    r"(?P<op>under\s+|fewer\s+than\s+|less\s+than\s+|at\s+most\s+)?(?P<num>\d+)"
+    r"(?P<op>under\s+|fewer\s+than\s+|less\s+than\s+|at\s+most\s+)?(?P<num>\d+(?:\.\d+)?)"
     r"(?:\s+or\s+(?:fewer|less|under))?(?:\s+made)?"
     rf"(?:\s+(?P<stat>{_OPP_STAT_WORDS}))?"
 )
@@ -360,8 +360,87 @@ def _held_bounds(text: str) -> list[tuple[_Span, dict]]:
     return found
 
 
+# "games where the opponent shot under 40 percent", "held opponents to 30%
+# from three": the opponent's shooting rate (the team's own was filtered).
+_RATE_OP = (
+    r"(?P<op>under|below|less\s+than|over|above|more\s+than|at\s+least|at\s+most|"
+    r"no\s+more\s+than)"
+)
+_RATE_TAIL = (
+    r"(?P<num>\d+(?:\.\d+)?)\s*(?:%|percent\b|pct\b)(?:\s+shooting\b)?"
+    r"(?:\s+(?P<area>(?:(?:from\s+)?(?:behind|beyond)|from|at|on|in)\s+(?:the\s+)?(?:three|3|deep|downtown|distance|"
+    r"long\s+range|outside|arc|(?:three|3)[\s-]point\s+(?:line|range)|field|floor|line|stripe|"
+    r"charity\s+stripe|free[\s-]throw\s+line|threes|3s|free\s+throws)\b))?"
+)
+_OPP_SHOOTING = re.compile(
+    r"\b(?:where\s+|when\s+|while\s+)?(?:the\s+)?(?:opponents?|other\s+team|opposing\s+teams?|"
+    r"opposition)\s+(?:shot|shoots|shoot|shooting|were\s+shooting|was\s+shooting)\s+"
+    rf"{_RATE_OP}\s+{_RATE_TAIL}"
+    r"|\b(?:held|holding|holds?|limited|limiting|limits?|kept|keeping)\s+(?:the\s+)?"
+    r"(?:opponents?|other\s+team|them|teams)\s+(?:to\s+)?"
+    rf"(?:{_RATE_OP.replace('?P<op>', '?P<op2>')}\s+)?"
+    + _RATE_TAIL.replace("?P<num>", "?P<num2>").replace("?P<area>", "?P<area2>")
+)
+# What follows the opponent's shooting with no new subject is still the
+# opponent's ("and scored under 100", ", scoring over 110", "and under 35
+# percent from three", "and 110 points"), or an area the reader does not know
+# ("from the corner"): not read, so refuse.
+_SECOND_OPPONENT_CLAUSE = re.compile(
+    r"\s*(?:,\s*|\s+(?:and|but|while|with)\s+)(?:and\s+)?"
+    r"(?:(?:scor\w*|had|has|made|making|hit|hitting|grabb\w*|committ\w*|put\w*\s+up|"
+    r"allow\w*|shoot\w*|shot|went)\s+)?"
+    r"(?:(?:under|over|below|above|at\s+least|at\s+most|less\s+than|more\s+than|fewer\s+than|"
+    # A season after the clause is the sample ("..., 2024-25", "from last
+    # season").
+    r"no\s+more\s+than)\s+)?(?!(?:19|20)\d{2}\b)\.?\d"
+    # (Month-name ranges are not read anywhere yet, so they still refuse.)
+    r"|\s+from\s+(?!(?:19|20)\d{2}\b|(?:last|this|next|previous)\b|"
+    r"the\s+(?:(?:19|20)\d{2}\b|last\b|previous\b))"
+)
+_RATE_MODE = {
+    "under": ("max", 0.0001),
+    "below": ("max", 0.0001),
+    "less than": ("max", 0.0001),
+    "over": ("min", 0.0001),
+    "above": ("min", 0.0001),
+    "more than": ("min", 0.0001),
+    "at least": ("min", 0.0),
+    "at most": ("max", 0.0),
+    "no more than": ("max", 0.0),
+}
+
+
+def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
+    found = []
+    for m in _OPP_SHOOTING.finditer(text):
+        op = m.group("op") or m.group("op2") or "at most"  # "held them to 40%": a ceiling
+        mode, eps = _RATE_MODE[re.sub(r"\s+", " ", op)]
+        area = m.group("area") or m.group("area2") or ""
+        if re.search(r"three|3|deep|arc|downtown|distance|long|outside", area) and not re.search(
+            r"free", area
+        ):
+            stat = "opponent_fg3_pct"
+        elif re.search(r"line|free|stripe", area):
+            stat = "opponent_ft_pct"
+        else:
+            stat = "opponent_fg_pct"
+        value = float(m.group("num") or m.group("num2")) / 100
+        found.append(
+            (
+                m,
+                {
+                    "stat": stat,
+                    "min_value": value + eps if mode == "min" else None,
+                    "max_value": value - eps if mode == "max" else None,
+                },
+            )
+        )
+    return found
+
+
 def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
+    found.extend(_opponent_shooting_bounds(text))
     for m in _OPP_STAT_BOUND.finditer(text):
         stat = _opponent_stat(m.group("stat") or m.group("stat2") or m.group("stat3") or "")
         op = m.group("op") or m.group("op3")
@@ -416,10 +495,24 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
     """ "Lakers games with at least 15 opponent turnovers": an opponent bound
     (the team's own turnovers were filtered)."""
     if route != "game_finder":
+        if route and _OPP_SHOOTING.search(text):
+            # "Lakers record when opponents shoot under 40 percent": only team
+            # game lists read the opponent's rate; elsewhere it filtered the
+            # subject's own shooting, so refuse.
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "opponent_shooting" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
     found = _opponent_bounds(text)
     if not found:
         return
+    for m, _ in found:
+        if getattr(m, "re", None) is _OPP_SHOOTING and _SECOND_OPPONENT_CLAUSE.match(text, m.end()):
+            # "the opponent shot under 45 percent and scored under 100": the
+            # second clause is the opponent's too; not read, so refuse.
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
+            return
     bounds = [bound for _, bound in found]
     spans = [m.span() for m, _ in found]
     ranked = _OPP_STAT_RANK.search(text)
@@ -435,10 +528,14 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
         + [
             {**bound, "stat": bound["stat"][len("opponent_") :]}
             for m, bound in found
-            if m.group("stat3")
+            if getattr(m, "re", None) is not _OPP_SHOOTING and m.group("stat3")
         ],
     )
     bases = {b["stat"][len("opponent_") :] for b in bounds}
+    if any(getattr(m, "re", None) is _OPP_SHOOTING for m, _ in found):
+        # "opponent shot under 75 percent from the line" was also read as the
+        # team's own field goal rate.
+        bases |= {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"} - {o["stat"] for o in own}
     if route_kwargs.get("stat") in bases or not route_kwargs.get("stat"):
         # The bound was read as the team's own: it moves to the opponent's.
         route_kwargs.update(

@@ -2684,7 +2684,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         r"(?:\s+(?:points?|pts))?"
         # Followed by the end of the clause: punctuation, a joining word, a
         # filter phrase ("at home", "vs Boston", "since March") or a season.
-        r"(?=\s*(?:[?.!,]|$|\d{4}(?:-\d{2})?\b|\b(?:this|that|in|during|last|"
+        # "47.5 percent": the "." of a decimal is not the clause's end.
+        r"(?=\s*(?:[?!,]|\.(?!\d)|$|\d{4}(?:-\d{2})?\b|\b(?:this|that|in|during|last|"
         r"season|year|record|when|and|or|at|on|vs|versus|against|since|over|from|"
         r"for|with|without|while|but|after|before|home|away|road|games?)\b))"
     )
@@ -2696,7 +2697,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         rf"\b(?:points?|pts)\s+allowed\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
         rf"\b(?:opponent|opp)\s+(?:points?|pts)\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
         rf"\b(?:gave|given|giving)\s+up\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
-        rf"\bopponents?\s+under\s+{_NUM}(?:\s+(?:points?|pts))?\b",
+        # "opponents under 40 percent shooting" is a rate, not points.
+        rf"\bopponents?\s+under\s+{_NUM}(?![\d.]*\s*(?:%|percent\b|pct\b))(?:\s+(?:points?|pts))?\b",
     ]
     # Inclusive bounds: "held opponents to 100 or fewer points", "allowing at
     # most 100 points", "opponents score no more than 100". Without these the
