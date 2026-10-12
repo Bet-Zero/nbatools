@@ -944,6 +944,7 @@ _JOINED_EVENT = re.compile(
 )
 
 
+_COUNT_OWNER = re.compile(r"\s+(?:from|by)\s+\w")
 _CLAUSE_JOINED_COUNT = re.compile(
     rf"\s*(?:,\s*)?and\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN})\b{_NOT_A_FLOOR}"
 )
@@ -1152,11 +1153,19 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
         return
     # "when the Lakers score 120 and 30 assists": the joined count is the
     # team's too.
+    read = {c["stat"] for c in _kwargs_conditions(route_kwargs)}
     for item in list(found):
         end = item["end"]
         while m := _CLAUSE_JOINED_COUNT.match(text, end):
             stat = _stat_word(m.group("w"))
-            if stat is None:
+            if (
+                stat is None
+                or f"{item['side']}_{stat}" in read
+                or any(f["stat"] == stat and f["side"] == item["side"] for f in found)
+                or _COUNT_OWNER.match(text, m.end())
+            ):
+                # Already bounded ("allow under 110 and 30 assists"), or
+                # given to someone ("and 10 assists from LeBron").
                 break
             found.append(
                 {

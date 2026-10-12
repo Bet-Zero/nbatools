@@ -97,3 +97,18 @@ def test_team_clause_keeps_its_joined_count():
     # "when the Lakers score 120 and 30 assists": the team's assists.
     assert _count("LeBron James games when the Lakers score 120 and 30 assists") == 2
     assert _count("LeBron James games shooting 50% when the Lakers score 120 and 30 assists") == 1
+
+
+def test_team_clause_joined_count_stops_at_an_owner_or_a_bound():
+    from nbatools.commands.natural_query import parse_query
+
+    kwargs = parse_query("LeBron James games when the Lakers score 120 and 10 assists from LeBron")[
+        "route_kwargs"
+    ]
+    assert "team_ast" not in {c["stat"] for c in kwargs["conditions"]}
+    kwargs = parse_query("LeBron James games when the Lakers allow under 110 and 30 assists")[
+        "route_kwargs"
+    ]
+    assert not any(
+        c["stat"] == "opponent_ast" and c["min_value"] is not None for c in kwargs["conditions"]
+    )
