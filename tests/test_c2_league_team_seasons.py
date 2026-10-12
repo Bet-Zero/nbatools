@@ -216,6 +216,10 @@ def test_metadata_names_the_ranked_stat_not_the_wins_bound(query, stat):
         ("maxey when embiid sits and he scores 30", "Joel Embiid"),
         ("maxey when embiid sits and maxey scores 30", "Joel Embiid"),
         ("maxey when embiid sits, at home", "Joel Embiid"),
+        ("maxey when embiid sits and he plays 35 minutes", "Joel Embiid"),
+        ("maxey when embiid sits and maxey plays 35 minutes", "Joel Embiid"),
+        # The opponent player is applied in his own role.
+        ("maxey when embiid sits against james harden", "Joel Embiid"),
     ],
 )
 def test_the_applied_absence_is_not_a_second_player(query, without):
@@ -304,6 +308,9 @@ def test_the_wins_number_is_not_the_row_count():
         "maxey when joel embiid sits and joel scores 30",
         "maxey when embiid sits, harris plays",
         "maxey when embiid sits with harris playing",
+        "maxey when embiid sits, oubre out",
+        "maxey when embiid sits paul george out",
+        "maxey when embiid sits and george is available",
         "maxey when embiid sits plus george out",
         "curry when klay thompson sits & draymond green sits",
         "curry when klay thompson sits draymond green sits",

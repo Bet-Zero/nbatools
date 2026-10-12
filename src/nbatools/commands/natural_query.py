@@ -6330,6 +6330,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             route_kwargs["player"],
             # The player routes apply without_player; with_player refuses.
             (route_kwargs.get("without_player"),),
+            also=(route_kwargs.get("opponent_player"),),
         )
     ):
         # "in games LeBron plays 35 minutes and Luka sits": the player route
