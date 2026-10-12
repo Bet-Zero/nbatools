@@ -158,7 +158,9 @@ def test_small_samples_still_rank(query, keep):
     rows = _rows("player_game_stats")
     rows = rows[keep(rows)]
     games = rows.groupby("player_name")["game_id"].nunique()
-    rows = rows[rows["player_name"].isin(games[games == games.max()].index)]
+    most = int(games.max())
+    floor = 3 if most >= 3 else max(1, -(-most // 2))
+    rows = rows[rows["player_name"].isin(games[games >= floor].index)]
     expected = rows.groupby("player_name")["pts"].mean().sort_values(ascending=False)
     board = execute_natural_query(query).result.to_dict()["sections"]["leaderboard"]
     assert [r["pts_per_game"] for r in board] == pytest.approx(list(expected.values)[: len(board)])

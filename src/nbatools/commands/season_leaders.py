@@ -745,11 +745,12 @@ def _apply_default_guardrails(
     games_floor = _capped(recommended, "games_played")
     if small_sample and "games_played" in df.columns:
         # "who led the Lakers in scoring against the Celtics in 2023-24": two
-        # meetings; a three-game floor left the board empty. The floor is at
-        # most the games anyone in the sample played.
+        # meetings, and nobody can reach the three-game floor, which left the
+        # board empty. Only then the floor is half the most games anyone
+        # played (one of two meetings); with three or more it stays.
         most_games = pd.to_numeric(df["games_played"], errors="coerce").max()
-        if pd.notna(most_games):
-            games_floor = min(games_floor, max(1, int(most_games)))
+        if pd.notna(most_games) and most_games < games_floor:
+            games_floor = max(1, math.ceil(0.5 * most_games))
     effective_min_games = max(min_games, games_floor)
     if floor_out is not None:
         floor_out.append(effective_min_games)

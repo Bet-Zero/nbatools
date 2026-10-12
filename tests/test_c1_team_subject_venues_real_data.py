@@ -14,6 +14,12 @@ def test_lakers_scoring_over_the_celtics_2023_24():
 
     rows = load_player_games_for_seasons(["2023-24"], "Regular Season")
     rows = rows[(rows["team_abbr"] == "LAL") & (rows["opponent_team_abbr"] == "BOS")]
+    games = rows.groupby("player_id")["game_id"].nunique()
+    # The board's small-sample floor: three games, or half the most games
+    # anyone played when nobody reaches three.
+    most = int(games.max())
+    floor = 3 if most >= 3 else max(1, -(-most // 2))
+    rows = rows[rows["player_id"].isin(games[games >= floor].index)]
     expected = rows.groupby("player_id")["pts"].mean().sort_values(ascending=False)
     from nbatools.commands.natural_query import parse_query
 
