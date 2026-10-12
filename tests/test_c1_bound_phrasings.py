@@ -144,10 +144,13 @@ def test_held_to_reads_only_the_subjects_points():
     from nbatools.commands._parse_helpers import canonicalize_bound_phrases
 
     assert "or fewer" in canonicalize_bound_phrases("lakers record when held to 100")
-    for text in (
-        "lakers record when held to 40% shooting",
-        "lakers games when held to 40 percent shooting",
-        "lakers record when opponents were held to 100",
-        "lakers record when the celtics were held to 100",
-    ):
-        assert canonicalize_bound_phrases(text) == text
+    assert canonicalize_bound_phrases("lakers record when the celtics were held to 100") == (
+        "lakers record when the celtics were held to 100"
+    )
+    # A rate and the opponent's points are their own bounds.
+    assert canonicalize_bound_phrases("lakers record when held to 40% shooting") == (
+        "lakers record when shooting 40% or worse"
+    )
+    assert canonicalize_bound_phrases("lakers record when opponents were held to 100") == (
+        "lakers record when opponents score 100 or fewer points"
+    )

@@ -873,6 +873,39 @@ _HELD_TO = re.compile(
 )
 
 
+# "when opponents were held to 100": the opponents' points.
+_OPPONENTS_HELD_TO = re.compile(
+    r"\b((?:when|if|while)\s+)(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?)\s+"
+    r"(?:were|are|was|is|get|gets|got)\s+held\s+to\s+(\d+)(?:\s+points?)?\b"
+    r"(?:\s+or\s+(?:fewer|less)\b(?:\s+points?\b)?)?"
+    rf"(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
+)
+# "when LeBron is held to 20": the named player's points.
+_NAMED_HELD_TO = re.compile(
+    r"\b((?:when|if|while)\s+)(?!(?:they|we|he|she|the|opponents?|other|opposing|teams?)\b)"
+    r"([a-z.'-]+(?:\s+[a-z.'-]+)?\s+(?:is|was|gets|got))\s+held\s+to\s+(\d+)(?:\s+points?)?\b"
+    rf"(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
+)
+
+
+def _named_held_to(m: re.Match) -> str:
+    """Only a player the question resolves; a team or an unknown name stays."""
+    from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    name = m.group(2).rsplit(" ", 1)[0]
+    if detect_team_in_text(name) or not detect_player(name):
+        return m.group(0)
+    return f"{m.group(1)}{m.group(2)} held to {m.group(3)} or fewer points"
+
+
+# "when held to 40% shooting": the subject's shooting rate is a ceiling.
+_HELD_TO_RATE = re.compile(
+    r"\b((?:when|if|while|games?)\s+(?:(?:they|we|he)\s+)?(?:(?:were|are|was|is|get|gets|got)\s+)?)"
+    r"held\s+to\s+(\d+(?:\.\d+)?)\s*(?:%|percent\b)(?!(?:\s+shooting)?\s+(?:or|and)\b)"
+    r"(?:\s+shooting\b)?"
+)
+
+
 def canonicalize_bound_phrases(text: str) -> str:
     """Rewrite bound wording the readers miss into the form they read.
 
@@ -892,6 +925,9 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
+    text = _OPPONENTS_HELD_TO.sub(r"\1opponents score \2 or fewer points", text)
+    text = _NAMED_HELD_TO.sub(_named_held_to, text)
+    text = _HELD_TO_RATE.sub(r"\1shooting \2% or worse", text)
     # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
     # winning-teams bar, or the bar that includes .500.
     text = canonicalize_500_team_bars(text)
@@ -2804,8 +2840,13 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     # A stat other than points after the bound ("allow 15 or more threes") is
     # not a points-allowed condition.
     _NOT_OTHER_STAT = rf"(?!\s+{STAT_PATTERN})"
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    # "Lakers record when teams score 120": the teams it plays. With no team
+    # named ("best record when teams score 120") they are the subject.
+    _WHEN_TEAMS = r"|\b(?<=when\s)teams" if detect_team_in_text(text) else ""
     _OPPONENT_SCORERS = (
-        r"\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+team)\s+"
+        rf"(?:\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?){_WHEN_TEAMS})\s+"
         r"(?:scor(?:e|es|ed|ing)|puts?\s+up|had)\s+"
     )
     # "opponents score below 100": a ceiling, not the team's own points.

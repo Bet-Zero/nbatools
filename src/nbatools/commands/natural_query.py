@@ -3617,6 +3617,10 @@ def _complete_threshold_conditions(
     return completed
 
 
+def _same_bounds(a: dict, b: dict) -> bool:
+    return a.get("min_value") == b.get("min_value") and a.get("max_value") == b.get("max_value")
+
+
 def _conditions_for_route(parsed: dict, route: str, route_kwargs: dict) -> list[dict]:
     """Return canonical condition-list filters consumed by the selected route."""
     route_conditions = normalize_stat_conditions(route_kwargs.get("conditions"))
@@ -3641,6 +3645,14 @@ def _conditions_for_route(parsed: dict, route: str, route_kwargs: dict) -> list[
         compound_conditions = normalize_stat_conditions(
             parsed.get("compound_occurrence_conditions")
         )
+        if any(
+            t["stat"] == f"opponent_{c['stat']}" and _same_bounds(t, c)
+            for t in threshold_conditions
+            for c in compound_conditions
+        ):
+            # "when the opponent scores 110 and makes 15 threes": the list
+            # read the opponent's clause as the team's own.
+            return []
         if len(compound_conditions) >= 2:
             return compound_conditions
 

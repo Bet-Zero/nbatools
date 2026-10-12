@@ -586,10 +586,28 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_opponent_stat_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
     _apply_own_team_clauses(route, route_kwargs, text)
+    _refuse_unread_held_to(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
+
+
+# "held to N" the bound rewrites did not read ("when Boston is held to 100",
+# "held to 40% shooting and 100 points"): its subject is unclear, so refuse
+# rather than answer without the bound.
+_UNREAD_HELD_TO = re.compile(
+    # "held to 100 points or less" and "held to fewer than 100 points" are read.
+    r"\bheld\s+to\s+(?:(?:under|below)\s+)?\d+(?:\.\d+)?"
+    r"(?!\d|(?:\s+points?)?\s+or\s+(?:fewer|less)\b)"
+)
+
+
+def _refuse_unread_held_to(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route and _UNREAD_HELD_TO.search(text):
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "held_to" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "held_to"]
 
 
 _BARE_OWN_CLAUSE = re.compile(
@@ -605,18 +623,34 @@ _OPPONENT_SUBJECT = re.compile(
 )
 
 
+# "... and they shoot 50%", "... and opponents shoot 50%": a joined clause
+# with its own subject.
+_JOINED_SUBJECT = re.compile(
+    r"\b(?:and|but|while)\s+(?:(?P<own>they|he|we|she|the\s+team)"
+    r"|(?P<opp>(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?)))\b"
+)
+
+
 def _opponent_subject(before: str, team: str | None) -> bool:
     """The clause before "and" is led by the opponent, not the team."""
     starts = list(_CLAUSE_START.finditer(before))
     if not starts:
         return False
     clause = before[starts[-1].end() :]
+    joined = list(_JOINED_SUBJECT.finditer(clause))
+    if joined:
+        return bool(joined[-1].group("opp"))
     if _OPPONENT_SUBJECT.match(clause):
         return True
     from nbatools.commands._matchup_utils import detect_team_in_text
 
     named = detect_team_in_text(" ".join(clause.split()[:3]))
-    return bool(named and named != team)
+    if not named:
+        return False
+    # "Lakers record when the Celtics shoot 50%": the parse may have taken
+    # the clause's team as the subject; the team named first is.
+    first = detect_team_in_text(before[: starts[-1].start()])
+    return named != (first or team)
 
 
 def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) -> None:
