@@ -961,9 +961,37 @@ def canonicalize_ranked_stat_games(text: str) -> str:
         # "lowest 3 assist games": the 3 is the row count, not a 3-assist bar.
         if _RANKED_STAT_KEEP.search(tail):
             return text
-    elif not _RANKED_STAT_CONDITION.search(tail) or _RANKED_STAT_KEEP.search(tail):
+    elif (
+        _RANKED_STAT_KEEP.search(tail)
+        or not (
+            _RANKED_STAT_CONDITION.search(tail)
+            # "LeBron top 3 three point games": "three point" read as points (or a
+            # 3-point bar). With a subject named, the games by threes; the league
+            # form ("top 5 three point games") keeps its earlier reading.
+            or (_is_three_stat(match.group("stat")) and _names_subject(text[: match.start()]))
+        )
+    ):
         return text
     return text[: match.start()] + _ranked_stat_games(match) + tail
+
+
+def _names_subject(text: str) -> bool:
+    """A player or team is named ("LeBron", "the Lakers"), not just a lead-in
+    ("show me the")."""
+    from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    # "against the Celtics top 5 three point games": an opponent, not the
+    # subject.
+    subject = re.sub(
+        r"\b(?:against|vs\.?|versus|over|at|@|in|facing|beat|beating)\s+(?:the\s+)?[a-z0-9.' ]+$",
+        "",
+        text.strip(),
+    )
+    return bool(subject) and bool(detect_player(subject) or detect_team_in_text(subject))
+
+
+def _is_three_stat(stat: str) -> bool:
+    return stat == "threes" or stat.startswith(("three", "3"))
 
 
 def canonicalize_adjective_game_lists(text: str) -> str:
