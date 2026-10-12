@@ -589,6 +589,7 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _refuse_unread_held_to(route, route_kwargs, text)
     _refuse_game_clock(route, route_kwargs, text)
     _refuse_other_player_stat(route, route_kwargs, text)
+    _refuse_any_player_stat(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
@@ -646,15 +647,38 @@ def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) 
     own = set(str(player).lower().split())
     for m in _OTHER_PLAYER_STAT.finditer(text):
         name = m.group("name")
-        if detect_team_in_text(name) or set(name.split()) & own:
+        shared = set(name.split()) & own
+        if detect_team_in_text(name) or (shared and len(name.split()) == 1):
             continue
         other = detect_player(name)
-        if other == player:
+        # "when LeBron James scores 30" is him; "when Bronny James scores 10"
+        # shares a surname but is another player.
+        if other == player or (shared and other is None):
             continue
         blocked = list(route_kwargs.get("unsupported_filters") or [])
         if "other_player_stat" not in blocked:
             route_kwargs["unsupported_filters"] = [*blocked, "other_player_stat"]
         return
+
+
+# "Lakers record when a player scores 40", "best record when someone has 40":
+# one of the team's players, which read the team's own points. Not read yet,
+# so refuse rather than answer with the team's points or every game.
+_ANY_PLAYER_STAT = re.compile(
+    r"\b(?:when|if|while|where|whenever)\s+"
+    r"(?:(?:a|any|one|some)\s+(?:[a-z.']+\s+)?player|someone|anyone|anybody|somebody)"
+    r"(?:\s+(?:on|from|for)\s+(?:the\s+)?[a-z.']+)?\s+"
+    r"(?:scores?|scored|has|had|gets?|got|records?|recorded|grabs?|grabbed|makes?|made"
+    r"|hits?|dishes|dished|puts?\s+up)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+
+
+def _refuse_any_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
+    if not route or route in _PLAYER_ROUTES or not _ANY_PLAYER_STAT.search(text):
+        return
+    blocked = list(route_kwargs.get("unsupported_filters") or [])
+    if "any_player_stat" not in blocked:
+        route_kwargs["unsupported_filters"] = [*blocked, "any_player_stat"]
 
 
 _BARE_OWN_CLAUSE = re.compile(
@@ -698,7 +722,9 @@ def _opponent_subject(before: str, team: str | None) -> bool:
     # the clause's team as the subject; the team named first is.
     from nbatools.commands.natural_query import _team_mentions
 
-    mentions = sorted(_team_mentions(before[: starts[-1].start()]))
+    # Short aliases are also common words ("what WAS the Lakers record",
+    # "MIN"): only a full team name counts as the first team.
+    mentions = [m for m in _team_mentions(before[: starts[-1].start()]) if m[1] - m[0] > 3]
     first = mentions[0][2] if mentions else None
     return named != (first or team)
 

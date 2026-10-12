@@ -116,7 +116,7 @@ def test_teams_without_a_named_team_are_the_subject():
         "Lakers record when Davis gets held to 15",
         "Lakers record when Boston is held to 100",
         "Lakers record when held to 40% shooting and 100 points",
-        "Lakers record when held to under 100",
+        "Lakers record when Boston is held to under 100",
     ],
 )
 def test_unread_held_to_refuses(query):

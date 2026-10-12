@@ -873,6 +873,20 @@ _HELD_TO = re.compile(
 )
 
 
+# "when held to under 100": a strict ceiling on the subject's own score.
+_HELD_TO_UNDER = re.compile(
+    r"\b((?:when|if|while|games?)\s+(?:(?:they|we|he)\s+)?(?:(?:were|are|was|is|get|gets|got)\s+)?)"
+    r"held\s+to\s+(?:under|below|fewer\s+than|less\s+than)\s+(\d+)(?:\s+points?)?\b"
+    rf"(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
+)
+_OPPONENTS_HELD_TO_UNDER = re.compile(
+    r"\b((?:when|if|while)\s+)(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?)\s+"
+    r"(?:were|are|was|is|get|gets|got)\s+held\s+to\s+(?:under|below|fewer\s+than|less\s+than)\s+"
+    r"(\d+)(?:\s+points?)?\b"
+    rf"(?!\s*(?:%|percent|or\b|-|\.\d|{STAT_PATTERN}))"
+)
+
+
 # "when opponents were held to 100": the opponents' points.
 _OPPONENTS_HELD_TO = re.compile(
     r"\b((?:when|if|while)\s+)(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?)\s+"
@@ -924,6 +938,8 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\bblowouts?(?:\s+games?)?\b", "games decided by 15+", text)
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
+    text = _HELD_TO_UNDER.sub(r"\1scoring under \2 points", text)
+    text = _OPPONENTS_HELD_TO_UNDER.sub(r"\1opponents score under \2 points", text)
     text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
     text = _OPPONENTS_HELD_TO.sub(r"\1opponents score \2 or fewer points", text)
     text = _NAMED_HELD_TO.sub(_named_held_to, text)
@@ -2916,6 +2932,27 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
                     "text": m.group(0),
                 }
             )
+
+    # "allowing between 100 and 110", "opponents score between 100 and 110":
+    # both bounds are the opponent's score.
+    _RANGE = (
+        rf"(?:{_MIN_SUBJECTS}|{_OPPONENT_SCORERS}"
+        r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to\s+"
+        r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to\s+)"
+        rf"between\s+{_NUM}(?:\s+(?:points?|pts))?\s+and\s+{_NUM}{_POINT_SUFFIX}"
+    )
+    for m in re.finditer(_RANGE, text):
+        low, high = sorted((float(m.group(1)), float(m.group(2))))
+        matches.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": "opponent_pts",
+                "min_value": low,
+                "max_value": high,
+                "text": m.group(0),
+            }
+        )
 
     matches.extend(_opponent_box_stat_conditions(text))
 

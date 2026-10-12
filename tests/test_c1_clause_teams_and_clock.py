@@ -78,3 +78,33 @@ def test_la_is_his_team_when_he_plays_for_one():
     result = execute_natural_query(query)
     assert result.result_status == "ok"
     assert len(result.result.to_dict()["sections"]["finder"]) == 19
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # "was" is also the Wizards' abbreviation: not the first team.
+        ("What was the Lakers record when the Lakers shoot 50%", (45, 11)),
+        ("What was the Lakers record vs Celtics when the Lakers shoot 50%", (4, 7)),
+    ],
+)
+def test_question_words_are_not_teams(query, record):
+    wins, losses, _ = _record(query)
+    assert (wins, losses) == record
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron James games when Bronny James scores 10",
+        "Anthony Davis games when Anthony Edwards scores 30",
+    ],
+)
+def test_shared_name_other_player_refuses(query):
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize("name", ["LeBron James", "King James", "James"])
+def test_his_own_names_still_answer(name):
+    result = execute_natural_query(f"LeBron James games when {name} scores 30")
+    assert len(result.result.to_dict()["sections"]["finder"]) == 11
