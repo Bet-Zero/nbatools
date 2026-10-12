@@ -7716,10 +7716,14 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
                 return _league_game_list_refusal(parsed)
             if _ROOKIE_SUBJECT.search(plain) or _LEAGUE_LIST_UNREAD.search(plain):
                 return None
-            for number in re.finditer(r"\b\d+(?:\.\d+)?\b", plain):
+            # Seasons and dates ("2022-23", "jan 5") are read by the parse.
+            dateless = _LEAGUE_LIST_DATES.sub(lambda m: " " * len(m.group(0)), plain)
+            for number in re.finditer(r"\b\d+(?:\.\d+)?\b", dateless):
                 if re.fullmatch(r"(?:19|20)\d\d", number.group(0)):
                     continue
-                if not _LEAGUE_LIST_BOUND_TAIL.match(plain, number.end()):
+                if not _LEAGUE_LIST_BOUND_TAIL.match(dateless, number.end()) and not re.match(
+                    r"\s+(?:seasons?|years?|playoffs|postseasons)\b", dateless[number.end() :]
+                ):
                     # "over 50% from three under 25": a number nothing applies.
                     return None
             plain = re.sub(r"\b(?:nights?|performances?|outings?)\b", "games", plain)

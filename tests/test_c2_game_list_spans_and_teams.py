@@ -69,6 +69,29 @@ def test_an_unnamed_rate_bound_is_on_the_ranked_rate(query, stat, bound):
     ]
 
 
+def test_a_rate_bound_and_a_season_span_together():
+    kwargs = parse_query("best free throw shooting games over 90% in the last 2 seasons")[
+        "route_kwargs"
+    ]
+    assert (kwargs["stat"], kwargs["start_season"]) == ("ft_pct", "2024-25")
+    assert kwargs["conditions"] == [{"stat": "ft_pct", "min_value": 0.9001, "max_value": None}]
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("best shooting games over 60% in 2023-24", ("2023-24", None, None)),
+        ("best shooting games from 2022-23 to 2023-24 over 60%", (None, "2022-23", "2023-24")),
+    ],
+)
+def test_a_rate_bound_beside_a_named_season(query, season):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "player_game_finder"
+    assert (kwargs.get("season"), kwargs.get("start_season"), kwargs.get("end_season")) == season
+    assert kwargs["conditions"] == [{"stat": "fg_pct", "min_value": 0.6001, "max_value": None}]
+
+
 def test_a_lower_rate_bound_is_on_the_ranked_rate():
     kwargs = parse_query("worst 3 point shooting games under 20%")["route_kwargs"]
     assert kwargs["stat"] == "fg3_pct" and kwargs["ascending"] is True
