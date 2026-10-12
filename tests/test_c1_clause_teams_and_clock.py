@@ -108,3 +108,22 @@ def test_shared_name_other_player_refuses(query):
 def test_his_own_names_still_answer(name):
     result = execute_natural_query(f"LeBron James games when {name} scores 30")
     assert len(result.result.to_dict()["sections"]["finder"]) == 11
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The opponent's rate beside an abbreviated subject is not read.
+        "BOS record vs Lakers when the Lakers shoot 50%",
+        "LAL record vs Celtics when the Celtics shoot 50%",
+    ],
+)
+def test_abbreviated_subject_keeps_opponent_clause_refused(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+def test_abbreviated_subjects_answer_their_own_clause():
+    assert _record("LAL record vs BOS when the Lakers shoot 50%")[:2] == (4, 7)
+    assert _record("BOS record vs Lakers when they shoot 50%")[:2] == (8, 3)

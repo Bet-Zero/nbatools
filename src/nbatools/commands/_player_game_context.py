@@ -594,6 +594,18 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
+    _refuse_team_as_own_opponent(route_kwargs)
+
+
+def _refuse_team_as_own_opponent(route_kwargs: dict) -> None:
+    """A clause read the wrong way round can leave the team as its own
+    opponent ("BOS record vs Lakers when the Lakers shoot 50%"); that sample
+    is always empty, so refuse instead of answering "no games"."""
+    team, opponent = route_kwargs.get("team"), route_kwargs.get("opponent")
+    if isinstance(team, str) and isinstance(opponent, str) and team == opponent:
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "team_is_opponent" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "team_is_opponent"]
 
 
 # "held to N" the bound rewrites did not read ("when Boston is held to 100",
@@ -702,6 +714,9 @@ _JOINED_SUBJECT = re.compile(
 )
 
 
+_WORD_ALIASES = frozenset({"was", "min", "cs", "c's"})
+
+
 def _opponent_subject(before: str, team: str | None) -> bool:
     """The clause before "and" is led by the opponent, not the team."""
     starts = list(_CLAUSE_START.finditer(before))
@@ -722,9 +737,10 @@ def _opponent_subject(before: str, team: str | None) -> bool:
     # the clause's team as the subject; the team named first is.
     from nbatools.commands.natural_query import _team_mentions
 
-    # Short aliases are also common words ("what WAS the Lakers record",
-    # "MIN"): only a full team name counts as the first team.
-    mentions = [m for m in _team_mentions(before[: starts[-1].start()]) if m[1] - m[0] > 3]
+    # Some aliases are also common words ("what WAS the Lakers record",
+    # "MIN"): they never count as the first team.
+    head = before[: starts[-1].start()]
+    mentions = [m for m in _team_mentions(head) if head[m[0] : m[1]] not in _WORD_ALIASES]
     first = mentions[0][2] if mentions else None
     return named != (first or team)
 
