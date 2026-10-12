@@ -88,8 +88,22 @@ def test_an_attempt_count_the_list_does_not_read_refuses():
     ],
 )
 def test_a_margin_never_replaces_the_counted_stat(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best rebounding performances with at least 20 points",
+        "best scoring performances over 40 points",
+        "highest scoring games by a team over 130 points",
+    ],
+)
+def test_a_bound_the_game_board_cannot_apply_refuses(query):
     kwargs = parse_query(query)["route_kwargs"]
-    assert kwargs["unsupported_filters"] == ["game_list_stat_conflict"]
+    assert kwargs["unsupported_filters"] == ["game_list_bound_unapplied"]
 
 
 def test_the_tail_keeps_its_filters():

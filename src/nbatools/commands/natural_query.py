@@ -7996,9 +7996,33 @@ _LEAGUE_GAME_LIST_COUNTS = {
 
 def _counting_game_list(parsed: dict, out: dict | None, route: str, what: str) -> dict | None:
     """The reparsed counting list, when it ranks the stat the words name."""
-    if out is None or out.get("route") != route:
+    if out is None:
         return None
-    if (out.get("route_kwargs") or {}).get("stat") != _LEAGUE_GAME_LIST_COUNTS[what]:
+    kwargs = out.get("route_kwargs") or {}
+    if kwargs.get("unsupported_filters"):
+        # Already a refusal that names its own reason ("by rookies").
+        return out
+    if out.get("route") != route:
+        return None
+    if any(
+        value is not None
+        for value in (
+            out.get("min_value"),
+            out.get("max_value"),
+            kwargs.get("min_value"),
+            kwargs.get("max_value"),
+        )
+    ):
+        # "best scoring performances over 40 points": the game board ranks
+        # but does not filter by a bound.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["game_list_bound_unapplied"]
+        refused["notes"] = [
+            "unsupported_boundary: this game list ranks one stat; a bound such as "
+            '"over 40 points" is not applied to it'
+        ]
+        return refused
+    if kwargs.get("stat") != _LEAGUE_GAME_LIST_COUNTS[what]:
         # "best scoring performances in wins by 20 or more": the margin took
         # the ranked stat and its bound was lost.
         refused = _single_season_refusal(parsed)
