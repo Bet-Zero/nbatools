@@ -173,3 +173,23 @@ def test_shooting_and_event_inside_a_margin(query, result):
         assert _record(query) == result
     else:
         assert len(_rows(query)) == result
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The opponent's bare rate is not read yet; it must not filter the
+        # team's own shooting.
+        "Lakers record when opponents shoot 50% and make 15 threes",
+        "Lakers games when the opponent shoots 50% with 15 threes",
+        "Lakers record when opponents shoot 50%",
+    ],
+)
+def test_opponent_bare_shooting_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+def test_the_team_is_the_subject_not_the_opponent():
+    assert _record("Lakers record when the team allows 110 and makes 15 threes") == (2, 1)

@@ -601,7 +601,7 @@ _BARE_OWN_CLAUSE = re.compile(
 
 _CLAUSE_START = re.compile(r"\b(?:when|if|while|where|whenever)\s+")
 _OPPONENT_SUBJECT = re.compile(
-    r"(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams?|their\s+opponents?)\b"
+    r"(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?)\b"
 )
 
 
@@ -910,16 +910,25 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
     "LeBron games shooting over 50% with 30 points" kept only the shooting
     bound, and "with 30 points shooting 50%" refused.
     """
-    if route not in ("player_game_finder", "player_game_summary", "game_finder", "team_record"):
+    if not route:
         return
     from nbatools.commands._parse_helpers import _extract_shooting_percentage_conditions
 
-    shooting = [
-        {k: c[k] for k in ("stat", "min_value", "max_value")}
-        for c in _extract_shooting_percentage_conditions(text)
-    ]
-    if not shooting:
+    matches = _extract_shooting_percentage_conditions(text)
+    if not matches:
         return
+    if any(_opponent_subject(text[: m["start"]], route_kwargs.get("team")) for m in matches):
+        # "when opponents shoot 50% and make 15 threes": the opponent's rate,
+        # which the bounded reader above handles; anything it missed would
+        # filter the team's own shooting, so refuse.
+        if not _OPP_SHOOTING.search(text):
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "opponent_shooting" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
+        return
+    if route not in ("player_game_finder", "player_game_summary", "game_finder", "team_record"):
+        return
+    shooting = [{k: c[k] for k in ("stat", "min_value", "max_value")} for c in matches]
     events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT))
     if not events:
         return
