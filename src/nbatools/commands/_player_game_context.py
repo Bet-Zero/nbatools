@@ -964,8 +964,12 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
         return
     shooting = [{k: c[k] for k in ("stat", "min_value", "max_value")} for c in matches]
     events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT))
-    if not events:
-        return
+    if not events and len(shooting) == 1:
+        if _kwargs_conditions(route_kwargs) or (
+            route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None
+        ):
+            return
+        # "LeBron games with ts 60%": a rate the parse did not read.
     conditions = shooting + events
     stats = [c["stat"] for c in conditions]
     if len(stats) != len(set(stats)):

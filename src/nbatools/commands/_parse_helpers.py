@@ -2276,11 +2276,13 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     """Infer shooting percentage thresholds from clear shooting contexts only."""
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
     operator = r"(over|above|at\s+least|under|below|less\s+than|at\s+most|no\s+more\s+than)"
-    _FROM = (
-        r"(?:\s+(?:from\s+(?:the\s+)?(?:field|three|3|deep|line|beyond\s+the\s+arc)"
-        r"|on\s+(?:threes|3s|three[\s-]pointers|3[\s-]pointers|free\s+throws)))?"
-        r"(?!\s+(?:from|on|beyond)\b)"
+    _AREA = (
+        r"(?:\s+(?:from\s+(?:the\s+)?(?:field|threes?|3s?|deep|line|beyond\s+the\s+arc)"
+        r"|on\s+(?:threes|3s|three[\s-]pointers|3[\s-]pointers|free\s+throws)))"
     )
+    _FROM = rf"{_AREA}?(?!\s+(?:from|on|beyond)\b)"
+    _TAIL = r"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?"
+    _RATE = r"(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
     patterns = [
         rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}{_FROM}\b",
         rf"\b(?:from\s+(?:the\s+)?(?:field|three|3))\s+{operator}\s+{_NUM}\b",
@@ -2290,14 +2292,26 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         # so "shot 10 threes" stays a count.
         rf"\b(?:shoots?|shooting|shot)()\s+(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
         rf"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?{_FROM}(?!\w)",
+        # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
+        rf"\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",
+        # "shooting 50% from the field and 40% from three": a joined rate
+        # names its own area.
+        rf"\band\s+(){_RATE}{_TAIL}{_AREA}(?!\s+(?:from|on|beyond)\b)(?!\w)",
     ]
+    abbreviation = re.compile(r"(ts|efg|fg|ft|3pt|3p)\b")
+    abbreviated = {"ts": "ts_pct", "efg": "efg_pct", "fg": "fg_pct", "ft": "ft_pct"}
 
     matches = []
-    for pattern in patterns:
+    for index, pattern in enumerate(patterns):
         for m in re.finditer(pattern, text):
+            if any(m.start() < e["end"] and e["start"] < m.end() for e in matches):
+                continue
+            if index == len(patterns) - 1 and not any(e["end"] <= m.start() for e in matches):
+                # A joined rate needs a shooting rate before it.
+                continue
             op = m.group(1)
             value_text = m.group(2)
-            if op == "":
+            if not op:
                 tail = m.group(3)
                 op = "at most" if tail in {"worse", "less", "lower", "below"} else "at least"
             op = " ".join(op.split())
@@ -2305,7 +2319,10 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
             epsilon = 0.0 if op in {"at least", "at most", "no more than"} else 0.0001
             stat = _shooting_percentage_stat_for_context(m.group(0))
             modifier = _SHOOTING_MODIFIER.search(text[: m.start()])
-            if modifier:
+            short = abbreviation.match(m.group(0)) if index == len(patterns) - 2 else None
+            if short:
+                stat = abbreviated.get(short.group(1), "fg3_pct")
+            elif modifier:
                 if modifier.group("other"):
                     stat = "ts_pct" if modifier.group("other") in {"true", "ts"} else "efg_pct"
                 else:
