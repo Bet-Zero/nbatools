@@ -129,3 +129,36 @@ def test_bets_and_non_venues_are_not_opponents(query):
         return
     assert kwargs.get("opponent") is None
     assert not kwargs.get("away_only")
+
+
+@pytest.mark.parametrize(
+    ("query", "keep"),
+    [
+        # A window or opponent with fewer than three games: the board's games
+        # floor is at most the games anyone played (it was empty).
+        (
+            "who scored the most points for the Lakers from 2026-03-05 to 2026-03-25",
+            lambda r: (
+                (r["team_abbr"] == "LAL")
+                & (r["game_date"] >= "2026-03-05")
+                & (r["game_date"] <= "2026-03-25")
+            ),
+        ),
+        (
+            "who has the most points per game against the Celtics from 2026-03-01 to 2026-03-31",
+            lambda r: (
+                (r["opponent_team_abbr"] == "BOS")
+                & (r["game_date"] >= "2026-03-01")
+                & (r["game_date"] <= "2026-03-31")
+            ),
+        ),
+    ],
+)
+def test_small_samples_still_rank(query, keep):
+    rows = _rows("player_game_stats")
+    rows = rows[keep(rows)]
+    games = rows.groupby("player_name")["game_id"].nunique()
+    rows = rows[rows["player_name"].isin(games[games == games.max()].index)]
+    expected = rows.groupby("player_name")["pts"].mean().sort_values(ascending=False)
+    board = execute_natural_query(query).result.to_dict()["sections"]["leaderboard"]
+    assert [r["pts_per_game"] for r in board] == pytest.approx(list(expected.values)[: len(board)])
