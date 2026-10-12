@@ -587,10 +587,26 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_team_context(route, route_kwargs, text)
     _apply_own_team_clauses(route, route_kwargs, text)
     _refuse_unread_held_to(route, route_kwargs, text)
+    _refuse_game_clock(route, route_kwargs, text)
+    _refuse_other_player_stat(route, route_kwargs, text)
+    _refuse_team_shooting(route, route_kwargs, text)
+    _refuse_any_player_stat(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
+    _refuse_team_as_own_opponent(route_kwargs)
+
+
+def _refuse_team_as_own_opponent(route_kwargs: dict) -> None:
+    """A clause read the wrong way round can leave the team as its own
+    opponent ("BOS record vs Lakers when the Lakers shoot 50%"); that sample
+    is always empty, so refuse instead of answering "no games"."""
+    team, opponent = route_kwargs.get("team"), route_kwargs.get("opponent")
+    if isinstance(team, str) and isinstance(opponent, str) and team == opponent:
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "team_is_opponent" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "team_is_opponent"]
 
 
 # "held to N" the bound rewrites did not read ("when Boston is held to 100",
@@ -608,6 +624,100 @@ def _refuse_unread_held_to(route: str | None, route_kwargs: dict, text: str) -> 
         blocked = list(route_kwargs.get("unsupported_filters") or [])
         if "held_to" not in blocked:
             route_kwargs["unsupported_filters"] = [*blocked, "held_to"]
+
+
+# "with 5 minutes left", "in the final 2 minutes": a point on the game clock,
+# not minutes played. Play-by-play is not loaded, so refuse.
+_GAME_CLOCK = re.compile(
+    r"\b\d+\s+minutes?\s+(?:left|remaining|to\s+go)\b|\b(?:last|final|closing)\s+\d+\s+minutes?\b"
+)
+
+
+def _refuse_game_clock(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route and _GAME_CLOCK.search(text):
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "game_clock" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "game_clock"]
+
+
+# "LeBron games when Anthony Davis scores 30": another player's stat, which
+# filtered LeBron's own points. Not read, so refuse.
+_OTHER_PLAYER_STAT = re.compile(
+    r"\b(?:when|if|while|where|whenever)\s+"
+    r"(?!(?:he|she|they|we|the|his|their|opponents?|teams?|other|opposing|la|los\s+angeles)\b)"
+    r"(?P<name>[a-z.'-]+(?:\s+[a-z.'-]+){0,2}?)\s+"
+    r"(?:scores?|scored|has|had|gets?|got|records?|recorded|grabs?|grabbed|makes?|made"
+    r"|hits?|dishes|dished|puts?\s+up)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+
+
+def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
+    player = route_kwargs.get("player")
+    if route not in _PLAYER_ROUTES or not player:
+        return
+    from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    own = set(str(player).lower().split())
+    for m in _OTHER_PLAYER_STAT.finditer(text):
+        name = m.group("name")
+        shared = set(name.split()) & own
+        if detect_team_in_text(name) or (shared and len(name.split()) == 1):
+            continue
+        other = detect_player(name)
+        # "when LeBron James scores 30" is him; "when Bronny James scores 10"
+        # shares a surname but is another player.
+        if other == player or (shared and other is None):
+            continue
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "other_player_stat" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "other_player_stat"]
+        return
+
+
+# "Lakers record when a player scores 40", "best record when someone has 40":
+# one of the team's players, which read the team's own points. Not read yet,
+# so refuse rather than answer with the team's points or every game.
+_ANY_PLAYER_STAT = re.compile(
+    r"\b(?:when|if|while|where|whenever)\s+"
+    r"(?:(?:a|any|one|some)\s+(?:[a-z.']+\s+)?player|someone|anyone|anybody|somebody)"
+    r"(?:\s+(?:on|from|for)\s+(?:the\s+)?[a-z.']+)?\s+"
+    r"(?:scores?|scored|has|had|gets?|got|records?|recorded|grabs?|grabbed|makes?|made"
+    r"|hits?|dishes|dished|puts?\s+up)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+
+
+def _refuse_any_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
+    if not route or route in _PLAYER_ROUTES or not _ANY_PLAYER_STAT.search(text):
+        return
+    blocked = list(route_kwargs.get("unsupported_filters") or [])
+    if "any_player_stat" not in blocked:
+        route_kwargs["unsupported_filters"] = [*blocked, "any_player_stat"]
+
+
+# "LeBron games vs Celtics when the Celtics shoot 50%": a team's shooting
+# rate, which filtered the player's own. Player rows do not carry the team
+# rates, so refuse.
+_TEAM_SHOOTING = re.compile(
+    r"\b(?:when|if|while|whenever|where|and|but)\s+(?:the\s+|his\s+)?"
+    r"(?P<name>[a-z.']+(?:\s+[a-z.']+)?)\s+(?:shoots?|shot|shooting)\b"
+)
+_TEAM_SHOOTING_SUBJECTS = frozenset(
+    {"they", "team", "opponents", "opponent", "other team", "opposing team", "teams"}
+)
+
+
+def _refuse_team_shooting(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
+        return
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    for m in _TEAM_SHOOTING.finditer(text):
+        name = m.group("name")
+        if name in _TEAM_SHOOTING_SUBJECTS or detect_team_in_text(name):
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "team_shooting" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "team_shooting"]
+            return
 
 
 _BARE_OWN_CLAUSE = re.compile(
@@ -631,6 +741,9 @@ _JOINED_SUBJECT = re.compile(
 )
 
 
+_WORD_ALIASES = frozenset({"was", "min", "cs", "c's"})
+
+
 def _opponent_subject(before: str, team: str | None) -> bool:
     """The clause before "and" is led by the opponent, not the team."""
     starts = list(_CLAUSE_START.finditer(before))
@@ -649,7 +762,13 @@ def _opponent_subject(before: str, team: str | None) -> bool:
         return False
     # "Lakers record when the Celtics shoot 50%": the parse may have taken
     # the clause's team as the subject; the team named first is.
-    first = detect_team_in_text(before[: starts[-1].start()])
+    from nbatools.commands.natural_query import _team_mentions
+
+    # Some aliases are also common words ("what WAS the Lakers record",
+    # "MIN"): they never count as the first team.
+    head = before[: starts[-1].start()]
+    mentions = [m for m in _team_mentions(head) if head[m[0] : m[1]] not in _WORD_ALIASES]
+    first = mentions[0][2] if mentions else None
     return named != (first or team)
 
 
@@ -1088,8 +1207,15 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     """
     if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
         return
-    own_team = str(route_kwargs.get("team") or "").upper()
     opponent = route_kwargs.get("opponent")
+    if (
+        isinstance(opponent, str)
+        and str(route_kwargs.get("team") or "").upper() == opponent.upper()
+    ):
+        # "LeBron games vs Celtics when the Celtics score 120": the clause's
+        # team was also taken as his; it is the opponent.
+        route_kwargs["team"] = None
+    own_team = str(route_kwargs.get("team") or "").upper()
     opponents = {
         str(o).upper() for o in ([opponent] if isinstance(opponent, str) else opponent or [])
     }
@@ -1132,6 +1258,11 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
                 team = own_team
             else:
                 team = next((t for t in ("LAL", "LAC") if t in opponents), None)
+            if team is None and not own_team and not _OTHER_SEASON_WORDS.search(text):
+                # "LeBron games when LA scores 120": his team when it is LA.
+                latest = _player_latest_team(route_kwargs["player"])
+                if latest in ("LAL", "LAC"):
+                    route_kwargs["team"] = own_team = team = latest
             if team is None:
                 continue
         if team in opponents:

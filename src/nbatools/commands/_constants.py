@@ -9,7 +9,7 @@ import unicodedata
 # Text normalisation helpers
 # ---------------------------------------------------------------------------
 
-STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or)"  # noqa: E501
+STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or|when|whenever|if|while|where)"  # noqa: E501
 
 
 def normalize_text(text: str) -> str:
