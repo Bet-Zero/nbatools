@@ -879,9 +879,16 @@ def canonicalize_bound_phrases(text: str) -> str:
     "10 assists at most" / "10 assists max" / "30 minutes or under" read as
     floors or refused; "no-more-than" and "never more than" read as floors;
     "when held to 100" was a 100-point floor; "vs above .500 teams" was
-    ignored and answered with every game.
+    ignored and answered with every game; "close games" and "blowouts" were
+    ignored too.
     """
     text = canonicalize_trailing_ceilings(text)
+    # "close games" and "blowouts" use the glossary's final-margin cutoffs.
+    text = re.sub(r"\bclose\s+(wins|losses)\b", r"\1 by 5 or fewer", text)
+    text = re.sub(r"\bclose\s+(win|loss)\b", r"\1 by 5 or fewer", text)
+    text = re.sub(r"\bclose\s+games?\b", "games decided by 5 or fewer", text)
+    text = re.sub(r"\bblowout\s+(wins|losses|win|loss)\b", r"\1 by 15+", text)
+    text = re.sub(r"\bblowouts?(?:\s+games?)?\b", "games decided by 15+", text)
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO.sub(r"\1held to \2 or fewer points", text)
@@ -2220,11 +2227,17 @@ def _shooting_percentage_stat_for_context(match_text: str) -> str:
 def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     """Infer shooting percentage thresholds from clear shooting contexts only."""
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
-    operator = r"(over|above|at\s+least|under|below|less\s+than)"
+    operator = r"(over|above|at\s+least|under|below|less\s+than|at\s+most|no\s+more\s+than)"
+    _FROM = r"(?:\s+from\s+(?:the\s+)?(?:field|three|3|deep))?"
     patterns = [
-        rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}(?:\s+from\s+(?:the\s+)?(?:field|three|3))?\b",
+        rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}{_FROM}\b",
         rf"\b(?:from\s+(?:the\s+)?(?:field|three|3))\s+{operator}\s+{_NUM}\b",
         rf"\b(?:free\s+throws?|from\s+the\s+line)\s+{operator}\s+{_NUM}\b",
+        # "when they shoot 50 percent", "shooting 50% or better": a bare
+        # percentage is a floor, "or worse" a ceiling. The sign is required,
+        # so "shot 10 threes" stays a count.
+        rf"\b(?:shoots?|shooting|shot)()\s+(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
+        rf"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?{_FROM}(?!\w)",
     ]
 
     matches = []
@@ -2232,8 +2245,12 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         for m in re.finditer(pattern, text):
             op = m.group(1)
             value_text = m.group(2)
+            if op == "":
+                tail = m.group(3)
+                op = "at most" if tail in {"worse", "less", "lower", "below"} else "at least"
+            op = " ".join(op.split())
             mode = "min" if op in {"over", "above", "at least"} else "max"
-            epsilon = 0.0 if op == "at least" else 0.0001
+            epsilon = 0.0 if op in {"at least", "at most", "no more than"} else 0.0001
             stat = _shooting_percentage_stat_for_context(m.group(0))
             min_value, max_value = _threshold_bounds(value_text, stat, mode, epsilon)
             matches.append(

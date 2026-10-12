@@ -585,9 +585,52 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
+    _apply_own_team_clauses(route, route_kwargs, text)
+    _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
+
+
+_BARE_OWN_CLAUSE = re.compile(
+    r"\band\s+(?:make|makes|made|hit|hits|score|scores|scored|have|has|had|grab|grabs|grabbed"
+    r"|record|records|recorded|dish|dishes|dished)\s+(?:at\s+least\s+)?(?P<n>\d+)\+?\s+"
+    rf"(?P<w>{STAT_PATTERN})\b(?![\s-]+(?:or\s+(?:fewer|less)|allowed))"
+)
+
+
+def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Keep the team's own stat beside an opponent bound on a team route.
+
+    "Lakers record when they make 15 threes and allow under 110" read only
+    the opponent's points: the threes became the bare stat the opponent
+    bound replaced, so the answer counted every game under 110 allowed.
+    """
+    if route not in ("team_record", "game_finder", "game_summary"):
+        return
+    conditions = _kwargs_conditions(route_kwargs)
+    if not any(c["stat"].startswith("opponent_") for c in conditions):
+        return
+    team = route_kwargs.get("team")
+    added = False
+    clauses = team_subject_stat_conditions(text)
+    # "... allow under 110 and make 15 threes": the subject carries over.
+    for m in _BARE_OWN_CLAUSE.finditer(text):
+        stat = _stat_word(m.group("w"))
+        if stat is not None:
+            clauses.append(
+                {"team": "TEAM", "stat": stat, "min_value": float(m.group("n")), "max_value": None}
+            )
+    for clause in clauses:
+        if clause["team"] not in ("TEAM", team):
+            continue
+        cond = {k: clause[k] for k in ("stat", "min_value", "max_value")}
+        if any(c["stat"] == cond["stat"] for c in conditions):
+            continue
+        conditions.append(cond)
+        added = True
+    if added:
+        route_kwargs["conditions"] = conditions
 
 
 # "lowest scoring games", "fewest turnovers": rank from the bottom. The low
@@ -730,6 +773,25 @@ def _not_own_event(route: str | None, m: re.Match, text: str, team: str | None =
     return not (team and detect_team_in_text(subject) == team)
 
 
+def _game_events(text: str, patterns) -> list[dict]:
+    """Player game conditions written as "with N stat" or "N stat games"."""
+    events = []
+    claimed: list[tuple[int, int]] = []
+    for pattern in patterns:
+        for m in pattern.finditer(text):
+            if any(m.start() < e and s < m.end() for s, e in claimed):
+                continue
+            stat = _stat_word(m.group("w"))
+            if stat is None:
+                continue
+            claimed.append(m.span())
+            if stat == "pts" and float(m.group("n")) < 10 and pattern is _EVENT_PATTERNS[1]:
+                # "3 point games" are games decided by 3 points.
+                continue
+            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+    return events
+
+
 def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> None:
     """Rank by the stat a rank word names and keep the game conditions.
 
@@ -807,6 +869,53 @@ def _opponent_ranked(route: str | None, route_kwargs: dict) -> bool:
         and route_kwargs.get("min_value") is None
         and route_kwargs.get("max_value") is None
     )
+
+
+# "... and making 15 threes", "scoring 30 points": a verb-led floor beside a
+# shooting bound.
+_VERB_EVENT = re.compile(
+    r"\b(?:making|make|makes|made|hitting|hit|hits|scoring|score|scores|scored)\s+"
+    rf"(?:at\s+least\s+)?(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN})\b{_NOT_A_FLOOR}"
+)
+
+
+def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Keep "with 30 points" beside a shooting percentage.
+
+    "LeBron games shooting over 50% with 30 points" kept only the shooting
+    bound, and "with 30 points shooting 50%" refused.
+    """
+    if route not in ("player_game_finder", "player_game_summary", "game_finder", "team_record"):
+        return
+    from nbatools.commands._parse_helpers import _extract_shooting_percentage_conditions
+
+    shooting = [
+        {k: c[k] for k in ("stat", "min_value", "max_value")}
+        for c in _extract_shooting_percentage_conditions(text)
+    ]
+    if not shooting:
+        return
+    events = _game_events(text, (_EVENT_PATTERNS[0], _VERB_EVENT))
+    if not events:
+        return
+    conditions = shooting + events
+    stats = [c["stat"] for c in conditions]
+    if len(stats) != len(set(stats)):
+        return
+    for c in _kwargs_conditions(route_kwargs):
+        if c.get("stat") and not any(
+            c["stat"] == k["stat"] and _same_bound(c, k) for k in conditions
+        ):
+            # Another bound the parse read; leave the parse alone.
+            return
+    _clear_covered_event_refusal(route_kwargs, conditions)
+    route_kwargs["conditions"] = conditions
+    if route == "player_game_finder" and route_kwargs.get("sort_by") == "stat":
+        route_kwargs["stat"] = route_kwargs.get("stat") or conditions[0]["stat"]
+    else:
+        route_kwargs["stat"] = conditions[0]["stat"]
+    route_kwargs["min_value"] = conditions[0]["min_value"]
+    route_kwargs["max_value"] = conditions[0]["max_value"]
 
 
 def _apply_ranking_stat(route: str | None, route_kwargs: dict, text: str) -> None:

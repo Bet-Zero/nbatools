@@ -125,7 +125,6 @@ def test_allowed_count_uses_opponent_points():
         # refuse rather than return an unfiltered answer. (Margins now apply:
         # tests/test_c1_margin_filters.py.)
         "LeBron record on 1 day of rest or less",
-        "LeBron games shooting 40% or less",
         "LeBron games with a plus minus of 0 or less",
         "Lakers record when opponents shoot 40% or less",
         # One bound per player is not applied separately.

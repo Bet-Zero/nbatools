@@ -1192,6 +1192,8 @@ Consolidated reference for fuzzy terms, aliases, and defaults. The canonical sou
 | `hottest`           | Stretch queries rank the rolling per-game average of the requested stat; if no stat is named, they default to rolling average Game Score | Yes     |
 | `efficient`         | Stretch queries without an explicit stat rank rolling True Shooting % | Yes     |
 | `clutch`            | Last 5 min of 4th quarter or OT, score within 5        | No      |
+| `close games`       | Final margin of 5 points or fewer ("close wins", "close losses" too) | Yes     |
+| `blowouts`          | Final margin of 15 points or more ("blowout wins", "blowout losses" too) | Yes     |
 | `all-around games`  | Undefined — not yet shipped                            | No      |
 | `catch-and-shoot`   | Undefined — not yet shipped                            | No      |
 | `transition scorer` | Undefined — not yet shipped                            | No      |

@@ -347,7 +347,20 @@ _TRAILING_BARE_CEILING = re.compile(
 )
 
 
+# "shooting 50% or better" / "or worse": a percentage bound, not a boolean "or".
+_SHOOTING_OR = re.compile(
+    r"\b(shoots?|shooting|shot)\s+(\d+(?:\.\d+)?|\.\d+)\s*(%|\s+percent)\s+or\s+"
+    r"(?:(better|more|higher|above)|worse|less|lower|below)\b(?!\s+than)"
+)
+
+
 def canonicalize_trailing_ceilings(text: str) -> str:
+    text = _SHOOTING_OR.sub(
+        lambda m: (
+            f"{m.group(1)} {'at least' if m.group(4) else 'at most'} {m.group(2)}{m.group(3)}"
+        ),
+        text,
+    )
     text = _TRAILING_STAT_CEILING.sub(r"\1 \2 or fewer", text)
     return _TRAILING_BARE_CEILING.sub(r"\1 or fewer", text)
 

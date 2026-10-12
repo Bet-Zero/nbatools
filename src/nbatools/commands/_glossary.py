@@ -303,6 +303,8 @@ SUBJECTIVE_TERMS: dict[str, SubjectiveTerm] = {
         shipped=True,
     ),
     "clutch": SubjectiveTerm("Last 5 min of 4th quarter or OT, score within 5"),
+    "close games": SubjectiveTerm("Final margin of 5 points or fewer", shipped=True),
+    "blowouts": SubjectiveTerm("Final margin of 15 points or more", shipped=True),
     "all-around games": SubjectiveTerm("Undefined — not yet shipped"),
     "catch-and-shoot": SubjectiveTerm("Undefined — not yet shipped"),
     "transition scorer": SubjectiveTerm("Undefined — not yet shipped"),
