@@ -113,6 +113,8 @@ def test_a_bound_the_game_board_cannot_apply_refuses(query):
         "best scoring performances in 2023-24 or 2024-25",
         "worst shooting games in the regular season and playoffs",
         "highest scoring games by a team in 2023-24 and 2024-25",
+        "worst shooting games in the regular season and postseason",
+        "best scoring performances in the postseason and regular season",
     ],
 )
 def test_two_season_windows_refuse(query):

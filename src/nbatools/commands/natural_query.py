@@ -7893,8 +7893,8 @@ _LEAGUE_GAME_LIST_RATES = (
 
 
 _BOTH_SEASON_TYPES = re.compile(
-    r"\bregular\s+season\s+(?:and|or|plus|&|,)\s+(?:the\s+)?playoffs?\b"
-    r"|\bplayoffs?\s+(?:and|or|plus|&|,)\s+(?:the\s+)?regular\s+season\b"
+    r"\bregular\s+season\s+(?:and|or|plus|&|,)\s+(?:the\s+)?(?:playoffs?|post[\s-]?season)\b"
+    r"|\b(?:playoffs?|post[\s-]?season)\s+(?:and|or|plus|&|,)\s+(?:the\s+)?regular\s+season\b"
 )
 
 
@@ -7917,8 +7917,7 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     if (
         len(seasons) > 1
         and not re.search(
-            r"\b(?:to|through|thru|until|till|between)\b",
-            tail[seasons[0].start() : seasons[-1].end()] + " " + tail[: seasons[0].start()][-12:],
+            r"\b(?:to|through|thru|until|till|between)\b", tail[: seasons[-1].start()]
         )
     ) or _BOTH_SEASON_TYPES.search(tail):
         # "in 2024-25 and 2025-26", "regular season and playoffs": the parse
