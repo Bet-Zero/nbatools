@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import team_value_mask
+from nbatools.commands.data_utils import score_margin_plus_minus, team_value_mask
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.playoff_history import (
     apply_series_situation_filter,
@@ -95,7 +95,7 @@ def build_result(
             notes=["limit must be greater than 0"],
         )
 
-    frames = [data_read_csv(path) for path in paths.values()]
+    frames = [score_margin_plus_minus(data_read_csv(path)) for path in paths.values()]
     df = frames[0] if len(frames) == 1 else pd.concat(frames, ignore_index=True)
 
     if "opponent_pts" not in df.columns and {

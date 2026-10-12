@@ -2806,6 +2806,10 @@ def _build_parse_state(query: str) -> dict:
     q = canonicalize_sample_phrases(
         _results_against_subject_first(_other_team_clause(_at_team(_over_team(_team_singular(q)))))
     )
+    point_differential = bool(_POINT_DIFFERENTIAL.search(q))
+    # "scoring margin", "point diff": the readers know "point differential"
+    # (team-season boards included).
+    q = _POINT_DIFFERENTIAL_SYNONYMS.sub("point differential", q)
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
     q = _LOSE_TO.sub("lost against", q)
@@ -3423,6 +3427,7 @@ def _build_parse_state(query: str) -> dict:
         "month_rank": month_rank,
         "month_stat": month_stat,
         "month_split_blocked": month_split_blocked,
+        "point_differential": point_differential,
         "opponent_record_list": opponent_record_list,
         "season": season,
         "start_season": start_season,
@@ -8647,11 +8652,15 @@ def _team_singular(q: str) -> str:
 _TEAM_PLAYER_SUBJECT = re.compile(
     r"\b(?:which|what)\s+(?:[a-z0-9.']+\s+){0,2}?players?\b"
     r"|\b(?:by|for|from)\s+an?\s+[a-z0-9.' ]+?\s+player\b"
-    r"|\bplayers?\s+(?:with|who|has|had|have|that)\b"
+    r"|\bplayers?\s+(?:with|who|has|had|have|that|in)\b"
     r"|\bwho\s+(?:has|had|have|leads?|led|scored|recorded|got|made|hit)\b"
     r"|\bleaders?\b|\bleading\b"
 )
 _TEAM_PLAYER_MOST = re.compile(r"\b(?:most|leads?|led|leaders?|leading)\b")
+# "who has the best plus minus on the Lakers", "highest ppg on the Lakers": a
+# per-game board of the team's players (it listed team games or summarized
+# the team). Only with a named stat; "best game" stays a game.
+_TEAM_PLAYER_BEST = re.compile(r"\b(?:best|highest|top)\b")
 _SINGLE_GAME_WORDS = re.compile(
     r"\bin\s+(?:a|one|any)\s+(?:single\s+)?game\b|\bsingle[\s-]game\b|\bgame[\s-]high\b"
 )
@@ -8674,19 +8683,228 @@ _TEAM_PLAYER_CONTEXT_KEYS = (
 )
 
 
+# "Lakers point differential", "scoring margin", "average margin": the
+# team's per-game plus-minus (it ranked games by points).
+_POINT_DIFFERENTIAL = re.compile(
+    r"\b(?:point|points|pt|scoring)\s+(?:differential|diff)\b|\bscoring\s+margin\b"
+    r"|\b(?:average|avg)\s+(?:point\s+)?margin\b(?!\s+of\b)|\bnet\s+points\b"
+)
+_POINT_DIFFERENTIAL_SUMMARY_KEYS = (
+    "season",
+    "start_season",
+    "end_season",
+    "season_type",
+    "team",
+    "player",
+    "opponent",
+    "without_player",
+    "home_only",
+    "away_only",
+    "wins_only",
+    "losses_only",
+    "start_date",
+    "end_date",
+    "last_n",
+    "last_n_scope",
+)
+# A ranking or a game list keeps the game reading ("biggest point
+# differential", "games with a point differential over 20").
+_POINT_DIFFERENTIAL_SYNONYMS = re.compile(
+    r"\b(?:points?|pt)\s+diff\b|\bpoints\s+differential\b|\bscoring\s+(?:margin|differential)\b"
+)
+_POINT_DIFFERENTIAL_GAMES = re.compile(
+    r"\b(?:best|worst|biggest|largest|highest|lowest|top|most|fewest|games?|nights?|"
+    r"which|when|where|times?)\b|\d"
+    # One summary cannot answer a grouping, comparison or rank.
+    r"|\bby\b|\beach\b|\bcompared?\b|\branks?\b|\branking\b|\bvs\.?\s+last\b"
+    r"|\band\s+(?:the\s+)?(?:playoffs|postseason|regular\s+season)\b"
+)
+_SEASON_BOARD_UNREAD_KWARGS = (
+    "home_only",
+    "away_only",
+    "opponent",
+    "wins_only",
+    "losses_only",
+    "last_n",
+    "start_date",
+    "end_date",
+)
+_PLAYER_WORDS = re.compile(r"\bplayers?\b|\bindividual\b")
+# A window the dates did not read ("this month", "until March", "over the
+# last two months", "in the 2025 calendar year"): a season answer would
+# claim it.
+_WINDOW_WORDS = re.compile(
+    r"\b(?:months?|weeks?|days?|until|till|up\s+to|calendar|january|february|march|"
+    r"april|may|june|july|august|september|october|november|december)\b"
+)
+
+
+def _unread_window(parsed: dict, out: dict) -> dict | None:
+    """The refusal when the query names a window no date was read for."""
+    kwargs = dict(out.get("route_kwargs") or {})
+    if (
+        parsed.get("start_date")
+        or parsed.get("end_date")
+        or kwargs.get("start_date")
+        or kwargs.get("end_date")
+        or not _WINDOW_WORDS.search(parsed["normalized_query"])
+    ):
+        return None
+    refused = dict(out)
+    refused["route_kwargs"] = {
+        **kwargs,
+        "unsupported_filters": [*(kwargs.get("unsupported_filters") or []), "date_window"],
+    }
+    return refused
+
+
+def _point_differential_board(parsed: dict, out: dict) -> dict | None:
+    """ "best point differential in the league", "scoring margin leaders": a
+    team board (a team's margin); it ranked players' plus-minus."""
+    if not parsed.get("point_differential") or parsed.get("team") or parsed.get("player"):
+        return None
+    route, kwargs = out.get("route"), dict(out.get("route_kwargs") or {})
+    if route != "season_leaders" or kwargs.get("stat") != "plus_minus":
+        return None
+    q = parsed["normalized_query"]
+    if _PLAYER_WORDS.search(q) or kwargs.get("unsupported_filters"):
+        return None
+    if refused := _unread_window(parsed, out):
+        return refused
+    seasons_board = re.search(r"\bseasons\b", q)
+    ever = re.search(r"\bever\b|\ball[\s-]time\b|\bof\s+all\s+time\b", q)
+    if (seasons_board or ever) and (
+        any(kwargs.get(k) for k in _SEASON_BOARD_UNREAD_KWARGS)
+        or any(parsed.get(k) for k in _TEAM_BOARD_UNREAD_FILTERS)
+    ):
+        # "best point differential ever at home": the team-season board does
+        # not apply the filter, and a players' board is not a differential.
+        refused = dict(out)
+        blocked = list(kwargs.get("unsupported_filters") or [])
+        blocked.append("team_seasons_filter")
+        refused["route_kwargs"] = {**kwargs, "unsupported_filters": blocked}
+        return refused
+    if seasons_board:
+        # "best point differential seasons ever": the team-season board.
+        return None
+    if ever:
+        # "best point differential ever": the best team seasons (a career
+        # board of players' plus-minus is not a point differential).
+        seasons = {
+            "start_season": kwargs.get("start_season"),
+            "end_season": kwargs.get("end_season"),
+            "season_type": kwargs.get("season_type") or "Regular Season",
+            "stat": "plus_minus_per_game",
+            "limit": kwargs.get("limit") or 10,
+            "per_season": True,
+        }
+        if kwargs.get("ascending"):
+            seasons["ascending"] = True
+        result = dict(out)
+        result.update(route="season_team_leaders", route_kwargs=seasons)
+        result["confidence"] = compute_parse_confidence(result)
+        result["alternates"] = generate_alternates(result)
+        return result
+    import inspect
+
+    from nbatools.commands.season_team_leaders import build_result as team_board
+
+    accepted = inspect.signature(team_board).parameters
+    if any(v not in (None, False) for k, v in kwargs.items() if k not in accepted):
+        return None
+    kwargs = {k: v for k, v in kwargs.items() if k in accepted}
+    result = dict(out)
+    result.update(route="season_team_leaders", route_kwargs=kwargs)
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
+    return result
+
+
+def _point_differential_summary(parsed: dict, out: dict) -> dict | None:
+    """ "Lakers point differential" is the season's average margin."""
+    if not parsed.get("point_differential"):
+        return None
+    route, kwargs = out.get("route"), dict(out.get("route_kwargs") or {})
+    target = {
+        "game_finder": "game_summary",
+        "player_game_finder": "player_game_summary",
+        "game_summary": "game_summary",
+        "player_game_summary": "player_game_summary",
+    }
+    # "average margin" and "net points" read no stat or points.
+    if route not in target or kwargs.get("stat") not in (None, "pts", "plus_minus"):
+        return None
+    # Years and a last-N window are the sample, not a game list.
+    q = re.sub(r"\b(?:19|20)\d{2}(?:-\d{2})?\b", "", parsed["normalized_query"])
+    q = re.sub(r"\bper\s+game\b", "", q)
+    if kwargs.get("last_n"):
+        q = re.sub(r"\b(?:last|past|previous)\s+\d+\s+games?\b", "", q)
+    if _POINT_DIFFERENTIAL_GAMES.search(q):
+        return None
+    if refused := _unread_window(parsed, out):
+        return refused
+    extra = {
+        k
+        for k, v in kwargs.items()
+        if v not in (None, False, [], "")
+        and k not in _POINT_DIFFERENTIAL_SUMMARY_KEYS
+        and k not in ("stat", "limit", "sort_by", "ascending")
+    }
+    if extra or kwargs.get("min_value") is not None or kwargs.get("max_value") is not None:
+        return None
+    base = {k: kwargs[k] for k in _POINT_DIFFERENTIAL_SUMMARY_KEYS if k in kwargs}
+    base["stat"] = "plus_minus"
+    result = dict(out)
+    result.update(route=target[route], intent="summary", route_kwargs=base, stat="plus_minus")
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
+    return result
+
+
+# Filters the team-player board does not apply.
+_TEAM_BOARD_UNREAD_FILTERS = (
+    "clutch",
+    "quarter",
+    "half",
+    "nationally_televised",
+    "back_to_back",
+    "rest_days",
+    "one_possession",
+    "without_player",
+    "with_player",
+    "opponent_conference",
+    "opponent_division",
+    "opponent_quality",
+    "last_n",
+    "role",
+    "position_filter",
+    "threshold_conditions",
+)
+
+
 def _team_player_board(parsed: dict, out: dict) -> dict | None:
     team = parsed.get("team")
     if not team or any(parsed.get(k) for k in ("player", "team_a", "team_b", "player_a")):
         return None
     q = parsed["normalized_query"]
-    if not (_TEAM_PLAYER_SUBJECT.search(q) and _TEAM_PLAYER_MOST.search(q)):
+    mentions = [(a, b, t) for a, b, t in _team_mentions(q) if q[a:b] != "min"]
+    # "best plus minus on the Lakers": "on" a team is one of its players.
+    on_team = any(t == team and re.search(r"\bon\s+(?:the\s+)?$", q[:a]) for a, b, t in mentions)
+    if not (_TEAM_PLAYER_SUBJECT.search(q) or on_team):
+        return None
+    best_words = (
+        bool(_TEAM_PLAYER_BEST.search(q))
+        and not _TEAM_PLAYER_MOST.search(q)
+        # "best scoring season by a Lakers player" is one season, not a board.
+        and not re.search(r"\b(?:best|highest|top)\s+(?:\w+\s+)?seasons?\b", q)
+    )
+    if not (_TEAM_PLAYER_MOST.search(q) or best_words):
         return None
     if re.search(r"\b(?:lead(?:s|ing)?|led)\s+the\s+(?:league|nba)\b", q) and not re.search(
         r"\bplayers?\b|\bwho\b", q
     ):
         # "are the Lakers leading the league in rebounds": the team's rank.
         return None
-    mentions = [(a, b, t) for a, b, t in _team_mentions(q) if q[a:b] != "min"]
     others = {t for a, b, t in mentions if t != team}
     if others - {parsed.get("opponent")} or not any(
         t == team
@@ -8701,10 +8919,29 @@ def _team_player_board(parsed: dict, out: dict) -> dict | None:
         return None
     if _TEAM_PLAYER_UNREAD.search(q):
         return None
-    single_game = bool(_SINGLE_GAME_WORDS.search(q))
+    if best_words and (
+        any(parsed.get(key) for key in _TEAM_BOARD_UNREAD_FILTERS)
+        # "in close games", "in his last 10 games": a sample the board may not
+        # apply.
+        or re.search(r"\bgames\b", q)
+    ):
+        # "who has the best plus minus on the Lakers in the clutch / without
+        # LeBron / against the West": the board would drop the filter.
+        return None
+    single_game = bool(_SINGLE_GAME_WORDS.search(q)) or (
+        # "which Lakers player had the highest scoring game": one game ("last
+        # 10 games" and "close games" are samples).
+        best_words
+        and not parsed.get("last_n")
+        and bool(re.search(r"(?<!\bper\s)\b(?:game|night|performance)\b", q))
+    )
     route, kwargs = out.get("route"), dict(out.get("route_kwargs") or {})
     if kwargs.get("unsupported_filters"):
         return None
+    if refused := _unread_window(parsed, out):
+        # "who has the most points on the Lakers until March": the board
+        # would answer the season.
+        return refused
     if route == "player_occurrence_leaders":
         if kwargs.get("team"):
             return None
@@ -8715,9 +8952,15 @@ def _team_player_board(parsed: dict, out: dict) -> dict | None:
     if route not in ("game_finder", "game_summary"):
         return None
     event = {} if single_game else parsed.get("occurrence_event") or {}
+    if best_words and (
+        event or not kwargs.get("stat") or kwargs.get("stat") in LOWER_IS_BETTER_STATS
+    ):
+        # "best" ranks a stat the board sorts high-to-low; counts of games
+        # and turnovers are left as they were.
+        return None
     base = {key: kwargs.get(key) for key in _TEAM_PLAYER_CONTEXT_KEYS if key in kwargs}
     base["team"] = team
-    base["limit"] = 10
+    base["limit"] = parsed.get("top_n") or 10
     if event.get("special_event"):
         new_route = "player_occurrence_leaders"
         base["special_event"] = event["special_event"]
@@ -9361,6 +9604,11 @@ def _finalize_route(parsed: dict) -> dict:
     team_board = _team_player_board(parsed, out)
     if team_board is not None:
         return team_board
+    differential = _point_differential_summary(parsed, out) or _point_differential_board(
+        parsed, out
+    )
+    if differential is not None:
+        return differential
     if parsed.get("player") and (
         _DECADE_SUPERLATIVE.search(parsed["normalized_query"])
         or re.search(r"\bby\s+decade\b|\bwhich\s+decade\b", parsed["normalized_query"])

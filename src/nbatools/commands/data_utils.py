@@ -1117,11 +1117,37 @@ def resolve_opponent_quality_tokens(
     return tokens
 
 
+def score_margin_plus_minus(df: pd.DataFrame) -> pd.DataFrame:
+    """A team's plus-minus is its final margin: its points minus the other
+    team's in the same game.
+
+    The source column disagrees with the score in some games (fractional
+    values, a wrong sign: 2021-22 to 2023-24 hold 9 to 20 such rows a
+    season), so the margin comes from the two rows' points where both are
+    present; a game without both rows keeps the stored value.
+    """
+    if not {"game_id", "pts", "plus_minus"} <= set(df.columns) or df.empty:
+        return df
+    pts = pd.to_numeric(df["pts"], errors="coerce")
+    games = df["game_id"]
+    rows = games.map(games.value_counts())
+    game_pts = pts.groupby(games).transform("sum")
+    margin = pts - (game_pts - pts)
+    usable = (rows == 2) & pts.notna() & pts.groupby(games).transform("count").eq(2)
+    team_key = next((c for c in ("team_id", "team_abbr") if c in df.columns), None)
+    if team_key is not None:
+        # Two rows of one team (its opponent's missing) are not a game's score.
+        usable &= df[team_key].groupby(games).transform("nunique").eq(2)
+    out = df.copy()
+    out["plus_minus"] = margin.where(usable, pd.to_numeric(df["plus_minus"], errors="coerce"))
+    return out
+
+
 def _load_team_games_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:
     def load() -> pd.DataFrame:
         safe = normalize_season_type(season_type)
         path = f"data/raw/team_game_stats/{season}_{safe}.csv"
-        df = data_read_csv(path)
+        df = score_margin_plus_minus(data_read_csv(path))
         return add_advanced_pct_columns(df)
 
     return FRAME_CACHE.get_or_load(
@@ -1152,7 +1178,7 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
         if not data_exists(team_stats_path):
             raise FileNotFoundError(f"Missing team stats file: {team_stats_path}")
 
-        team_stats = data_read_csv(team_stats_path)
+        team_stats = score_margin_plus_minus(data_read_csv(team_stats_path))
         # The team's final margin rides along for "games the Lakers won by 10+".
         team_columns = ["game_id", "team_id", "wl"]
         if "plus_minus" in team_stats.columns:

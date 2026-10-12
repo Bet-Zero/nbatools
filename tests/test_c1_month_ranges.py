@@ -155,6 +155,8 @@ def test_since_a_season_through_a_date_is_one_window(query, end):
     [
         ("Lakers record in the month of March", "2026-03-01", "2026-03-31"),
         ("LeBron points per game during the month of March", "2026-03-01", "2026-03-31"),
+        ("Lakers record for the month of March", "2026-03-01", "2026-03-31"),
+        ("LeBron points over the month of March", "2026-03-01", "2026-03-31"),
         ("Lakers record in the months of January and February", "2026-01-01", "2026-02-28"),
     ],
 )
