@@ -605,18 +605,34 @@ _OPPONENT_SUBJECT = re.compile(
 )
 
 
+# "... and they shoot 50%", "... and opponents shoot 50%": a joined clause
+# with its own subject.
+_JOINED_SUBJECT = re.compile(
+    r"\b(?:and|but|while)\s+(?:(?P<own>they|he|we|she|the\s+team)"
+    r"|(?P<opp>(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?)))\b"
+)
+
+
 def _opponent_subject(before: str, team: str | None) -> bool:
     """The clause before "and" is led by the opponent, not the team."""
     starts = list(_CLAUSE_START.finditer(before))
     if not starts:
         return False
     clause = before[starts[-1].end() :]
+    joined = list(_JOINED_SUBJECT.finditer(clause))
+    if joined:
+        return bool(joined[-1].group("opp"))
     if _OPPONENT_SUBJECT.match(clause):
         return True
     from nbatools.commands._matchup_utils import detect_team_in_text
 
     named = detect_team_in_text(" ".join(clause.split()[:3]))
-    return bool(named and named != team)
+    if not named:
+        return False
+    # "Lakers record when the Celtics shoot 50%": the parse may have taken
+    # the clause's team as the subject; the team named first is.
+    first = detect_team_in_text(before[: starts[-1].start()])
+    return named != (first or team)
 
 
 def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) -> None:
