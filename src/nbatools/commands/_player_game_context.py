@@ -589,6 +589,7 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _refuse_unread_held_to(route, route_kwargs, text)
     _refuse_game_clock(route, route_kwargs, text)
     _refuse_other_player_stat(route, route_kwargs, text)
+    _refuse_team_shooting(route, route_kwargs, text)
     _refuse_any_player_stat(route, route_kwargs, text)
     _apply_shooting_with_events(route, route_kwargs, text)
     _apply_ranked_events(route, route_kwargs, text)
@@ -691,6 +692,32 @@ def _refuse_any_player_stat(route: str | None, route_kwargs: dict, text: str) ->
     blocked = list(route_kwargs.get("unsupported_filters") or [])
     if "any_player_stat" not in blocked:
         route_kwargs["unsupported_filters"] = [*blocked, "any_player_stat"]
+
+
+# "LeBron games vs Celtics when the Celtics shoot 50%": a team's shooting
+# rate, which filtered the player's own. Player rows do not carry the team
+# rates, so refuse.
+_TEAM_SHOOTING = re.compile(
+    r"\b(?:when|if|while|whenever|where|and|but)\s+(?:the\s+|his\s+)?"
+    r"(?P<name>[a-z.']+(?:\s+[a-z.']+)?)\s+(?:shoots?|shot|shooting)\b"
+)
+_TEAM_SHOOTING_SUBJECTS = frozenset(
+    {"they", "team", "opponents", "opponent", "other team", "opposing team", "teams"}
+)
+
+
+def _refuse_team_shooting(route: str | None, route_kwargs: dict, text: str) -> None:
+    if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
+        return
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    for m in _TEAM_SHOOTING.finditer(text):
+        name = m.group("name")
+        if name in _TEAM_SHOOTING_SUBJECTS or detect_team_in_text(name):
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "team_shooting" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "team_shooting"]
+            return
 
 
 _BARE_OWN_CLAUSE = re.compile(

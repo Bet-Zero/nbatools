@@ -142,3 +142,26 @@ def test_player_vs_team_when_that_team_scores(query):
     # The clause's team is his opponent, not his team.
     wins, losses, _ = _record(query)
     assert (wins, losses) == (1, 3)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # A team's shooting rate is not the player's own (it filtered his).
+        "LeBron James games vs Celtics when Boston shoots 50%",
+        "LeBron James games vs Celtics when the Celtics shoot 50%",
+        "LeBron James games vs Celtics when the Celtics shoot 50% and score 120",
+        "LeBron James games when the Lakers shoot 50%",
+    ],
+)
+def test_team_shooting_on_player_games_refuses(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    "query", ["LeBron James games when he shoots 50%", "LeBron James games when LeBron shoots 50%"]
+)
+def test_his_own_shooting_still_answers(query):
+    assert execute_natural_query(query).result_status == "ok"
