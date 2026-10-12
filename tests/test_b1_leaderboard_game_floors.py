@@ -60,6 +60,13 @@ def test_opponent_and_window_samples_keep_their_three_game_floor():
     assert _kept([3, 3, 2, 1], "pts_per_game", date_window_active=True) == [3, 3]
 
 
+def test_samples_where_nobody_reaches_the_floor_still_rank():
+    # Two meetings with one opponent: nobody has three games; half the most
+    # games (one) qualifies instead of an empty board.
+    assert _kept([2, 2, 1], "pts_per_game", opponent_active=True) == [1, 2, 2]
+    assert _kept([1, 1], "pts_per_game", date_window_active=True) == [1, 1]
+
+
 def test_playoff_samples_keep_their_floor():
     assert _kept([6, 5, 3, 2], "pts_per_game", season_type="Playoffs") == [5, 6]
 

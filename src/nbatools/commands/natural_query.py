@@ -2323,8 +2323,60 @@ _AT_OPPONENT_LEAD = re.compile(
 )
 
 
+# "which Laker scored the most points in Boston": a team's games in another
+# team's city are road games there. Only a city name after a team subject
+# ("LeBron points in Miami" may mean his Miami years; "in Lakers wins" is a
+# team, and Los Angeles is two teams).
+_IN_LEAD = re.compile(r"\bin\s+$")
+_NOT_A_VENUE = re.compile(
+    r"\b(?:born|drafted|traded|raised|grew\s+up|signed|started|career|bubble|moved|relocated)\b"
+)
+_IN_CITIES = frozenset(
+    {
+        "atlanta", "boston", "brooklyn", "charlotte", "chicago", "cleveland", "dallas",
+        "denver", "detroit", "golden state", "houston", "indiana", "memphis", "miami",
+        "milwaukee", "minnesota", "new orleans", "new york", "oklahoma city", "orlando",
+        "philadelphia", "philly", "phoenix", "portland", "sacramento", "san antonio",
+        "toronto", "utah", "washington",
+    }
+)  # fmt: skip
+
+
 # Team words that are also other words: "at min 30", "at was".
 _AT_SKIP = frozenset({"la", "min", "was"})
+
+
+# "who led the Lakers in scoring over the Celtics", "LeBron points over the
+# Celtics": "over" another team is the opponent (the Celtics became the
+# subject). A number after "over" is a threshold and is never a team.
+_OVER_LEAD = re.compile(r"\bover\s+(?:the\s+)?$")
+_OVER_SPAN_AFTER = re.compile(
+    r"(?:'s?|s')|\s+(?:last|past|previous|first|next|recent|most\s+recent|\d|season|seasons|"
+    r"stretch|run|span|schedule|games)\b"
+)
+
+
+def _over_team(q: str) -> str:
+    from nbatools.commands._matchup_utils import detect_player
+
+    for start, end, team in reversed(_team_mentions(q)):
+        lead = _OVER_LEAD.search(q[:start])
+        if not lead or q[start:end] in _AT_SKIP or _OVER_SPAN_AFTER.match(q, end):
+            # "over the Lakers' last 10 games", "over the Lakers season": a
+            # span of games, not an opponent; "the over was hit" is a bet.
+            continue
+        before = q[: lead.start()]
+        subjects = {t for _s, _e, t in _team_mentions(before)}
+        player = detect_player(before)
+        if player and _player_latest_team(player) == team:
+            # "LeBron points over the Lakers ...": his own team.
+            continue
+        if team in subjects or not (subjects or player):
+            # "Celtics over the Celtics", or no subject ("wins over Boston"
+            # alone is read as before).
+            continue
+        q = f"{before}against {q[lead.start() + len('over') :].lstrip()}"
+    return q
 
 
 def _at_team(q: str) -> str:
@@ -2335,6 +2387,9 @@ def _at_team(q: str) -> str:
 
     for start, end, team in reversed(_team_mentions(q)):
         at = _AT_LEAD.search(q[:start])
+        in_city = None
+        if not at and q[start:end] in _IN_CITIES:
+            at = in_city = _IN_LEAD.search(q[:start])
         if not at or q[start:end] in _AT_SKIP:
             continue
         before = q[: at.start()].rstrip()
@@ -2353,6 +2408,9 @@ def _at_team(q: str) -> str:
         subjects = [t for s, t in named if not _AT_OPPONENT_LEAD.search(before[:s])]
         opponents = [t for s, t in named if _AT_OPPONENT_LEAD.search(before[:s])]
         player = detect_player(before)
+        if in_city and (player or not subjects or _NOT_A_VENUE.search(q)):
+            # "drafted in Boston", "the Orlando bubble": not games there.
+            continue
         if player and _OTHER_SEASON_WORDS.search(q):
             # "Butler averages at Miami in 2023-24": his team then is not read.
             continue
@@ -2735,7 +2793,7 @@ def _build_parse_state(query: str) -> dict:
         )
     )
     q = canonicalize_sample_phrases(
-        _results_against_subject_first(_other_team_clause(_at_team(_team_singular(q))))
+        _results_against_subject_first(_other_team_clause(_at_team(_over_team(_team_singular(q)))))
     )
     q, opponent_record_list = _who_beat(q)
     q = _BEAT_VERB.sub("won against", q)
