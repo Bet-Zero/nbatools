@@ -2663,6 +2663,15 @@ def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     without_player = _clean_text(metadata.get("without_player"))
     context = f" without {without_player}" if without_player else ""
     ppg = f", averaging {_format_one_decimal(pts_avg)} PPG" if pts_avg is not None else ""
+    margin = _series_float(row, "plus_minus_avg")
+    if metadata.get("stat") == "plus_minus" and margin is not None:
+        # "Lakers point differential": the average margin is the answer.
+        if round(margin, 1) > 0:
+            ppg = f", outscoring opponents by {margin:.1f} points per game"
+        elif round(margin, 1) < 0:
+            ppg = f", outscored by {-margin:.1f} points per game"
+        else:
+            ppg = ", with an even point differential"
     metadata["answer_phrase"] = f"{team} are {wins}-{losses} in {games} {game_word}{context}{ppg}."
 
 

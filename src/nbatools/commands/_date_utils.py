@@ -372,12 +372,13 @@ _MONTH_ONLY_RANGE = re.compile(
     rf"|(?:\bfrom\s+|\b){_MONTH_WORDS}{_Y}\s*(?:to|through|thru|-))"
     rf"\s*{_MONTH_WORDS}{_Y}\b(?!\s*\d)"
 )
-# "in the month of March" is "in March".
+# "in the month of March" is "in March", as are "for / over the month of".
 _MONTH_OF = r"(?:the\s+months?\s+of\s+)?"
+_IN_MONTH = rf"\b(?:(?:in|during)\s+{_MONTH_OF}|(?:for|over)\s+the\s+months?\s+of\s+)"
 # "in January and February": both months; adjacent months are one span.
 _MONTH_SEP = r"(?:\s*,\s*(?:and\s+|&\s+)?|\s+(?:and|&)\s+)"
 _MONTH_PAIR = re.compile(
-    rf"\b(?:in|during)\s+{_MONTH_OF}{_MONTH_WORDS}(?:{_MONTH_SEP}{_MONTH_WORDS})+"
+    rf"{_IN_MONTH}{_MONTH_WORDS}(?:{_MONTH_SEP}{_MONTH_WORDS})+"
     r"(?:\s+((?:19|20)\d{2})(?!-\d))?\b(?!\s*\d)"
 )
 _MONTH_WORD_RE = re.compile(_MONTH_WORDS)
@@ -476,7 +477,7 @@ _TWO_SEASONS = re.compile(rf"{_SEASON_WORD}\s*,?\s*(?:and|&|or)\s+(?:the\s+)?{_S
 # "in March vs April", "in March or April": two months to compare or choose
 # between, not one window (it read March alone).
 _MONTH_VERSUS = re.compile(
-    rf"\b(?:in|during)\s+{_MONTH_OF}{_MONTH_WORDS}{_Y}\s*,?\s+"
+    rf"{_IN_MONTH}{_MONTH_WORDS}{_Y}\s*,?\s+"
     rf"(?:vs\.?|versus|compared\s+(?:to|with)|against|or)\s+(?:(?:in|during)\s+)?"
     rf"{_MONTH_OF}{_FULL_MONTHS}\b"
 )
@@ -603,9 +604,7 @@ def extract_date_range(
         start = f"{year}-{month_num:02d}-01"
         return start, None
 
-    m = re.search(
-        rf"\b(?:in|during)\s+{_MONTH_OF}({month_pattern})(?:\s+((?:19|20)\d{{2}}))?\b", text
-    )
+    m = re.search(rf"{_IN_MONTH}({month_pattern})(?:\s+((?:19|20)\d{{2}}))?\b", text)
     if m:
         month_num = MONTH_NAME_TO_NUM[m.group(1)]
         year = (

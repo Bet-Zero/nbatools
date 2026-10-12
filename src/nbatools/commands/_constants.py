@@ -272,6 +272,13 @@ STAT_ALIASES: dict[str, str] = {
     "plus/minus": "plus_minus",
     "plus_minus": "plus_minus",
     "+/-": "plus_minus",
+    # A team's plus-minus is its point differential ("Lakers point
+    # differential" is the average margin, not points).
+    "point differential": "plus_minus",
+    "points differential": "plus_minus",
+    "point diff": "plus_minus",
+    "scoring differential": "plus_minus",
+    "scoring margin": "plus_minus",
     # Final margins; margin phrases are rewritten to these forms ("won by
     # 10+" -> "won at 10+ win margin", "decided by 3 or fewer" -> "at 3 or
     # fewer game margin").
