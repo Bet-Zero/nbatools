@@ -67,3 +67,49 @@ def test_unread_any_player_clauses_refuse(query):
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Two clauses, one player's joined line, or a subject it cannot place:
+        # a per-team best per stat cannot read these.
+        "Lakers record when someone scores 30 and someone has 15 rebounds",
+        "Lakers record when someone scores 30, someone has 15 rebounds",
+        "Lakers record when someone scores 30 and has 15 rebounds",
+        "Lakers record when someone scores 30 and 10 rebounds",
+        "Lakers record when a player has 30 points and 10 rebounds",
+        "Lakers record when an opposing player scores 40",
+        "Lakers record when nobody scores 30",
+    ],
+)
+def test_unread_any_player_combinations_refuse(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        ("Lakers record when they score 120 and someone scores 30", (13, 0)),
+        ("Lakers record when someone scores 30 and they score 120", (13, 0)),
+        ("Lakers record when someone scores 30 and opponents score 120", (2, 2)),
+        ("LAL record when a Lakers player scores 40", (2, 0)),
+    ],
+)
+def test_any_player_beside_team_clauses(query, record):
+    assert _record(query) == record
+
+
+def test_missing_player_rows_are_no_data(tmp_path, monkeypatch):
+    import shutil
+    from pathlib import Path
+
+    root = tmp_path / "fx"
+    shutil.copytree(Path("qa/fixtures/query_engine_sample"), root)
+    (root / "data/raw/player_game_stats/2024-25_regular_season.csv").unlink()
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root))
+    result = execute_natural_query("Lakers record when someone scores 30 since 2023-24")
+    assert result.result_status == "no_result"
+    assert result.result_reason == "no_data"

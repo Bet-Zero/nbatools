@@ -194,22 +194,26 @@ def attach_top_player_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
     needed = {"game_id", "team_id", "season", "season_type"}
     if not names or df.empty or not needed.issubset(df.columns):
         return df
-    from nbatools.commands.data_utils import load_player_games_for_seasons
+    from nbatools.commands.data_utils import (
+        data_exists,
+        load_player_games_for_seasons,
+        normalize_season_type,
+    )
 
     bases = [n[len("top_player_") :] for n in names]
     frames = []
     for season_type, part in df.groupby("season_type"):
         seasons = sorted(str(s) for s in part["season"].dropna().unique())
-        try:
-            players = load_player_games_for_seasons(seasons, str(season_type))
-        except FileNotFoundError:
-            continue
+        safe = normalize_season_type(str(season_type))
+        missing = [
+            s for s in seasons if not data_exists(f"data/raw/player_game_stats/{s}_{safe}.csv")
+        ]
+        if missing:
+            # A season without player rows would silently drop its games.
+            raise FileNotFoundError(f"No player_game_stats for {', '.join(missing)}")
+        players = load_player_games_for_seasons(seasons, str(season_type))
         frames.append(players[["game_id", "team_id", *bases]])
     out = df.copy()
-    if not frames:
-        for name in names:
-            out[name] = float("nan")
-        return out
     players = pd.concat(frames, ignore_index=True)
     for base in bases:
         players[base] = pd.to_numeric(players[base], errors="coerce")
