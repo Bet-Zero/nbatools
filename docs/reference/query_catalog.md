@@ -183,6 +183,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - `25+ points`
 - `5+ threes`
 - reverse phrasing for some stats: `ts% over .600`, `efg% under .500`
+- opponent shooting on team game lists and counts: `games where the opponent shot under 45 percent`, `opponents shot over 50% from three`, `under 75 percent from the line / the stripe`, `held opponents to under 47.5 percent shooting` (no operator after `held` is a ceiling); team records and player game lists refuse, as do a second clause with no new subject (`... and scored under 100`, `..., 35 percent from three`) and an unknown area (`from the corner`)
 - opponent-points defensive thresholds: `held opponents under 100 points`, `held teams under 100`, `held teams to under 100 points`, `held them to under 100 points`, `limited opponents to under 100 points`, `kept the other team below 100 points`, `allowed under 100 points`, `allow fewer than 110 points`, `points allowed under 110`, `opponent points under 110`, `opp pts under 110`, `gave up under 100`, `gave up fewer than 100 points`
 - clear shooting percentage thresholds normalize to the stored 0.xx scale: `shoots under 40%`, `shoots below 40 percent`, `FG% under 40%`, `field goal percentage below 40%`, `shoots under .400`, `3PT% over 40%`, `from three over 40%`, `FT% under 80%`
 
