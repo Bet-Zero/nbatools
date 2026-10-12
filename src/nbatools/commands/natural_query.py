@@ -7535,7 +7535,19 @@ _LEAGUE_LIST_UNREAD = re.compile(
 _LEAGUE_LIST_BOUND_TAIL = re.compile(
     r"\s*(?:\+|\s+or\s+(?:more|fewer|less))?\s*(?:points?|pts|rebounds?|reb|assists?|ast|"
     r"threes?|3s|3pm|turnovers?|tov|minutes?|mins?|steals?|stl|blocks?|blk|fouls?|"
-    r"made\s+threes|free\s+throws?|field\s+goals?)\b|\s+or\s+more\b"
+    r"made\s+threes|free\s+throws?|field\s+goals?|(?:(?:win|game|loss)\s+)?margin)\b|\s+or\s+more\b"
+)
+# Seasons and dates in a league game list's tail.
+_LEAGUE_LIST_DATES = re.compile(
+    r"\b(?:19|20)\d\d\s*[-/]\s*(?:(?:19|20)?\d\d)\b(?:[-/]\d\d\b)?"
+    r"|\b\d{1,2}/\d{1,2}(?:/\d{2,4})?\b"
+    r"|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b"
+)
+# Player groups a league game list has no filter for.
+_LEAGUE_LIST_GROUP = re.compile(
+    r"\b(?:for|among|from|of)\s+(?:the\s+)?(?:top\s+)?(?:\d+\s+)?(?:leading\s+)?"
+    r"(?:scorers|shooters|rebounders|passers|all[\s-]?stars|stars|starters?\s+only|veterans|"
+    r"mvps?|superstars)\b"
 )
 # Routes a league-wide "best shooting games" question lands on.
 _LEAGUE_GAME_LIST_ROUTES = frozenset({"season_leaders", "season_team_leaders", "top_player_games"})
@@ -7627,6 +7639,17 @@ def _team_game_list(parsed: dict, out: dict) -> dict | None:
     return rerouted
 
 
+def _league_game_list_refusal(parsed: dict) -> dict:
+    # The board under it would answer a different question (season points).
+    refused = _single_season_refusal(parsed)
+    refused["route_kwargs"]["unsupported_filters"] = ["league_game_list_unread"]
+    refused["notes"] = [
+        "unsupported_boundary: league game lists rank every player's games; a group or "
+        'number they do not read ("the top 10 scorers", "with 20 shots") is not applied'
+    ]
+    return refused
+
+
 def _player_game_list(parsed: dict, out: dict) -> dict | None:
     """ "Curry best 3 point shooting game": that player's games, best first.
 
@@ -7714,6 +7737,33 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             # "in the last 10 games" means each player's last games, which a
             # league game list cannot apply.
             return None
+        head = _PLAYER_GAME_LIST.search(q)
+        # Seasons, dates and percent bounds are read by the parse already.
+        plain = _LEAGUE_LIST_DATES.sub(lambda m: " " * len(m.group(0)), q)
+        plain = _GAME_LIST_PERCENT_BOUND.sub(lambda m: " " * len(m.group(0)), plain)
+        if route_kwargs.get("series_situation") or parsed.get("series_situation"):
+            # "in game 7", "when up 3-1": the series situation reads them.
+            plain = re.sub(
+                r"\bgames?\s+[1-7]\b|\b[0-4]\s*-\s*[0-4]\b",
+                lambda m: " " * len(m.group(0)),
+                plain,
+            )
+        for number in re.finditer(r"\b\d+(?:\.\d+)?\b", plain):
+            if re.fullmatch(r"(?:19|20)\d\d", number.group(0)) or (
+                head and number.end() <= head.end()
+            ):
+                # A year, or the list's own count ("top 5 shooting games").
+                continue
+            if not _LEAGUE_LIST_BOUND_TAIL.match(plain, number.end()) and not re.match(
+                r"(?:st|nd|rd|th)\b|\s+(?:seasons?|years?|days?|weeks?|months?)\b",
+                plain[number.end() :],
+            ):
+                # "for the top 10 scorers": a number no filter reads.
+                return _league_game_list_refusal(parsed)
+        if _LEAGUE_LIST_GROUP.search(q):
+            # "for the top scorers", "among all-stars": a group the list does
+            # not filter.
+            return _league_game_list_refusal(parsed)
         for key in ("unsupported_filters", "leaderboard_eligibility", "min_games", "per_season"):
             route_kwargs.pop(key, None)
         if parsed.get("min_value") is not None or parsed.get("max_value") is not None:
@@ -7818,6 +7868,206 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
     whose = f"{player}'s games" if player else "every player's games"
     rerouted["notes"] = list(out.get("notes") or []) + [f"game_list: {whose} ranked by {stat}"]
     return rerouted
+
+
+# "worst free throw shooting games since 2020", "top 5 shooting performances
+# this season", "best shooting games by a team": single-game lists the base
+# parse could not map, or mapped to a season board.
+_LEAGUE_GAME_LIST_FRAME = re.compile(
+    r"^(?:(?:what|which)\s+(?:are|were)\s+)?(?:the\s+)?(?:nba\s+)?"
+    r"(?P<dir>best|worst|top|highest|lowest|greatest)(?:\s+(?P<n>\d{1,2}))?\s+"
+    r"(?:(?P<team>team)\s+)?"
+    r"(?:(?P<rate>free[\s-]?throw|ft|three[\s-]?point|3[\s-]?(?:point|pt)|true|"
+    r"effective(?:\s+field[\s-]goal)?|field[\s-]goal)\s+)?"
+    r"(?P<what>shooting|scoring|rebounding|assist|passing)\s+"
+    r"(?P<noun>games|performances|nights|outings)\b"
+    r"(?:\s+(?:by|from|for)\s+an?\s+(?P<by>team|player))?"
+)
+_LEAGUE_GAME_LIST_RATES = (
+    (r"free|ft", "ft_pct"),
+    (r"three|3", "fg3_pct"),
+    (r"true", "ts_pct"),
+    (r"effective", "efg_pct"),
+    (r"field", "fg_pct"),
+)
+
+
+_BOTH_SEASON_TYPES = re.compile(
+    r"\bregular\s+season\s+(?:and|or|plus|&|,)\s+(?:the\s+)?(?:playoffs?|post[\s-]?season)\b"
+    r"|\b(?:playoffs?|post[\s-]?season)\s+(?:and|or|plus|&|,)\s+(?:the\s+)?regular\s+season\b"
+)
+
+
+def _league_game_list_frame(parsed: dict) -> dict | None:
+    """A league-wide single-game list in a wording the base parse misses.
+
+    The question is answered as the canonical "best shooting games ..." with
+    the same tail, so every filter in the tail goes through that list's
+    guards; then the rate, the direction and the row count asked for are set.
+    """
+    q = parsed["normalized_query"]
+    match = _LEAGUE_GAME_LIST_FRAME.match(q)
+    if match is None or parsed.get("player") or parsed.get("team"):
+        return None
+    if parsed.get("game_list_reparse"):
+        # The canonical wording is answered as it stands.
+        return None
+    tail = q[match.end() :]
+    seasons = list(re.finditer(r"\b(?:19|20)\d\d(?:\s*-\s*\d\d)?\b", tail))
+    if (
+        len(seasons) > 1
+        and not re.search(
+            r"\b(?:to|through|thru|until|till|between)\b", tail[: seasons[-1].start()]
+        )
+    ) or _BOTH_SEASON_TYPES.search(tail):
+        # "in 2024-25 and 2025-26", "regular season and playoffs": the parse
+        # keeps one of them.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["two_season_windows"]
+        refused["notes"] = [
+            "unsupported_boundary: a game list covers one season, one span or one season "
+            'type; ask for each, or a range ("from 2023-24 to 2025-26")'
+        ]
+        return refused
+    team = bool(match.group("team")) or match.group("by") == "team"
+    what = match.group("what")
+    rate = match.group("rate")
+    if what == "shooting":
+        stat = next(
+            (stat for pattern, stat in _LEAGUE_GAME_LIST_RATES if rate and re.match(pattern, rate)),
+            "fg_pct",
+        )
+    elif rate:
+        return None
+    elif not team:
+        # "best scoring performances": the scoring game board with games for
+        # performances; "best scoring games" already reaches it.
+        if match.group("noun") == "games":
+            return None
+        canonical = q[: match.start("noun")] + "games" + q[match.end("noun") :]
+        out = _reparsed_as(parsed, canonical)
+        return _counting_game_list(parsed, out, "top_player_games", what)
+    else:
+        # "highest scoring games by a team": the team game board, in the
+        # wording it reads.
+        if _wants_top_team_games(q):
+            return None
+        count = f" {match.group('n')}" if match.group("n") else ""
+        noun = "assist" if what == "passing" else what
+        canonical = f"{match.group('dir')}{count} team {noun} games" + q[match.end() :]
+        out = _reparsed_as(parsed, canonical)
+        return _counting_game_list(parsed, out, "top_team_games", what)
+    canonical = "best shooting games" + tail
+    if canonical == q:
+        return None
+    out = _reparsed_as(parsed, canonical)
+    if out is None or out.get("route") != "player_game_finder":
+        return None
+    if not any("every player's games" in note for note in out.get("notes") or []):
+        return None
+    kwargs = dict(out["route_kwargs"])
+    if stat != "fg_pct" and any(
+        condition.get("stat") in _RATE_STATS for condition in kwargs.get("conditions") or []
+    ):
+        # "best free throw shooting games over 90%": the bound was read as FG%.
+        return None
+    kwargs.update(
+        stat=stat,
+        ascending=match.group("dir") in ("worst", "lowest"),
+        limit=int(match.group("n") or 10),
+    )
+    whose = "every player's games"
+    if team:
+        from inspect import signature
+
+        from nbatools.commands.game_finder import build_result as team_finder
+
+        accepted = set(signature(team_finder).parameters)
+        if any(
+            value not in (None, False, "", [], (), {})
+            for key, value in kwargs.items()
+            if key not in accepted
+        ):
+            # "best shooting games by a team in the clutch": a filter team
+            # games cannot apply; the season board would drop "games".
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["team_game_list_filter"]
+            refused["notes"] = [
+                "unsupported_boundary: league team game lists take seasons, dates, "
+                "home/road, wins/losses and the opponent; this one adds a filter team "
+                "games cannot apply"
+            ]
+            return refused
+        kwargs = {key: value for key, value in kwargs.items() if key in accepted}
+        out["route"] = "game_finder"
+        whose = "every team's games"
+    out["route_kwargs"] = kwargs
+    out.update(stat=stat, min_value=kwargs.get("min_value"))
+    out["notes"] = [note for note in out.get("notes") or [] if not note.startswith("game_list:")]
+    out["notes"].append(f"game_list: {whose} ranked by {stat}")
+    return out
+
+
+_LEAGUE_GAME_LIST_COUNTS = {
+    "scoring": "pts",
+    "rebounding": "reb",
+    "assist": "ast",
+    "passing": "ast",
+}
+
+
+def _counting_game_list(parsed: dict, out: dict | None, route: str, what: str) -> dict | None:
+    """The reparsed counting list, when it ranks the stat the words name."""
+    if out is None:
+        return None
+    kwargs = out.get("route_kwargs") or {}
+    if kwargs.get("unsupported_filters"):
+        # Already a refusal that names its own reason ("by rookies").
+        return out
+    if out.get("route") != route:
+        return None
+    if any(
+        value is not None
+        for value in (
+            out.get("min_value"),
+            out.get("max_value"),
+            kwargs.get("min_value"),
+            kwargs.get("max_value"),
+        )
+    ):
+        # "best scoring performances over 40 points": the game board ranks
+        # but does not filter by a bound.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["game_list_bound_unapplied"]
+        refused["notes"] = [
+            "unsupported_boundary: this game list ranks one stat; a bound such as "
+            '"over 40 points" is not applied to it'
+        ]
+        return refused
+    if kwargs.get("stat") != _LEAGUE_GAME_LIST_COUNTS[what]:
+        # "best scoring performances in wins by 20 or more": the margin took
+        # the ranked stat and its bound was lost.
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["game_list_stat_conflict"]
+        refused["notes"] = [
+            "unsupported_boundary: this game list ranks one stat; a margin or second "
+            "stat beside it is not applied as a filter"
+        ]
+        return refused
+    return out
+
+
+def _reparsed_as(parsed: dict, canonical: str) -> dict | None:
+    state = _build_parse_state(canonical)
+    state["game_list_reparse"] = True
+    try:
+        out = _finalize_route(state)
+    except ValueError:
+        return None
+    out = dict(out)
+    out.pop("game_list_reparse", None)
+    out["normalized_query"] = parsed["normalized_query"]
+    return out
 
 
 # Short decades ("the 90s", "the '80s") are already four digits here.
@@ -9589,6 +9839,9 @@ def _finalize_route(parsed: dict) -> dict:
     record_bar = _team_record_bar_board(parsed)
     if record_bar is not None:
         return record_bar
+    game_list = _league_game_list_frame(parsed)
+    if game_list is not None:
+        return game_list
     try:
         out = _finalize_route_inner(parsed)
     except ValueError:
