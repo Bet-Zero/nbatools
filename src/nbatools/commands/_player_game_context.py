@@ -599,6 +599,26 @@ _BARE_OWN_CLAUSE = re.compile(
 )
 
 
+_CLAUSE_START = re.compile(r"\b(?:when|if|while|where|whenever)\s+")
+_OPPONENT_SUBJECT = re.compile(
+    r"(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams?|their\s+opponents?)\b"
+)
+
+
+def _opponent_subject(before: str, team: str | None) -> bool:
+    """The clause before "and" is led by the opponent, not the team."""
+    starts = list(_CLAUSE_START.finditer(before))
+    if not starts:
+        return False
+    clause = before[starts[-1].end() :]
+    if _OPPONENT_SUBJECT.match(clause):
+        return True
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    named = detect_team_in_text(" ".join(clause.split()[:3]))
+    return bool(named and named != team)
+
+
 def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) -> None:
     """Keep the team's own stat beside an opponent bound on a team route.
 
@@ -617,10 +637,15 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
     # "... allow under 110 and make 15 threes": the subject carries over.
     for m in _BARE_OWN_CLAUSE.finditer(text):
         stat = _stat_word(m.group("w"))
-        if stat is not None:
-            clauses.append(
-                {"team": "TEAM", "stat": stat, "min_value": float(m.group("n")), "max_value": None}
-            )
+        if stat is None:
+            continue
+        if _opponent_subject(text[: m.start()], team):
+            # "when opponents score 110 and make 15 threes": the threes are
+            # the opponent's.
+            stat = f"opponent_{stat}"
+        clauses.append(
+            {"team": "TEAM", "stat": stat, "min_value": float(m.group("n")), "max_value": None}
+        )
     for clause in clauses:
         if clause["team"] not in ("TEAM", team):
             continue
@@ -902,13 +927,20 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
     stats = [c["stat"] for c in conditions]
     if len(stats) != len(set(stats)):
         return
+    extras = []
     for c in _kwargs_conditions(route_kwargs):
-        if c.get("stat") and not any(
+        if not c.get("stat") or any(
             c["stat"] == k["stat"] and _same_bound(c, k) for k in conditions
         ):
+            continue
+        if c["stat"] in stats or not (c["stat"] == "margin" or c["stat"].startswith("opponent_")):
             # Another bound the parse read; leave the parse alone.
             return
+        # "in close games", "when opponents score 100 or fewer": the game's
+        # margin or the opponent's line stays beside the shooting bound.
+        extras.append(c)
     _clear_covered_event_refusal(route_kwargs, conditions)
+    conditions = conditions + extras
     route_kwargs["conditions"] = conditions
     if route == "player_game_finder" and route_kwargs.get("sort_by") == "stat":
         route_kwargs["stat"] = route_kwargs.get("stat") or conditions[0]["stat"]

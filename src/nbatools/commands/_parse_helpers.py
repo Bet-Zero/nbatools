@@ -2217,18 +2217,34 @@ def _parse_threshold_match(
 
 
 def _shooting_percentage_stat_for_context(match_text: str) -> str:
-    if re.search(r"\b(?:from\s+)?(?:three|3)\b", match_text):
+    if re.search(
+        r"\b(?:from\s+)?(?:three|3|deep|threes|3s|three[\s-]pointers?|3[\s-]pointers?)\b"
+        r"|\bthe\s+arc\b",
+        match_text,
+    ):
         return "fg3_pct"
     if re.search(r"\b(?:free\s+throws?|from\s+the\s+line)\b", match_text):
         return "ft_pct"
     return "fg_pct"
 
 
+# "free throw shooting 90%", "3-point shooting 40%": the rate the word names.
+# "true shooting" and "effective shooting" read TS% and eFG%.
+_SHOOTING_MODIFIER = re.compile(
+    r"\b(?P<ft>free[\s-]throw)\s*$|\b(?P<three>three|3)[\s-]?(?:point|pt)\s*$"
+    r"|\b(?P<other>true|effective|ts|efg)\s*$"
+)
+
+
 def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     """Infer shooting percentage thresholds from clear shooting contexts only."""
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
     operator = r"(over|above|at\s+least|under|below|less\s+than|at\s+most|no\s+more\s+than)"
-    _FROM = r"(?:\s+from\s+(?:the\s+)?(?:field|three|3|deep))?"
+    _FROM = (
+        r"(?:\s+(?:from\s+(?:the\s+)?(?:field|three|3|deep|line|beyond\s+the\s+arc)"
+        r"|on\s+(?:threes|3s|three[\s-]pointers|3[\s-]pointers|free\s+throws)))?"
+        r"(?!\s+(?:from|on|beyond)\b)"
+    )
     patterns = [
         rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}{_FROM}\b",
         rf"\b(?:from\s+(?:the\s+)?(?:field|three|3))\s+{operator}\s+{_NUM}\b",
@@ -2252,6 +2268,12 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
             mode = "min" if op in {"over", "above", "at least"} else "max"
             epsilon = 0.0 if op in {"at least", "at most", "no more than"} else 0.0001
             stat = _shooting_percentage_stat_for_context(m.group(0))
+            modifier = _SHOOTING_MODIFIER.search(text[: m.start()])
+            if modifier:
+                if modifier.group("other"):
+                    stat = "ts_pct" if modifier.group("other") in {"true", "ts"} else "efg_pct"
+                else:
+                    stat = "ft_pct" if modifier.group("ft") else "fg3_pct"
             min_value, max_value = _threshold_bounds(value_text, stat, mode, epsilon)
             matches.append(
                 {

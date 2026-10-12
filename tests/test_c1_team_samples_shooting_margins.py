@@ -113,3 +113,63 @@ def test_shot_count_is_not_a_percentage():
     assert len(_rows("LeBron James games shooting at most 40%")) == 1
     # "or less" after a shooting rate is read now (it used to refuse).
     assert len(_rows("LeBron games shooting 40% or less")) == 1
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # The clause after "and" keeps the opponent as its subject.
+        ("Lakers record when opponents score 110 and make 15 threes", (1, 4)),
+        ("Lakers record when opponents score under 110 and have 30 assists", (0, 1)),
+        ("Lakers record when the Celtics score 110 and make 15 threes", (1, 2)),
+    ],
+)
+def test_opponent_clause_stays_the_opponents(query, record):
+    assert _record(query) == record
+
+
+def _count(query: str) -> int:
+    return _execute(f"how many {query}")["count"][0]["count"]
+
+
+@pytest.mark.parametrize(
+    ("query", "count"),
+    [
+        # The rate the wording names, not field goal percentage.
+        ("LeBron James games shooting 80% from the line", 13),
+        ("LeBron James games shooting 90% on free throws", 11),
+        ("LeBron James games with free throw shooting 90% or better", 11),
+        ("LeBron James games with true shooting 60% or better", 48),
+        ("LeBron James games with effective shooting 55%", 52),
+    ],
+)
+def test_shooting_percent_reads_the_named_rate(query, count):
+    assert _count(query) == count
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record when they shoot 40% on threes",
+        "Lakers record when they shoot 40% from deep",
+        "Lakers record when they shoot 40% from beyond the arc",
+        "Lakers record with 3-point shooting 40%",
+    ],
+)
+def test_three_point_shooting_wording(query):
+    assert _record(query) == (39, 10)
+
+
+@pytest.mark.parametrize(
+    ("query", "result"),
+    [
+        # The margin stays beside the shooting bound and the event.
+        ("LeBron James games shooting 50% with 30 points in close games", 2),
+        ("Lakers record when they shoot 50% in blowouts with 15 threes", (12, 2)),
+    ],
+)
+def test_shooting_and_event_inside_a_margin(query, result):
+    if isinstance(result, tuple):
+        assert _record(query) == result
+    else:
+        assert len(_rows(query)) == result
