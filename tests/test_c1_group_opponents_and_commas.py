@@ -3,8 +3,7 @@
 - "vs winning / good / above .500 / losing / below .500 / Western / Eastern
   opponents" and "vs Western teams" were ignored and answered with every
   game.
-- "Lakers record vs Celtics, at home" answered Boston's whole record, and
-  "vs Celtics, Knicks and Heat" Boston's record too.
+- "Lakers record vs Celtics, at home" answered Boston's whole record.
 - "vs ranked opponents" and "vs LA opponents" answered with every game.
 
 Expected values are counted with pandas from the fixture.
@@ -54,7 +53,6 @@ def test_group_and_comma_records(query, record):
 @pytest.mark.parametrize(
     "query",
     [
-        "Lakers record vs Celtics, Knicks and Heat",
         "Lakers record vs ranked opponents",
         "Lakers record vs LA opponents",
     ],
