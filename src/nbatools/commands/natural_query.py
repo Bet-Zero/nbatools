@@ -2599,6 +2599,12 @@ _STAT_SPELLINGS = (
         ),
         r"\1 three ",
     ),
+    # "best three pointer games": the games ranked by threes (it became "best
+    # three games").
+    (
+        re.compile(r"\b(top|best|biggest|highest|greatest)\s+(?:3|three)[\s-]*pointer\s+games\b"),
+        r"\1 three point games",
+    ),
     # Made threes: "3-pointers", "three pointers", "3pt", "3 point shots"; one
     # is "a three".
     (
@@ -10767,8 +10773,48 @@ def _stat_bounds(parsed: dict) -> set[tuple]:
     return {b for b in bounds if b[0] not in _MARGIN_STATS}
 
 
+# "Lakers biggest win each season", "LeBron best game every season": the top
+# game of each season (it gave the span's top games, or one game).
+_EACH_SEASON = re.compile(
+    r"\b(?:(?:in\s+)?(?:each|every)\s+season|per\s+season|season\s+by\s+season|by\s+season)\b"
+)
+_EACH_SEASON_COUNT = re.compile(
+    r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest)"
+    r"\s+(\d{1,2})\b(?!\s*[-\s]?(?:point|pt|game\s+stretch))"
+)
+
+
+def _per_season_games(parsed: dict) -> dict:
+    q = parsed.get("normalized_query") or ""
+    kwargs = parsed.get("route_kwargs") or {}
+    if (
+        parsed.get("route") not in {"game_finder", "player_game_finder"}
+        or kwargs.get("sort_by") != "stat"
+        or kwargs.get("unsupported_filters")
+        or kwargs.get("last_n")
+        or not _EACH_SEASON.search(q)
+    ):
+        return parsed
+    count = _EACH_SEASON_COUNT.search(q)
+    kwargs = dict(kwargs)
+    kwargs["per_season_limit"] = int(count.group(1)) if count else 1
+    if parsed.get("season_defaulted"):
+        from nbatools.commands._seasons import resolve_career
+
+        kwargs["season"] = None
+        kwargs["start_season"], kwargs["end_season"] = resolve_career(
+            kwargs.get("season_type") or "Regular Season"
+        )
+    result = dict(parsed)
+    result["route_kwargs"] = kwargs
+    result["notes"] = list(parsed.get("notes") or []) + ["per_season: each season's top games"]
+    return result
+
+
 def _parse_query_once(query: str) -> dict:
-    return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+    return _per_season_games(
+        _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+    )
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:

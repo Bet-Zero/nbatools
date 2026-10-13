@@ -102,7 +102,6 @@ def test_game_list_reads_the_opponent_ceiling():
         "Lakers games with 10 or fewer opponent turnovers and 10 or fewer lead changes",
         "Lakers record against teams that won 50 games",
         "Lakers record vs poor shooting teams",
-        "Lakers record vs good defensive teams",
         "Lakers record vs high scoring teams",
         "Lakers record when the score is tied",
     ],

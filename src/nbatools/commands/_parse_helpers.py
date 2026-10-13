@@ -1246,6 +1246,15 @@ def canonicalize_bound_phrases(text: str) -> str:
         r"\1 teams",
         text,
     )
+    # "vs good / elite / bad defensive teams": the rating groups ("defensive"
+    # read as a defensive-rating stat).
+    text = re.sub(
+        r"\b((?:vs\.?|versus|against|facing)\s+(?:the\s+)?"
+        r"(?:top|best|elite|great|good|strong|bottom|worst|bad|poor|weak)"
+        r"(?:[- ]?\d{1,2})?)\s+(defens|offens)ive\s+teams\b",
+        r"\1 \2es",
+        text,
+    )
     # "vs contending / elite / weak teams": the glossary's names for them.
     text = re.sub(r"\bcontending\s+teams\b", "contenders", text)
     text = re.sub(r"\b(?:elite|great)\s+(?:teams|opponents)\b", "top teams", text)
