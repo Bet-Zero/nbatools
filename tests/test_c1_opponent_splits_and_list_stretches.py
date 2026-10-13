@@ -127,3 +127,21 @@ def test_counted_ranking_with_a_threshold_each_season():
         games = _lebron(f"{season}_regular_season.csv")
         expected += [(season, v) for v in games.loc[games["pts"] >= 30, "pts"].nlargest(2)]
     assert [(row["season"], row["pts"]) for row in rows] == expected
+
+
+@pytest.mark.parametrize(
+    ("query", "stat", "floor"),
+    [
+        # The number is the bar, not a count of games per season.
+        ("LeBron James most 10 rebound games each season", "reb", 10),
+        ("LeBron James most 10 assist games each season", "ast", 10),
+    ],
+)
+def test_threshold_number_is_not_a_per_season_count(query, stat, floor):
+    rows = execute_natural_query(query).result.to_dict()["sections"]["finder"]
+    games = _lebron()
+    assert len(rows) == int((games[stat] >= floor).sum())
+
+
+def test_points_allowed_by_opponent_is_not_the_split():
+    assert execute_natural_query("Lakers points allowed by opponent").route != "team_split_summary"

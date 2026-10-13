@@ -10792,6 +10792,10 @@ _EACH_SEASON_RANKED = re.compile(
     r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest|least"
     r"|career[\s-]+highs?)\b"
 )
+_EACH_SEASON_GAMES_COUNT = re.compile(
+    r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest)"
+    r"\s+(\d{1,2})\s+games\b"
+)
 _EACH_SEASON_COUNT = re.compile(
     r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest)"
     r"\s+(\d{1,2})\b(?!\s*[-\s]?(?:point|pt|game\s+stretch))"
@@ -10812,11 +10816,13 @@ def _per_season_games(parsed: dict) -> dict:
     ):
         return parsed
     count = _EACH_SEASON_COUNT.search(q)
-    if not count and (kwargs.get("min_value") is not None or kwargs.get("max_value") is not None):
-        # "30 point games by season", "most 30 point games each season": every
-        # qualifying game, not each season's top one ("top 5 games with 30
-        # points each season" names its count).
-        return parsed
+    if kwargs.get("min_value") is not None or kwargs.get("max_value") is not None:
+        # "30 point games by season", "most 10 rebound games each season": the
+        # number is the bar; every qualifying game, not each season's top
+        # ones. "top 5 games with 30 points each season" names its count.
+        count = _EACH_SEASON_GAMES_COUNT.search(q)
+        if not count:
+            return parsed
     kwargs = dict(kwargs)
     kwargs["per_season_limit"] = int(count.group(1)) if count else 1
     if parsed.get("season_defaulted"):

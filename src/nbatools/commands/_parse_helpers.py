@@ -2584,7 +2584,7 @@ def detect_split_type(text: str) -> str | None:
     # opponent (it gave the whole sample).
     if re.search(
         # Not "by opponent points" (a ranking by the opponent's stat).
-        r"\b(?:by|per)\s+opponents?\b(?=\s*$|\s*[,?.]|\s+(?:since|this|last|in|from|during"
+        r"(?<!\ballowed\s)\b(?:by|per)\s+opponents?\b(?=\s*$|\s*[,?.]|\s+(?:since|this|last|in|from|during"
         r"|vs\.?|versus|against|at|on|over|with|when|and|split|splits|breakdown)\b)"
         r"|\bopponent[\s-]+(?:by[\s-]+opponent|splits?)\b"
         r"|\b(?:vs\.?|versus|against)\s+(?:each|every)\s+(?:team|opponent)\b",
