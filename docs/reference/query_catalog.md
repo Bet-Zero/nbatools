@@ -1027,7 +1027,11 @@ Current behavior:
   from the score, like "close games" (5 or fewer), so every season and every
   route that reads a margin answers: records, game lists and counts, player
   summaries, comparisons, splits, streaks and team record boards
-- a bare "within one possession" (an in-game state) keeps
+- "excluding / outside of / non- one-possession games" are decided by 4+;
+  "excluding close games" by 6+ and "non-blowout games" by 14 or fewer
+- a bare "within one possession", a score during the game ("... in the final
+  minute", "in the 4th quarter"), a team after "losses to" and a comparison
+  with another margin ("one possession games vs close games") keep
   `one_possession=True`, which `team_record` and `player_game_summary` execute
   through `schedule_context_features.one_possession` when coverage exists;
   other routes or missing coverage return typed `no_result` /

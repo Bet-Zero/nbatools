@@ -131,3 +131,58 @@ def test_bare_within_one_possession_keeps_its_reading():
 
     parsed = parse_query("Lakers record when within one possession in the final minute")
     assert parsed["one_possession"] is True
+
+
+@pytest.mark.parametrize(
+    ("query", "kept"),
+    [
+        ("Lakers record excluding one possession games", lambda m: m.abs() >= 4),
+        ("Lakers record in non-one-possession games", lambda m: m.abs() >= 4),
+        ("Lakers record outside of one possession games", lambda m: m.abs() >= 4),
+        ("Lakers record excluding close games", lambda m: m.abs() >= 6),
+        ("Lakers record in non-close games", lambda m: m.abs() >= 6),
+        ("Lakers record excluding blowouts", lambda m: m.abs() <= 14),
+        ("Lakers record in non-blowout games", lambda m: m.abs() <= 14),
+    ],
+)
+def test_excluded_margins_keep_the_other_games(query, kept):
+    # These read as the excluded games themselves.
+    rows = _margins("2025-26")
+    rows = rows[rows["team_abbr"] == "LAL"]
+    rows = rows[kept(rows["margin"])]
+    row = _execute(query).result.to_dict()["sections"]["summary"][0]
+    assert (row["games"], row["wins"], row["losses"]) == (
+        len(rows),
+        int((rows["margin"] > 0).sum()),
+        int((rows["margin"] < 0).sum()),
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The team after "to" reads as the subject; the flag's refusal stays.
+        "Lakers one possession losses to the Celtics",
+        "Lakers one possession games to the Celtics",
+        "Lakers one possession wins against the Celtics",
+        # A score during the game, not the final margin.
+        "Lakers record in games within one possession in the final minute",
+        "Lakers record in one possession games in the 4th quarter",
+        # Two margins compared.
+        "Lakers one possession games vs close games",
+        "Lakers close games vs one possession games",
+    ],
+)
+def test_unread_one_possession_wordings_keep_their_refusal(query):
+    from nbatools.commands.natural_query import parse_query
+    from nbatools.query_service import execute_natural_query
+
+    assert parse_query(query)["one_possession"] is True
+    assert execute_natural_query(query).result_status == "no_result"
+
+
+def test_one_possession_games_against_a_team():
+    close = _close("LAL")
+    close = close[close["opp_abbr"] == "BOS"]
+    rows = _execute("Lakers one possession games vs the Celtics").result.to_dict()["sections"]
+    assert sorted(r["game_id"] for r in rows["finder"]) == sorted(close["game_id"])

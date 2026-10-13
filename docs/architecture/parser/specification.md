@@ -543,7 +543,10 @@ Define where or when within a game the stat applies.
 - `one-possession games`, `games (decided) within one possession`,
   `one-possession wins / losses / record` → a final margin of 3 or fewer from
   the score (`margin` / `win_margin` / `loss_margin` <= 3), like `close games`;
-  a bare `within one possession` keeps `one_possession=True`
+  `excluding / non- one-possession games` are decided by 4+ (and `excluding
+  close games` 6+, `non-blowout games` 14 or fewer); a bare `within one
+  possession`, an in-game time, a team after `losses to` and a comparison with
+  another margin keep `one_possession=True`
 - `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
   for player-context queries only. Team-only phrasing like `Celtics bench scoring`

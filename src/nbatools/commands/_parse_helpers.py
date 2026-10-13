@@ -939,6 +939,72 @@ def _forced_turnovers(m: re.Match) -> str:
     return f"{m.group('lead')} opponents commit {m.group('n')} turnovers{joined}"
 
 
+_MARGIN_NEGATION = (
+    r"\b(?:excluding|exclude|outside(?:\s+of)?|not\s+in|except(?:\s+(?:for|in))?"
+    r"|other\s+than|non)[\s-]*(?:the\s+)?"
+)
+_NEGATED_MARGIN_TERM = re.compile(
+    _MARGIN_NEGATION + r"(close(?:\s+games?)?|blowouts?(?:\s+games?)?)(?:\s+games?)?\b"
+)
+_ONE_POSSESSION = r"one[\s-]+possession"
+# "within one possession in the final minute", "one possession games at
+# halftime": a score during the game, not the final margin.
+_IN_GAME_STATE = re.compile(
+    r"[^.?!]*\b(?:minutes?|mins?|seconds?|secs?|halftime|half|quarters?|q[1-4]|overtime|ot"
+    r"|late|clutch|left|remaining|lead)\b"
+)
+# "one possession games vs close games": a comparison of two margins.
+_MARGIN_COMPARED = re.compile(
+    r"\s+(?:vs\.?|versus|compared\s+(?:to|with)|or|and)\s+(?:in\s+)?"
+    r"(?:close|blowouts?|games\s+decided|non[\s-]|one[\s-]+possession)"
+)
+_ONE_POSSESSION_TERM = re.compile(
+    rf"(?P<neg>{_MARGIN_NEGATION})?"
+    rf"(?:\b{_ONE_POSSESSION}\s+(?P<outcome>wins|losses|win|loss)\b"
+    rf"|\b{_ONE_POSSESSION}\s+(?P<record>record)\b"
+    rf"|\b{_ONE_POSSESSION}\s+games?\b"
+    rf"|\bgames?\s+(?:decided\s+)?within\s+{_ONE_POSSESSION}\b)"
+)
+_MARGIN_COMPARED_BEFORE = re.compile(
+    r"\b(?:close|blowouts?|decided\s+by\s+\S+(?:\s+or\s+(?:fewer|less|more))?)\s+(?:games?\s+)?"
+    r"(?:vs\.?|versus|compared\s+(?:to|with)|or|and)\s+(?:in\s+)?$"
+)
+_OPPONENT_AFTER_OUTCOME = re.compile(r"\s+(?:to|over|against|vs\.?|versus|at|@|from|by)\b")
+
+
+def _canonicalize_one_possession(text: str) -> str:
+    """One-possession games are decided by 3 or fewer, from the final score.
+
+    The schedule-context flag they set covered two seasons and two routes.
+    "excluding one possession games" is decided by 4+. A score during the
+    game ("within one possession in the final minute"), a team after
+    "losses to" (the team read as the subject) and a comparison with another
+    margin keep the flag and its refusal.
+    """
+
+    def rewrite(m: re.Match) -> str:
+        after = m.string[m.end() :]
+        if (
+            _IN_GAME_STATE.match(after)
+            or _MARGIN_COMPARED.match(after)
+            or _MARGIN_COMPARED_BEFORE.search(m.string[: m.start()])
+            or re.match(r"\s+(?:to|from)\b", after)
+            or (m.group("outcome") and _OPPONENT_AFTER_OUTCOME.match(after))
+        ):
+            return m.group(0)
+        if m.group("neg"):
+            if m.group("outcome") or m.group("record"):
+                return m.group(0)
+            return "games decided by 4+"
+        if m.group("outcome"):
+            return f"{m.group('outcome')} by 3 or fewer"
+        if m.group("record"):
+            return "record in games decided by 3 or fewer"
+        return "games decided by 3 or fewer"
+
+    return _ONE_POSSESSION_TERM.sub(rewrite, text)
+
+
 def canonicalize_bound_phrases(text: str) -> str:
     """Rewrite bound wording the readers miss into the form they read.
 
@@ -949,21 +1015,22 @@ def canonicalize_bound_phrases(text: str) -> str:
     ignored too; "one possession games" refused outside two seasons.
     """
     text = canonicalize_trailing_ceilings(text)
+    text = _canonicalize_one_possession(text)
+    # "excluding close games", "non-blowout games": the games left out.
+    text = _NEGATED_MARGIN_TERM.sub(
+        lambda m: (
+            "games decided by 6+"
+            if m.group(1).startswith("close")
+            else "games decided by 14 or fewer"
+        ),
+        text,
+    )
     # "close games" and "blowouts" use the glossary's final-margin cutoffs.
     text = re.sub(r"\bclose\s+(wins|losses)\b", r"\1 by 5 or fewer", text)
     text = re.sub(r"\bclose\s+(win|loss)\b", r"\1 by 5 or fewer", text)
     text = re.sub(r"\bclose\s+games?\b", "games decided by 5 or fewer", text)
     text = re.sub(r"\bblowout\s+(wins|losses|win|loss)\b", r"\1 by 15+", text)
     text = re.sub(r"\bblowouts?(?:\s+games?)?\b", "games decided by 15+", text)
-    # "one possession games" are decided by 3 or fewer, from the final score
-    # (the schedule-context flag covered two seasons and two routes).
-    text = re.sub(r"\bone[- ]possession\s+(wins|losses|win|loss)\b", r"\1 by 3 or fewer", text)
-    text = re.sub(r"\bone[- ]possession\s+record\b", "record in games decided by 3 or fewer", text)
-    text = re.sub(
-        r"\b(?:one[- ]possession\s+games?|games?\s+(?:decided\s+)?within\s+one\s+possession)\b",
-        "games decided by 3 or fewer",
-        text,
-    )
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO_UNDER.sub(r"\1scoring under \2 points", text)
