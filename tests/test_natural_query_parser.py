@@ -1135,9 +1135,12 @@ def test_numeric_rest_days_surface_form_sets_rest_slot():
     assert parsed["rest_days"] == 2
 
 
-def test_one_possession_surface_form_sets_flag():
+def test_one_possession_surface_form_reads_final_margin():
+    # One-possession games are decided by 3 or fewer, read from the score.
     parsed = parse_query("Celtics one-possession record")
-    assert parsed["one_possession"] is True
+    assert parsed["one_possession"] is False
+    assert parsed["route_kwargs"]["stat"] == "margin"
+    assert parsed["route_kwargs"]["max_value"] == 3.0
 
 
 def test_national_tv_surface_form_sets_flag():

@@ -109,6 +109,8 @@ from nbatools.commands._occurrence_route_utils import (
 )
 from nbatools.commands._parse_helpers import (
     _STAT_THRESHOLD_AFTER_NUMBER,
+    ONE_POSSESSION_REWRITE,
+    ONE_POSSESSION_TERM_PRESENT,
     extract_min_attempts,
     text_without_min_attempts,
 )
@@ -3754,6 +3756,26 @@ def _counts_streaks(route_kwargs: dict) -> bool:
     return league or not route_kwargs.get("longest")
 
 
+_NOT_A_PERSON_WORD = re.compile(
+    r"\b(?:the|a|an|true|effective|free|shooting|most|fewest|least|highest|lowest|best|worst"
+    r"|rest|days?|minutes?|points?|games?|teams?|sits?|plays?|and|or)\b|\d"
+)
+
+
+def _names_a_person(fragment: str | None) -> bool:
+    """ "davis" or "anthony davis" (a player's last name), not "30 points",
+    "the fewest", "double doubles" or "home court"."""
+    from nbatools.commands.entity_resolution import player_last_name_candidates
+
+    return bool(
+        fragment
+        and re.fullmatch(r"[a-z.'\-]+(?:\s+[a-z.'\-]+)?", fragment)
+        and not _NOT_A_PERSON_WORD.search(fragment)
+        and detect_stat(fragment) is None
+        and player_last_name_candidates(fragment.split()[-1])
+    )
+
+
 def _route_parsed_query(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     season = parsed["season"]
@@ -6384,6 +6406,18 @@ def _route_parsed_query(parsed: dict) -> dict:
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "multi_player_availability" not in existing_unsupported:
             existing_unsupported.append("multi_player_availability")
+        route_kwargs["unsupported_filters"] = existing_unsupported
+
+    if (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
+        and any(_names_a_person(f) for f in (unresolved_with_player, unresolved_without_player))
+    ):
+        # "LeBron games with Davis": a teammate who could not be resolved was
+        # dropped and every game came back.
+        existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
+        if "unresolved_player_availability" not in existing_unsupported:
+            existing_unsupported.append("unresolved_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
     # "LeBron games when the Lakers score 120": a team-subject bound is the
@@ -10604,6 +10638,99 @@ def parse_query(query: str) -> dict:
     since = _games_since(query)
     if since is not None:
         return since
+    out = _parse_query_once(query)
+    if ONE_POSSESSION_TERM_PRESENT.search(query.lower()):
+        # "one possession games with 10 reb": the margin the rewrite adds can
+        # take the parse's one stat slot and drop a bound the question named.
+        # The reading without the rewrite (its flag refuses) wins then.
+        token = ONE_POSSESSION_REWRITE.set(False)
+        try:
+            unrewritten = _parse_query_once(query)
+        finally:
+            ONE_POSSESSION_REWRITE.reset(token)
+        if _stat_bounds(unrewritten) - _stat_bounds(out) or _unread_numbers(query, out):
+            return unrewritten
+    return out
+
+
+_QUERY_NUMBER = re.compile(r"(?<![\w.-])(\d+(?:\.\d+)?)(?![\w-]|\.\d)")
+
+
+def _parsed_numbers(value, found: set[float]) -> None:
+    if isinstance(value, bool):
+        return
+    if isinstance(value, (int, float)):
+        # Exclusive bounds sit just off the number ("over 30" -> 30.0001).
+        for number in (float(value), float(value) * 100):
+            found.update({round(number, 6), round(number, 1), float(round(number))})
+    elif isinstance(value, dict):
+        for item in value.values():
+            _parsed_numbers(item, found)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _parsed_numbers(item, found)
+
+
+def _without_margin_bounds(value, in_list: bool = False):
+    """The parse without the margin bound the one-possession rewrite adds
+    (its 3 or 4 is not a number the question named)."""
+    if isinstance(value, dict):
+        margin = value.get("stat") in _MARGIN_STATS
+        if margin and in_list:
+            return None
+        return {
+            k: _without_margin_bounds(v)
+            for k, v in value.items()
+            if k not in ("normalized_query", "confidence", "alternates")
+            and not (margin and k in ("min_value", "max_value"))
+        }
+    if isinstance(value, (list, tuple)):
+        return [_without_margin_bounds(item, in_list=True) for item in value]
+    return value
+
+
+def _unread_numbers(query: str, parsed: dict) -> bool:
+    """True when a number the question names appears nowhere in the parse
+    ("when LeBron gets 30": the count was dropped)."""
+    margins = {
+        value
+        for source in (parsed, parsed.get("route_kwargs") or {})
+        if source.get("stat") in _MARGIN_STATS
+        for value in (source.get("min_value"), source.get("max_value"))
+        if value is not None
+    }
+    trimmed = dict(parsed)
+    trimmed["route_kwargs"] = dict(parsed.get("route_kwargs") or {})
+    for source in (trimmed, trimmed["route_kwargs"]):
+        # "decided by 4+" also fills min_games with its 4.
+        if source.get("min_games") in margins:
+            source.pop("min_games")
+    found: set[float] = set()
+    _parsed_numbers(_without_margin_bounds(trimmed), found)
+    text = re.sub(r"\b(?:19|20)\d{2}(?:-\d{2})?\b", " ", query.lower())
+    return any(float(n) not in found for n in _QUERY_NUMBER.findall(text))
+
+
+_MARGIN_STATS = {"margin", "win_margin", "loss_margin"}
+
+
+def _stat_bounds(parsed: dict) -> set[tuple]:
+    """Every (stat, min, max) bound a parse reads, margins aside."""
+    kwargs = parsed.get("route_kwargs") or {}
+    bounds = set()
+    for source in (parsed, kwargs):
+        if source.get("stat") and (
+            source.get("min_value") is not None or source.get("max_value") is not None
+        ):
+            bounds.add((source["stat"], source.get("min_value"), source.get("max_value")))
+        for key in ("threshold_conditions", "conditions", "extra_conditions"):
+            for cond in source.get(key) or []:
+                if isinstance(cond, dict) and cond.get("stat"):
+                    bounds.add((cond["stat"], cond.get("min_value"), cond.get("max_value")))
+    return {b for b in bounds if b[0] not in _MARGIN_STATS}
+
+
+def _parse_query_once(query: str) -> dict:
     return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
 
 

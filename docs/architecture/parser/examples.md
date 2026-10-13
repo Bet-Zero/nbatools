@@ -970,9 +970,8 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `What is the Celtics' record in one-possession games this season?`
 - `Celtics one-possession record this season`
 - `Celtics record in one-possession games`
-- _Execution note:_ all variants set `one_possession=True`; `team_record`
-  executes the filter when trusted `schedule_context_features` coverage exists.
-  Missing coverage returns typed `no_result` / `filter_not_supported`._
+- _Execution note:_ all variants read a final margin of 3 or fewer from the
+  score (`margin` <= 3), like `close games`, in every season._
 
 ### 7.14 National-TV filter — Lakers national-TV record
 
