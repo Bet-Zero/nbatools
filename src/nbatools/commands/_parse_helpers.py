@@ -1087,7 +1087,9 @@ def _forced_turnovers(m: re.Match) -> str:
 _OPPONENTS_THAT = re.compile(
     r"\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?(?:teams|opponents)\s+(?:that|who|which)\s+"
     r"((?:scor(?:e|es|ed)|shoot|shoots|shot|ma(?:ke|kes|de)|ha(?:ve|s|d)|commit(?:s|ted)?"
-    r"|grab(?:s|bed)?)\s+(?:(?:at\s+least|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?\d)"
+    r"|grab(?:s|bed)?)\s+(?:(?:at\s+least|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?\d+)"
+    # "teams that had 50 wins / 3 all-stars" describe their season.
+    r"(?!\d|\s+(?:wins?|losses|games|all[\s-]?stars?|titles?|championships?)\b)"
 )
 _GROUP_OPPONENTS = re.compile(
     r"\b(winning|losing|good|bad|top(?:[- ]\d+)?|best|playoff|non-playoff|contending"
@@ -2823,12 +2825,21 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
             masked = masked.replace(condition["text"], " ")
     # "with 10 or fewer opponent turnovers" is read by the route's own
     # clause readers, which leave no threshold condition behind.
-    route_maxima = {route_kwargs.get("max_value")} | {
-        c.get("max_value") for c in route_kwargs.get("conditions") or []
-    }
-    masked = _COUNT_OR_FEWER.sub(
-        lambda m: " " if float(m.group(1)) in route_maxima else m.group(0), masked
-    )
+    # Each applied ceiling covers one phrase naming its own stat.
+    route_maxima = [(route_kwargs.get("stat"), route_kwargs.get("max_value"))] + [
+        (c.get("stat"), c.get("max_value")) for c in route_kwargs.get("conditions") or []
+    ]
+
+    def _applied(m: re.Match) -> str:
+        stat = detect_stat(masked[m.end() : m.end() + 40])
+        names = {stat, f"opponent_{stat}", f"team_{stat}"} if stat else set()
+        for pair in route_maxima:
+            if pair[0] in names and pair[1] == float(m.group(1)):
+                route_maxima.remove(pair)
+                return " "
+        return m.group(0)
+
+    masked = _COUNT_OR_FEWER.sub(_applied, masked)
     if _OR_FEWER_PHRASE.search(masked):
         return "unparsed_upper_bound"
 

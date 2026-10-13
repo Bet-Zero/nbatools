@@ -45,6 +45,11 @@ def _record(query: str) -> tuple[int, int, int]:
         ("Lakers record with 55% efg", (56, 45, 11)),
         ("Lakers record with 10 or fewer opponent turnovers", (11, 9, 2)),
         ("Lakers record when opponents commit 10 or fewer turnovers", (11, 9, 2)),
+        (
+            "Lakers record with 10 or fewer opponent turnovers and 10 or fewer opponent steals",
+            (5, 3, 2),
+        ),
+        ("Lakers record with 100 or fewer points and 10 or fewer opponent turnovers", (3, 1, 2)),
         ("Lakers record vs teams that have a winning record", (24, 11, 13)),
         ("Lakers record vs teams that had losing records", (36, 36, 0)),
         # The opponent's line in those games, like "when opponents score 120".
@@ -90,6 +95,11 @@ def test_game_list_reads_the_opponent_ceiling():
     "query",
     [
         "Lakers record vs teams that allow 120 points",
+        "Lakers record vs teams that had 50 wins",
+        "Lakers record vs teams that have 40 losses",
+        # A ceiling the route did not apply beside one it did.
+        "LeBron James games with 5 or fewer turnovers and 5 or fewer technicals",
+        "Lakers games with 10 or fewer opponent turnovers and 10 or fewer lead changes",
         "Lakers record against teams that won 50 games",
         "Lakers record vs poor shooting teams",
         "Lakers record vs good defensive teams",
