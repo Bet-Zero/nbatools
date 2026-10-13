@@ -809,6 +809,12 @@ _RECENT_WORD = r"(?:last|past|previous|prior|latest|most\s+recent)"
 _SAMPLE_UNIT = r"(?:games?|contests?|outings?|matchups?|meetings?|seasons?|starts?|wins?|losses)"
 
 
+_OPPONENT_COMMA = re.compile(
+    r"(\b(?:vs\.?|versus|against)\s+(?:the\s+)?[a-z.']+(?:\s+[a-z.']+)?),\s+"
+    r"(?=(?:at|in|on|this|last|since|during|from|before|after|over)\b)"
+)
+
+
 def canonicalize_sample_phrases(text: str) -> str:
     """Rewrite recent-sample wording into the one form the detectors read.
 
@@ -860,6 +866,9 @@ def canonicalize_sample_phrases(text: str) -> str:
         text,
     )
     text = re.sub(r"\bmeetings?\b", "matchups", text)
+    # "vs Celtics, at home": the comma cut the opponent off and Boston became
+    # the team.
+    text = _OPPONENT_COMMA.sub(r"\1 ", text)
     text = canonicalize_bound_phrases(text)
     text = canonicalize_margin_phrases(" ".join(text.split()))
 
@@ -938,6 +947,12 @@ def _forced_turnovers(m: re.Match) -> str:
     # team's own again, so it keeps "they".
     joined = f"{m.group('and')}they " if m.group("and") else ""
     return f"{m.group('lead')} opponents commit {m.group('n')} turnovers{joined}"
+
+
+_GROUP_OPPONENTS = re.compile(
+    r"\b(winning|losing|good|bad|top(?:[- ]\d+)?|best|playoff|non-playoff|contending"
+    r"|(?:above|over|under|below)\s+\.500|western|eastern)\s+opponents\b"
+)
 
 
 _MARGIN_NEGATION = (
@@ -1063,6 +1078,10 @@ def canonicalize_bound_phrases(text: str) -> str:
     # turnovers (they read as the team's own).
     text = _FORCED_TURNOVERS.sub(_forced_turnovers, text)
     text = re.sub(r"\b(\d+\+?)\s+forced\s+turnovers\b", r"\1 opponent turnovers", text)
+    # "vs winning opponents", "above .500 opponents", "Western opponents": the
+    # same groups as "... teams" (the opponents wording was ignored).
+    text = _GROUP_OPPONENTS.sub(r"\1 teams", text)
+    text = re.sub(r"\b(western|eastern)\s+teams\b", r"\1 conference teams", text)
     # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
     # winning-teams bar, or the bar that includes .500.
     text = canonicalize_500_team_bars(text)
