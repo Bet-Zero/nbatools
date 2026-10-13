@@ -83,6 +83,19 @@ def test_an_opponent_is_still_not_the_owner():
     assert kwargs.get("team") is None and kwargs["opponent"] == "LAL"
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring games by Lakers players against the Lakers",
+        "Lakers players best scoring games against the Lakers",
+        "best shooting games by Lakers players vs the Lakers",
+    ],
+)
+def test_a_teams_players_against_that_team_refuse(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert "team_is_opponent" in (kwargs.get("unsupported_filters") or [])
+
+
 def test_a_shooting_bound_on_a_counting_list_is_not_applied_as_the_count():
     try:
         parsed = parse_query("best scoring games by Lakers players over 50%")
@@ -102,3 +115,11 @@ def test_lakers_players_worst_shooting_games_rank_their_rows():
     assert all(row.get("player_name") for row in rows)
     rates = [row["fg_pct"] for row in rows]
     assert rates == sorted(rates)
+
+
+@pytest.mark.fixture_data
+def test_lakers_players_against_the_lakers_is_not_no_games():
+    result = execute_natural_query("best scoring games by Lakers players against the Lakers").result
+    data = result.to_dict()
+    assert data["result_status"] == "no_result"
+    assert any("team_is_opponent" in note for note in data.get("notes") or [])

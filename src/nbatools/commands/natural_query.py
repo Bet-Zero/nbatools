@@ -361,7 +361,10 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands._parse_helpers import (
     wants_team_leaderboard as wants_team_leaderboard,
 )
-from nbatools.commands._player_game_context import apply_player_game_context
+from nbatools.commands._player_game_context import (
+    _refuse_team_as_own_opponent,
+    apply_player_game_context,
+)
 from nbatools.commands._playoff_record_route_utils import (
     _DECADE_SUPERLATIVE,
     _PLAYER_SERIES,
@@ -8194,6 +8197,8 @@ def _team_players_game_list(parsed: dict, team: str, league_q: str, match) -> di
         kwargs["stat"] = _LEAGUE_GAME_LIST_COUNTS[what]
         out["stat"] = kwargs["stat"]
     kwargs["team"] = team
+    # "Lakers players vs the Lakers": refused, as for the team's own games.
+    _refuse_team_as_own_opponent(kwargs)
     out["route_kwargs"] = kwargs
     out["notes"] = [
         re.sub(
