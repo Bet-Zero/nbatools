@@ -697,15 +697,18 @@ _ANY_PLAYER_NOT_A_STAT = re.compile(
 # 30", "if any of them score 30") makes the clause count disagree, so refuse.
 _ANY_PLAYER_SUBJECT = re.compile(
     r"\b(?:(?:a|an|any|one|some)\s+(?:[a-z.']+\s+)?player|someone|anyone|anybody|somebody"
-    r"|nobody|no\s+one|no\s+player)\b"
+    r"|nobody|no\s+one|no\s+player|another|(?:a\s+)?second\s+player|(?:a\s+)?teammates?"
+    r"|(?:an)?other\s+players?)\b"
 )
 # A second stat joined to the same player ("someone scores 30 and has 15
 # rebounds", "30 and 10"): one player's line, which a per-team best per stat
 # cannot read.
 _ANY_PLAYER_JOINED = re.compile(
-    r"\s*(?:,\s*(?:and\s+)?|\s+(?:and|with|while)\s+)(?:(?:he|she)\s+)?"
+    r"\s*(?:(?:,\s*(?:and\s+)?|\s+(?:and|with|while)\s+)(?:(?:he|she)\s+)?"
     r"(?:has|have|had|scores?|scored|gets?|got|grabs?|grabbed|records?|recorded|makes?|made"
-    r"|hits?|dishes|dished|puts?\s+up|adds?|added|\d)"
+    r"|hits?|dishes|dished|puts?\s+up|adds?|added|shoots?|shooting|shot|\d)"
+    # "on 50% shooting", "on 10 of 15": the scorer's own efficiency.
+    r"|\s+on\s+\d)"
 )
 # Any subject with a stat verb and a number, read or not ("nobody scores 30").
 _ANY_PLAYER_LOOSE = re.compile(

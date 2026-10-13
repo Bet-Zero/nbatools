@@ -81,6 +81,10 @@ def test_unread_any_player_clauses_refuse(query):
         "Lakers record when a player has 30 points and 10 rebounds",
         "Lakers record when an opposing player scores 40",
         "Lakers record when nobody scores 30",
+        "Lakers record when someone scores 30 while shooting 50%",
+        "Lakers record when someone scores 30 on 50% shooting",
+        "Lakers record when one player scores 30 and another scores 20",
+        "Lakers record when a player scores 30 and a teammate scores 20",
     ],
 )
 def test_unread_any_player_combinations_refuse(query):
