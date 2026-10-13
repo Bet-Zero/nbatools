@@ -118,11 +118,11 @@ def _or_bounds_read(text: str) -> str:
 
 
 def contains_boolean_or(text: str) -> bool:
-    return bool(
-        BOOLEAN_OR_PATTERN.search(
-            _or_bounds_read(canonicalize_trailing_ceilings(normalize_text(text)))
-        )
-    )
+    # "vs Celtics or Knicks" is one opponent list, not two clauses.
+    from nbatools.commands._parse_helpers import join_opponent_lists
+
+    text = join_opponent_lists(normalize_text(text))
+    return bool(BOOLEAN_OR_PATTERN.search(_or_bounds_read(canonicalize_trailing_ceilings(text))))
 
 
 # ---------------------------------------------------------------------------

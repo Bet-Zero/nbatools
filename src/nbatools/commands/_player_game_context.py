@@ -668,7 +668,50 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
     _refuse_team_as_own_opponent(route_kwargs)
+    _apply_opponent_list(route, route_kwargs, text)
     _refuse_unread_samples(route, route_kwargs, text)
+
+
+_LIST_ROUTES = (
+    "team_record",
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+    "team_streak_finder",
+    "player_streak_finder",
+)
+
+
+def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> None:
+    """ "vs Celtics, Knicks and Heat": games against any of them (only the
+    first was kept)."""
+    from nbatools.commands._parse_helpers import opponent_lists
+
+    if route not in _LIST_ROUTES or not isinstance(route_kwargs.get("opponent"), str):
+        return
+    lists = opponent_lists(text)
+    if len(lists) != 1:
+        return
+    start, end, teams = lists[0]
+    if route_kwargs.get("team") in teams[1:]:
+        # "Knicks record vs Heat and Celtics", "LeBron games vs Celtics and
+        # Knicks": a later team in the list was read as the subject.
+        from nbatools.commands.natural_query import _teams_in_order
+
+        before = [team for _, _, team in _teams_in_order(text[:start])]
+        if before:
+            route_kwargs["team"] = before[0]
+        elif route.startswith("player_"):
+            route_kwargs["team"] = None
+    if (
+        route_kwargs["opponent"] != teams[0]
+        or route_kwargs.get("team") in teams
+        # "vs Celtics and the Knicks score 110": a clause about the last team.
+        or _CLAUSE_VERB.match(text, end)
+    ):
+        return
+    route_kwargs["opponent"] = list(dict.fromkeys(teams))
 
 
 # "vs Celtics and Knicks": a second opponent the routes do not combine (only
@@ -727,7 +770,7 @@ def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> 
     # One opponent, or none when the list's first team became the subject
     # ("Lakers record vs Celtics, Knicks and Heat" answered Boston's record).
     single = isinstance(route_kwargs.get("opponent"), (str, type(None)))
-    for m in _TWO_OPPONENTS.finditer(text) if single and route in _SAMPLE_ROUTES else ():
+    for m in _TWO_OPPONENTS.finditer(text) if single and route in _LIST_ROUTES else ():
         first, second = detect_team_in_text(m.group("a")), detect_team_in_text(m.group("b"))
         if second == route_kwargs.get("team") or _CLAUSE_VERB.match(text, m.end()):
             # "vs Celtics and the Lakers score 120": the subject's own clause.

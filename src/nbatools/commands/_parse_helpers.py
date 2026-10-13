@@ -815,6 +815,59 @@ _OPPONENT_COMMA = re.compile(
 )
 
 
+_LIST_VS = re.compile(r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?")
+_LIST_SEP = re.compile(r"\s*(?:,\s*(?:(?:and|or|&)\s+)?|\s(?:and|or|&)\s+|/)\s*(?:the\s+)?")
+_TEAM_AT: re.Pattern | None = None
+
+
+def _team_at(text: str, pos: int) -> tuple[int, str] | None:
+    global _TEAM_AT
+    from nbatools.commands._matchup_utils import TEAM_ALIASES
+
+    if _TEAM_AT is None:
+        keys = sorted(TEAM_ALIASES, key=len, reverse=True)
+        _TEAM_AT = re.compile("(" + "|".join(re.escape(k) for k in keys) + r")\b")
+    m = _TEAM_AT.match(text, pos)
+    return (m.end(), TEAM_ALIASES[m.group(1)]) if m else None
+
+
+def opponent_lists(text: str) -> list[tuple[int, int, list[str]]]:
+    """Lists of two or more teams after vs/against ("vs Celtics, Knicks and
+    Heat"): (start of the first team, end of the last, teams in order)."""
+    found = []
+    for vs in _LIST_VS.finditer(text):
+        first = _team_at(text, vs.end())
+        if not first:
+            continue
+        end, teams = first[0], [first[1]]
+        while (sep := _LIST_SEP.match(text, end)) and (item := _team_at(text, sep.end())):
+            end = item[0]
+            teams.append(item[1])
+        if len(set(teams)) > 1:
+            found.append((vs.end(), end, teams))
+    return found
+
+
+_STRETCH_WORD = re.compile(r"\b(?:stretch(?:es)?|windows?|rolling)\b")
+
+
+def join_opponent_lists(text: str) -> str:
+    # "vs Celtics, Knicks and Heat": the comma made Boston the team, and "vs
+    # Celtics or Knicks" read as a boolean OR.
+    if _STRETCH_WORD.search(text):
+        # Stretches read comma lists themselves, and close a list at "and".
+        return text
+    for start, end, _ in reversed(opponent_lists(text)):
+        text = (
+            text[:start]
+            + re.sub(
+                r"\s*(?:,\s*(?:(?:and|or|&)\s+)?|\s(?:or|&)\s+|/)\s*", " and ", text[start:end]
+            )
+            + text[end:]
+        )
+    return text
+
+
 def canonicalize_sample_phrases(text: str) -> str:
     """Rewrite recent-sample wording into the one form the detectors read.
 
@@ -869,6 +922,7 @@ def canonicalize_sample_phrases(text: str) -> str:
     # "vs Celtics, at home": the comma cut the opponent off and Boston became
     # the team.
     text = _OPPONENT_COMMA.sub(r"\1 ", text)
+    text = join_opponent_lists(text)
     text = canonicalize_bound_phrases(text)
     text = canonicalize_margin_phrases(" ".join(text.split()))
 
@@ -1081,6 +1135,11 @@ def canonicalize_bound_phrases(text: str) -> str:
     # "vs winning opponents", "above .500 opponents", "Western opponents": the
     # same groups as "... teams" (the opponents wording was ignored).
     text = _GROUP_OPPONENTS.sub(r"\1 teams", text)
+    # "vs contending / elite / weak teams": the glossary's names for them.
+    text = re.sub(r"\bcontending\s+teams\b", "contenders", text)
+    text = re.sub(r"\b(?:elite|great)\s+(?:teams|opponents)\b", "top teams", text)
+    text = re.sub(r"\bstrong\s+(?:teams|opponents)\b", "good teams", text)
+    text = re.sub(r"\b(?:weak|poor)\s+(?:teams|opponents)\b", "bad teams", text)
     text = re.sub(r"\b(western|eastern)\s+teams\b", r"\1 conference teams", text)
     # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
     # winning-teams bar, or the bar that includes .500.
@@ -4359,6 +4418,8 @@ def detect_season_high_intent(text: str) -> bool:
     if re.search(
         r"\b(?:season|career)[- ]?highs?\b"
         r"|\b(?:best|highest)\s+(?:\d{1,2}\s+)?(?:single[- ]?)?games?\b"
+        # "top 5 games" ranks like "best 5 games" ("vs Celtics" listed the last 5).
+        r"|\btop\s+\d{1,2}\s+(?:single[- ]?)?games\b"
         # "best 5 scoring games" is a top-5 list; "best 50 point games" is a floor.
         rf"|\b(?:top\s+(?:\d{{1,3}}\s+)?|(?:best|highest)\s+(?:\d{{1,3}}\s+(?!(?:points?|pts?)\b))?)"
         rf"(?:single[- ]?)?(?:(?:team|player)\s+)?"
