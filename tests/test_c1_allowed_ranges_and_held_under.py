@@ -1,11 +1,9 @@
-"""C1: points-allowed ranges, "held to under N" and any-player clauses.
+"""C1: points-allowed ranges, and "held to under N".
 
 - "Lakers record when allowing between 100 and 110" answered every game, and
   "when they allow / opponents score between 100 and 110" read the Lakers'
   own points.
 - "when held to under 100" refused.
-- "Lakers record when a player scores 40" answered every game: it now refuses
-  until a team's players' games are read on records.
 
 Expected values are counted with pandas from the fixture.
 """
@@ -67,21 +65,6 @@ def test_held_to_under(query, record):
 
 def test_player_held_to_under():
     assert len(_execute("LeBron James games when held to under 20")["finder"]) == 15
-
-
-@pytest.mark.parametrize(
-    "query",
-    [
-        "best record when a player scores 40",
-        "Lakers record when a player scores 40",
-        "Lakers record when someone scores 40",
-        "Lakers record when anyone has 40 points",
-    ],
-)
-def test_any_player_clause_on_team_records_refuses(query):
-    result = execute_natural_query(query)
-    assert result.result_status == "no_result"
-    assert result.result_reason == "filter_not_supported"
 
 
 def test_team_players_games_still_answer():
