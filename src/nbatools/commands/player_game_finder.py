@@ -292,6 +292,7 @@ def build_result(
     series_situation: str | None = None,
     position: str | None = None,
     rookies_only: bool = False,
+    per_season_limit: int | None = None,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
@@ -549,6 +550,13 @@ def build_result(
             ).copy()
         else:
             df = df.sort_values([stat_col, "game_date"], ascending=[ascending, ascending]).copy()
+
+    if per_season_limit is not None and sort_by == "stat":
+        # "biggest win each season": each season's top games, newest season
+        # first, in place of the span's top games.
+        df = df.groupby("season", sort=False).head(per_season_limit)
+        df = df.sort_values("season", ascending=False, kind="stable").copy()
+        limit = None
 
     df = df.reset_index(drop=True)
     df.insert(0, "rank", range(1, len(df) + 1))

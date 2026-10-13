@@ -748,7 +748,11 @@ _DESCRIBED_OPPONENTS = re.compile(
     r"(?!(?:made|make|qualified|qualify|missed|miss)\s+(?:the\s+)?(?:playoffs|postseason)\b)"
     r"(?!(?:are|were|is|was)\s+(?:over|above|under|below|\.500|winning|losing)\b)"
     r"[a-z]"
-    r"|\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?(?:[a-z]+\s+)?"
+    r"|\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?"
+    # "vs good / top / bad defensive teams" are the rating groups.
+    r"(?!(?:top|best|elite|great|good|strong|bottom|worst|bad|poor|weak)\s+"
+    r"(?:defensive|offensive)\s+teams\b)"
+    r"(?:[a-z]+\s+)?"
     r"(?:shooting|scoring|defensive|defending|offensive|rebounding|passing)\s+(?:teams|opponents)\b"
 )
 # "when the score was 120": which side's points is not said (dropped).
