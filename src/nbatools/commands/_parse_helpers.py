@@ -509,8 +509,9 @@ _YEAR_COUNT_CONTEXT = re.compile(
 # follows ("from 2019 on vs the Celtics"); "in 2019 on the Lakers", "from 2019
 # on the road" keep the one season.
 _CLAUSE_NEXT = (
-    r"(?=\s*(?:[,?.!]|$)|\s+(?:vs\.?|versus|against|in(?!-|\s+season\b)|at(?!\s+(?:least|most)\b)"
-    r"|with|without|when|as|during|for|while|including|excluding)\b)"
+    r"(?=\s*(?:[,?.!]|$)|\s+(?:(?:vs|versus)(?!\.?\s+off\b)\.?|against|in(?!-|\s+season\b)"
+    r"|at(?!\s+(?:least|most)\b)|with|without|when|as|during|for(?!\s+\d)|while|including"
+    r"|excluding)\b)"
 )
 _OPEN_END_WORDS = (
     rf"on{_CLAUSE_NEXT}|onwards?\b|forward\b|and\s+(?:on|after|later|beyond){_CLAUSE_NEXT}"

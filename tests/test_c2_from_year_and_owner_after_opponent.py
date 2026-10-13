@@ -215,3 +215,19 @@ def test_at_least_and_in_season_after_on_are_not_open_ends(query, season):
 def test_in_a_year_to_tonight_has_no_one_day_filter():
     kwargs = parse_query("LeBron stats in 2024 to tonight")["route_kwargs"]
     assert not kwargs.get("start_date") and not kwargs.get("end_date")
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("Jokic in the 2024-25 season on vs off court", "2024-25"),
+        ("LeBron in 2024 on vs off court", "2023-24"),
+        ("LeBron in 2024 on versus off court", "2023-24"),
+        ("LeBron in 2024 on vs. off court", "2023-24"),
+        ("LeBron stats in 2024 on for 30+ minutes", "2023-24"),
+    ],
+)
+def test_on_court_wording_after_a_year_keeps_the_season(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("season") == season
+    assert not kwargs.get("start_season")
