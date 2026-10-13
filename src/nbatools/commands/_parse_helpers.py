@@ -811,7 +811,7 @@ def extract_since_season(text: str) -> str | None:
         rest = (_OPEN_END if opener in ("", "from", "starting") else _STRICT_OPEN_END).match(
             text, m.end()
         )
-        if not rest and m.group("lead") and m.start() == 0:
+        if not rest and opener in ("from", "starting") and m.start() == 0:
             # "from 2019 on, LeBron stats" / "from 2019 on LeBron stats".
             rest = re.match(r"\s*,?\s*on\b", text[m.end() :])
         if not rest:

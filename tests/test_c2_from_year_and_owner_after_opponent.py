@@ -247,3 +247,26 @@ def test_in_a_year_on_followed_by_more_is_on_court_wording(query, season):
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs.get("season") == season
     assert not kwargs.get("start_season")
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("In 2019 on the Lakers, how many points did LeBron average", "2018-19"),
+        ("in 2019 on the road Celtics record", "2018-19"),
+        ("during 2024 on the road Celtics record", "2023-24"),
+        ("In 2023-24 on the road Celtics record", "2023-24"),
+    ],
+)
+def test_a_leading_in_a_year_on_filter_keeps_the_season(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("season") == season
+    assert not kwargs.get("start_season")
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["from 2019 on LeBron stats", "from 2019 on, LeBron stats", "In 2019 onward LeBron stats"],
+)
+def test_a_leading_open_end_is_a_span(query):
+    assert parse_query(query)["route_kwargs"]["start_season"] == "2019-20"
