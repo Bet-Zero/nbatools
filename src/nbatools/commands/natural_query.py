@@ -7560,6 +7560,12 @@ _LEAGUE_GAME_LIST_WORDS = re.compile(r"games?|nights?|performances?|outings?")
 # Subjects and samples a league game list cannot apply.
 _LEAGUE_LIST_UNREAD = re.compile(
     r"\b(?:guards?|forwards?|centers?|wings?|bigs?|big\s+m[ae]n)\b|\blast\s+\d+"
+    r"(?!\s+(?:seasons?|years?|postseasons?|playoffs?)\b)"
+)
+# "in the last 10 games": each player's own last games, which a league list
+# cannot apply.
+_LEAGUE_LIST_LAST_GAMES = re.compile(
+    r"\blast\s+\d+(?!\s+(?:seasons?|years?|postseasons?|playoffs?)\b)"
 )
 # What may follow a number the parse reads as a stat bound.
 _LEAGUE_LIST_BOUND_TAIL = re.compile(
@@ -7674,8 +7680,9 @@ def _league_game_list_refusal(parsed: dict) -> dict:
     refused = _single_season_refusal(parsed)
     refused["route_kwargs"]["unsupported_filters"] = ["league_game_list_unread"]
     refused["notes"] = [
-        "unsupported_boundary: league game lists rank every player's games; a group or "
-        'number they do not read ("the top 10 scorers", "with 20 shots") is not applied'
+        "unsupported_boundary: league game lists rank every player's games; a group, "
+        'number or recent-games window they do not read ("the top 10 scorers", "with 20 '
+        'shots", "in the last 10 games") is not applied'
     ]
     return refused
 
@@ -7701,7 +7708,9 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
         out.get("route") not in _PLAYER_GAME_LIST_ROUTES or not isinstance(player, str)
     ):
         return None
-    if not _PLAYER_GAME_LIST.search(q) or _PLAYER_GAME_LIST_BLOCKERS.search(q):
+    # "in the last 3 seasons" is a span, not a season list.
+    spanless = re.sub(r"\b(?:last|past|previous)\s+\d+\s+seasons\b", " ", q)
+    if not _PLAYER_GAME_LIST.search(q) or _PLAYER_GAME_LIST_BLOCKERS.search(spanless):
         return None
     shooting = next(
         (stat for pattern, stat in _GAME_SHOOTING_PATTERNS if re.search(pattern, q)), None
@@ -7733,12 +7742,18 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             # The residual misses filters the partial parse dropped ("for
             # rookies", "among guards", "in his last 10", "under 25").
             plain = _GAME_LIST_PERCENT_BOUND.sub(" ", q)
+            if _LEAGUE_LIST_LAST_GAMES.search(plain):
+                return _league_game_list_refusal(parsed)
             if _ROOKIE_SUBJECT.search(plain) or _LEAGUE_LIST_UNREAD.search(plain):
                 return None
-            for number in re.finditer(r"\b\d+(?:\.\d+)?\b", plain):
+            # Seasons and dates ("2022-23", "jan 5") are read by the parse.
+            dateless = _LEAGUE_LIST_DATES.sub(lambda m: " " * len(m.group(0)), plain)
+            for number in re.finditer(r"\b\d+(?:\.\d+)?\b", dateless):
                 if re.fullmatch(r"(?:19|20)\d\d", number.group(0)):
                     continue
-                if not _LEAGUE_LIST_BOUND_TAIL.match(plain, number.end()):
+                if not _LEAGUE_LIST_BOUND_TAIL.match(dateless, number.end()) and not re.match(
+                    r"\s+(?:seasons?|years?|playoffs|postseasons)\b", dateless[number.end() :]
+                ):
                     # "over 50% from three under 25": a number nothing applies.
                     return None
             plain = re.sub(r"\b(?:nights?|performances?|outings?)\b", "games", plain)
@@ -7765,8 +7780,9 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
             return None
         if route_kwargs.get("last_n"):
             # "in the last 10 games" means each player's last games, which a
-            # league game list cannot apply.
-            return None
+            # league game list cannot apply; the season board would answer
+            # season percentages.
+            return _league_game_list_refusal(parsed)
         head = _PLAYER_GAME_LIST.search(q)
         # Seasons, dates and percent bounds are read by the parse already.
         plain = _LEAGUE_LIST_DATES.sub(lambda m: " " * len(m.group(0)), q)
@@ -7785,7 +7801,8 @@ def _player_game_list(parsed: dict, out: dict) -> dict | None:
                 # A year, or the list's own count ("top 5 shooting games").
                 continue
             if not _LEAGUE_LIST_BOUND_TAIL.match(plain, number.end()) and not re.match(
-                r"(?:st|nd|rd|th)\b|\s+(?:seasons?|years?|days?|weeks?|months?)\b",
+                r"(?:st|nd|rd|th)\b|\s+(?:seasons?|years?|days?|weeks?|months?|playoffs|"
+                r"postseasons)\b",
                 plain[number.end() :],
             ):
                 # "for the top 10 scorers": a number no filter reads.
@@ -7996,11 +8013,34 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     if not any("every player's games" in note for note in out.get("notes") or []):
         return None
     kwargs = dict(out["route_kwargs"])
-    if stat != "fg_pct" and any(
-        condition.get("stat") in _RATE_STATS for condition in kwargs.get("conditions") or []
-    ):
-        # "best free throw shooting games over 90%": the bound was read as FG%.
-        return None
+    conditions = list(kwargs.get("conditions") or [])
+    if stat != "fg_pct" and any(c.get("stat") in _RATE_STATS for c in conditions):
+        percents = list(_GAME_LIST_PERCENT_BOUND.finditer(tail))
+        rates = [c for c in conditions if c.get("stat") in _RATE_STATS]
+        unbounded = _GAME_LIST_PERCENT_BOUND.sub(" ", tail)
+        if (
+            not percents
+            or any(m.group(3) for m in percents)
+            or len(percents) != len(rates)
+            or any(c.get("stat") != "fg_pct" for c in rates)
+            # "over 90% and over 50%": two floors, so one may be another rate.
+            or sum(c.get("min_value") is not None for c in rates) > 1
+            or sum(c.get("max_value") is not None for c in rates) > 1
+            # "with fg% over 50%", "over 50% shooting": the bound names a
+            # rate before or after it, so it is not on the ranked rate.
+            or re.search(
+                r"\b(?:fg|ts|efg|3p|ft)\b|%|\bfield[\s-]goal|\bshooting\b|\bpercent(?:age)?\b"
+                r"|\btrue\b|\beffective\b|\bthrees?\b|\bfree[\s-]throws?\b",
+                unbounded,
+            )
+        ):
+            # A rate bound this wording does not explain: keep it unanswered.
+            return None
+        # "best free throw shooting games over 90%": the unnamed bound is on
+        # the rate the list ranks, read as FG% by the canonical wording.
+        kwargs["conditions"] = [
+            dict(c, stat=stat) if c.get("stat") == "fg_pct" else c for c in conditions
+        ]
     kwargs.update(
         stat=stat,
         ascending=match.group("dir") in ("worst", "lowest"),
@@ -8035,6 +8075,75 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     out.update(stat=stat, min_value=kwargs.get("min_value"))
     out["notes"] = [note for note in out.get("notes") or [] if not note.startswith("game_list:")]
     out["notes"].append(f"game_list: {whose} ranked by {stat}")
+    return out
+
+
+def _named_team_game_list_frame(parsed: dict) -> dict | None:
+    """ "Lakers worst shooting games", "best 3 point shooting games by the Celtics".
+
+    The team's own games ranked by the shooting rate asked for, answered as
+    the league team list with the same tail and then limited to that team.
+    The team summary or plain game list answered without the rate or the
+    direction.
+    """
+    team = parsed.get("team")
+    if (
+        not isinstance(team, str)
+        or parsed.get("player")
+        or parsed.get("game_list_reparse")
+        or parsed.get("team_a")
+        or parsed.get("team_b")
+    ):
+        return None
+    q = parsed["normalized_query"]
+    aliases = "|".join(
+        re.escape(name)
+        for name in sorted(TEAM_ALIASES, key=len, reverse=True)
+        if TEAM_ALIASES[name] == team and name not in _WORD_TEAM_ALIASES
+    )
+    if not aliases:
+        return None
+    prefix = re.match(rf"(?:the\s+)?(?:{aliases})(?:'s?)?\s+(?!players?\b)", q)
+    if prefix:
+        league_q = q[prefix.end() :]
+        match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
+    else:
+        match = _LEAGUE_GAME_LIST_FRAME.match(q)
+        owner = (
+            re.match(
+                rf"\s+(?:by|for|from|of)\s+(?:the\s+)?(?:{aliases})\b(?!'?\s*players?\b)",
+                q[match.end() :],
+            )
+            if match and not match.group("by")
+            else None
+        )
+        if owner is None:
+            return None
+        league_q = q[: match.end()] + q[match.end() + owner.end() :]
+        match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
+    if match is None or match.group("by") or match.group("what") != "shooting":
+        return None
+    team_q = league_q
+    if not match.group("team"):
+        team_q = league_q[: match.end()] + " by a team" + league_q[match.end() :]
+    state = _build_parse_state(team_q)
+    if state.get("team") or state.get("player"):
+        # Another team or a player in the tail: not this team's own list.
+        return None
+    out = _league_game_list_frame(state)
+    if out is None:
+        return None
+    out = dict(out)
+    out["normalized_query"] = q
+    if out.get("route") != "game_finder":
+        # A refusal that names its own reason.
+        return out
+    kwargs = dict(out["route_kwargs"], team=team)
+    out["route_kwargs"] = kwargs
+    out["team"] = team
+    out["notes"] = [
+        note.replace("every team's games", f"{team} games") for note in out.get("notes") or []
+    ]
     return out
 
 
@@ -9869,7 +9978,7 @@ def _finalize_route(parsed: dict) -> dict:
     record_bar = _team_record_bar_board(parsed)
     if record_bar is not None:
         return record_bar
-    game_list = _league_game_list_frame(parsed)
+    game_list = _league_game_list_frame(parsed) or _named_team_game_list_frame(parsed)
     if game_list is not None:
         return game_list
     try:
