@@ -185,6 +185,7 @@ def test_excluded_margins_keep_the_other_games(query, kept):
         "Nikola Jokic one possession games with 30 and 10",
         # A dropped count equal to the margin's own 3.
         "Nikola Jokic one possession games with 3 rebs",
+        "Nikola Jokic one possession games with 1 rebs",
         "Lakers record excluding one possession games when LeBron has 4 asts",
         # Two margins compared.
         "Lakers one possession games vs close games",

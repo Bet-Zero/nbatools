@@ -10645,7 +10645,8 @@ def _without_margin_bounds(value, in_list: bool = False):
         return {
             k: _without_margin_bounds(v)
             for k, v in value.items()
-            if k != "normalized_query" and not (margin and k in ("min_value", "max_value"))
+            if k not in ("normalized_query", "confidence", "alternates")
+            and not (margin and k in ("min_value", "max_value"))
         }
     if isinstance(value, (list, tuple)):
         return [_without_margin_bounds(item, in_list=True) for item in value]
