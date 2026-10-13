@@ -680,6 +680,8 @@ _LIST_ROUTES = (
     "player_game_summary",
     "team_streak_finder",
     "player_streak_finder",
+    # Team stretches read their own lists; a player's stretch does not.
+    "player_stretch_leaderboard",
 )
 
 
@@ -738,8 +740,22 @@ _UNREAD_GROUP = re.compile(
     r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?(?:ranked|la|l\.a\.|los\s+angeles)"
     r"\s+(?:opponents|teams)\b"
 )
+# "vs teams that shoot 50%", "vs teams that won 50 games", "vs poor shooting
+# teams": opponents described by their own season, which is not loaded (the
+# clause was read as the subject's own stat or dropped).
+_DESCRIBED_OPPONENTS = re.compile(
+    r"\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?(?:teams?|opponents?)\s+(?:that|who|which)\s+"
+    r"(?!(?:made|make|qualified|qualify|missed|miss)\s+(?:the\s+)?(?:playoffs|postseason)\b)"
+    r"(?!(?:are|were|is|was)\s+(?:over|above|under|below|\.500|winning|losing)\b)"
+    r"[a-z]"
+    r"|\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?(?:[a-z]+\s+)?"
+    r"(?:shooting|scoring|defensive|defending|offensive|rebounding|passing)\s+(?:teams|opponents)\b"
+)
 # "when the score was 120": which side's points is not said (dropped).
-_BARE_SCORE = re.compile(r"\b(?:the\s+)?(?:final\s+)?score\s+(?:was|is|of|were)\s+\d")
+# "when the score is tied / close": the in-game score is not loaded.
+_BARE_SCORE = re.compile(
+    r"\b(?:the\s+)?(?:final\s+)?score\s+(?:was|is|of|were)\s+(?:\d|tied\b|close\b|even\b)"
+)
 
 
 _CLAUSE_VERB = re.compile(
@@ -762,6 +778,8 @@ def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> 
 
     if _UNREAD_GROUP.search(text):
         _refuse(route_kwargs, "opponent_group")
+    if _DESCRIBED_OPPONENTS.search(text):
+        _refuse(route_kwargs, "opponent_description")
     if _BARE_SCORE.search(text):
         _refuse(route_kwargs, "unattributed_score")
     if route in ("game_finder", "player_game_finder") and _CONDITION_SEASONS.search(text):

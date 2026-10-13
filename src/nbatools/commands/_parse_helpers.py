@@ -241,8 +241,9 @@ def detect_team_leader_stat(text: str) -> str | None:
     if m:
         return detect_stat(m.group(1))
     if re.search(
+        # "Lakers record with 60% true shooting" has no ranking word.
         r"\b(?:best|top|leading|highest|worst|lowest)\b.*?"
-        r"\b(?:shooters?|percentage|pct)\b|%",
+        r"(?:\b(?:shooters?|percentage|pct)\b|%)",
         text,
     ) and not re.search(
         # Game lists, team seasons ("Lakers best 3P% season") and player groups
@@ -1083,6 +1084,11 @@ def _forced_turnovers(m: re.Match) -> str:
     return f"{m.group('lead')} opponents commit {m.group('n')} turnovers{joined}"
 
 
+_OPPONENTS_THAT = re.compile(
+    r"\b(?:vs\.?|versus|against|facing)\s+(?:the\s+)?(?:teams|opponents)\s+(?:that|who|which)\s+"
+    r"((?:scor(?:e|es|ed)|shoot|shoots|shot|ma(?:ke|kes|de)|ha(?:ve|s|d)|commit(?:s|ted)?"
+    r"|grab(?:s|bed)?)\s+(?:(?:at\s+least|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?\d)"
+)
 _GROUP_OPPONENTS = re.compile(
     r"\b(winning|losing|good|bad|top(?:[- ]\d+)?|best|playoff|non-playoff|contending"
     r"|(?:above|over|under|below)\s+\.500|western|eastern)\s+opponents\b"
@@ -1215,6 +1221,21 @@ def canonicalize_bound_phrases(text: str) -> str:
     # "vs winning opponents", "above .500 opponents", "Western opponents": the
     # same groups as "... teams" (the opponents wording was ignored).
     text = _GROUP_OPPONENTS.sub(r"\1 teams", text)
+    # "vs teams that scored 120", "against opponents who shoot 50%": the
+    # opponent's line in those games ("allowed" stays unread).
+    text = _OPPONENTS_THAT.sub(r"when opponents \1", text)
+    # "teams that have a winning record": the .500 bar, like "teams with a
+    # winning record".
+    text = re.sub(
+        r"\bteams\s+(?:that|who|which)\s+(?:have|had)\s+(?:a\s+)?winning\s+records?\b",
+        "teams over .500",
+        text,
+    )
+    text = re.sub(
+        r"\bteams\s+(?:that|who|which)\s+(?:have|had)\s+(?:a\s+)?losing\s+records?\b",
+        "teams under .500",
+        text,
+    )
     # "vs contending / elite / weak teams": the glossary's names for them.
     text = re.sub(r"\bcontending\s+teams\b", "contenders", text)
     text = re.sub(r"\b(?:elite|great)\s+(?:teams|opponents)\b", "top teams", text)
@@ -2579,6 +2600,14 @@ _SHOOTING_MODIFIER = re.compile(
 )
 
 
+def _rate_word_stat(match_text: str) -> str | None:
+    if re.search(r"\b(?:true\s+shooting|ts)\b", match_text):
+        return "ts_pct"
+    if re.search(r"\b(?:effective\s+(?:field[\s-]goal\s+)?shooting|efg)\b", match_text):
+        return "efg_pct"
+    return None
+
+
 def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     """Infer shooting percentage thresholds from clear shooting contexts only."""
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
@@ -2591,6 +2620,11 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     _FROM = rf"{_AREA}?(?!\s+(?:from|on|beyond)\b)"
     _TAIL = r"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?"
     _RATE = r"(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
+    # "40% three point shooting", "60% true shooting", "55% efg".
+    _SHOT = (
+        r"(?:(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+|true\s+"
+        r"|effective\s+(?:field[\s-]goal\s+)?)?shooting|ts|efg)\b"
+    )
     patterns = [
         rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}{_FROM}\b",
         rf"\b(?:from\s+(?:the\s+)?(?:field|floor|three|3))\s+{operator}\s+{_NUM}\b",
@@ -2608,14 +2642,14 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         r"(?<!under )(?<!over )(?<!below )(?<!above )(?<!than )(?<!least )(?<!most )"
         r"(?<!to )(?<!at )(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!up )"
         r"(?<![\w.])()(\d+(?:\.\d+)?)\s*(?:%|percent)\s+"
-        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b()"
+        rf"{_SHOT}()"
         rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
         # "under 40% shooting", "at least 50% three point shooting": the bound
         # word comes first. "allow under 45% shooting" is the opponent's and
         # "held to under 40% shooting" is read elsewhere.
         r"(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!to )"
         rf"\b{operator}\s+{_RATE}\s+"
-        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b"
+        rf"{_SHOT}"
         rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
         # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
         # "6 ft 50%" is a height, not a rate.
@@ -2631,7 +2665,7 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         rf"{_RATE}{_FROM}(?!\w)",
         r"(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!to )"
         rf"\bbetween\s+(\d+(?:\.\d+)?)\s*(?:%|percent)?\s+and\s+{_RATE}\s+"
-        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b"
+        rf"{_SHOT}"
         rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
     ]
     abbreviation = re.compile(r"(ts|efg|fg|ft|3pt|3p)\b")
@@ -2642,7 +2676,7 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         for m in re.finditer(pattern, text):
             if any(m.start() < e["end"] and e["start"] < m.end() for e in matches):
                 continue
-            stat = _shooting_percentage_stat_for_context(m.group(0))
+            stat = _rate_word_stat(m.group(0)) or _shooting_percentage_stat_for_context(m.group(0))
             modifier = _SHOOTING_MODIFIER.search(text[: m.start()])
             if modifier and not modifier.group("other"):
                 stat = "ft_pct" if modifier.group("ft") else "fg3_pct"
@@ -2684,6 +2718,8 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
             short = abbreviation.match(m.group(0)) if index == len(patterns) - 2 else None
             if short:
                 stat = abbreviated.get(short.group(1), "fg3_pct")
+            elif word := _rate_word_stat(m.group(0)):
+                stat = word
             elif modifier:
                 if modifier.group("other"):
                     stat = "ts_pct" if modifier.group("other") in {"true", "ts"} else "efg_pct"
@@ -2761,6 +2797,7 @@ def _verb_upper_bound(text: str, m: re.Match, stat: str) -> dict | None:
 
 
 _OR_FEWER_PHRASE = re.compile(r"\bor\s+(?:fewer|less)\b(?!\s+than)")
+_COUNT_OR_FEWER = re.compile(r"(?<![\d.])(\d+(?:\.\d+)?)\s+or\s+(?:fewer|less)\b(?!\s+than)")
 _UPPER_BOUND_TEXT = re.compile(
     r"\b(?:or\s+(?:fewer|less)|at\s+most|no\s+more\s+than|max(?:imum)?)\b"
 )
@@ -2784,6 +2821,14 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
     for condition in conditions:
         if condition.get("text"):
             masked = masked.replace(condition["text"], " ")
+    # "with 10 or fewer opponent turnovers" is read by the route's own
+    # clause readers, which leave no threshold condition behind.
+    route_maxima = {route_kwargs.get("max_value")} | {
+        c.get("max_value") for c in route_kwargs.get("conditions") or []
+    }
+    masked = _COUNT_OR_FEWER.sub(
+        lambda m: " " if float(m.group(1)) in route_maxima else m.group(0), masked
+    )
     if _OR_FEWER_PHRASE.search(masked):
         return "unparsed_upper_bound"
 
