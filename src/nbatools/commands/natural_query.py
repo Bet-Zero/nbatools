@@ -8103,25 +8103,34 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
     )
     if not aliases:
         return None
-    prefix = re.match(rf"(?:the\s+)?(?:{aliases})(?:'s?)?\s+(?!players?\b)", q)
+    # "Lakers players worst shooting games", "... by Lakers players": the
+    # team's players' own games, not the team's.
+    prefix = re.match(rf"(?:the\s+)?(?:{aliases})(?:'s?)?\s+(?P<players>players?'?\s+)?", q)
     if prefix:
+        players = bool(prefix.group("players"))
         league_q = q[prefix.end() :]
-        match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
     else:
         match = _LEAGUE_GAME_LIST_FRAME.match(q)
-        owner = (
-            re.match(
-                rf"\s+(?:by|for|from|of)\s+(?:the\s+)?(?:{aliases})\b(?!'?\s*players?\b)",
-                q[match.end() :],
-            )
-            if match and not match.group("by")
-            else None
+        if match is None or match.group("by"):
+            return None
+        tail = q[match.end() :]
+        # The owner may follow the list or close the question ("best free
+        # throw shooting games over 90% by the Celtics").
+        owner = re.search(
+            rf"\s+(?:by|for|from|of|among)\s+(?:the\s+)?(?:{aliases})"
+            rf"(?P<players>'?\s*players?)?\b",
+            tail,
         )
         if owner is None:
             return None
-        league_q = q[: match.end()] + q[match.end() + owner.end() :]
-        match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
-    if match is None or match.group("by") or match.group("what") != "shooting":
+        players = bool(owner.group("players"))
+        league_q = q[: match.end()] + tail[: owner.start()] + tail[owner.end() :]
+    match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
+    if match is None or match.group("by"):
+        return None
+    if players:
+        return _team_players_game_list(parsed, team, league_q, match)
+    if match.group("what") != "shooting":
         return None
     team_q = league_q
     if not match.group("team"):
@@ -8143,6 +8152,56 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
     out["team"] = team
     out["notes"] = [
         note.replace("every team's games", f"{team} games") for note in out.get("notes") or []
+    ]
+    return out
+
+
+def _team_players_game_list(parsed: dict, team: str, league_q: str, match) -> dict | None:
+    """ "Lakers players worst shooting games": every Lakers player's games."""
+    what = match.group("what")
+    if match.group("team") or (match.group("rate") and what != "shooting"):
+        return None
+    player_q = league_q
+    if what != "shooting":
+        # The shooting list's wording carries the tail; the counted stat is
+        # set below.
+        player_q = league_q[: match.start("what")] + "shooting" + league_q[match.end("what") :]
+    state = _build_parse_state(player_q)
+    if state.get("team") or state.get("player"):
+        return None
+    try:
+        out = _finalize_route(state)
+    except ValueError:
+        return None
+    out = dict(out)
+    out["normalized_query"] = parsed["normalized_query"]
+    kwargs = dict(out.get("route_kwargs") or {})
+    if out.get("route") is None and kwargs.get("unsupported_filters"):
+        # A refusal that names its own reason.
+        return out
+    if (
+        out.get("route") != "player_game_finder"
+        or kwargs.get("player")
+        or kwargs.get("team")
+        or not any("every player's games" in note for note in out.get("notes") or [])
+    ):
+        return None
+    if what != "shooting":
+        if any(c.get("stat") in _RATE_STATS for c in kwargs.get("conditions") or []):
+            # "best scoring games by Lakers players over 50%": not a bound on
+            # the counted stat.
+            return None
+        kwargs["stat"] = _LEAGUE_GAME_LIST_COUNTS[what]
+        out["stat"] = kwargs["stat"]
+    kwargs["team"] = team
+    out["route_kwargs"] = kwargs
+    out["notes"] = [
+        re.sub(
+            r"game_list: every player's games ranked by \w+",
+            f"game_list: {team} players' games ranked by {kwargs['stat']}",
+            note,
+        )
+        for note in out.get("notes") or []
     ]
     return out
 
