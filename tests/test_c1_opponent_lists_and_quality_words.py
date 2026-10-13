@@ -125,3 +125,33 @@ def test_quality_word_records(query, record):
 def test_top_n_games_rank_by_points(query, points):
     rows = _execute(query)["finder"]
     assert [row["pts"] for row in rows] == points
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # A clause about the player's own team after the opponent.
+        ("LeBron James record vs the Celtics and the Lakers won", (4, 4, 0)),
+    ],
+)
+def test_own_team_clause_after_the_opponent(query, record):
+    assert _record(query) == record
+
+
+def test_own_team_clause_on_a_player_game_list():
+    assert len(_execute("LeBron James games vs Celtics and the Lakers lost")["finder"]) == 8
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Two teams joined by vs pair up; a third after "or" is not read.
+        "Celtics vs Knicks or Heat",
+        "Celtics vs Knicks or Heat record",
+        "Lakers vs Celtics or Knicks head to head",
+    ],
+)
+def test_or_after_a_team_pair_refuses(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"

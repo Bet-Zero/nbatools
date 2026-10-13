@@ -694,6 +694,10 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     if len(lists) != 1:
         return
     start, end, teams = lists[0]
+    if _CLAUSE_VERB.match(text, end):
+        # "vs Celtics and the Knicks score 110", "LeBron games vs Celtics and
+        # Lakers won": a clause about the last team.
+        return
     if route_kwargs.get("team") in teams[1:]:
         # "Knicks record vs Heat and Celtics", "LeBron games vs Celtics and
         # Knicks": a later team in the list was read as the subject.
@@ -704,12 +708,7 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
             route_kwargs["team"] = before[0]
         elif route.startswith("player_"):
             route_kwargs["team"] = None
-    if (
-        route_kwargs["opponent"] != teams[0]
-        or route_kwargs.get("team") in teams
-        # "vs Celtics and the Knicks score 110": a clause about the last team.
-        or _CLAUSE_VERB.match(text, end)
-    ):
+    if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:
         return
     route_kwargs["opponent"] = list(dict.fromkeys(teams))
 

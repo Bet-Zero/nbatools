@@ -831,13 +831,20 @@ def _team_at(text: str, pos: int) -> tuple[int, str] | None:
     return (m.end(), TEAM_ALIASES[m.group(1)]) if m else None
 
 
+def _team_ends_here(text: str) -> bool:
+    from nbatools.commands._matchup_utils import TEAM_ALIASES
+
+    return any(text.endswith(" " + k) or text == k for k in TEAM_ALIASES)
+
+
 def opponent_lists(text: str) -> list[tuple[int, int, list[str]]]:
     """Lists of two or more teams after vs/against ("vs Celtics, Knicks and
     Heat"): (start of the first team, end of the last, teams in order)."""
     found = []
     for vs in _LIST_VS.finditer(text):
         first = _team_at(text, vs.end())
-        if not first:
+        if not first or _team_ends_here(text[: vs.start()].rstrip()):
+            # "Celtics vs Knicks or Heat" pairs teams; a list there is not read.
             continue
         end, teams = first[0], [first[1]]
         while (sep := _LIST_SEP.match(text, end)) and (item := _team_at(text, sep.end())):
