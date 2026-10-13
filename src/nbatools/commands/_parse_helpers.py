@@ -518,6 +518,18 @@ _OPEN_END_WORDS = (
     r"|(?:up\s+to|to|through|thru|until|till|til)\s+(?:now|today|tonight|date|present"
     r"|the\s+present|this\s+(?:season|year)|the\s+current\s+season|current)\b"
 )
+# "in 2019 on" / "for 2019 onward" open a span only when the open end closes the
+# question: "in 2024 on with Brown", "in 2024 on vs bench" are on-court wording.
+_STRICT_OPEN_END_WORDS = (
+    r"on(?=\s*(?:[?.!]|$))|onwards?\b|forward\b|and\s+(?:on|after|later|beyond)(?=\s*(?:[?.!]|$))"
+    r"|(?:up\s+to|to|through|thru|until|till|til)\s+(?:now|today|tonight|date|present"
+    r"|the\s+present|this\s+(?:season|year)|the\s+current\s+season|current)\b"
+)
+_STRICT_OPEN_END = re.compile(
+    r"(?:\s+(?:nba\s+)?(?:season|play-?offs?|postseason))?\s*(?:,\s*)?(?:"
+    + _STRICT_OPEN_END_WORDS
+    + ")"
+)
 # "from 2019 on", "from 2019 to now": a span reaching the latest season.
 _OPEN_END = re.compile(
     r"(?:\s+(?:nba\s+)?(?:season|play-?offs?|postseason))?\s*(?:,\s*)?(?:" + _OPEN_END_WORDS + ")"
@@ -528,7 +540,7 @@ _BARE_YEAR = re.compile(
     # "from 2019 to 2021" and "from 2019 on" are spans.
     rf"\b(?:in|during|for|from)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b"
     r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b"
-    r"|,?\s*(?:" + _OPEN_END_WORDS + ")))"
+    r"|,?\s*(?:" + _STRICT_OPEN_END_WORDS + ")))"
     rf"|\b(?:the\s+)?({_YEAR})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
     # "Lakers record 2024", "LeBron stats 2016": a year closing the question.
     rf"|(?<![\d/-])\b({_YEAR})\s*[?.!]?\s*$"
@@ -794,7 +806,11 @@ def extract_since_season(text: str) -> str | None:
         r"(?<![\w-])((?:19|20)\d{2}(?:-\d{2})?)(?![-\d])",
         text,
     ):
-        rest = _OPEN_END.match(text, m.end())
+        lead = (m.group("lead") or "").split()
+        opener = lead[0] if lead else ""
+        rest = (_OPEN_END if opener in ("", "from", "starting") else _STRICT_OPEN_END).match(
+            text, m.end()
+        )
         if not rest and m.group("lead") and m.start() == 0:
             # "from 2019 on, LeBron stats" / "from 2019 on LeBron stats".
             rest = re.match(r"\s*,?\s*on\b", text[m.end() :])

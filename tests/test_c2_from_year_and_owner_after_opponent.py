@@ -231,3 +231,19 @@ def test_on_court_wording_after_a_year_keeps_the_season(query, season):
     kwargs = parse_query(query)["route_kwargs"]
     assert kwargs.get("season") == season
     assert not kwargs.get("start_season")
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("Tatum stats in 2024 on with Brown off", "2023-24"),
+        ("Tatum stats in 2024 on without Brown", "2023-24"),
+        ("Nuggets in 2024 on vs bench", "2023-24"),
+        ("Jokic net rating in 2024 on vs sitting", "2023-24"),
+        ("Celtics record in 2024 on with Tatum", "2023-24"),
+    ],
+)
+def test_in_a_year_on_followed_by_more_is_on_court_wording(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("season") == season
+    assert not kwargs.get("start_season")
