@@ -39,11 +39,12 @@ ALLOWED_STATS = {
     "ts_pct": "ts_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses", "month"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
+    "opponent": (),
 }
 
 
@@ -201,6 +202,30 @@ def build_result(
             stat=stat,
             rank_stat=rank_stat,
             rank_order=rank_order,
+        )
+
+    if split == "opponent":
+        # One row per opponent, in alphabetical order of its abbreviation.
+        rows = [
+            _summarize_bucket(bucket_df, bucket)
+            for bucket, bucket_df in sorted(df.groupby("opponent_team_abbr"), key=lambda x: x[0])
+        ]
+        return SplitSummaryResult(
+            summary=pd.DataFrame(
+                [
+                    {
+                        "team_name": team_name,
+                        "season_start": season_min,
+                        "season_end": season_max,
+                        "season_type": season_type,
+                        "split": split,
+                        "games_total": int(len(df)),
+                    }
+                ]
+            ),
+            split_comparison=pd.DataFrame(rows),
+            current_through=compute_current_through_for_seasons(seasons, season_type),
+            caveats=_caveats(seasons, opponent),
         )
 
     if split == "home_away":

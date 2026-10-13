@@ -682,6 +682,8 @@ _LIST_ROUTES = (
     "player_streak_finder",
     # Team stretches read their own lists; a player's stretch does not.
     "player_stretch_leaderboard",
+    "team_split_summary",
+    "player_split_summary",
 )
 
 

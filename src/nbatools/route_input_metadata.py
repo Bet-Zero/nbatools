@@ -78,7 +78,7 @@ TEAM_SAMPLE_FILTERS = COMMON_SAMPLE_FILTERS + (
 )
 
 SEASON_TYPE_VALUES = ("Regular Season", "Playoffs")
-SPLIT_VALUES = ("home_away", "wins_losses", "month")
+SPLIT_VALUES = ("home_away", "wins_losses", "month", "opponent")
 RANK_ORDER_VALUES = ("asc", "desc")
 SORT_BY_VALUES = ("game_date", "stat")
 RECORD_STAT_VALUES = ("wins", "losses", "win_pct")
