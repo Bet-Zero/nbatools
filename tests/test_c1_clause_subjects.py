@@ -66,20 +66,6 @@ def test_player_shooting_after_an_opponent_clause():
 
 
 @pytest.mark.parametrize(
-    "query",
-    [
-        # Not read yet; must not answer with the Lakers' or the Celtics' own rate.
-        "Lakers record when the Celtics shoot 50%",
-        "Lakers record when they shoot 50% and opponents shoot 50%",
-    ],
-)
-def test_other_teams_bare_shooting_refuses(query):
-    from nbatools.query_service import execute_natural_query
-
-    assert execute_natural_query(query).result_status == "no_result"
-
-
-@pytest.mark.parametrize(
     ("query", "record"),
     [
         ("Lakers record when LeBron is held to 20", (12, 6)),

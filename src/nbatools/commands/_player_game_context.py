@@ -260,6 +260,10 @@ _OPP_STAT_BOUND = re.compile(
     r"|(?:\b(?P<op3>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?"
     r"\b(?P<num3>\d+)(?:\+|\s+or\s+(?P<orx>more|fewer|less))?\s+"
     rf"(?P<stat3>{_OPP_STAT_WORDS})\s+(?:allowed|given\s+up)\b"
+    # "with 15 opponent turnovers", "10 or fewer opponent turnovers": a bare
+    # count is a floor, as the team's own counts are.
+    r"|(?<![\d.])\b(?P<num4>\d+)(?:\s+or\s+(?P<orx4>more|fewer|less))?\s+"
+    rf"{_OPP_WORD}\s+(?P<stat4>{_OPP_STAT_WORDS})\b(?:\s+or\s+(?P<orx5>more|fewer|less))?"
 )
 _OPP_BOUND_MODE = {
     "at least": ("min", 0.0),
@@ -375,7 +379,12 @@ _RATE_TAIL = (
 _OPP_SHOOTING = re.compile(
     r"\b(?:where\s+|when\s+|while\s+)?(?:the\s+)?(?:opponents?|other\s+team|opposing\s+teams?|"
     r"opposition)\s+(?:shot|shoots|shoot|shooting|were\s+shooting|was\s+shooting)\s+"
-    rf"{_RATE_OP}\s+{_RATE_TAIL}"
+    # "when opponents shoot 50%": a bare rate is a floor, as the team's own is.
+    rf"(?:(?:{_RATE_OP}\s+)?{_RATE_TAIL}"
+    # "opponents shot between 40 and 50 percent": both bounds.
+    r"|between\s+(?P<lo>\d+(?:\.\d+)?)\s*(?:%|percent\b)?\s+and\s+"
+    + _RATE_TAIL.replace("?P<num>", "?P<num3>").replace("?P<area>", "?P<area3>")
+    + ")"
     r"|\b(?:held|holding|holds?|limited|limiting|limits?|kept|keeping)\s+(?:the\s+)?"
     r"(?:opponents?|other\s+team|them|teams)\s+(?:to\s+)?"
     rf"(?:{_RATE_OP.replace('?P<op>', '?P<op2>')}\s+)?"
@@ -387,7 +396,7 @@ _OPP_SHOOTING = re.compile(
 # ("from the corner"): not read, so refuse.
 _SECOND_OPPONENT_CLAUSE = re.compile(
     r"\s*(?:,\s*|\s+(?:and|but|while|with)\s+)(?:and\s+)?"
-    r"(?:(?:scor\w*|had|has|made|making|hit|hitting|grabb\w*|committ\w*|put\w*\s+up|"
+    r"(?:(?:scor\w*|had|has|have|made|makes?|making|hit|hits|hitting|grabb\w*|committ\w*|put\w*\s+up|"
     r"allow\w*|shoot\w*|shot|went)\s+)?"
     r"(?:(?:under|over|below|above|at\s+least|at\s+most|less\s+than|more\s+than|fewer\s+than|"
     # A season after the clause is the sample ("..., 2024-25", "from last
@@ -397,6 +406,7 @@ _SECOND_OPPONENT_CLAUSE = re.compile(
     r"|\s+from\s+(?!(?:19|20)\d{2}\b|(?:last|this|next|previous)\b|"
     r"the\s+(?:(?:19|20)\d{2}\b|last\b|previous\b))"
 )
+_RATE_OR_TAIL = re.compile(r"\s+or\s+(better|more|higher|above|worse|less|lower|below)\b")
 _RATE_MODE = {
     "under": ("max", 0.0001),
     "below": ("max", 0.0001),
@@ -419,8 +429,15 @@ def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
     found = []
     for m in _OPP_SHOOTING.finditer(text):
         op = m.group("op") or m.group("op2") or "at most"  # "held them to 40%": a ceiling
+        if m.group("num") and not m.group("op"):
+            tail = _RATE_OR_TAIL.match(text, m.end())
+            op = (
+                "at most"
+                if tail and tail.group(1) in {"worse", "less", "lower", "below"}
+                else "at least"
+            )
         mode, eps = _RATE_MODE[re.sub(r"\s+", " ", op)]
-        area = m.group("area") or m.group("area2") or ""
+        area = m.group("area") or m.group("area2") or m.group("area3") or ""
         if re.search(r"three|3|deep|arc|downtown|distance|long|outside", area) and not re.search(
             r"free", area
         ):
@@ -429,6 +446,10 @@ def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
             stat = "opponent_ft_pct"
         else:
             stat = "opponent_fg_pct"
+        if m.group("lo"):
+            low, high = sorted((float(m.group("lo")), float(m.group("num3"))))
+            found.append((m, {"stat": stat, "min_value": low / 100, "max_value": high / 100}))
+            continue
         value = float(m.group("num") or m.group("num2")) / 100
         found.append(
             (
@@ -447,14 +468,17 @@ def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
     found.extend(_opponent_shooting_bounds(text))
     for m in _OPP_STAT_BOUND.finditer(text):
-        stat = _opponent_stat(m.group("stat") or m.group("stat2") or m.group("stat3") or "")
+        stat = _opponent_stat(
+            m.group("stat") or m.group("stat2") or m.group("stat3") or m.group("stat4") or ""
+        )
         op = m.group("op") or m.group("op3")
         if not stat:
             continue
-        if not op and m.group("orx"):
-            op = "at least" if m.group("orx") == "more" else "at most"
+        orx = m.group("orx") or m.group("orx4") or m.group("orx5")
+        if not op and orx:
+            op = "at least" if orx == "more" else "at most"
         mode, eps = _OPP_BOUND_MODE[re.sub(r"\s+", " ", op or "at least")]
-        value = float(m.group("num") or m.group("num2") or m.group("num3"))
+        value = float(m.group("num") or m.group("num2") or m.group("num3") or m.group("num4"))
         if stat.endswith("_pct") and value > 1:
             # "at least 50 opponent field goal percentage": the rate as a fraction.
             value /= 100
@@ -506,7 +530,7 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
         if "opponent_shooting" not in blocked:
             route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    if route != "game_finder":
+    if route not in ("game_finder", "team_record"):
         if route and _OPP_SHOOTING.search(text):
             # "Lakers record when opponents shoot under 40 percent": only team
             # game lists read the opponent's rate; elsewhere it filtered the
@@ -1094,7 +1118,10 @@ def _apply_ranking_direction(route: str | None, route_kwargs: dict, text: str) -
 
 
 # "highest scoring games", "top 5 games by assists", "most rebounds in a game".
-_RANKING_WORDS = re.compile(r"\b(?:highest|most|top|best|biggest|largest|lowest|fewest|least|by)\b")
+# "at least" and "at most" are bounds, not ranks.
+_RANKING_WORDS = re.compile(
+    r"\b(?:highest|(?<!\bat )most|top|best|biggest|largest|lowest|fewest|(?<!\bat )least|by)\b"
+)
 
 
 _RANK_WORD = r"(?:highest|most|top|best|biggest|largest|lowest|fewest|(?<!\bat )least)"

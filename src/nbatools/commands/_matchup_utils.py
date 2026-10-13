@@ -822,7 +822,9 @@ _STAT_COUNT_NOUN = (
     r"|threes?|3s|3pm|three[- ]pointers?|steals?|blocks?|turnovers?|fouls?)"
 )
 _STAT_COUNT_CLAUSE = (
-    rf"{_STAT_COUNT_QUALIFIER}\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+{_STAT_COUNT_NOUN}"
+    rf"{_STAT_COUNT_QUALIFIER}\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+"
+    # "with 15 opponent turnovers": the opponent's count, still not a teammate.
+    rf"(?:opponents?(?:'s?|s')?\s+)?{_STAT_COUNT_NOUN}"
     r"(?:\s+or\s+(?:more|fewer|less|better))?"
 )
 # "120 points", "15+ threes and 30 assists": every clause is a count of a

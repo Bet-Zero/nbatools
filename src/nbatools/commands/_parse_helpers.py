@@ -920,6 +920,13 @@ _HELD_TO_RATE = re.compile(
 )
 
 
+_FORCED_TURNOVERS = re.compile(
+    r"\b(?:(?:they|we)\s+)?forc(?:e|es|ed|ing)\s+"
+    r"(?P<n>(?:(?:at\s+(?:least|most)|over|under|more\s+than|fewer\s+than|less\s+than"
+    r"|no\s+more\s+than)\s+)?\d+\+?(?:\s+or\s+(?:more|fewer|less))?)\s+turnovers?\b"
+)
+
+
 def canonicalize_bound_phrases(text: str) -> str:
     """Rewrite bound wording the readers miss into the form they read.
 
@@ -944,6 +951,10 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = _OPPONENTS_HELD_TO.sub(r"\1opponents score \2 or fewer points", text)
     text = _NAMED_HELD_TO.sub(_named_held_to, text)
     text = _HELD_TO_RATE.sub(r"\1shooting \2% or worse", text)
+    # "when they force 15 turnovers", "15 forced turnovers": the opponent's
+    # turnovers (they read as the team's own).
+    text = _FORCED_TURNOVERS.sub(r"opponents commit \g<n> turnovers", text)
+    text = re.sub(r"\b(\d+\+?)\s+forced\s+turnovers\b", r"\1 opponent turnovers", text)
     # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
     # winning-teams bar, or the bar that includes .500.
     text = canonicalize_500_team_bars(text)
@@ -2307,7 +2318,8 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
     operator = r"(over|above|at\s+least|under|below|less\s+than|at\s+most|no\s+more\s+than)"
     _AREA = (
-        r"(?:\s+(?:from\s+(?:the\s+)?(?:field|threes?|3s?|deep|line|beyond\s+the\s+arc)"
+        r"(?:\s+(?:from\s+(?:the\s+)?(?:field|floor|threes?|3s?|deep|line|beyond\s+the\s+arc)"
+        r"|beyond\s+the\s+arc"
         r"|on\s+(?:threes|3s|three[\s-]pointers|3[\s-]pointers|free\s+throws)))"
     )
     _FROM = rf"{_AREA}?(?!\s+(?:from|on|beyond)\b)"
@@ -2315,7 +2327,7 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
     _RATE = r"(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
     patterns = [
         rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}{_FROM}\b",
-        rf"\b(?:from\s+(?:the\s+)?(?:field|three|3))\s+{operator}\s+{_NUM}\b",
+        rf"\b(?:from\s+(?:the\s+)?(?:field|floor|three|3))\s+{operator}\s+{_NUM}\b",
         rf"\b(?:free\s+throws?|from\s+the\s+line)\s+{operator}\s+{_NUM}\b",
         # "when they shoot 50 percent", "shooting 50% or better": a bare
         # percentage is a floor, "or worse" a ceiling. The sign is required,
@@ -2332,6 +2344,13 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         r"(?<![\w.])()(\d+(?:\.\d+)?)\s*(?:%|percent)\s+"
         r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b()"
         rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
+        # "under 40% shooting", "at least 50% three point shooting": the bound
+        # word comes first. "allow under 45% shooting" is the opponent's and
+        # "held to under 40% shooting" is read elsewhere.
+        r"(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!to )"
+        rf"\b{operator}\s+{_RATE}\s+"
+        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b"
+        rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
         # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
         # "6 ft 50%" is a height, not a rate.
         rf"(?<!\d)(?<!\d\s)\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",
@@ -2339,10 +2358,46 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         # names its own area.
         rf"\band\s+(){_RATE}{_TAIL}{_AREA}(?!\s+(?:from|on|beyond)\b)(?!\w)",
     ]
+    # "shooting between 40 and 50 percent", "between 40% and 50% shooting":
+    # both bounds, inclusive.
+    ranges = [
+        rf"\b(?:shoots?|shooting|shot)\s+between\s+(\d+(?:\.\d+)?)\s*(?:%|percent)?\s+and\s+"
+        rf"{_RATE}{_FROM}(?!\w)",
+        r"(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!to )"
+        rf"\bbetween\s+(\d+(?:\.\d+)?)\s*(?:%|percent)?\s+and\s+{_RATE}\s+"
+        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b"
+        rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
+    ]
     abbreviation = re.compile(r"(ts|efg|fg|ft|3pt|3p)\b")
     abbreviated = {"ts": "ts_pct", "efg": "efg_pct", "fg": "fg_pct", "ft": "ft_pct"}
 
     matches = []
+    for pattern in ranges:
+        for m in re.finditer(pattern, text):
+            if any(m.start() < e["end"] and e["start"] < m.end() for e in matches):
+                continue
+            stat = _shooting_percentage_stat_for_context(m.group(0))
+            modifier = _SHOOTING_MODIFIER.search(text[: m.start()])
+            if modifier and not modifier.group("other"):
+                stat = "ft_pct" if modifier.group("ft") else "fg3_pct"
+            elif modifier:
+                stat = "ts_pct" if modifier.group("other") in {"true", "ts"} else "efg_pct"
+            low, high = sorted(
+                (
+                    _normalize_threshold_value(m.group(1), stat),
+                    _normalize_threshold_value(m.group(2), stat),
+                )
+            )
+            matches.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": stat,
+                    "min_value": low,
+                    "max_value": high,
+                    "text": m.group(0),
+                }
+            )
     for index, pattern in enumerate(patterns):
         for m in re.finditer(pattern, text):
             if any(m.start() < e["end"] and e["start"] < m.end() for e in matches):
