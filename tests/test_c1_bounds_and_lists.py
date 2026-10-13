@@ -121,12 +121,11 @@ def test_allowed_count_uses_opponent_points():
 @pytest.mark.parametrize(
     "query",
     [
-        # Percentages, rest and plus-minus bounds have no parse yet; they
+        # Rest and plus-minus bounds have no parse yet; they
         # refuse rather than return an unfiltered answer. (Margins now apply:
         # tests/test_c1_margin_filters.py.)
         "LeBron record on 1 day of rest or less",
         "LeBron games with a plus minus of 0 or less",
-        "Lakers record when opponents shoot 40% or less",
         # One bound per player is not applied separately.
         "Lakers record when Luka scores 20 or less and LeBron scores 20 or less",
         # A route that never receives the bound.

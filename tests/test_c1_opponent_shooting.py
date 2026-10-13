@@ -95,9 +95,8 @@ def test_opponent_shooting_bounds_the_opponent(query, keep):
 @pytest.mark.parametrize(
     "query",
     [
-        # Records and player game lists do not read the opponent's rate; they
-        # filtered the subject's own shooting.
-        "Lakers record when opponents shoot under 40 percent",
+        # Player game lists do not read the opponent's rate; they filtered
+        # the subject's own shooting.
         "LeBron games where the opponent shot under 40 percent",
         # The second clause is the opponent's too and is not read.
         "Lakers wins where the opponent shot under 45 percent and scored under 100",
