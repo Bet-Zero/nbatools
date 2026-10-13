@@ -3761,12 +3761,16 @@ _NOT_A_PERSON_WORD = re.compile(
 
 
 def _names_a_person(fragment: str | None) -> bool:
-    """ "davis" or "anthony davis", not "30 points" or "the fewest"."""
+    """ "davis" or "anthony davis" (a player's last name), not "30 points",
+    "the fewest", "double doubles" or "home court"."""
+    from nbatools.commands.entity_resolution import player_last_name_candidates
+
     return bool(
         fragment
         and re.fullmatch(r"[a-z.'\-]+(?:\s+[a-z.'\-]+)?", fragment)
         and not _NOT_A_PERSON_WORD.search(fragment)
         and detect_stat(fragment) is None
+        and player_last_name_candidates(fragment.split()[-1])
     )
 
 

@@ -71,3 +71,31 @@ def test_stat_bounds_after_with_are_not_teammates():
 
     result = execute_natural_query("LeBron James games with 30 points")
     assert len(result.result.to_dict()["sections"]["finder"]) == 11
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Time scope, the subject's own clause after "vs", and filters after
+        # "with" that are not teammates still answer.
+        "LeBron James games this season with 30 points",
+        "LeBron James games last season with 30 points",
+        "Lakers games this season with 120 points",
+        "Lakers games vs Celtics and Lakers scored 120",
+        "Lakers record vs Celtics and Lakers won",
+        "LeBron James games vs the Celtics when the Lakers' opponents score 110",
+        "LeBron James games with double doubles",
+        "LeBron James games with home court",
+        "LeBron James games with starters",
+    ],
+)
+def test_wording_that_is_not_an_unread_sample_answers(query):
+    assert _status(query) == "ok"
+
+
+def test_counts_for_wording_that_still_answers():
+    assert _record("Lakers record vs the Celtics and the Lakers score 120") == (3, 1)
+    assert _record("LeBron James games vs the Celtics when the Lakers' opponents score 110") == (
+        2,
+        5,
+    )

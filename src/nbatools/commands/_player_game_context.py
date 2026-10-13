@@ -688,12 +688,16 @@ _NAMED_OPPONENTS = re.compile(
 # shooting": a season list, which the game lists answered with games.
 _CONDITION_SEASONS = re.compile(
     r"\b(?:points?|pts|shooting|assists?|rebounds?|threes?|\d+%)\s+seasons\b"
-    r"|\bseasons?\s+(?:with|shooting|where|when|in\s+which)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+    r"|\bseasons\s+(?:with|shooting|where|when|in\s+which)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
 )
 # "when the score was 120": which side's points is not said (dropped).
 _BARE_SCORE = re.compile(r"\b(?:the\s+)?(?:final\s+)?score\s+(?:was|is|of|were)\s+\d")
 
 
+_CLAUSE_VERB = re.compile(
+    r"\s+(?:scor\w*|won|wins?|winning|lost|los\w*|beat\w*|ha[sd]|have|mak\w*|made|shoot\w*"
+    r"|shot|allow\w*|gave|give\w*|play\w*|held|hold\w*)\b"
+)
 _SAMPLE_ROUTES = (
     "team_record",
     "game_finder",
@@ -715,13 +719,19 @@ def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> 
     single = isinstance(route_kwargs.get("opponent"), str)
     for m in _TWO_OPPONENTS.finditer(text) if single and route in _SAMPLE_ROUTES else ():
         first, second = detect_team_in_text(m.group("a")), detect_team_in_text(m.group("b"))
+        if second == route_kwargs.get("team") or _CLAUSE_VERB.match(text, m.end()):
+            # "vs Celtics and the Lakers score 120": the subject's own clause.
+            continue
         if first and second and first != second:
             _refuse(route_kwargs, "multiple_opponents")
             break
     from nbatools.commands.natural_query import _teams_in_order
 
-    named = _teams_in_order(text)
-    subject = named[0][2] if named else None
+    # The subject is the first team named that is not the opponent ("LeBron
+    # games vs the Celtics when the Lakers' opponents score 110" is his team's).
+    opponent = route_kwargs.get("opponent")
+    named = [team for _, _, team in _teams_in_order(text) if team != opponent]
+    subject = named[0] if named else None
     for m in _NAMED_OPPONENTS.finditer(text):
         team = detect_team_in_text(m.group("name"))
         if team and subject and team != subject:
