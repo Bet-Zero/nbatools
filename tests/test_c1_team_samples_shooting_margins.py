@@ -178,11 +178,10 @@ def test_shooting_and_event_inside_a_margin(query, result):
 @pytest.mark.parametrize(
     "query",
     [
-        # The opponent's bare rate is not read yet; it must not filter the
-        # team's own shooting.
+        # A count joined onto the opponent's rate is not read yet; it must
+        # not filter the team's own counts.
         "Lakers record when opponents shoot 50% and make 15 threes",
         "Lakers games when the opponent shoots 50% with 15 threes",
-        "Lakers record when opponents shoot 50%",
     ],
 )
 def test_opponent_bare_shooting_refuses(query):

@@ -61,9 +61,6 @@ def test_joined_opponent_shooting_on_a_game_list():
 @pytest.mark.parametrize(
     "query",
     [
-        # The opponent's shooting on a record is not read yet; it answered
-        # Boston's record.
-        "Lakers record when the Lakers shoot 50% and the Celtics shoot 40%",
         # A team outside the game.
         "Lakers record vs Celtics when the Lakers score 120 and the Knicks score 110",
         "Lakers record when they score 120 and Knicks and Celtics score 110",
