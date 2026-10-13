@@ -1090,6 +1090,8 @@ _OPPONENTS_THAT = re.compile(
     r"|grab(?:s|bed)?)\s+(?:(?:at\s+least|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?\d+)"
     # "teams that had 50 wins / 3 all-stars" describe their season.
     r"(?!\d|\s+(?:wins?|losses|games|all[\s-]?stars?|titles?|championships?)\b)"
+    # "teams that score 115 points per game" describe their season.
+    r"(?!(?:\s+[a-z%]+)?\s+(?:per\s+game|a\s+game|ppg|on\s+average|a\s+night|per\s+night)\b)"
 )
 _GROUP_OPPONENTS = re.compile(
     r"\b(winning|losing|good|bad|top(?:[- ]\d+)?|best|playoff|non-playoff|contending"
@@ -1236,6 +1238,12 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(
         r"\bteams\s+(?:that|who|which)\s+(?:have|had)\s+(?:a\s+)?losing\s+records?\b",
         "teams under .500",
+        text,
+    )
+    # "teams that are winning": winning teams.
+    text = re.sub(
+        r"\bteams\s+(?:that|who|which)\s+(?:are|were)\s+(winning|losing)\b(?!\s+teams)",
+        r"\1 teams",
         text,
     )
     # "vs contending / elite / weak teams": the glossary's names for them.
