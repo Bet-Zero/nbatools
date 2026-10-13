@@ -195,3 +195,23 @@ def test_to_tonight_closes_a_season_span():
     assert kwargs["start_season"] == "2024-25"
     assert kwargs["end_season"] > "2024-25"
     assert not kwargs.get("start_date")
+
+
+@pytest.mark.parametrize(
+    ("query", "season"),
+    [
+        ("LeBron stats in 2024 on at least 2 days rest", "2023-24"),
+        ("Lakers record in 2024 on at least 1 day rest", "2023-24"),
+        ("LeBron stats in 2024 on at most 1 day rest", "2023-24"),
+        ("LeBron stats in 2024 on in-season tournament games", "2023-24"),
+    ],
+)
+def test_at_least_and_in_season_after_on_are_not_open_ends(query, season):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get("season") == season
+    assert not kwargs.get("start_season")
+
+
+def test_in_a_year_to_tonight_has_no_one_day_filter():
+    kwargs = parse_query("LeBron stats in 2024 to tonight")["route_kwargs"]
+    assert not kwargs.get("start_date") and not kwargs.get("end_date")

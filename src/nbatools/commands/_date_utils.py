@@ -268,7 +268,7 @@ def seasons_for_explicit_dates(text: str) -> tuple[str | None, str | None]:
 
 
 _SEASON_SPAN_TO_TODAY = re.compile(
-    r"\b(?:from|since|starting)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
+    r"\b(?:from|since|starting|in|for|during)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
     r"\s+(?:up\s+to|to|through|thru|until|till|til)\s+(?:today|tonight)\b"
 )
 
