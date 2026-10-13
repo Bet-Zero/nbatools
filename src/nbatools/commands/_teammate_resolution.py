@@ -27,6 +27,20 @@ _NOT_A_NAME = re.compile(
 )
 
 
+# Scope the parser reads on its own: "without Davis this season", "with
+# Davis since 2024-25", "with Davis vs Celtics" keep only the name.
+_SCOPE_WORD = re.compile(
+    r"\s+(?:this|last|since|in|vs\.?|versus|against|at|on|from|during|over|before|after"
+    r"|through|until|playoffs?|postseason|regular|career|home|away|road|past|when|while"
+    r"|for|with|without|under|between)\b.*$"
+)
+
+
+def name_before_scope(fragment: str | None) -> str:
+    """The name in an availability fragment, without the scope after it."""
+    return _SCOPE_WORD.sub("", (fragment or "").strip().lower())
+
+
 def resolve_teammate(
     fragment: str | None,
     *,
@@ -38,7 +52,7 @@ def resolve_teammate(
     season_type: str,
 ) -> str | None:
     """The one teammate ``fragment`` (a single first or last name) names, or None."""
-    word = (fragment or "").strip().lower()
+    word = name_before_scope(fragment)
     if not re.fullmatch(r"[a-z][a-z.'\-]+", word) or _NOT_A_NAME.match(word):
         return None
     if not (team or player):
@@ -78,6 +92,33 @@ def shares_side(
     if side is None:
         return False
     return not select_player_rows(side, name).empty
+
+
+def only_against(
+    name: str,
+    *,
+    player: str,
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+    season_type: str,
+) -> bool:
+    """Whether ``name`` played in the seasons, but never alongside ``player``."""
+    side = _same_side_rows(None, player, season, start_season, end_season, season_type)
+    if side is None or not select_player_rows(side, name).empty:
+        return False
+    from nbatools.commands._parse_helpers import default_season_for_context
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    try:
+        if start_season and end_season and not season:
+            seasons = resolve_seasons(None, start_season, end_season)
+        else:
+            seasons = [season or default_season_for_context(season_type)]
+        games = load_player_games_for_seasons(seasons, season_type)
+    except (ValueError, FileNotFoundError):
+        return False
+    return not select_player_rows(games, name).empty
 
 
 def _same_side_rows(team, player, season, start_season, end_season, season_type):

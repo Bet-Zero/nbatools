@@ -86,6 +86,9 @@ def test_team_record_with_a_one_word_teammate(sparse_root, query, name, present)
         ("LeBron James games with Anthony Davis", "Anthony Davis", True),
         ("LeBron stats with Austin", "Austin Reaves", True),
         ("LeBron stats when Reaves plays", "Austin Reaves", True),
+        # Scope after the name is read on its own.
+        ("LeBron James stats with Davis this season", "Anthony Davis", True),
+        ("LeBron James stats without Davis this season", "Anthony Davis", False),
     ],
 )
 def test_player_games_with_or_without_a_teammate(sparse_root, query, name, present):
@@ -122,11 +125,45 @@ def test_player_game_list_with_a_teammate(sparse_root):
     assert {row["game_id"] for row in rows} == set(together["game_id"])
 
 
+def test_team_record_with_scope_after_the_name(sparse_root):
+    _, out = sparse_root
+    teams = pd.read_csv(FIXTURE / TEAMS)
+    games = teams[(teams["team_abbr"] == "LAL") & teams["game_id"].isin(out["Anthony Davis"])]
+    row = _ok("Lakers record without Davis this season")["summary"][0]
+    assert (row["wins"], row["losses"]) == _team_record(games)
+    bos = games[games["opponent_team_abbr"] == "BOS"]
+    row = _ok("Lakers record without Davis vs Celtics")["summary"][0]
+    assert (row["wins"], row["losses"]) == _team_record(bos)
+
+
+@pytest.mark.parametrize(
+    ("query", "keep"),
+    [
+        # The bound, then the teammate.
+        ("LeBron James games with 30 points and Davis", lambda g: g["pts"] >= 30),
+        ("LeBron James games with 30 points with Davis", lambda g: g["pts"] >= 30),
+        ("LeBron James games with 10 assists and Davis", lambda g: g["ast"] >= 10),
+        ("LeBron James stats with Davis vs Celtics", lambda g: g["opponent_team_abbr"] == "BOS"),
+    ],
+)
+def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
+    root, out = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    lebron = players[
+        (players["player_name"] == "LeBron James") & ~players["game_id"].isin(out["Anthony Davis"])
+    ]
+    lebron = lebron[keep(lebron)]
+    sections = _ok(query)
+    rows = sections.get("finder") or sections["game_log"]
+    assert {row["game_id"] for row in rows} == set(lebron["game_id"])
+
+
 @pytest.mark.parametrize(
     "query",
     [
-        # Never his teammate: not read as "with".
+        # Never his teammate: not read as "with" or "without".
         "LeBron James games with Stephen Curry",
+        "LeBron James stats without Jayson Tatum",
         # Two teammates: one would be dropped.
         "Lakers record with LeBron and Davis",
         "Lakers record without Davis and LeBron",
@@ -136,13 +173,6 @@ def test_player_game_list_with_a_teammate(sparse_root):
 )
 def test_unread_availability_still_refuses(sparse_root, query):
     assert execute_natural_query(query).result_status == "no_result"
-
-
-def test_an_opponent_is_not_a_missing_teammate():
-    # Without a team, "without" dropped every game the other player played,
-    # his games against LeBron included.
-    row = _ok("LeBron James games without Jayson Tatum")["summary"][0]
-    assert row["games"] == 60
 
 
 def test_a_name_on_another_team_is_not_read():

@@ -382,7 +382,12 @@ from nbatools.commands._playoff_record_route_utils import (
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
-from nbatools.commands._teammate_resolution import resolve_teammate, shares_side
+from nbatools.commands._teammate_resolution import (
+    name_before_scope,
+    only_against,
+    resolve_teammate,
+    shares_side,
+)
 from nbatools.commands.entity_resolution import (
     TEAM_ALIASES,
     format_ambiguity_message,
@@ -3286,6 +3291,24 @@ def _build_parse_state(query: str) -> dict:
                 with_player, unresolved_with_player = teammate, None
             elif teammate and unresolved_without_player and not without_player:
                 without_player, unresolved_without_player = teammate, None
+        trailing = re.search(
+            r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
+            r"|in|vs\.?|versus|against|at|on|from|during)\b)",
+            q,
+        )
+        if trailing and not with_player and (team or player):
+            # "LeBron games with 30 points and Davis": the bound, then the teammate.
+            teammate = resolve_teammate(
+                trailing.group(1),
+                team=team,
+                player=player,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+            )
+            if teammate:
+                with_player = teammate
 
     wins_only, losses_only = detect_wins_losses(q)
     if team_streak_request and team_streak_request.get("special_condition") in ("wins", "losses"):
@@ -6453,6 +6476,22 @@ def _route_parsed_query(parsed: dict) -> dict:
             route_kwargs["with_player"] = with_player
         else:
             route_kwargs["unsupported_filters"] = ["with_player"]
+    if (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
+        and route_kwargs.get("without_player")
+        and not route_kwargs.get("unsupported_filters")
+        and only_against(
+            route_kwargs["without_player"],
+            player=route_kwargs["player"],
+            season=route_kwargs.get("season"),
+            start_season=route_kwargs.get("start_season"),
+            end_season=route_kwargs.get("end_season"),
+            season_type=route_kwargs.get("season_type") or "Regular Season",
+        )
+    ):
+        # "LeBron games without Tatum": never his teammate, so nothing to leave out.
+        route_kwargs["unsupported_filters"] = ["without_player"]
 
     if (
         route in ("player_game_summary", "player_game_finder")
@@ -6474,7 +6513,11 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and any(_names_a_person(f) for f in (unresolved_with_player, unresolved_without_player))
+        and any(
+            _names_a_person(f) or _names_a_person(name_before_scope(f))
+            for f in (unresolved_with_player, unresolved_without_player)
+            if f
+        )
     ):
         # "LeBron games with Davis": a teammate who could not be resolved was
         # dropped and every game came back.
