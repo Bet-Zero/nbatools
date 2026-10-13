@@ -7986,10 +7986,22 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
     conditions = list(kwargs.get("conditions") or [])
     if stat != "fg_pct" and any(c.get("stat") in _RATE_STATS for c in conditions):
         percents = list(_GAME_LIST_PERCENT_BOUND.finditer(tail))
-        if not percents or any(m.group(3) for m in percents):
+        rates = [c for c in conditions if c.get("stat") in _RATE_STATS]
+        unbounded = _GAME_LIST_PERCENT_BOUND.sub(" ", tail)
+        if (
+            not percents
+            or any(m.group(3) for m in percents)
+            or len(percents) != len(rates)
+            or any(c.get("stat") != "fg_pct" for c in rates)
+            # "with fg% over 50%", "over 50% shooting": the bound names a
+            # rate before or after it, so it is not on the ranked rate.
+            or re.search(
+                r"\b(?:fg|ts|efg|3p|ft)\b|%|\bfield[\s-]goal|\bshooting\b|\bpercent(?:age)?\b"
+                r"|\btrue\b|\beffective\b|\bthrees?\b|\bfree[\s-]throws?\b",
+                unbounded,
+            )
+        ):
             # A rate bound this wording does not explain: keep it unanswered.
-            return None
-        if any(c.get("stat") in _RATE_STATS and c.get("stat") != "fg_pct" for c in conditions):
             return None
         # "best free throw shooting games over 90%": the unnamed bound is on
         # the rate the list ranks, read as FG% by the canonical wording.
@@ -8058,14 +8070,17 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
     )
     if not aliases:
         return None
-    prefix = re.match(rf"(?:the\s+)?(?:{aliases})(?:'s?)?\s+", q)
+    prefix = re.match(rf"(?:the\s+)?(?:{aliases})(?:'s?)?\s+(?!players?\b)", q)
     if prefix:
         league_q = q[prefix.end() :]
         match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
     else:
         match = _LEAGUE_GAME_LIST_FRAME.match(q)
         owner = (
-            re.match(rf"\s+(?:by|for|from|of)\s+(?:the\s+)?(?:{aliases})\b", q[match.end() :])
+            re.match(
+                rf"\s+(?:by|for|from|of)\s+(?:the\s+)?(?:{aliases})\b(?!'?\s*players?\b)",
+                q[match.end() :],
+            )
             if match and not match.group("by")
             else None
         )

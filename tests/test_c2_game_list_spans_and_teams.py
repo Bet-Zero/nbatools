@@ -159,3 +159,44 @@ def test_a_named_team_list_ranks_that_teams_games():
     rates = [row["fg_pct"] for row in rows]
     assert rates == sorted(rates)
     assert {row.get("team_abbr") for row in rows} == {"LAL"}
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best free throw shooting games with fg% over 50%",
+        "best free throw shooting games with field goal percentage over 50%",
+        "best 3 point shooting games with fg% under 40%",
+        "best free throw shooting games over 90% with fg% under 40%",
+        "best team free throw shooting games with fg% over 50%",
+        "best free throw shooting games over 50% shooting",
+    ],
+)
+def test_a_bound_that_names_another_rate_is_not_moved_to_the_ranked_rate(query):
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    conditions = parsed["route_kwargs"].get("conditions") or []
+    stat = parsed["route_kwargs"].get("stat")
+    assert parsed["route_kwargs"].get("unsupported_filters") or not any(
+        c["stat"] == stat for c in conditions
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "worst shooting games by Lakers players",
+        "best 3 point shooting games by Celtics players this season",
+        "Lakers players worst shooting games",
+    ],
+)
+def test_a_teams_players_are_not_its_team_games(query):
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    assert not any(
+        "LAL games ranked" in n or "BOS games ranked" in n for n in parsed.get("notes") or []
+    )
