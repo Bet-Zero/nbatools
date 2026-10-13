@@ -471,6 +471,12 @@ def wants_occurrence_leaderboard(text: str) -> bool:
     )
 
 
+def _team_ranked_games(team: str | None, q: str) -> bool:
+    """ "Lakers top 5 games with 120 points (and 30 assists)": the team's own
+    games, ranked, not a board of teams or players."""
+    return bool(team) and bool(re.search(r"\b(?:top|best|greatest)\s+\d{1,2}\s+games\s+with\b", q))
+
+
 # ---------------------------------------------------------------------------
 # Route helpers — called from _finalize_route() in natural_query.py
 # ---------------------------------------------------------------------------
@@ -581,6 +587,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and len(compound_occurrence_conditions) >= 2
         and not re.search(r"\b(last|past|recent)\s+\d+\s+games?\b", q)
         and (occurrence_leaderboard_intent or count_intent or team_leaderboard_intent)
+        and not (not count_intent and _team_ranked_games(team, q))
     ):
         occ_season = season
         occ_start = start_season
@@ -680,8 +687,7 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and not player
         and not player_a
         and not player_b
-        # "Lakers top 5 games with 120 points": the team's own games, ranked.
-        and not (team and re.search(r"\b(?:top|best|greatest)\s+\d{1,2}\s+games\s+with\b", q))
+        and not _team_ranked_games(team, q)
         and (
             # "most 30 point games" ranks on the season board; "players with
             # 30 point games" lists every player who had one.

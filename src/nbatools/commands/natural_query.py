@@ -2533,10 +2533,14 @@ _WINS_OVER_QUALITY = re.compile(
 _GAME_NOUN_AHEAD = r"(?=[\s-]+(?:games?|performances?|outings?)\b)"
 _THRESHOLD_GAME_SPELLINGS = (
     # "30 pt game", "5 three pointer game": the spellings the threshold reader
-    # knows ("30 point game", "5 three game").
+    # knows ("30 point game", "5 three game"). Not the count in "top 5 three
+    # pointer games".
     (re.compile(rf"\b(\d+\+?)\s*[- ]?\s*pt\b{_GAME_NOUN_AHEAD}"), r"\1 point"),
     (
-        re.compile(rf"\b(\d+\+?)\s*[- ]?\s*(?:three|3)[- ]?pointers?\b{_GAME_NOUN_AHEAD}"),
+        re.compile(
+            r"(?<!\btop\s)(?<!\bbest\s)(?<!\bbiggest\s)(?<!\bhighest\s)(?<!\bgreatest\s)"
+            rf"\b(\d+\+?)\s*[- ]?\s*(?:three|3)[- ]?pointers?\b{_GAME_NOUN_AHEAD}"
+        ),
         r"\1 three",
     ),
     # "his last 30 point outing / performance" is a game.
@@ -2571,6 +2575,14 @@ _RATE_AFTER = (
 # 3-point attempts" read a 3-point floor). Each is rewritten to the form the
 # readers know.
 _STAT_SPELLINGS = (
+    # "best three pointer games": the games ranked by threes (it became "best
+    # three games").
+    (
+        re.compile(
+            r"\b(top|best|biggest|highest|greatest)\s+(\d{1,2}\s+)?(?:3|three)[\s-]*pointer\s+games\b"
+        ),
+        r"\1 \2three point games",
+    ),
     (re.compile(r"\b(free|field)-(throws?|goals?)\b"), r"\1 \2"),
     # "3pt fg%", "3pt fga", "3pt fgm": the three-point rate, attempts, makes.
     (
@@ -10767,8 +10779,58 @@ def _stat_bounds(parsed: dict) -> set[tuple]:
     return {b for b in bounds if b[0] not in _MARGIN_STATS}
 
 
+# "Lakers biggest win each season", "LeBron best game every season": the top
+# game of each season (it gave the span's top games, or one game).
+_EACH_SEASON = re.compile(
+    r"\b(?:(?:in\s+)?(?:each|every)\s+season|per\s+season|season\s+by\s+season|by\s+season)\b"
+)
+_EACH_SEASON_RANKED = re.compile(
+    r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest|least"
+    r"|career[\s-]+highs?)\b"
+)
+_EACH_SEASON_COUNT = re.compile(
+    r"\b(?:top|best|worst|biggest|largest|highest|lowest|greatest|closest|most|fewest)"
+    r"\s+(\d{1,2})\b(?!\s*[-\s]?(?:point|pt|game\s+stretch))"
+)
+
+
+def _per_season_games(parsed: dict) -> dict:
+    q = parsed.get("normalized_query") or ""
+    kwargs = parsed.get("route_kwargs") or {}
+    if (
+        parsed.get("route") not in {"game_finder", "player_game_finder"}
+        or kwargs.get("sort_by") != "stat"
+        or kwargs.get("unsupported_filters")
+        or kwargs.get("last_n")
+        # "30 point games by season", "how many ... each season": every
+        # qualifying game, not each season's top one.
+        or kwargs.get("min_value") is not None
+        or kwargs.get("max_value") is not None
+        or parsed.get("count_intent")
+        or not _EACH_SEASON_RANKED.search(q)
+        or not _EACH_SEASON.search(q)
+    ):
+        return parsed
+    count = _EACH_SEASON_COUNT.search(q)
+    kwargs = dict(kwargs)
+    kwargs["per_season_limit"] = int(count.group(1)) if count else 1
+    if parsed.get("season_defaulted"):
+        from nbatools.commands._seasons import resolve_career
+
+        kwargs["season"] = None
+        kwargs["start_season"], kwargs["end_season"] = resolve_career(
+            kwargs.get("season_type") or "Regular Season"
+        )
+    result = dict(parsed)
+    result["route_kwargs"] = kwargs
+    result["notes"] = list(parsed.get("notes") or []) + ["per_season: each season's top games"]
+    return result
+
+
 def _parse_query_once(query: str) -> dict:
-    return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+    return _per_season_games(
+        _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+    )
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:
