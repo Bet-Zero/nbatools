@@ -1,7 +1,8 @@
 """Wording the sample readers dropped and answered with the wrong sample.
 
 - "LeBron games with Davis" / "without Davis": an unresolved teammate was
-  dropped and every game came back.
+  dropped and every game came back (now read as his teammate, in
+  test_c1_teammate_names).
 - "Lakers record vs Celtics and Knicks" kept Boston only (now read as a
   list, in test_c1_opponent_lists_and_quality_words).
 - "Lakers record when the Celtics' opponents score 110" answered Boston's
@@ -28,9 +29,6 @@ def _status(query: str) -> str:
 @pytest.mark.parametrize(
     "query",
     [
-        "LeBron James games with Davis",
-        "LeBron James games without Davis",
-        "LeBron James games with Davis with 30 points",
         "Lakers record when the Celtics' opponents score 110",
         "Lakers record when the Celtics opponents score 110",
         "Lakers 120 point seasons",

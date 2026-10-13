@@ -69,6 +69,7 @@ from nbatools.commands._leaderboard_utils import (
 )
 from nbatools.commands._lineup_on_off_route_utils import try_lineup_on_off_route
 from nbatools.commands._matchup_utils import (
+    _bare_surname,
     detect_bare_player_vs_player_query,
     detect_head_to_head,
     detect_opponent,
@@ -381,6 +382,7 @@ from nbatools.commands._playoff_record_route_utils import (
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
+from nbatools.commands._teammate_resolution import resolve_teammate, shares_side
 from nbatools.commands.entity_resolution import (
     TEAM_ALIASES,
     format_ambiguity_message,
@@ -579,14 +581,18 @@ def _multi_player_availability_boundary(q: str) -> bool:
         return False
 
     left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
-    return bool(detect_player(left) and detect_player(right))
+    # "with LeBron and Davis": a bare surname is a second player too.
+    return bool(
+        (detect_player(left) or _bare_surname(left))
+        and (detect_player(right) or _bare_surname(right))
+    )
 
 
 # Routes whose build_result() actually filters by a whole-game teammate
 # presence/absence flag. Every other route only ever receives with_player /
 # without_player as display metadata (set unconditionally by the parser) with
 # nothing downstream applying it - see _player_availability_unsupported_markers.
-_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record"}
+_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record", "player_game_finder", "player_game_summary"}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
     "player_split_summary",
@@ -3265,6 +3271,21 @@ def _build_parse_state(query: str) -> dict:
             player_without_absence = detect_player_resolved(q_without_absence)
             if player_without_absence.is_confident:
                 player = player_without_absence.resolved
+        if bool(unresolved_with_player) != bool(unresolved_without_player):
+            # "Lakers record without Davis": the one Davis on the team.
+            teammate = resolve_teammate(
+                unresolved_with_player or unresolved_without_player,
+                team=team,
+                player=player,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+            )
+            if teammate and unresolved_with_player and not with_player:
+                with_player, unresolved_with_player = teammate, None
+            elif teammate and unresolved_without_player and not without_player:
+                without_player, unresolved_without_player = teammate, None
 
     wins_only, losses_only = detect_wins_losses(q)
     if team_streak_request and team_streak_request.get("special_condition") in ("wins", "losses"):
@@ -6409,11 +6430,37 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
+        and _multi_player_availability_boundary(q)
+    ):
+        # "LeBron stats with Davis and Austin": one teammate would be dropped.
+        route_kwargs["unsupported_filters"] = ["multi_player_availability"]
+    elif (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
+        and with_player
+        and not route_kwargs.get("unsupported_filters")
+    ):
+        # "LeBron games with Davis": the games they played together. A player
+        # who was never on his side ("with Curry") is not read as a teammate.
+        if shares_side(
+            with_player,
+            player=route_kwargs["player"],
+            season=route_kwargs.get("season"),
+            start_season=route_kwargs.get("start_season"),
+            end_season=route_kwargs.get("end_season"),
+            season_type=route_kwargs.get("season_type") or "Regular Season",
+        ):
+            route_kwargs["with_player"] = with_player
+        else:
+            route_kwargs["unsupported_filters"] = ["with_player"]
+
+    if (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
         and names_other_player_availability(
             q,
             route_kwargs["player"],
-            # The player routes apply without_player; with_player refuses.
-            (route_kwargs.get("without_player"),),
+            (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
             also=(route_kwargs.get("opponent_player"),),
         )
     ):

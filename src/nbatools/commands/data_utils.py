@@ -2570,6 +2570,17 @@ def filter_by_opponent_player(
         return df[df["game_id"].isin(game_ids)].copy()
 
 
+def _same_side_columns(df: pd.DataFrame, p_rows: pd.DataFrame) -> bool:
+    return "team_id" in df.columns and "team_id" in p_rows.columns
+
+
+def _same_side_mask(df: pd.DataFrame, p_rows: pd.DataFrame) -> pd.Series:
+    """Rows of ``df`` whose game and team match one of ``p_rows``."""
+    pairs = set(zip(p_rows["game_id"].astype(str), p_rows["team_id"].astype(str)))
+    keys = zip(df["game_id"].astype(str), df["team_id"].astype(str))
+    return pd.Series([key in pairs for key in keys], index=df.index)
+
+
 def filter_without_player(
     df: pd.DataFrame,
     without_player: str,
@@ -2595,6 +2606,10 @@ def filter_without_player(
         team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
+    elif _same_side_columns(df, p_rows):
+        # A player's games: only the other player's games on the same side,
+        # not the ones he played against him.
+        return df[~_same_side_mask(df, p_rows)].copy()
     else:
         team_games = set(p_rows["game_id"])
 
@@ -2621,6 +2636,9 @@ def filter_with_player(
         team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
+    elif _same_side_columns(df, p_rows):
+        # "LeBron games with Davis": games they played together, not against.
+        return df[_same_side_mask(df, p_rows)].copy()
     else:
         team_games = set(p_rows["game_id"])
 
