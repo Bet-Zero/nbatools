@@ -169,3 +169,41 @@ def test_unread_opponent_wording_refuses(query):
     from nbatools.query_service import execute_natural_query
 
     assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        ("Lakers record when they keep opponents under 55% shooting", (23, 2)),
+        ("Lakers record when they hold opponents under 55% shooting", (23, 2)),
+        ("Lakers record when they have at least 50% shooting", (45, 11)),
+        # The joined clause is the team's own turnovers again.
+        ("Lakers record when they force 15 turnovers and commit 15 turnovers", (13, 1)),
+    ],
+)
+def test_clause_subjects_beside_rates_and_forced_turnovers(query, record):
+    assert _record(query) == record
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # Another side's rate read as the subject's own filtered the wrong team.
+        "Lakers record against teams under 55% shooting",
+        "Lakers record when they hold the Celtics under 55% shooting",
+        "Lakers record when they allow between 40 and 50% shooting",
+        "LeBron James games when the Lakers have at least 55% shooting",
+        "LeBron James record when the team has at least 55% shooting",
+        "LeBron James games when the Lakers have under 50% shooting",
+        "LeBron James games when the Lakers have between 40 and 50% shooting",
+        # Forcing by a player or another team is not the team's own forcing.
+        "LeBron James games when he forced 3 turnovers",
+        "Lakers record when LeBron forces 3 turnovers",
+        "Celtics record when the Lakers force 15 turnovers",
+        "Lakers record when the Celtics force 15 turnovers",
+    ],
+)
+def test_other_sides_rates_and_forcing_refuse(query):
+    from nbatools.query_service import execute_natural_query
+
+    assert execute_natural_query(query).result_status == "no_result"

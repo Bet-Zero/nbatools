@@ -385,7 +385,7 @@ _OPP_SHOOTING = re.compile(
     r"|between\s+(?P<lo>\d+(?:\.\d+)?)\s*(?:%|percent\b)?\s+and\s+"
     + _RATE_TAIL.replace("?P<num>", "?P<num3>").replace("?P<area>", "?P<area3>")
     + ")"
-    r"|\b(?:held|holding|holds?|limited|limiting|limits?|kept|keeping)\s+(?:the\s+)?"
+    r"|\b(?:held|holding|holds?|limited|limiting|limits?|keeps?|kept|keeping)\s+(?:the\s+)?"
     r"(?:opponents?|other\s+team|them|teams)\s+(?:to\s+)?"
     rf"(?:{_RATE_OP.replace('?P<op>', '?P<op2>')}\s+)?"
     + _RATE_TAIL.replace("?P<num>", "?P<num2>").replace("?P<area>", "?P<area2>")
@@ -421,7 +421,24 @@ _RATE_MODE = {
 
 _ALLOWED_RATE = re.compile(
     r"\b(?:allow(?:s|ed|ing)?|gave\s+up|give\s+up|gives\s+up|giving\s+up"
-    r"|opponents?\s+at)\s+(?:\w+\s+){0,2}?\d+(?:\.\d+)?\s*(?:%|percent)"
+    r"|opponents?\s+at)\s+(?:\w+\s+){0,2}?"
+    # "allow between 40 and 50% shooting".
+    r"(?:between\s+\d+(?:\.\d+)?\s*(?:%|percent)?\s+and\s+)?\d+(?:\.\d+)?\s*(?:%|percent)"
+)
+# Another side's rate the readers do not place ("keep the Celtics under 55%",
+# "against teams under 55% shooting"): read as the subject's own it filtered
+# the wrong team, so refuse unless the opponent reader took it.
+_OTHER_SIDE_RATE = re.compile(
+    r"\b(?:keep\w*|kept|hold\w*|held|limit\w*|against|vs\.?|versus)\s+"
+    r"(?:(?!(?:shoot\w*|shot|when|while|if|and|with|to)\b)[a-z.']+\s+){0,3}?"
+    r"(?:(?:under|below|over|above|at\s+least|at\s+most|less\s+than|more\s+than"
+    r"|no\s+more\s+than)\s+|between\s+\d+(?:\.\d+)?\s*(?:%|percent)?\s+and\s+)?"
+    r"\d+(?:\.\d+)?\s*(?:%|percent)"
+)
+# "when LeBron forces 3 turnovers", "when the Celtics force 15 turnovers": not
+# the team's own forcing (which is rewritten to the opponent's turnovers).
+_UNREAD_FORCED = re.compile(
+    r"\bforc(?:e|es|ed|ing)\s+(?:[a-z]+\s+){0,2}?\d+\+?\s+(?:or\s+[a-z]+\s+)?turnovers?\b"
 )
 
 
@@ -520,9 +537,24 @@ def _own_bounds(text: str, spans: list[tuple[int, int]]) -> list[dict]:
     return own
 
 
+def _refuse(route_kwargs: dict, name: str) -> None:
+    blocked = list(route_kwargs.get("unsupported_filters") or [])
+    if name not in blocked:
+        route_kwargs["unsupported_filters"] = [*blocked, name]
+
+
 def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str) -> None:
     """ "Lakers games with at least 15 opponent turnovers": an opponent bound
     (the team's own turnovers were filtered)."""
+    if route and _UNREAD_FORCED.search(text):
+        _refuse(route_kwargs, "forced_turnovers")
+        return
+    if route:
+        read = [m.span() for m in _OPP_SHOOTING.finditer(text)]
+        for m in _OTHER_SIDE_RATE.finditer(text):
+            if not any(start <= m.end() and m.start() <= end for start, end in read):
+                _refuse(route_kwargs, "opponent_shooting")
+                return
     if route and _ALLOWED_RATE.search(text):
         # "when they allow 45% shooting": the opponent's rate, not read in
         # this wording (it was dropped).
@@ -945,7 +977,10 @@ _TEAM_SHOOTING = re.compile(
     r"\b(?:when|if|while|whenever|where|and|but)\s+(?:the\s+|his\s+)?"
     r"(?P<name>[a-z.']+(?:\s+[a-z.']+)?)\s+(?:shoots?|shot|shooting"
     # "when the Lakers have 50% shooting".
-    r"|ha(?:s|d|ve)\s+\d+(?:\.\d+)?\s*(?:%|percent)\s+shooting)\b"
+    # "have at least 55% shooting", "had between 40 and 50% shooting".
+    r"|ha(?:s|d|ve)\s+(?:(?:under|below|over|above|at\s+least|at\s+most|less\s+than"
+    r"|more\s+than|no\s+more\s+than)\s+|between\s+\d+(?:\.\d+)?\s*(?:%|percent)?\s+and\s+)?"
+    r"\d+(?:\.\d+)?\s*(?:%|percent)\s+shooting)\b"
 )
 _TEAM_SHOOTING_SUBJECTS = frozenset(
     {"they", "team", "opponents", "opponent", "other team", "opposing team", "teams"}

@@ -920,11 +920,23 @@ _HELD_TO_RATE = re.compile(
 )
 
 
+# Only the team's own forcing is rewritten ("when they force", "games
+# forcing"); "when LeBron forces 3 turnovers" or "when the Celtics force 15"
+# is left for the context reader to refuse.
 _FORCED_TURNOVERS = re.compile(
-    r"\b(?:(?:they|we)\s+)?forc(?:e|es|ed|ing)\s+"
+    r"\b(?P<lead>when|while|if|whenever|where|and|games|record|wins|losses)\s+"
+    r"(?:(?:they|we)\s+)?forc(?:e|es|ed|ing)\s+"
     r"(?P<n>(?:(?:at\s+(?:least|most)|over|under|more\s+than|fewer\s+than|less\s+than"
     r"|no\s+more\s+than)\s+)?\d+\+?(?:\s+or\s+(?:more|fewer|less))?)\s+turnovers?\b"
+    r"(?P<and>\s*,?\s*and\s+(?!(?:they|he|we|the|opponents?|their)\b)(?=[a-z]+\s+\d))?"
 )
+
+
+def _forced_turnovers(m: re.Match) -> str:
+    # "when they force 15 turnovers and commit 15": the joined clause is the
+    # team's own again, so it keeps "they".
+    joined = f"{m.group('and')}they " if m.group("and") else ""
+    return f"{m.group('lead')} opponents commit {m.group('n')} turnovers{joined}"
 
 
 def canonicalize_bound_phrases(text: str) -> str:
@@ -953,7 +965,7 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = _HELD_TO_RATE.sub(r"\1shooting \2% or worse", text)
     # "when they force 15 turnovers", "15 forced turnovers": the opponent's
     # turnovers (they read as the team's own).
-    text = _FORCED_TURNOVERS.sub(r"opponents commit \g<n> turnovers", text)
+    text = _FORCED_TURNOVERS.sub(_forced_turnovers, text)
     text = re.sub(r"\b(\d+\+?)\s+forced\s+turnovers\b", r"\1 opponent turnovers", text)
     # "vs .500 teams", "teams .500 or better", ".500 or worse teams": the
     # winning-teams bar, or the bar that includes .500.
