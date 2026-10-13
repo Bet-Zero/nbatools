@@ -945,9 +945,7 @@ _MARGIN_NEGATION = (
 )
 # "excluding close losses" and "excluding close games and blowouts" are not
 # one excluded margin; they keep their reading.
-_NEGATED_MARGIN_TERM = re.compile(
-    _MARGIN_NEGATION + r"(close|blowouts?)(?:\s+games?)?\b"
-)
+_NEGATED_MARGIN_TERM = re.compile(_MARGIN_NEGATION + r"(close|blowouts?)(?:\s+games?)?\b")
 _NOT_ONE_EXCLUDED_MARGIN = re.compile(
     r"\s+(?:wins?|loss(?:es)?)\b"
     r"|\s*(?:,|&|\band\b|\bor\b|\bnor\b)\s*(?:(?:non|excluding|not\s+in)[\s-]*)?(?:the\s+)?"
@@ -955,12 +953,26 @@ _NOT_ONE_EXCLUDED_MARGIN = re.compile(
 )
 
 
+# "with 30 points" beside a margin: the margin takes the parse's one stat
+# slot and the bare count is dropped ("30+ points" and "30 or more" are read
+# as their own condition).
+_BARE_STAT_COUNT = re.compile(
+    r"(?<![\d.-])\d+(?:\.\d+)?(?!\+|\s*(?:\+|or\s+(?:more|better|higher|fewer|less|lower)"
+    r"|plus\b))\s*-?\s*(?:points?|pts|rebounds?|boards?|assists?|steals?|blocks?|threes?|3s"
+    r"|3-?pointers?|three[\s-]pointers?|turnovers?|minutes?|mins|fouls?|free\s+throws?"
+    r"|field\s+goals?|%|percent)\b"
+    r"|\b(?:scor(?:ed|ing|es?)|shoot(?:ing)?|shot|held\s+to|allow(?:ed|ing)?)\s+\d"
+)
+
+
 def _negated_margin(m: re.Match) -> str:
-    if _NOT_ONE_EXCLUDED_MARGIN.match(m.string, m.end()):
+    if _NOT_ONE_EXCLUDED_MARGIN.match(m.string, m.end()) or _BARE_STAT_COUNT.search(m.string):
         return m.group(0)
     if m.group(1) == "close":
         return "games decided by 6+"
     return "games decided by 14 or fewer"
+
+
 _ONE_POSSESSION = r"one[\s-]+possession"
 # "within one possession in the final minute", "one possession games at
 # halftime": a score during the game, not the final margin.
@@ -1007,7 +1019,8 @@ def _canonicalize_one_possession(text: str) -> str:
     def rewrite(m: re.Match) -> str:
         after = m.string[m.end() :]
         if (
-            _IN_GAME_STATE.match(after)
+            _BARE_STAT_COUNT.search(m.string)
+            or _IN_GAME_STATE.match(after)
             or _MARGIN_COMPARED.match(after)
             or _MARGIN_COMPARED_BEFORE.search(m.string[: m.start()])
             or _TEAM_AFTER_TO.match(after)

@@ -172,6 +172,12 @@ def test_excluded_margins_keep_the_other_games(query, kept):
         "Lakers record in games within one possession entering the fourth",
         "Lakers record in games within one possession after three",
         "Lakers record in one possession games in the final period",
+        # A bare count beside the margin: the margin takes the parse's stat
+        # slot and the count would be dropped.
+        "LeBron James one possession games with 30 points",
+        "LeBron James 30 points in one possession games",
+        "Lakers one possession losses with 120 points",
+        "Lakers record in one possession games with 15 threes",
         # Two margins compared.
         "Lakers one possession games vs close games",
         "Lakers close games vs one possession games",
@@ -240,3 +246,17 @@ def test_one_possession_record_over_a_season_span():
         int((close["margin"] > 0).sum()),
         int((close["margin"] < 0).sum()),
     )
+
+
+def test_explicit_count_beside_one_possession():
+    close = _close("LAL")
+    players = pd.read_csv(_RAW / "player_game_stats/2025-26_regular_season.csv")
+    expected = players[
+        (players["player_name"] == "LeBron James")
+        & players["game_id"].isin(close["game_id"])
+        & (players["pts"] >= 30)
+    ]
+    rows = _execute("LeBron James one possession games with 30+ points").result.to_dict()[
+        "sections"
+    ]["finder"]
+    assert sorted(r["game_id"] for r in rows) == sorted(expected["game_id"])
