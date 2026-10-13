@@ -3060,8 +3060,10 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
             )
     # "opponents had between 40 and 50 rebounds", "allowing between 10 and 15
     # threes": both bounds are the opponent's.
+    # "opponents had 40 to 50 rebounds", "allowing 10-15 threes" too.
     ranged = (
-        rf"{subject}between\s+{_OPP_STAT_NUM}(?:\s+and\s+|\s*-\s*){_OPP_STAT_NUM}\s+"
+        rf"{subject}(?:between\s+(?=\d)|(?=\d+(?:\.\d+)?(?:\s*-\s*|\s+to\s+)\d))"
+        rf"{_OPP_STAT_NUM}(?:\s+and\s+|\s*-\s*|\s+to\s+){_OPP_STAT_NUM}\s+"
         rf"(?:made\s+)?({_OPP_STAT_WORD})(?![\w-])"
     )
     for m in re.finditer(ranged, text):

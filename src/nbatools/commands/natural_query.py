@@ -2255,6 +2255,7 @@ _OTHER_TEAM_CLAUSE = re.compile(
     # A number follows: "had a winning record" / "had Tatum" are not stat clauses.
     r"(?=\s+(?:at\s+least\s+|over\s+|more\s+than\s+|under\s+|fewer\s+than\s+|less\s+than\s+)?\d)"
 )
+_LA_NAME = re.compile(r"la|l\.a\.|los\s+angeles")
 _CLAUSE_OPPONENT_LEAD = re.compile(r"\b(?:against|vs\.?|versus|facing)\s+(?:the\s+)?$")
 _AT_LEAD = re.compile(r"(?:\bat|@)\s*(?:the\s+)?$")
 # "Lakers vs Celtics when ...", "compare the Lakers and Celtics": two sides
@@ -2441,7 +2442,11 @@ def _other_team_clause(q: str) -> str:
     # The first clause that names a team ("when they score 120 and the
     # Celtics score 110" names one in its second clause).
     m = next(
-        (c for c in _OTHER_TEAM_CLAUSE.finditer(q) if detect_team_in_text(c.group("name"))),
+        (
+            c
+            for c in _OTHER_TEAM_CLAUSE.finditer(q)
+            if detect_team_in_text(c.group("name")) or _LA_NAME.fullmatch(c.group("name"))
+        ),
         None,
     )
     if not m:
@@ -2454,11 +2459,17 @@ def _other_team_clause(q: str) -> str:
     if re.search(r"\bplayers?$", m.group("name")):
         # "when a Celtics player scores 40": one player, not the team's total.
         return q
-    other = detect_team_in_text(m.group("name"))
+    other = detect_team_in_text(m.group("name")) or m.group("name")
     prefix = q[: m.start()]
     if not other or detect_player(prefix):
         return q
     ordered = _teams_in_order(prefix)
+    if _LA_NAME.fullmatch(m.group("name")):
+        # "Lakers record when they score 120 and LA makes 15 threes": LA is
+        # the subject when the subject is the Lakers or the Clippers.
+        if not ordered or ordered[0][2] not in ("LAL", "LAC"):
+            return q
+        other = ordered[0][2]
     if not ordered or any(_AT_LEAD.search(prefix[:start]) for start, _, _ in ordered):
         # "Lakers games at the Celtics" is not read as an opponent yet.
         return q
@@ -2473,9 +2484,12 @@ def _other_team_clause(q: str) -> str:
     if other == subjects[0]:
         # "Celtics games against the Lakers when the Celtics scored 110": the
         # subject's own number ("they"; the name was read as the opponent).
+        rest = f"{prefix}{m.group('lead')} they {m.group('verb')}{q[m.end() :]}"
         if not opponents:
-            return q
-        return f"{prefix}{m.group('lead')} they {m.group('verb')}{q[m.end() :]}"
+            # "Lakers record when the Lakers score 120 and the Celtics score
+            # 110": the subject's own clause; a later one may name the opponent.
+            return _other_team_clause(rest)
+        return rest
     if opponents and other not in opponents:
         return q
     lead = "" if opponents else f"against the {m.group('name')} "
