@@ -2325,9 +2325,13 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         # "on 50% shooting", "50% shooting games": a floor. After a bound word
         # ("under 40% shooting", "held them to 40% shooting") it is read
         # elsewhere.
+        # "allow 45% shooting" and "opponents at 45%" are the opponent's.
+        # "50% shooting from three", "40% three point shooting" name the rate.
         r"(?<!under )(?<!over )(?<!below )(?<!above )(?<!than )(?<!least )(?<!most )"
-        r"(?<!to )(?<![\w.])()(\d+(?:\.\d+)?)\s*(?:%|percent)\s+shooting\b()"
-        r"(?!\s+or\b)",
+        r"(?<!to )(?<!at )(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!up )"
+        r"(?<![\w.])()(\d+(?:\.\d+)?)\s*(?:%|percent)\s+"
+        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b()"
+        rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
         # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
         # "6 ft 50%" is a height, not a rate.
         rf"(?<!\d)(?<!\d\s)\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",

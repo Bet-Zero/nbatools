@@ -64,6 +64,21 @@ def test_adjective_games_with_a_rate(query, count):
     assert all(row["pts"] >= 30 for row in rows)
 
 
+@pytest.mark.parametrize(
+    ("query", "stat", "value"),
+    [
+        # The area or kind after (or before) "shooting" names the rate.
+        ("LeBron James games on 50% shooting from three", "fg3_pct", 0.5),
+        ("LeBron James games on 40% three point shooting", "fg3_pct", 0.4),
+        ("LeBron James games on 80% free throw shooting", "ft_pct", 0.8),
+        ("LeBron James games on 80% shooting from the line", "ft_pct", 0.8),
+    ],
+)
+def test_percent_shooting_names_its_rate(query, stat, value):
+    assert (stat, value, None) in _conditions(query)
+    assert ("fg_pct", value, None) not in _conditions(query)
+
+
 def test_rate_after_a_bound_word_is_not_a_floor():
     # Read by the opponent and "held to" readers, not as the team's floor.
     assert ("fg_pct", 0.4, None) not in _conditions(
@@ -95,6 +110,10 @@ def test_records(query, record):
         "LeBron and Luka games with 30 points",
         "LeBron James and Luka Doncic 30 point games",
         "LeBron and Luka record",
+        # A team's or the opponent's rate, not read here.
+        "LeBron James games when the Lakers have 50% shooting",
+        "Lakers record when they allow 45% shooting",
+        "Lakers games when they allow 45% shooting",
     ],
 )
 def test_refuses(query):

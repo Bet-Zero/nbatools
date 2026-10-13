@@ -409,6 +409,11 @@ _RATE_MODE = {
     "no more than": ("max", 0.0),
 }
 
+_ALLOWED_RATE = re.compile(
+    r"\b(?:allow(?:s|ed|ing)?|gave\s+up|give\s+up|gives\s+up|giving\s+up"
+    r"|opponents?\s+at)\s+(?:\w+\s+){0,2}?\d+(?:\.\d+)?\s*(?:%|percent)"
+)
+
 
 def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
     found = []
@@ -494,6 +499,13 @@ def _own_bounds(text: str, spans: list[tuple[int, int]]) -> list[dict]:
 def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str) -> None:
     """ "Lakers games with at least 15 opponent turnovers": an opponent bound
     (the team's own turnovers were filtered)."""
+    if route and _ALLOWED_RATE.search(text):
+        # "when they allow 45% shooting": the opponent's rate, not read in
+        # this wording (it was dropped).
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "opponent_shooting" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
+        return
     if route != "game_finder":
         if route and _OPP_SHOOTING.search(text):
             # "Lakers record when opponents shoot under 40 percent": only team
@@ -907,7 +919,9 @@ def _apply_any_player_stat(route: str | None, route_kwargs: dict, text: str) -> 
 # rates, so refuse.
 _TEAM_SHOOTING = re.compile(
     r"\b(?:when|if|while|whenever|where|and|but)\s+(?:the\s+|his\s+)?"
-    r"(?P<name>[a-z.']+(?:\s+[a-z.']+)?)\s+(?:shoots?|shot|shooting)\b"
+    r"(?P<name>[a-z.']+(?:\s+[a-z.']+)?)\s+(?:shoots?|shot|shooting"
+    # "when the Lakers have 50% shooting".
+    r"|ha(?:s|d|ve)\s+\d+(?:\.\d+)?\s*(?:%|percent)\s+shooting)\b"
 )
 _TEAM_SHOOTING_SUBJECTS = frozenset(
     {"they", "team", "opponents", "opponent", "other team", "opposing team", "teams"}
