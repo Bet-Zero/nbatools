@@ -8213,13 +8213,7 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
 
         if not _opponents_end_cleanly(league_q):
             # "by the Lakers vs Celtics centers": the opponents' players.
-            refused = _single_season_refusal(parsed)
-            refused["route_kwargs"]["unsupported_filters"] = ["opponent_players_group"]
-            refused["notes"] = [
-                "unsupported_boundary: game lists read the opponent team, not a group of "
-                "its players"
-            ]
-            return refused
+            return _opponent_group_refusal(parsed)
         if (
             _GAME_LIST_ALLOWED.search(q)
             or len(_LIST_VS.findall(q)) != 1
@@ -8317,18 +8311,40 @@ def _two_team_owners(q: str) -> bool:
 # read the team, not the group, so the wording is refused rather than answered
 # for every player. Anything else after the team opens the next clause.
 _TEAM_PLAYERS_GROUP = re.compile(
-    r"(?:'s?|s')(?!\s*players?\b)|\s+(?:rookies?|sophomores?|veterans?|vets|guards?|forwards?"
-    r"|centers?|bigs?|big\s+m[ae]n|wings?|point\s+guards?|shooting\s+guards?"
-    r"|small\s+forwards?|power\s+forwards?|starters?|starting\s+(?:five|lineup|unit)"
-    r"|bench|reserves?|subs|stars?|superstars?|all[\s-]?stars?|role\s+players?|scorers?"
-    r"|shooters?|players?|defen[cs]e|offense|frontcourt|backcourt|rotation|lineups?|roster"
-    r"|duo|trio|big\s+(?:three|3|two|2)|core|youngsters?|young\s+(?:players?|guys|core)"
-    r"|kids|combined|together|teammates?)\b"
+    r"(?:'s?|s')(?!\s*(?:players?|team|season|franchise|squad|own)\b)"
+    r"|\s+(?:(?:best|top|key|main|young|starting|bench|depth|role|perimeter|second[\s-]year)"
+    r"\s+(?:players?|guys|men|five|5|lineup|unit|core|scorers?)\b"
+    r"|all[\s-]?stars?|big\s+m[ae]n|big\s+(?:three|3|two|2)|sixth\s+m[ae]n|front\s*line"
+    r"|free\s+agents?|draft\s+picks?|ball[\s-]?handlers?|non[\s-]?starters?)"
+)
+# What opens the next clause after a team: anything else there ("by the
+# Lakers backups") is read as a group of the team's players and refused,
+# since these lists read only the team.
+_AFTER_TEAM_CLAUSE = re.compile(
+    r"\s*(?:$|[,?.!;:)]|\d"
+    r"|(?:in|since|this|last|past|during|from|over|under|at|on|vs\.?|versus|against|when"
+    r"|with|without|while|before|after|between|through|thru|until|til|till|to|where|if"
+    r"|who|that|which|home|away|road|regular|playoffs?|post[\s-]?season|and|or|by|for"
+    r"|the|a|an|ever|all|of|so|lately|recently|historically|including|excluding|off|top"
+    r"|min|minimum|max|please|ranked|ranking|list|overall|now|today|tonight|yet|only"
+    r"|sorted|order|ordered|each|every|per|across|career|season|seasons|year|years"
+    r"|first|early|late|both|also|ever|as|team|franchise|squad|ascending|descending)\b)"
 )
 
 
+def _opponent_group_refusal(parsed: dict) -> dict:
+    refused = _single_season_refusal(parsed)
+    refused["route_kwargs"]["unsupported_filters"] = ["opponent_players_group"]
+    refused["notes"] = [
+        "unsupported_boundary: game lists read the opponent team, not a group of its players"
+    ]
+    return refused
+
+
 def _clause_ends(text: str, pos: int) -> bool:
-    return _TEAM_PLAYERS_GROUP.match(text, pos) is None
+    if _TEAM_PLAYERS_GROUP.match(text, pos):
+        return False
+    return _AFTER_TEAM_CLAUSE.match(text, pos) is not None
 
 
 # "points allowed by the Lakers": the opponents' games, which these lists do
@@ -8400,8 +8416,11 @@ def _every_players_game_list(parsed: dict, league_q: str, match) -> dict | None:
     what = match.group("what")
     if match.group("team") or (match.group("rate") and what != "shooting"):
         return None
-    if _GAME_LIST_ALLOWED.search(league_q) or not _opponents_end_cleanly(league_q):
+    if _GAME_LIST_ALLOWED.search(league_q):
         return None
+    if not _opponents_end_cleanly(league_q):
+        # "by Lakers players vs the Celtics starters": the opponents' players.
+        return _opponent_group_refusal(parsed)
     lists = opponent_lists(league_q)
     if len(lists) > 1:
         return None
@@ -8599,12 +8618,7 @@ def _opponent_list_game_list_frame(parsed: dict) -> dict | None:
     if not _opponents_end_cleanly(q):
         # "vs the Celtics and Knicks rookies": the opponents' players, which
         # the game lists do not read (the last team was read as the owner).
-        refused = _single_season_refusal(parsed)
-        refused["route_kwargs"]["unsupported_filters"] = ["opponent_players_group"]
-        refused["notes"] = [
-            "unsupported_boundary: game lists read the opponent team, not a group of its players"
-        ]
-        return refused
+        return _opponent_group_refusal(parsed)
     if _two_team_owners(q) or _GAME_LIST_GROUP_OWNER.search(q, match.end()):
         return None
     return _every_players_game_list(parsed, q, match)

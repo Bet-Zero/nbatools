@@ -261,6 +261,23 @@ def test_a_group_of_a_teams_players_refuses(query):
     assert parsed["route_kwargs"]["unsupported_filters"] == ["team_players_group"]
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring games by Lakers players vs the Celtics starters",
+        "Lakers players worst shooting games vs the Celtics' starters",
+        "best scoring games by Lakers players vs the Celtics and Knicks rookies",
+        "best scoring games by the Lakers vs the Celtics sixth man",
+        "best scoring games vs the Celtics and Knicks best players",
+        "best rookie scoring games vs the Celtics top players",
+    ],
+)
+def test_a_group_of_the_opponents_players_refuses(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["opponent_players_group"]
+
+
 def _roster(season):
     from pathlib import Path
 
