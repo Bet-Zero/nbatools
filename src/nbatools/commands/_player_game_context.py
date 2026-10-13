@@ -630,6 +630,8 @@ def _refuse_unread_held_to(route: str | None, route_kwargs: dict, text: str) -> 
 # not minutes played. Play-by-play is not loaded, so refuse.
 _GAME_CLOCK = re.compile(
     r"\b\d+\s+minutes?\s+(?:left|remaining|to\s+go)\b|\b(?:last|final|closing)\s+\d+\s+minutes?\b"
+    # "with 5 minutes rest": not minutes played.
+    r"|\b\d+\s+(?:minutes?|mins?|hours?|nights?)\s+(?:of\s+)?rest\b"
 )
 
 
@@ -658,7 +660,9 @@ _LA_CLAUSE = re.compile(
 
 _TEAM_STAT_CLAUSE = re.compile(
     r"\b(?:when|if|while|where|whenever|and)\s+(?:the\s+)?"
-    r"(?P<name>[a-z.']+(?:\s+[a-z.']+){0,3}?)\s+"
+    # The name never spans another clause ("Lakers and Celtics when they score").
+    r"(?P<name>(?:(?!(?:when|if|while|where|whenever|they|he|we)\b)[a-z.']+\s+){0,3}?"
+    r"(?!(?:when|if|while|where|whenever|they|he|we)\b)[a-z.']+)\s+"
     r"(?:scores?|scored|has|had|makes?|made|hits?|shoots?|shot|grabs?|grabbed)\s+"
     r"(?:at\s+least\s+|over\s+|under\s+)?\d"
 )
@@ -682,16 +686,51 @@ def _refuse_third_team_stat(route_kwargs: dict, text: str) -> None:
             return
 
 
+def _refuse_compare_team_stat(route_kwargs: dict, text: str) -> None:
+    """ "Lakers vs Celtics when the Celtics score 110" bounded both teams' own
+    points; a clause naming one team (or a third) is not read on a compare."""
+    from nbatools.commands.natural_query import _teams_in_order
+
+    for m in _TEAM_STAT_CLAUSE.finditer(text):
+        if _teams_in_order(m.group("name")) or _LA_NAME_ONLY.fullmatch(m.group("name")):
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "other_team_stat" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "other_team_stat"]
+            return
+
+
+_LA_NAME_ONLY = re.compile(r"la|l\.a\.|los\s+angeles")
+
+_TWO_PLAYER_SUBJECT = re.compile(
+    r"\s*(?P<a>[a-z.'\-]+(?:\s+[a-z.'\-]+){0,2}?)\s+(?:and|&)\s+"
+    r"(?P<b>[a-z.'\-]+(?:\s+[a-z.'\-]+){0,2}?)\s+"
+    r"(?=(?:\d+\+?[- ]\w+\s+)?(?:games?|record|stats|summary|averages?|last|this|in|with|when)\b)"
+)
+
+
 def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     player = route_kwargs.get("player")
     if route and route not in _PLAYER_ROUTES:
         _refuse_unknown_name_stat(route_kwargs, text)
         if route in ("team_record", "game_finder", "game_summary"):
             _refuse_third_team_stat(route_kwargs, text)
+        elif route == "team_compare":
+            _refuse_compare_team_stat(route_kwargs, text)
         return
     if not player:
         return
     from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    pair = _TWO_PLAYER_SUBJECT.match(text)
+    if pair:
+        first, second = detect_player(pair.group("a")), detect_player(pair.group("b"))
+        if first and second and first != second:
+            # "LeBron and Luka games with 30 points" answered with LeBron's
+            # games alone.
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "two_players" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "two_players"]
+            return
 
     own = set(str(player).lower().split())
     for m in _OTHER_PLAYER_STAT.finditer(text):

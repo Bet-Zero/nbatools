@@ -2459,7 +2459,8 @@ def _other_team_clause(q: str) -> str:
     if len(_teams_in_order(m.group("name"))) > 1:
         # "when Knicks and Celtics score 110": not one opponent.
         return q
-    if re.search(r"\bplayers?$", m.group("name")):
+    if re.search(r"\b(?:players?|opponents?|opposition)$", m.group("name")):
+        # "when the Lakers' opponents score 110": the opponent's total.
         # "when a Celtics player scores 40": one player, not the team's total.
         return q
     other = detect_team_in_text(m.group("name")) or m.group("name")
