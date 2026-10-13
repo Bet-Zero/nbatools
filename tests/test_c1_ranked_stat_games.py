@@ -239,9 +239,7 @@ def test_team_span_list_ranks_by_the_named_stat(query, rank):
 @pytest.mark.parametrize(
     "query",
     [
-        # No stat named, or "summary": the team summary stays.
-        "Lakers best games since 2024",
-        "Lakers top 3 games by margin since 2024",
+        # "summary": the team summary stays.
         "Lakers highest scoring games since 2024 summary",
         "Lakers stats since 2024",
         # The opponent's stat is not the team's own points.
@@ -259,10 +257,19 @@ def test_team_span_by_month_is_a_month_split():
     assert execute_natural_query("Lakers games by month since 2024").route == "team_split_summary"
 
 
-def test_team_span_list_by_point_differential():
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers top 3 games by point differential since 2024",
+        # No stat named: the best games are the biggest final margins.
+        "Lakers top 3 games by margin since 2024",
+        "Lakers top 3 games since 2024",
+    ],
+)
+def test_team_span_list_by_point_differential(query):
     games = pd.concat(
         [pd.read_csv(RAW / "team_game_stats" / f"{s}_regular_season.csv") for s in SPAN[1:]]
     )
     games = games[games["team_abbr"] == "LAL"]
-    rows = _rows("Lakers top 3 games by point differential since 2024")
+    rows = _rows(query)
     assert [row["plus_minus"] for row in rows] == games["plus_minus"].nlargest(3).tolist()

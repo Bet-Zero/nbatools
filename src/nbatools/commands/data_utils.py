@@ -1043,6 +1043,15 @@ def resolve_opponent_quality_teams(
             df = load_latest_standings_snapshot(season)
         elif metric in {"def_rating_rank", "off_rating_rank"}:
             df = load_latest_team_advanced(season)
+            if "team_abbr" not in df.columns and "team_id" in df.columns:
+                # A ratings table keyed by team_id only ("vs top 10 defenses"
+                # raised a KeyError): name the teams from that season's rows.
+                names = season_team_abbrs(season)
+                ids = pd.to_numeric(df["team_id"], errors="coerce")
+                df["team_abbr"] = ids.map(
+                    lambda team_id: names.get(int(team_id)) if pd.notna(team_id) else None
+                )
+                df = df.dropna(subset=["team_abbr"])
         else:
             raise ValueError(f"Unsupported opponent_quality metric: {metric}")
 
