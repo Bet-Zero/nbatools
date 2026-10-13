@@ -94,33 +94,6 @@ def shares_side(
     return not select_player_rows(side, name).empty
 
 
-def only_against(
-    name: str,
-    *,
-    player: str,
-    season: str | None,
-    start_season: str | None,
-    end_season: str | None,
-    season_type: str,
-) -> bool:
-    """Whether ``name`` played in the seasons, but never alongside ``player``."""
-    side = _same_side_rows(None, player, season, start_season, end_season, season_type)
-    if side is None or not select_player_rows(side, name).empty:
-        return False
-    from nbatools.commands._parse_helpers import default_season_for_context
-    from nbatools.commands.data_utils import load_player_games_for_seasons
-
-    try:
-        if start_season and end_season and not season:
-            seasons = resolve_seasons(None, start_season, end_season)
-        else:
-            seasons = [season or default_season_for_context(season_type)]
-        games = load_player_games_for_seasons(seasons, season_type)
-    except (ValueError, FileNotFoundError):
-        return False
-    return not select_player_rows(games, name).empty
-
-
 def _same_side_rows(team, player, season, start_season, end_season, season_type):
     """Rows of the team's players, or of the player's teammates, in the seasons."""
     from nbatools.commands._parse_helpers import default_season_for_context

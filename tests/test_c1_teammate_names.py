@@ -31,14 +31,19 @@ TEAMS = "data/raw/team_game_stats/2025-26_regular_season.csv"
 
 @pytest.fixture
 def sparse_root(tmp_path, monkeypatch):
-    """The fixture with Davis out of 15 Lakers games and Reaves out of 10."""
+    """The fixture with Davis, Reaves and Tatum out of some of their games."""
     from nbatools.data_source import reset_data_source_cache
 
     root = tmp_path / "fx"
     shutil.copytree(FIXTURE, root)
     players = pd.read_csv(root / PLAYERS)
     lal = sorted(players.loc[players["team_abbr"] == "LAL", "game_id"].unique())
-    out = {"Anthony Davis": set(lal[::4]), "Austin Reaves": set(lal[1::6])}
+    bos = sorted(players.loc[players["team_abbr"] == "BOS", "game_id"].unique())
+    out = {
+        "Anthony Davis": set(lal[::4]),
+        "Austin Reaves": set(lal[1::6]),
+        "Jayson Tatum": set(bos[::3]),
+    }
     drop = pd.Series(False, index=players.index)
     for name, games in out.items():
         drop |= (players["player_name"] == name) & players["game_id"].isin(games)
@@ -161,9 +166,9 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
 @pytest.mark.parametrize(
     "query",
     [
-        # Never his teammate: not read as "with" or "without".
+        # Never his teammate: not read as "with".
         "LeBron James games with Stephen Curry",
-        "LeBron James stats without Jayson Tatum",
+        "LeBron James games with 30 points and Curry",
         # Two teammates: one would be dropped.
         "Lakers record with LeBron and Davis",
         "Lakers record without Davis and LeBron",
@@ -173,6 +178,20 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
 )
 def test_unread_availability_still_refuses(sparse_root, query):
     assert execute_natural_query(query).result_status == "no_result"
+
+
+def test_an_opponent_sitting(sparse_root):
+    # "without" an opposing player: the games he did not play.
+    root, out = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    lebron = players[
+        (players["player_name"] == "LeBron James")
+        & (players["opponent_team_abbr"] == "BOS")
+        & players["game_id"].isin(out["Jayson Tatum"])
+    ]
+    assert len(lebron) > 0
+    row = _ok("LeBron James stats vs Celtics without Jayson Tatum")["summary"][0]
+    assert (row["games"], row["wins"]) == (len(lebron), int((lebron["wl"] == "W").sum()))
 
 
 def test_a_name_on_another_team_is_not_read():

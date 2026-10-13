@@ -384,7 +384,6 @@ from nbatools.commands._playoff_record_route_utils import (
 )
 from nbatools.commands._teammate_resolution import (
     name_before_scope,
-    only_against,
     resolve_teammate,
     shares_side,
 )
@@ -6476,22 +6475,23 @@ def _route_parsed_query(parsed: dict) -> dict:
             route_kwargs["with_player"] = with_player
         else:
             route_kwargs["unsupported_filters"] = ["with_player"]
+    trailing = re.search(
+        r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
+        r"|since|in|vs\.?|versus|against|at|on|from|during)\b)",
+        q,
+    )
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and route_kwargs.get("without_player")
-        and not route_kwargs.get("unsupported_filters")
-        and only_against(
-            route_kwargs["without_player"],
-            player=route_kwargs["player"],
-            season=route_kwargs.get("season"),
-            start_season=route_kwargs.get("start_season"),
-            end_season=route_kwargs.get("end_season"),
-            season_type=route_kwargs.get("season_type") or "Regular Season",
-        )
+        and not route_kwargs.get("with_player")
+        and trailing
+        and (_names_a_person(trailing.group(1)) or detect_player(trailing.group(1)))
     ):
-        # "LeBron games without Tatum": never his teammate, so nothing to leave out.
-        route_kwargs["unsupported_filters"] = ["without_player"]
+        # "LeBron games with 30 points and Curry": not his teammate, and the
+        # name would otherwise be dropped.
+        route_kwargs["unsupported_filters"] = list(
+            route_kwargs.get("unsupported_filters") or []
+        ) + ["unresolved_player_availability"]
 
     if (
         route in ("player_game_summary", "player_game_finder")

@@ -2606,10 +2606,6 @@ def filter_without_player(
         team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
         if strict_team_match and not team_games:
             return df.iloc[0:0].copy()
-    elif _same_side_columns(df, p_rows):
-        # A player's games: only the other player's games on the same side,
-        # not the ones he played against him.
-        return df[~_same_side_mask(df, p_rows)].copy()
     else:
         team_games = set(p_rows["game_id"])
 
