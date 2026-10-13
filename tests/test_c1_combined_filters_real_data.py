@@ -205,3 +205,18 @@ def test_final_margin_filters():
     expected = lebron[pd.to_numeric(lebron["team_pm"], errors="coerce") >= 10]
     (summary,) = _sections(_run(f"LeBron summary in games won by 10+ {SEASON}"))["summary"]
     assert summary["games"] == len(expected)
+
+
+def test_team_record_when_one_of_its_players_scores_40():
+    # The team's best single-player line, from that season's player rows.
+    players = data_read_csv(
+        f"raw/player_game_stats/{SEASON}_regular_season.csv", dtype={"game_id": str}
+    )
+    players["pts"] = pd.to_numeric(players["pts"], errors="coerce")
+    big = set(players[(players["team_abbr"] == "DAL") & (players["pts"] >= 40)]["game_id"])
+    games = _team("DAL")
+    games = games[games["game_id"].isin(big)]
+    assert len(games) > 0
+    (summary,) = _sections(_run(f"Mavericks record when a player scores 40 {SEASON}"))["summary"]
+    assert summary["games"] == len(games)
+    assert summary["wins"] == int(games["won"].sum())
