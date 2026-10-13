@@ -9188,6 +9188,10 @@ def _season_average_threshold_board(parsed: dict) -> dict | None:
     q = parsed["normalized_query"]
     if not _AVERAGE_WORDING.search(q) or _AVERAGE_ONE_GAME.search(q):
         return None
+    if re.search(r"\b(?:teams|opponents)\s+(?:that|who|which)\s+averag", q):
+        # "Lakers record vs teams who average 115": the opponents' season, not
+        # a list of players.
+        return None
     bound = _average_bound(q)
     if bound is None:
         return None
@@ -9940,6 +9944,20 @@ _MARGIN_RANKS = (
         re.compile(rf"\b(?:biggest|largest)\s+{_N}blowouts?\b(?!\s+(?:wins?|loss))"),
         ("win_margin", False, "wins_only"),
     ),
+    (
+        # "Lakers top 5 games", "best games": a team's games by final margin
+        # (listed by date). Player routes rank by points elsewhere.
+        re.compile(
+            rf"\b(?:best|top|greatest)\s+{_N}games\b"
+            r"(?!\s+(?:by\b(?!\s+(?:point\s+)?margin\b)|in\s+a\s+row\b))"
+            r"|\bgames\s+by\s+(?:point\s+)?margin\b"
+        ),
+        ("plus_minus", False, None),
+    ),
+    (
+        re.compile(rf"\bworst\s+{_N}games\b(?!\s+(?:by\b|in\s+a\s+row\b))"),
+        ("plus_minus", True, None),
+    ),
 )
 _MARGIN_ROUTES = {
     "game_finder": "game_finder",
@@ -9954,6 +9972,8 @@ def _margin_ranking(parsed: dict, out: dict) -> dict | None:
     found = next(((m, spec) for rx, spec in _MARGIN_RANKS if (m := rx.search(q))), None)
     route = out.get("route")
     if found is None or route not in _MARGIN_ROUTES:
+        return None
+    if found[1][0] == "plus_minus" and not route.startswith("game_"):
         return None
     kwargs = dict(out.get("route_kwargs") or {})
     if kwargs.get("unsupported_filters") or parsed.get("count_intent"):
