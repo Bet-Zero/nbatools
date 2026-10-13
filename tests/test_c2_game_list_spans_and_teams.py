@@ -170,6 +170,7 @@ def test_a_named_team_list_ranks_that_teams_games():
         "best free throw shooting games over 90% with fg% under 40%",
         "best team free throw shooting games with fg% over 50%",
         "best free throw shooting games over 50% shooting",
+        "best free throw shooting games over 90% and over 50%",
     ],
 )
 def test_a_bound_that_names_another_rate_is_not_moved_to_the_ranked_rate(query):

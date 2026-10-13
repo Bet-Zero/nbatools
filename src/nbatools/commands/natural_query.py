@@ -7993,6 +7993,9 @@ def _league_game_list_frame(parsed: dict) -> dict | None:
             or any(m.group(3) for m in percents)
             or len(percents) != len(rates)
             or any(c.get("stat") != "fg_pct" for c in rates)
+            # "over 90% and over 50%": two floors, so one may be another rate.
+            or sum(c.get("min_value") is not None for c in rates) > 1
+            or sum(c.get("max_value") is not None for c in rates) > 1
             # "with fg% over 50%", "over 50% shooting": the bound names a
             # rate before or after it, so it is not on the ranked rate.
             or re.search(
