@@ -192,6 +192,8 @@ def test_clause_subjects_beside_rates_and_forced_turnovers(query, record):
         "Lakers record against teams under 55% shooting",
         "Lakers record when they hold the Celtics under 55% shooting",
         "Lakers record when they allow between 40 and 50% shooting",
+        "Lakers record when they hold opponents on under 50% shooting",
+        "Lakers record when they keep the Celtics on under 55% shooting",
         "LeBron James games when the Lakers have at least 55% shooting",
         "LeBron James record when the team has at least 55% shooting",
         "LeBron James games when the Lakers have under 50% shooting",
