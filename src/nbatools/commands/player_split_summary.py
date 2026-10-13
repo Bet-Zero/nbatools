@@ -51,11 +51,12 @@ ALLOWED_STATS = {
     "reb_pct": "reb_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses", "month"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
+    "opponent": (),
 }
 
 
@@ -226,6 +227,8 @@ def build_result(
         df["bucket"] = df["is_home"].astype(int).eq(1).map({True: "home", False: "away"})
     elif split == "month":
         df = assign_month_buckets(df)
+    elif split == "opponent":
+        df["bucket"] = df["opponent_team_abbr"]
     else:
         df["bucket"] = df["wl"].map({"W": "wins", "L": "losses"})
 

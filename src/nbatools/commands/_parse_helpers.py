@@ -921,7 +921,14 @@ def opponent_lists(text: str) -> list[tuple[int, int, list[str]]]:
             # "Celtics vs Knicks or Heat" pairs teams; a list there is not read.
             continue
         end, teams = first[0], [first[1]]
+        joined = False
         while (sep := _LIST_SEP.match(text, end)) and (item := _team_at(text, sep.end())):
+            bare_comma = re.fullmatch(r"\s*,\s*(?:the\s+)?", sep.group(0))
+            if joined and bare_comma:
+                # "against the Celtics and Knicks, Lakers best stretch": the
+                # "and" closed the list; the team after the comma is the subject.
+                break
+            joined = joined or not bare_comma
             end = item[0]
             teams.append(item[1])
         if len(set(teams)) > 1:
@@ -929,15 +936,9 @@ def opponent_lists(text: str) -> list[tuple[int, int, list[str]]]:
     return found
 
 
-_STRETCH_WORD = re.compile(r"\b(?:stretch(?:es)?|windows?|rolling)\b")
-
-
 def join_opponent_lists(text: str) -> str:
     # "vs Celtics, Knicks and Heat": the comma made Boston the team, and "vs
     # Celtics or Knicks" read as a boolean OR.
-    if _STRETCH_WORD.search(text):
-        # Stretches read comma lists themselves, and close a list at "and".
-        return text
     for start, end, _ in reversed(opponent_lists(text)):
         text = (
             text[:start]
@@ -2579,6 +2580,17 @@ def detect_split_type(text: str) -> str | None:
         text,
     ):
         return "wins_losses"
+    # "Lakers record by opponent", "LeBron averages vs each team": one row per
+    # opponent (it gave the whole sample).
+    if re.search(
+        # Not "by opponent points" (a ranking by the opponent's stat).
+        r"\b(?:by|per)\s+opponents?\b(?=\s*$|\s*[,?.]|\s+(?:since|this|last|in|from|during"
+        r"|vs\.?|versus|against|at|on|over|with|when|and|split|splits|breakdown)\b)"
+        r"|\bopponent[\s-]+(?:by[\s-]+opponent|splits?)\b"
+        r"|\b(?:vs\.?|versus|against)\s+(?:each|every)\s+(?:team|opponent)\b",
+        text,
+    ):
+        return "opponent"
     return None
 
 

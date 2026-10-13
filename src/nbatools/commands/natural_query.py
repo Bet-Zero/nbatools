@@ -706,6 +706,7 @@ _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
+    "opponent": (),
 }
 _SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
 
@@ -1608,7 +1609,10 @@ def _named_team_pairs(q: str) -> dict:
                 break
             # "and" joins the last item: "vs celtics and knicks, lakers best..."
             # ends the list at the knicks.
-            closed = bool(re.search(r"(?:\band|&)\s+(?:the\s+)?$", q[list_end : one.start()]))
+            # An "and" chain ("vs celtics and knicks and heat") stays open.
+            closed = bool(
+                re.search(r"(?:\band|&)\s+(?:the\s+)?$", q[list_end : one.start()])
+            ) and not re.match(r"\s+and\s", q[one.end() :])
             abbr = TEAM_ALIASES[one.group(1)]
             if abbr not in teams:
                 teams.append(abbr)
@@ -10802,16 +10806,17 @@ def _per_season_games(parsed: dict) -> dict:
         or kwargs.get("sort_by") != "stat"
         or kwargs.get("unsupported_filters")
         or kwargs.get("last_n")
-        # "30 point games by season", "how many ... each season": every
-        # qualifying game, not each season's top one.
-        or kwargs.get("min_value") is not None
-        or kwargs.get("max_value") is not None
         or parsed.get("count_intent")
         or not _EACH_SEASON_RANKED.search(q)
         or not _EACH_SEASON.search(q)
     ):
         return parsed
     count = _EACH_SEASON_COUNT.search(q)
+    if not count and (kwargs.get("min_value") is not None or kwargs.get("max_value") is not None):
+        # "30 point games by season", "most 30 point games each season": every
+        # qualifying game, not each season's top one ("top 5 games with 30
+        # points each season" names its count).
+        return parsed
     kwargs = dict(kwargs)
     kwargs["per_season_limit"] = int(count.group(1)) if count else 1
     if parsed.get("season_defaulted"):
