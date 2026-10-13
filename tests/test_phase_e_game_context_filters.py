@@ -19,10 +19,11 @@ def test_rest_filter_propagates_to_player_route_kwargs():
     assert parsed["route_kwargs"]["back_to_back"] is False
 
 
-def test_one_possession_filter_propagates_to_team_record_route_kwargs():
+def test_one_possession_reads_as_final_margin_on_team_record_route_kwargs():
     parsed = parse_query("Celtics one-possession record")
     assert parsed["route"] == "team_record"
-    assert parsed["route_kwargs"]["one_possession"] is True
+    assert parsed["route_kwargs"]["one_possession"] is False
+    assert (parsed["route_kwargs"]["stat"], parsed["route_kwargs"]["max_value"]) == ("margin", 3.0)
 
 
 def test_national_tv_filter_propagates_to_team_record_route_kwargs():

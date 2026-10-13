@@ -276,6 +276,28 @@ def test_build_schedule_context_features_derives_core_fields(tmp_path, monkeypat
     assert aaa.loc[aaa["game_id"] == 3, "rest_advantage"].iloc[0] == "advantage"
 
 
+def test_build_schedule_context_features_reads_margin_from_the_score(tmp_path, monkeypatch):
+    # The stored plus_minus disagrees with the score in some real games
+    # (fractional values, a wrong sign); one possession reads the score.
+    _write_schedule_context_fixture(tmp_path, monkeypatch, build_context=False)
+    team_path = tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv"
+    team = pd.read_csv(team_path)
+    team["plus_minus"] = team["plus_minus"].astype(float)
+    # Game 1 is 110-100 but stored as a 2.5 margin; game 2 is 101-103 but
+    # stored as 7.
+    team.loc[team["game_id"] == 1, "plus_minus"] = [2.5, -2.5]
+    team.loc[team["game_id"] == 2, "plus_minus"] = [7.0, -7.0]
+    team.to_csv(team_path, index=False)
+
+    features = build_schedule_context_features("2099-00", "Regular Season")
+    aaa = features[features["team_abbr"] == "AAA"].set_index("game_id")
+
+    assert aaa.loc[1, "score_margin"] == 10
+    assert aaa.loc[1, "one_possession"] == 0
+    assert aaa.loc[2, "score_margin"] == 2
+    assert aaa.loc[2, "one_possession"] == 1
+
+
 def test_schedule_context_loader_and_validator_accept_valid_dataset(tmp_path, monkeypatch):
     _write_schedule_context_fixture(tmp_path, monkeypatch)
 

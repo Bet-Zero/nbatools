@@ -116,7 +116,7 @@ filters:
     badge: "Rest days"
   - id: one_possession
     phrase: "in one possession games"
-    badge: "One-possession game"
+    badge: "margin max"
   - id: nationally_televised
     phrase: "on national tv"
     badge: "Nationally televised"

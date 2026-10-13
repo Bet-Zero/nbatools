@@ -1186,7 +1186,8 @@ Recommended uniqueness expectation:
   calendar day.
 - `rest_advantage` is one of `advantage`, `disadvantage`, `even`, or `unknown`
   relative to the opponent's normalized rest for the same game.
-- `one_possession` is `1` when the final absolute scoring margin is `<= 3`.
+- `one_possession` is `1` when the final absolute scoring margin is `<= 3`;
+  `score_margin` comes from the two teams' points, not the stored plus-minus.
 - `nationally_televised` is `1` only when the schedule source carries a
   non-empty national-TV marker.
 
