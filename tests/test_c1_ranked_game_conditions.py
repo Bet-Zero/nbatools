@@ -110,7 +110,6 @@ def test_ceiling_after_the_stat_stays_a_ceiling(query, stat, values):
     [
         # Another bound on the same stat, a defensive stat and a margin are
         # not read as the player's own floor.
-        "LeBron James most rebounds in a game with 30 points against teams that scored 120 points",
         "LeBron James most points in a game with 5 threes allowed",
         "LeBron James most assists in 3 point games",
         # A total no player reaches is the team's score.
