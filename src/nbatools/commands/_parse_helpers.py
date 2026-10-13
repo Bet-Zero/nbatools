@@ -1090,8 +1090,8 @@ _OPPONENTS_THAT = re.compile(
     r"|grab(?:s|bed)?)\s+(?:(?:at\s+least|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?\d+)"
     # "teams that had 50 wins / 3 all-stars" describe their season.
     r"(?!\d|\s+(?:wins?|losses|games|all[\s-]?stars?|titles?|championships?)\b)"
-    # "teams that score 115 points per game" describe their season.
-    r"(?!(?:\s+[a-z%]+)?\s+(?:per\s+game|a\s+game|ppg|on\s+average|a\s+night|per\s+night)\b)"
+    # "teams that score 115 points per game" or "shoot 50% a game" describe their season.
+    r"(?!%?(?:\s+[a-z%]+)?\s+(?:per\s+game|a\s+game|ppg|on\s+average|a\s+night|per\s+night)\b)"
 )
 _GROUP_OPPONENTS = re.compile(
     r"\b(winning|losing|good|bad|top(?:[- ]\d+)?|best|playoff|non-playoff|contending"
@@ -1315,9 +1315,24 @@ def _ranked_stat_games(match: re.Match) -> str:
     return f"{rank} {match.group('n')} games by {word}"
 
 
+# "Lakers best 3 point games", "LeBron top three point games": no count, so
+# the 3 is not a points bar (they ranked by points, or read points >= 3).
+_UNCOUNTED_THREE_GAMES = re.compile(
+    r"\b(?P<rank>top|best|highest|biggest|greatest)\s+"
+    r"(?:three|3)[\s-]?(?:point|pt)(?:ers?)?\s+games\b(?!\s+by\b)"
+)
+
+
 def canonicalize_ranked_stat_games(text: str) -> str:
     match = _RANKED_STAT_GAMES.search(text)
     if not match:
+        three = _UNCOUNTED_THREE_GAMES.search(text)
+        if three and _names_subject(text[: three.start()]):
+            return (
+                text[: three.start()]
+                + f"{three.group('rank')} games by threes"
+                + text[three.end() :]
+            )
         return text
     tail = text[match.end() :]
     low = match.group("rank") in ("lowest", "fewest", "least", "worst")
@@ -3803,7 +3818,45 @@ _OPPONENT_QUALITY_PATTERNS = [
 ]
 
 
+# "vs top 5 offenses", "vs bottom 10 defenses", "vs elite defenses": a group
+# ranked by the season's offensive or defensive rating. A bare "top"/"good"
+# is the top 10, "elite" the top 5, and "bad"/"worst" the bottom 10.
+_RATING_GROUP = re.compile(
+    rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}"
+    r"(?:(?P<rank>top|bottom|best|worst)[- ]?(?P<n>\d{1,2})"
+    r"|(?P<word>top|best|elite|great|good|strong|bottom|worst|bad|poor|weak))\s+"
+    r"(?P<side>defens|offens)(?:es|ive\s+teams)\b"
+)
+_RATING_LOW_WORDS = {"bottom", "worst", "bad", "poor", "weak"}
+
+
+def _rating_group(text: str) -> dict | None:
+    m = _RATING_GROUP.search(text)
+    if not m:
+        return None
+    word = m.group("rank") or m.group("word")
+    count = int(m.group("n")) if m.group("n") else (5 if word == "elite" else 10)
+    if not 1 <= count <= 30:
+        return None
+    low = word in _RATING_LOW_WORDS
+    side = "defenses" if m.group("side") == "defens" else "offenses"
+    return {
+        "type": "opponent_quality",
+        "surface_term": f"{'bottom' if low else 'top'}-{count} {side}",
+        "definition": {
+            "metric": "def_rating_rank" if side == "defenses" else "off_rating_rank",
+            "operator": "bottom_n" if low else "top_n",
+            "value": count,
+            "source": "team_season_advanced",
+            "snapshot": "latest_regular_season",
+        },
+    }
+
+
 def detect_opponent_quality(text: str) -> dict | None:
+    rating = _rating_group(text)
+    if rating is not None:
+        return rating
     patterns = _OPPONENT_QUALITY_PATTERNS
     for pattern, term in patterns:
         if re.search(pattern, text):
@@ -3822,6 +3875,8 @@ def opponent_quality_span_end(text: str, pos: int) -> int | None:
     "top" terms are left out: "vs top 5 teams" after a stat bound routes to
     an occurrence leaderboard, and top-10 defenses are not served yet.
     """
+    if _RATING_GROUP.match(text, pos):
+        return None
     for pattern, term in _OPPONENT_QUALITY_PATTERNS:
         m = re.compile(pattern).match(text, pos)
         if m:

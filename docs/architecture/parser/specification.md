@@ -1184,8 +1184,9 @@ Consolidated reference for fuzzy terms, aliases, and defaults. The canonical sou
 | `playoff teams`   | Latest regular-season standings snapshot: conference_rank ≤ 10 | Yes     |
 | `teams over .500` | Latest regular-season standings snapshot: win_pct > .500 | Yes     |
 | `top-10 defenses` | Latest regular-season team advanced table: top 10 by defensive rating | Yes     |
-| `top-10 offenses` | Top 10 by offensive rating at query time                | No      |
-| `elite defenses`  | Top 5 by defensive rating at query time                 | No      |
+| `top-10 offenses` | Latest regular-season team advanced table: top 10 by offensive rating | Yes     |
+| `elite defenses`  | Latest regular-season team advanced table: top 5 by defensive rating | Yes     |
+| `top/bottom N defenses/offenses` | Latest regular-season team advanced table: the N best (or worst) by defensive or offensive rating; "top"/"good" is 10, "elite" 5, "bad"/"worst" the bottom 10 | Yes     |
 | `bad teams`       | Teams with win % < .400                                 | No      |
 
 ### 18.3 Subjective-term definitions

@@ -31,10 +31,15 @@ def _finder(query: str) -> list[dict]:
 @pytest.mark.parametrize(
     ("query", "keep", "key", "ascending", "limit"),
     [
-        ("Lakers biggest win this season", lambda g: g["plus_minus"] > 0, "pm", False, 25),
+        # One game for a singular ("biggest win"), every game for a plural.
+        ("Lakers biggest win this season", lambda g: g["plus_minus"] > 0, "pm", False, 1),
+        ("Lakers biggest wins this season", lambda g: g["plus_minus"] > 0, "pm", False, 25),
         ("Lakers 5 biggest wins", lambda g: g["plus_minus"] > 0, "pm", False, 5),
-        ("Lakers largest margin of victory", lambda g: g["plus_minus"] > 0, "pm", False, 25),
-        ("Lakers worst loss", lambda g: g["plus_minus"] < 0, "pm", True, 25),
+        ("Lakers largest margins of victory", lambda g: g["plus_minus"] > 0, "pm", False, 25),
+        ("Lakers worst loss", lambda g: g["plus_minus"] < 0, "pm", True, 1),
+        ("Lakers worst losses", lambda g: g["plus_minus"] < 0, "pm", True, 25),
+        # "best wins" are the biggest margins, like "best games".
+        ("Lakers best wins", lambda g: g["plus_minus"] > 0, "pm", False, 25),
         ("Lakers closest losses", lambda g: g["plus_minus"] < 0, "pm", False, 25),
         ("Lakers closest games", lambda g: g["plus_minus"] != 0, "abs", True, 25),
     ],
@@ -79,7 +84,6 @@ def test_biggest_road_wins():
         "LeBron biggest wins on back to backs",
         "LeBron closest games on national tv",
         # Not a margin.
-        "Lakers best wins",
         "Lakers biggest 2024 wins",
     ],
 )
