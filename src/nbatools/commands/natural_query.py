@@ -8384,7 +8384,7 @@ _OWNER_LIST_TAIL_WORDS = frozenset(
     games game ever all time times please only just their his its far yet now today tonight
     this last past next since during before after between through thru until til till
     over under above below more less fewer than least most at most or more exactly
-    each every per by season seasons year years month months week weeks day days night
+    each every per by season seasons year years month months week weeks day days
     regular playoff playoffs postseason post-season preseason home away road neutral
     win wins won winning loss losses lost losing they we it he team
     point points pts rebound rebounds reb assist assists ast steal steals stl block blocks
@@ -8392,22 +8392,55 @@ _OWNER_LIST_TAIL_WORDS = frozenset(
     double triple digits pointers pointer field goals goal free throws throw
     shooting scoring percent percentage pct made makes attempts attempted
     straight consecutive row back-to-back back to start started end career
-    yesterday recently lately historically overall first early late both also
+    yesterday recently lately historically overall early late both also
     ranked ranking rank list sorted order ordered ascending descending top bottom
     show me right since min minimum max maximum including excluding included excluded
     january february march april may june july october november december
     jan feb mar apr jun jul oct nov dec plus up down by led leading trailing
-    that where which when who whose while if meeting meetings matchup matchups nights
+    that where which when who whose while if meeting meetings matchup matchups
     """.split()
 )
 
 
-# Phrases whose ordinal or noun is not read alone: "in the second" or "in
-# league history" are checked word by word, "in the second half" is not.
+# Phrases whose ordinal or noun is not read alone ("in the second", "in
+# league history" are checked word by word). A phrase is set aside only when
+# the parse read exactly it: "in the 4th quarter" as quarter 4, not "in fourth
+# quarters" or a second quarter named beside the first.
 _OWNER_LIST_PHRASES = re.compile(
-    r"\b(?:(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+(?:quarter|half|round|night)s?"
-    r"|nba\s+history)\b"
+    r"\b(?:(?P<n>first|second|third|fourth|1st|2nd|3rd|4th)\s+(?P<kind>quarter|half|round)"
+    r"|(?P<night>second|2nd)\s+(?:night|game)\s+of\s+(?:an?\s+|the\s+)?back[\s-]to[\s-]backs?"
+    r"|nba\s+(?P<nba>history|playoffs|postseason))\b"
 )
+_ORDINALS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3rd": 3}
+_ORDINALS.update({"fourth": 4, "4th": 4})
+
+
+def _owner_list_phrase_read(phrase: re.Match, kwargs: dict) -> bool:
+    if phrase.group("night"):
+        return kwargs.get("back_to_back") is True
+    if phrase.group("nba"):
+        if phrase.group("nba") == "history":
+            return bool(kwargs.get("start_season"))
+        return kwargs.get("season_type") == "Playoffs"
+    n = _ORDINALS[phrase.group("n")]
+    kind = phrase.group("kind")
+    if kind == "quarter":
+        return kwargs.get("quarter") == str(n)
+    if kind == "half":
+        return n <= 2 and kwargs.get("half") == ("first" if n == 1 else "second")
+    return kwargs.get("series_situation") == f"round_0{n}"
+
+
+def _owner_list_blank_read_phrases(tail: str, kwargs: dict) -> str:
+    seen: set[str] = set()
+    out = tail
+    for phrase in _OWNER_LIST_PHRASES.finditer(tail):
+        kind = phrase.group("kind") or ("night" if phrase.group("night") else "nba")
+        if kind in seen or not _owner_list_phrase_read(phrase, kwargs):
+            continue
+        seen.add(kind)
+        out = out[: phrase.start()] + " " * len(phrase.group()) + out[phrase.end() :]
+    return out
 
 
 def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
@@ -8424,11 +8457,7 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
     # Each run of words outside the list's usual vocabulary must change what
     # the list reads: "in the 4th quarter" or "on national TV" do, "winning
     # players" or "going big" do not.
-    words = list(
-        re.finditer(
-            r"\b[a-z][a-z'\-]*", _OWNER_LIST_PHRASES.sub(lambda m: " " * len(m.group()), tail)
-        )
-    )
+    words = list(re.finditer(r"\b[a-z][a-z'\-]*", _owner_list_blank_read_phrases(tail, kwargs)))
     runs: list[list] = []
     for word in words:
         if word.group().strip("'") in _OWNER_LIST_TAIL_WORDS:

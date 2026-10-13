@@ -316,6 +316,11 @@ def test_a_group_after_an_opening_word_refuses(frame, group):
         "in league history",
         "in the fourth game of the season",
         "in the second and third quarter",
+        "in fourth quarters",
+        "in the fourth round",
+        "in the second quarter and the fourth quarter",
+        "in the second night",
+        "on the first night of back to backs",
     ],
 )
 def test_an_unread_word_after_the_opponent_refuses(tail):
@@ -337,6 +342,8 @@ def test_an_unread_word_after_the_opponent_refuses(tail):
         ("in the second half", "half", "second"),
         ("in NBA history", "start_season", "1996-97"),
         ("on 0 days rest", "rest_days", 0),
+        ("in the nba playoffs", "season_type", "Playoffs"),
+        ("in the second game of back to backs", "back_to_back", True),
         ("in the clutch", "clutch", True),
         ("on the second night of a back to back", "back_to_back", True),
         ("in game 7s", "series_situation", "game_7"),
