@@ -8321,14 +8321,17 @@ _TEAM_PLAYERS_GROUP = re.compile(
 # Lakers backups") is read as a group of the team's players and refused,
 # since these lists read only the team.
 _AFTER_TEAM_CLAUSE = re.compile(
-    r"\s*(?:$|[,?.!;:)]|\d"
+    r"\s*(?:$|[,?.!;:()\-\u2013\u2014\"']|\d"
     r"|(?:in|since|this|last|past|during|from|over|under|at|on|vs\.?|versus|against|when"
     r"|with|without|while|before|after|between|through|thru|until|til|till|to|where|if"
     r"|who|that|which|home|away|road|regular|playoffs?|post[\s-]?season|and|or|by|for"
     r"|the|a|an|ever|all|of|so|lately|recently|historically|including|excluding|off|top"
     r"|min|minimum|max|please|ranked|ranking|list|overall|now|today|tonight|yet|only"
     r"|sorted|order|ordered|each|every|per|across|career|season|seasons|year|years"
-    r"|first|early|late|both|also|ever|as|team|franchise|squad|ascending|descending)\b)"
+    r"|first|early|late|both|also|ever|as|team|franchise|squad|ascending|descending"
+    r"|just|yesterday|night|shooting|scoring|they|he|we|it|plus|show|right|games?|wins?"
+    r"|losses|won|lost|winning|losing|holding|allowing|giving|having|getting|making"
+    r"|hitting|going|while|led|leading|trailing|down|up|back|straight|consecutive)\b)"
 )
 
 

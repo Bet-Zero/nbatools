@@ -243,6 +243,21 @@ def test_time_words_after_an_owner_or_opponent_keep_the_list(query, route, team)
     assert not kwargs.get("unsupported_filters")
 
 
+@pytest.mark.parametrize(
+    ("query", "key"),
+    [
+        ("best scoring games by Lakers players just at home", "home_only"),
+        ("best scoring games by the Lakers they lost", "losses_only"),
+        ("best scoring games by rookies vs the Celtics just at home", "home_only"),
+        ("best scoring games by the Lakers yesterday", "start_date"),
+    ],
+)
+def test_a_filter_after_a_team_is_applied_not_refused(query, key):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs.get(key)
+    assert not kwargs.get("unsupported_filters")
+
+
 def test_a_team_shooting_list_keeps_its_rate_before_more_words():
     kwargs = parse_query("worst shooting games by the Lakers so far this season")["route_kwargs"]
     assert (kwargs["team"], kwargs["stat"], kwargs["ascending"]) == ("LAL", "fg_pct", True)
