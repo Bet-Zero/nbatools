@@ -70,6 +70,7 @@ def test_adjective_games_with_a_rate(query, count):
         # The area or kind after (or before) "shooting" names the rate.
         ("LeBron James games on 50% shooting from three", "fg3_pct", 0.5),
         ("LeBron James games on 40% three point shooting", "fg3_pct", 0.4),
+        ("LeBron James games on 40% 3pt shooting", "fg3_pct", 0.4),
         ("LeBron James games on 80% free throw shooting", "ft_pct", 0.8),
         ("LeBron James games on 80% shooting from the line", "ft_pct", 0.8),
     ],

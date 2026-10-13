@@ -2285,7 +2285,7 @@ def _parse_threshold_match(
 def _shooting_percentage_stat_for_context(match_text: str) -> str:
     if re.search(
         r"\b(?:from\s+)?(?:three|3|deep|threes|3s|three[\s-]pointers?|3[\s-]pointers?)\b"
-        r"|\bthe\s+arc\b",
+        r"|\bthe\s+arc\b|\b(?:3|three)[\s-]?pt\b",
         match_text,
     ):
         return "fg3_pct"
