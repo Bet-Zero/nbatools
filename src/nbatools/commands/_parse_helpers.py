@@ -946,7 +946,7 @@ def canonicalize_bound_phrases(text: str) -> str:
     floors or refused; "no-more-than" and "never more than" read as floors;
     "when held to 100" was a 100-point floor; "vs above .500 teams" was
     ignored and answered with every game; "close games" and "blowouts" were
-    ignored too.
+    ignored too; "one possession games" refused outside two seasons.
     """
     text = canonicalize_trailing_ceilings(text)
     # "close games" and "blowouts" use the glossary's final-margin cutoffs.
@@ -955,6 +955,15 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\bclose\s+games?\b", "games decided by 5 or fewer", text)
     text = re.sub(r"\bblowout\s+(wins|losses|win|loss)\b", r"\1 by 15+", text)
     text = re.sub(r"\bblowouts?(?:\s+games?)?\b", "games decided by 15+", text)
+    # "one possession games" are decided by 3 or fewer, from the final score
+    # (the schedule-context flag covered two seasons and two routes).
+    text = re.sub(r"\bone[- ]possession\s+(wins|losses|win|loss)\b", r"\1 by 3 or fewer", text)
+    text = re.sub(r"\bone[- ]possession\s+record\b", "record in games decided by 3 or fewer", text)
+    text = re.sub(
+        r"\b(?:one[- ]possession\s+games?|games?\s+(?:decided\s+)?within\s+one\s+possession)\b",
+        "games decided by 3 or fewer",
+        text,
+    )
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
     text = re.sub(r"\bnever\s+(more|fewer|less|greater)\s+than\b", r"no \1 than", text)
     text = _HELD_TO_UNDER.sub(r"\1scoring under \2 points", text)

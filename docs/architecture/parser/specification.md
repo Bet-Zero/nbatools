@@ -540,7 +540,10 @@ Define where or when within a game the stat applies.
 - `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back=True`
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
   (`"advantage"`, `"disadvantage"`, or an integer day count)
-- `one-possession games` → `one_possession=True`
+- `one-possession games`, `games (decided) within one possession`,
+  `one-possession wins / losses / record` → a final margin of 3 or fewer from
+  the score (`margin` / `win_margin` / `loss_margin` <= 3), like `close games`;
+  a bare `within one possession` keeps `one_possession=True`
 - `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
   for player-context queries only. Team-only phrasing like `Celtics bench scoring`
@@ -1193,6 +1196,7 @@ Consolidated reference for fuzzy terms, aliases, and defaults. The canonical sou
 | `efficient`         | Stretch queries without an explicit stat rank rolling True Shooting % | Yes     |
 | `clutch`            | Last 5 min of 4th quarter or OT, score within 5        | No      |
 | `close games`       | Final margin of 5 points or fewer ("close wins", "close losses" too) | Yes     |
+| `one-possession games` | Final margin of 3 points or fewer ("one-possession wins / losses / record" too) | Yes     |
 | `blowouts`          | Final margin of 15 points or more ("blowout wins", "blowout losses" too) | Yes     |
 | `all-around games`  | Undefined — not yet shipped                            | No      |
 | `catch-and-shoot`   | Undefined — not yet shipped                            | No      |

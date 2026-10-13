@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands.data_utils import SCHEDULE_CONTEXT_REQUIRED_COLUMNS, normalize_season_type
+from nbatools.commands.data_utils import (
+    SCHEDULE_CONTEXT_REQUIRED_COLUMNS,
+    normalize_season_type,
+    score_margin_plus_minus,
+)
 
 
 def _require_columns(df: pd.DataFrame, required: list[str], name: str) -> None:
@@ -96,7 +100,11 @@ def build_schedule_context_features(season: str, season_type: str) -> pd.DataFra
     )
     work["rest_advantage"] = work.apply(_rest_advantage, axis=1)
 
-    work["score_margin"] = pd.to_numeric(work["plus_minus"], errors="coerce").abs()
+    # The stored plus_minus disagrees with the score in some games, so the
+    # margin comes from the two rows' points.
+    work["score_margin"] = pd.to_numeric(
+        score_margin_plus_minus(work)["plus_minus"], errors="coerce"
+    ).abs()
     if work["score_margin"].isna().any():
         raise ValueError("team_game_stats plus_minus contains unparseable values")
     work["one_possession"] = work["score_margin"].le(3).astype(int)

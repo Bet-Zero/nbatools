@@ -1022,12 +1022,18 @@ Examples:
 
 Current behavior:
 
-- parser sets `one_possession=True` and preserves the filter in `route_kwargs`
-- `team_record` and `player_game_summary` execute the filter through `schedule_context_features.one_possession` when coverage exists
-- unsupported routes or missing coverage return typed `no_result` /
+- "one-possession games", "games (decided) within one possession" and
+  "one-possession wins / losses / record" read a final margin of 3 or fewer
+  from the score, like "close games" (5 or fewer), so every season and every
+  route that reads a margin answers: records, game lists and counts, player
+  summaries, comparisons, splits, streaks and team record boards
+- a bare "within one possession" (an in-game state) keeps
+  `one_possession=True`, which `team_record` and `player_game_summary` execute
+  through `schedule_context_features.one_possession` when coverage exists;
+  other routes or missing coverage return typed `no_result` /
   `filter_not_supported`
-- broader schedule-context route expansion is out of scope for the core finish
-  line unless a future product queue reopens it
+- the schedule-context build derives `one_possession` from the two rows'
+  points, not the stored team plus-minus
 
 ### National-TV filter
 
