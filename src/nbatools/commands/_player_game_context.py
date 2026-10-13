@@ -656,11 +656,38 @@ _LA_CLAUSE = re.compile(
     r"(?:at\s+least\s+|over\s+|under\s+)?\d"
 )
 
+_TEAM_STAT_CLAUSE = re.compile(
+    r"\b(?:when|if|while|where|whenever|and)\s+(?:the\s+)?"
+    r"(?P<name>[a-z.']+(?:\s+[a-z.']+){0,3}?)\s+"
+    r"(?:scores?|scored|has|had|makes?|made|hits?|shoots?|shot|grabs?|grabbed)\s+"
+    r"(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+
+
+def _refuse_third_team_stat(route_kwargs: dict, text: str) -> None:
+    """ "Lakers record vs Celtics when ... the Knicks score 110", "when Knicks
+    and Celtics score 110": a team that is neither side of the game was read
+    as the subject's own stat, so refuse."""
+    from nbatools.commands.natural_query import _teams_in_order
+
+    sides = {route_kwargs.get("team"), route_kwargs.get("opponent")}
+    if not route_kwargs.get("team"):
+        return
+    for m in _TEAM_STAT_CLAUSE.finditer(text):
+        named = [t for _, _, t in _teams_in_order(m.group("name"))]
+        if len(named) > 1 or (named and named[0] not in sides):
+            blocked = list(route_kwargs.get("unsupported_filters") or [])
+            if "other_team_stat" not in blocked:
+                route_kwargs["unsupported_filters"] = [*blocked, "other_team_stat"]
+            return
+
 
 def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     player = route_kwargs.get("player")
     if route and route not in _PLAYER_ROUTES:
         _refuse_unknown_name_stat(route_kwargs, text)
+        if route in ("team_record", "game_finder", "game_summary"):
+            _refuse_third_team_stat(route_kwargs, text)
         return
     if not player:
         return
@@ -871,7 +898,8 @@ _BARE_OWN_CLAUSE = re.compile(
 
 _CLAUSE_START = re.compile(r"\b(?:when|if|while|where|whenever)\s+")
 _OPPONENT_SUBJECT = re.compile(
-    r"(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?)\b"
+    r"(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?"
+    r"|opposition|another\s+team)\b"
 )
 
 
@@ -879,7 +907,8 @@ _OPPONENT_SUBJECT = re.compile(
 # with its own subject.
 _JOINED_SUBJECT = re.compile(
     r"\b(?:and|but|while)\s+(?:(?P<own>they|he|we|she|the\s+team)"
-    r"|(?P<opp>(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?)))\b"
+    r"|(?P<opp>(?:the\s+)?(?:opponents?|opposing\s+teams?|other\s+teams?|teams|their\s+opponents?"
+    r"|opposition|another\s+team)))\b"
 )
 
 

@@ -2939,13 +2939,17 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
 
     # "allowing between 100 and 110", "opponents score between 100 and 110":
     # both bounds are the opponent's score.
-    _RANGE = (
+    _RANGE_LEAD = (
         rf"(?:{_MIN_SUBJECTS}|{_OPPONENT_SCORERS}"
         r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to\s+"
         r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to\s+)"
-        rf"between\s+{_NUM}(?:\s+(?:points?|pts))?\s+and\s+{_NUM}{_POINT_SUFFIX}"
     )
-    for m in re.finditer(_RANGE, text):
+    # "opponents score 100 to 110", "they allow 100-110 points" too.
+    _RANGES = (
+        rf"{_RANGE_LEAD}between\s+{_NUM}(?:\s+(?:points?|pts))?\s+and\s+{_NUM}{_POINT_SUFFIX}",
+        rf"{_RANGE_LEAD}(?!(?:19|20)\d\d\b){_NUM}(?:\s*-\s*|\s+to\s+){_NUM}{_POINT_SUFFIX}",
+    )
+    for m in (m for pattern in _RANGES for m in re.finditer(pattern, text)):
         low, high = sorted((float(m.group(1)), float(m.group(2))))
         matches.append(
             {
@@ -2976,7 +2980,8 @@ _OPP_STAT_SUBJECT = (
     r"(?:\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
     r"|\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them)(?:\s+to)?"
     r"|\blimit(?:s|ed|ing)?\s+opponents?(?:\s+to)?"
-    r"|\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+team)\s+(?:had|has|have|made|makes?"
+    r"|\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?|opposition|another\s+team)\s+"
+    r"(?:had|has|have|made|makes?"
     r"|hit|hits|shot|shoots|scor(?:e|es|ed)|commit"
     r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
     r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
