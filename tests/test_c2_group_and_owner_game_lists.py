@@ -211,6 +211,56 @@ def test_a_team_against_itself_or_the_opponents_players_refuse(query):
     assert parsed["route_kwargs"]["unsupported_filters"]
 
 
+@pytest.mark.parametrize(
+    ("query", "route", "team"),
+    [
+        ("best scoring games by Lakers players vs the Celtics ever", "player_game_finder", "LAL"),
+        (
+            "best scoring games by Lakers players vs the Celtics all time",
+            "player_game_finder",
+            "LAL",
+        ),
+        (
+            "best scoring games vs the Celtics by Lakers players in 2024",
+            "player_game_finder",
+            "LAL",
+        ),
+        ("best scoring games by the Lakers vs the Celtics of all time", "game_finder", "LAL"),
+        ("best scoring games vs the Celtics by the Lakers please", "game_finder", "LAL"),
+        (
+            "best scoring games vs the Celtics and Knicks so far this season",
+            "player_game_finder",
+            None,
+        ),
+    ],
+)
+def test_time_words_after_an_owner_or_opponent_keep_the_list(query, route, team):
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == route
+    assert kwargs.get("team") == team
+    assert kwargs.get("opponent")
+    assert not kwargs.get("unsupported_filters")
+
+
+def test_a_team_shooting_list_keeps_its_rate_before_more_words():
+    kwargs = parse_query("worst shooting games by the Lakers so far this season")["route_kwargs"]
+    assert (kwargs["team"], kwargs["stat"], kwargs["ascending"]) == ("LAL", "fg_pct", True)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring games by Lakers centers",
+        "best scoring games by the Lakers rookies vs the Celtics",
+    ],
+)
+def test_a_group_of_a_teams_players_refuses(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["team_players_group"]
+
+
 def _roster(season):
     from pathlib import Path
 

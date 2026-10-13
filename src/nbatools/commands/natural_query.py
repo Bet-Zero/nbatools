@@ -8186,10 +8186,18 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
             rf"(?P<players>'?\s*players?)?\b",
             tail,
         )
-        if owner is None or not _GAME_LIST_CLAUSE_END.match(tail, owner.end()):
+        if owner is None:
+            return None
+        if not _clause_ends(tail, owner.end()):
             # "by Lakers centers", "by the Lakers' rookies": a group of the
             # team's players these lists do not read.
-            return None
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["team_players_group"]
+            refused["notes"] = [
+                "unsupported_boundary: a team's game lists read the team or all its "
+                "players, not a group of them"
+            ]
+            return refused
         players = bool(owner.group("players"))
         alias = owner.group("alias")
         league_q = q[: match.end()] + tail[: owner.start()] + tail[owner.end() :]
@@ -8203,11 +8211,19 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         # owner first, as "Lakers best scoring games vs the Celtics".
         from nbatools.commands._parse_helpers import _LIST_VS
 
+        if not _opponents_end_cleanly(league_q):
+            # "by the Lakers vs Celtics centers": the opponents' players.
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["opponent_players_group"]
+            refused["notes"] = [
+                "unsupported_boundary: game lists read the opponent team, not a group of "
+                "its players"
+            ]
+            return refused
         if (
             _GAME_LIST_ALLOWED.search(q)
             or len(_LIST_VS.findall(q)) != 1
             or re.search(r"\bcompared\b|\bthan\b", q)
-            or not _opponents_end_cleanly(league_q)
         ):
             # Points allowed, a second "vs", a comparison, or the opponents'
             # own players: not this team's list against one opponent.
@@ -8296,16 +8312,25 @@ def _two_team_owners(q: str) -> bool:
 
 # Owners that are not the team itself: "by opponents of the Lakers", "by
 # former Lakers players".
-# What may follow a team named as a list's owner or opponent: the end, a
-# punctuation mark, or a word that opens the next clause. Anything else ("by
-# Lakers centers", "vs the Celtics' rookies", "vs the Celtics and Knicks
-# bench") qualifies the players and is not read by these lists.
-_GAME_LIST_CLAUSE_END = re.compile(
-    r"\s*(?:$|[,?.!;]|(?:in|since|this|last|past|during|from|over|under|at|on|vs\.?|versus"
-    r"|against|when|with|without|while|before|after|between|through|thru|until|til|to"
-    r"|where|if|who|that|home|away|regular|playoffs?|post[\s-]?season|and|or|by|for"
-    r"|the\s+(?:last|past|regular|playoffs?|post[\s-]?season|\d)|\d)\b)"
+# A group of a team's players named right after the team ("by Lakers centers",
+# "by the Lakers' rookies", "vs the Celtics and Knicks bench"): these lists
+# read the team, not the group, so the wording is refused rather than answered
+# for every player. Anything else after the team opens the next clause.
+_TEAM_PLAYERS_GROUP = re.compile(
+    r"(?:'s?|s')(?!\s*players?\b)|\s+(?:rookies?|sophomores?|veterans?|vets|guards?|forwards?"
+    r"|centers?|bigs?|big\s+m[ae]n|wings?|point\s+guards?|shooting\s+guards?"
+    r"|small\s+forwards?|power\s+forwards?|starters?|starting\s+(?:five|lineup|unit)"
+    r"|bench|reserves?|subs|stars?|superstars?|all[\s-]?stars?|role\s+players?|scorers?"
+    r"|shooters?|players?|defen[cs]e|offense|frontcourt|backcourt|rotation|lineups?|roster"
+    r"|duo|trio|big\s+(?:three|3|two|2)|core|youngsters?|young\s+(?:players?|guys|core)"
+    r"|kids|combined|together|teammates?)\b"
 )
+
+
+def _clause_ends(text: str, pos: int) -> bool:
+    return _TEAM_PLAYERS_GROUP.match(text, pos) is None
+
+
 # "points allowed by the Lakers": the opponents' games, which these lists do
 # not read.
 _GAME_LIST_ALLOWED = re.compile(
@@ -8332,7 +8357,7 @@ def _vs_team_lists(text: str) -> list[tuple[int, list[str]]]:
 
 def _opponents_end_cleanly(text: str) -> bool:
     """Every "vs <team>" or "vs <team> and <team>" closes before the next clause."""
-    return all(_GAME_LIST_CLAUSE_END.match(text, end) for end, _ in _vs_team_lists(text))
+    return all(_clause_ends(text, end) for end, _ in _vs_team_lists(text))
 
 
 _NOT_THE_TEAMS_OWN = re.compile(
