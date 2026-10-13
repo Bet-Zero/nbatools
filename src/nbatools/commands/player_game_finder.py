@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 
 from nbatools.commands._condition_utils import (
@@ -208,6 +210,49 @@ _RATE_SORT_ATTEMPTS = {
 }
 
 
+def _apply_roster_filter(
+    df: pd.DataFrame, position: str | None, rookies_only: bool
+) -> tuple[pd.DataFrame, str | None]:
+    """Keep the games of players listed at a position group, or as rookies.
+
+    Both are read from that season's roster, so a player's position and
+    rookie year are the ones of the season the game was played in. A season
+    with no roster rows refuses rather than silently drop its games.
+    """
+    from nbatools.commands.season_leaders import _resolve_position_filter
+    from nbatools.data_source import data_exists, data_read_csv
+
+    codes = _resolve_position_filter(position) if position else None
+    if position and not codes:
+        return df, f"position filter unavailable: unknown position group {position!r}"
+    if df.empty:
+        return df, None
+    frames = []
+    for season in sorted(df["season"].dropna().unique()):
+        path = Path(f"data/raw/rosters/{season}.csv")
+        if not data_exists(path):
+            return df, f"roster data unavailable for {season}: position and rookie filters"
+        frames.append(data_read_csv(path))
+    rosters = pd.concat(frames, ignore_index=True)
+    needed = {"season", "player_id"} | ({"position"} if codes else set())
+    needed |= {"experience_years"} if rookies_only else set()
+    if not needed.issubset(rosters.columns):
+        return df, "roster data lacks position or experience columns"
+    rosters["player_id"] = pd.to_numeric(rosters["player_id"], errors="coerce").astype(float)
+    keep = pd.Series(True, index=rosters.index)
+    if codes:
+        keep &= rosters["position"].astype(str).str.strip().isin(codes)
+    if rookies_only:
+        keep &= pd.to_numeric(rosters["experience_years"], errors="coerce") == 0
+    pairs = rosters.loc[keep, ["season", "player_id"]].dropna().drop_duplicates()
+    pairs["season"] = pairs["season"].astype(str)
+    ids = pd.to_numeric(df["player_id"], errors="coerce").astype(float)
+    kept = pd.MultiIndex.from_arrays([df["season"].astype(str), ids]).isin(
+        pd.MultiIndex.from_frame(pairs)
+    )
+    return df[kept].copy(), None
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -239,6 +284,8 @@ def build_result(
     role: str | None = None,
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
+    position: str | None = None,
+    rookies_only: bool = False,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
@@ -444,6 +491,15 @@ def build_result(
             reason="filter_not_supported",
             notes=[role_note],
         )
+
+    if position or rookies_only:
+        df, roster_note = _apply_roster_filter(df, position, rookies_only)
+        if roster_note:
+            return NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=[roster_note],
+            )
 
     # Last N runs after every filter: on the qualifying games, or (window
     # scope) on the N most recent games in play.

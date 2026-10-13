@@ -190,9 +190,8 @@ def test_a_team_list_filter_team_games_cannot_apply_refuses():
 @pytest.mark.parametrize(
     "query",
     [
-        "best shooting games by a guard",
-        "worst shooting games by rookies",
         "worst shooting games for the top 10 scorers",
+        "best shooting games by a point guard",
     ],
 )
 def test_a_subject_the_list_cannot_filter_is_not_dropped(query):

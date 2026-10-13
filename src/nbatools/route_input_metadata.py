@@ -351,7 +351,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "role",
             "opponent_quality",
         )
-        + ("series_situation",),
+        + ("series_situation", "position", "rookies_only"),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
