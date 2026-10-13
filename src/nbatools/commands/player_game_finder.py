@@ -19,6 +19,7 @@ from nbatools.commands.data_utils import (
     build_period_filter_coverage_note,
     filter_by_opponent_player,
     filter_period_rows,
+    filter_with_player,
     filter_without_player,
     last_n_outcome,
     last_n_window_game_ids,
@@ -171,6 +172,7 @@ def _window_game_ids(
     opponent,
     opponent_player: str | None,
     without_player: str | None,
+    with_player: str | None,
     home_only: bool,
     away_only: bool,
     start_date: str | None,
@@ -193,6 +195,8 @@ def _window_game_ids(
         sample = filter_by_opponent_player(sample, opponent_player, seasons, season_type)
     if without_player and not sample.empty:
         sample = filter_without_player(sample, without_player, seasons, season_type, team=team)
+    if with_player and not sample.empty:
+        sample = filter_with_player(sample, with_player, seasons, season_type, team=team)
     if role and not sample.empty:
         sample, _ = apply_player_role_filter(sample, seasons, season_type, role)
     return last_n_window_game_ids(sample, last_n, outcome)
@@ -218,6 +222,7 @@ def build_result(
     opponent: str | None = None,
     opponent_player: str | None = None,
     without_player: str | None = None,
+    with_player: str | None = None,
     special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -356,6 +361,13 @@ def build_result(
             coverage_period = filter_without_player(
                 coverage_period, without_player, seasons, season_type, team=team
             )
+        if with_player and not coverage_base.empty:
+            coverage_base = filter_with_player(
+                coverage_base, with_player, seasons, season_type, team=team
+            )
+            coverage_period = filter_with_player(
+                coverage_period, with_player, seasons, season_type, team=team
+            )
         if special_event and not coverage_base.empty:
             coverage_base = coverage_base[_flag_special_event(coverage_base, special_event)].copy()
             coverage_period = coverage_period[
@@ -393,6 +405,7 @@ def build_result(
             opponent=opponent,
             opponent_player=opponent_player,
             without_player=without_player,
+            with_player=with_player,
             home_only=home_only,
             away_only=away_only,
             start_date=start_date,
@@ -425,6 +438,9 @@ def build_result(
 
     if without_player and not df.empty:
         df = filter_without_player(df, without_player, seasons, season_type, team=team)
+
+    if with_player and not df.empty:
+        df = filter_with_player(df, with_player, seasons, season_type, team=team)
 
     if special_event and not df.empty:
         df = df[_flag_special_event(df, special_event)].copy()

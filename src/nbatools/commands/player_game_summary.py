@@ -29,6 +29,7 @@ from nbatools.commands.data_utils import (
     build_schedule_context_filter_coverage_notes,
     describe_opponent_filter,
     filter_by_opponent_player,
+    filter_with_player,
     filter_without_player,
     last_n_outcome,
     last_n_window_game_ids,
@@ -239,6 +240,7 @@ def select_player_summary_sample(
     opponent: str | None = None,
     opponent_player: str | None = None,
     without_player: str | None = None,
+    with_player: str | None = None,
     special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -347,6 +349,8 @@ def select_player_summary_sample(
                 sample = filter_without_player(
                     sample, without_player, seasons, season_type, team=team
                 )
+            if with_player and not sample.empty:
+                sample = filter_with_player(sample, with_player, seasons, season_type, team=team)
             sample, _ = apply_schedule_context_filters(
                 sample,
                 seasons,
@@ -385,6 +389,9 @@ def select_player_summary_sample(
 
         if without_player and not df.empty:
             df = filter_without_player(df, without_player, seasons, season_type, team=team)
+
+        if with_player and not df.empty:
+            df = filter_with_player(df, with_player, seasons, season_type, team=team)
     else:
         _player_arc_seasons = None
         df = apply_series_situation_filter(df, seasons, series_situation)
@@ -452,6 +459,7 @@ def build_result(
     opponent: str | None = None,
     opponent_player: str | None = None,
     without_player: str | None = None,
+    with_player: str | None = None,
     special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -485,6 +493,7 @@ def build_result(
         opponent=opponent,
         opponent_player=opponent_player,
         without_player=without_player,
+        with_player=with_player,
         special_event=special_event,
         home_only=home_only,
         away_only=away_only,

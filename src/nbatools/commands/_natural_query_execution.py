@@ -754,8 +754,9 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id in ("with_player", "unresolved_with_player"):
         return (
-            "whole-game 'with player' availability filtering is only supported for "
-            "team record queries (e.g. 'Lakers record with Austin Reaves available'); "
+            "whole-game 'with player' availability filtering is supported for team "
+            "records and a player's own games with a teammate (e.g. 'Lakers record "
+            "with Austin Reaves', 'LeBron games with Anthony Davis'); "
             "no unfiltered player answer was substituted "
             f"(blocked: {', '.join(all_filters)})"
         )

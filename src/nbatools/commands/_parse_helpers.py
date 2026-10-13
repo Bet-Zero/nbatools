@@ -961,6 +961,13 @@ def canonicalize_sample_phrases(text: str) -> str:
     Only phrases with an explicit sample unit are rewritten, so "the last
     five minutes" and "previous season" are left alone.
     """
+    # "best 10 game window / span / spell" is a 10 game stretch.
+    text = re.sub(
+        r"\b(\d+)([\s-]*games?(?:\s+[a-z%-]+){0,3}?)\s+(?:window|span|spell)(s?)\b",
+        r"\1\2 stretch\3",
+        text,
+    )
+    text = re.sub(r"\bstretchs\b", "stretches", text)
     # Number words to digits, only inside a recent-sample phrase.
     text = re.sub(
         rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+(?={_SAMPLE_UNIT}\b)",
@@ -1209,6 +1216,12 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = re.sub(r"\bclose\s+(wins|losses)\b", r"\1 by 5 or fewer", text)
     text = re.sub(r"\bclose\s+(win|loss)\b", r"\1 by 5 or fewer", text)
     text = re.sub(r"\bclose\s+games?\b", "games decided by 5 or fewer", text)
+    # "biggest blowout(s)": the team's own blowout wins, ranked by margin.
+    text = re.sub(
+        r"\b(biggest|largest)\s+(\d{1,2}\s+)?blowout(s?)\b(?!\s+(?:wins?|loss(?:es)?|games?)\b)",
+        lambda m: f"{m.group(1)} {m.group(2) or ''}win{m.group(3)} by 15+",
+        text,
+    )
     text = re.sub(r"\bblowout\s+(wins|losses|win|loss)\b", r"\1 by 15+", text)
     text = re.sub(r"\bblowouts?(?:\s+games?)?\b", "games decided by 15+", text)
     text = re.sub(r"\b(no|not)-(more|fewer|less)-than\b", r"\1 \2 than", text)
@@ -2576,7 +2589,10 @@ def detect_split_type(text: str) -> str | None:
     if _MONTH_SPLIT_RE.search(text) or detect_month_rank(text):
         return "month"
     if re.search(
-        r"\bwins?\s+(?:vs\.?|versus)\s+loss(?:es)?\b|\bwins?\s+loss(?:es)?\b|\bwins_losses\b|\bin\s+wins\s+(?:and|&)\s+loss(?:es)?\b",
+        r"\bwins?\s+(?:vs\.?|versus)\s+loss(?:es)?\b|\bwins?\s+loss(?:es)?\b|\bwins_losses\b|\bin\s+wins\s+(?:and|&)\s+loss(?:es)?\b"
+        # "wins and losses split", "split by wins and losses", "win/loss splits"
+        r"|\bwins?\s*(?:and|&|/|-)\s*loss(?:es)?\s+splits?\b"
+        r"|\b(?:split|splits|broken\s+down)\s+by\s+wins?\s+(?:and|&|or|vs\.?)\s+loss(?:es)?\b",
         text,
     ):
         return "wins_losses"
