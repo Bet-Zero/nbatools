@@ -8186,7 +8186,9 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
             rf"(?P<players>'?\s*players?)?\b",
             tail,
         )
-        if owner is None:
+        if owner is None or not _GAME_LIST_CLAUSE_END.match(tail, owner.end()):
+            # "by Lakers centers", "by the Lakers' rookies": a group of the
+            # team's players these lists do not read.
             return None
         players = bool(owner.group("players"))
         alias = owner.group("alias")
@@ -8199,6 +8201,30 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
     if owner_after_opponent:
         # "best scoring games vs the Celtics by the Lakers": read with the
         # owner first, as "Lakers best scoring games vs the Celtics".
+        from nbatools.commands._parse_helpers import _LIST_VS
+
+        if (
+            _GAME_LIST_ALLOWED.search(q)
+            or len(_LIST_VS.findall(q)) != 1
+            or re.search(r"\bcompared\b|\bthan\b", q)
+            or not _opponents_end_cleanly(league_q)
+        ):
+            # Points allowed, a second "vs", a comparison, or the opponents'
+            # own players: not this team's list against one opponent.
+            return None
+        named = _vs_team_lists(q)
+        if len(named) != 1:
+            return None
+        expected = list(dict.fromkeys(named[0][1]))
+        if team in expected:
+            # "by the Lakers vs the Celtics and the Lakers".
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["team_is_opponent"]
+            refused["notes"] = [
+                "unsupported_boundary: a team's games against itself are not a sample"
+            ]
+            return refused
+        expected = expected[0] if len(expected) == 1 else expected
         try:
             out = _finalize_route(_build_parse_state(f"{alias} {league_q}"))
         except ValueError:
@@ -8209,6 +8235,8 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         if out.get("route") is None and kwargs.get("unsupported_filters"):
             return out
         if out.get("route") != "game_finder" or kwargs.get("team") != team:
+            return None
+        if kwargs.get("opponent") != expected:
             return None
         return out
     if match.group("what") != "shooting":
@@ -8268,8 +8296,48 @@ def _two_team_owners(q: str) -> bool:
 
 # Owners that are not the team itself: "by opponents of the Lakers", "by
 # former Lakers players".
+# What may follow a team named as a list's owner or opponent: the end, a
+# punctuation mark, or a word that opens the next clause. Anything else ("by
+# Lakers centers", "vs the Celtics' rookies", "vs the Celtics and Knicks
+# bench") qualifies the players and is not read by these lists.
+_GAME_LIST_CLAUSE_END = re.compile(
+    r"\s*(?:$|[,?.!;]|(?:in|since|this|last|past|during|from|over|under|at|on|vs\.?|versus"
+    r"|against|when|with|without|while|before|after|between|through|thru|until|til|to"
+    r"|where|if|who|that|home|away|regular|playoffs?|post[\s-]?season|and|or|by|for"
+    r"|the\s+(?:last|past|regular|playoffs?|post[\s-]?season|\d)|\d)\b)"
+)
+# "points allowed by the Lakers": the opponents' games, which these lists do
+# not read.
+_GAME_LIST_ALLOWED = re.compile(
+    r"\b(?:allow(?:ed|s|ing)?|conced(?:ed|es|ing)|surrender(?:ed|s)?|gave\s+up|given\s+up)\b"
+)
+
+
+def _vs_team_lists(text: str) -> list[tuple[int, list[str]]]:
+    """Each "vs <team>( and <team>)*": where it ends, and its teams in order."""
+    from nbatools.commands._parse_helpers import _LIST_SEP, _LIST_VS
+
+    found = []
+    for vs in _LIST_VS.finditer(text):
+        first = _team_at(text, vs.end())
+        if first is None:
+            continue
+        end, teams = first[0], [first[1]]
+        while (sep := _LIST_SEP.match(text, end)) and (item := _team_at(text, sep.end())):
+            end = item[0]
+            teams.append(item[1])
+        found.append((end, teams))
+    return found
+
+
+def _opponents_end_cleanly(text: str) -> bool:
+    """Every "vs <team>" or "vs <team> and <team>" closes before the next clause."""
+    return all(_GAME_LIST_CLAUSE_END.match(text, end) for end, _ in _vs_team_lists(text))
+
+
 _NOT_THE_TEAMS_OWN = re.compile(
-    r"\b(?:opponents?|opposing|teammates?|former|ex|guarded|traded|against|vs\.?|versus)\s*$"
+    r"\b(?:opponents?|opposing|teammates?|former|ex|guarded|traded|against|vs\.?|versus"
+    r"|allowed|conceded|surrendered|given\s+up|gave\s+up)\s*$"
 )
 
 
@@ -8306,6 +8374,8 @@ def _every_players_game_list(parsed: dict, league_q: str, match) -> dict | None:
     """
     what = match.group("what")
     if match.group("team") or (match.group("rate") and what != "shooting"):
+        return None
+    if _GAME_LIST_ALLOWED.search(league_q) or not _opponents_end_cleanly(league_q):
         return None
     lists = opponent_lists(league_q)
     if len(lists) > 1:
@@ -8423,6 +8493,9 @@ def _group_game_list_frame(parsed: dict) -> dict | None:
     q = parsed["normalized_query"]
     if parsed.get("game_list_reparse") or parsed.get("player") or not _no_team_owner(parsed, q):
         return None
+    if re.search(r"\brookies?\s+of\s+the\s+year\b", q) or _GAME_LIST_ALLOWED.search(q):
+        # An award, or the opponents' games.
+        return None
     found = _GAME_LIST_GROUP_PREFIX.match(q)
     if found is not None:
         league_q = q[found.end() :]
@@ -8498,6 +8571,15 @@ def _opponent_list_game_list_frame(parsed: dict) -> dict | None:
         return None
     if len(opponent_lists(q)) != 1 or not _no_team_owner(parsed, q):
         return None
+    if not _opponents_end_cleanly(q):
+        # "vs the Celtics and Knicks rookies": the opponents' players, which
+        # the game lists do not read (the last team was read as the owner).
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["opponent_players_group"]
+        refused["notes"] = [
+            "unsupported_boundary: game lists read the opponent team, not a group of its players"
+        ]
+        return refused
     if _two_team_owners(q) or _GAME_LIST_GROUP_OWNER.search(q, match.end()):
         return None
     return _every_players_game_list(parsed, q, match)

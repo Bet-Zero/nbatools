@@ -211,7 +211,7 @@ _RATE_SORT_ATTEMPTS = {
 
 
 def _apply_roster_filter(
-    df: pd.DataFrame, position: str | None, rookies_only: bool
+    df: pd.DataFrame, position: str | None, rookies_only: bool, caveats: list[str]
 ) -> tuple[pd.DataFrame, str | None]:
     """Keep the games of players listed at a position group, or as rookies.
 
@@ -244,12 +244,18 @@ def _apply_roster_filter(
         keep &= rosters["position"].astype(str).str.strip().isin(codes)
     if rookies_only:
         keep &= pd.to_numeric(rosters["experience_years"], errors="coerce") == 0
+    rosters["season"] = rosters["season"].astype(str)
     pairs = rosters.loc[keep, ["season", "player_id"]].dropna().drop_duplicates()
-    pairs["season"] = pairs["season"].astype(str)
+    listed = rosters[["season", "player_id"]].dropna().drop_duplicates()
     ids = pd.to_numeric(df["player_id"], errors="coerce").astype(float)
-    kept = pd.MultiIndex.from_arrays([df["season"].astype(str), ids]).isin(
-        pd.MultiIndex.from_frame(pairs)
-    )
+    games = pd.MultiIndex.from_arrays([df["season"].astype(str), ids])
+    kept = games.isin(pd.MultiIndex.from_frame(pairs))
+    unlisted = int((~games.isin(pd.MultiIndex.from_frame(listed))).sum())
+    if unlisted:
+        caveats.append(
+            f"{unlisted} games by players missing from that season's roster could not be "
+            "classified and are left out"
+        )
     return df[kept].copy(), None
 
 
@@ -492,8 +498,9 @@ def build_result(
             notes=[role_note],
         )
 
+    roster_caveats: list[str] = []
     if position or rookies_only:
-        df, roster_note = _apply_roster_filter(df, position, rookies_only)
+        df, roster_note = _apply_roster_filter(df, position, rookies_only, roster_caveats)
         if roster_note:
             return NoResult(
                 query_class="finder",
@@ -507,13 +514,13 @@ def build_result(
         df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
-        return NoResult(query_class="finder", notes=notes)
+        return NoResult(query_class="finder", notes=notes + roster_caveats)
 
     stat_col = None
     if stat:
         stat_col = ALLOWED_STATS[stat.lower()]
 
-    caveats: list[str] = []
+    caveats: list[str] = list(roster_caveats)
     if sort_by == "game_date":
         df = df.sort_values(["game_date", "game_id"], ascending=[ascending, ascending]).copy()
     else:

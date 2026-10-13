@@ -164,6 +164,53 @@ def test_most_points_in_a_game_by_a_teams_players_is_their_games():
     assert parse_query("most points in a game this season")["route"] == "top_player_games"
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring games by rookie of the year",
+        "best scoring games by the rookie of the year in 2024",
+        "best scoring games vs the Celtics by Lakers centers",
+        "best scoring games vs the Celtics by Lakers rookie guards",
+        "best scoring games vs the Celtics by the Lakers' centers",
+        "best scoring games vs the Celtics by Lakers starters",
+        "best shooting games vs the Celtics by Lakers centers",
+        "best scoring games vs the Celtics allowed by the Lakers",
+        "best scoring games by the Lakers vs Celtics centers",
+        "best scoring games allowed by the Lakers vs the Celtics",
+        "best scoring games vs the Celtics and Knicks rookies",
+        "best scoring games vs the Celtics and Knicks' rookies",
+        "best scoring games vs the Celtics and Knicks starters",
+        "best scoring games vs the Celtics and Knicks bench",
+        "best scoring games by the Lakers vs the Celtics and vs the Knicks",
+        "best scoring games by the Lakers vs the Celtics compared to the Knicks",
+    ],
+)
+def test_words_these_lists_do_not_read_are_not_answered(query):
+    try:
+        parsed = parse_query(query)
+    except ValueError:
+        return
+    kwargs = parsed["route_kwargs"]
+    if kwargs.get("unsupported_filters"):
+        return
+    # Not one of the new lists answering without the group, award, "allowed"
+    # or second opponent.
+    assert parsed["route"] not in ("player_game_finder", "game_finder")
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best scoring games by the Lakers vs the Celtics and the Lakers",
+        "best scoring games vs the Celtics and Knicks rookies",
+    ],
+)
+def test_a_team_against_itself_or_the_opponents_players_refuse(query):
+    parsed = parse_query(query)
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"]
+
+
 def _roster(season):
     from pathlib import Path
 
@@ -217,3 +264,22 @@ def test_an_opponent_list_keeps_games_against_each_team():
     ).result.to_dict()["sections"]["finder"]
     assert rows
     assert {row["opponent_team_abbr"] for row in rows} <= {"BOS", "NYK"}
+
+
+@pytest.mark.fixture_data
+def test_a_player_missing_from_the_roster_is_reported_not_silently_dropped():
+    import pandas as pd
+
+    from nbatools.commands.player_game_finder import _apply_roster_filter
+
+    roster = _roster("2025-26")
+    rookie = int(roster.loc[roster["experience_years"] == 0, "player_id"].iloc[0])
+    games = pd.DataFrame({"season": ["2025-26", "2025-26"], "player_id": [rookie, 999999999]})
+    caveats: list[str] = []
+    kept, note = _apply_roster_filter(games, None, True, caveats)
+    assert note is None
+    assert kept["player_id"].tolist() == [rookie]
+    assert caveats == [
+        "1 games by players missing from that season's roster could not be classified "
+        "and are left out"
+    ]
