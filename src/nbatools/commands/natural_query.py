@@ -8125,6 +8125,11 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
     direction.
     """
     team = parsed.get("team")
+    q = parsed["normalized_query"]
+    if team is None and isinstance(parsed.get("opponent"), str):
+        # "best scoring games vs the Celtics by Lakers players": the opponent
+        # read first and the owner was dropped.
+        team = _game_list_owner_after_opponent(q)
     if (
         not isinstance(team, str)
         or parsed.get("player")
@@ -8133,7 +8138,6 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         or parsed.get("team_b")
     ):
         return None
-    q = parsed["normalized_query"]
     aliases = "|".join(
         re.escape(name)
         for name in sorted(TEAM_ALIASES, key=len, reverse=True)
@@ -8186,12 +8190,44 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         # A refusal that names its own reason.
         return out
     kwargs = dict(out["route_kwargs"], team=team)
+    _refuse_team_as_own_opponent(kwargs)
     out["route_kwargs"] = kwargs
     out["team"] = team
     out["notes"] = [
         note.replace("every team's games", f"{team} games") for note in out.get("notes") or []
     ]
     return out
+
+
+# Owners that are not the team itself: "by opponents of the Lakers", "by
+# former Lakers players".
+_NOT_THE_TEAMS_OWN = re.compile(
+    r"\b(?:opponents?|opposing|teammates?|former|ex|guarded|traded|against|vs\.?|versus)\s*$"
+)
+
+
+def _game_list_owner_after_opponent(q: str) -> str | None:
+    """The team in "... vs the Celtics by Lakers players", else None."""
+    aliases = "|".join(
+        re.escape(name)
+        for name in sorted(TEAM_ALIASES, key=len, reverse=True)
+        if name not in _WORD_TEAM_ALIASES
+    )
+    found = list(
+        re.finditer(
+            rf"\s+(?:by|for|from|of|among)\s+(?:the\s+)?(?P<alias>{aliases})"
+            rf"(?:'?\s*players?)?\b",
+            q,
+        )
+    )
+    if len(found) != 1:
+        return None
+    match = found[0]
+    if _NOT_THE_TEAMS_OWN.search(q[: match.start()]) or re.search(
+        r"\b(?:opponents?|opposing|former|ex)\b", q
+    ):
+        return None
+    return TEAM_ALIASES[match.group("alias")]
 
 
 def _team_players_game_list(parsed: dict, team: str, league_q: str, match) -> dict | None:
