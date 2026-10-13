@@ -8370,7 +8370,8 @@ _AFTER_TEAM_CLAUSE = re.compile(
 # center", "with rookies", "just their guards", "in the frontcourt").
 _PLAYER_GROUP_WORDS = re.compile(
     r"\b(?:guards?|centers?|forwards?|wings?|bigs|big\s+m[ae]n|front\s*court|back\s*court"
-    r"|rookies?|starters?|bench|reserves?|back[\s-]?ups?|subs|sixth\s+m[ae]n|all[\s-]?stars?"
+    r"|rookies?|starters?|bench|reserves?|back[\s-]?ups?|subs|sixth\s+m[ae]n"
+    r"|all[\s-]?stars?(?!\s+(?:break|weekend|game))"
     r"|down\s+low|up\s+front|debut(?:s|ing)?|getting\s+minutes)\b"
 )
 
@@ -8396,6 +8397,8 @@ _OWNER_LIST_TAIL_WORDS = frozenset(
     show me right since min minimum max maximum including excluding included excluded
     january february march april may june july october november december
     jan feb mar apr jun jul oct nov dec plus up down by led leading trailing
+    that where which when who whose while if nba league history meeting meetings matchup
+    matchups second third fourth fifth nights
     """.split()
 )
 
@@ -8411,8 +8414,25 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
         return False
     end = lists[-1][0]
     tail = league_q[end:]
-    for word in re.findall(r"[a-z][a-z'\-]*", tail):
-        if word.strip("'") not in _OWNER_LIST_TAIL_WORDS:
+    # Each run of words outside the list's usual vocabulary must change what
+    # the list reads: "in the 4th quarter" or "on national TV" do, "winning
+    # players" or "going big" do not.
+    words = list(re.finditer(r"\b[a-z][a-z'\-]*", tail))
+    runs: list[list] = []
+    for word in words:
+        if word.group().strip("'") in _OWNER_LIST_TAIL_WORDS:
+            continue
+        if runs and tail[runs[-1][-1].end() : word.start()].strip() == "":
+            runs[-1].append(word)
+        else:
+            runs.append([word])
+    for run in runs:
+        other_tail = tail[: run[0].start()] + tail[run[-1].end() :]
+        try:
+            other = _finalize_route(_build_parse_state(f"{alias} {league_q[:end]}{other_tail}"))
+        except ValueError:
+            continue
+        if other.get("route") == "game_finder" and (other.get("route_kwargs") or {}) == kwargs:
             return True
     for number in re.finditer(r"\d+", tail):
         digits = number.group()

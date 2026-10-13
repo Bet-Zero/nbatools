@@ -322,6 +322,12 @@ def test_an_unread_word_after_the_opponent_refuses(tail):
         ("this season", "stat", "pts"),
         ("top 25", "limit", 25),
         ("they lost", "losses_only", True),
+        ("that they won", "wins_only", True),
+        ("in the 4th quarter", "quarter", "4"),
+        ("in the clutch", "clutch", True),
+        ("on the second night of a back to back", "back_to_back", True),
+        ("in game 7s", "series_situation", "game_7"),
+        ("in the last 5 meetings", "last_n", 5),
         (
             "in wins by 20 or more",
             "conditions",
@@ -423,3 +429,13 @@ def test_a_player_missing_from_the_roster_is_reported_not_silently_dropped():
         "1 games by players missing from that season's roster could not be classified "
         "and are left out"
     ]
+
+
+def test_the_all_star_break_is_a_date_not_a_group():
+    for query in (
+        "best scoring games by the Lakers after the all-star break",
+        "best scoring games vs the Celtics by the Lakers after the all-star break",
+    ):
+        kwargs = parse_query(query)["route_kwargs"]
+        assert kwargs["team"] == "LAL"
+        assert kwargs["start_date"]
