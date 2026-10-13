@@ -2,7 +2,8 @@
 
 - "LeBron games with Davis" / "without Davis": an unresolved teammate was
   dropped and every game came back.
-- "Lakers record vs Celtics and Knicks" kept Boston only.
+- "Lakers record vs Celtics and Knicks" kept Boston only (now read as a
+  list, in test_c1_opponent_lists_and_quality_words).
 - "Lakers record when the Celtics' opponents score 110" answered Boston's
   record.
 - "Lakers 120 point seasons" and "40% shooting seasons" listed games.
@@ -30,8 +31,6 @@ def _status(query: str) -> str:
         "LeBron James games with Davis",
         "LeBron James games without Davis",
         "LeBron James games with Davis with 30 points",
-        "Lakers record vs Celtics and Knicks",
-        "Lakers record vs Celtics and Knicks when they score 120",
         "Lakers record when the Celtics' opponents score 110",
         "Lakers record when the Celtics opponents score 110",
         "Lakers 120 point seasons",
