@@ -164,10 +164,14 @@ def test_excluded_margins_keep_the_other_games(query, kept):
         # The team after "to" reads as the subject; the flag's refusal stays.
         "Lakers one possession losses to the Celtics",
         "Lakers one possession games to the Celtics",
-        "Lakers one possession wins against the Celtics",
         # A score during the game, not the final margin.
         "Lakers record in games within one possession in the final minute",
         "Lakers record in one possession games in the 4th quarter",
+        "Lakers record in games within one possession in the 4th",
+        "Lakers record in games within one possession down the stretch",
+        "Lakers record in games within one possession entering the fourth",
+        "Lakers record in games within one possession after three",
+        "Lakers record in one possession games in the final period",
         # Two margins compared.
         "Lakers one possession games vs close games",
         "Lakers close games vs one possession games",
@@ -186,3 +190,53 @@ def test_one_possession_games_against_a_team():
     close = close[close["opp_abbr"] == "BOS"]
     rows = _execute("Lakers one possession games vs the Celtics").result.to_dict()["sections"]
     assert sorted(r["game_id"] for r in rows["finder"]) == sorted(close["game_id"])
+
+
+def test_two_excluded_margins_keep_their_reading():
+    # "excluding close games and blowouts" is not one excluded margin; it
+    # keeps the reading it had (no game is both).
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query("Lakers record excluding close games and blowouts")
+    assert result.result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "pick"),
+    [
+        (
+            "Lakers one possession wins over the Celtics",
+            lambda r: (r["opp_abbr"] == "BOS") & (r["margin"] > 0),
+        ),
+        (
+            "Lakers one possession wins against the Celtics",
+            lambda r: (r["opp_abbr"] == "BOS") & (r["margin"] > 0),
+        ),
+        (
+            "Lakers one-possession losses vs the Celtics",
+            lambda r: (r["opp_abbr"] == "BOS") & (r["margin"] < 0),
+        ),
+        ("Lakers one possession wins at home", lambda r: (r["is_home"] == 1) & (r["margin"] > 0)),
+        (
+            "Lakers one possession losses at home this season",
+            lambda r: (r["is_home"] == 1) & (r["margin"] < 0),
+        ),
+    ],
+)
+def test_one_possession_outcomes_with_opponent_or_venue(query, pick):
+    close = _close("LAL")
+    expected = close[pick(close)]
+    rows = _execute(query).result.to_dict()["sections"]["finder"]
+    assert sorted(r["game_id"] for r in rows) == sorted(expected["game_id"])
+
+
+def test_one_possession_record_over_a_season_span():
+    row = _execute(
+        "Lakers record in one possession games from 2023-24 to 2025-26"
+    ).result.to_dict()["sections"]["summary"][0]
+    close = pd.concat([_close("LAL", s) for s in ("2023-24", "2024-25", "2025-26")])
+    assert (row["games"], row["wins"], row["losses"]) == (
+        len(close),
+        int((close["margin"] > 0).sum()),
+        int((close["margin"] < 0).sum()),
+    )

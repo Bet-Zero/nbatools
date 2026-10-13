@@ -943,15 +943,33 @@ _MARGIN_NEGATION = (
     r"\b(?:excluding|exclude|outside(?:\s+of)?|not\s+in|except(?:\s+(?:for|in))?"
     r"|other\s+than|non)[\s-]*(?:the\s+)?"
 )
+# "excluding close losses" and "excluding close games and blowouts" are not
+# one excluded margin; they keep their reading.
 _NEGATED_MARGIN_TERM = re.compile(
-    _MARGIN_NEGATION + r"(close(?:\s+games?)?|blowouts?(?:\s+games?)?)(?:\s+games?)?\b"
+    _MARGIN_NEGATION + r"(close|blowouts?)(?:\s+games?)?\b"
 )
+_NOT_ONE_EXCLUDED_MARGIN = re.compile(
+    r"\s+(?:wins?|loss(?:es)?)\b"
+    r"|\s*(?:,|&|\band\b|\bor\b|\bnor\b)\s*(?:(?:non|excluding|not\s+in)[\s-]*)?(?:the\s+)?"
+    r"(?:close|blowouts?|one[\s-]+possession|games\s+decided)"
+)
+
+
+def _negated_margin(m: re.Match) -> str:
+    if _NOT_ONE_EXCLUDED_MARGIN.match(m.string, m.end()):
+        return m.group(0)
+    if m.group(1) == "close":
+        return "games decided by 6+"
+    return "games decided by 14 or fewer"
 _ONE_POSSESSION = r"one[\s-]+possession"
 # "within one possession in the final minute", "one possession games at
 # halftime": a score during the game, not the final margin.
 _IN_GAME_STATE = re.compile(
     r"[^.?!]*\b(?:minutes?|mins?|seconds?|secs?|halftime|half|quarters?|q[1-4]|overtime|ot"
-    r"|late|clutch|left|remaining|lead)\b"
+    r"|late|clutch|left|remaining|lead|leads|leading|trailing|down\s+the\s+stretch|stretch"
+    r"|crunch|period|frame|entering|heading|going\s+into|after\s+(?:three|3|two|2|one|1)"
+    r"|(?:1st|2nd|3rd|4th|first|second|third|fourth|final|last)(?!\s+(?:\d+\s+)?"
+    r"(?:seasons?|games?|years?|meetings?|matchups?|months?|weeks?|days?)\b))\b"
 )
 # "one possession games vs close games": a comparison of two margins.
 _MARGIN_COMPARED = re.compile(
@@ -969,7 +987,11 @@ _MARGIN_COMPARED_BEFORE = re.compile(
     r"\b(?:close|blowouts?|decided\s+by\s+\S+(?:\s+or\s+(?:fewer|less|more))?)\s+(?:games?\s+)?"
     r"(?:vs\.?|versus|compared\s+(?:to|with)|or|and)\s+(?:in\s+)?$"
 )
-_OPPONENT_AFTER_OUTCOME = re.compile(r"\s+(?:to|over|against|vs\.?|versus|at|@|from|by)\b")
+# "one possession losses to the Celtics" reads Boston as the subject ("losses
+# to the Celtics by 3 or fewer" reads it right); "from 2023-24" is a span.
+_TEAM_AFTER_TO = re.compile(
+    r"\s+(?:to|from)\s+(?!(?:the\s+)?(?:\d|last\b|this\b|previous\b|date\b|now\b))"
+)
 
 
 def _canonicalize_one_possession(text: str) -> str:
@@ -988,8 +1010,7 @@ def _canonicalize_one_possession(text: str) -> str:
             _IN_GAME_STATE.match(after)
             or _MARGIN_COMPARED.match(after)
             or _MARGIN_COMPARED_BEFORE.search(m.string[: m.start()])
-            or re.match(r"\s+(?:to|from)\b", after)
-            or (m.group("outcome") and _OPPONENT_AFTER_OUTCOME.match(after))
+            or _TEAM_AFTER_TO.match(after)
         ):
             return m.group(0)
         if m.group("neg"):
@@ -1017,14 +1038,7 @@ def canonicalize_bound_phrases(text: str) -> str:
     text = canonicalize_trailing_ceilings(text)
     text = _canonicalize_one_possession(text)
     # "excluding close games", "non-blowout games": the games left out.
-    text = _NEGATED_MARGIN_TERM.sub(
-        lambda m: (
-            "games decided by 6+"
-            if m.group(1).startswith("close")
-            else "games decided by 14 or fewer"
-        ),
-        text,
-    )
+    text = _NEGATED_MARGIN_TERM.sub(_negated_margin, text)
     # "close games" and "blowouts" use the glossary's final-margin cutoffs.
     text = re.sub(r"\bclose\s+(wins|losses)\b", r"\1 by 5 or fewer", text)
     text = re.sub(r"\bclose\s+(win|loss)\b", r"\1 by 5 or fewer", text)
