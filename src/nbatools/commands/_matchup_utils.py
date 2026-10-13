@@ -511,7 +511,42 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
         right_player = detect_player(right.strip(" ."))
         if left_player and right_player and left_player != right_player:
             return True
+        if bool(left_player) != bool(right_player) and _bare_surname(
+            right if left_player else left
+        ):
+            # "with LeBron and Davis": the second name is a player too.
+            return True
     return False
+
+
+def _joins_second_player(text: str, m: re.Match) -> bool:
+    """'with LeBron and Davis': the name list goes on past the match."""
+    nxt = re.match(
+        r"\s+(?:and|&)\s+([a-z][a-z'\-]+)(?:\s+([a-z][a-z'\-]+))?"
+        # A name list ends the clause; "and maxey scores 30" is his own line.
+        rf"(?=\s*$|[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
+        r")\b)",
+        text[m.end() :],
+    )
+    if not nxt:
+        return False
+    two = " ".join(w for w in nxt.groups() if w)
+    return bool(detect_player(two) or _bare_surname(nxt.group(1)))
+
+
+def _bare_surname(text: str) -> bool:
+    from nbatools.commands._parse_helpers import detect_stat
+    from nbatools.commands.entity_resolution import (
+        _get_player_first_name_index,
+        player_last_name_candidates,
+    )
+
+    word = text.strip(" .")
+    return bool(
+        re.fullmatch(r"[a-z][a-z'\-]+", word)
+        and detect_stat(word) is None
+        and (player_last_name_candidates(word) or _get_player_first_name_index().get(word))
+    )
 
 
 # "while LeBron was out" states exactly the same availability condition as
@@ -559,7 +594,7 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
                 continue
-            if _phrase_names_multiple_players(phrase):
+            if _phrase_names_multiple_players(phrase) or _joins_second_player(cleaned_text, m):
                 continue
             player = detect_player(phrase)
             if player:
@@ -650,6 +685,11 @@ def names_other_player_availability(
         if not subject or subject in _NON_PLAYER_SUBJECTS or subject in TEAM_ALIASES:
             continue
         other = detect_player(subject)
+        if other is None:
+            # "when Davis sits", read as the teammate Anthony Davis.
+            other = next(
+                (n for n in read if n and set(subject.split()) <= set(n.lower().split())), None
+            )
         if other is None and set(subject.split()) <= own_words:
             continue
         if (
@@ -786,7 +826,7 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
                 continue
-            if _phrase_names_multiple_players(phrase):
+            if _phrase_names_multiple_players(phrase) or _joins_second_player(cleaned_text, m):
                 continue
             player = detect_player(phrase)
             tail = cleaned_text[m.end() :]

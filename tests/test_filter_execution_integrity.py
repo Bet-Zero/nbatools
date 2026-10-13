@@ -79,8 +79,8 @@ FILTER_PAIRS = [
     ("team triple double leaders in 2023-24", "team points leaders in 2023-24", "Special Event"),
     # whole-game teammate availability outside team records
     (
-        "Jokic averages with Jamal Murray in 2023-24",
-        "Jokic averages in 2023-24",
+        "Jokic home vs away splits with Jamal Murray in 2023-24",
+        "Jokic home vs away splits in 2023-24",
         "With player",
     ),
     # opponent conference / division outside team records

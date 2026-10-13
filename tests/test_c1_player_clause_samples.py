@@ -86,7 +86,6 @@ def test_sits_is_absence(query):
         "Lakers record when LeBron James plays and scores 30 points and Davis sits",
         "Lakers record when LeBron James plays and scores 30 points while Davis rests",
         "Lakers record when LeBron James plays and scores 30 points while Davis is out",
-        "Lakers record when Davis sits",
         # The first player's own stat can't be checked on team rows.
         "Lakers record when LeBron James plays and scores 30 points and Davis plays",
         "Lakers record when LeBron James plays and has 10 assists and Anthony Davis plays",
