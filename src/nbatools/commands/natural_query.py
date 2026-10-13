@@ -2250,7 +2250,7 @@ _OTHER_TEAM_CLAUSE = re.compile(
     # "when they shoot 50% and the Celtics score 110": a joined clause.
     r"|and)\s+"
     r"(?:the\s+)?(?P<name>[a-z0-9.']+(?:\s+[a-z0-9.']+){0,2}?)\s+"
-    r"(?P<verb>made|makes?|scored|scores?|had|has|have|hit|hits|shot|shoots|grabbed|grabs|"
+    r"(?P<verb>made|makes?|scored|scores?|had|has|have|hit|hits|shot|shoots?|grabbed|grabs|"
     r"committed|commits|recorded|records|put\s+up|puts\s+up)\b"
     # A number follows: "had a winning record" / "had Tatum" are not stat clauses.
     r"(?=\s+(?:at\s+least\s+|over\s+|more\s+than\s+|under\s+|fewer\s+than\s+|less\s+than\s+)?\d)"
@@ -2456,6 +2456,9 @@ def _other_team_clause(q: str) -> str:
     ):
         # Only a clause joined to an earlier "when ..." clause.
         return q
+    if len(_teams_in_order(m.group("name"))) > 1:
+        # "when Knicks and Celtics score 110": not one opponent.
+        return q
     if re.search(r"\bplayers?$", m.group("name")):
         # "when a Celtics player scores 40": one player, not the team's total.
         return q
@@ -2485,11 +2488,9 @@ def _other_team_clause(q: str) -> str:
         # "Celtics games against the Lakers when the Celtics scored 110": the
         # subject's own number ("they"; the name was read as the opponent).
         rest = f"{prefix}{m.group('lead')} they {m.group('verb')}{q[m.end() :]}"
-        if not opponents:
-            # "Lakers record when the Lakers score 120 and the Celtics score
-            # 110": the subject's own clause; a later one may name the opponent.
-            return _other_team_clause(rest)
-        return rest
+        # "Lakers record (vs Celtics) when the Lakers score 120 and the Celtics
+        # score 110": the subject's own clause; a later one may name the opponent.
+        return _other_team_clause(rest)
     if opponents and other not in opponents:
         return q
     lead = "" if opponents else f"against the {m.group('name')} "
