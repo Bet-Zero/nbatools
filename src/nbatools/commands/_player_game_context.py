@@ -650,6 +650,12 @@ _OTHER_PLAYER_STAT = re.compile(
     r"|hits?|dishes|dished|puts?\s+up)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
 )
 
+_LA_CLAUSE = re.compile(
+    r"\b(?:when|if|while|where|whenever|and)\s+(?:la|l\.a\.|los\s+angeles)\s+"
+    r"(?:scores?|scored|has|had|gets?|got|makes?|made|hits?|shoots?|shot)\s+"
+    r"(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+
 
 def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     player = route_kwargs.get("player")
@@ -682,12 +688,19 @@ def _refuse_unknown_name_stat(route_kwargs: dict, text: str) -> None:
     team's own 30 points (every game): a name it cannot place refuses."""
     from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
 
+    if _LA_CLAUSE.search(text) and route_kwargs.get("team") not in ("LAL", "LAC"):
+        # "Celtics record when they score 120 and LA scores 110": the Lakers or
+        # the Clippers; not read, so refuse rather than reading the Celtics' own.
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "other_player_stat" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "other_player_stat"]
+        return
     for m in _OTHER_PLAYER_STAT.finditer(text):
         name = m.group("name")
         if (
             detect_team_in_text(name)
             or _ANY_PLAYER_SUBJECT.match(name)
-            or re.match(r"(?:a|an|any|one|some|another|no|nobody|our|my|your)\b", name)
+            or re.match(r"(?:a|an|any|one|some|another|no|nobody|our|my|your|opposition)\b", name)
             or detect_player(name)
         ):
             continue
@@ -919,6 +932,7 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
     team = route_kwargs.get("team")
     added = False
     clauses = team_subject_stat_conditions(text)
+    bare_own = False
     # "... allow under 110 and make 15 threes": the subject carries over.
     for m in _BARE_OWN_CLAUSE.finditer(text):
         stat = _stat_word(m.group("w"))
@@ -928,14 +942,22 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
             # "when opponents score 110 and make 15 threes": the threes are
             # the opponent's.
             stat = f"opponent_{stat}"
+        else:
+            bare_own = True
         clauses.append(
             {"team": "TEAM", "stat": stat, "min_value": float(m.group("n")), "max_value": None}
         )
     own = [c for c in clauses if c["team"] in ("TEAM", team)]
-    if not beside_opponent and not any(
-        any(c["stat"] == o["stat"] and _same_bound(c, o) for c in conditions) for o in own
+    if (
+        not beside_opponent
+        and not bare_own
+        and not any(
+            any(c["stat"] == o["stat"] and _same_bound(c, o) for c in conditions) for o in own
+        )
     ):
-        # No clause of the list was read: not a list this reads.
+        # No clause of the list was read: not a list this reads. ("when they
+        # score between 110 and 120 and make 15 threes": the range is not a
+        # clause it lists, but the joined "and make 15 threes" is the team's.)
         return
     for clause in own:
         cond = {k: clause[k] for k in ("stat", "min_value", "max_value")}
