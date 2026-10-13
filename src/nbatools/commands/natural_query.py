@@ -8203,19 +8203,21 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         if not _clause_ends(tail, owner.end()):
             # "by Lakers centers", "by the Lakers' rookies": a group of the
             # team's players these lists do not read.
-            refused = _single_season_refusal(parsed)
-            refused["route_kwargs"]["unsupported_filters"] = ["team_players_group"]
-            refused["notes"] = [
-                "unsupported_boundary: a team's game lists read the team or all its "
-                "players, not a group of them"
-            ]
-            return refused
+            return _team_group_refusal(parsed)
         players = bool(owner.group("players"))
         alias = owner.group("alias")
         league_q = q[: match.end()] + tail[: owner.start()] + tail[owner.end() :]
     match = _LEAGUE_GAME_LIST_FRAME.match(league_q)
     if match is None or match.group("by"):
         return None
+    if (
+        not players
+        and not owner_after_opponent
+        and _PLAYER_GROUP_WORDS.search(league_q, match.end())
+    ):
+        # "by the Lakers at center", "... shooting guards": the team's totals
+        # would drop the group the question names.
+        return _team_group_refusal(parsed)
     if players:
         return _team_players_game_list(parsed, team, league_q, match)
     if owner_after_opponent:
@@ -8226,6 +8228,10 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         if not _opponents_end_cleanly(league_q):
             # "by the Lakers vs Celtics centers": the opponents' players.
             return _opponent_group_refusal(parsed)
+        if _PLAYER_GROUP_WORDS.search(league_q, match.end()):
+            # "... by the Lakers vs the Celtics at center": the team's totals
+            # would drop the group.
+            return _team_group_refusal(parsed)
         if (
             _GAME_LIST_ALLOWED.search(q)
             or len(_LIST_VS.findall(q)) != 1
@@ -8260,6 +8266,15 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
             return None
         if kwargs.get("opponent") != expected:
             return None
+        if _owner_list_drops_a_word(alias, league_q, kwargs):
+            # "... by the Lakers vs the Celtics winning players", "... under
+            # 25": words the team's list does not read.
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["team_game_list_words"]
+            refused["notes"] = [
+                "unsupported_boundary: this team game list does not read every word of the question"
+            ]
+            return refused
         return out
     if match.group("what") != "shooting":
         # "best scoring games by the Lakers": the team game list reads it.
@@ -8345,6 +8360,88 @@ _AFTER_TEAM_CLAUSE = re.compile(
     r"|losses|won|lost|winning|losing|holding|allowing|giving|having|getting|making"
     r"|hitting|going|while|led|leading|trailing|down|up|back|straight|consecutive)\b)"
 )
+
+
+# Player groups and positions anywhere in a team-totals list's tail ("at
+# center", "with rookies", "just their guards", "in the frontcourt").
+_PLAYER_GROUP_WORDS = re.compile(
+    r"\b(?:guards?|centers?|forwards?|wings?|bigs|big\s+m[ae]n|front\s*court|back\s*court"
+    r"|rookies?|starters?|bench|reserves?|back[\s-]?ups?|subs|sixth\s+m[ae]n|all[\s-]?stars?"
+    r"|down\s+low|up\s+front|debut(?:s|ing)?|getting\s+minutes)\b"
+)
+
+
+# The words a team game list's tail reads after the opponent: time and
+# place, results, stat bounds and ordering. Another word ("winning players",
+# "under 25 year olds") is something the team's list would drop.
+_OWNER_LIST_TAIL_WORDS = frozenset(
+    """a an the of in on at to for by from with without and or as so vs versus against
+    games game ever all time times please only just their his its far yet now today tonight
+    this last past next since during before after between through thru until til till
+    over under above below more less fewer than least most at most or more exactly
+    each every per by season seasons year years month months week weeks day days night
+    regular playoff playoffs postseason post-season preseason home away road neutral
+    win wins won winning loss losses lost losing they we it he team
+    point points pts rebound rebounds reb assist assists ast steal steals stl block blocks
+    blk three threes 3s 3pm turnover turnovers tov fouls minutes margin overtime ot
+    double triple digits pointers pointer field goals goal free throws throw
+    shooting scoring percent percentage pct made makes attempts attempted
+    straight consecutive row back-to-back back to start started end career history
+    yesterday recently lately historically overall first early late both also
+    ranked ranking rank list sorted order ordered ascending descending top bottom
+    show me right since min minimum max maximum including excluding included excluded
+    january february march april may june july october november december
+    jan feb mar apr jun jul oct nov dec plus up down by led leading trailing
+    """.split()
+)
+
+
+def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
+    """A word or number after the opponent that the team's list does not read.
+
+    Each number is moved by one and the list parsed again: a number the list
+    reads ("since 2020", "over 120 points", "top 5") changes what it asks for.
+    """
+    lists = _vs_team_lists(league_q)
+    if not lists:
+        return False
+    end = lists[-1][0]
+    tail = league_q[end:]
+    for word in re.findall(r"[a-z][a-z'\-]*", tail):
+        if word.strip("'") not in _OWNER_LIST_TAIL_WORDS:
+            return True
+    for number in re.finditer(r"\d+", tail):
+        digits = number.group()
+        moved = str((int(digits) + 1) % 10 ** len(digits)).zfill(len(digits))
+        other_tail = tail[: number.start()] + moved + tail[number.end() :]
+        if number.end() < len(tail) and tail[number.end()] == "-":
+            # "2023-24": move both years together.
+            after = re.match(r"-(\d+)", tail[number.end() :])
+            if after:
+                d2 = after.group(1)
+                m2 = str((int(d2) + 1) % 10 ** len(d2)).zfill(len(d2))
+                other_tail = (
+                    tail[: number.start()] + moved + "-" + m2 + tail[number.end() + after.end() :]
+                )
+        if number.start() > 0 and tail[number.start() - 1] == "-":
+            continue
+        try:
+            other = _finalize_route(_build_parse_state(f"{alias} {league_q[:end]}{other_tail}"))
+        except ValueError:
+            continue
+        if other.get("route") == "game_finder" and (other.get("route_kwargs") or {}) == kwargs:
+            return True
+    return False
+
+
+def _team_group_refusal(parsed: dict) -> dict:
+    refused = _single_season_refusal(parsed)
+    refused["route_kwargs"]["unsupported_filters"] = ["team_players_group"]
+    refused["notes"] = [
+        "unsupported_boundary: a team's game lists read the team or all its "
+        "players, not a group of them"
+    ]
+    return refused
 
 
 def _opponent_group_refusal(parsed: dict) -> dict:

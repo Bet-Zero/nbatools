@@ -277,6 +277,64 @@ def test_a_group_of_a_teams_players_refuses(query):
 
 
 @pytest.mark.parametrize(
+    "group",
+    [
+        "shooting guards",
+        "at center",
+        "in the frontcourt",
+        "with rookies",
+        "just rookies",
+        "plus their starters",
+        "- rookies only",
+        "led by rookies",
+    ],
+)
+@pytest.mark.parametrize(
+    "frame",
+    [
+        "best scoring games vs the Celtics by the Lakers {}",
+        "best scoring games by the Lakers vs the Celtics {}",
+        "best scoring games by the Lakers {}",
+    ],
+)
+def test_a_group_after_an_opening_word_refuses(frame, group):
+    # The team's totals would answer with the group gone.
+    parsed = parse_query(frame.format(group))
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["team_players_group"]
+
+
+@pytest.mark.parametrize(
+    "tail",
+    ["winning players", "going big", "under 25", "since the 2020 season", "show stoppers"],
+)
+def test_an_unread_word_after_the_opponent_refuses(tail):
+    parsed = parse_query(f"best scoring games vs the Celtics by the Lakers {tail}")
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["team_game_list_words"]
+
+
+@pytest.mark.parametrize(
+    ("tail", "key", "value"),
+    [
+        ("since 2020", "start_season", "2020-21"),
+        ("in 2023-24", "season", "2023-24"),
+        ("this season", "stat", "pts"),
+        ("top 25", "limit", 25),
+        ("they lost", "losses_only", True),
+        (
+            "in wins by 20 or more",
+            "conditions",
+            [{"stat": "win_margin", "min_value": 20.0, "max_value": None}],
+        ),
+    ],
+)
+def test_read_words_after_the_opponent_still_answer(tail, key, value):
+    kwargs = parse_query(f"best scoring games vs the Celtics by the Lakers {tail}")["route_kwargs"]
+    assert (kwargs["team"], kwargs["opponent"], kwargs[key]) == ("LAL", "BOS", value)
+
+
+@pytest.mark.parametrize(
     "query",
     [
         "best scoring games by Lakers players vs the Celtics starters",
