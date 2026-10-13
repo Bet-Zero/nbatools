@@ -690,6 +690,12 @@ _CONDITION_SEASONS = re.compile(
     r"\b(?:points?|pts|shooting|assists?|rebounds?|threes?|\d+%)\s+seasons\b"
     r"|\bseasons\s+(?:with|shooting|where|when|in\s+which)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
 )
+# "vs ranked opponents", "vs LA teams": groups the readers do not define
+# (they answered with every game).
+_UNREAD_GROUP = re.compile(
+    r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?(?:ranked|la|l\.a\.|los\s+angeles)"
+    r"\s+(?:opponents|teams)\b"
+)
 # "when the score was 120": which side's points is not said (dropped).
 _BARE_SCORE = re.compile(r"\b(?:the\s+)?(?:final\s+)?score\s+(?:was|is|of|were)\s+\d")
 
@@ -712,11 +718,15 @@ def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> 
         return
     from nbatools.commands._matchup_utils import detect_team_in_text
 
+    if _UNREAD_GROUP.search(text):
+        _refuse(route_kwargs, "opponent_group")
     if _BARE_SCORE.search(text):
         _refuse(route_kwargs, "unattributed_score")
     if route in ("game_finder", "player_game_finder") and _CONDITION_SEASONS.search(text):
         _refuse(route_kwargs, "season_condition_list")
-    single = isinstance(route_kwargs.get("opponent"), str)
+    # One opponent, or none when the list's first team became the subject
+    # ("Lakers record vs Celtics, Knicks and Heat" answered Boston's record).
+    single = isinstance(route_kwargs.get("opponent"), (str, type(None)))
     for m in _TWO_OPPONENTS.finditer(text) if single and route in _SAMPLE_ROUTES else ():
         first, second = detect_team_in_text(m.group("a")), detect_team_in_text(m.group("b"))
         if second == route_kwargs.get("team") or _CLAUSE_VERB.match(text, m.end()):
