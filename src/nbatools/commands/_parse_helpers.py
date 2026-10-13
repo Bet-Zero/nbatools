@@ -1059,7 +1059,13 @@ def canonicalize_adjective_game_lists(text: str) -> str:
     # number, so "30 point games with LeBron" keeps its teammate.
     m = _ADJECTIVE_GAMES_WITH.search(text)
     if m is None:
-        return text
+        # "30 point games shooting 50%", "30 point games on 50% shooting":
+        # the rate keeps its own wording after the count.
+        r = _ADJECTIVE_GAMES_RATE.search(text)
+        if r is None:
+            return text
+        first = f"{r.group(1)}{r.group(2) or ''} {r.group(3)}s"
+        return f"{text[: r.start()]}games {r.group('filler')}with {first} {text[r.end() :]}"
     first = f"{m.group(1)}{m.group(2) or ''} {m.group(3)}s"
     # "30 point games with 10 assists or 10 rebounds" groups the "or" under
     # the second clause. The condition list reads "or" loosest, so repeat
@@ -1085,6 +1091,14 @@ _ADJECTIVE_GAMES_WITH = re.compile(
     r"(?=(?:at\s+least\s+|over\s+|more\s+than\s+)?\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+"
     r"(?:points?|pts|rebounds?|boards|assists?|dimes|threes?|3s|3pm|three[- ]pointers?"
     r"|steals?|blocks?|turnovers?|fouls?)\b)"
+)
+
+_ADJECTIVE_GAMES_RATE = re.compile(
+    r"\b(\d+)(\+)?[- ](point|rebound|assist|three|steal|block|turnover)\s+games?\s+"
+    r"(?P<filler>(?:(?!(?:with|without|w/|w/o|and|or|vs|versus|against|where|when|if|while"
+    r"|shooting|on)\b)[\w.'\-]+\s+){0,5}?)"
+    r"(?=(?:shooting|with|on)\s+(?:at\s+least\s+|over\s+|under\s+)?\d+(?:\.\d+)?\s*(?:%|percent)"
+    r"|shooting\s+(?:at\s+least\s+|over\s+|under\s+))"
 )
 
 
@@ -2271,7 +2285,7 @@ def _parse_threshold_match(
 def _shooting_percentage_stat_for_context(match_text: str) -> str:
     if re.search(
         r"\b(?:from\s+)?(?:three|3|deep|threes|3s|three[\s-]pointers?|3[\s-]pointers?)\b"
-        r"|\bthe\s+arc\b",
+        r"|\bthe\s+arc\b|\b(?:3|three)[\s-]?pt\b",
         match_text,
     ):
         return "fg3_pct"
@@ -2308,6 +2322,16 @@ def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
         # so "shot 10 threes" stays a count.
         rf"\b(?:shoots?|shooting|shot)()\s+(\d+(?:\.\d+)?|\.\d+)\s*(?:%|percent)"
         rf"(?:\s+or\s+(better|more|higher|above|worse|less|lower|below))?{_FROM}(?!\w)",
+        # "on 50% shooting", "50% shooting games": a floor. After a bound word
+        # ("under 40% shooting", "held them to 40% shooting") it is read
+        # elsewhere.
+        # "allow 45% shooting" and "opponents at 45%" are the opponent's.
+        # "50% shooting from three", "40% three point shooting" name the rate.
+        r"(?<!under )(?<!over )(?<!below )(?<!above )(?<!than )(?<!least )(?<!most )"
+        r"(?<!to )(?<!at )(?<!allow )(?<!allows )(?<!allowed )(?<!allowing )(?<!up )"
+        r"(?<![\w.])()(\d+(?:\.\d+)?)\s*(?:%|percent)\s+"
+        r"(?:(?:three|3)[\s-]?(?:point|pt)\s+|free[\s-]throw\s+)?shooting\b()"
+        rf"{_AREA}?(?!\s+or\b)(?!\s+(?:from|on|beyond)\b)",
         # "with ts 60%", "fg 50% or better": the rate's own abbreviation.
         # "6 ft 50%" is a height, not a rate.
         rf"(?<!\d)(?<!\d\s)\b(?:ts|efg|fg|ft|3p|3pt)\s*%?\s+(?:of\s+)?(?:{operator}\s+)?{_RATE}{_TAIL}(?!\w)",
@@ -4086,6 +4110,10 @@ def wants_summary(text: str) -> bool:
     if re.search(r"\brecent\s+form\b|\bform\b", text):
         # Preserve pre-existing `form` / `recent form` detection, but guard
         # with a word boundary so substrings like `perform` do not count.
+        return True
+    # "LeBron stats in close games / in games with 30 points": the sample's
+    # stats, like "stats in wins" (it listed the games).
+    if re.search(r"\bstats\s+in\s+(?:close\s+games|blowouts|games\b)", text):
         return True
     # Per-game-average phrasing ("points per game", "Jokic ppg") asks for
     # averages, not a game list.
