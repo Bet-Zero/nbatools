@@ -207,3 +207,19 @@ def test_other_sides_rates_and_forcing_refuse(query):
     from nbatools.query_service import execute_natural_query
 
     assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    ("query", "record"),
+    [
+        # "vs <team> on 50% shooting" is the subject's own rate in those games.
+        ("Lakers record vs Celtics on 50% shooting", (4, 7)),
+        ("Lakers record against the Celtics on 50% shooting", (4, 7)),
+    ],
+)
+def test_own_rate_against_a_named_opponent(query, record):
+    assert _record(query) == record
+
+
+def test_player_rate_against_a_named_opponent():
+    assert len(_rows("LeBron James games against Boston on 50% shooting")) == 11

@@ -430,7 +430,7 @@ _ALLOWED_RATE = re.compile(
 # the wrong team, so refuse unless the opponent reader took it.
 _OTHER_SIDE_RATE = re.compile(
     r"\b(?:keep\w*|kept|hold\w*|held|limit\w*|against|vs\.?|versus)\s+"
-    r"(?:(?!(?:shoot\w*|shot|when|while|if|and|with|to)\b)[a-z.']+\s+){0,3}?"
+    r"(?:(?!(?:shoot\w*|shot|when|while|if|and|with|on|to)\b)[a-z.']+\s+){0,3}?"
     r"(?:(?:under|below|over|above|at\s+least|at\s+most|less\s+than|more\s+than"
     r"|no\s+more\s+than)\s+|between\s+\d+(?:\.\d+)?\s*(?:%|percent)?\s+and\s+)?"
     r"\d+(?:\.\d+)?\s*(?:%|percent)"
