@@ -9959,17 +9959,30 @@ _MARGIN_RANKS = (
         ("win_margin", False, "wins_only"),
     ),
     (
-        # "Lakers top 5 games", "best games": a team's games by final margin
-        # (listed by date). Player routes rank by points elsewhere.
+        # "Lakers best wins", "top 5 wins": the biggest margins (listed by date).
         re.compile(
-            rf"\b(?:best|top|greatest)\s+{_N}games\b"
+            rf"\b(?:best|top|greatest)\s+{_N}(?:wins?|victor(?:y|ies))\b"
+            r"(?!\s*(?:%|pct\b|percentage|totals?\b|streaks?\b|shares?\b|in\s+a\s+row\b))"
+        ),
+        ("win_margin", False, "wins_only"),
+    ),
+    (
+        # "Lakers top 5 games", "best games", "best game": a team's games by
+        # final margin (listed by date). Player routes rank by points elsewhere.
+        re.compile(
+            rf"\b(?:best|top|greatest)\s+{_N}games?\b"
+            r"(?![\s-]*(?:stretch|span|run|streak|window|segment|score|stretches)\b)"
             r"(?!\s+(?:by\b(?!\s+(?:point\s+)?margin\b)|in\s+a\s+row\b))"
             r"|\bgames\s+by\s+(?:point\s+)?margin\b"
         ),
         ("plus_minus", False, None),
     ),
     (
-        re.compile(rf"\bworst\s+{_N}games\b(?!\s+(?:by\b|in\s+a\s+row\b))"),
+        re.compile(
+            rf"\bworst\s+{_N}games?\b"
+            r"(?!\s+(?:by\b|in\s+a\s+row\b))"
+            r"(?![\s-]*(?:stretch|span|run|streak|window|segment|score|stretches)\b)"
+        ),
         ("plus_minus", True, None),
     ),
 )
@@ -10015,6 +10028,10 @@ def _margin_ranking(parsed: dict, out: dict) -> dict | None:
             }
         ]
     number = re.search(r"\d+", m.group(0))
+    # "best game", "biggest win": one game.
+    single = not number and not re.search(
+        r"\b(?:games|wins|victories|losses|defeats|blowouts|margins)\b", m.group(0)
+    )
     if (
         side == "wins_only"
         and kwargs.get("losses_only")
@@ -10029,7 +10046,7 @@ def _margin_ranking(parsed: dict, out: dict) -> dict | None:
         max_value=None,
         sort_by="stat",
         ascending=ascending,
-        limit=int(number.group(0)) if number else kwargs.get("limit") or 25,
+        limit=int(number.group(0)) if number else 1 if single else kwargs.get("limit") or 25,
     )
     if conditions:
         kwargs["conditions"] = conditions

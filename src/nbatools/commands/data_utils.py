@@ -1090,16 +1090,18 @@ def resolve_opponent_quality_teams(
                 ["win_pct", "wins", "team_abbr"],
                 ascending=[False, False, True],
             ).head(int(value))["team_abbr"]
-        elif metric == "def_rating_rank":
+        elif metric in {"def_rating_rank", "off_rating_rank"}:
+            if operator not in {"top_n", "bottom_n"}:
+                raise ValueError(f"Unsupported {metric} operator: {operator}")
+            column = "def_rating" if metric == "def_rating_rank" else "off_rating"
             work = df.copy()
-            work["def_rating"] = pd.to_numeric(work.get("def_rating"), errors="coerce")
-            teams = work.sort_values(["def_rating", "team_abbr"], ascending=[True, True]).head(
-                int(value)
-            )["team_abbr"]
-        elif metric == "off_rating_rank":
-            work = df.copy()
-            work["off_rating"] = pd.to_numeric(work.get("off_rating"), errors="coerce")
-            teams = work.sort_values(["off_rating", "team_abbr"], ascending=[False, True]).head(
+            work[column] = pd.to_numeric(work.get(column), errors="coerce")
+            work = work.dropna(subset=[column])
+            # Best first: the lowest defensive rating, the highest offensive.
+            best_first = metric == "def_rating_rank"
+            if operator == "bottom_n":
+                best_first = not best_first
+            teams = work.sort_values([column, "team_abbr"], ascending=[best_first, True]).head(
                 int(value)
             )["team_abbr"]
         else:

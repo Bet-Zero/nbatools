@@ -680,6 +680,8 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
         and not player
         and not player_a
         and not player_b
+        # "Lakers top 5 games with 120 points": the team's own games, ranked.
+        and not (team and re.search(r"\b(?:top|best|greatest)\s+\d{1,2}\s+games\s+with\b", q))
         and (
             # "most 30 point games" ranks on the season board; "players with
             # 30 point games" lists every player who had one.
