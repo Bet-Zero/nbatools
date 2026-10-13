@@ -2827,13 +2827,16 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         r"for|with|without|while|but|after|before|home|away|road|games?)\b))"
     )
     patterns = [
-        rf"\bheld\s+(?:opponents?|teams?|them)\s+(?:to\s+)?(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",
-        rf"\blimited\s+opponents\s+to\s+(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+(?:to\s+)?"
+        rf"(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\blimit(?:s|ed|ing)?\s+opponents?\s+to\s+(?:under|below|fewer\s+than|less\s+than)\s+"
+        rf"{_NUM}{_POINT_SUFFIX}",
         rf"\bkept\s+the\s+other\s+team\s+below\s+{_NUM}{_POINT_SUFFIX}",
         rf"\ballow(?:s|ing|ed)?\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\b(?:points?|pts)\s+allowed\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
         rf"\b(?:opponent|opp)\s+(?:points?|pts)\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
-        rf"\b(?:gave|given|giving)\s+up\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\b(?:gave|given|giving|give|gives)\s+up\s+(?:under|below|fewer\s+than|less\s+than)\s+"
+        rf"{_NUM}{_POINT_SUFFIX}",
         # "opponents under 40 percent shooting" is a rate, not points.
         rf"\bopponents?\s+under\s+{_NUM}(?![\d.]*\s*(?:%|percent\b|pct\b))(?:\s+(?:points?|pts))?\b",
     ]
@@ -2848,7 +2851,7 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     _SUBJECTS = (
         r"(?:\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+to"
         r"|\blimit(?:s|ed|ing)?\s+opponents?\s+to"
-        r"|\ballow(?:s|ing|ed)?|\b(?:gave|given|giving)\s+up"
+        r"|\ballow(?:s|ing|ed)?|\b(?:gave|given|giving|give|gives)\s+up"
         r"|\bopponents?\s+(?:scor(?:e|es|ed|ing)|put\s+up|had)"
         r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:scor(?:e|es|ed)|put\s+up|had)"
         r"|\b(?:points?|pts)\s+allowed(?:\s+(?:of|was|is))?"
@@ -2880,7 +2883,8 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     # named ("best record when teams score 120") they are the subject.
     _WHEN_TEAMS = r"|\b(?<=when\s)teams" if detect_team_in_text(text) else ""
     _OPPONENT_SCORERS = (
-        rf"(?:\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?){_WHEN_TEAMS})\s+"
+        rf"(?:\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?|opposition|another\s+team)"
+        rf"{_WHEN_TEAMS})\s+"
         r"(?:scor(?:e|es|ed|ing)|puts?\s+up|had)\s+"
     )
     # "opponents score below 100": a ceiling, not the team's own points.
@@ -3054,6 +3058,28 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
                     "text": m.group(0),
                 }
             )
+    # "opponents had between 40 and 50 rebounds", "allowing between 10 and 15
+    # threes": both bounds are the opponent's.
+    ranged = (
+        rf"{subject}between\s+{_OPP_STAT_NUM}(?:\s+and\s+|\s*-\s*){_OPP_STAT_NUM}\s+"
+        rf"(?:made\s+)?({_OPP_STAT_WORD})(?![\w-])"
+    )
+    for m in re.finditer(ranged, text):
+        stat = _opponent_stat_word(m.group(4), m.group(1))
+        base = f"opponent_{stat}"
+        if base not in OPPONENT_STATS:
+            continue
+        low, high = sorted((float(m.group(2)), float(m.group(3))))
+        found.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": base,
+                "min_value": low,
+                "max_value": high,
+                "text": m.group(0),
+            }
+        )
     # Several bounds can read one phrase ("allow 45 rebounds or more" is also
     # a bare "45 rebounds"): keep the longest reading at each place.
     found.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))

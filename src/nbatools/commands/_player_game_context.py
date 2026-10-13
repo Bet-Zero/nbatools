@@ -653,7 +653,10 @@ _OTHER_PLAYER_STAT = re.compile(
 
 def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) -> None:
     player = route_kwargs.get("player")
-    if route not in _PLAYER_ROUTES or not player:
+    if route and route not in _PLAYER_ROUTES:
+        _refuse_unknown_name_stat(route_kwargs, text)
+        return
+    if not player:
         return
     from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
 
@@ -667,6 +670,26 @@ def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) 
         # "when LeBron James scores 30" is him; "when Bronny James scores 10"
         # shares a surname but is another player.
         if other == player or (shared and other is None):
+            continue
+        blocked = list(route_kwargs.get("unsupported_filters") or [])
+        if "other_player_stat" not in blocked:
+            route_kwargs["unsupported_filters"] = [*blocked, "other_player_stat"]
+        return
+
+
+def _refuse_unknown_name_stat(route_kwargs: dict, text: str) -> None:
+    """ "Lakers record when Davis scores 30" with no player resolved read the
+    team's own 30 points (every game): a name it cannot place refuses."""
+    from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
+
+    for m in _OTHER_PLAYER_STAT.finditer(text):
+        name = m.group("name")
+        if (
+            detect_team_in_text(name)
+            or _ANY_PLAYER_SUBJECT.match(name)
+            or re.match(r"(?:a|an|any|one|some|another|no|nobody|our|my|your)\b", name)
+            or detect_player(name)
+        ):
             continue
         blocked = list(route_kwargs.get("unsupported_filters") or [])
         if "other_player_stat" not in blocked:
@@ -697,7 +720,7 @@ _ANY_PLAYER_NOT_A_STAT = re.compile(
 # 30", "if any of them score 30") makes the clause count disagree, so refuse.
 _ANY_PLAYER_SUBJECT = re.compile(
     r"\b(?:(?:a|an|any|one|some)\s+(?:[a-z.']+\s+)?player|someone|anyone|anybody|somebody"
-    r"|nobody|no\s+one|no\s+player|another|(?:a\s+)?second\s+player|(?:a\s+)?teammates?"
+    r"|nobody|no\s+one|no\s+player|another(?!\s+team)|(?:a\s+)?second\s+player|(?:a\s+)?teammates?"
     r"|(?:an)?other\s+players?)\b"
 )
 # A second stat joined to the same player ("someone scores 30 and has 15
@@ -888,7 +911,10 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
     if route not in ("team_record", "game_finder", "game_summary"):
         return
     conditions = _kwargs_conditions(route_kwargs)
-    if not any(c["stat"].startswith("opponent_") for c in conditions):
+    # Beside an opponent bound, or beside one own bound of a clause list
+    # ("when they score 120 and make 15 threes" kept only the points).
+    beside_opponent = any(c["stat"].startswith("opponent_") for c in conditions)
+    if not beside_opponent and not conditions:
         return
     team = route_kwargs.get("team")
     added = False
@@ -905,9 +931,13 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
         clauses.append(
             {"team": "TEAM", "stat": stat, "min_value": float(m.group("n")), "max_value": None}
         )
-    for clause in clauses:
-        if clause["team"] not in ("TEAM", team):
-            continue
+    own = [c for c in clauses if c["team"] in ("TEAM", team)]
+    if not beside_opponent and not any(
+        any(c["stat"] == o["stat"] and _same_bound(c, o) for c in conditions) for o in own
+    ):
+        # No clause of the list was read: not a list this reads.
+        return
+    for clause in own:
         cond = {k: clause[k] for k in ("stat", "min_value", "max_value")}
         if any(c["stat"] == cond["stat"] for c in conditions):
             continue

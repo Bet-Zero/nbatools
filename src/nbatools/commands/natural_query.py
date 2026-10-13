@@ -2246,7 +2246,9 @@ _HOW_MANY_OPPONENTS = re.compile(
 # names the other team, so it is the Lakers' games against the Celtics with
 # the opponent's number (the Celtics became the subject: their own games).
 _OTHER_TEAM_CLAUSE = re.compile(
-    r"\b(?P<lead>when|where|while|whenever|in\s+games?\s+(?:where|when)|in\s+which)\s+"
+    r"\b(?P<lead>when|where|while|whenever|in\s+games?\s+(?:where|when)|in\s+which"
+    # "when they shoot 50% and the Celtics score 110": a joined clause.
+    r"|and)\s+"
     r"(?:the\s+)?(?P<name>[a-z0-9.']+(?:\s+[a-z0-9.']+){0,2}?)\s+"
     r"(?P<verb>made|makes?|scored|scores?|had|has|have|hit|hits|shot|shoots|grabbed|grabs|"
     r"committed|commits|recorded|records|put\s+up|puts\s+up)\b"
@@ -2436,8 +2438,18 @@ def _at_team(q: str) -> str:
 def _other_team_clause(q: str) -> str:
     from nbatools.commands._matchup_utils import detect_player, detect_team_in_text
 
-    m = _OTHER_TEAM_CLAUSE.search(q)
+    # The first clause that names a team ("when they score 120 and the
+    # Celtics score 110" names one in its second clause).
+    m = next(
+        (c for c in _OTHER_TEAM_CLAUSE.finditer(q) if detect_team_in_text(c.group("name"))),
+        None,
+    )
     if not m:
+        return q
+    if m.group("lead") == "and" and not re.search(
+        r"\b(?:when|where|while|whenever)\b", q[: m.start()]
+    ):
+        # Only a clause joined to an earlier "when ..." clause.
         return q
     if re.search(r"\bplayers?$", m.group("name")):
         # "when a Celtics player scores 40": one player, not the team's total.
