@@ -70,6 +70,29 @@ def test_player_top_game_each_season():
     assert [(row["season"], row["pts"]) for row in rows] == _per_season(lebron, "pts")
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        # No ranking word, a threshold or a count: every qualifying game of
+        # the season, not each season's top one.
+        "LeBron James 30 point games by season",
+        "LeBron James games with 30 points each season",
+        "how many 30 point games did LeBron James have each season",
+        "LeBron most 30 point games each season",
+    ],
+)
+def test_threshold_lists_by_season_keep_every_game(query):
+    players = _games("player_game_stats")
+    lebron = players[(players["player_name"] == "LeBron James") & (players["season"] == "2025-26")]
+    assert len(_rows(query)) == int((lebron["pts"] >= 30).sum())
+
+
+def test_team_threshold_list_per_season_keeps_every_game():
+    games = _lakers()
+    games = games[(games["season"] == "2025-26") & (games["pts"] >= 120)]
+    assert len(_rows("Lakers games with 120 points per season")) == len(games)
+
+
 def test_named_span_keeps_its_seasons():
     rows = _rows("Lakers biggest win each season since 2024-25")
     assert [row["season"] for row in rows] == ["2025-26", "2024-25"]
@@ -95,11 +118,25 @@ def test_described_defensive_teams_still_refuse():
     assert result.result_status == "no_result"
 
 
-def test_three_pointer_games_rank_by_threes():
+@pytest.mark.parametrize(
+    ("query", "count"),
+    [("Lakers best three pointer games", 25), ("Lakers top 3 3 pointer games", 3)],
+)
+def test_three_pointer_games_rank_by_threes(query, count):
     games = _lakers()
     games = games[games["season"] == "2025-26"]
-    rows = _rows("Lakers best three pointer games")
-    assert [row["fg3m"] for row in rows] == games["fg3m"].nlargest(25).tolist()
+    rows = _rows(query)
+    assert [row["fg3m"] for row in rows] == games["fg3m"].nlargest(count).tolist()
+
+
+def test_player_numbered_three_pointer_games():
+    players = _games("player_game_stats")
+    lebron = players[(players["player_name"] == "LeBron James") & (players["season"] == "2025-26")]
+    rows = _rows("LeBron James top 5 three pointer games")
+    assert [row["fg3m"] for row in rows] == lebron["fg3m"].nlargest(5).tolist()
+    # A count before "three pointer games" is still a threes floor.
+    rows = _rows("LeBron 5 three pointer games")
+    assert len(rows) == int((lebron["fg3m"] >= 5).sum())
 
 
 def test_team_top_games_with_two_conditions():
