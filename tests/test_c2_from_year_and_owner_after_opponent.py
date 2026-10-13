@@ -127,3 +127,47 @@ def test_lakers_players_vs_the_celtics_rank_their_rows():
         assert row["opponent_team_abbr"] == "BOS"
     points = [row["pts"] for row in rows]
     assert points == sorted(points, reverse=True)
+
+
+@pytest.mark.parametrize(
+    ("query", "start", "season_type"),
+    [
+        ("LeBron stats for 2019 on", "2019-20", "Regular Season"),
+        ("LeBron stats in 2019, on", "2019-20", "Regular Season"),
+        ("Lakers record in 2019 on", "2019-20", "Regular Season"),
+        ("LeBron stats from 2019 on vs Celtics", "2019-20", "Regular Season"),
+        ("LeBron stats from 2019 on in wins", "2019-20", "Regular Season"),
+        ("from 2019 on LeBron stats", "2019-20", "Regular Season"),
+        ("LeBron stats from 2019 on in the playoffs", "2019-20", "Playoffs"),
+        ("Lakers record from the 2019 playoffs on", "2018-19", "Playoffs"),
+        ("LeBron stats from 2019 up to now", "2019-20", "Regular Season"),
+        ("LeBron stats from 2019 to this season", "2019-20", "Regular Season"),
+    ],
+)
+def test_an_open_end_followed_by_more_question_is_still_a_span(query, start, season_type):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["start_season"] == start
+    assert kwargs["end_season"] > start
+    assert kwargs["season_type"] == season_type
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "lakers record from 2019 on the road",
+        "lakers record from 2019 on back to backs",
+    ],
+)
+def test_an_on_filter_after_the_year_keeps_one_season(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["season"] == "2018-19"
+    assert not kwargs.get("start_season")
+
+
+@pytest.mark.parametrize(
+    "query", ["lebron ppg from 2019 to today", "lebron ppg from 2019 until today"]
+)
+def test_to_today_ends_a_season_span_without_a_one_day_filter(query):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["start_season"] == "2019-20"
+    assert not kwargs.get("start_date") and not kwargs.get("end_date")

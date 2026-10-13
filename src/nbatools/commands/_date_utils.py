@@ -267,6 +267,12 @@ def seasons_for_explicit_dates(text: str) -> tuple[str | None, str | None]:
     return min(seasons), max(seasons)
 
 
+_SEASON_SPAN_TO_TODAY = re.compile(
+    r"\b(?:from|since|starting)\s+(?:the\s+)?(?:19|20)\d{2}(?:-\d{2})?(?:\s+(?:nba\s+)?season)?"
+    r"\s+(?:up\s+to|to|through|thru|until|till)\s+(?:today|tonight)\b"
+)
+
+
 def explicit_date_is_open_ended(text: str) -> bool:
     """True when a year-bearing date opens a window that runs to today.
 
@@ -555,6 +561,9 @@ def extract_date_range(
             d = (anchor - pd.Timedelta(days=1)).date().isoformat()
             return d, d
         if term.same_day:
+            if _SEASON_SPAN_TO_TODAY.search(text):
+                # "from 2019 to today": the season span runs to the latest season.
+                continue
             d = anchor.date().isoformat()
             return d, d
         if term.days_back is not None:
