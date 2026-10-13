@@ -505,19 +505,17 @@ _YEAR_COUNT_NOUN = re.compile(r"\s+(?:games?|times)\b")
 _YEAR_COUNT_CONTEXT = re.compile(
     r"\b\d+\+?\s*(?:points?|pts|rebounds?|assists?|steals?|blocks?|threes?)\b|\bscored\b"
 )
-# "on" that starts a filter ("from 2019 on the road", "on back to backs", "on
-# Christmas", "on 50% shooting"), not an open end.
-_ON_FILTER = (
-    r"(?:the\s+(?:road|second|first|front|back|tail|end|same|day|night|opening)\b"
-    r"|back[\s-]?to[\s-]?backs?\b|b2bs?\b|\d|(?:zero|no|one|two|three|four)\s+(?:days?|nights?)\b"
-    r"|(?:christmas|thanksgiving|opening|national|tv|espn|tnt|abc|mlk|new\s+year)"
-    r"|(?:mon|tues|wednes|thurs|fri|satur|sun)days?\b"
-    r"|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b)"
+# "from 2019 on" is open-ended when "on" closes the question or another clause
+# follows ("from 2019 on vs the Celtics"); "in 2019 on the Lakers", "from 2019
+# on the road" keep the one season.
+_CLAUSE_NEXT = (
+    r"(?=\s*(?:[,?.!]|$)|\s+(?:vs\.?|versus|against|in|at|with|without|when|as|during"
+    r"|for|while|including|excluding)\b)"
 )
 _OPEN_END_WORDS = (
-    rf"on\b(?!\s+{_ON_FILTER})|onwards?\b|forward\b|and\s+(?:on|after|later|beyond)\b"
-    r"|(?:up\s+to|to|through|thru|until|till)\s+(?:now|today|date|present|the\s+present"
-    r"|this\s+(?:season|year)|the\s+current\s+season|current)\b"
+    rf"on{_CLAUSE_NEXT}|onwards?\b|forward\b|and\s+(?:on|after|later|beyond){_CLAUSE_NEXT}"
+    r"|(?:up\s+to|to|through|thru|until|till|til)\s+(?:now|today|tonight|date|present"
+    r"|the\s+present|this\s+(?:season|year)|the\s+current\s+season|current)\b"
 )
 # "from 2019 on", "from 2019 to now": a span reaching the latest season.
 _OPEN_END = re.compile(
@@ -528,7 +526,7 @@ _BARE_YEAR = re.compile(
     # "best scoring games from 2019" names the 2019 season, as "in 2019" does;
     # "from 2019 to 2021" and "from 2019 on" are spans.
     rf"\b(?:in|during|for|from)\s+(?:the\s+)?({_YEAR})(?:\s+(?:nba\s+)?season)?\b"
-    r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b|up\s+to\b"
+    r"(?![-/]\d|\s*(?:-|to\b|through\b|thru\b|until\b|till\b|and\b|or\b"
     r"|,?\s*(?:" + _OPEN_END_WORDS + ")))"
     rf"|\b(?:the\s+)?({_YEAR})\s+(?:nba\s+)?(?:season|stats|record|numbers|averages)\b"
     # "Lakers record 2024", "LeBron stats 2016": a year closing the question.
@@ -606,6 +604,9 @@ def extract_bare_year_season(text: str) -> tuple[int, str] | None:
         return None
     match = _BARE_YEAR.search(text)
     if not match or _BARE_YEAR_RANGE_WORD.search(text[: match.start()]):
+        return None
+    if extract_since_season(text):
+        # "from 2019 on LeBron stats": the year opens a span.
         return None
     if match.group(0).startswith("from") and re.search(
         rf"\b(?:to|through|thru|until|till)\s+(?:the\s+)?{_YEAR}", text[match.end() :]
@@ -793,6 +794,9 @@ def extract_since_season(text: str) -> str | None:
         text,
     ):
         rest = _OPEN_END.match(text, m.end())
+        if not rest and m.group("lead") and m.start() == 0:
+            # "from 2019 on, LeBron stats" / "from 2019 on LeBron stats".
+            rest = re.match(r"\s*,?\s*on\b", text[m.end() :])
         if not rest:
             continue
         if not m.group("lead") and not re.match(r"\s*onwards?\b", text[m.end() :]):
