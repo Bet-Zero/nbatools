@@ -122,3 +122,51 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
         side = side[~side["player_id"].astype(str).isin(set(own["player_id"].astype(str)))]
 
     return side
+
+
+_PAIR = re.compile(
+    r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
+    r"|versus|against|at|on|from|during|when|while)\b|[?.!,;:]|$)"
+)
+
+
+def availability_pair(
+    text: str,
+    *,
+    team: str | None,
+    player: str | None,
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+    season_type: str,
+) -> tuple[str, str] | None:
+    """("with" | "without", "A and B") when both names are the subject's teammates."""
+    from nbatools.commands._matchup_utils import detect_player
+
+    m = _PAIR.search(text)
+    if not m or (team is None and player is None):
+        return None
+    parts = [part.strip(" .") for part in m.group(2).split(" and ")]
+    if len(parts) != 2:
+        return None
+    side = _same_side_rows(team, player, season, start_season, end_season, season_type)
+    if side is None:
+        return None
+    names = []
+    for part in parts:
+        name = detect_player(part) or resolve_teammate(
+            part,
+            team=team,
+            player=player,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            season_type=season_type,
+        )
+        if not name or select_player_rows(side, name).empty:
+            return None
+        names.append(name)
+    if names[0] == names[1]:
+        return None
+    mode = "with" if m.group(1) == "with" else "without"
+    return mode, " and ".join(names)
