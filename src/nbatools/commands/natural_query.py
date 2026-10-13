@@ -8391,15 +8391,22 @@ _OWNER_LIST_TAIL_WORDS = frozenset(
     blk three threes 3s 3pm turnover turnovers tov fouls minutes margin overtime ot
     double triple digits pointers pointer field goals goal free throws throw
     shooting scoring percent percentage pct made makes attempts attempted
-    straight consecutive row back-to-back back to start started end career history
+    straight consecutive row back-to-back back to start started end career
     yesterday recently lately historically overall first early late both also
     ranked ranking rank list sorted order ordered ascending descending top bottom
     show me right since min minimum max maximum including excluding included excluded
     january february march april may june july october november december
     jan feb mar apr jun jul oct nov dec plus up down by led leading trailing
-    that where which when who whose while if nba league history meeting meetings matchup
-    matchups second third fourth fifth nights
+    that where which when who whose while if meeting meetings matchup matchups nights
     """.split()
+)
+
+
+# Phrases whose ordinal or noun is not read alone: "in the second" or "in
+# league history" are checked word by word, "in the second half" is not.
+_OWNER_LIST_PHRASES = re.compile(
+    r"\b(?:(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+(?:quarter|half|round|night)s?"
+    r"|nba\s+history)\b"
 )
 
 
@@ -8417,7 +8424,11 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
     # Each run of words outside the list's usual vocabulary must change what
     # the list reads: "in the 4th quarter" or "on national TV" do, "winning
     # players" or "going big" do not.
-    words = list(re.finditer(r"\b[a-z][a-z'\-]*", tail))
+    words = list(
+        re.finditer(
+            r"\b[a-z][a-z'\-]*", _OWNER_LIST_PHRASES.sub(lambda m: " " * len(m.group()), tail)
+        )
+    )
     runs: list[list] = []
     for word in words:
         if word.group().strip("'") in _OWNER_LIST_TAIL_WORDS:

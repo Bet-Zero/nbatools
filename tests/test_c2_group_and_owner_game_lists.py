@@ -306,7 +306,17 @@ def test_a_group_after_an_opening_word_refuses(frame, group):
 
 @pytest.mark.parametrize(
     "tail",
-    ["winning players", "going big", "under 25", "since the 2020 season", "show stoppers"],
+    [
+        "winning players",
+        "going big",
+        "under 25",
+        "since the 2020 season",
+        "show stoppers",
+        "in the fourth",
+        "in league history",
+        "in the fourth game of the season",
+        "in the second and third quarter",
+    ],
 )
 def test_an_unread_word_after_the_opponent_refuses(tail):
     parsed = parse_query(f"best scoring games vs the Celtics by the Lakers {tail}")
@@ -324,6 +334,9 @@ def test_an_unread_word_after_the_opponent_refuses(tail):
         ("they lost", "losses_only", True),
         ("that they won", "wins_only", True),
         ("in the 4th quarter", "quarter", "4"),
+        ("in the second half", "half", "second"),
+        ("in NBA history", "start_season", "1996-97"),
+        ("on 0 days rest", "rest_days", 0),
         ("in the clutch", "clutch", True),
         ("on the second night of a back to back", "back_to_back", True),
         ("in game 7s", "series_situation", "game_7"),
