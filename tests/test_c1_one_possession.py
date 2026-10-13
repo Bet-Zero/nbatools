@@ -178,6 +178,11 @@ def test_excluded_margins_keep_the_other_games(query, kept):
         "LeBron James 30 points in one possession games",
         "Lakers one possession losses with 120 points",
         "Lakers record in one possession games with 15 threes",
+        "Nikola Jokic one possession games with 10 reb",
+        "Nikola Jokic one possession games with 10 dimes",
+        "Stephen Curry one possession games with 5 3pm",
+        "Lakers record in one possession games when LeBron gets 30",
+        "Nikola Jokic one possession games with 30 and 10",
         # Two margins compared.
         "Lakers one possession games vs close games",
         "Lakers close games vs one possession games",
@@ -248,7 +253,15 @@ def test_one_possession_record_over_a_season_span():
     )
 
 
-def test_explicit_count_beside_one_possession():
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron James one possession games with 30+ points",
+        "LeBron James one possession games scoring 30 or more",
+        "LeBron James one possession games with at least 30 points",
+    ],
+)
+def test_explicit_count_beside_one_possession(query):
     close = _close("LAL")
     players = pd.read_csv(_RAW / "player_game_stats/2025-26_regular_season.csv")
     expected = players[
@@ -256,7 +269,30 @@ def test_explicit_count_beside_one_possession():
         & players["game_id"].isin(close["game_id"])
         & (players["pts"] >= 30)
     ]
-    rows = _execute("LeBron James one possession games with 30+ points").result.to_dict()[
-        "sections"
-    ]["finder"]
+    rows = _execute(query).result.to_dict()["sections"]["finder"]
     assert sorted(r["game_id"] for r in rows) == sorted(expected["game_id"])
+
+
+@pytest.mark.parametrize(
+    ("query", "kept"),
+    [
+        (
+            "Lakers record in non-close games when scoring 120+",
+            lambda r: (r["margin"].abs() >= 6) & (r["pts"] >= 120),
+        ),
+        (
+            "Lakers record excluding blowouts when scoring 100+",
+            lambda r: (r["margin"].abs() <= 14) & (r["pts"] >= 100),
+        ),
+    ],
+)
+def test_excluded_margin_beside_a_count(query, kept):
+    rows = _margins("2025-26")
+    rows = rows[rows["team_abbr"] == "LAL"]
+    rows = rows[kept(rows)]
+    row = _execute(query).result.to_dict()["sections"]["summary"][0]
+    assert (row["games"], row["wins"], row["losses"]) == (
+        len(rows),
+        int((rows["margin"] > 0).sum()),
+        int((rows["margin"] < 0).sum()),
+    )

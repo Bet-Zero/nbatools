@@ -109,6 +109,8 @@ from nbatools.commands._occurrence_route_utils import (
 )
 from nbatools.commands._parse_helpers import (
     _STAT_THRESHOLD_AFTER_NUMBER,
+    ONE_POSSESSION_REWRITE,
+    ONE_POSSESSION_TERM_PRESENT,
     extract_min_attempts,
     text_without_min_attempts,
 )
@@ -10600,6 +10602,68 @@ def parse_query(query: str) -> dict:
     since = _games_since(query)
     if since is not None:
         return since
+    out = _parse_query_once(query)
+    if ONE_POSSESSION_TERM_PRESENT.search(query.lower()):
+        # "one possession games with 10 reb": the margin the rewrite adds can
+        # take the parse's one stat slot and drop a bound the question named.
+        # The reading without the rewrite (its flag refuses) wins then.
+        token = ONE_POSSESSION_REWRITE.set(False)
+        try:
+            unrewritten = _parse_query_once(query)
+        finally:
+            ONE_POSSESSION_REWRITE.reset(token)
+        if _stat_bounds(unrewritten) - _stat_bounds(out) or _unread_numbers(query, out):
+            return unrewritten
+    return out
+
+
+_QUERY_NUMBER = re.compile(r"(?<![\w.-])(\d+(?:\.\d+)?)(?![\w-]|\.\d)")
+
+
+def _parsed_numbers(value, found: set[float]) -> None:
+    if isinstance(value, bool):
+        return
+    if isinstance(value, (int, float)):
+        found.update({float(value), round(float(value) * 100, 6)})
+    elif isinstance(value, str):
+        found.update(float(n) for n in _QUERY_NUMBER.findall(value))
+    elif isinstance(value, dict):
+        for item in value.values():
+            _parsed_numbers(item, found)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _parsed_numbers(item, found)
+
+
+def _unread_numbers(query: str, parsed: dict) -> bool:
+    """True when a number the question names appears nowhere in the parse
+    ("when LeBron gets 30": the count was dropped)."""
+    found: set[float] = set()
+    _parsed_numbers({k: v for k, v in parsed.items() if k != "normalized_query"}, found)
+    text = re.sub(r"\b(?:19|20)\d{2}(?:-\d{2})?\b", " ", query.lower())
+    return any(float(n) not in found for n in _QUERY_NUMBER.findall(text))
+
+
+_MARGIN_STATS = {"margin", "win_margin", "loss_margin"}
+
+
+def _stat_bounds(parsed: dict) -> set[tuple]:
+    """Every (stat, min, max) bound a parse reads, margins aside."""
+    kwargs = parsed.get("route_kwargs") or {}
+    bounds = set()
+    for source in (parsed, kwargs):
+        if source.get("stat") and (
+            source.get("min_value") is not None or source.get("max_value") is not None
+        ):
+            bounds.add((source["stat"], source.get("min_value"), source.get("max_value")))
+        for key in ("threshold_conditions", "conditions", "extra_conditions"):
+            for cond in source.get(key) or []:
+                if isinstance(cond, dict) and cond.get("stat"):
+                    bounds.add((cond["stat"], cond.get("min_value"), cond.get("max_value")))
+    return {b for b in bounds if b[0] not in _MARGIN_STATS}
+
+
+def _parse_query_once(query: str) -> dict:
     return _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
 
 

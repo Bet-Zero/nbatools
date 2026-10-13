@@ -1032,7 +1032,8 @@ Current behavior:
 - a bare "within one possession", a score during the game ("... in the final
   minute", "in the 4th quarter"), a team after "losses to" and a comparison
   with another margin ("one possession games vs close games") keep
-  `one_possession=True`, which `team_record` and `player_game_summary` execute
+  `one_possession=True`, as does a question whose stat bound or number the
+  margin reading would drop ("with 10 reb", "when LeBron gets 30"), which `team_record` and `player_game_summary` execute
   through `schedule_context_features.one_possession` when coverage exists;
   other routes or missing coverage return typed `no_result` /
   `filter_not_supported`

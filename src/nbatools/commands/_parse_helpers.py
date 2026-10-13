@@ -1,4 +1,5 @@
 import re
+from contextvars import ContextVar
 
 from nbatools.commands._constants import (
     STAT_ALIASES,
@@ -953,20 +954,8 @@ _NOT_ONE_EXCLUDED_MARGIN = re.compile(
 )
 
 
-# "with 30 points" beside a margin: the margin takes the parse's one stat
-# slot and the bare count is dropped ("30+ points" and "30 or more" are read
-# as their own condition).
-_BARE_STAT_COUNT = re.compile(
-    r"(?<![\d.-])\d+(?:\.\d+)?(?!\+|\s*(?:\+|or\s+(?:more|better|higher|fewer|less|lower)"
-    r"|plus\b))\s*-?\s*(?:points?|pts|rebounds?|boards?|assists?|steals?|blocks?|threes?|3s"
-    r"|3-?pointers?|three[\s-]pointers?|turnovers?|minutes?|mins|fouls?|free\s+throws?"
-    r"|field\s+goals?|%|percent)\b"
-    r"|\b(?:scor(?:ed|ing|es?)|shoot(?:ing)?|shot|held\s+to|allow(?:ed|ing)?)\s+\d"
-)
-
-
 def _negated_margin(m: re.Match) -> str:
-    if _NOT_ONE_EXCLUDED_MARGIN.match(m.string, m.end()) or _BARE_STAT_COUNT.search(m.string):
+    if _NOT_ONE_EXCLUDED_MARGIN.match(m.string, m.end()):
         return m.group(0)
     if m.group(1) == "close":
         return "games decided by 6+"
@@ -974,6 +963,10 @@ def _negated_margin(m: re.Match) -> str:
 
 
 _ONE_POSSESSION = r"one[\s-]+possession"
+ONE_POSSESSION_TERM_PRESENT = re.compile(rf"\b{_ONE_POSSESSION}\b")
+# Off while ``parse_query`` reads a question the way it did before the
+# rewrite, to check the rewrite kept every stat bound.
+ONE_POSSESSION_REWRITE: ContextVar[bool] = ContextVar("one_possession_rewrite", default=True)
 # "within one possession in the final minute", "one possession games at
 # halftime": a score during the game, not the final margin.
 _IN_GAME_STATE = re.compile(
@@ -1019,7 +1012,7 @@ def _canonicalize_one_possession(text: str) -> str:
     def rewrite(m: re.Match) -> str:
         after = m.string[m.end() :]
         if (
-            _BARE_STAT_COUNT.search(m.string)
+            not ONE_POSSESSION_REWRITE.get()
             or _IN_GAME_STATE.match(after)
             or _MARGIN_COMPARED.match(after)
             or _MARGIN_COMPARED_BEFORE.search(m.string[: m.start()])
