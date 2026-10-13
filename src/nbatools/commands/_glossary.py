@@ -248,6 +248,7 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
             "source": "team_season_advanced",
             "snapshot": "latest_regular_season",
         },
+        shipped=True,
     ),
     "elite defenses": OpponentQualityTerm(
         "Latest regular-season team advanced table: top 5 by defensive rating",
@@ -258,6 +259,7 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
             "source": "team_season_advanced",
             "snapshot": "latest_regular_season",
         },
+        shipped=True,
     ),
     "bad teams": OpponentQualityTerm(
         "Latest regular-season standings snapshot: win_pct < .400",

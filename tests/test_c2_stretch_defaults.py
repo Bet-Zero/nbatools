@@ -217,7 +217,6 @@ def test_team_shooting_stretch_ranks_teams():
     "query",
     [
         f"LeBron best 5 game scoring stretch against the worst teams in {SEASON}",
-        f"best 5 game scoring stretch against the worst defenses in {SEASON}",
         f"Celtics best 5 game stretch against the worst teams in {SEASON}",
     ],
 )
