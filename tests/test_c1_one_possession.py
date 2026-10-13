@@ -183,6 +183,9 @@ def test_excluded_margins_keep_the_other_games(query, kept):
         "Stephen Curry one possession games with 5 3pm",
         "Lakers record in one possession games when LeBron gets 30",
         "Nikola Jokic one possession games with 30 and 10",
+        # A dropped count equal to the margin's own 3.
+        "Nikola Jokic one possession games with 3 rebs",
+        "Lakers record excluding one possession games when LeBron has 4 asts",
         # Two margins compared.
         "Lakers one possession games vs close games",
         "Lakers close games vs one possession games",

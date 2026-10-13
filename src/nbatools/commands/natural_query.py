@@ -10624,9 +10624,9 @@ def _parsed_numbers(value, found: set[float]) -> None:
     if isinstance(value, bool):
         return
     if isinstance(value, (int, float)):
-        found.update({float(value), round(float(value) * 100, 6)})
-    elif isinstance(value, str):
-        found.update(float(n) for n in _QUERY_NUMBER.findall(value))
+        # Exclusive bounds sit just off the number ("over 30" -> 30.0001).
+        for number in (float(value), float(value) * 100):
+            found.update({round(number, 6), round(number, 1), float(round(number))})
     elif isinstance(value, dict):
         for item in value.values():
             _parsed_numbers(item, found)
@@ -10635,11 +10635,41 @@ def _parsed_numbers(value, found: set[float]) -> None:
             _parsed_numbers(item, found)
 
 
+def _without_margin_bounds(value, in_list: bool = False):
+    """The parse without the margin bound the one-possession rewrite adds
+    (its 3 or 4 is not a number the question named)."""
+    if isinstance(value, dict):
+        margin = value.get("stat") in _MARGIN_STATS
+        if margin and in_list:
+            return None
+        return {
+            k: _without_margin_bounds(v)
+            for k, v in value.items()
+            if k != "normalized_query" and not (margin and k in ("min_value", "max_value"))
+        }
+    if isinstance(value, (list, tuple)):
+        return [_without_margin_bounds(item, in_list=True) for item in value]
+    return value
+
+
 def _unread_numbers(query: str, parsed: dict) -> bool:
     """True when a number the question names appears nowhere in the parse
     ("when LeBron gets 30": the count was dropped)."""
+    margins = {
+        value
+        for source in (parsed, parsed.get("route_kwargs") or {})
+        if source.get("stat") in _MARGIN_STATS
+        for value in (source.get("min_value"), source.get("max_value"))
+        if value is not None
+    }
+    trimmed = dict(parsed)
+    trimmed["route_kwargs"] = dict(parsed.get("route_kwargs") or {})
+    for source in (trimmed, trimmed["route_kwargs"]):
+        # "decided by 4+" also fills min_games with its 4.
+        if source.get("min_games") in margins:
+            source.pop("min_games")
     found: set[float] = set()
-    _parsed_numbers({k: v for k, v in parsed.items() if k != "normalized_query"}, found)
+    _parsed_numbers(_without_margin_bounds(trimmed), found)
     text = re.sub(r"\b(?:19|20)\d{2}(?:-\d{2})?\b", " ", query.lower())
     return any(float(n) not in found for n in _QUERY_NUMBER.findall(text))
 
