@@ -668,6 +668,65 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
     _refuse_team_as_own_opponent(route_kwargs)
+    _refuse_unread_samples(route, route_kwargs, text)
+
+
+# "vs Celtics and Knicks": a second opponent the routes do not combine (only
+# the first was kept).
+_TWO_OPPONENTS = re.compile(
+    r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?(?P<a>[a-z.']+(?:\s+[a-z.']+)?)"
+    r"\s*(?:,|and|&|or)\s+(?:the\s+)?(?P<b>[a-z.']+(?:\s+[a-z.']+)?)\b"
+)
+# "the Celtics' opponents score 110" on a Lakers record: another team's
+# opponents (it answered with Boston's record).
+_NAMED_OPPONENTS = re.compile(
+    r"\b(?P<name>(?:(?!(?:when|while|if|and|where|vs|versus|against|the|with|did|do|does)\b)"
+    r"[a-z.']+\s+)?(?!(?:when|while|if|and|where|vs|versus|against|the|with|did|do|does)\b)"
+    r"[a-z.]+)(?:'s?|s')?\s+opponents?\b"
+)
+# "Lakers 120 point seasons", "40% shooting seasons", "seasons with 40%
+# shooting": a season list, which the game lists answered with games.
+_CONDITION_SEASONS = re.compile(
+    r"\b(?:points?|pts|shooting|assists?|rebounds?|threes?|\d+%)\s+seasons\b"
+    r"|\bseasons?\s+(?:with|shooting|where|when|in\s+which)\s+(?:at\s+least\s+|over\s+|under\s+)?\d"
+)
+# "when the score was 120": which side's points is not said (dropped).
+_BARE_SCORE = re.compile(r"\b(?:the\s+)?(?:final\s+)?score\s+(?:was|is|of|were)\s+\d")
+
+
+_SAMPLE_ROUTES = (
+    "team_record",
+    "game_finder",
+    "game_summary",
+    "player_game_finder",
+    "player_game_summary",
+)
+
+
+def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> None:
+    if not route:
+        return
+    from nbatools.commands._matchup_utils import detect_team_in_text
+
+    if _BARE_SCORE.search(text):
+        _refuse(route_kwargs, "unattributed_score")
+    if route in ("game_finder", "player_game_finder") and _CONDITION_SEASONS.search(text):
+        _refuse(route_kwargs, "season_condition_list")
+    single = isinstance(route_kwargs.get("opponent"), str)
+    for m in _TWO_OPPONENTS.finditer(text) if single and route in _SAMPLE_ROUTES else ():
+        first, second = detect_team_in_text(m.group("a")), detect_team_in_text(m.group("b"))
+        if first and second and first != second:
+            _refuse(route_kwargs, "multiple_opponents")
+            break
+    from nbatools.commands.natural_query import _teams_in_order
+
+    named = _teams_in_order(text)
+    subject = named[0][2] if named else None
+    for m in _NAMED_OPPONENTS.finditer(text):
+        team = detect_team_in_text(m.group("name"))
+        if team and subject and team != subject:
+            _refuse(route_kwargs, "other_team_opponents")
+            break
 
 
 def _refuse_team_as_own_opponent(route_kwargs: dict) -> None:

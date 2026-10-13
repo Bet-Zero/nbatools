@@ -3754,6 +3754,22 @@ def _counts_streaks(route_kwargs: dict) -> bool:
     return league or not route_kwargs.get("longest")
 
 
+_NOT_A_PERSON_WORD = re.compile(
+    r"\b(?:the|a|an|true|effective|free|shooting|most|fewest|least|highest|lowest|best|worst"
+    r"|rest|days?|minutes?|points?|games?|teams?|sits?|plays?|and|or)\b|\d"
+)
+
+
+def _names_a_person(fragment: str | None) -> bool:
+    """ "davis" or "anthony davis", not "30 points" or "the fewest"."""
+    return bool(
+        fragment
+        and re.fullmatch(r"[a-z.'\-]+(?:\s+[a-z.'\-]+)?", fragment)
+        and not _NOT_A_PERSON_WORD.search(fragment)
+        and detect_stat(fragment) is None
+    )
+
+
 def _route_parsed_query(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     season = parsed["season"]
@@ -6384,6 +6400,18 @@ def _route_parsed_query(parsed: dict) -> dict:
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "multi_player_availability" not in existing_unsupported:
             existing_unsupported.append("multi_player_availability")
+        route_kwargs["unsupported_filters"] = existing_unsupported
+
+    if (
+        route in ("player_game_summary", "player_game_finder")
+        and route_kwargs.get("player")
+        and any(_names_a_person(f) for f in (unresolved_with_player, unresolved_without_player))
+    ):
+        # "LeBron games with Davis": a teammate who could not be resolved was
+        # dropped and every game came back.
+        existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
+        if "unresolved_player_availability" not in existing_unsupported:
+            existing_unsupported.append("unresolved_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
     # "LeBron games when the Lakers score 120": a team-subject bound is the
