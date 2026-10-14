@@ -2594,6 +2594,11 @@ def filter_without_player(
     Specifically: exclude game_ids where without_player appeared for the
     same team (or at all, if no team context).
     """
+    if " and " in without_player:
+        # "without LeBron James and Anthony Davis": the games neither played.
+        for name in without_player.split(" and "):
+            df = filter_without_player(df, name, seasons, season_type, team, strict_team_match)
+        return df
     player_df = load_player_games_for_seasons(seasons, season_type)
     p_rows = player_game_ids(player_df, without_player, team=team)
 
@@ -2621,6 +2626,11 @@ def filter_with_player(
     strict_team_match: bool = False,
 ) -> pd.DataFrame:
     """Filter df to games where with_player DID play for the same team."""
+    if " and " in with_player:
+        # "with LeBron James and Anthony Davis": the games both played.
+        for name in with_player.split(" and "):
+            df = filter_with_player(df, name, seasons, season_type, team, strict_team_match)
+        return df
     player_df = load_player_games_for_seasons(seasons, season_type)
     p_rows = player_game_ids(player_df, with_player, team=team)
 

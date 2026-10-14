@@ -246,8 +246,16 @@ def build_result(
     max_value: float | None = None,
     conditions: list[dict] | None = None,
     series_situation: str | None = None,
+    team_c: str | None = None,
 ) -> ComparisonResult | NoResult:
     conditions = combined_stat_conditions(stat, min_value, max_value, conditions)
+    if team_c and head_to_head:
+        return NoResult(
+            query_class="comparison",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["A head-to-head comparison takes two teams."],
+        )
     if conditions and head_to_head:
         return NoResult(
             query_class="comparison",
@@ -331,37 +339,57 @@ def build_result(
             conditions=conditions,
         )
 
-    if a_df.empty and b_df.empty:
+    sides = [(team_a, a_df), (team_b, b_df)]
+    if team_c:
+        # "Lakers vs Celtics vs Knicks": a third column, same sample.
+        sides.append(
+            (
+                team_c,
+                filter_team_games(
+                    df,
+                    team=team_c,
+                    opponent=opponent,
+                    home_only=home_only,
+                    away_only=away_only,
+                    wins_only=wins_only,
+                    losses_only=losses_only,
+                    last_n=last_n,
+                    start_date=start_date,
+                    end_date=end_date,
+                    conditions=conditions,
+                ),
+            )
+        )
+    if all(frame.empty for _, frame in sides):
         return NoResult(query_class="comparison", reason="no_match")
 
-    summary_a = summarize_team(a_df, team_a)
-    summary_b = summarize_team(b_df, team_b)
+    summaries = [summarize_team(frame, team) for team, frame in sides]
+    summary = pd.DataFrame(summaries)
 
-    summary = pd.DataFrame([summary_a, summary_b])
-
-    comparison_rows = [
-        ("games", summary_a["games"], summary_b["games"]),
-        ("wins", summary_a["wins"], summary_b["wins"]),
-        ("losses", summary_a["losses"], summary_b["losses"]),
-        ("win_pct", summary_a["win_pct"], summary_b["win_pct"]),
-        ("pts_avg", summary_a["pts_avg"], summary_b["pts_avg"]),
-        ("reb_avg", summary_a["reb_avg"], summary_b["reb_avg"]),
-        ("ast_avg", summary_a["ast_avg"], summary_b["ast_avg"]),
-        ("stl_avg", summary_a["stl_avg"], summary_b["stl_avg"]),
-        ("blk_avg", summary_a["blk_avg"], summary_b["blk_avg"]),
-        ("fg3m_avg", summary_a["fg3m_avg"], summary_b["fg3m_avg"]),
-        ("tov_avg", summary_a["tov_avg"], summary_b["tov_avg"]),
-        ("plus_minus_avg", summary_a["plus_minus_avg"], summary_b["plus_minus_avg"]),
-        ("efg_pct_avg", summary_a["efg_pct_avg"], summary_b["efg_pct_avg"]),
-        ("ts_pct_avg", summary_a["ts_pct_avg"], summary_b["ts_pct_avg"]),
-        ("pts_sum", summary_a["pts_sum"], summary_b["pts_sum"]),
-        ("reb_sum", summary_a["reb_sum"], summary_b["reb_sum"]),
-        ("ast_sum", summary_a["ast_sum"], summary_b["ast_sum"]),
-    ]
+    metrics = (
+        "games",
+        "wins",
+        "losses",
+        "win_pct",
+        "pts_avg",
+        "reb_avg",
+        "ast_avg",
+        "stl_avg",
+        "blk_avg",
+        "fg3m_avg",
+        "tov_avg",
+        "plus_minus_avg",
+        "efg_pct_avg",
+        "ts_pct_avg",
+        "pts_sum",
+        "reb_sum",
+        "ast_sum",
+    )
+    comparison_rows = [(metric, *(row[metric] for row in summaries)) for metric in metrics]
 
     comp = pd.DataFrame(
         comparison_rows,
-        columns=["metric", team_a, team_b],
+        columns=["metric", *(team for team, _ in sides)],
     )
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
@@ -399,7 +427,7 @@ def build_result(
             found = min(len(a_df), len(b_df))
             caveats.append(f"only {found} meetings found in the searched seasons")
         elif not head_to_head:
-            for team, frame in ((team_a, a_df), (team_b, b_df)):
+            for team, frame in sides:
                 if len(frame) < last_n:
                     caveats.append(
                         f"only {len(frame)} qualifying {team} games found in the searched seasons"
