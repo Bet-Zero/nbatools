@@ -2613,7 +2613,9 @@ def filter_without_player(
         # Only exclude games where the player was on the same team
         # Franchise-aware: Durant's Seattle games are Thunder games with him.
         team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
-        if not team_games and opponent:
+        if opponent:
+            # He played against the team in the sample (a trade can put him on
+            # both sides): "without" him is the games he did not play at all.
             opponents = [opponent] if isinstance(opponent, str) else list(opponent)
             on_opponent = pd.Series(False, index=p_rows.index)
             for opp in opponents:

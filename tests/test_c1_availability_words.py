@@ -252,3 +252,25 @@ def test_absence_then_a_bound(sparse_root, query):
     else:
         rows = sections.get("finder") or sections["game_log"]
         assert {row["game_id"] for row in rows} == set(lebron["game_id"])
+
+
+@pytest.mark.parametrize(
+    ("query", "bound"),
+    [
+        ("Lakers 120 point games vs Celtics with Tatum out", 120),
+        ("Lakers 120 point games vs Celtics without Tatum", 120),
+        ("Lakers points per game vs Celtics without Tatum", None),
+    ],
+)
+def test_game_summary_with_an_opposing_player_out(sparse_root, query, bound):
+    root, _ = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    played = set(players.loc[players["player_name"] == "Jayson Tatum", "game_id"])
+    games = _lakers()
+    games = games[(games["opponent_team_abbr"] == "BOS") & ~games["game_id"].isin(played)]
+    if bound:
+        games = games[games["pts"] >= bound]
+    assert len(games) > 0
+    row = _ok(query)["summary"][0]
+    assert (row["games"], row["wins"]) == (len(games), int((games["wl"] == "W").sum()))
+    assert row["pts_avg"] == pytest.approx(games["pts"].mean(), abs=1e-3)

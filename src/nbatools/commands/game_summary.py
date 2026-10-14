@@ -384,7 +384,7 @@ def select_team_summary_sample(
             )
             if without_player and not sample.empty:
                 sample = filter_without_player(
-                    sample, without_player, seasons, season_type, team=team
+                    sample, without_player, seasons, season_type, team=team, opponent=opponent
                 )
             window_game_ids = last_n_window_game_ids(
                 sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
@@ -407,7 +407,9 @@ def select_team_summary_sample(
         )
 
         if without_player and not df.empty:
-            df = filter_without_player(df, without_player, seasons, season_type, team=team)
+            df = filter_without_player(
+                df, without_player, seasons, season_type, team=team, opponent=opponent
+            )
 
         # Last N runs after every filter: on the qualifying games, or (window
         # scope) on the N most recent games in play.
