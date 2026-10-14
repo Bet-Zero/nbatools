@@ -10,6 +10,7 @@ one person; only then is the name read.
 from __future__ import annotations
 
 import re
+import unicodedata
 
 from nbatools.commands._franchise import team_value_mask
 from nbatools.commands._player_identity import select_player_rows
@@ -130,6 +131,16 @@ _PAIR = re.compile(
 )
 
 
+def _words(text: str) -> list[str]:
+    plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    return re.findall(r"[a-z0-9']+", plain.lower().replace("-", " ").replace(".", ""))
+
+
+def _only_the_name(part: str, name: str) -> bool:
+    """Whether the part is the name and nothing else: "davis and reaves out" is not."""
+    return set(_words(part)) <= set(_words(name))
+
+
 def availability_pair(
     text: str,
     *,
@@ -163,7 +174,7 @@ def availability_pair(
             end_season=end_season,
             season_type=season_type,
         )
-        if not name or select_player_rows(side, name).empty:
+        if not name or not _only_the_name(part, name) or select_player_rows(side, name).empty:
             return None
         names.append(name)
     if names[0] == names[1]:
