@@ -8470,24 +8470,21 @@ _PLAYER_GROUP_WORDS = re.compile(
 # place, results, stat bounds and ordering. Another word ("winning players",
 # "under 25 year olds") is something the team's list would drop.
 _OWNER_LIST_TAIL_WORDS = frozenset(
-    """a an the of in on at to for by from with without and or as so vs versus against
-    games game ever all time times please only just their his its far yet now today tonight
-    this last past next since during before after between through thru until til till
-    over under above below more less fewer than least most at most or more exactly
-    each every per by season seasons year years month months week weeks day days
-    regular playoff playoffs postseason post-season preseason home away road neutral
-    win wins won winning loss losses lost losing they we it he team
-    point points pts rebound rebounds reb assist assists ast steal steals stl block blocks
-    blk three threes 3s 3pm turnover turnovers tov fouls minutes margin overtime ot
-    double triple digits pointers pointer field goals goal free throws throw
-    shooting scoring percent percentage pct made makes attempts attempted
-    straight consecutive row back-to-back back to start started end career
-    yesterday recently lately historically overall early late both also
-    ranked ranking rank list sorted order ordered ascending descending top bottom
-    show me right since min minimum max maximum including excluding included excluded
-    january february march april may june july october november december
-    jan feb mar apr jun jul oct nov dec plus up down by led leading trailing
-    that where which when who whose while if meeting meetings matchup matchups
+    """
+    a an the of in on at to for by from with without and or as so vs versus against
+    games game ever all time times please only just their his its far yet now today
+    tonight this since during before after between through thru until til till over
+    under above below more less fewer than least most at most or more exactly each every
+    per by season seasons year years day days regular playoff playoffs postseason
+    post-season home away road neutral win wins won winning loss losses lost losing they
+    we it he team point points pts rebound rebounds reb assist assists ast steal steals
+    stl block blocks blk three threes 3s 3pm turnover turnovers tov fouls minutes
+    overtime ot pointers pointer field goals goal free throws throw shooting scoring
+    percent percentage pct made makes attempts attempted back-to-back back to yesterday
+    overall both also list top show me right since january february march april may june
+    july october november december jan feb mar apr jun jul oct nov dec plus up down by
+    led leading trailing that where which when who whose while if meeting meetings
+    matchup matchups
     """.split()
 )
 
@@ -8549,6 +8546,9 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
     # players" or "going big" do not.
     if re.search(r"\b(?:rounds?|finals)\b", tail) and not kwargs.get("series_situation"):
         # "in the first quarter of the first round": the round was not read.
+        return True
+    if re.search(r"\b(?:first|last|final|opening)\s+games?\s+of\b", tail):
+        # "in the last game of the season" is not the last meeting.
         return True
     blanked = _owner_list_blank_read_phrases(tail, kwargs)
     words = list(re.finditer(r"\b[a-z][a-z'\-]*", blanked))

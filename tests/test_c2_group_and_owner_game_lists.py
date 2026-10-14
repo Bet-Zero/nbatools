@@ -323,6 +323,11 @@ def test_a_group_after_an_opening_word_refuses(frame, group):
         "on the first night of back to backs",
         "in the first quarter of the first round",
         "in the fourth quarter of the finals",
+        "by double digits",
+        "this month",
+        "in the preseason",
+        "ranked by margin",
+        "in the last game of the season",
     ],
 )
 def test_an_unread_word_after_the_opponent_refuses(tail):
