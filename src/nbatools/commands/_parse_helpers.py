@@ -959,7 +959,7 @@ _AVAIL_NAME = (
 _AVAIL_NAMES = rf"{_AVAIL_NAME}(?:\s+and\s+{_AVAIL_NAME})?"
 _AVAIL_END = (
     r"(?=\s*$|[?.!,;:]|\s+(?:this|last|since|in|vs\.?|versus|against|at|on|from|during|for"
-    r"|games?|record)\b)"
+    r"|games?|record)\b|\s+(?:and|with)\s+\d)"
 )
 _WITH_OUT = re.compile(
     rf"\bwith\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:out|injured|sidelined|inactive|missing|resting|"

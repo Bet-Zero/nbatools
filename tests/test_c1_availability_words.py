@@ -29,14 +29,19 @@ TEAMS = "data/raw/team_game_stats/{}_regular_season.csv"
 
 @pytest.fixture
 def sparse_root(tmp_path, monkeypatch):
-    """The fixture with Davis and Reaves out of some of their games."""
+    """The fixture with Davis, Reaves and Tatum out of some of their games."""
     from nbatools.data_source import reset_data_source_cache
 
     root = tmp_path / "fx"
     shutil.copytree(FIXTURE, root)
     players = pd.read_csv(root / PLAYERS)
     lal = sorted(players.loc[players["team_abbr"] == "LAL", "game_id"].unique())
-    out = {"Anthony Davis": set(lal[::4]), "Austin Reaves": set(lal[::6])}
+    bos = sorted(players.loc[players["team_abbr"] == "BOS", "game_id"].unique())
+    out = {
+        "Anthony Davis": set(lal[::4]),
+        "Austin Reaves": set(lal[::6]),
+        "Jayson Tatum": set(bos[::3]),
+    }
     drop = pd.Series(False, index=players.index)
     for name, games in out.items():
         drop |= (players["player_name"] == name) & players["game_id"].isin(games)
@@ -200,3 +205,50 @@ def test_three_teams_with_an_unread_rest_refuse(query):
 
 def test_three_team_stretch_is_still_the_stretch_board():
     assert _ok("Lakers vs Celtics vs Knicks best 5 game stretch")["leaderboard"]
+
+
+@pytest.mark.parametrize(
+    ("query", "opponents"),
+    [
+        ("Lakers record vs Celtics with Tatum out", ["BOS"]),
+        ("Lakers record vs Celtics without Tatum", ["BOS"]),
+        ("Lakers record vs Celtics when Tatum sits", ["BOS"]),
+        ("Lakers record vs Celtics and Knicks without Tatum", ["BOS", "NYK"]),
+    ],
+)
+def test_team_record_with_an_opposing_player_out(sparse_root, query, opponents):
+    # He is on the opponent: the games he did not play, not "no games".
+    root, _ = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    played = set(players.loc[players["player_name"] == "Jayson Tatum", "game_id"])
+    games = _lakers()
+    games = games[games["opponent_team_abbr"].isin(opponents) & ~games["game_id"].isin(played)]
+    assert len(games) > 0
+    row = _ok(query)["summary"][0]
+    assert (row["games"], row["wins"]) == (len(games), int((games["wl"] == "W").sum()))
+    assert row["pts_avg"] == pytest.approx(games["pts"].mean(), abs=1e-3)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron James games with Davis out and 30 points",
+        "LeBron James games with Davis out with 30 points",
+        "LeBron James 30 point games with Davis out",
+    ],
+)
+def test_absence_then_a_bound(sparse_root, query):
+    root, out = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    lebron = players[
+        (players["player_name"] == "LeBron James")
+        & (players["pts"] >= 30)
+        & players["game_id"].isin(out["Anthony Davis"])
+    ]
+    assert len(lebron) > 0
+    sections = _ok(query)
+    if "summary" in sections and "finder" not in sections:
+        assert sections["summary"][0]["games"] == len(lebron)
+    else:
+        rows = sections.get("finder") or sections["game_log"]
+        assert {row["game_id"] for row in rows} == set(lebron["game_id"])
