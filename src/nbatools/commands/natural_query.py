@@ -8498,7 +8498,7 @@ _OWNER_LIST_TAIL_WORDS = frozenset(
 # quarters" or a second quarter named beside the first.
 _OWNER_LIST_PHRASES = re.compile(
     r"\b(?:(?P<n>first|second|third|fourth|1st|2nd|3rd|4th)\s+(?P<kind>quarter|half|round)"
-    r"|(?P<night>second|2nd)\s+(?:night|game)\s+of\s+(?:an?\s+|the\s+)?back[\s-]to[\s-]backs?"
+    r"|(?P<night>second|2nd)\s+(?:night|game)s?\s+of\s+(?:an?\s+|the\s+)?back[\s-]to[\s-]backs?"
     r"|nba\s+(?P<nba>history|playoffs|postseason))\b"
 )
 _ORDINALS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3rd": 3}
@@ -8547,7 +8547,11 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
     # Each run of words outside the list's usual vocabulary must change what
     # the list reads: "in the 4th quarter" or "on national TV" do, "winning
     # players" or "going big" do not.
-    words = list(re.finditer(r"\b[a-z][a-z'\-]*", _owner_list_blank_read_phrases(tail, kwargs)))
+    if re.search(r"\b(?:rounds?|finals)\b", tail) and not kwargs.get("series_situation"):
+        # "in the first quarter of the first round": the round was not read.
+        return True
+    blanked = _owner_list_blank_read_phrases(tail, kwargs)
+    words = list(re.finditer(r"\b[a-z][a-z'\-]*", blanked))
     runs: list[list] = []
     for word in words:
         if word.group().strip("'") in _OWNER_LIST_TAIL_WORDS:
@@ -8564,7 +8568,7 @@ def _owner_list_drops_a_word(alias: str, league_q: str, kwargs: dict) -> bool:
             continue
         if other.get("route") == "game_finder" and (other.get("route_kwargs") or {}) == kwargs:
             return True
-    for number in re.finditer(r"\d+", tail):
+    for number in re.finditer(r"\d+", blanked):
         digits = number.group()
         moved = str((int(digits) + 1) % 10 ** len(digits)).zfill(len(digits))
         other_tail = tail[: number.start()] + moved + tail[number.end() :]
