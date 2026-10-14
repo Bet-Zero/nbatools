@@ -950,6 +950,41 @@ def join_opponent_lists(text: str) -> str:
     return text
 
 
+# "with Davis out", "with Davis and Reaves both injured": the games they sat.
+# "with Davis playing", "without Davis and Reaves playing": the plain forms.
+_AVAIL_NAME = (
+    r"(?!(?:the|a|an|his|her|their|its|no|any)\b)[a-z][a-z'.\-]*"
+    r"(?:\s+(?!(?:both|and)\b)[a-z][a-z'.\-]*)?"
+)
+_AVAIL_NAMES = rf"{_AVAIL_NAME}(?:\s+and\s+{_AVAIL_NAME})?"
+_AVAIL_END = (
+    r"(?=\s*$|[?.!,;:]|\s+(?:this|last|since|in|vs\.?|versus|against|at|on|from|during|for"
+    r"|games?|record)\b)"
+)
+_WITH_OUT = re.compile(
+    rf"\bwith\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:out|injured|sidelined|inactive|missing|resting|"
+    rf"sitting(?:\s+out)?|not\s+playing|dnp)(?:\s+of\s+the\s+lineup)?{_AVAIL_END}"
+)
+_PLAYING = re.compile(
+    rf"\b(with|without)\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:playing|healthy|available|active|"
+    rf"in\s+the\s+lineup){_AVAIL_END}"
+)
+
+
+def _availability_words(text: str) -> str:
+    """Absence and presence words after a name, as plain "with"/"without".
+
+    "LeBron stats with Davis out" used to return every game, and "with
+    Anthony Davis out" the games Davis played: the trailing word was dropped.
+    """
+    if re.search(r"\b(?:when|whenever|while|if)\b", text):
+        # "Maxey when Embiid sits with Harris playing": a second clause the
+        # with/without readers would drop; left for the refusal that sees it.
+        return text
+    text = _WITH_OUT.sub(r"without \1", text)
+    return _PLAYING.sub(r"\1 \2", text)
+
+
 def canonicalize_sample_phrases(text: str) -> str:
     """Rewrite recent-sample wording into the one form the detectors read.
 
@@ -968,6 +1003,7 @@ def canonicalize_sample_phrases(text: str) -> str:
         text,
     )
     text = re.sub(r"\bstretchs\b", "stretches", text)
+    text = _availability_words(text)
     # Number words to digits, only inside a recent-sample phrase.
     text = re.sub(
         rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+(?={_SAMPLE_UNIT}\b)",

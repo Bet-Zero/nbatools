@@ -126,7 +126,7 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
 
 
 _PAIR = re.compile(
-    r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
+    r"\b(with|without|w/o)\s+(?!\d)(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
     r"|versus|against|at|on|from|during|when|while)\b|[?.!,;:]|$)"
 )
 

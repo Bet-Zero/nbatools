@@ -580,7 +580,7 @@ def _multi_player_availability_boundary(q: str) -> bool:
         return True
 
     with_without = re.search(
-        r"\b(?:with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for)\b|$)",
+        r"\b(?:with|without|w/o)\s+(?!\d)(.+?)(?=\s+(?:record|games?|this|that|last|in|for)\b|$)",
         q,
     )
     if not with_without or " and " not in with_without.group(1):
@@ -3293,7 +3293,7 @@ def _build_parse_state(query: str) -> dict:
             elif teammate and unresolved_without_player and not without_player:
                 without_player, unresolved_without_player = teammate, None
         trailing = re.search(
-            r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
+            r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
             r"|in|vs\.?|versus|against|at|on|from|during)\b)",
             q,
         )
@@ -6465,6 +6465,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             existing_unsupported.append("player_minutes_bound")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
+    pair_read = False
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
@@ -6484,6 +6485,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         if pair:
             route_kwargs.update(with_player=None, without_player=None)
             route_kwargs[f"{pair[0]}_player"] = pair[1]
+            pair_read = True
         else:
             route_kwargs["unsupported_filters"] = ["multi_player_availability"]
     elif (
@@ -6506,7 +6508,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         else:
             route_kwargs["unsupported_filters"] = ["with_player"]
     trailing = re.search(
-        r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
+        r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
         r"|since|in|vs\.?|versus|against|at|on|from|during)\b)",
         q,
     )
@@ -6543,6 +6545,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
+        and not pair_read
         and any(
             _names_a_person(f) or _names_a_person(name_before_scope(f))
             for f in (unresolved_with_player, unresolved_without_player)

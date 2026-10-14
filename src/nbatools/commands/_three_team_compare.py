@@ -35,7 +35,9 @@ def _patterns() -> tuple[re.Pattern, ...]:
 _READ_REST = re.compile(
     r"^(?:\s+(?:in|during|for|this|last|since|from|to|through|the|season|seasons|"
     r"regular|playoffs?|postseason|at|home|on|road|away|games?|stats?|records?|"
-    r"comparison|\d{4}(?:-\d{2})?|\d+))*\s*[?.!]?$"
+    r"comparison|per|game|points|ppg|scoring|averages?|of|and|"
+    r"january|february|march|april|may|june|october|november|december|"
+    r"\d{4}(?:-\d{2})?|\d+))*\s*[?.!]?$"
 )
 
 
@@ -52,12 +54,13 @@ def three_teams(query: str) -> tuple[list[str], bool] | None:
         rest = m.group(4)
         if _READ_REST.match(rest):
             return teams, True
-        if _CONDITION.search(rest):
-            return teams, False
-        # "Lakers vs Celtics vs Knicks best 5 game stretch": another reader's.
-        return None
+        if _STRETCH.search(rest):
+            # "Lakers vs Celtics vs Knicks best 5 game stretch": the stretch board's.
+            return None
+        # "in wins", "longest win streak", "head to head": not read for three
+        # teams, and another reader would drop one of them.
+        return teams, False
     return None
 
 
-# A condition beside the three teams that the comparison cannot apply.
-_CONDITION = re.compile(r"\b(?:when|whenever|while|if|with|without|vs\.?|versus|against)\b")
+_STRETCH = re.compile(r"\b(?:stretch(?:es)?|span|window|run)\b")
