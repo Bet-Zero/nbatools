@@ -41,7 +41,7 @@ def sparse_root(tmp_path, monkeypatch):
     bos = sorted(players.loc[players["team_abbr"] == "BOS", "game_id"].unique())
     out = {
         "Anthony Davis": set(lal[::4]),
-        "Austin Reaves": set(lal[1::6]),
+        "Austin Reaves": set(lal[::6]),
         "Jayson Tatum": set(bos[::3]),
     }
     drop = pd.Series(False, index=players.index)
@@ -169,11 +169,17 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
         # Never his teammate: not read as "with".
         "LeBron James games with Stephen Curry",
         "LeBron James games with 30 points and Curry",
-        # Two teammates: one would be dropped.
-        "Lakers record with LeBron and Davis",
-        "Lakers record without Davis and LeBron",
-        "LeBron stats with Davis and Austin",
-        "LeBron James stats with Anthony Davis and Austin Reaves",
+        # A second name who is not a teammate.
+        "LeBron stats with Davis and Curry",
+        "Lakers record with LeBron and Tatum",
+        # Words after the second name change the meaning: not read as "with both".
+        "Lakers record with Davis and Reaves both out",
+        "Lakers record with Davis and Reaves out",
+        "Lakers record with Davis and Reaves injured",
+        "Lakers record with Davis and Reaves not playing",
+        "Lakers record with Davis and Reaves missing",
+        "LeBron James stats with Davis and Reaves injured",
+        "LeBron James stats with Davis and Reaves out",
     ],
 )
 def test_unread_availability_still_refuses(sparse_root, query):
@@ -230,3 +236,48 @@ def test_biggest_blowouts_rank_blowout_wins(query, count):
     wins = games[(games["wl"] == "W") & (games["plus_minus"] >= 15)]
     rows = _ok(query)["finder"]
     assert [row["plus_minus"] for row in rows] == wins["plus_minus"].nlargest(count).tolist()
+
+
+@pytest.mark.parametrize(
+    ("query", "both"),
+    [
+        ("Lakers record with LeBron and Davis", True),
+        ("Lakers record with LeBron James and Anthony Davis this season", True),
+        ("Lakers record without Davis and Reaves", False),
+    ],
+)
+def test_team_record_with_two_teammates(sparse_root, query, both):
+    root, out = sparse_root
+    teams = pd.read_csv(FIXTURE / TEAMS)
+    games = teams[teams["team_abbr"] == "LAL"]
+    if both:
+        games = games[~games["game_id"].isin(out["Anthony Davis"])]
+    else:
+        games = games[
+            games["game_id"].isin(out["Anthony Davis"])
+            & games["game_id"].isin(out["Austin Reaves"])
+        ]
+    assert len(games) > 0
+    row = _ok(query)["summary"][0]
+    assert (row["games"], row["wins"], row["losses"]) == (len(games), *_team_record(games))
+
+
+@pytest.mark.parametrize(
+    ("query", "both"),
+    [
+        ("LeBron stats with Davis and Austin", True),
+        ("LeBron James stats with Anthony Davis and Austin Reaves", True),
+        ("LeBron stats without Davis and Reaves", False),
+    ],
+)
+def test_player_games_with_two_teammates(sparse_root, query, both):
+    root, out = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    lebron = players[players["player_name"] == "LeBron James"]
+    davis = lebron["game_id"].isin(out["Anthony Davis"])
+    reaves = lebron["game_id"].isin(out["Austin Reaves"])
+    lebron = lebron[~davis & ~reaves] if both else lebron[davis & reaves]
+    assert len(lebron) > 0
+    row = _ok(query)["summary"][0]
+    assert row["games"] == len(lebron)
+    assert row["pts_avg"] == pytest.approx(lebron["pts"].mean(), abs=1e-3)

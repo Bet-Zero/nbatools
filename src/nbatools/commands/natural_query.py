@@ -386,10 +386,12 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands._teammate_resolution import (
+    availability_pair,
     name_before_scope,
     resolve_teammate,
     shares_side,
 )
+from nbatools.commands._three_team_compare import three_teams
 from nbatools.commands.entity_resolution import (
     TEAM_ALIASES,
     format_ambiguity_message,
@@ -6037,6 +6039,20 @@ def _route_parsed_query(parsed: dict) -> dict:
             "end_date": end_date,
             "unsupported_filters": ["multi_player_availability"],
         }
+        pair = availability_pair(
+            q,
+            team=team,
+            player=None,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            season_type=season_type,
+        )
+        if pair:
+            # "Lakers record with LeBron and Davis": the games both played.
+            route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
+            route_kwargs[f"{pair[0]}_player"] = pair[1]
+            notes.pop()
     elif (
         team
         and team_record_availability_intent
@@ -6457,8 +6473,22 @@ def _route_parsed_query(parsed: dict) -> dict:
         and route_kwargs.get("player")
         and _multi_player_availability_boundary(q)
     ):
-        # "LeBron stats with Davis and Austin": one teammate would be dropped.
-        route_kwargs["unsupported_filters"] = ["multi_player_availability"]
+        # "LeBron stats with Davis and Austin": both teammates, or a refusal
+        # rather than dropping one.
+        pair = availability_pair(
+            q,
+            team=None,
+            player=route_kwargs["player"],
+            season=route_kwargs.get("season"),
+            start_season=route_kwargs.get("start_season"),
+            end_season=route_kwargs.get("end_season"),
+            season_type=route_kwargs.get("season_type") or "Regular Season",
+        )
+        if pair:
+            route_kwargs.update(with_player=None, without_player=None)
+            route_kwargs[f"{pair[0]}_player"] = pair[1]
+        else:
+            route_kwargs["unsupported_filters"] = ["multi_player_availability"]
     elif (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
@@ -10729,8 +10759,57 @@ def _missed_games(parsed: dict) -> dict | None:
     return out
 
 
+def _three_team_comparison(parsed: dict) -> dict | None:
+    """ "Lakers vs Celtics vs Knicks": three teams side by side (one was dropped)."""
+    found = three_teams(parsed["normalized_query"])
+    if found is None:
+        return None
+    teams, read = found
+    out = dict(parsed)
+    kwargs = {
+        key: parsed.get(key)
+        for key in (
+            "season",
+            "start_season",
+            "end_season",
+            "start_date",
+            "end_date",
+            "home_only",
+            "away_only",
+            "last_n",
+        )
+    }
+    kwargs.update(
+        team_a=teams[0],
+        team_b=teams[1],
+        team_c=teams[2],
+        season_type=parsed.get("season_type") or "Regular Season",
+    )
+    if not (kwargs["season"] or kwargs["start_season"]):
+        kwargs["season"] = default_season_for_context(kwargs["season_type"])
+    if not read:
+        # An opponent or a condition beside three teams is not read here.
+        kwargs["unsupported_filters"] = ["three_team_condition"]
+    out.update(
+        route="team_compare",
+        route_kwargs=kwargs,
+        intent="comparison",
+        team=None,
+        team_a=teams[0],
+        team_b=teams[1],
+        opponent=None,
+    )
+    out["notes"] = [f"three_team_compare: {', '.join(teams)}"]
+    out["confidence"] = compute_parse_confidence(out)
+    out["alternates"] = generate_alternates(out)
+    return out
+
+
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
+    three = _three_team_comparison(parsed)
+    if three is not None:
+        return three
     win_totals = _team_win_total_count(parsed)
     if win_totals is not None:
         return win_totals

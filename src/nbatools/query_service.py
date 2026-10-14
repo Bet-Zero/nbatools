@@ -544,10 +544,11 @@ def _build_query_metadata(
 
     team_a = parsed.get("team_a")
     team_b = parsed.get("team_b")
+    team_c = (parsed.get("route_kwargs") or {}).get("team_c")
     team = parsed.get("team")
     if not team:
         if team_a and team_b:
-            team = f"{team_a}, {team_b}"
+            team = ", ".join(t for t in (team_a, team_b, team_c) if t)
         else:
             team = team_a or team_b
 
@@ -718,7 +719,7 @@ def _build_query_metadata(
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
         player_values = [player]
-    team_values = [value for value in [team_a, team_b] if value]
+    team_values = [value for value in [team_a, team_b, team_c] if value]
     if not team_values and team:
         team_values = [team]
     _add_identity_contexts(
@@ -3562,9 +3563,10 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
 
     team_a = kwargs.get("team_a")
     team_b = kwargs.get("team_b")
+    team_c = kwargs.get("team_c")
     team = kwargs.get("team")
     if not team and team_a and team_b:
-        team = f"{team_a}, {team_b}"
+        team = ", ".join(t for t in (team_a, team_b, team_c) if t)
     elif not team:
         team = team_a or team_b
 
@@ -3649,7 +3651,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
         player_values = [player]
-    team_values = [value for value in [team_a, team_b] if value]
+    team_values = [value for value in [team_a, team_b, team_c] if value]
     if not team_values and team:
         team_values = [team]
     _add_identity_contexts(

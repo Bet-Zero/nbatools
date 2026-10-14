@@ -411,6 +411,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         description="Compare two teams over the same filtered sample.",
         required_kwargs=("team_a", "team_b"),
         optional_kwargs=(
+            "team_c",
             "season",
             "start_season",
             "end_season",
