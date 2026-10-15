@@ -4215,11 +4215,11 @@ def detect_on_off(text: str) -> dict | None:
     player_fragment = r"[\w .&'\-]+?"
     phrase_patterns = (
         (rf"\bwith\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "on"),
-        (rf"\bwith\s+({player_fragment})\s+on\s+court\b", "on"),
+        (rf"\bwith\s+({player_fragment})\s+on\s+(?:the\s+)?court\b", "on"),
         (rf"\bwithout\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "off"),
-        (rf"\bwithout\s+({player_fragment})\s+on\s+court\b", "off"),
-        (rf"\b({player_fragment})\s+on\s+court\b", "on"),
-        (rf"\b({player_fragment})\s+off\s+court\b", "off"),
+        (rf"\bwithout\s+({player_fragment})\s+on\s+(?:the\s+)?court\b", "off"),
+        (rf"\b({player_fragment})\s+on\s+(?:the\s+)?court\b", "on"),
+        (rf"\b({player_fragment})\s+off\s+(?:the\s+)?court\b", "off"),
         (rf"\b({player_fragment})\s+sitting\b", "off"),
     )
 

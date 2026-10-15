@@ -821,8 +821,9 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     ]
 
     for index, pattern in enumerate(presence_patterns):
-        m = re.search(pattern, cleaned_text)
-        if m:
+        # A stat clause can precede a separate teammate clause. Inspect each
+        # occurrence instead of allowing the first non-name to hide the rest.
+        for m in re.finditer(pattern, cleaned_text):
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
                 continue
@@ -1015,47 +1016,55 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         raise ValueError(f"Unsupported availability mode: {mode}")
 
     for pattern in patterns:
-        m = re.search(pattern, text)
-        if not m:
-            continue
-        phrase = m.group(1).strip()
-        if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
-            continue
-        stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
-        if (
-            stat_bound
-            # Only scope the parser already reads may follow the bound, so
-            # nothing ("and 2 days rest", "from Davis") is silently dropped.
-            and _tail_is_read_scope(text, stat_bound.end())
-            and not detect_player(text[stat_bound.end() :])
-            and not _names_conditional_player(text)
-        ):
-            # "record in games with 120 points": a stat bound, not a teammate.
-            # A player named later ("... with 15 threes and LeBron") or in a
-            # "when LeBron scores 30" clause still needs the availability
-            # reading, which this path cannot combine with the team bound.
-            continue
-        if (
-            mode == "with"
-            and re.match(r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase)
-            and (
-                re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
-                or (
-                    re.search(
-                        r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
-                        text,
-                    )
-                    and _superlative_names_a_stat(phrase, text)
+        matches = list(re.finditer(pattern, text))
+        for index, m in enumerate(matches):
+            # Scope ends before the next independent availability clause; a
+            # later bare name is resolved using the same teammate context.
+            clause_end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+            phrase = m.group(1).strip()
+            if mode == "with" and re.search(
+                r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase
+            ):
+                continue
+            stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
+            if (
+                stat_bound
+                # Only scope the parser already reads may follow the bound, so
+                # nothing ("and 2 days rest", "from Davis") is silently dropped.
+                and _tail_is_read_scope(text[:clause_end], stat_bound.end())
+                and not detect_player(text[stat_bound.end() : clause_end])
+                and not _names_conditional_player(text[:clause_end])
+            ):
+                # "record in games with 120 points": a stat bound, not a teammate.
+                # A player named later ("... with 15 threes and LeBron") or in a
+                # "when LeBron scores 30" clause still needs the availability
+                # reading, which this path cannot combine with the team bound.
+                continue
+            if (
+                mode == "with"
+                and re.match(
+                    r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase
                 )
-            )
-        ):
-            # "season with the most wins / best record" ranks seasons, it
-            # names no player.
-            continue
-        if phrase and _phrase_names_multiple_players(phrase):
-            return phrase
-        if phrase and not detect_player(phrase):
-            return phrase
+                and (
+                    re.search(
+                        r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text
+                    )
+                    or (
+                        re.search(
+                            r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
+                            text,
+                        )
+                        and _superlative_names_a_stat(phrase, text)
+                    )
+                )
+            ):
+                # "season with the most wins / best record" ranks seasons, it
+                # names no player.
+                continue
+            if phrase and _phrase_names_multiple_players(phrase):
+                return phrase
+            if phrase and not detect_player(phrase):
+                return phrase
     return None
 
 

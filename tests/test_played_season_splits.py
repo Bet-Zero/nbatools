@@ -27,6 +27,13 @@ def played_sample(tmp_path, monkeypatch):
         players = players.loc[
             ~(players.player_name.eq("Jayson Tatum") & players.game_id.isin(ids[::3]))
         ]
+        gsw_ids = sorted(players.loc[players.team_abbr.eq("GSW"), "game_id"].unique())
+        players = players.loc[
+            ~(
+                (players.player_name.eq("Klay Thompson") & players.game_id.isin(gsw_ids[::4]))
+                | (players.player_name.eq("Draymond Green") & players.game_id.isin(gsw_ids[1::5]))
+            )
+        ]
         players.to_csv(path, index=False)
         present = set(players.loc[players.player_name.eq("Jayson Tatum"), "game_id"])
         teams = pd.read_csv(root / f"data/raw/team_game_stats/{season}_regular_season.csv")
@@ -42,6 +49,19 @@ def played_sample(tmp_path, monkeypatch):
                 & players.game_id.isin(present)
             ],
         }
+        klay = set(players.loc[players.player_name.eq("Klay Thompson"), "game_id"])
+        green = set(players.loc[players.player_name.eq("Draymond Green"), "game_id"])
+        expected[season]["curry_bound"] = players.loc[
+            players.player_name.eq("Stephen Curry")
+            & players.opponent_team_abbr.eq("NYK")
+            & players.pts.ge(24)
+            & players.game_id.isin(klay)
+        ]
+        expected[season]["warriors_pair"] = teams.loc[
+            teams.team_abbr.eq("GSW")
+            & teams.opponent_team_abbr.eq("NYK")
+            & teams.game_id.isin(klay & green)
+        ]
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root))
     reset_data_source_cache()
     yield expected
@@ -131,3 +151,53 @@ def test_teammate_minutes_do_not_become_team_minutes(played_sample, axis):
     result = execute_natural_query(f"Celtics record with Tatum playing 30 minutes {axis}")
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("period", ["in 2025-26", "in 2023-24 and 2025-26"])
+def test_stat_clause_does_not_hide_later_teammate(played_sample, period):
+    result = execute_natural_query(
+        f"Stephen Curry averages with at least 24 points against Knicks with Thompson playing {period}"
+    )
+    assert result.result_status == "ok"
+    assert result.metadata["with_player"] == "Klay Thompson"
+    if "and" in period:
+        rows = result.to_dict()["sections"]["split_comparison"]
+        assert [r["bucket"] for r in rows] == SEASONS
+    else:
+        rows = [{**result.to_dict()["sections"]["summary"][0], "bucket": "2025-26"}]
+    for row in rows:
+        expected = played_sample[row["bucket"]]["curry_bound"]
+        assert len(expected) > 0
+        assert row["games"] == len(expected)
+        assert row["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+
+
+def test_team_pair_transfers_both_names_and_rows(played_sample, monkeypatch):
+    original = team_split_summary._summarize_bucket
+    seen = {}
+
+    def capture(frame, bucket):
+        seen[bucket] = set(frame.game_id)
+        return original(frame, bucket)
+
+    monkeypatch.setattr(team_split_summary, "_summarize_bucket", capture)
+    result = execute_natural_query(
+        "Warriors record against Knicks with Thompson and Green playing in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "ok"
+    assert result.metadata["with_player"] == "Klay Thompson and Draymond Green"
+    for row in result.to_dict()["sections"]["split_comparison"]:
+        expected = played_sample[row["bucket"]]["warriors_pair"]
+        assert len(expected) > 0
+        assert seen[row["bucket"]] == set(expected.game_id)
+        assert row["games"] == len(expected)
+        assert row["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+
+
+@pytest.mark.parametrize("presence", ["on the court", "off the court", "on court", "on the floor"])
+@pytest.mark.parametrize("period", ["in 2025-26", "in 2023-24 and 2025-26"])
+def test_on_court_is_never_whole_game_participation(played_sample, presence, period):
+    result = execute_natural_query(f"Celtics record with Tatum {presence} {period}")
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+    assert result.metadata.get("with_player") is None

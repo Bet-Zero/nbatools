@@ -6115,6 +6115,8 @@ def _route_parsed_query(parsed: dict) -> dict:
             # "Lakers record with LeBron and Davis": the games both played.
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
             route_kwargs[f"{pair[0]}_player"] = pair[1]
+            parsed = dict(parsed, with_player=None, without_player=None)
+            parsed[f"{pair[0]}_player"] = pair[1]
             notes.pop()
     elif (
         team
@@ -6534,16 +6536,23 @@ def _route_parsed_query(parsed: dict) -> dict:
 
     pair_read = False
     if (
-        route in ("player_game_summary", "player_game_finder", "player_split_summary")
-        and route_kwargs.get("player")
+        route
+        in (
+            "player_game_summary",
+            "player_game_finder",
+            "player_split_summary",
+            "team_split_summary",
+            "game_summary",
+        )
+        and (route_kwargs.get("player") or route_kwargs.get("team"))
         and _multi_player_availability_boundary(q)
     ):
         # "LeBron stats with Davis and Austin": both teammates, or a refusal
         # rather than dropping one.
         pair = availability_pair(
             q,
-            team=None,
-            player=route_kwargs["player"],
+            team=route_kwargs.get("team"),
+            player=route_kwargs.get("player"),
             season=route_kwargs.get("season"),
             start_season=route_kwargs.get("start_season"),
             end_season=route_kwargs.get("end_season"),
@@ -6552,6 +6561,8 @@ def _route_parsed_query(parsed: dict) -> dict:
         if pair:
             route_kwargs.update(with_player=None, without_player=None)
             route_kwargs[f"{pair[0]}_player"] = pair[1]
+            parsed = dict(parsed, with_player=None, without_player=None)
+            parsed[f"{pair[0]}_player"] = pair[1]
             pair_read = True
         else:
             route_kwargs["unsupported_filters"] = ["multi_player_availability"]
