@@ -2,15 +2,17 @@
 
 NBA Tools is a natural-language NBA stats answer engine for stat-shaped questions across players, teams, records, splits, streaks, leaderboards, comparisons, and playoff history.
 
-Ask a stat-shaped NBA question in plain English; get a direct, scoped answer backed by verified data. When a question falls outside the current supported boundary, the engine returns an explicit unsupported or no-result response instead of inventing an answer.
+The goal: ask a stat-shaped NBA question in plain English and get a direct, correctly scoped answer backed by qualified data. Unsupported or unavailable conditions should be identified rather than silently replaced by a different question. Implementation and broader product acceptance are still in progress.
 
 The same query engine is exposed through three surfaces: a public answer-first web UI, an HTTP API, and a CLI for development and power-user queries.
+
+For agent execution, start with [AGENTS.md](AGENTS.md) and [ROADMAP.md](ROADMAP.md). The October 15 direction preserves the existing product, strengthens correctness and numerical acceptance, delivers shared interpretation, and establishes a bounded deployed-core checkpoint. This README is not the active execution queue or proof that every combination is verified.
 
 ---
 
 ## What you can ask
 
-The engine is tuned for stat-shaped NBA questions in the following areas. Each area has accepted phrasings documented in [docs/reference/query_catalog.md](docs/reference/query_catalog.md) and [docs/reference/query_guide.md](docs/reference/query_guide.md).
+The engine is tuned for stat-shaped NBA questions in the following areas. Each area has examples and current limitations documented in [docs/reference/query_catalog.md](docs/reference/query_catalog.md) and [docs/reference/query_guide.md](docs/reference/query_guide.md). A listed family does not imply that every filter combination or source dataset is available.
 
 ### Player summaries and recent form
 
@@ -77,16 +79,15 @@ The engine is tuned for stat-shaped NBA questions in the following areas. Each a
 
 ---
 
-## What is intentionally unsupported
+## Current limitations and answer integrity
 
-The product has explicit boundaries. When a question falls outside them, the engine returns an explicit unsupported, no-result, or `filter_not_supported` response rather than a broad plausible answer.
+Subjective opinion/narrative questions and invented metric definitions are not statistical answers supplied by this engine. A genuinely ambiguous request needs clarification; an unavailable source or missing implementation must not produce a broader plausible answer.
 
-- Subjective, opinion, or narrative questions (best defender, MVP candidate, cooled off, best player lately).
-- Inference beyond available data, including invented metric definitions for terms the product has not approved.
-- Query families that are still being evaluated against the promotion path (see [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md)).
-- Specific guarded families that are out of scope for the current release — for example fouls-drawn leaderboards, team bench scoring, rolling/date-window team advanced-rating leaderboards, clutch filters where trusted data is unavailable, championship/ring counts (playoff data starts at 1996-97), opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
+Desired statistical capabilities that are not implemented or not backed by sufficient data remain unfinished work, not permanent product exclusions. The former static list of unsupported families is no longer maintained here because it included capabilities subsequently implemented. Consult the [query catalog](docs/reference/query_catalog.md), relevant [data contracts](docs/reference/data_contracts.md), and actual scoped verification for a particular request; do not infer every combination works from a family name.
 
-The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
+Working historical scope is 1996-97 onward, with priority on the 21st century. Earlier history is optional. A career that begins before available coverage must be labeled with its covered span. Participation, injury/status, and simultaneous on-court presence are different facts; one cannot be silently substituted for another.
+
+The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [parser/routing guardrails](docs/operations/parser_routing_growth_guardrails.md) and [feature promotion rules](docs/operations/feature_promotion_rules.md).
 
 ---
 
@@ -169,8 +170,8 @@ The engine supports these query classes:
 - **finder** — games matching conditions
 - **count** — count of matching games/occurrences
 - **summary** — aggregated stats over a sample
-- **comparison** — side-by-side stats for two entities
-- **split** — home/away or wins/losses breakdowns
+- **comparison** — side-by-side stats for entities
+- **split** — breakdowns over a selected sample
 - **leaderboard** — ranked lists (season leaders, occurrence leaders, top games)
 - **streak** — consecutive games meeting a condition
 - **record** — team win-loss records with optional filters
@@ -190,7 +191,7 @@ The engine supports these query classes:
 
 ### Entity resolution
 
-- 90+ curated player aliases and nicknames
+- curated player aliases and nicknames
 - accent normalization (jokic → Jokić, doncic → Dončić)
 - team name / abbreviation / nickname resolution
 - ambiguity detection with confidence levels
@@ -205,10 +206,11 @@ Player summaries, comparisons, and splits also show sample-aware USG%, AST%, REB
 
 ## QA and release status
 
-Queue D was owner-accepted on 2026-07-21 for the current documented product
-boundary after the clean desktop/mobile review and the final 17-check combined
-evidence run passed. Manual feedback persistence remains deferred and disabled.
-This Queue D decision does not claim broader product release readiness.
+Queue D was owner-accepted on 2026-07-21 for the then-documented product boundary
+after the desktop/mobile review and final 17-check combined evidence run passed.
+That historical decision is not broader product acceptance or verification of
+subsequent changes. Manual feedback persistence remains deferred and disabled.
+The October 15 Core-1 checkpoint is planned, not claimed complete.
 
 Pointers:
 
@@ -227,6 +229,8 @@ The test suite covers parser and routing behavior, result contracts, CLI and
 API paths, the query service, frontend contracts, Raw QA harness behavior, and
 specialized query areas. Use the test runner's collection output when an exact
 current count is needed rather than freezing a volatile total into this guide.
+A passing workflow or selected full suite does not establish that required
+real-data tests executed; inspect the relevant executed/skipped results.
 
 Run tests:
 
@@ -241,10 +245,16 @@ For release history, see [CHANGELOG.md](CHANGELOG.md).
 
 ### Refresh data
 
-    # One-shot refresh of the current season
+Fresh NBA acquisition and unattended refresh are parked under the October 4 owner
+decision. Existing qualified-snapshot work may continue. These CLI capabilities
+are not proof of an active scheduler and are not an instruction to operate the
+owner's laptop as a data runner. Consult the runbook and current authorization
+before refresh/publication.
+
+    # One-shot refresh of the current season, when authorized/reachable
     nbatools-cli pipeline refresh
 
-    # Automated repeating refresh
+    # Repeating refresh command; not evidence an unattended runner is installed
     nbatools-cli pipeline auto-refresh --interval 6h
 
 ### Pipeline stages
@@ -263,11 +273,11 @@ Pipeline runbook: [docs/operations/pipeline_runbook.md](docs/operations/pipeline
 
     GET /freshness    # returns structured freshness report
 
-The UI shows a collapsible freshness panel with status badge, current-through date, and per-season details.
+The UI shows a collapsible freshness panel with status badge, current-through date, and per-season details. Snapshot coverage must not be advertised as unattended current data; metadata republication must preserve the underlying data's dates.
 
 ### Deployment
 
-Deployed runtime is Cloudflare R2 (data) + Vercel (frontend + API). Vercel excludes `data/**`, so any data-backed feature must verify R2 sync before preview/production. The deployment runbook contains the data-backed feature promotion checklist, the missing-data clean `no_data` behavior rule, and R2/Vercel setup details:
+Deployed runtime is Cloudflare R2 (data) + Vercel (frontend + API). Vercel excludes `data/**`, so any data-backed feature must verify R2 availability before preview/production. The deployment runbook contains the data-backed feature promotion checklist, the missing-data clean `no_data` behavior rule, and R2/Vercel setup details:
 
 [docs/operations/deployment.md](docs/operations/deployment.md).
 

@@ -1,338 +1,150 @@
 # Parser/Routing Growth Guardrails
 
-## 1. Purpose
-
-This is a durable policy document that governs how new natural-language query
-support is added to NBA Tools. It exists so that parser/routing growth cannot
-quietly become a wrong-route problem as new query families are introduced.
-
-This doc is policy only. It does not change parser, routing, backend, or
-frontend behavior. It does not change result contracts or QA corpus
-expectations. It does not initiate any refactor. It defines the bar that any
-new natural-language query support must clear before it ships.
-
-Companion policy:
-
-- `docs/operations/feature_promotion_rules.md`
-
-## 2. Working principles
-
-Two principles govern every parser/routing change.
-
-```text
-Forgive phrasing.
-Do not invent meaning.
-```
-
-```text
-No broad fallback answers for unsupported or low-confidence queries.
-```
-
-What "forgive phrasing" means in practice:
-
-- Accept reasonable rewordings of stat-shaped questions the product already
-  supports.
-- Accept common aliases (team nicknames, player short names, common stat
-  shorthands) where they are already part of the supported surface.
-- Tolerate ordering differences ("Lakers record on the road last season" vs
-  "Lakers road record last season").
-
-What "do not invent meaning" means in practice:
-
-- Do not infer a metric the user did not name when the supported route
-  requires an explicit metric.
-- Do not turn a subjective phrase ("best defender", "cooled off lately") into
-  a stat answer unless a defined metric and a supported route exist.
-- Do not silently substitute a near-but-different route just because the
-  intent looks close.
-
-What "no broad fallback" means in practice:
-
-- When parser confidence is below the supported boundary, return
-  `no_result` / `filter_not_supported` / a guided unsupported response, not a
-  broader related answer.
-- Do not promote a partial match into a wider leaderboard, league-wide table,
-  or alternate scope.
-- Better to clearly say "this is not supported" than to answer a different
-  question that looks credible.
-
-## 3. Accepted phrase requirements
-
-Every new supported query family must define an accepted phrase set as part of
-its promotion. The set is a written contract, not an implementation detail.
-
-Accepted phrase requirements:
-
-- List the canonical phrasings the family must answer.
-- Include reasonable alternate orderings and common shorthand for the same
-  intent.
-- Include the entity, scope, and filter combinations the family is required
-  to handle.
-- Each accepted phrase must map to a single expected route.
-- Each accepted phrase must have at least one raw QA case in the natural
-  query corpus.
-
-Worked example (opponent-conference team record):
-
-```text
-Accepted:
-- Celtics record against the East
-- Celtics record vs Eastern Conference teams
-- Lakers record against the West last season
-- Lakers record vs Western Conference opponents in 2024-25
-```
-
-Each accepted phrase above must route to `team_record` with an
-`opponent_conference` filter applied and must be covered by raw QA cases.
-
-## 4. Rejected / guarded phrase requirements
-
-Every new supported query family must also define a rejected / guarded phrase
-set. This is the negative half of the contract and is what prevents wrong-route
-growth.
-
-Rejected / guarded phrase requirements:
-
-- List phrasings that look adjacent to the accepted set but are explicitly
-  not supported by this family.
-- For each rejected phrase, state the expected unsupported behavior:
-  `no_result`, `filter_not_supported`, a guided unsupported response, or a
-  specific named alternative route when one applies.
-- Rejected phrases must have raw QA cases that assert the unsupported
-  behavior. Asserting only that the wrong route does not fire is not enough
-  on its own — the corpus must pin the supported behavior shape.
-- A new family must not loosen an existing family's rejected/guarded set in
-  order to ship.
-
-Worked example (opponent-conference team record):
-
-```text
-Rejected / guarded:
-- east coast teams           -> geography phrase; unsupported
-- conference finals          -> playoff round concept, not opponent filter
-- vs Atlantic Division       -> division filter; unsupported in this family
-- historical conference record outside trusted seasons -> conference_coverage
-                                                          unsupported
-```
-
-## 5. Route collision check rule
-
-Wrong route is the dominant failure mode, not crashes. Every new supported
-family must be reviewed against the route collision groups before it ships.
-
-Required collision check:
-
-- For each accepted phrase in the new family, name every existing family
-  whose phrasing is adjacent in surface form.
-- Provide a raw QA case for at least one phrasing in each adjacent family
-  that asserts the existing family still routes correctly after the new
-  family ships.
-- For each rejected/guarded phrase in the new family, state which existing
-  family it most resembles and assert the unsupported behavior with a raw QA
-  case.
-- If two families could legitimately match a phrase, document which one wins
-  and why; the loser must have an explicit rejected phrase or guarded path.
-
-Known high-risk collision groups (from PARSER_ROUTING_GROWTH_REVIEW_NOTES
-§10C):
-
-```text
-opponent conference vs conference finals vs geography phrases
-team record vs team comparison vs team matchup
-player comparison vs player-vs-opponent summary
-leaderboard vs top single-game performances
-subjective/trend phrases vs supported stat metrics
-```
-
-Every new family promotion must explicitly say which of these collision
-groups it touches, and document the routing decision for the touched group.
-
-## 6. Unsupported-boundary regression requirement
-
-A new family must not erode an existing unsupported boundary. Unsupported
-behavior is a feature, not a gap.
-
-Requirements:
-
-- Identify every unsupported boundary the new family is near.
-- Add or keep raw QA cases that pin the unsupported behavior at each near
-  boundary.
-- The expected unsupported shape (`no_result`, `filter_not_supported`,
-  `conference_coverage`, or a guided unsupported response) must be the same
-  shape that shipped before the new family.
-- If a previously unsupported phrasing becomes supported, that change must
-  be called out explicitly in the promotion record, not buried inside a
-  parser rule.
-
-The product rule:
-
-```text
-The unsupported boundary is part of the product.
-Moving it requires a deliberate promotion, not an accidental side effect of
-adding a new rule.
-```
-
-## 7. QA / corpus requirement
-
-Every new supported family must ship with corpus coverage that pins both the
-accepted and the rejected behavior.
-
-Required coverage:
-
-- At least one raw QA case per accepted phrase canonical form.
-- At least one raw QA case per rejected/guarded phrase listed in the family
-  contract.
-- At least one collision-group case per adjacent existing family the new
-  family is near, asserting the existing family still routes correctly.
-- At least one unsupported-boundary case for each nearby boundary the new
-  family does not cross.
-
-Corpus discipline:
-
-- Raw QA cases are the source of truth for parser/routing behavior.
-- Public families must be registered in
-  `qa/raw_query_answer_acceptance_families.yaml` and reviewed through the
-  generated `product_review.md` family matrix.
-- Frontend-copy QA and visual QA are required only when rendering changes
-  result from the promotion. See `FEATURE_PROMOTION_RULES.md` for those
-  gates.
-- A new family cannot ship if its raw QA cases pass only because a broad
-  fallback answered them. Each case must assert the specific expected
-  shape.
-- Green machine expectations do not establish public acceptance. Applicable
-  variant gaps must be resolved and representative outputs must be
-  human-reviewed. See `docs/operations/raw_query_answer_qa.md`.
-
-## 8. No broad fallback rule
-
-This rule is restated here as a hard guardrail because it is the rule most
-likely to be quietly relaxed under pressure to "answer something".
-
-```text
-No broad fallback answers for unsupported or low-confidence queries.
-```
-
-Concrete applications:
-
-- If a route requires a metric and the parser cannot pin one, return
-  `filter_not_supported` or a guided unsupported response. Do not silently
-  pick a default metric.
-- If a route requires a scope and the parser cannot resolve it, return
-  `no_result` for the requested scope. Do not widen the scope and return a
-  broader answer.
-- If the user's phrasing partially matches multiple families and confidence
-  is split, prefer the clearer unsupported response over a confident-looking
-  wrong route.
-
-## 9. Working contract format
-
-Every new supported family must record its contract in the format expected
-by `FEATURE_PROMOTION_RULES.md`. At minimum, the contract names:
-
-- accepted phrases
-- rejected / guarded phrases
-- expected route
-- expected unsupported behavior
-- required data contract
-- result contract expectations
-- frontend rendering expectations
-- raw QA cases
-- frontend-copy QA cases when copy changes
-- visual QA cases when UI/layout changes
-- deployment / R2 checks when data-backed
-- release-doc updates
-
-`FEATURE_PROMOTION_RULES.md` is the canonical home of the per-feature
-contract format and its worked example. This doc covers the parser/routing
-half of the contract; the feature promotion doc covers the full path.
-
-## 10. Deferred items
-
-The following work is intentionally deferred. It is named here so the
-deferral is durable and is not reconsidered casually.
-
-### 10.1 Gradual `natural_query.py` extraction
-
-`src/nbatools/commands/natural_query.py` is the parser maintainability risk
-identified by `PARSER_ROUTING_GROWTH_REVIEW_NOTES` §6. The current policy is:
-
-```text
-Do not panic-rewrite the parser.
-Do not casually keep growing one giant parser file forever.
-Add parser-growth guardrails now.
-Refactor/extract gradually and safely.
-```
-
-Safe extraction candidates include:
-
-- stat aliases / constants
-- player / team aliases if duplicated
-- date parsing helpers
-- unsupported-boundary definitions
-- route-family-specific helpers
-- note / caveat construction helpers
-
-Established route-family helper pattern:
-
-- `src/nbatools/commands/natural_query.py` remains the orchestration layer
-  for parse-state collection, ordered route selection, shared post-processing,
-  confidence, alternates, and compatibility glue.
-- Route-family-specific finalization logic belongs in focused helper modules
-  rather than large new inline `_finalize_route` branches.
-- Editing `natural_query.py` is acceptable when wiring a helper into the
-  correct priority position, adjusting shared parse-state orchestration,
-  applying common post-processing, or preserving small compatibility surfaces.
-- Create or extend a helper module when a route family needs more than one
-  conditional branch, custom `route_kwargs`, unsupported-boundary handling, or
-  family-specific precedence logic.
-- Preserve observable behavior during extraction: branch order, route names,
-  `route_kwargs`, notes, confidence, and unsupported behavior must remain
-  unchanged unless the task is an explicit feature promotion.
-
-The first established example is
-`src/nbatools/commands/_lineup_on_off_route_utils.py`, which owns the
-`player_on_off`, `lineup_summary`, and `lineup_leaderboard` finalization
-branches while `natural_query.py` wires it at the original priority point.
-
-Expected validation for behavior-preserving route-helper extraction:
-
-- `make test-parser`
-- `make test-query`
-- a relevant Raw QA slice, especially `natural_query_route_priority`
-- `make test-preflight` for high-fan-in parser extractions
-- `make docs-governance`
-
-A single-pass rewrite is an explicit non-goal. Any future extraction wave
-must follow the same accepted/rejected/collision/unsupported-boundary
-guardrails as a new family promotion.
-
-### 10.2 Bucket-first intent classification preflight
-
-The bucket-first conceptual model from `PARSER_ROUTING_GROWTH_REVIEW_NOTES`
-§7 (player_subject, team_subject, comparison, leaderboard, finder, record,
-split, streak, playoff, unsupported_or_ambiguous) is a candidate
-architectural direction but is not committed work.
-
-Any bucket-first preflight, if undertaken later, must:
-
-- not change observable routing behavior in its first wave
-- not change result contracts
-- not change QA corpus expectations
-- be evaluated against the same accepted/rejected/collision/unsupported
-  guardrails as a new family
-
-This doc records the deferral. It does not commit to the design.
-
-## 11. How this doc is used
-
-- When a contributor proposes a new supported query family, this doc is the
-  parser/routing half of the bar that proposal must clear.
-- When an agent is asked to "just add a phrase rule", this doc is the
-  reference that explains why a contract is required first.
-- When a reviewer evaluates a parser change, the checks in sections 3–8 are
-  the minimum review surface.
-- When a future review revisits the deferred items in section 10, this doc
-  is the prior decision record.
-
-This is a policy document. Updates to it are themselves a policy change and
-should be treated with the same care as a feature promotion.
+## 1. Purpose and controlling policy
+
+Revised for the owner's 2026-10-15 direction. Preserve correct supported behavior
+while delivering reusable interpretation and execution, not an ever-growing set
+of sentence exceptions. Read [AGENTS.md](../../AGENTS.md),
+[ROADMAP.md](../../ROADMAP.md) and [Feature Promotion Rules](feature_promotion_rules.md).
+These instructions do not themselves change runtime, data or test expectations.
+
+Older requirements for routine human acceptance or preserving unsupported behavior
+as a permanent feature are superseded by the owner delegation in AGENTS.md. Actual
+historical human reviews remain historical. Desired missing capabilities remain
+unfinished; invalid/ambiguous/unavailable-data safeguards still matter.
+
+## 2. Principles
+
+Forgive ordinary phrasing. Do not invent meaning. Do not answer a broader or
+nearby question merely because one fragment was understood.
+
+Preserve subject identities, record grain, time/sample ordering, condition
+ownership, metric and basis, grouping and ranking through the request boundary.
+A condition must not change ownership when another clause, split or comparison
+is added. Played/did-not-play, injury/status and on-court presence are different
+facts; missing participation cannot be silently substituted for injury.
+
+If a meaningful requested clause cannot be resolved or executed, expose the
+limitation/ambiguity rather than drop it. Clarification is for real ambiguity,
+not a substitute for supporting ordinary wording. A safe temporary refusal can
+contain a defect, but cannot close a desired-answer requirement.
+
+## 3. Capability contracts, examples and collisions
+
+Use a compact semantic contract in the existing PR/queue, not a new document per
+phrase. State the intended operation and all meaningful subject/sample/condition
+combinations in its bounded scope before tuning the implementation.
+
+Include canonical examples, ordinary rewordings/order changes and shorthand,
+plus positive controls from adjacent families. Use the existing Raw QA corpus
+for durable representative canonical/variant/collision cases and focused tests
+for further combinations. Examples specify the concept, not a hardcoded sentence
+allowlist. Keep some independent checker wordings out of the maker's tuning set.
+
+Pin intended route/kwargs where they are part of the public/compatibility contract;
+more importantly assert intended meaning, execution and result. An intentional
+route change must preserve or deliberately extend that contract with evidence.
+Route equality alone cannot establish correctness.
+
+Inspect relevant collision groups:
+
+- opponent conference/division versus conference finals or geography;
+- team record, independent comparison and actual head-to-head;
+- player comparison versus one player's opponent/teammate condition;
+- season leaders versus individual games or single-season records;
+- ranking key versus event threshold, and top-N versus last-N;
+- owned player/team/opponent clauses and multiple named subjects;
+- ordinary metric/default wording versus subjective or undefined measures.
+
+For ambiguous overlap, document the chosen meaning or explicit clarification.
+Test the neighboring valid reading too. A global phrase rewrite or a new priority
+branch must not fix one interpretation while silently changing an unrelated one.
+
+## 4. Positive delivery and separate safety coverage
+
+Required valid questions must remain positive delivery targets until answered
+correctly. Do not reclassify them as invalid or change their desired expectations
+to refusal just to pass tests. Correct zero/empty answers require sufficient
+coverage and independently verified computation.
+
+Separate invalid-input, ambiguity, unavailable-source and explicit-exclusion cases.
+Keep relevant temporary refusal regressions until verified support replaces them
+intentionally. When crossing a former boundary, replace the corresponding refusal
+expectation with proved positive support and retain genuine safety controls.
+Document the transition; do not preserve an obsolete refusal forever or erase it
+without a working replacement.
+
+A partial match must not widen a sample, substitute a player/team, choose an
+invented stat, or return a plausible leaderboard for a different question. A
+confidence score is not proof that every clause survived.
+
+## 5. Shared interpretation and code placement
+
+`natural_query.py` is the orchestration layer. Keep substantial route-family
+logic, calculations and reusable sample/condition handling in focused modules.
+Existing `_lineup_on_off_route_utils.py` is one established extraction pattern;
+use existing helpers and adapter boundaries before adding another representation.
+
+For touched consumers, make the requested subjects, grain, predicates, ordered
+sample/window, operation and metric basis explicit. Consolidate duplicate
+interpretation/capability facts rather than introduce a third registry. Metadata
+or a function parameter does not prove that a condition executes.
+
+Deliver a bounded shared path with real positive answers in the same work cycle.
+A small typed internal structure is justified when it resolves an observed
+ambiguity; a universal query framework is not a prerequisite. Extraction alone,
+file size reduction or moving exceptions to a different file is not delivery.
+
+Preserve behavior during pure extraction, including order, kwargs, notes, confidence
+and deliberate refusals. Capability changes need explicit before/after evidence.
+Keep defensive reparses/compatibility adapters until the invariants they protect
+are verified on the replacement. Do not remove safeguards merely for cleaner code.
+
+Repeated findings with the same root cause trigger a lead diagnosis of the
+representation/contract, not another cosmetic phrase patch. Optional cleanup is
+non-blocking. A known wrong answer never becomes acceptable because review has
+already taken several rounds.
+
+## 6. Language alternatives and replacement
+
+A bounded deterministic interpreter or constrained AI translator may be evaluated
+on already-verified engine capabilities. Finishing the entire engine first is not
+required. Use the same semantic targets, code/data and independent held-out cases.
+The incumbent must be measured too; neither AI adoption nor parser preservation
+wins automatically.
+
+A model may propose a validated request for the same engine. It must not invent
+NBA values, override coverage, or execute unrestricted generated code/SQL. Schema
+validity is not semantic correctness. Measure clause preservation, wrong accepted
+answers, positive coverage, refusals/ambiguity, latency/repeatability and authorized
+cost. Do not tune on holdouts and keep calling them unseen.
+
+No paid access, new credentials or production adoption follows automatically from
+an experiment. Preserve existing cost/security boundaries. Record inaccessible
+alternatives as untested and continue independent work. Integrate a winning
+bounded change through existing contracts/gates, not a second full engine.
+
+## 7. Verification and promotion
+
+Use [Feature Promotion Rules](feature_promotion_rules.md) for the end-to-end bar.
+Check intended meaning before deriving expected values. Test selected record IDs,
+conditions, counts/rates/denominators, order and scope labels against independent
+raw aggregation or controlled fixtures. Two agreeing engine paths are not an
+independent oracle. Test data is not evidence of real NBA facts.
+
+During iteration use focused parser/query/engine tests and relevant Raw QA cases.
+For high-fan-in parser changes use `make test-preflight` or the appropriate broad
+suite on the stable candidate. Preserve route-priority/adjacent-family controls;
+use relevant natural-query route-priority corpus cases. Run required numerical
+checks against the exact candidate and immutable generation. Required skipped,
+empty or informationally failing tests cannot count as acceptance.
+
+Verify the actual API/result payload and changed rendered/deployed answer. Reuse
+unchanged renderers with targeted checks; no recurring owner screenshot battery.
+Independent checker evidence and machine evidence are separate; a bot invitation,
+self-review or historical human field is not current independent acceptance.
+
+Update affected query catalog, data/result contracts and verified current-state
+references. Record remaining valid unanswered questions and one exact next action
+in the existing active queue, reached through AGENTS.md. Do not create a parallel
+phase tracker or use an old rejected-phrase list as the product destination.

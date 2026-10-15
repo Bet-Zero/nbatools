@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+
 import pandas as pd
 
 from nbatools.commands._month_split import (
@@ -51,12 +53,13 @@ ALLOWED_STATS = {
     "reb_pct": "reb_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent", "season"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
     "opponent": (),
+    "season": (),
 }
 
 
@@ -170,15 +173,17 @@ def build_result(
     last_n_scope: str = "qualifying",
     rank_stat: str | None = None,
     rank_order: str | None = None,
+    split_seasons: list[str] | None = None,
     **sample_filters,
 ) -> SplitSummaryResult | NoResult:
-    """Split one player's sample by home/away, wins/losses or month.
+    """Split one player's sample by home/away, wins/losses, month or season.
 
     The sample is exactly what the player summary would describe: dates,
     opponent, the other location/outcome flag, stat conditions, teammate
     availability, role, schedule context and the last-N window all apply
     first, then the split divides those games. A month split can be ranked
-    by ``rank_stat`` ("best month").
+    by ``rank_stat`` ("best month"). A season split ("this season vs last
+    season") keeps only ``split_seasons`` when the named seasons skip some.
     """
     split = split.lower()
     if split not in ALLOWED_SPLITS:
@@ -187,6 +192,16 @@ def build_result(
     # The split's own axis divides the sample; it is not a filter on it.
     for axis_field in _SPLIT_AXIS_FIELDS[split]:
         sample_filters.pop(axis_field, None)
+    # The parse passes context keys ("quarter": None) the summary sample does
+    # not take; an empty one is dropped, a set one is not run here.
+    accepted = inspect.signature(select_player_summary_sample).parameters
+    for key in [k for k in sample_filters if k not in accepted]:
+        if sample_filters.pop(key) not in (None, False, [], {}, ""):
+            return NoResult(
+                query_class="split_summary",
+                reason="filter_not_supported",
+                notes=[f"{key}: not supported on split summaries"],
+            )
 
     seasons = resolve_seasons(season, start_season, end_season)
     sample = select_player_summary_sample(
@@ -197,7 +212,7 @@ def build_result(
         player=player,
         team=team,
         opponent=opponent,
-        stat=sample_stat(stat, min_value, max_value) if split == "month" else stat,
+        stat=sample_stat(stat, min_value, max_value) if split in ("month", "season") else stat,
         min_value=min_value,
         max_value=max_value,
         conditions=conditions,
@@ -214,6 +229,9 @@ def build_result(
         )
     df = sample.df
     identity_notes = sample.notes
+    if split == "season" and split_seasons:
+        df = df[df["season"].isin(split_seasons)].copy()
+        seasons = [s for s in seasons if s in split_seasons]
 
     if df.empty:
         return NoResult(query_class="split_summary")
@@ -229,6 +247,8 @@ def build_result(
         df = assign_month_buckets(df)
     elif split == "opponent":
         df["bucket"] = df["opponent_team_abbr"]
+    elif split == "season":
+        df["bucket"] = df["season"]
     else:
         df["bucket"] = df["wl"].map({"W": "wins", "L": "losses"})
 
@@ -256,7 +276,7 @@ def build_result(
     bucket_rows = []
     for bucket_name, bucket_df in split_df.groupby("bucket", sort=False):
         row = _summarize_bucket(bucket_df, bucket_name)
-        if split == "month":
+        if split in ("month", "season"):
             row = add_requested_stat(row, bucket_df, stat)
             row = add_requested_stat(row, bucket_df, rank_stat)
         bucket_rows.append(row)
@@ -278,6 +298,8 @@ def build_result(
         if ranked_by:
             summary["ranked_by"] = ranked_by
             summary["rank_order"] = rank_order
+    elif split == "season":
+        split_comparison = split_comparison.sort_values("bucket").reset_index(drop=True)
     else:
         bucket_order = {
             "home": 0,
@@ -295,7 +317,11 @@ def build_result(
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
     caveats: list[str] = []
-    if len(seasons) > 1:
+    if split == "season":
+        missing = [s for s in (split_seasons or []) if s not in set(split_df["season"])]
+        if missing:
+            caveats.append(f"no games in {', '.join(missing)}")
+    elif len(seasons) > 1:
         caveats.append(
             "multi-season split summary aggregated from game logs across "
             f"{seasons[0]} to {seasons[-1]}"

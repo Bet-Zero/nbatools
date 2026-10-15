@@ -68,10 +68,10 @@ SECRET_ENV_VARS = tuple(SECRET_SOURCES)
 PREFLIGHT_JOB = "preflight"
 
 # Jobs whose outcome is the verdict. A pass here is load-bearing.
-GATE_JOBS = ("raw-qa", "filter-sweep")
+GATE_JOBS = ("raw-qa", "filter-sweep", "data-backed-tests")
 
-# Informational: no prior green run to regress from.
-ADVISORY_JOBS = ("data-backed-tests",)
+# Required numerical acceptance is blocking alongside Raw QA and the sweep.
+ADVISORY_JOBS = ()
 
 # Pins one generation for the whole run. The engine honours it over the live
 # pointer -- see `_resolve_active_data_generation` in data_source.
@@ -454,7 +454,7 @@ def test_each_gate_has_a_timeout_that_fits_its_measured_runtime(job_name: str) -
     pair across 521 pairs. The floors below leave headroom for a growing corpus
     and a slow runner.
     """
-    floors = {"raw-qa": 60, "filter-sweep": 20}
+    floors = {"raw-qa": 60, "filter-sweep": 20, "data-backed-tests": 60}
     timeout = int(_job(job_name)["timeout-minutes"])
     assert timeout >= floors[job_name], (
         f"{job_name} allows {timeout} minutes; run 1 measured a runtime needing "
@@ -488,34 +488,46 @@ def test_a_targeted_run_is_labelled_as_one() -> None:
     assert "${{ inputs.scope }}" in workflow["run-name"]
 
 
-def _run_targeted_test_selection(tests: str) -> subprocess.CompletedProcess:
-    """Run the needs_data step's own script, with pytest replaced by echo."""
-    step = next(s for s in _steps("data-backed-tests") if "needs_data" in s.get("name", ""))
-    script = step["run"].replace("python -m pytest", "echo pytest")
-    return subprocess.run(
-        ["bash", "-e", "-c", script],
-        env={"PATH": os.environ["PATH"], "SCOPE": "targeted", "TESTS": tests},
-        capture_output=True,
-        text=True,
-        check=False,
+def test_every_gate_uses_the_once_resolved_candidate_sha() -> None:
+    assert _job(PREFLIGHT_JOB)["outputs"]["candidate_sha"] == (
+        "${{ steps.revision.outputs.candidate_sha }}"
     )
+    for name in GATE_JOBS:
+        checkout = next(s for s in _steps(name) if "actions/checkout@" in s.get("uses", ""))
+        assert checkout["with"]["ref"] == "${{ needs.preflight.outputs.candidate_sha }}"
+
+
+def test_required_tests_use_the_strict_harness_and_candidate_identity() -> None:
+    step = next(s for s in _steps("data-backed-tests") if "needs_data" in s.get("name", ""))
+    assert step["run"] == "python tools/required_data_validation.py"
+    assert step["env"]["VALIDATION_SHA"] == "${{ needs.preflight.outputs.candidate_sha }}"
 
 
 @pytest.mark.parametrize(
-    "test_id",
+    ("tests", "raw_qa", "success"),
     [
-        "tests/test_explicit_date_ranges_real_data.py",
-        "tests/test_leaderboard_metric_boundary.py::test_case[total-rebounds]",
+        ("", "", False),
+        (" ", "", False),
+        (" ", "valid", False),
+        ("tests/test_x.py", "", True),
+        ("", "case-id", True),
     ],
 )
-def test_a_targeted_run_accepts_real_test_paths(test_id: str) -> None:
-    result = _run_targeted_test_selection(test_id)
-    assert result.returncode == 0, result.stderr
-    assert test_id in result.stdout
-
-
-@pytest.mark.parametrize("test_id", ["tests/../secrets.py", "tests/x.py;env", "qa/run.py", "-k"])
-def test_a_targeted_run_rejects_other_arguments(test_id: str) -> None:
-    result = _run_targeted_test_selection(test_id)
-    assert result.returncode != 0
-    assert "Invalid test path" in result.stderr
+def test_preflight_rejects_empty_requests_but_allows_unselected_jobs(
+    tests: str, raw_qa: str, success: bool, tmp_path: Path
+) -> None:
+    step = next(s for s in _steps(PREFLIGHT_JOB) if s.get("id") == "revision")
+    result = subprocess.run(
+        ["bash", "-e", "-c", step["run"]],
+        cwd=ROOT,
+        env={
+            **os.environ,
+            "SCOPE": "targeted",
+            "TESTS": tests,
+            "RAW_QA_CASES": raw_qa,
+            "GITHUB_OUTPUT": str(tmp_path / "output"),
+        },
+        capture_output=True,
+        text=True,
+    )
+    assert (result.returncode == 0) == success, result.stderr

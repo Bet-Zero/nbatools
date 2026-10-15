@@ -1,4 +1,5 @@
 import re
+from contextvars import ContextVar
 
 import pandas as pd
 
@@ -312,6 +313,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     extract_season as extract_season,
+)
+from nbatools.commands._parse_helpers import (
+    extract_season_list as extract_season_list,
 )
 from nbatools.commands._parse_helpers import (
     extract_season_range as extract_season_range,
@@ -722,6 +726,7 @@ _SPLIT_AXIS_FIELDS = {
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
     "opponent": (),
+    "season": (),
 }
 _SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
 
@@ -865,6 +870,10 @@ def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: di
     if parsed.get("split_type") == "month" and route not in _SPLIT_AXIS_ROUTES:
         # "LeBron vs Curry by month", "Lakers leading scorer by month".
         markers.append("month_split")
+    if parsed.get("split_type") == "season" and route not in _SPLIT_AXIS_ROUTES:
+        # "LeBron vs Curry this season vs last season", "top scorers 2016 vs
+        # 2017": one answer would cover every named season together.
+        markers.append("season_split")
 
     axis_fields: tuple[str, ...] = ()
     if route in _SPLIT_AXIS_ROUTES:
@@ -878,6 +887,24 @@ def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: di
             markers.append(field)
 
     return markers
+
+
+# Months named for two seasons ("January to March this season and last
+# season") and playoff rounds ("the 2016 and 2018 finals") keep their own
+# readings (refusals) rather than a season split.
+_SEASON_LIST_OTHER_READING = re.compile(
+    r"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|june?|july?|aug(?:ust)?"
+    r"|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b"
+    r"|\bmay\s+(?:\d|to\b|through\b|and\b)|\b(?:to|through|and|from|in)\s+may\b"
+    r"|\b(?:finals?|rounds?|conference|semis|semifinals?|quarterfinals?)\b"
+)
+
+
+def _season_split_kwargs(parsed: dict, split_type: str | None) -> dict:
+    """ "this season vs last season": the seasons the split keeps."""
+    if split_type != "season" or not parsed.get("season_list"):
+        return {}
+    return {"split_seasons": list(parsed["season_list"])}
 
 
 def _month_rank_kwargs(parsed: dict, split_type: str | None) -> dict:
@@ -1821,6 +1848,7 @@ __all__ = [
     "extract_position_filter",
     "extract_relative_season",
     "extract_bare_year_pair",
+    "extract_season_list",
     "detect_series_situation",
     "detect_series_comeback",
     "extract_bare_year_season",
@@ -2951,6 +2979,18 @@ def _build_parse_state(query: str) -> dict:
             career_intent = True
             start_season, end_season = resolve_career(season_type)
 
+    # "this season vs last season", "2023-24 vs 2024-25", "in 2016 and
+    # 2020": each named season, split one row per season.
+    season_list = None
+    if (
+        not (start_season and end_season)
+        and SEASON_LIST_READING.get()
+        and not _SEASON_LIST_OTHER_READING.search(q)
+    ):
+        season_list = extract_season_list(q, season_type)
+        if season_list:
+            start_season, end_season = season_list[0], season_list[-1]
+
     explicit_relative_season = False
     bare_year_season = None
     bare_year_span = False
@@ -3005,6 +3045,12 @@ def _build_parse_state(query: str) -> dict:
     min_games = extract_min_games(q)
     top_n = extract_top_n(q)
     split_type = detect_split_type(q)
+    season_split_blocked = False
+    if season_list:
+        # A second split ("home vs away this season vs last season") or a
+        # last-N window (the last N of which season?) has no season split.
+        season_split_blocked = split_type is not None or last_n is not None
+        split_type = "season"
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
     stretch_request = detect_stretch_query(q)
@@ -3518,8 +3564,11 @@ def _build_parse_state(query: str) -> dict:
                 wins_only = losses_only = False
             month_rank = {"order": month_rank["order"], "stat": rank_stat}
 
-    month_split_blocked = split_type == "month" and _month_split_blocked(
-        q, player=player, team=team, comparison=bool(player_a or player_b or team_a or team_b)
+    month_split_blocked = split_type in ("month", "season") and (
+        _month_split_blocked(
+            q, player=player, team=team, comparison=bool(player_a or player_b or team_a or team_b)
+        )
+        or (split_type == "season" and season_split_blocked)
     )
 
     return {
@@ -3595,6 +3644,7 @@ def _build_parse_state(query: str) -> dict:
         "top_n": top_n,
         "game_top_n": extract_top_n_games(q),
         "split_type": split_type,
+        "season_list": season_list,
         "home_only": home_only,
         "away_only": away_only,
         "wins_only": wins_only,
@@ -5179,6 +5229,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "last_n": last_n,
             "special_event": special_event,
             **_month_rank_kwargs(parsed, split_type),
+            **_season_split_kwargs(parsed, split_type),
         }
     elif split_type and team and not team_a and not team_b:
         route = "team_split_summary"
@@ -5202,6 +5253,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "max_value": max_value,
             "last_n": last_n,
             **_month_rank_kwargs(parsed, split_type),
+            **_season_split_kwargs(parsed, split_type),
         }
     elif player_a and player_b and bare_player_vs_player:
         route = "player_compare"
@@ -10686,7 +10738,9 @@ def _missed_games(parsed: dict) -> dict | None:
     rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", shape.group("rest")))
     if _MISSED_NOT_A_COUNT.search(rest):
         return None
-    if re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season"):
+    if parsed.get("season_list") or (
+        re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season")
+    ):
         # "in 2024-25 and 2025-26": the parse keeps one season; ask for a span.
         refused = _single_season_refusal(parsed)
         refused["route_kwargs"]["unsupported_filters"] = ["missed_games_seasons"]
@@ -10806,6 +10860,30 @@ def _three_team_comparison(parsed: dict) -> dict | None:
 
 
 def _finalize_route(parsed: dict) -> dict:
+    """Route a parse state; named seasons answer only as a season split."""
+    out = _finalize_route_unchecked(parsed)
+    route = out.get("route")
+    if (
+        parsed.get("season_list")
+        and route
+        and route not in _SPLIT_AXIS_ROUTES
+        and not (out.get("route_kwargs") or {}).get("unsupported_filters")
+    ):
+        # "how many games did LeBron miss this season vs last season", "top
+        # scorers 2024 vs 2025": one answer would pool the named seasons (and
+        # any between them).
+        refused = _single_season_refusal(parsed)
+        refused["route_kwargs"]["unsupported_filters"] = ["season_split"]
+        refused["notes"] = [
+            "unsupported_boundary: named seasons are compared one row per season for one "
+            "player's or one team's games and records; ask for one season, or a span "
+            '("from 2023-24 to 2025-26")'
+        ]
+        return refused
+    return out
+
+
+def _finalize_route_unchecked(parsed: dict) -> dict:
     """Route a parse state, then rank single seasons when one season is asked."""
     three = _three_team_comparison(parsed)
     if three is not None:
@@ -11416,6 +11494,18 @@ def parse_query(query: str) -> dict:
             ONE_POSSESSION_REWRITE.reset(token)
         if _stat_bounds(unrewritten) - _stat_bounds(out) or _unread_numbers(query, out):
             return unrewritten
+    if out.get("season_list") and out.get("route") in _SPLIT_AXIS_ROUTES:
+        # The split runs the summary's sample; it answers only what the
+        # one-season reading answers with the same filters ("LeBron stats
+        # when Reaves scores 20 this season vs last season" refuses there).
+        token = SEASON_LIST_READING.set(False)
+        try:
+            one_season = _parse_query_once(query)
+        finally:
+            SEASON_LIST_READING.reset(token)
+        dropped = _season_split_drops(one_season, out)
+        if dropped:
+            return _season_split_refusal(out, dropped)
     return out
 
 
@@ -11551,6 +11641,98 @@ def _per_season_games(parsed: dict) -> dict:
     return result
 
 
+SEASON_LIST_READING: ContextVar[bool] = ContextVar("season_list_reading", default=True)
+_SEASON_SPLIT_FROM = {
+    "player_game_summary": "player",
+    "player_game_finder": "player",
+    "team_record": "team",
+    "game_finder": "team",
+    "game_summary": "team",
+}
+# Keys the split sets for itself, or that only place the one season.
+_SEASON_SPLIT_OWN_KEYS = {
+    "season",
+    "start_season",
+    "end_season",
+    "split",
+    "split_seasons",
+    "season_type",
+    # How a game list orders and cuts its rows.
+    "limit",
+    "sort_by",
+    "ascending",
+}
+
+
+_OPPONENT_STAT_WORDS = re.compile(
+    r"\ballow(?:ed|s|ing)?\b|\bopponents?'?s?\b|\bopp\b|\bgiv(?:e|es|ing|en)\s+up\b"
+    r"|\bgave\s+up\b|\bheld\b|\bdefen[cs]e\b|\bforced\b"
+)
+
+
+_OPPONENT_SPLIT_WORDS = re.compile(
+    r"\bby\s+(?:opponents?|teams?)\b|\bper\s+opponent\b"
+    r"|\b(?:vs\.?|versus|against)\s+(?:each|every)\s+(?:opponent|team)\b"
+)
+
+
+def _has_opponent_bound(kwargs: dict) -> bool:
+    bounded = (
+        [kwargs]
+        if kwargs.get("min_value") is not None or kwargs.get("max_value") is not None
+        else []
+    )
+    bounded += [c for c in kwargs.get("conditions") or [] if isinstance(c, dict)]
+    return any(str(c.get("stat") or "").startswith("opponent_") for c in bounded)
+
+
+def _season_split_drops(one_season: dict, split: dict) -> list[str]:
+    """What the one-season reading applies that the season split does not."""
+    kind = _SEASON_SPLIT_FROM.get(one_season.get("route"))
+    split_route = "player_split_summary" if kind == "player" else "team_split_summary"
+    if kind is None or split.get("route") != split_route:
+        return ["a question that is not one player's or one team's games"]
+    base = one_season.get("route_kwargs") or {}
+    if base.get("unsupported_filters"):
+        return list(base["unsupported_filters"])
+    kwargs = split.get("route_kwargs") or {}
+    if (
+        kind == "team"
+        and _OPPONENT_STAT_WORDS.search(split.get("normalized_query") or "")
+        and not _has_opponent_bound(kwargs)
+    ):
+        # "Lakers points allowed per game": the team summary reads the
+        # team's own points (on one season too); the split would repeat it.
+        # A bound on the opponent ("when allowing 100") filters correctly.
+        return ["the opponent's stats"]
+    if _OPPONENT_SPLIT_WORDS.search(split.get("normalized_query") or ""):
+        # "LeBron stats by opponent 2023-24 vs 2024-25": a second split the
+        # parse missed beside an explicit season (it is read on main too).
+        return ["a split by opponent"]
+    if kwargs.get("opponent_player"):
+        # The split's per-bucket advanced metrics need the team rows a
+        # player-vs-player sample does not carry.
+        return ["opponent_player"]
+    return [
+        key
+        for key, value in base.items()
+        if key not in _SEASON_SPLIT_OWN_KEYS
+        and value not in (None, False, [], {}, "")
+        and kwargs.get(key) != value
+    ]
+
+
+def _season_split_refusal(parsed: dict, dropped: list[str]) -> dict:
+    refused = _single_season_refusal(parsed)
+    refused["route_kwargs"]["unsupported_filters"] = ["season_split"]
+    refused["notes"] = [
+        "unsupported_boundary: named seasons are compared one row per season for one "
+        "player's or one team's games with filters the season split runs; this one also "
+        f"asks for {', '.join(sorted(set(dropped)))}"
+    ]
+    return refused
+
+
 def _parse_query_once(query: str) -> dict:
     return _per_season_games(
         _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
@@ -11588,6 +11770,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         # window (or qualifying) reading carries to every clause.
         "last_n_scope",
         "split_type",
+        "season_list",
         "role",
         "rest_days",
         "quarter",

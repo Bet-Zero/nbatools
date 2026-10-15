@@ -1,228 +1,219 @@
 # AGENTS.md
 
-Instructions for coding agents working in `Bet-Zero/nbatools`.
+Instructions for coding agents in `Bet-Zero/nbatools` (NBA Tools, not ScoutZero).
 
-## Project goal
+## Product and controlling direction
 
-NBA Tools is a web-based NBA statistics search app. A person asks a normal
-basketball-statistics question in ordinary language and gets the correct,
-properly scoped answer. The shared engine also serves the API and CLI.
+NBA Tools is a web-based NBA statistics search app. Ordinary basketball questions
+should get correct, properly scoped answers. The same engine serves the API and
+CLI. **A safe refusal is not implementation of a desired capability.**
 
-**Deliver useful answers. Do not mistake making an unsupported answer safe for
-implementing the requested capability.**
+Owner direction revised 2026-10-15: preserve the foundation; secure current
+correctness/verification gaps; deliver bounded shared interpretation; evaluate
+language approaches on verified capabilities; accept a finite deployed core.
+The October 2 hands-off delegation and 1996-97+ scope remain. The old four-stream
+execution model and indefinite phrase-patch continuation are superseded.
+
+Read in order:
+
+1. This file for authority and safeguards.
+2. `ROADMAP.md` for destination, sequence and milestone boundaries.
+3. `working/nba-tools-completion-program/README.md`, starting at its Resume
+   checkpoint, for live work, first action, acceptance and continuation.
+4. Only the code, contracts, PR discussions and runbooks relevant to that action.
+
+Current explicit owner decisions control. This file and the revised roadmap
+supersede conflicting older workflow/phase instructions. Current code, data and
+executed evidence establish behavior; a planning statement does not. Historical
+reviews remain historical. Do not use earlier refusal boundaries as permanent
+product exclusions or revive a superseded queue from an old branch.
 
 ## Owner delegation and completion policy
 
-Owner direction updated 2026-10-02. This section supersedes older instructions
-that make routine query review, technical prioritization, phase selection, or
-build-versus-refuse decisions an owner dependency. It changes the workflow,
-not the truth of historical evidence or the current implementation.
+- The owner supplies intent and optional examples. Agents own prioritization,
+  query generation, diagnosis, implementation, data research, numeric checking,
+  regression coverage, review coordination and routine technical choices.
+- Desired coherent questions remain unfinished when unsupported, unrouted,
+  missing data, or safely refused. Record containment separately. A genuinely
+  correct zero/empty answer requires sufficient coverage and a valid calculation.
+- Negative tests cover invalid input, real ambiguity, unavailable data or explicit
+  exclusions. A missing legitimate feature is not a bad input. Preserve safety
+  regressions until verified positive support replaces them deliberately.
+- Never invent metrics, silently omit clauses, swap subjects, or force special
+  wording. Ordinary shorthand, punctuation and grammar variation are not invalid.
+- Participation, injury/status and on-court presence are different facts. A missing
+  game row does not establish injured; a played row does not establish healthy,
+  available or active status. Do not encode those equivalences in code OR tests.
+  Qualify absence against relevant team membership and complete participation
+  coverage; pre-joining games and unknown data are not verified missed games.
+- Ask the owner only for unresolved product meaning, necessary access/consent,
+  material new spending, or consequential action beyond authorization. Bring a
+  recommendation and minimal exact action, not routine engineering homework.
 
-- The owner supplies product intent and may contribute examples. Agents own
-  input generation, diagnosis, data research, implementation, numerical
-  verification, regression coverage, prioritization, and routine coordination.
-- For a desired, coherent question, `unsupported`, `filter_not_supported`,
-  `unrouted`, missing data, or a safer refusal means **capability unfinished**.
-  A containment repair can be recorded separately, but cannot close the feature
-  or count as an answered question.
-- A genuinely correct zero count or empty search result is an answer, not a
-  refusal. Verify data coverage and the calculation before accepting it.
-- Negative tests are for genuinely invalid requests, unresolved ambiguity,
-  unsupported data conditions, or explicit product exclusions. A legitimate
-  feature missing from today's implementation is not a bad input. Keep its
-  temporary safety regression separate from its open delivery requirement.
-- Current-boundary documents and historical `expected_unsupported` cases
-  describe what exists, not a permanent veto on implementing desired features.
-  Preserve protections until their replacement is implemented and verified.
-- Clarify genuinely ambiguous meaning; do not invent metrics, silently omit
-  clauses, substitute subjects, or force people to memorize special wording.
-  Normal shorthand, punctuation, aliases, and grammatical variation are not
-  reasons to label a clear request invalid.
-- Ask the owner only about genuinely unresolved product intent, necessary
-  account access/consent, meaningful new spending, or consequential actions
-  outside authorization. Resolve implementation questions from the repo and
-  verified data. Bring a recommendation with any real owner decision.
+## Execution and session continuity
 
-## Task-based work queues
+The completion-program README is the sole active queue. Its Resume checkpoint is
+replaced with current state, not expanded into a diary. The roadmap keeps durable
+direction when this temporary program eventually closes.
 
-`ROADMAP.md` defines the product direction. The current temporary coordination
-file is `working/nba-tools-completion-program/README.md`; use it until the
-completion program closes, then retain the continuing direction in the roadmap.
-This pointer is for active execution, not evidence of shipped behavior.
+- Verify remote, live main, open PRs, current branch/dirty work, and the checkpoint
+  before writing. Preserve newer work; never reset or force-push another session's
+  branch to match an old snapshot. Resume an existing candidate when appropriate.
+- One lead owns integration. Use at most two non-overlapping implementation lanes
+  plus independent checking. One active owner handles shared parser/request/service
+  changes. Separate hunks in the same semantic path are not independent lanes.
+  If capacity is one agent, interleave; do not invent a running team.
+- Reproduce the selected defect, define the intended meaning, then implement.
+  Do not restart a whole-project audit, create a new framework/queue, or request
+  a fresh owner query battery. If already repaired, verify and advance.
+- Track implementation/merge, independent numerical evidence, unfamiliar-language
+  evidence and deployed verification separately. Do not close a desired feature
+  with a new refusal, parser registration, documentation or a green test total.
+- Before a material stage transition, merge, block or session stop, update the
+  checkpoint with package, actual owner/lane, branch and exact SHA, data generation,
+  completed evidence, unresolved findings, and one precise next action. Commit/push
+  safe WIP to its task branch where permitted; identify any unpushed work explicitly.
+- Keep PR-specific detail in the PR and one short pointer in the queue. Preserve
+  reproducible tests and compact durable conclusions when generated artifacts can
+  expire. Do not make a private chat, local laptop or ignored output the only handoff.
+- Continue authorized work after acceptance within the active session. An access
+  or checker blocker stops the dependent acceptance/merge, not independent tasks.
+  No fresh owner prompt is needed at every routine package boundary. Do not claim
+  background execution without an actual running service.
 
-The working loop is:
+## Architecture and improvement rules
 
-```text
-collect desired questions -> verify answers -> group gaps by cause
--> implement capability -> verify unfamiliar variants and real results
--> retain regression checks -> merge/deploy -> continue
-```
+Keep the Python service, established calculations, result types, React interface,
+immutable generations and useful tests. Computation, filters and interpretation
+belong in the engine; UI and CLI remain thin consumers.
 
-1. Check the current branch, open PRs, queue, and relevant existing code before
-   adding anything. Do not create a second workflow or parallel source of truth.
-2. Start the next unfinished delivery unit. Reproduce its concrete examples;
-   do not restart a whole-project audit or request a new owner query battery.
-3. Group common causes, but keep PRs coherent and reviewable. Fix reusable
-   behavior instead of hardcoding names, query strings, or expected answers.
-4. The maker implements; a checker independently verifies meaningful query,
-   calculation, or data-semantic changes. A self-review is not independent.
-   Checker findings must identify a reproducible defect or material missing
-   evidence. Optional cleanup is non-blocking.
-5. Repair actionable findings directly. Do not send routine maker/checker
-   disagreements or review prompts through the owner. If a separate checker
-   cannot be invoked, leave one exact handoff and continue independent work;
-   never fabricate its approval.
-6. Update the same queue with what actually landed, remaining blockers, and the
-   exact next action. Continue through authorized work without a fresh prompt
-   at every task boundary. A session limit requires a resumable handoff, not a
-   new planning phase or an unsupported promise of background execution.
+- Deliver shared semantics with real consumers, not an abstraction first. Preserve
+  explicit subjects, record grain, sample/window ordering, condition ownership,
+  metric/basis, grouping and ranking through the existing parse/execution boundary.
+- Use existing fields/helpers first; add a small typed internal structure only
+  when it fixes a demonstrated ambiguity. No universal QueryPlan prerequisite,
+  third capability registry, whole-application rewrite or cosmetic extraction wave.
+- `natural_query.py` orchestrates. Keep substantial family logic/computation in
+  helpers. Extend shared conditions instead of repeated phrase-specific rewrites
+  or route allowlists. Splitting files without better delivered behavior is not P1.
+- Repeated review findings with the same root cause require diagnosis of the
+  shared representation/contract, not a third cosmetic patch. This never permits
+  merging a known wrong answer. Optional cleanup remains non-blocking.
+- Read `docs/operations/parser_routing_growth_guardrails.md` and
+  `docs/operations/feature_promotion_rules.md`. Preserve contracts unless extending
+  them intentionally, update consumers, and align verified behavior references.
+- Evaluate a bounded language alternative once the chosen engine subset is
+  verified. Do not wait for every statistical feature; do not assume a model wins.
+  Models cannot invent NBA values or execute unrestricted generated code/SQL.
+  Paid access or production adoption still requires existing cost/access authority.
 
-### Completion-level rule
+## Data, freshness and publication
 
-A desired capability is complete only when natural input reaches the intended
-computation; all meaningful requested conditions are honored; the answer and
-its presentation are correct; applicable automated/independent checks pass;
-and the deployed path is verified when changed. Parser recognition, route
-registration, containment, documentation, deferral, and green test totals are
-not substitutes. Report implementation and deployment separately when only
-one is complete. A blocked delivery item stays open with a concrete dependency;
-work on other independent items continues.
+Preserve raw/processed/derived layers and each dataset's grain. Every extension
+needs source, row meaning, join keys, verified coverage/trust rules, storage,
+consumer and honest missing-data behavior in `docs/reference/data_contracts.md`.
 
-## Working style and architecture
+Use configured data sources, a fixed code revision and one immutable generation
+for comparisons. Fixtures are not NBA evidence and must never be published as
+real data. Existing, derivable, missing and unverified inputs are different.
+Do not infer complete careers, absence, official rings or injury from incomplete
+or differently scoped source facts.
 
-- Prefer targeted, reusable changes. No rewrite, new framework, extra receipt
-  system, or general cleanup project without a concrete delivery benefit.
-- Keep core logic UI-agnostic and transport-agnostic. CLI wrappers are thin;
-  React fetches and renders. Computation, filtering, and parsing belong in the
-  engine, not the frontend or CLI entrypoints.
-- Keep parsing/routing, command computation, data processing, and formatting
-  separated. `natural_query.py` orchestrates; substantial computation belongs
-  in command/helper modules. Avoid duplicate branches and silent player/team
-  behavior forks when touching shared behavior.
-- Support full questions, search fragments, and compressed shorthand. Read
-  `docs/operations/parser_routing_growth_guardrails.md` for route-collision
-  and parser-structure details. Apply those guards without turning temporary
-  unsupported states into the product goal.
-- Preserve public contracts unless intentionally extending them; update all
-  affected consumers. Follow `docs/operations/feature_promotion_rules.md`.
-- Do not claim shipped behavior from docs alone. Keep `query_catalog.md` and
-  relevant current-state/reference docs aligned with verified changes.
+Fresh NBA acquisition/automatic refresh remains parked under the October 4 owner
+decision. Existing-snapshot features, qualified derived metadata, source research
+and measured performance work may continue independently. Never relabel old data
+as fresh when republishing. Unattended freshness/rollover remains open even when
+the finite snapshot milestone is accepted. Follow `docs/operations/deployment.md`
+for validated publication, same-base protection, last-good/rollback and deployed
+checks. Runtime/validation credentials stay read-only; write authority is separate.
 
-## Data placement and dataset-structure rule
+## Verification and independent review
 
-Preserve the raw/processed/derived lifecycle and each dataset's grain. Do not
-silently repurpose canonical data, mix game/period/stint grains, or add ad hoc
-files without consumers and a contract. New or extended data needs a source,
-grain, join keys, coverage/trust rules, storage location, consumer, and honest
-missing-data behavior, documented in `docs/reference/data_contracts.md`.
+Tests protect delivery; totals and expected refusals are not completion scores.
+Meaning is checked before expected numbers: independent arithmetic of the wrong
+sample is still the wrong answer. Check clause/subject ownership and sample row
+IDs as well as values, counts, ordering, denominator, labels and actual output.
+Natural/structured agreement alone is not an independent oracle.
 
-Use the configured data source, not laptop-only paths for runtime datasets.
-Use a fixed code revision and one immutable data generation for comparisons.
-Test data is not NBA evidence. Never publish fixtures as real stats, fabricate
-coverage, or infer complete history from a partial dataset. Follow
-`docs/operations/deployment.md` for generation publication and deployed checks.
+A separate checker verifies material query, computation, data or validation-gate
+changes. It supplies unfamiliar wording/entities/thresholds and independently
+derives expectations from qualified rows or controlled fixtures. Self-review is
+not independent. Record reviewer identity/session, revision, data and unresolved
+findings in the PR; a bot comment or installed integration is not proof of review.
+No counterfeit agent/human approval. If a checker is unavailable, leave one exact
+handoff and continue independent work; do not route routine reviewer debates
+through the owner. Docs-only planning changes require accurate self-review and
+normal checks, not fabricated runtime/independent acceptance.
 
-## Testing expectations
+Use existing commands and runners:
 
-Tests protect delivery; test totals are not product-completion scores.
+- While iterating: a focused test file or `make test-parser`, `test-query`,
+  `test-engine`, `test-api`, `test-output` as appropriate.
+- `make test-impacted` is for small localized changes. Testmon is serial, misses
+  data/environment/dynamic-import changes, and can overselect. After 60 seconds
+  without useful progress, use focused tests or parallel domain/preflight tests.
+- High fan-in changes need `make test-preflight` or `make test` on a stable candidate.
+  Avoid repeated overlapping full runs per edit. While remote checks run, work on
+  independent tasks without moving the candidate being validated.
+- `make test-unit` / `test-ci-fast` exclude `needs_data` and `slow`;
+  `test-preflight` excludes `slow`; `make test` selects all. Disclose executed,
+  skipped and unavailable tests. `fixture_data` and `needs_data` stay separate.
+- `make raw-query-answer-qa` is the failing gate, not a report-only run. Use a
+  targeted R2 run for changed cases and numerical tests; use full R2/Raw QA/sweep
+  at meaningful integration checkpoints. No full remote corpus for a docs edit.
+- Required feature-acceptance tests must execute and pass on the candidate/data.
+  Empty selections, all-skipped runs, missing required datasets, informational
+  failures or a green outer workflow are not acceptance. P0 repairs enforcement;
+  until landed, inspect underlying jobs/counts manually and block dependent merges.
+  Never demote a failing required test to exploratory to obtain a green result.
+- Frontend changes need locked install/build/lint/tests and rebuilt served assets.
+  Inspect actual changed rendering; unchanged renderers need targeted output checks,
+  not a fresh owner screenshot tour. Track implementation and deployment separately.
+- Docs-only work: `make docs-governance` and `git diff --check`. Existing CI may run
+  more checks automatically; do not disable those checks to save time.
 
-- While iterating, use a focused test file or the relevant existing Make target:
-  `test-parser`, `test-query`, `test-engine`, `test-api`, or `test-output`.
-- Use `make test-impacted` only for small localized changes. Testmon is serial,
-  does not track data/environment/dynamic-import changes, and can select too
-  much. Stop it after 60 seconds without useful progress; use focused tests or
-  a parallel domain/preflight run instead.
-- High fan-in changes (`natural_query.py`, `query_service.py`, parser core,
-  API, shared fixtures) need broad candidate validation with
-  `make test-preflight` or `make test`, as appropriate. Do not rerun overlapping
-  full suites after every small edit. Reuse evidence for unchanged code/data.
-- `make test-unit` / `make test-ci-fast` exclude `needs_data` and `slow`.
-  `make test-preflight` excludes `slow`; `make test` selects the full suite.
-  Selection is not execution: disclose skips and unavailable data.
-- Use the committed fixture for behavioral checks. Verify numeric answers with
-  qualified real data and independently calculated expectations, including
-  scope, counts, ordering, thresholds, and displayed values. Backend `ok`, a
-  changed fingerprint, or a second agent agreeing is not enough on its own.
-- Run relevant Raw QA cases during iteration; run the full failing gate at
-  meaningful query/data integration checkpoints. The canonical command is
-  `make raw-query-answer-qa`; report-only runs are not passes. On real data,
-  verify each change with a `scope: targeted` R2 run of its cases and
-  `needs_data` tests (minutes), and keep the `scope: full` run (Raw QA alone is
-  30-40 minutes) for batches and merge points. Never wait idle on a run: keep
-  building the next change while it works.
-- Existing refusal regressions stay until verified support intentionally
-  replaces them. Do not mass-relabel cases, weaken assertions, hide failures,
-  or make desired-answer tests expect refusal to obtain a green result.
-- Frontend changes require build, lint, and tests; rebuild the FastAPI-served
-  assets. Inspect actual rendered output for changed layout/copy. Unchanged
-  renderers do not require a fresh owner screenshot tour.
-- Docs-only changes require `make docs-governance` and `git diff --check`.
-  Do not run a remote full NBA corpus solely for a documentation edit.
+## CI, cost and merge safeguards
 
-## CI testing policy
+Preserve `.github/workflows/ci.yml` checks: lint, docs-governance, frontend-verify,
+blocking production frontend-security, informational whole-tree frontend-security-dev,
+test-fast on PRs and the full-suite main/nightly/dispatch backstop. Do not suppress
+failures, remove backstops, raise audit/latency thresholds or weaken assertions.
+Dev advisories remain maintenance, not automatic unrelated feature blockers.
 
-The workflow is `.github/workflows/ci.yml`; command details are in `Makefile`
-and `CONTRIBUTING.md`. Preserve these independent checks:
+Ordinary CI stays secret-free. Use the existing manual R2 workflow and its dedicated
+`r2-validation` environment. P0 may strengthen required validation in that existing
+path; it does not authorize new credentials, broader permissions, duplicate
+workflows, secret printing, or branch-protection changes. Keep fixed-plan limits,
+$0 metered overage, disabled public query-feedback persistence and separate
+publication authority. No new paid service/hosting migration by implication.
 
-- `lint`, `docs-governance`, and `frontend-verify` (locked install/build/lint/test);
-- `frontend-security`: production-scoped audit, strict and blocking;
-- `frontend-security-dev`: whole-tree advisory audit, informational;
-- `test-fast`: data-free test selection on every PR;
-- `test-full`: full suite selection on main pushes, nightly, and dispatch.
+Use one PR per logical unit. Before merging, require all applicable blocking CI,
+actual required numerical results and independent semantic review where needed;
+GitHub's technical ability to merge is not permission to bypass them. Inspect the
+current head/base and revalidate materially changed integration. Routine accepted
+merges need no additional owner approval. Check post-merge CI and deployed behavior
+when affected; leave unfinished verification open. A red advisory is reported as
+advisory, not hidden or confused with a blocking failure.
 
-Do not remove the full-suite backstop, suppress failures, increase audit
-thresholds, or bypass blocking checks. Dev-tool advisories are not zero-risk;
-they are maintenance rather than automatic product-work blockers under the
-existing scoped policy. Ordinary CI remains secret-free. Real-data validation
-uses the existing manual `r2-real-data-validation.yml` workflow and dedicated
-`r2-validation` environment. Never duplicate or print credentials, move them
-into ordinary CI, or widen their scope to repair a wiring error. These docs do
-not change workflow triggers, permissions, secrets, or branch protection.
+## Documentation and owner updates
 
-### Merge policy
+Current behavior belongs in `docs/reference/`, architecture in `docs/architecture/`,
+policies/runbooks in `docs/operations/`, historical audits in `docs/audits/`. Keep the
+docs index current when adding/moving durable docs. Follow
+`docs/operations/working_and_archive_policy.md`; do not create another status system.
+Update affected catalog/current-state descriptions from evidence, not intentions.
 
-Use one PR per logical delivery unit. Before merging, require all applicable
-blocking checks, not just lint and test-fast, and the relevant independent
-semantic review. Routine docs/maintenance do not need a separate owner review.
-After acceptance, merge and continue the authorized queue. Do not bypass checks
-because GitHub technically permits a merge. A red advisory-only check must be
-reported as such, not confused with a blocking failure.
+Raw QA human-review fields keep their literal historical meaning. Inspect relevant
+product-review outputs and record agent checking in the PR; legacy
+`human_review_pending` alone is not a routine engineering stop. Never invent
+`human_review_complete`, a named human reviewer or a schema state. Launch/branding
+remain separate owner decisions.
 
-## Documentation and evidence
+Owner updates lead with **Now answers; Still unfinished; Verification; Next;
+Needed from you (normally nothing)**. Explain useful examples in basketball terms.
+Separate correctness containment, completed capability and operational work.
+Keep receipts and coordination in the repo instead of owner homework.
 
-Current behavior belongs in `docs/reference/`, architecture in
-`docs/architecture/`, runbooks/policy in `docs/operations/`, retained historical
-audits in `docs/audits/`. Keep the docs index current when adding/moving docs.
-Use `docs/operations/working_and_archive_policy.md` for task-artifact lifecycle.
-Keep one active queue rather than several conflicting status narratives.
-
-### Raw QA product-review rule
-
-Inspect representative outputs and the generated product review for relevant
-public capability changes. Record machine verification and independent agent
-review separately. Historical human acceptance stays historical. Never write
-`human_review_complete`, a named human reviewer, or an owner acceptance receipt
-for work a human did not review.
-
-The older Raw QA schema/runbooks retain human-review/closure fields. They still
-mean what they say; they no longer assign routine capability review to the
-owner under the 2026-10-02 delegation. Record agent verification in the PR/active
-queue without inventing a schema value. Legacy `human_review_pending` alone is
-not a routine engineering stop. Do not bypass genuine data, numerical, or
-regression failures. Human launch/branding decisions remain separate.
-
-### Owner updates
-
-Lead with: **Now answers; Still unfinished; Verification; Next; Needed from
-you (normally nothing).** Explain actual examples in basketball language.
-Containment may be mentioned as a limitation removed, never celebrated as a
-completed desired feature. Keep technical receipts in the PR, not in owner
-homework. Report attempted/blocked work honestly.
-
-## graphify
-
-When available, use the existing graph for relevant code navigation: scoped
-query/path/explain before a full report. Use its wiki index for broad navigation.
-Expected dirty graph output is not itself a blocker. Refresh the graph after
-code changes when the tool is available; do not make installation or graph
-cleanup a new dependency for this delivery program.
+When Graphify is available, use scoped navigation before full reports and refresh
+it after code changes. Its installation or expected dirty output is not a new
+project dependency. Do not divert capability delivery into graph cleanup.
