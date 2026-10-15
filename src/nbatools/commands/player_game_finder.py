@@ -217,13 +217,12 @@ _RATE_SORT_ATTEMPTS = {
 def _apply_roster_filter(
     df: pd.DataFrame, position: str | None, rookies_only: bool, caveats: list[str]
 ) -> tuple[pd.DataFrame, str | None]:
-    """Keep the games of players listed at a position group, or as rookies.
+    """Filter season-specific roster classifications, disclosing unknown games.
 
-    Both are read from that season's roster, so a player's position and
-    rookie year are the ones of the season the game was played in. A season
-    with no roster rows refuses rather than silently drop its games.
+    Roster snapshots do not cover every appearance. A known subset can answer
+    with a population caveat, but unknown classifications cannot prove no match.
     """
-    from nbatools.commands.season_leaders import _resolve_position_filter
+    from nbatools.commands.season_leaders import POSITION_GROUPS, _resolve_position_filter
     from nbatools.data_source import data_exists, data_read_csv
 
     codes = _resolve_position_filter(position) if position else None
@@ -231,34 +230,73 @@ def _apply_roster_filter(
         return df, f"position filter unavailable: unknown position group {position!r}"
     if df.empty:
         return df, None
+    needed = {"season", "player_id"} | ({"position"} if codes else set())
+    needed |= {"experience_years"} if rookies_only else set()
     frames = []
-    for season in sorted(df["season"].dropna().unique()):
+    for season in sorted(df["season"].dropna().astype(str).unique()):
         path = Path(f"data/raw/rosters/{season}.csv")
         if not data_exists(path):
             return df, f"roster data unavailable for {season}: position and rookie filters"
-        frames.append(data_read_csv(path))
+        try:
+            roster = data_read_csv(path)
+        except pd.errors.EmptyDataError:
+            return df, f"roster data unavailable for {season}: no roster rows"
+        # Validate each slice before concatenating: another season's columns
+        # must not conceal missing classification fields in this one.
+        if not needed.issubset(roster.columns):
+            return (
+                df,
+                f"roster data unavailable for {season}: missing requested classification columns",
+            )
+        roster = roster[roster["season"].astype(str) == season].copy()
+        if roster.empty:
+            return df, f"roster data unavailable for {season}: no roster rows"
+        frames.append(roster)
+    if not frames:
+        return df, "roster classification unavailable: game rows have no season"
     rosters = pd.concat(frames, ignore_index=True)
-    needed = {"season", "player_id"} | ({"position"} if codes else set())
-    needed |= {"experience_years"} if rookies_only else set()
-    if not needed.issubset(rosters.columns):
-        return df, "roster data lacks position or experience columns"
+    rosters["season"] = rosters["season"].astype(str)
     rosters["player_id"] = pd.to_numeric(rosters["player_id"], errors="coerce").astype(float)
+    known = pd.Series(True, index=rosters.index)
     keep = pd.Series(True, index=rosters.index)
     if codes:
-        keep &= rosters["position"].astype(str).str.strip().isin(codes)
+        positions = rosters["position"].astype("string").str.strip().str.upper()
+        known &= positions.isin(set().union(*POSITION_GROUPS.values()))
+        keep &= positions.isin(codes)
     if rookies_only:
-        keep &= pd.to_numeric(rosters["experience_years"], errors="coerce") == 0
-    rosters["season"] = rosters["season"].astype(str)
-    pairs = rosters.loc[keep, ["season", "player_id"]].dropna().drop_duplicates()
-    listed = rosters[["season", "player_id"]].dropna().drop_duplicates()
+        experience = pd.to_numeric(rosters["experience_years"], errors="coerce")
+        known &= experience.ge(0) & experience.mod(1).eq(0)
+        keep &= experience.eq(0)
+    rosters["known"] = known
+    rosters["matches"] = known & keep
+    # Multiple team snapshots can list the same player-season. A positive
+    # classification is evidence; a known nonmatch plus an unknown entry is
+    # insufficient to exclude that player from the requested population.
+    classification = rosters.groupby(["season", "player_id"]).agg(
+        known=("known", "all"), matches=("matches", "any")
+    )
     ids = pd.to_numeric(df["player_id"], errors="coerce").astype(float)
     games = pd.MultiIndex.from_arrays([df["season"].astype(str), ids])
-    kept = games.isin(pd.MultiIndex.from_frame(pairs))
-    unlisted = int((~games.isin(pd.MultiIndex.from_frame(listed))).sum())
-    if unlisted:
+    kept = games.isin(classification.index[classification["matches"]])
+    classified = games.isin(
+        classification.index[classification["known"] | classification["matches"]]
+    )
+    unknown_count = int((~classified).sum())
+    if unknown_count:
+        requested = " and ".join(
+            label
+            for label, active in (("position", bool(codes)), ("rookie", rookies_only))
+            if active
+        )
+        if not kept.any():
+            return df, (
+                f"roster classification unavailable: {unknown_count} candidate games have unknown "
+                f"{requested} classification; no matching games can be verified"
+            )
         caveats.append(
-            f"{unlisted} games by players missing from that season's roster could not be "
-            "classified and are left out"
+            f"Incomplete population: ranking covers only games with known {requested} "
+            f"classification; {unknown_count} games with missing roster entries or unknown "
+            "requested classifications are left out"
         )
     return df[kept].copy(), None
 
@@ -531,7 +569,11 @@ def build_result(
         df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
-        return NoResult(query_class="finder", notes=notes + roster_caveats)
+        return NoResult(
+            query_class="finder",
+            reason="filter_not_supported" if roster_caveats else "no_match",
+            notes=notes + roster_caveats,
+        )
 
     stat_col = None
     if stat:
@@ -559,7 +601,11 @@ def build_result(
                 caveats.append(f"games with fewer than {floor} {label} left out")
             df = kept
             if df.empty:
-                return NoResult(query_class="finder", notes=notes + caveats)
+                return NoResult(
+                    query_class="finder",
+                    reason="filter_not_supported" if roster_caveats else "no_match",
+                    notes=notes + caveats,
+                )
             # 10-for-10 ranks above 5-for-5.
             df = df.sort_values(
                 [stat_col, column, "game_date"], ascending=[ascending, False, ascending]
@@ -576,12 +622,17 @@ def build_result(
 
     df = df.reset_index(drop=True)
     df.insert(0, "rank", range(1, len(df) + 1))
+    if roster_caveats:
+        # CSV/labeled text export contains the table without result caveats.
+        # Keep the population limit attached to those rows as well.
+        df["population_scope"] = "Incomplete population: known roster classifications only"
 
     if limit is not None:
         df = df.head(limit).copy()
 
     output_cols = [
         "rank",
+        "population_scope",
         "game_date",
         "game_id",
         "season",

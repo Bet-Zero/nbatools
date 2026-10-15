@@ -455,8 +455,8 @@ def test_a_player_missing_from_the_roster_is_reported_not_silently_dropped():
     assert note is None
     assert kept["player_id"].tolist() == [rookie]
     assert caveats == [
-        "1 games by players missing from that season's roster could not be classified "
-        "and are left out"
+        "Incomplete population: ranking covers only games with known rookie classification; "
+        "1 games with missing roster entries or unknown requested classifications are left out"
     ]
 
 
