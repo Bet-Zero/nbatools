@@ -261,3 +261,56 @@ def test_teammate_comparator_is_not_sample_scope(played_sample, bound):
     )
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("bound", ["at least 28 minutes", "under 28 minutes", "over 20 usage"])
+def test_teammate_numeric_predicate_is_preserved_for_any_metric(played_sample, bound):
+    result = execute_natural_query(
+        f"Stephen Curry averages with Thompson playing {bound} against Knicks in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "with Thompson and Green playing and at least 29 points against Knicks",
+        "with at least 29 points against Knicks with Thompson and Green playing",
+    ],
+)
+def test_consumed_pair_is_not_a_third_participant(played_sample, monkeypatch, clause):
+    original = player_split_summary._summarize_bucket
+    seen = {}
+
+    def capture(frame, bucket):
+        seen[bucket] = set(frame.game_id)
+        return original(frame, bucket)
+
+    monkeypatch.setattr(player_split_summary, "_summarize_bucket", capture)
+    result = execute_natural_query(f"Stephen Curry averages {clause} in 2023-24 and 2025-26")
+    assert result.result_status == "ok"
+    assert result.metadata["with_player"] == "Klay Thompson and Draymond Green"
+    rows = result.to_dict()["sections"]["split_comparison"]
+    assert [row["bucket"] for row in rows] == SEASONS
+    for row in rows:
+        season = row["bucket"]
+        expected = played_sample[season]["curry_bound"]
+        expected = expected.loc[
+            expected.pts.ge(29)
+            & expected.game_id.isin(played_sample[season]["warriors_pair"].game_id)
+        ]
+        assert seen[season] == set(expected.game_id)
+        assert row["games"] == len(expected)
+        if len(expected):
+            assert row["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+        else:
+            assert pd.isna(row["pts_avg"])
+
+
+def test_consumed_pair_does_not_hide_later_conditional_participant(played_sample):
+    result = execute_natural_query(
+        "Stephen Curry averages with Thompson and Green playing against Knicks when Wiggins plays in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]

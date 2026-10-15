@@ -678,9 +678,14 @@ def names_other_player_availability(
     counts, including a name the resolver can't match ("and Davis sits"): dropping that clause would
     answer about the first player alone.
     """
+    from nbatools.commands._teammate_resolution import read_participation_name_spans
+
+    consumed_spans = read_participation_name_spans(text, read)
     own_words = set(player.lower().split()) if player else set()
     applied = {name.upper() for name in read if name}
     for m in _AVAILABILITY_CLAUSE.finditer(text):
+        if any(start <= m.start() and m.end() <= end for start, end in consumed_spans):
+            continue
         subject = re.sub(r"^(?:the|his|their)\s+", "", m.group(1).strip())
         if not subject or subject in _NON_PLAYER_SUBJECTS or subject in TEAM_ALIASES:
             continue

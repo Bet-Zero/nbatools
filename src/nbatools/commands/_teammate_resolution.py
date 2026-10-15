@@ -38,11 +38,11 @@ _SCOPE_WORD = re.compile(
 )
 
 
-def name_before_scope(fragment: str | None) -> str:
-    """The name in an availability fragment, without the scope after it."""
-    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE
+def _name_clause_prefix(fragment: str) -> str:
+    """Keep the original name-clause span before independently read predicates/scope."""
+    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE, _STAT_COUNT_QUALIFIER
 
-    text = (fragment or "").strip().lower()
+    text = fragment
     # A named participation clause and a box-score predicate are independent
     # conditions. Find their boundary before removing scope ("at least" is a
     # comparator, whereas "at home" is scope). Leave unknown predicates intact
@@ -52,10 +52,16 @@ def name_before_scope(fragment: str | None) -> str:
             text = text[: conjunction.start()]
             break
     scope = _SCOPE_WORD.search(text)
-    if scope and not _STAT_COUNT_PHRASE.match(text[scope.start() :].lstrip()):
+    if scope and not re.match(rf"{_STAT_COUNT_QUALIFIER}\d", text[scope.start() :].lstrip()):
         text = text[: scope.start()].strip()
-    # "at least 20 points" / "under 20 points" after a name qualify that
-    # participant; unlike "at home", they must survive as an unread predicate.
+    # Numeric predicates qualify the participant regardless of metric support.
+    # In particular, minutes are not a box-score count in _STAT_COUNT_PHRASE.
+    return re.split(r"\s+(?:record|games?)\b", text, maxsplit=1)[0]
+
+
+def name_before_scope(fragment: str | None) -> str:
+    """The name in an availability fragment, without the scope after it."""
+    text = _name_clause_prefix((fragment or "").strip().lower())
     return re.sub(r"\s+(?:both\s+)?playing$", "", text)
 
 
@@ -147,7 +153,7 @@ _AVAILABILITY_CLAUSE = re.compile(
 )
 
 
-def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
+def _participation_clauses(text: str) -> list[tuple[str, list[str], int, int]]:
     """Explicit participation names, with common stat/scope boundaries.
 
     All clauses are inspected: an earlier "with 24 points" must not hide a
@@ -159,14 +165,40 @@ def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
 
     clauses = []
     for match in _AVAILABILITY_CLAUSE.finditer(text):
-        fragment = match.group(2).strip(" .")
+        fragment = match.group(2)
         if _STAT_COUNT_PHRASE.match(fragment):
             continue
-        fragment = name_before_scope(fragment)
-        fragment = re.split(r"\s+(?:record|games?)\b", fragment, maxsplit=1)[0]
+        fragment = _name_clause_prefix(fragment)
         parts = [name_before_scope(part.strip(" .")) for part in fragment.split(" and ")]
-        clauses.append(("with" if match.group(1) == "with" else "without", parts))
+        clauses.append(
+            (
+                "with" if match.group(1) == "with" else "without",
+                parts,
+                match.start(),
+                match.start(2) + len(fragment),
+            )
+        )
     return clauses
+
+
+def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
+    return [(mode, parts) for mode, parts, _, _ in _participation_clauses(text)]
+
+
+def read_participation_name_spans(
+    text: str, applied: tuple[str | None, ...]
+) -> list[tuple[int, int]]:
+    """Explicit name spans already consumed by execution, excluding their predicates.
+
+    A conditional scanner must not reread 'and Green playing' inside a resolved
+    pair as a new participant. Unknown tails and extra names never earn a span.
+    """
+    names = [name for value in applied if value for name in value.split(" and ")]
+    return [
+        (start, end)
+        for _, parts, start, end in _participation_clauses(text)
+        if all(any(_only_the_name(part, name) for name in names) for part in parts)
+    ]
 
 
 def _words(text: str) -> list[str]:
