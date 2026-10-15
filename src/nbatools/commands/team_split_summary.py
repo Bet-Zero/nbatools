@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+
 import pandas as pd
 
 from nbatools.commands._month_split import (
@@ -39,12 +41,13 @@ ALLOWED_STATS = {
     "ts_pct": "ts_pct",
 }
 
-ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent"}
+ALLOWED_SPLITS = {"home_away", "wins_losses", "month", "opponent", "season"}
 _SPLIT_AXIS_FIELDS = {
     "home_away": ("home_only", "away_only"),
     "wins_losses": ("wins_only", "losses_only"),
     "month": (),
     "opponent": (),
+    "season": (),
 }
 
 
@@ -149,14 +152,17 @@ def build_result(
     last_n_scope: str = "qualifying",
     rank_stat: str | None = None,
     rank_order: str | None = None,
+    split_seasons: list[str] | None = None,
     **sample_filters,
 ) -> SplitSummaryResult | NoResult:
-    """Split one team's sample by home/away, wins/losses or month.
+    """Split one team's sample by home/away, wins/losses, month or season.
 
     The sample is exactly what the team summary would describe (dates,
     opponent, the other location/outcome flag, stat conditions, teammate
     availability, last-N window); the split then divides those games. A
     month split can be ranked by ``rank_stat`` ("best month" is the record).
+    A season split ("this season vs last season") keeps only
+    ``split_seasons`` when the named seasons skip some.
     """
     split = split.lower()
     if split not in ALLOWED_SPLITS:
@@ -164,6 +170,16 @@ def build_result(
 
     for axis_field in _SPLIT_AXIS_FIELDS[split]:
         sample_filters.pop(axis_field, None)
+    # The parse passes context keys ("quarter": None) the summary sample does
+    # not take; an empty one is dropped, a set one is not run here.
+    accepted = inspect.signature(select_team_summary_sample).parameters
+    for key in [k for k in sample_filters if k not in accepted]:
+        if sample_filters.pop(key) not in (None, False, [], {}, ""):
+            return NoResult(
+                query_class="split_summary",
+                reason="filter_not_supported",
+                notes=[f"{key}: not supported on split summaries"],
+            )
 
     seasons = resolve_seasons(season, start_season, end_season)
     df = select_team_summary_sample(
@@ -173,7 +189,7 @@ def build_result(
         season_type=season_type,
         team=team,
         opponent=opponent,
-        stat=sample_stat(stat, min_value, max_value) if split == "month" else stat,
+        stat=sample_stat(stat, min_value, max_value) if split in ("month", "season") else stat,
         min_value=min_value,
         max_value=max_value,
         conditions=conditions,
@@ -185,6 +201,9 @@ def build_result(
     if isinstance(df, NoResult):
         return NoResult(query_class="split_summary", reason=df.reason, notes=list(df.notes or []))
 
+    if split == "season" and split_seasons:
+        df = df[df["season"].isin(split_seasons)].copy()
+        seasons = [s for s in seasons if s in split_seasons]
     if df.empty:
         return NoResult(query_class="split_summary")
 
@@ -226,6 +245,17 @@ def build_result(
             split_comparison=pd.DataFrame(rows),
             current_through=compute_current_through_for_seasons(seasons, season_type),
             caveats=_caveats(seasons, opponent),
+        )
+
+    if split == "season":
+        return _season_split_result(
+            df,
+            team_name=team_name,
+            season_type=season_type,
+            seasons=seasons,
+            opponent=opponent,
+            stat=stat,
+            split_seasons=split_seasons,
         )
 
     if split == "home_away":
@@ -278,6 +308,43 @@ def _caveats(seasons: list[str], opponent) -> list[str]:
         # "against winning teams" passes a list of opponents.
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
     return caveats
+
+
+def _season_split_result(
+    df: pd.DataFrame,
+    *,
+    team_name: str | None,
+    season_type: str,
+    seasons: list[str],
+    opponent,
+    stat: str | None,
+    split_seasons: list[str] | None,
+) -> SplitSummaryResult:
+    """One row per season named ("this season vs last season")."""
+    rows = [
+        add_requested_stat(_summarize_bucket(season_df, season), season_df, stat)
+        for season, season_df in df.groupby("season", sort=True)
+    ]
+    summary_row = {
+        "team_name": team_name,
+        "season_start": df["season"].min(),
+        "season_end": df["season"].max(),
+        "season_type": season_type,
+        "split": "season",
+        "games_total": int(len(df)),
+    }
+    caveats = []
+    missing = [s for s in (split_seasons or []) if s not in set(df["season"])]
+    if missing:
+        caveats.append(f"no games in {', '.join(missing)}")
+    if opponent:
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
+    return SplitSummaryResult(
+        summary=pd.DataFrame([summary_row]),
+        split_comparison=pd.DataFrame(rows),
+        current_through=compute_current_through_for_seasons(seasons, season_type),
+        caveats=caveats,
+    )
 
 
 def _month_split_result(

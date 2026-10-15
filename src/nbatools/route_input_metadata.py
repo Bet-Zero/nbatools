@@ -78,7 +78,7 @@ TEAM_SAMPLE_FILTERS = COMMON_SAMPLE_FILTERS + (
 )
 
 SEASON_TYPE_VALUES = ("Regular Season", "Playoffs")
-SPLIT_VALUES = ("home_away", "wins_losses", "month", "opponent")
+SPLIT_VALUES = ("home_away", "wins_losses", "month", "opponent", "season")
 RANK_ORDER_VALUES = ("asc", "desc")
 SORT_BY_VALUES = ("game_date", "stat")
 RECORD_STAT_VALUES = ("wins", "losses", "win_pct")
@@ -563,6 +563,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "last_n",
             "rank_stat",
             "rank_order",
+            "split_seasons",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
@@ -593,6 +594,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "last_n",
             "rank_stat",
             "rank_order",
+            "split_seasons",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,

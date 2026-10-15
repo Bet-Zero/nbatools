@@ -662,6 +662,89 @@ def extract_bare_year_pair(text: str) -> tuple[str, str] | None:
     return int_to_season(first - 1), int_to_season(last - 1)
 
 
+# One season named in a list of seasons: "2023-24", "the 2016 season",
+# "this season", "last year". A bare year names the season that ended in it.
+_PAIR_SEASON_TOKEN = re.compile(
+    r"(?P<explicit>(?<![\d-])(?:19|20)\d{2}-\d{2}(?![-\d]))(?:\s+(?:nba\s+)?season)?"
+    r"|(?P<bare>(?<![\d/.-])(?:19|20)\d{2}(?![-/\d]))(?:\s+(?:nba\s+)?season)?"
+    r"|(?P<this>\b(?:this|current)\s+(?:season|year)\b)"
+    r"|(?P<last>\b(?:last|previous)\s+(?:season|year)\b)"
+    r"|(?P<lone_last>(?<=\s)last"
+    r"(?=\s*[?.!]?\s*$|\s+(?:and|or|,)\b))"
+)
+# What may stand between two listed seasons: "2023-24 vs 2024-25", "this
+# season compared to last season", "in 2016, 2018 and in 2020".
+_PAIR_SEASON_JOIN = re.compile(
+    r"\s*(?:,|&|\band\b|\bor\b|\bvs\.?|\bversus\b|\bthan\b"
+    r"|\bcompared?\s+(?:to|with)\b|\bcompares\s+(?:to|with)\b)\s*"
+    r"(?:(?:and|or)\s+)?(?:(?:in|during|for)\s+)?(?:the\s+)?"
+)
+_PAIR_SEASON_BEFORE = re.compile(
+    r"\s*(?:,|&|\band\b|\bor\b|\bvs\.?|\bversus\b|\bthan\b|\bcompared?\s+(?:to|with)\b)\s*"
+    r"(?:the\s+)?(?:(?:season|year)\s+(?:before|after|prior)|(?:previous|prior|next)\s+(?:season|year))"
+)
+_PAIR_NOT_SEASONS_AFTER = re.compile(
+    r"\s*(?:points?|pts|rebounds?|assists?|minutes?|mins?|steals?|blocks?|turnovers?"
+    r"|threes?|3s|fg|games?|times|wins?|losses?)\b"
+)
+
+
+def extract_season_list(text: str, season_type: str) -> list[str] | None:
+    """Every season named in a list of two or more, oldest first, else None.
+
+    "Lakers record this season vs last season", "LeBron 2023-24 vs 2024-25",
+    "Lakers record in 2016 and 2020" name more than one season; reading only
+    the first (or the current one) answered a different question. Two
+    consecutive bare years joined by "and" stay the span they already read
+    as ("in 2024 and 2025"). Spans ("from 2016 to 2020") are read earlier.
+    """
+    from nbatools.commands._seasons import (
+        default_end_season,
+        int_to_season,
+        previous_season,
+        season_to_int,
+    )
+
+    if _BARE_YEAR_NOT_A_SEASON.search(text):
+        return None
+    tokens = list(_PAIR_SEASON_TOKEN.finditer(text))
+    groups: list[list[re.Match]] = []
+    for token in tokens:
+        if groups and _PAIR_SEASON_JOIN.fullmatch(text[groups[-1][-1].end() : token.start()]):
+            groups[-1].append(token)
+        else:
+            groups.append([token])
+    for group in groups:
+        if len(group) < 2:
+            continue
+        if any(t.group("lone_last") for t in group[:1]):
+            continue
+        if _PAIR_NOT_SEASONS_AFTER.match(text, group[-1].end()):
+            continue
+        if _PAIR_SEASON_BEFORE.match(text, group[-1].end()):
+            # "this season vs last season vs the season before": a season
+            # named from another one is not read; the list would miss it.
+            return None
+        if _BARE_YEAR_RANGE_WORD.search(text[: group[0].start()]):
+            continue
+        seasons: list[str] = []
+        for token in group:
+            if token.group("explicit"):
+                seasons.append(token.group("explicit"))
+            elif token.group("bare"):
+                seasons.append(int_to_season(int(token.group("bare")) - 1))
+            elif token.group("this"):
+                seasons.append(default_end_season("Regular Season"))
+            else:
+                seasons.append(previous_season(season_type))
+        if all(t.group("bare") for t in group) and extract_bare_year_pair(text) is not None:
+            return None
+        distinct = sorted(set(seasons), key=season_to_int)
+        if len(distinct) >= 2:
+            return distinct
+    return None
+
+
 def extract_relative_season(text: str, season_type: str) -> str | None:
     """Extract singular relative season phrases such as ``last season``."""
     if re.search(r"\b(?:last|previous)\s+season\b", text):
@@ -950,7 +1033,7 @@ def join_opponent_lists(text: str) -> str:
     return text
 
 
-# "with Davis out", "with Davis and Reaves both injured": the games they sat.
+# Participation wording only; injury/health/roster status needs its own source.
 # "with Davis playing", "without Davis and Reaves playing": the plain forms.
 _AVAIL_NAME = (
     r"(?!(?:the|a|an|his|her|their|its|no|any)\b)[a-z][a-z'.\-]*"
@@ -962,13 +1045,10 @@ _AVAIL_END = (
     r"|games?|record)\b|\s+(?:and|with)\s+\d)"
 )
 _WITH_OUT = re.compile(
-    rf"\bwith\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:out|injured|sidelined|inactive|missing|resting|"
+    rf"\bwith\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:out|missing|"
     rf"sitting(?:\s+out)?|not\s+playing|dnp)(?:\s+of\s+the\s+lineup)?{_AVAIL_END}"
 )
-_PLAYING = re.compile(
-    rf"\b(with|without)\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:playing|healthy|available|active|"
-    rf"in\s+the\s+lineup){_AVAIL_END}"
-)
+_PLAYING = re.compile(rf"\b(with|without)\s+({_AVAIL_NAMES})\s+(?:both\s+)?(?:playing){_AVAIL_END}")
 
 
 def _availability_words(text: str) -> str:

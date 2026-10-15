@@ -696,6 +696,11 @@ def _prepare_route_conditions(
 
 
 def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
+    if filter_id == "availability_status":
+        return (
+            "The requested injury, health or availability status needs qualified status data. "
+            "Game participation does not establish that status or the reason for an absence."
+        )
     if filter_id == "player_playoff_appearances":
         return (
             "player playoff-appearance counts are not supported because the current "

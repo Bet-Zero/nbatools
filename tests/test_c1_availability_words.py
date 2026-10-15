@@ -74,11 +74,11 @@ def _keep(games: pd.DataFrame, out: dict, names: list[str], present: bool) -> pd
     [
         ("Lakers record with Davis out", ["Anthony Davis"], False),
         ("Lakers record with Anthony Davis out", ["Anthony Davis"], False),
-        ("Lakers record with Davis injured", ["Anthony Davis"], False),
+        ("Lakers record with Davis not playing", ["Anthony Davis"], False),
         ("Lakers record with Davis sitting this season", ["Anthony Davis"], False),
         ("Lakers record with Davis playing", ["Anthony Davis"], True),
         ("Lakers record with Davis and Reaves both out", ["Anthony Davis", "Austin Reaves"], False),
-        ("Lakers record with Davis and Reaves injured", ["Anthony Davis", "Austin Reaves"], False),
+        ("Lakers record with Davis and Reaves DNP", ["Anthony Davis", "Austin Reaves"], False),
         ("Lakers record with Davis and Reaves out", ["Anthony Davis", "Austin Reaves"], False),
         ("Lakers record with Davis and Reaves missing", ["Anthony Davis", "Austin Reaves"], False),
         (
@@ -114,7 +114,7 @@ def test_team_record_with_absence_words(sparse_root, query, names, present):
         ("LeBron James stats with Davis out this season", ["Anthony Davis"], False),
         ("LeBron James stats with Davis and Reaves out", ["Anthony Davis", "Austin Reaves"], False),
         (
-            "LeBron James stats with Davis and Reaves injured",
+            "LeBron James stats with Davis and Reaves not playing",
             ["Anthony Davis", "Austin Reaves"],
             False,
         ),
@@ -274,3 +274,95 @@ def test_game_summary_with_an_opposing_player_out(sparse_root, query, bound):
     row = _ok(query)["summary"][0]
     assert (row["games"], row["wins"]) == (len(games), int((games["wl"] == "W").sum()))
     assert row["pts_avg"] == pytest.approx(games["pts"].mean(), abs=1e-3)
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        "injured",
+        "hurt",
+        "healthy",
+        "available",
+        "unavailable",
+        "active",
+        "inactive",
+        "sidelined",
+        "resting",
+        "suspended",
+        "in the lineup",
+        "out of the lineup",
+    ],
+)
+@pytest.mark.parametrize(
+    "subject",
+    [
+        "Lakers record with Davis",
+        "LeBron James stats with Davis and Reaves both",
+        "Celtics record with Jayson Tatum",
+    ],
+)
+def test_status_is_not_participation(sparse_root, subject, status):
+    # The very same present/absent rows cannot establish status or its cause.
+    result = execute_natural_query(f"{subject} {status}")
+    assert result.result_status == "no_result"
+    assert "availability_status" in result.metadata["unsupported_filters"]
+    assert result.metadata["unsupported_availability"]["condition"]
+    assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "LeBron James games with 30 points with Davis and Reaves injured",
+        "LeBron James stats when Davis is healthy",
+        "Celtics record while Tatum is suspended",
+        "Lakers record with injured Anthony Davis",
+        "Celtics record whenever Tatum is active",
+        "Celtics record during games where Tatum was active",
+        "Jaylen Brown stats with Tatum fully fit",
+        "Celtics record with Tatum doubtful",
+        "Celtics record with Tatum questionable",
+        "LeBron James stats with Davis available this season vs last season",
+    ],
+)
+def test_status_survives_other_clauses(sparse_root, query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert "availability_status" in result.metadata["unsupported_filters"]
+
+
+def test_participation_natural_structured_and_api(sparse_root):
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from nbatools.query_service import execute_structured_query
+
+    root, out = sparse_root
+    players = pd.read_csv(root / PLAYERS)
+    expected = players[(players["player_name"] == "LeBron James") & (players["pts"] >= 30)]
+    expected = _keep(expected, out, ["Anthony Davis", "Austin Reaves"], True)
+    query = "LeBron James games with 30 points with Davis and Reaves playing"
+    natural = execute_natural_query(query)
+    structured = execute_structured_query(
+        "player_game_finder",
+        player="LeBron James",
+        season="2025-26",
+        stat="pts",
+        min_value=30,
+        with_player="Anthony Davis and Austin Reaves",
+    )
+    for result in (natural, structured):
+        assert result.result_status == "ok"
+        rows = result.to_dict()["sections"]["finder"]
+        assert {row["game_id"] for row in rows} == set(expected["game_id"])
+    client = TestClient(app)
+    response = client.post("/query", json={"query": query})
+    assert response.status_code == 200
+    rows = response.json()["result"]["sections"]["finder"]
+    assert {row["game_id"] for row in rows} == set(expected["game_id"])
+    response = client.post("/query", json={"query": "Lakers record with Davis injured"})
+    assert response.status_code == 200
+    payload = response.json()["result"]
+    assert payload["result_status"] == "no_result"
+    assert not payload["sections"]
+    assert "availability_status" in payload["metadata"]["unsupported_filters"]
