@@ -218,11 +218,17 @@ def test_three_team_stretch_is_still_the_stretch_board():
 )
 def test_team_record_with_an_opposing_player_out(sparse_root, query, opponents):
     # He is on the opponent: the games he did not play, not "no games".
-    root, _ = sparse_root
-    players = pd.read_csv(root / PLAYERS)
-    played = set(players.loc[players["player_name"] == "Jayson Tatum", "game_id"])
+    _, out = sparse_root
+    # Required positive obligation: Tatum belongs to Boston in this stipulated
+    # fixture. Knicks games cannot count as his missed Boston games. The fixture
+    # still lacks source-backed membership/coverage, so this test must not be
+    # counted as accepted while the shared filter reports unavailable data.
     games = _lakers()
-    games = games[games["opponent_team_abbr"].isin(opponents) & ~games["game_id"].isin(played)]
+    games = games[
+        games["opponent_team_abbr"].eq("BOS")
+        & games["opponent_team_abbr"].isin(opponents)
+        & games["game_id"].isin(out["Jayson Tatum"])
+    ]
     assert len(games) > 0
     row = _ok(query)["summary"][0]
     assert (row["games"], row["wins"]) == (len(games), int((games["wl"] == "W").sum()))

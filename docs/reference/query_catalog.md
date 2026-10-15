@@ -116,7 +116,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
 - whole-game player presence for team records: `Lakers record with Luka`, `Lakers record w/ Luka`, `How many games did the Lakers win with Reaves playing?`
-- injury/health/roster status is unavailable: injured, healthy, active, available and absence causes are not inferred from whole-game participation. Absence qualification by membership and complete participation coverage remains under P0a review; fixture participation checks do not certify real-data absence.
+- injury/health/roster status is unavailable: injured, healthy, active, available and absence causes are not inferred from whole-game participation. Whole-game did-not-play filters currently return unavailable coverage because game-date membership and complete participation are not established. P0a remains unfinished; fixture participation checks do not certify real-data absence.
 - on/off presence: `on/off`, `on off`, `on-off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
   (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`
   rows when coverage exists, otherwise returns an explicit unsupported-data
@@ -383,7 +383,7 @@ Common combinations:
 
 - opponent team filters
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
-- without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
+- without player filters (`without LeBron`, `without Steph Curry`) — recognized and routed, but currently return unavailable membership/participation coverage; missing appearances cannot establish absence
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - home / away
 - wins / losses
