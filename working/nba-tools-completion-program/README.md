@@ -3,7 +3,8 @@
 Owner-approved direction: **2026-10-15**. This remains the only active queue.
 Read `AGENTS.md` and `ROADMAP.md`. The owner approved the reassessment and asked
 for an immediately executable plan with durable agent-to-agent continuation.
-This revision changes planning/instructions only; no runtime fix is claimed here.
+Runtime continuation is recorded below; implementation, independent fixture evidence,
+real-data acceptance and deployment remain distinct.
 
 The old A1-first start and four-stream execution instructions are superseded.
 The A/B/C/D/O/E capabilities and unfinished requirements are retained, not reset.
@@ -19,19 +20,20 @@ The revision below is an observation, not an instruction to reset newer main.
 
 | Field | Current handoff |
 | --- | --- |
-| State | Plan updated; P0/P1/P2/P3 runtime work under this revision is not yet accepted |
-| Observed implementation main | `ce5c0cef2f46cbd086c48535b427df142be4aa8a` (PR #450 merged, 2026-10-15); fetch live main, which will also contain this documentation revision |
-| First package | **P0a: repair participation-versus-injury/status interpretation on PR #462**, or verify a newer fix and move on |
-| Existing P0a candidate | PR #462, branch `claude/samples-stream-mm11at`, observed head `79f5f5987dca2671c67b0d0a5f37beecaa1df079`; open, not mergeable at inspection; preserve newer commits and inspect discussion |
-| Other in-flight work | PR #455, branch `claude/rankings-stream-s8gywm`, observed head `99505bbfd08cab6fed1da8eb8e1db9eb10e6f032`; open; preserve and integrate under P0c, do not discard or presume accepted |
-| Lane ownership | No live executor is established by this document. Next lead claims the checkpoint after checking active PR work; one writer for shared interpretation, second lane only if genuinely independent |
-| Data | Last verified R2 generation `queue-d-production-0574735-20260716`; pin and verify the generation actually used. Do not assume its name establishes coverage/freshness or republish it implicitly |
-| Evidence already observed | Main CI run `38705620533` succeeded; PR #450 targeted R2 `38705190302` executed 16 selected real-data tests successfully. These are scoped historical passes, not Core-1 or pending-PR acceptance |
-| Current blockers | No blocker to inspecting/reproducing P0a. Fresh NBA pulls remain parked. Separate checker, publication/model access and current production behavior must be verified when needed, not assumed |
-| Exact next action | Read PR #462's latest code/comments; reproduce injury/status normalization and participation controls using the focused command below; record intended semantics and repair the existing candidate with its owner or a clearly documented takeover |
-| Independent next action | With a second non-overlapping lane, start P0b in the existing validation workflow. With one agent, interleave after P0a is ready for review |
-| After P0 | Integrate useful #455/#462 work with checks, then begin P1's common sample/condition path. Do not resume an unbounded next-phrase queue |
-| Owner action | Normally none. Escalate only a concrete unresolved intent/access/cost/authority decision; continue independent authorized work |
+| State | Updated 2026-10-15: bounded P0a status repair published; P0a/K08 still blocked. P0b gate repair independently reviewed and green CI, ready for guarded integration via #464 |
+| Live main checked | `11ef97e996f8b461e88d3974899545fe317e61d8`; recheck after #464 merges. #455 unchanged at `99505bbfd08cab6fed1da8eb8e1db9eb10e6f032`, still open/unaccepted |
+| P0a candidate | Existing #462 / `claude/samples-stream-mm11at`, code `a066d8d5f359bd2466d1890696cf1a095551cb55`; parents preserve original `79f5f59` and current main. Verified tree `6f6787de825faca29225da5c787cf0b5f00973c3` matches local `e8b3d071ef50aeedc2712ff762bd0f11e0408296`. No force push. Further checkpoint-only commits do not change this code evidence |
+| P0b candidate | #464 / `codex/p0b-required-validation`, code `fffd14f037c79b15f1f12b673c970da9b85a0461`, tree `c109235ea41b7123316294e68fc7d3c41a849bec`; single resolved code SHA/generation, blocking required numerical tests and explicit selected/executed/skipped/error evidence. Actual R2 run still pending; no NBA verification claimed |
+| Owner/lane | Codex lead owns shared interpretation/integration; P0b maker `p0b_gate` and independent checkers `p0a_checker`/`p0b_checker` completed their bounded work. No background executor promised. Local P0a branch `codex/p0a-participation-status`; P0b separate worktree/branch. Code published; checkpoint updates are recorded in these PRs |
+| Data | Committed synthetic fixture only in this session. Historical R2 generation `queue-d-production-0574735-20260716` not accessed/reverified; fresh NBA acquisition remains parked. No data publication, model spending or credential expansion |
+| P0a verification | `DATA_SOURCE=local make test-preflight PYTEST='.venv/bin/python -m pytest -n 4 -q'`: 7584 passed, 1442 skipped, 3 subtests passed. Focused non-data checks 205 passed plus separate natural/structured/HTTP API exact-ID check passed. Two targeted Raw QA status-safety cases passed; positive played real-data corpus control retained but unverified. Ruff/docs-governance/diff checks pass. Restricted TestClient thread handoff hung; broad/API tests completed in approved local execution context |
+| P0a independent evidence | Checker `p0a_checker` checked the cited code/tree: five exact-ID/value fixture comparisons, seven status cases, eight disclosed unfamiliar-language probes and two further season-split cases passed. Brown 27+ with Tatum =16 IDs, both Tatum/Holiday =14; stipulated absent-Tatum =5/32 ppg, neither =game 438/30 points. Celtics played control =45 games/31-14/102.022 ppg. Controlled omissions are not verified real absence |
+| P0b independent evidence | Checker `p0b_checker`: 63 focused tests plus ten independent subprocess scenarios; required arithmetic failure, partial/collection/missing-data skips, typo, zero execution, syntax error and XPASS all block. Final test-path-only fix reviewed; docs governance, Ruff and diff checks pass. All blocking CI on code head green; full-suite PR job legitimately unselected. Inspect CI on final documentation head before merge |
+| Blocking findings | #462 still complements appearance IDs without game-date membership or complete participation coverage. Independent controlled IDs before/played/missed/unknown/after return before/missed/unknown/after, though only missed is qualified. Its inherited multi-opponent case includes NYK games in Lakers vs Celtics and Knicks without Tatum. Do not reuse those inherited expectations as acceptance. Season rosters (no effective dates) and first/last appearances do not prove qualification. No P0a/K08 merge approval |
+| Access/deployment | Shell Git proxy unavailable; GitHub connector reads/writes work and exact tree hashes were verified. No real NBA dataset or runtime R2 credentials locally. Production/API deployment and current served generation not checked; injury-status functionality and fresh/unattended data remain unfinished |
+| Exact next action | On live #462, reproduce `filter_without_player` with the five-ID membership/coverage discriminator above; define and implement one shared qualification contract from actually stored membership/coverage evidence (inspect roster and player-game manifests first), excluding unrelated opponents. If those inputs cannot prove qualification, report honest unavailable coverage rather than numerical absence; retain positive played queries. Run independent row/value checks and targeted required R2 tests before accepting #462; then proceed to P0c/P1 |
+| Independent continuation | Land #464 once final CI remains green; then exercise its existing manual R2 workflow on an authorized runner with pinned candidate/generation. Do not count missing/skipped required real-data tests as acceptance. #455 integration and O1 stored-metadata inspection can proceed without fresh acquisition |
+| Owner action | No routine technical choice needed. Access-dependent acceptance stays open; no request to restore an owner laptop |
 
 ### First-session procedure
 
