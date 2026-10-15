@@ -486,7 +486,20 @@ def _build_applied_filters(
                     "kind": "threshold",
                 }
             )
-    if source.get("start_season") and source.get("end_season"):
+    if (
+        source.get("season_list")
+        and source.get("split_type") == "season"
+        and source.get("route") in ("player_split_summary", "team_split_summary")
+    ):
+        # "2023-24 vs 2025-26" skips 2024-25; a range badge would claim it.
+        applied_filters.append(
+            {
+                "label": "Seasons",
+                "value": ", ".join(source["season_list"]),
+                "kind": "season",
+            }
+        )
+    elif source.get("start_season") and source.get("end_season"):
         applied_filters.append(
             {
                 "label": "Season range",
@@ -664,6 +677,7 @@ def _build_query_metadata(
         "conditions": route_kwargs.get("conditions") or parsed.get("conditions"),
         "occurrence_event": parsed.get("occurrence_event"),
         "split_type": parsed.get("split_type"),
+        "season_list": parsed.get("season_list"),
         "clutch": parsed.get("clutch"),
         "back_to_back": parsed.get("back_to_back"),
         "series_situation": parsed.get("series_situation"),

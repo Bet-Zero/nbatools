@@ -176,7 +176,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - ranked three-point games with a named player or team: `LeBron top 3 three point games`, `Lakers top 3 3 point games`, `Curry best 5 3pt games` rank games by threes made (the league form `top 5 three point games` reads as before)
 - point differential: `Lakers point differential`, `scoring margin`, `average margin`, `net points` (the team's average final margin; `games with a point differential over 20` and `biggest point differential` stay game lists, `which team has the best point differential` is the team board)
 - month ranges without days: `from January to March`, `between Nov and Jan`, `January through March`, `Jan-Mar`, `in January and February`, `in January, February and March`, `before March`, `after March`, `through February` (years from the season, or one named year: `from March 2025 to January` spans 2024-25 and 2025-26); `in January and March`, a backwards span and a range named for two seasons refuse, as does a yearless cut over several seasons (`before March in the last 3 seasons`); `in / for / over the month of March` is `in March`; `in March vs April` / `in March or April` refuse, as do landmarks the dates do not place (`after Christmas`, `before the All-Star break`, `since the trade deadline`, `after Thanksgiving`, `since New Year's`; `since / after the All-Star break` reads as before)
-- split views: `home vs away`, `home versus away`, `home vs road`, `home and away record`, `wins vs losses`, `wins versus losses`, `in wins and losses`, `by month`, `month by month`, `monthly`, `best month`, `worst month`, `best scoring / shooting / 3 point shooting month`, `which month did he score the most`
+- split views: `home vs away`, `home versus away`, `home vs road`, `home and away record`, `wins vs losses`, `wins versus losses`, `in wins and losses`, `by month`, `month by month`, `monthly`, `best month`, `worst month`, `best scoring / shooting / 3 point shooting month`, `which month did he score the most`, `this season vs last season`, `2023-24 vs 2024-25` (season split)
 
 ### 2.4 Threshold language
 
@@ -497,6 +497,25 @@ Examples:
 - `Lakers record by month`, `Lakers best month` / `worst month` (by record;
   ties on percentage go to more wins / more losses), `Lakers highest scoring
   month`, `which month did the Lakers win the most games` (every game counts)
+
+### Season splits
+
+Examples:
+
+- `Lakers record this season vs last season`, `LeBron stats this season compared to last season`
+- `Lakers record 2025-26 vs 2024-25`, `LeBron 2015-16 vs 2017-18`
+- `Lakers record in 2016 and 2020`, `Celtics record in 2023-24, 2024-25 and 2025-26`
+- `how many 30 point games did LeBron have this season vs last season`
+
+Two or more named seasons (explicit seasons, bare years read as the season
+ending in them, "this / last season", joined by vs, versus, compared to,
+than, and, or, commas) split one player's or one team's sample one row per
+season; seasons between them are left out ("2023-24 vs 2025-26" skips
+2024-25). Two consecutive bare years joined by "and" ("in 2024 and 2025") stay
+the span they read as. Comparisons, leaderboards, game lists, a second split
+or a last-N window with named seasons refuse rather than pool the seasons or
+answer one of them; months or playoff rounds named for two seasons keep their
+refusals.
 
 ---
 
