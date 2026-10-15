@@ -63,7 +63,9 @@ def run_gate(sandbox, body: str, *, selection=None, scope=None, parallel=False):
         capture_output=True,
         timeout=45,
     )
-    report = json.loads((root / "outputs/required_data_validation/summary.json").read_text())
+    # Read only evidence just generated in this test's temporary repository.
+    report_path = root / "outputs" / "required_data_validation" / "summary.json"
+    report = json.loads(report_path.read_text())
     return result, report
 
 
