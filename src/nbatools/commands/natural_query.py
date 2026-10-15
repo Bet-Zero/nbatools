@@ -11126,6 +11126,12 @@ _OPPONENT_STAT_WORDS = re.compile(
 )
 
 
+_OPPONENT_SPLIT_WORDS = re.compile(
+    r"\bby\s+(?:opponents?|teams?)\b|\bper\s+opponent\b"
+    r"|\b(?:vs\.?|versus|against)\s+(?:each|every)\s+(?:opponent|team)\b"
+)
+
+
 def _has_opponent_bound(kwargs: dict) -> bool:
     bounded = (
         [kwargs]
@@ -11155,6 +11161,10 @@ def _season_split_drops(one_season: dict, split: dict) -> list[str]:
         # team's own points (on one season too); the split would repeat it.
         # A bound on the opponent ("when allowing 100") filters correctly.
         return ["the opponent's stats"]
+    if _OPPONENT_SPLIT_WORDS.search(split.get("normalized_query") or ""):
+        # "LeBron stats by opponent 2023-24 vs 2024-25": a second split the
+        # parse missed beside an explicit season (it is read on main too).
+        return ["a split by opponent"]
     if kwargs.get("opponent_player"):
         # The split's per-bucket advanced metrics need the team rows a
         # player-vs-player sample does not carry.

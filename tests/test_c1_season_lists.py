@@ -114,6 +114,7 @@ def test_skipped_season_stays_out():
         "Lakers points allowed per game this season vs last season",
         "Lakers opponent field goal percentage this season vs last season",
         "Lakers record vs opponents over 500 this season vs last season",
+        "LeBron James stats by opponent 2023-24 vs 2024-25",
     ],
 )
 def test_routes_without_a_season_split_refuse(query):
