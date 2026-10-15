@@ -116,6 +116,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
 - whole-game player presence for team records: `Lakers record with Luka`, `Lakers record w/ Luka`, `How many games did the Lakers win with Reaves playing?`
+- played-game conditions also travel into team/player season splits: e.g. `Celtics record against Lakers with Tatum playing in 2023-24 and 2025-26`. The shared summary sample filters participation before grouping; only the named seasons appear. This candidate path has discriminating fixture checks; required real-data and deployed verification remain pending.
 - injury/health/roster status is unavailable: injured, healthy, active, available and absence causes are not inferred from whole-game participation. Whole-game did-not-play filters currently return unavailable coverage because game-date membership and complete participation are not established. P0a remains unfinished; fixture participation checks do not certify real-data absence.
 - on/off presence: `on/off`, `on off`, `on-off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
   (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`

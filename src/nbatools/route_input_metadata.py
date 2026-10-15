@@ -306,7 +306,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "career_intent",
             "opponent_quality",
         )
-        + ("series_situation",),
+        + ("series_situation", "with_player"),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "role": ("starter", "bench")},
         examples=(
@@ -322,7 +322,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         description="Summarize a filtered team game sample.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
         + ("stat", "min_value", "max_value", "opponent_quality")
-        + ("series_situation",),
+        + ("series_situation", "with_player"),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
         examples=(
@@ -351,7 +351,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "role",
             "opponent_quality",
         )
-        + ("series_situation",),
+        + ("series_situation", "with_player"),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
@@ -564,6 +564,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "rank_stat",
             "rank_order",
             "split_seasons",
+            "with_player",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
@@ -595,6 +596,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "rank_stat",
             "rank_order",
             "split_seasons",
+            "with_player",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,

@@ -603,7 +603,14 @@ def _multi_player_availability_boundary(q: str) -> bool:
 # presence/absence flag. Every other route only ever receives with_player /
 # without_player as display metadata (set unconditionally by the parser) with
 # nothing downstream applying it - see _player_availability_unsupported_markers.
-_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record", "player_game_finder", "player_game_summary"}
+_WITH_PLAYER_SUPPORTED_ROUTES = {
+    "team_record",
+    "player_game_finder",
+    "player_game_summary",
+    "game_summary",
+    "player_split_summary",
+    "team_split_summary",
+}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
     "player_split_summary",
@@ -5221,6 +5228,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "opponent": opponent,
             "opponent_player": opponent_player,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -5246,6 +5254,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -6340,6 +6349,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -6508,7 +6518,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
 
     if (
-        route == "team_record"
+        route in ("team_record", "game_summary", "team_split_summary")
         and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
         and (route_kwargs.get("stat") == "minutes" or presence_states_player_condition(q))
     ):
@@ -6524,7 +6534,7 @@ def _route_parsed_query(parsed: dict) -> dict:
 
     pair_read = False
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and _multi_player_availability_boundary(q)
     ):
@@ -6546,7 +6556,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         else:
             route_kwargs["unsupported_filters"] = ["multi_player_availability"]
     elif (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and with_player
         and not route_kwargs.get("unsupported_filters")
@@ -6570,7 +6580,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         q,
     )
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and not route_kwargs.get("with_player")
         and trailing
@@ -6583,7 +6593,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         ) + ["unresolved_player_availability"]
 
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and names_other_player_availability(
             q,
@@ -6600,7 +6610,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         route_kwargs["unsupported_filters"] = existing_unsupported
 
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and not pair_read
         and any(

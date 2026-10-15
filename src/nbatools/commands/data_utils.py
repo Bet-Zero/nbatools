@@ -2627,7 +2627,7 @@ def filter_with_player(
     p_rows = player_game_ids(player_df, with_player, team=team)
 
     if p_rows.empty:
-        return df.iloc[0:0].copy() if strict_team_match else df.copy()
+        return df.iloc[0:0].copy()
 
     if team:
         # Franchise-aware: Durant's Seattle games are Thunder games with him.
