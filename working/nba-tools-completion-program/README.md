@@ -1,570 +1,421 @@
-# NBA Tools capability delivery: execution plan
+# NBA Tools execution queue
 
-Revised 2026-10-02. This is the single active queue. Read `AGENTS.md` and
-`ROADMAP.md`; the source review and architectural alternatives are recorded in
-[review-2026-10-02.md](review-2026-10-02.md). The Q1-Q6 order from PR #312 is
-superseded. The owner's sample-query idea is not a mandated workflow.
+Owner-approved direction: **2026-10-15**. This remains the only active queue.
+Read `AGENTS.md` and `ROADMAP.md`. The owner approved the reassessment and asked
+for an immediately executable plan with durable agent-to-agent continuation.
+This revision changes planning/instructions only; no runtime fix is claimed here.
 
-## Start now
+The old A1-first start and four-stream execution instructions are superseded.
+The A/B/C/D/O/E capabilities and unfinished requirements are retained, not reset.
+The full pre-revision queue and detailed PR history remain available at the
+[immutable October 15 snapshot](https://github.com/Bet-Zero/nbatools/blob/ce5c0cef2f46cbd086c48535b427df142be4aa8a/working/nba-tools-completion-program/README.md).
+`review-2026-10-02.md` is historical rationale, not the current sequence. Do not
+require a new agent to read that history before starting the task below.
 
-**First implementation: A1, correct player identity. Next: A2, consistent game
-sample selection. Start O1, data/runtime verification, alongside A1 when a
-second execution environment is available, otherwise interleave it.** Recent
-team records remain an early deliverable within A2, not an isolated strategy.
+## Resume checkpoint
 
-Issue #314 (2026-10-03) launched execution and is folded in here rather than
-tracked separately: the working scope below, the foundation map in section 2a,
-the A1 result in section 4 and the continuation record in section 7.
+Replace this checkpoint as work advances; do not append a second live tracker.
+The revision below is an observation, not an instruction to reset newer main.
 
-Preserve existing work and inspect live main/open PRs before branching. At the
-review boundary, main was `6a02fccb729206dd381653769f8a59adc90bdb26`, PR #312
-was merged, and no PRs were open. No product implementation is claimed by this
-plan change. All work packages below remain open until proven otherwise.
+| Field | Current handoff |
+| --- | --- |
+| State | Plan updated; P0/P1/P2/P3 runtime work under this revision is not yet accepted |
+| Observed implementation main | `ce5c0cef2f46cbd086c48535b427df142be4aa8a` (PR #450 merged, 2026-10-15); fetch live main, which will also contain this documentation revision |
+| First package | **P0a: repair participation-versus-injury/status interpretation on PR #462**, or verify a newer fix and move on |
+| Existing P0a candidate | PR #462, branch `claude/samples-stream-mm11at`, observed head `79f5f5987dca2671c67b0d0a5f37beecaa1df079`; open, not mergeable at inspection; preserve newer commits and inspect discussion |
+| Other in-flight work | PR #455, branch `claude/rankings-stream-s8gywm`, observed head `99505bbfd08cab6fed1da8eb8e1db9eb10e6f032`; open; preserve and integrate under P0c, do not discard or presume accepted |
+| Lane ownership | No live executor is established by this document. Next lead claims the checkpoint after checking active PR work; one writer for shared interpretation, second lane only if genuinely independent |
+| Data | Last verified R2 generation `queue-d-production-0574735-20260716`; pin and verify the generation actually used. Do not assume its name establishes coverage/freshness or republish it implicitly |
+| Evidence already observed | Main CI run `38705620533` succeeded; PR #450 targeted R2 `38705190302` executed 16 selected real-data tests successfully. These are scoped historical passes, not Core-1 or pending-PR acceptance |
+| Current blockers | No blocker to inspecting/reproducing P0a. Fresh NBA pulls remain parked. Separate checker, publication/model access and current production behavior must be verified when needed, not assumed |
+| Exact next action | Read PR #462's latest code/comments; reproduce injury/status normalization and participation controls using the focused command below; record intended semantics and repair the existing candidate with its owner or a clearly documented takeover |
+| Independent next action | With a second non-overlapping lane, start P0b in the existing validation workflow. With one agent, interleave after P0a is ready for review |
+| After P0 | Integrate useful #455/#462 work with checks, then begin P1's common sample/condition path. Do not resume an unbounded next-phrase queue |
+| Owner action | Normally none. Escalate only a concrete unresolved intent/access/cost/authority decision; continue independent authorized work |
 
-Do not turn this into another general audit phase. Establish the small execution
-baseline while implementing A1/A2. Evidence unavailable in this review is
-explicitly unknown; do not invent numeric results or repeat completed setup.
+### First-session procedure
 
-## 1. Why the work is grouped this way
+Inspect the repository without resetting or overwriting another agent's work:
 
-The engine already has separate natural and structured entry points, 30
-registered routes, shared data loaders and metric utilities, and established
-renderers. The gaps are not all parsing gaps. Filter capability declarations are
-split across parser allowlists and execution transport sets; route modules have
-different sample filters; data contracts do not prove datasets are populated;
-and operation/season freshness cannot wait until a final UI pass.
+```sh
+git remote -v
+git status --short --branch
+git fetch origin
+git log -1 --format='%H %s' origin/main
+```
 
-Sequence work by dependency, user value and observed correctness risk:
+Read live PR metadata, changed files, discussion and check results through GitHub
+or `gh`. The observed branch names above are resume leads, not proof a worker is
+still running. Coordinate on the PR; preserve its author/session evidence. If its
+head moved or merged, inspect that actual revision before choosing the next step.
+Do not create duplicate repair PRs without explaining why the original cannot be
+continued. Never force-push someone else's work to match this handoff.
 
-`identity + qualified rows -> time/sample -> operation/basis -> combinations`
+On the #462 candidate, after the normal editable project installation in an agent
+execution environment (not the owner's laptop):
 
-`source feasibility + refresh/runtime ----------------------------------->`
+```sh
+DATA_SOURCE=local python -m pytest -q \
+  tests/test_c1_availability_words.py tests/test_c1_teammate_names.py
+```
 
-Use examples to detect and validate gaps, but derive scope from the capability
-map below. A failing phrase can be one symptom of an entire missing operation.
-A passing phrase does not prove its siblings or the numeric answer.
+These are fixture checks, not real NBA verification. The first file is on #462,
+not the observed main. A passing baseline may reproduce the defect because its
+expected meaning is wrong. Inspect `_availability_words`, the normalization
+callers and those tests before changing expectations. The new negative-status
+and positive-participation assertions must expose the difference.
 
-## 2. Capability map and scope
+## 1. Preserved product and starting evidence
 
-**Working historical scope: 1996-97 onward, with priority on the 21st
-century** (owner clarification, issue #314). Earlier history is optional, not a
-completion requirement, and pre-1996-97 backfill must not block any package.
-Do not delete older data that exists. Never present a partial span as a full
-career: label the covered span instead (for example "since 1996-97") when a
-player's career started earlier.
+1996-97 onward is the working historical scope, prioritizing the 21st century.
+Earlier history is optional. Do not delete existing older rows or call a partial
+career complete. Salary/trade-rule work is outside this repository's purpose.
 
-Plan data families from the capabilities they serve (section 2a), not one
-failed phrase at a time. Stored facts, facts derivable from qualified stored
-rows, and genuinely missing source data are different: when existing rows can
-produce a statistic, record the formula/join and implement it rather than
-planning another scrape. The owner's recollection of past scraping is a lead to
-verify, not evidence of complete coverage.
-
-This is a seeded plan, not a measured answer-rate report. "Present" below means
-source implementations exist, not that all combinations or data are verified.
-Update the evidence/status cells here as the work runs. Reuse the generated
-route inventory and Raw QA families; do not create another route registry.
-
-| Capability group | Starting evidence / gap | Required completion / package |
+| Area | Evidence retained at the revision boundary | Implication |
 | --- | --- | --- |
-| Player/team identity | Data-backed and curated resolution exist; #304 reported partial-alias collisions | Correct canonical identity across full names, aliases, accents, historical contexts and covered-data conditions; A1 |
-| Summaries/scalars and team records | Present; record builder lacks last_n, sample filtering differs by route | Same defined sample across compatible views; current/explicit seasons, date ranges and last-N; A2 |
-| Finders and counts | Present; generic phrase boundaries and compound gaps remain | All stated conditions, AND/OR/grouping, strict vs inclusive thresholds, games versus distinct entities, valid zeros; B1 |
-| Leaderboards and top games | Present; stat vocabulary/basis and route coverage differ | Explicit totals/per-game/rates/count-of-events, eligibility and deterministic tie policy; B1 |
-| Comparisons and head-to-head | Present; subjects and sample semantics require parity | Same requested basis/scope, correct matchup rather than accidental subject changes; C1 |
-| Splits | Present; restricted filter interfaces | Apply the requested sample first, then the declared split; meaningful additional filters; C1 |
-| Streaks and rolling stretches | Present, with route-specific eligibility/window behavior | Defined sequence, continuity, per-entity windows and correct thresholds/ranking; C2 |
-| Opponent/context/availability | Partial; transport sets differ; conference/division reference covers only 2024-25/2025-26 | Season-aware joins and meaningful combinations, not cross-season union unless explicitly requested; C1/C2/D1 |
-| Advanced metrics | Shared ratio formulas and sample-aware helpers present | Reuse correct formula/denominator at the requested sample grain; no average-of-percentages or invented rating substitutes; B1/D2 |
-| Playoff/history/career | Present within the configured 1996-97 onward span (the working scope) | Distinguish games/series/appearances/rounds/franchises; label the covered span for careers that began earlier; C2 (pre-1996-97 backfill optional) |
-| Bench/role and period/clutch | Contracts and some implementations exist; publication/coverage must be inspected | Actual source-backed answers at team/player/period grain; D1/D2 |
-| Lineups and on/off | Routes/specs exist; prior sweep controls unsupported | Qualify exact source coverage and meaning, activate/complete rather than rebuild blindly; D2 |
-| Calendar/factual reference questions | Schedule data path exists; championship/award questions currently bounded | Source-backed schedule and historical-reference answers in the extended queue; D1/D2 as appropriate |
-| Browser/API and ongoing operation | Existing UI and R2/Vercel path; monitor passes do not prove all capabilities | Answer/render parity, measured latency, complete source coverage, repeatable refresh and rollover; O1/O2/E |
-| Guided builders/profile pages | Explicit future surfaces in existing product boundary | Retained follow-on work after shared engine delivery; not silently deleted, and not a precondition for ordinary search combinations |
-
-Core completion comprises the first ten groups' game-data-backed behavior,
-including meaningful cross-family combinations defined during A/B/C. Extended
-source-dependent behavior is D, and operation is O/E. This staged scope is not
-permission to call the whole product finished when only A/B/C land.
-
-### Bounded baseline, performed by agents
-
-Start from the existing 30-route inventory and 16 acceptance families. For each
-family, retain a compact row describing: desired operation, entities, metric and
-basis, time/sample, relevant modifiers, required datasets/coverage, current
-structured result, natural result, and remaining defect/dependency. Keep detailed
-run output in existing generated artifacts, not this plan.
-
-Run representative structured and natural versions over the SAME code/data:
-
-- Structured correct, natural incorrect: binding/parsing/routing gap.
-- Structured and natural both wrong: investigate shared computation/data against
-  an independently calculated expectation; agreement alone proves nothing.
-- Required source/coverage unavailable: data dependency, not a language defect.
-- Correct payload, wrong/slow browser experience: presentation/runtime defect.
-
-Cover the selected first packages immediately and extend other map cells during
-parallel source reconnaissance. No exhaustive cross-product, arbitrary quota of
-owner-written questions, new test runner, or baseline-only multi-session project.
-Unknown cases stay unknown. Use a bounded corpus-wide run at integration, not
-before every local edit.
-
-## 2a. Foundation map (issue #314, 2026-10-03)
-
-Compact and evidence-labelled. "Doc" means a repository contract or catalog
-statement; "verified" names the check. The served generation
-`queue-d-production-0574735-20260716` (684 files) was inspected on 2026-10-03
-by `tests/test_served_data_coverage_real_data.py` in targeted R2 run
-37118094775 (185 passed); its report is in that run's log and is regenerated by
-`python -m nbatools.commands.ops.served_coverage`.
-
-**Data view**
-
-| Family | Serves | One row is | Declared coverage | Evidence | Stored / derivable / missing | Next gap |
-| --- | --- | --- | --- | --- | --- | --- |
-| `player_game_stats`, `team_game_stats`, `games` | Summaries, finders, records, leaders, comparisons, streaks | Player-game / team-game / game | 1996-97 to 2025-26, regular season and playoffs | Verified served: all 60 slices; every regular season has the league's game count (1189/1230, lockout and 2019-20/2020-21 totals); playoffs 66-89 games; every final game has two team rows and player rows for both teams. 57 slices carry only legacy (pre-receipt) manifests, 3 have versioned receipts | Stored | None for the core span; versioned receipts for older slices are optional |
-| Player identity | Every named-player answer | Name and `player_id` on each player-game row | Follows game data | Verified: controlled names, fixture and data-free paths (A1 tests); real names await the R2 run | Stored; named-player rows are selected by `player_id` (A1b) | Real data: 12 names are two players each and 5 players have two spellings (listed in A1b); handled by id selection, one display name per id |
-| `rosters`, `player_game_starter_roles` | Team membership, starter/bench | Player-season-team / player-game role | Coverage-gated per slice | Verified served: rosters 1996-97..2025-26; starter roles only 2024-25 and 2025-26 | Stored where served | D1: starter roles before 2024-25 |
-| `team_conference_membership` | Conference/division opponents | Team-season | 2024-25 and 2025-26 trusted only | Doc (`data_catalog.md`) | Older seasons missing as rows; historical alignment is reference data, not box-score derivable | D1 |
-| `schedule`, `standings_snapshots`, `schedule_context_features` | Calendar, rest/back-to-back, standings | Game / team-date / team-game | Standings regular season only | Verified served: schedule and standings 1996-97..2025-26; schedule context features only 2024-25 and 2025-26 | Rest/back-to-back derivable from game dates; standings stored | O2 rollover (done in the stream 4 PR); D1 context features before 2024-25 |
-| Playoff series context | Series, rounds, appearances | Derived from playoff team-game rows | Follows playoff game data | Doc; round labelling unverified | Derivable from game rows | C2 |
-| `player_season_advanced`, `team_season_advanced` | Advanced metrics | Player/team season snapshot | 1996-97 to 2025-26 | Verified served: all 60 slices | Stored snapshot plus derivable sample metrics | B1/D2 |
-| Period, play-by-play/clutch, on/off, lineups | Quarter/half, clutch, on/off, lineup answers | Period window / event / presence split / lineup unit | Coverage-gated; contracts exist | Verified served: player/team period stats only 2024-25 and 2025-26; play-by-play, clutch, on/off and lineup files are not in the served generation | Period stored for two seasons; the rest missing | D2: pull and publish slices; period stats before 2024-25 |
-| Awards, championships | Factual reference answers | Reference row | None | Not in game data | Team champions derivable from final-series results; player rings and awards need a qualified reference source | D1 |
-
-**Operations view**
-
-| Operation | Existing implementation | State | Next |
-| --- | --- | --- | --- |
-| Subject selection (players) | `entity_resolution.py`, called by `_matchup_utils.detect_player*` and comparison extractors | Sound after A1 (spelling/alias collisions) and A1b: rows by `player_id` through `_player_identity.select_player_rows`; lineup members through `resolve_players_in_query`; raw legacy alias fallback removed | Data-free and real-data tests (section 4); lineup answers still need D2 data |
-| Subject selection (teams, populations) | `resolve_team*`, opponent quality/conference helpers | Unverified this session | C1 |
-| Time/sample selection | `_seasons.py`, `_date_utils.py`, per-route `last_n`/date handling | Inconsistent. Verified on the fixture: "Knicks record last 10 games" refuses (`team_record` parses `last_n` with no execution path) while player last-N summaries answer | A2 |
-| Predicates and joins | Condition utilities, finders, opponent/context filters | Parser allowlists and transport sets duplicate declarations (doc) | B1/C1 |
-| Group / aggregate / count / rank | `aggregate_metrics.py`, leaderboards, occurrence counts | Present; basis and eligibility differ by route (doc) | B1 |
-| Comparison | `player_compare`, team comparisons | Verified on the fixture for named-player pairs, including accented spellings and seasons | C1 parity of filters |
-| Sequences | Streak and stretch modules | Present; per-route semantics (doc) | C2 |
-| Output | `query_service` metadata/sections, React renderers | Verified for the A1 summaries through `/query` | E |
-
-The map is complete enough for A1 and A2. Unknown cells stay unknown until a
-package needs them; they are not a prerequisite for continuing.
-
-## 3. Architecture decisions for implementation
-
-Keep the public query service and result contracts. Reuse `_constants.py`,
-`aggregate_metrics.py`, sample-aware metric helpers, `data_utils.py`, condition
-utilities and the existing route adapters. `route_input_metadata.py` is currently
-DESCRIPTIVE, not proof of execution; a function argument is not proof either.
-
-Make the distinction between entity, sample, predicate, operation, ranking
-metric and aggregation basis explicit at the existing parse/execution boundary.
-Use existing fields first; add a small typed internal structure only where it
-removes an observed ambiguity. Do not build a generic QueryPlan framework as a
-prerequisite. Incrementally move repeated sample/filter behavior to shared
-helpers while delivering at least two real consumers when that establishes reuse.
-
-Consolidate capability declarations for touched routes where parser allowlists
-and transport sets duplicate the same fact. Back them with execution assertions.
-Do not merely add a third metadata table or permit a filter without implementing
-it. Keep route-specific adapters for genuinely different data grains.
-
-Natural and structured requests should reach the same semantics and calculations.
-Output scope labels must describe the executed sample, not raw parse flags. Do
-not start a cross-cutting receipt-ledger project unless a demonstrated remaining
-failure cannot be fixed with the smaller existing boundary.
-
-No immediate database, frontend, or LLM rewrite. If language-only failures remain
-the dominant blocker after engine parity, the lead may run one bounded isolated
-comparison of a constrained semantic parser with the current parser, using
-held-out inputs, clause preservation, costs and end-to-end latency. No model
-selects numeric answers from memory, executes arbitrary generated code/SQL, or
-enters production without verified benefit and authorized cost/access. A
-schema-valid request can still express the wrong question.
-
-## 4. Delivery packages
-
-Each package may contain small coherent PRs; it is not a demand for a giant PR.
-All packages use the common acceptance rules in section 6.
-
-### A1 - Identity integrity (first slice and A1b merged)
-
-**A1b result (#319).** The real data (pinned
-generation, all season types) has twelve names shared by two players: Brandon
-Williams, Charles Smith, Chris Johnson, Chris Wright, Dee Brown, Glen Rice,
-Marcus Williams, Mike James, Patrick Ewing, Reggie Williams, Steven Smith, Tony
-Mitchell (four of them overlap inside one season). Five players carry two
-spellings under one id: Bobby Portis / Bobby Portis Jr. (renamed during 2024-25),
-Jonas Valančiūnas / Valanciunas, Vlatko Čančar / Cancar, Brandon Boston /
-Boston Jr., Lester Quinones / Quiñones. Name filters merged the first group
-("Mike James career" added two careers) and split the second ("Bobby Portis
-2024-25" found no games, all stored as "Jr."; multi-season leaderboards listed
-him twice).
-
-- Every named-player filter (summary, finder, streaks, comparison, splits,
-  occurrence counts, with/without/opponent-player) selects rows by
-  `player_id` through `_player_identity.select_player_rows`, so all spellings
-  of one player count.
-- A shared name picks the player on the requested team, otherwise the one
-  with the most games in the requested scope (Patrick Ewing career = the
-  Knicks centre; "Mike James 2018-19" = the only Mike James that season). A
-  note names the other player and says to add a team or season.
-- Loaded player rows and season leaderboards show one name per id (latest
-  spelling, keeping accents).
-- Lineup "with X and Y" members resolve through the shared resolver (data
-  full names, curated names, aliases; a bare last name only when listed after
-  "with"). A listed shared last name ("hart": Josh and Jason) stays as typed,
-  so the unit keeps its size and matches nothing rather than answering for
-  fewer players; era/team disambiguation for it waits on D2 lineup data. The
-  raw legacy alias fallback in `detect_player*` is removed.
-- Independent review (separate agent) found three defects, all fixed with
-  regression tests: player counts missed renamed spellings, ordinary words
-  ("early", "love", "strong") became lineup members, float ids missed the index.
-- Not changed: on/off rows (`player_on_off`, a D2 dataset) still match by
-  name; with/without/opponent-player filters choose a shared-name player
-  without a note. Stream 4 proposed a published `metadata/player_names.csv` to
-  skip the cold full scan; it must carry `player_id` for these indexes.
-
-Evidence: `tests/test_player_identity_selection.py` (data-free, controlled
-frames with the real ids) and the A1b block of
-`tests/test_player_identity_real_data.py` (values from raw rows by id), all
-16 real-data identity tests passing in targeted R2 runs 37118187291 and
-37130896078 (after the independent review fixes).
-
-
-**Result of the first slice (branch `claude/issue-314-q0tbff`).** Reproduced,
-then fixed in shared resolution, so every consumer (summaries, finders,
-comparisons, API) inherits it:
-
-- With covered data, "karl anthony towns" (no hyphen) answered with Carmelo
-  Anthony, and "Tim Hardaway Jr" / "Gary Trent Jr" / "Jaren Jackson Jr"
-  without the period answered with the father. Names now match regardless of
-  hyphens and suffix/initial periods.
-- Without the player in the loaded data, "Karl-Anthony Towns" answered with
-  Carmelo Anthony; curated canonical names now match in full before shorter
-  aliases. An earlier candidate also vetoed an alias whose neighbouring word
-  was a known name; the independent checker showed that broke ordinary
-  queries ("lebron christmas day games" became Todd Day), so it was removed
-  and those cases are now regression tests.
-- Names typed with their real diacritics broke comparisons ("Luka Dončić vs
-  Nikola Jokić last 10 games" lost its second player); parser input now folds
-  accents. "X vs Y 2025-26" no longer reads the season as a name typo.
-- The fixture now seeds Karl-Anthony Towns and Nikola Jović instead of avoiding
-  them; fixture names must resolve to themselves.
-
-Evidence: `tests/test_player_identity_collisions.py` (controlled names,
-data-free, fixture natural/structured/HTTP with values computed from the
-fixture CSVs) and `tests/test_player_identity_real_data.py` (`needs_data`,
-values from raw rows of the pinned generation). Remaining in A1b: select
-players by `player_id` so identical-name players are not merged; route the
-lineup/legacy alias scans through the resolver. A player absent from the
-loaded data whose name starts with another player's alias (for example
-"Anthony Black" with no Anthony Black rows) still falls back to that alias;
-with 1996-97+ data present the full name wins. Original scope:
-
-
-Reproduce the #304 Towns/Carmelo and Jovic/Jokic findings in their actual data
-conditions. Full-name precedence already exists with a populated index; do not
-assume every deployed query is wrong or solve this by avoiding the names in
-fixtures. Review `entity_resolution.py` and the callers that bind query subjects.
-
-Deliver correct named-player answers with covered data. Preserve specificity
-when a full name contains another player's alias; handle canonical/ASCII accent
-variants and shared-name cases. Use canonical IDs for joins where available;
-keep names for presentation/aliases. Reuse a trustworthy identity source rather
-than building another curated special-case list. Missing coverage must not select
-a different player, but that negative control does not complete the positive task.
-
-Acceptance: Towns, Jovic, their distinct collision players, another independently
-chosen collision, single-player and comparison contexts, complete/incomplete
-identity inputs, independent ID/value checks, API/render confirmation. This
-package does not require a new identity warehouse or historical-data backfill.
-
-### A2 - Time and game sample selection (open; follows A1 or independent edits)
-
-Deliver recent records AND consistent sample behavior for the related summary
-path. Inspect `team_record.py`, summary/split modules, `_seasons.py`, `_date_utils.py`
-and existing windows before adding helpers. Shared code should unlock a second
-consumer in this package, not be a speculative refactor.
-
-Targets include team last-N records, player/team last-N summaries, explicit dates
-and season/season-type scopes. Confirm per-entity N for league views. Keep game IDs
-as the independent evidence of which rows were selected.
-
-Distinguish "in the last N games" (choose the time sample, then conditions) from
-"last N games with condition" (choose qualifying games, then N), and last N
-meetings from last N overall games. Preserve an existing interpretation only if
-it matches the requested meaning; record intentional compatibility changes and
-update tests rather than silently relabeling. Define a default and expose its
-scope where normal shorthand is clear; use a focused clarification for genuinely
-different plausible meanings, not routine product-owner consultation.
-
-Acceptance: two entity types and two answer families share a validated sample;
-N greater than available games, midseason date cutoffs, home/opponent interactions,
-regular season/playoffs, game ordering and deterministic same-date ties; summary
-and record agree with independent selected game IDs/counts. The former Q1 examples
-remain positive targets. Calendar/rollover integration belongs with O1/O2.
-
-### B1 - Core operations and metric basis (open; depends on A sample semantics)
-
-Complete find/count/aggregate/rank behavior over that sample, reusing existing
-condition and metric helpers. Separate event conditions from the ranking key.
-Support additive totals versus per-game values, shooting rates from appropriate
-totals, games played, occurrence counts, and applicable minimum games/minutes/
-attempts. Do not sum percentages, average per-game percentages blindly, or label
-an approximation as an official advanced metric.
-
-Targets include total rebounds leaders, three-pointer wording, compound player
-30-point/10-rebound occurrence rankings, and game-level compound finders. Inspect
-the generic phrase blockers (including "10+ assists and 0 turnovers") and replace
-relevant ones only with verified support. Normal phrasing is not a new statistic.
-
-Acceptance: independently computed counts/values, qualified zero-match cases,
-strict/inclusive/equality and AND/OR/grouped logic, distinct entity versus game
-count, ranking/eligibility and stated tie policy, player/team parity where
-meaningful, and separate last-N versus top-N operations. Preserve working sibling
-queries; do not patch exact sample strings.
-
-### C1 - Meaningful combinations, comparisons and splits (open; after A/B)
-
-Extend shared behavior across family adapters: season/date, location, opponent,
-outcome, role/position and single-/multi-player participation where qualified
-source data permits. Include comparisons and split views rather than declaring
-them finished because their unfiltered example works.
-
-Specify meaningful combinations in the map; use pairwise coverage plus targeted
-three-way high-risk cases rather than every syntactic permutation. Prioritize
-ordinary requests and shared causes. Inspect the 42 prior sweep flags, but do not
-treat unchanged output as automatic proof of an ignored filter or awkward team
-"starter" probes as normal desired features.
-
-Use discriminating data and selected-game checks. Distinguish played/not-played
-from injury, and game participation from simultaneous court presence. Respect
-team membership at the relevant time; absence before joining a team is not the
-same question as missing that team's game. Opponent classifications should join
-at the stated season/date, not silently union qualifying teams across seasons.
-The existing multi-season union is documented behavior, so any correction must
-be explicit with before/after regression evidence.
-
-Acceptance: correct joins, no multiplied game rows, qualified availability,
-matched scope across comparisons, filter-before-split behavior, all requested
-clauses accounted for, result labels consistent with actual execution.
-
-### C2 - Sequences and historical semantics (open; after relevant A/B)
-
-Finish streaks, rolling stretches, playoff round/matchup/appearance/decade views
-and historical career queries. Reuse existing modules. Define consecutive team
-games versus player appearances, date-filtered sequences, and last-N versus a
-rolling best-N window. Do not bridge excluded games accidentally to manufacture
-a streak, nor change a documented sequence meaning without explicit evidence.
-
-Differentiate playoff games, series, rounds and appearances. Preserve historical
-franchise identity. A configured 1996-97 start is not proof of complete careers
-for players who played earlier; label the covered span ("since 1996-97") rather
-than claiming a full career. Pre-1996-97 backfill is optional under the working
-scope and does not block C2.
-
-Acceptance: boundary/continuity examples, traded players and franchise changes,
-regular/playoff separation, explicit coverage, and independent sequences/counts.
-
-### D1 - Low-dependency dataset and reference expansion (open; feasibility starts in O1)
-
-Default order: extend needed roster/role/conference/division coverage and team
-bench scoring; historical team/playoff/championship reference; player championship
-membership. Pre-1996-97 career coverage is optional under the working scope
-(section 2) and is last in this order. These are different datasets/claims, not
-one generic "rings" calculation. Retain factual awards/schedule requests in the
-extended map where existing examples seek them; subjective opinion is separate.
-
-For each slice: identify the existing reader/puller/contract, probe representative
-coverage, qualify the source, implement the missing aggregate/join, verify, publish
-under existing authority, and prove the deployed answer. Do not perform a full
-historical backfill before a representative slice proves the pipeline works.
-Keep incomplete eras open and explicit. Missing files trigger source acquisition
-work, not permanent rejection or a new owner build-versus-refuse decision.
-
-Acceptance: source and grain recorded, key/date coverage and values independently
-checked, complete enough data for the requested claim, deterministic build and
-repeatable update/publication, natural/API/rendered answer. Do not infer player
-rings from a team-only champion list.
-
-### D2 - Specialized event/period and on-court data (open; reconnaissance starts in O1)
-
-Period data, play-by-play/clutch, lineup aggregates and on/off are source-distinct
-subpackages, not a single serial dependency. Existing contracts/readers and some
-route support already exist. Determine what needs activation/backfill versus new
-computation before writing replacements. Sequence by usable source coverage and
-user value, documenting reorder reasons in this queue.
-
-Use representative slices first. Preserve game/period/stint/event grain, official
-versus derived metric definitions, minute denominators and coverage. Team period
-win/loss, full-game result within a period-selected sample and clutch record are
-different questions. Do not conflate whole-game participation with on-court
-on/off. Early source/access blockers stay named and do not stop A/B/C.
-
-Acceptance: qualified source sample -> reconciliation -> reusable pipeline ->
-correct calculation -> normal language -> actual deployed answer. Additional
-storage/compute/provider cost requires the preserved authorization boundary.
-
-### O1 - Data, verification and runtime baseline (open; parallel from the start)
-
-Use existing remote validation and production tooling; do not add another R2
-workflow. Verify the #311 test repair at the next relevant candidate integration,
-and inspect actual manifests/key coverage, not the generation's date-like name.
-Map essential versus optional datasets to the capability groups. Check a recent
-season, a prior season, playoffs, and the earliest requested historical boundary.
-A contract/schema existing in the repo is not evidence that its dataset exists.
-
-For new-source feasibility, use one representative supported slice and record
-source/access/coverage conclusions; no unbounded full-history download first.
-Use the existing inventory/manifest/pipeline commands. Resolve code/data access in
-a cloud execution environment, not by restoring the owner's laptop as a runner.
-
-Measure representative deployed summary, ranking, multi-season and history
-requests cold and warm, including actual browser-visible behavior. Separate data
-read, identity-index construction, computation, serialization and render time.
-The whole-corpus test duration is not an individual query latency measurement.
-The current 20-second application/platform limit is a ceiling, not a UX target.
-Proposed acceptance targets: warm common requests p95 <= 3 seconds, cold common
-requests <= 10 seconds, admitted historical requests <= 20 seconds without
-unhandled timeouts. Measure on a declared representative run; these are targets,
-not current measurements. Do not alter monitoring thresholds to manufacture a pass.
-
-Retain the documented fixed-plan/$0-metered-overage constraint; inspect external
-cost enforcement rather than assuming in-process counters enforce a global
-serverless quota. Request only genuinely missing provider consent/access. Do not
-expand read-only validation/runtime credentials to enable publication.
-
-### O2 - Refresh, calendar and measured runtime repairs (open; follows O1 evidence)
-
-Reuse the staged pull -> validate -> process -> immutable publish path. Prove an
-update reaches the served app and that a failed update keeps the last-good
-snapshot. Select an authorized cloud scheduler/runtime only if none already does
-this; preserve budgets and separate write authority. Automate refresh/rollover
-under those boundaries rather than requiring recurring owner operation.
-
-Separate the season implied by today's date from the latest available data; do
-not silently substitute an older season. Resolve relative dates at request time
-with a controllable test clock rather than relying on import-time "today".
-Use sourced season/calendar events, not guessed All-Star dates for unsupported
-years. Test season start, midseason, playoffs, offseason and a process crossing
-midnight; historical numeric regressions get explicit dates/seasons or a frozen
-clock, while freshness tests exercise the live-date contract separately.
-
-Fix measured bottlenecks first: existing file/frame caches and generation keys,
-bounded reads, precomputed identity/reference lookup if all-game scanning is the
-cause, result size, and execution concurrency. Do not select a database/host
-migration before those measurements establish why it is needed. Reuse validated
-snapshot caching for CI only if profiling shows network repetition is material;
-retain real R2-path integration checks and never cache credentials.
-
-### E - Integrated delivered-product acceptance (open; targeted checks happen earlier)
-
-Run the capability map through the API and actual desktop/mobile interface,
-including unfamiliar wording chosen independently, realistic combinations,
-empty-but-correct outcomes, numeric references and representative latency.
-Check displayed entity/sample/metric/basis, tables, clipping/loading/error states,
-query history/saved query behavior when affected, deployed code/data agreement,
-refresh/rollover and rollback behavior. No broad visual redesign is required.
-
-Every required core row must be answered and verified, not merely safe. D's
-remaining items keep the extended program open. A known external blocker gets
-its exact dependency and next action; it is not a completed feature. At the
-milestone boundary select the next real capability group, including later guided
-builders/profiles when their shared engine/data dependencies are ready. Do not
-infer whole-product completion from a clean PR list or closed subsystem queue.
-
-## 5. Work ownership, prioritization and continuity
-
-The lead owns the map, next task, integration and technical choices. The maker
-implements; the checker independently reviews meaningful semantics and numbers
-using evidence, not agreement. Use at most two non-overlapping maker lanes
-(engine and data/runtime); serialize changes to shared parser/service/data
-contracts. Do not create a parallel agent swarm that the owner must reconcile.
-
-Within available authorized execution sessions, continue after accepted merges.
-At a usage/session limit, retain one exact next action here with branch/PR,
-command/evidence and blocker. Do not promise background work without a running
-execution service. If no independent checker can be invoked, record an exact
-handoff and continue independent tasks; never relabel self-review independent.
-
-Reprioritize when evidence shows higher user impact, wider reuse, a critical
-wrong-answer risk, or a source dependency. Do not reprioritize merely because an
-easy documentation/test cleanup appeared. Infra work must unlock a named active
-capability, prevent material harm, or repair observed operation. Stop optional
-refactoring when its targeted user outcome is achieved. Two repair/review rounds
-with the same root cause trigger a lead diagnosis of the model/contract, not a
-third cosmetic patch or another owner review loop; this is not permission to
-merge a known defect. Batch unrelated maintenance outside the critical path.
-
-## 6. Acceptance and evidence without new ceremony
-
-For each unit keep a short semantic contract in its PR: meaning, dependencies,
-examples, independent expected values and applicable checks. Do not require
-separate preflight/spec/review documents for routine work.
-
-- Deterministic small-data checks prove sample selection, formulas and joins.
-  Independent expectations must not call the function under test. Include
-  discriminating rows, zero denominators and incomplete coverage where relevant.
-- Paired structured/natural tests prove binding and execution parity; explicit
-  clause/identity checks prevent two identically wrong outputs from passing.
-- Real-data checks use the exact candidate and one immutable generation; verify
-  representative numbers against independent raw aggregation/qualified source.
-  Neither engine output nor another agent's opinion is the expected answer.
-- Select focused tests while editing. Run appropriate broad checks once the
-  candidate stabilizes; full Raw QA/filter sweep at meaningful integration
-  points. Do not rerun every overlapping suite after docs changes. Keep existing
-  blocking CI and disclose skips; the informational needs_data job's failure is
-  still relevant evidence for a data-dependent capability's acceptance.
-- Preserve successful behavior and historical acceptance provenance. Legitimate
-  temporary refusal tests can be replaced only alongside proved functionality;
-  negative tests remain separate. Never remove difficult desired cases, mark
-  unmeasured ones passing, or manufacture human acceptance.
-- The checker supplies some unseen paraphrases/entities/thresholds AFTER the
-  maker defines the semantic target. Record failure causes and repair shared
-  behavior. Do not build a second permanent corpus solely for holdout management.
-- Deployed result checks are part of each runtime/data change. A local pass is
-  not a deployment pass. Existing renderer reuse needs a targeted spot-check,
-  not another owner screenshot tour.
-
-Owner update: what useful capability now works; what remains; verification
-summary; next action; necessary owner action (normally none). Detailed code,
-run IDs and numerical evidence belong in the PR/queue.
-
-## 7. Live continuation record
-
-| Package | Status at plan revision | Dependency / next action |
+| Core data | O1 recorded 684 served files and 60 player/team/game season-type slices, 1996-97..2025-26; most older manifests are legacy. Coverage tests/runs are in the immutable prior queue | Reuse the qualified snapshot. This is not exhaustive independent proof of every value or current freshness |
+| Identity/sample | A1/A1b and A2 implementations include id-based selection, renamed players, dates and last-N semantics; shared helpers and real-data tests exist | Do not rebuild from scratch; preserve and verify affected behavior |
+| Operations/history | B1/C1/C2 delivered substantial counts, rankings, splits, conditions, streaks, franchise/series/history work, most recently #450 season lists | Implemented does not mean every combination or deployment is accepted. Old individual fixes are not the new sequence |
+| Participation/period | Starter roles, period rows and schedule-context features were served only for 2024-25/2025-26; rosters and core games span the historical window | Existing-snapshot slices can proceed. Earlier role/period coverage remains an explicit dependency |
+| Specialized data | Served play-by-play, clutch, lineup and on/off files were absent; awards/injury/status require qualified reference sources | Missing sources remain unfinished work; do not derive injury or simultaneous presence from participation |
+| Runtime | Prior profiling found material read/index/frame costs and several useful fixes; compact name lookup publication is still to verify | Follow O's bounded measurement/metadata path before suggesting a migration |
+| Product acceptance | Existing monitor checks availability and one representative route, not all numeric answers; integrated E remains open | P3 is a real interface/numeric/latency checkpoint, not a monitor screenshot or green-CI claim |
+
+Reuse existing helpers such as `_player_identity.py`, `_condition_utils.py`,
+`aggregate_metrics.py`, sample selection in `data_utils.py`, `query_service.py`
+and existing route adapters. Locate exact implementations on live main first.
+`route_input_metadata.py` is descriptive; accepting a kwarg is not proof it runs.
+
+## 2. Execution order and work ownership
+
+**P0a + P0b -> P0c integration -> P1 -> P2 -> P3**, with **O** independent or
+interleaved. P0c can integrate a ready independent candidate sooner; do not wait
+idle for unrelated work. P1 implementation can proceed while independent evidence
+is pending, but dependent acceptance cannot bypass P0's actual correctness gates.
+
+One lead owns this checkpoint, semantic decisions and integration. At most two
+non-overlapping makers plus an independent checker. Only one active writer owns
+`natural_query.py` and shared request/parser/service semantics. P0b/workflow or O
+work can be a second lane if its files/dependencies truly do not overlap. File
+ownership is recorded in the checkpoint, not inferred from the former streams.
+
+P0/P1/P2/P3/O are work-package labels in THIS queue, not new projects, dashboards,
+registries or parallel roadmaps. Use coherent PRs. A package may need several
+PRs, but each must advance a named outcome; no quota of phrase fixes.
+
+## 3. P0 - Secure existing work
+
+### P0a. Participation is not injury or status
+
+**Observed defect, not a delivered repair:** #462 maps injured/similar status
+words to missing participation and healthy/available/active to playing. Its
+fixture removes player rows to justify those readings. The source facts do not
+support that equivalence. Inspect `docs/reference/data_contracts.md` and the
+current participation contract; meaning must be checked before arithmetic.
+
+Preserve real improvements to teammate names/pairs and valid participation
+wording. Games in which a player did not play may answer did-not-play/without
+questions when coverage and relevant membership are qualified. They cannot be
+advertised as injured games or a cause of absence. Likewise played does not mean
+healthy, and listed active/available does not prove actual minutes played.
+
+Repair the existing candidate, not a fresh unrelated parser expansion. Status-
+specific wording without a source needs honest unavailable/clarification behavior,
+not a converted participation answer. Colloquial 'out' can only use a clearly
+stated did-not-play meaning where unambiguous; never imply injury. Do not equate
+resting/suspended/sidelined or other causes with all absences without evidence.
+
+Acceptance: independently check one and two teammates, reordered clauses and a
+stat bound beside participation; retain positive answers for another team/player.
+Use discriminating fixtures with both playing and non-playing games, membership
+boundaries and unavailable coverage. Explicit injury/status cases must not pass
+using absent/present rows. Check selected game IDs, counts, values and scope text
+through natural and structured/API paths, then targeted real data for participation
+and affected deployed output. Safety for missing injury data does not complete an
+injury-statistics feature. If the bug already landed, repair main via a bounded PR.
+
+### P0b. Required numerical acceptance must actually fail when wrong
+
+Inspect `.github/workflows/r2-real-data-validation.yml`, related harness tests,
+`tests/conftest.py` and its `needs_data` skip behavior. The observed workflow sets
+`continue-on-error: true` on numerical tests; targeted mode may skip other gates.
+The last inspected numerical run passed, but a green workflow alone is insufficient.
+
+Strengthen the EXISTING read-only validation path. Required tests for a feature
+must be non-optional and tied to a resolved candidate SHA and one pinned generation.
+Avoid a moving branch being independently checked out at different revisions by
+separate jobs. If older exploratory checks need to stay informational, identify
+and separate them explicitly; never reclassify a failing acceptance test merely
+to keep green. Preserve the full Raw QA/filter-sweep backstop and secret-free CI.
+
+Acceptance in a controlled test/validation context: a required assertion failure,
+a typo or empty required selection, zero executed tests, all-required-skipped run,
+missing required data and execution error cannot become a pass. A legitimate
+unselected job in targeted mode is not the same as skipped required tests. A valid
+positive selection must execute and pass. Report required selected/executed/skipped
+counts and underlying job conclusions. A deliberate failure experiment is clearly
+labeled, isolated from production data, and leaves no failing test in main.
+
+Use the existing `r2-validation` environment; no credential expansion, duplicate
+workflow or branch-protection change. Independent checker verifies enforcement,
+not just YAML appearance. Until this lands, manually inspect required underlying
+jobs/counts and block dependent merges on any real failure or unavailable evidence.
+
+### P0c. Preserve and integrate pending work
+
+Refresh #455 and #462. Keep the useful game-list population/owner/opponent work
+and participation/composition fixes. Do not merge either solely because it is
+mergeable or its PR body lists old green totals. Reconcile shared parser changes,
+review the actual combined candidate and its semantics, and run applicable checks.
+Do not treat an automated-review invitation as completed independent review.
+
+Close this transition when the two trust defects are fixed/verified, useful
+pending work is integrated or remains open with a specific independent dependency,
+and the checkpoint names P1. Unrelated blocked work must not create an indefinite
+P0 phase. No pending capability is silently discarded or marked complete.
+
+## 4. P1 - Deliver shared interpretation, not a new engine
+
+**Outcome:** changing a record/summary into a season split does not silently change
+who, which games, whose condition, or statistical basis the question asks for.
+This is the first bounded replacement/consolidation opportunity, not a demand to
+migrate all routes before shipping.
+
+Start with `team_record`, player/team summaries and `player_split_summary` /
+`team_split_summary` for named-season splits. Inspect their existing shared sample
+helpers and the #450 reparse guard. Reuse or extend the existing boundary so the
+request has explicit subject identity, record grain, ordered time/sample selection,
+owned conditions, operation, metric/basis and grouping. Structured and natural
+entry points should reach the same calculation. Retain working compatibility
+adapters while migrating this group. Remove a defensive reparse only when its
+invariants are implemented and independently verified, not just to shrink code.
+
+Mandatory first positive contracts (select fixture and real-data entities where
+participation/coverage is actually discriminating; names are examples, not rules):
+
+| ID | Shared behavior and required combination |
+| --- | --- |
+| S1 | Team record/summary and season split: home + named opponent, comparing exactly two explicit non-adjacent seasons; intermediate seasons must not appear |
+| S2 | Player summary and season split: own points threshold + named opponent, on the same explicit season set; selected player-game IDs and averages agree with independent expectations |
+| S3 | Team record and player summary: own-stat and opponent-stat clauses in the same request stay owned by the correct side; combine with a home/road filter |
+| S4 | Team record/player summary and season split: one qualified teammate's played/did-not-play condition + named opponent survives the operation change; no injury/status inference |
+| S5 | Records and summaries: explicit date range + opponent; distinguish the last N games with a condition checked inside that window from the last N qualifying games. Keep eligibility/order and labels explicit |
+
+P1 covers these five contracts, not every permutation. For S1-S4 also retain the
+corresponding one-season control. Specify behavior of an explicitly named empty
+season and missing coverage separately. Do not force date/last-N combinations
+into cross-season splits before their meaning and need are established.
+
+In the P1 PR, bind S1-S5 to existing/new focused tests and corpus IDs before
+repairing them; update the corresponding Core-1 cells. Expected results come
+from independent raw-row selection/aggregation, not parser output. The checker
+uses another entity, threshold and wording outside the maker's tuning set.
+Test lost clauses, swapped subjects, scope widening, and valid zeros separately.
+Assert actual API/result labels and selected IDs, not merely route equality.
+
+Done: these positive contracts work through existing calculations and natural
+input, required checks/review pass, deployment is checked, and the relevant
+obsolete special handling is removed or explicitly justified. A new class or
+file extraction without those answers is not completion. Other families stay
+on their working paths. Then start P2; do not finish every engine feature first.
+
+## 5. P2 - Bounded input-layer comparison
+
+Use the P1-verified subset and freeze the candidate code/data and semantic truth
+before tuning. This is one decision-sized comparison, not a provider tournament.
+Reuse existing tests, structured entry point, corpora and reports; no new permanent
+benchmark framework or public-input mode.
+
+Compare the incumbent with one bounded improved interpreter. The lead chooses a
+feasible deterministic redesign or a constrained AI translator under existing
+access/cost authority; when feasible include the other as a small comparison,
+not a prerequisite. Models propose validated requests for the same engine, not
+NBA answers, missing facts, arbitrary SQL or executable code.
+
+Bind held-out paraphrases to S1-S5 and selected Core-1 cells. The checker establishes
+intended semantics independently of the candidate, including alternate word order,
+unfamiliar entity names, two conditions with the same number, unsupported extra
+clauses and genuine ambiguity. Keep maker examples, held-out valid questions and
+safety/ambiguity controls distinguishable. Do not tune on a held-out failure and
+continue reporting it as unseen; keep it as regression and add fresh holdouts.
+
+Record denominator, answered-correctly, wrong-answer, refusal and ambiguity counts;
+clause/identity/sample preservation; real end-to-end latency (including repeats
+for a nondeterministic candidate); and authorized operating cost. Define the
+comparison's exact cases and latency/cost limits before running it. An unrun model
+alternative is 'not evaluated', not a win/loss. Without authorized model access,
+complete the feasible comparison, retain that limitation, and continue core work.
+
+Selection gate: no known wrong accepted answer or lost clause in the required
+subset, no required positive regression hidden as refusal, and either more correct
+held-out answers or demonstrably simpler reliable interpretation at comparable
+coverage, within limits. Schema conformance alone never passes. Keep the incumbent
+when the replacement does not show a verified benefit; record why and the next
+bounded improvement. Do not keep it by default without measuring the problem.
+
+The result is one short decision in this queue/PR with evidence and the exact
+integration step. Integrate a winning bounded replacement behind existing contracts
+and normal gates. New cost/credentials or production-model adoption require the
+necessary owner decision; prepare a recommendation and continue independent work.
+
+## 6. Core-1 acceptance scope (P3 starts during P1, closes after P2 decision)
+
+This finite **existing-snapshot checkpoint** is not the entire original core or
+whole product. The following 12 rows are its fixed capability denominator. Each
+row's enumerated obligations is required; examples are not exact phrase templates.
+Before tuning a row, bind the obligations to explicit test/corpus IDs and independent
+expectations in its PR and the evidence column. Reuse existing tests/evidence where
+applicable. Do this while building the selected row, not as a new audit-only phase.
+
+States: **I** implemented/merged; **N** independently numerically verified (fixture
+and real-data scope distinguished); **L** held-out language verified; **D** actual
+API/rendered/deployed path verified. 'Unassessed' means current integrated acceptance
+is not established, not that all underlying code is absent. Never infer a percentage
+from PR or test counts. Each row passes only when every bound required case passes.
+
+| ID | Required positive behavior and bounded combinations | State / evidence |
 | --- | --- | --- |
-| A1 | First slice merged (#315). A1b (id selection, renamed players, lineup member resolution) merged (#319); real-data tests passed (R2 runs 37118187291, 37130896078). #322: cold start builds the name/id indexes from the published `metadata/player_names.csv` (game-ordered `first_seen`; older or id-less lists fall back to the full scan) | Takes effect at the next published generation; deployed check for A1/A1b then. On/off still matches by name and with/without/opponent cross-filters pick a shared-name player without a note (D2); lineup answers wait on D2 lineup data |
-| A2 | Team last-N records merged (#316). Explicit date windows merged (#317): from/to, between/and, since/after, before/until/through, lone ISO dates, cross-season ranges; impossible dates refuse (R2 run 37106273170). Samples PR #318: window vs qualifying last N ("30 point games in his last 10" counts inside the 10 most recent games; "last 5 games where he scored 30" and "last 10 wins" pick qualifying games first) on player/team finders, summaries and team records; last N now runs after every filter (teammate availability, special events, role, schedule context); "last N meetings with X" and "last meeting with X" select games vs X; spelled-out and reworded windows ("last ten", "previous 8", "5 most recent") no longer drop silently; count answers name the window and the team; with no season named, "last N" fills from the prior season when the current one has fewer games ("this season" or a named season keeps it inside that season). Real data: targeted R2 runs 37118297245 and 37132664753 (reach-back) passed (10 Raw QA cases incl. 4 new; 17 needs_data tests). Named-player summaries and finders cut each season to that player's candidate ids before combining: career query peak RSS 1.21 GB to 530 MB (R2 run 37156413363). "Past N games", "how many of X's last N games" and "how many of his last 10 wins did he score 30" (outcome window) read as windows; qualifying counts say they are limited to the N most recent. Independent agent review: all findings fixed and re-verified. Closing years (#393 merged): "Lakers record 2024", "LeBron stats 2016", "Celtics vs Lakers 2024", "top scorers 2024" read the season that ended in that year (they answered the current season); a closing number a stat word owns ("how many players scored 2000") is not a year. Not read when a value word owns the number ("min 2000", "when allowing 2000"), beside a second year, a range or comparison word or other time wording ("this season", "career"), or outside 1947..next year; the leaderboard grammar claims only the closing year the parser read. Independent check: two rounds, all fixed. Real data: Lakers 2023-24 47-35, LeBron 2015-16 76 games, 25.3 points (R2 37620411687, 37622712845) | "Lakers vs Warriors last N games" compares each team's own last N unless "meetings"/"head to head" is said; "last 5 minutes" still reads as last 5 games (period work, D2); window count phrases drop selectors ("last 10 home games" reads "last 10 games") |
-| B1 | Totals vs per-game leaderboards in #317. Stream 3 branch `claude/rankings-stream-s8gywm`: condition-count rankings in adjective/shorthand form ("most 30 point 10 rebound games", "30/10 games", three conditions), exact-zero conditions ("10+ assists and 0 turnovers" no longer counts every 10-assist game; missing stats meet no bound), league-wide game lists and counts ("games with 10+ assists and 0 turnovers", "how often has a player had ..."), attempt-qualified shooting-rate leaders ("minimum 300 attempts", "5+ attempts per game"), games-played leaders, "best 3 point percentage" no longer read as top 3. PR #321: fixture checks pass; real data passed in targeted R2 runs 37130674898 (Raw QA 10/10, B1 needs_data tests) and 37131376968 (all needs_data tests in the touched files) | Independent check of #321 done: every claimed count, rate board and games-played board re-derived from raw fixture rows matched; its two findings are fixed in #321 (team "games played" duplicated column; "at most N" / "fewer than N" read as lower bounds) and real data passed again in targeted R2 run 37149301584. #321 merged. C2 streaks merged in #323 (league streak rankings, current streaks, streaks of any game condition, "this season"/career scope kept for streaks, career highs and the "covers 1996-97 onward" career label; targeted R2 run 37157463068). C2 team rolling stretches merged in #325: new `team_stretch_leaderboard` route ("best 10 game stretch for the Celtics", "which team had the best 10 game stretch", worst, scoring, points allowed, point differential, shooting and box-score-estimated ratings; named team lists and opponent lists; windows stay within a season); team "Game Score" stretches and two-team player stretches refuse (targeted R2 run 37173019011, 5 independent check rounds). C2 playoff series on the same branch: rounds before 2001-02 from each team's series order, series tables with Won/Lost/In progress (best-of-5 first rounds through 2001-02), single-team round records ("Celtics conference finals record"), year-named playoffs ("2026 playoffs" is 2025-26), series won/lost, team title counts as Finals series won ("Lakers titles since 2000", "did the Warriors win the title in 2017"); play-in games excluded. C2 league titles on the same branch: "which team has won the most titles since 2000", "top 3 teams with the most titles", "nba champions since 2010" rank every title winner by Finals series won with their title seasons; "who won the title in 2016" names the champion, Finals opponent and score; "champions" wording works for named teams; conference champions still refuse (rings were refused here and are answered since the player-rings slice below). PR #327 merged (league titles; also fixed a team split crash on "against winning teams" and stale round-record expectations found by full R2 run 37175338557). Bare-year and season ranges on the same branch: "from 2010 to 2015", "between 2000-01 and 2009-10", "2015-2017", "1999 through 2003", "since 2010 until 2020" now reach every route as a span (a bare year names the season starting in it, as "since 2010" and "the 2010s" do, except that for playoffs and titles it names the season ending in it, as "the 2016 playoffs" does; "2019-2020" is one season; future end years stop at the latest season; backwards spans are reordered; stat bounds like "between 20 and 30 points" are untouched); title counts over a range answer. PR #328 merged. Two-team stretches on the same branch: "Lakers vs Celtics best 10 game stretch" ranks each team on its own games; head-to-head stretches and "which Lakers vs Celtics player" stretches refuse. PR #329 merged. Stretch defaults on the same branch: "Celtics best stretch" / "LeBron best stretch" with no length rank 10-game windows and say so in a note; shooting wording ranks the rate ("3 point shooting" is 3P%, it was points); league shooting-rate stretches need the NBA season minimum made shots per game; player stretch lists no longer repeat overlapping windows of one hot run and get a headline. PR #331 merged. Lone years on the same branch: "Lakers record in 2019" is 2018-19, the season that ended in it, and a note says so; "in 2024 and 2025" covers both seasons; draft, birth and class years are untouched. PR #336. Series situations on the same branch: game N, elimination, closeout, deciding games and series scores ("when up 3-1", "down 3-1", "tied 2-2") filter team records, team and player summaries, game lists, player leaderboards and the team playoff record board ("who has won the most game 7s"); with no season named they cover every playoff season since 1996-97 and say so; split, compare and streak routes refuse the filter; series comebacks ("came back from 3-1") refused here and are answered since the series-comebacks slice below; "last N years/playoffs/postseasons" is a season window, not N games. PR #340 merged. Top-N game lists on the same branch: "LeBron top 5 scoring games", "best 5", "5 highest" list his five best games (the 5 was read as a 5-point floor and lists held 25 rows); "best 50 point games" stays a floor and "vs top 10 defenses" never sizes the list. PR #341 merged. Player rings on the same branch: "how many rings does LeBron have", "LeBron titles since 2015", "who has the most rings" count Finals titles won while playing at least one playoff game for the champion, with the title seasons and teams (unfinished Finals award none; ties are never cut); rings with a team or teammate, scoring/conference titles and back-to-back titles still refuse; any word beyond ring, question, span or the player's name refuses. PR #343 merged. Series comebacks on the same branch: new `playoff_series_comebacks` route, "teams that came back from 3-1 down", "Warriors blew a 3-1 lead", "have the Celtics ever come back from 3-1" list each series won after trailing (or lost after leading) by that series score, with round, opponent and span filters; player, two-team, home/away and regular-season comeback questions still refuse; counts, rankings, game conditions and span words the parser does not resolve refuse too. PR #346 merged. Stats by playoff round on the same branch: "LeBron stats in the Finals", "LeBron Finals averages", "Jokic stats in the 2023 Finals", "who scored the most points in the first round since 2000", "Lakers record in game 7s in the Finals" filter to that round's games (every playoff season since 1996-97 unless a span is named; "this/last season" kept); team round records keep their playoff routes. PR #350 merged; full R2 run 37337662565 on main 3a8216c passed. Titles, comparisons and single-game lists on the same branch: "won it all" is the title ("how many times have the Spurs won it all", "who won it all in 2016"); "this/last year" in a title question is one season; player and team comparisons take a round or series situation ("LeBron vs Curry in the Finals", "Lakers vs Nuggets in game 4s"); single-game lists rank every game in a named span or round ("most points in a game since 2000", "most points in a finals game", "most points in a game 7"; they ranked only the current season); "ever", "in NBA history" and "of all time" with no season named cover every season since 1996-97; "Lakers record in the first round this season" keeps the season. PR #355 merged. Single-game and single-season records on the same branch: "most points in an elimination/closeout/deciding game" list single games in that series situation; "most threes in a game by a team", "fewest points by a team in a game" rank team games (fewest from the bottom); "most points in a single season since 2000", "most points in a season ever" rank one row per player season (each season with its own games floor); "Lakers and Celtics record in the finals" is their Finals series history; "Celtics vs Heat in the eastern conference finals" refuses instead of comparing whole postseasons. PR #357 merged. Team and player best seasons on the same branch: "most wins in a single season", "worst record in a single season since 2010", "most team points in a single season", "best net rating in a single season" rank one row per team season (regular-season seasons under half the longest season's games left out, with a caveat); "LeBron best scoring season", "LeBron most points in a single season", "Jokic best rebounding seasons" rank that player's own seasons; "most wins"/"fewest losses" rank full records (they counted only won games, so boards showed records like 47-0). PR #358 merged. Record counts and apostrophe years on the same branch: "most road wins", "most home losses", "fewest wins in a single season", "best win % at home" rank the count or rate asked for (they could not be mapped, or "most home losses" ranked win%); "in '16", "the '90s", "'15-16" name seasons as their full years do ("Lakers record in '16" answered the current season). PR #360 merged. Team and shooting seasons on the same branch: "Lakers best scoring season", "Lakers best season", "Lakers most threes in a single season" rank that team's seasons (record or stat); "LeBron best three point shooting season", "Curry best shooting season" rank the shooting rate; "LeBron and Curry best scoring season" ranks both players' seasons; "lowest scoring team games" lists single games; decade boards rank what is asked ("worst record by decade" by win%, ascending; "fewest playoff wins by decade" answers); "most playoff wins" is a record board. PR #361. Team-season wording on the same branch: "Lakers top 3 seasons by wins", "Lakers best season with the most wins", "Lakers seasons ranked by wins", "best scoring season by points per game", "Celtics best defensive seasons" (lowest rating first), "Lakers best offensive rating season" rank that team's seasons; "who won the most games in a season" ranks single-season wins (PR #362). Player game lists: "Curry best 3 point shooting game", "LeBron top 5 games", "worst shooting game", "best shooting game since 2023" rank that player's games by the stat asked; rate lists leave out games under 10 shot / 5 three-point / 5 free-throw attempts, with a caveat (PR #364). Decades and ranges: "most points in a season in the 2010s" ranks single seasons in the decade (it ranked team wins), "this decade" is the current decade, "from 2010 to 2019" / "between 2010 and 2019" pass the leaderboard check, "LeBron best season" ranks his seasons by points per game with a note; "the 90s"/"the '80s" read as four-digit decades with a coverage note (PR #365). Shooting game lists keep "over 50%" / "% from three" / "under 15 points" bounds as conditions with the attempt floor, and "<team/player> season with the most X / best record" ranks seasons (PR #367). Player win and record boards: "most playoff wins by a player" counts games won by each player's team while he played (PR #369); "players with the best record", "rookies with the most wins", "guards with the best record against the Celtics" rank players by win % over their games (at least half the most games played); "Lakers best decade" / "which decade did the Lakers win the most" give the decade record table, while "best decade for points" and a player's best decade refuse (PR #372). League-wide shooting game lists ("best shooting games this season", "worst shooting games under 15 points") rank every player's games with the attempt floor (PR #375). League team-season boards rank each team season since 1996-97 and take wins thresholds ("teams with at least 50 wins ranked by net rating", "50 win teams", "seasons with at least 40 wins ranked by losses", "best defensive seasons by opponent points"); independently re-derived from raw fixture rows, the published stat now names the ranked column instead of the parser's reading (PR #378, targeted R2 runs 37581241206 and 37581988512). "players with 25 points and 10 rebounds", "players with 30 point games", "players with a triple double" list every player with a qualifying game, most often first (it refused or was unrouted; the earlier V1 refusal is replaced by this answer; targeted R2 run 37583404621; PR #380, five independent check rounds). Team shooting boards read a stated attempt minimum ("teams with the best 3 point percentage minimum 3000 attempts", "... 25 attempts per game") in place of the default floor, with a caveat (PR #381). Player season totals ("most total points this season") need one game instead of 20, and the per-game floor is at most half the most games anyone has played, so early-season boards are not empty. Absence clauses: a third player or a joined availability clause ("without Curry and Klay out") refuses instead of being dropped; nicknames, joined filters and the opponent player still answer (PR #431, full R2 run 38277703286). League single-game lists in more wordings: "worst shooting games", "top 5 shooting performances", free throw / 3 point / true / effective shooting game lists, team shooting game lists, team counting lists and "performances" as games; groups, unread numbers, unapplied bounds, stat-replacing margins and two season windows refuse (PR #435, targeted R2 run 38313416886). Game lists over "the last 3 seasons" rank games (they ranked season percentages), "best free throw shooting games over 90%" bounds the ranked rate, "Lakers worst shooting games" / "best 3 point shooting games by the Celtics" rank that team's games by the rate, and "in the last 10 games" on a league list refuses (PR #438, targeted R2 run 38339077548; full R2 38339611954 passed). A team's players' game lists ("Lakers players worst shooting games", "best scoring games by Lakers players") rank those players' own games, a closing owner ("... over 90% by the Celtics") keeps the bound, and a team's players against that team refuse (#444, targeted R2 run 38360645638; full R2 38361297322 passed). "from 2019" names the 2019 season; "from/in/for 2019 on", "2019 onwards" and "from 2019 to now/today" read as since 2019 while "on" as a filter or on-court wording ("in 2019 on the Lakers", "from 2019 on the road", "on vs off court") keeps the season; "best scoring games vs the Celtics by Lakers players" keeps the Lakers (#446, seven review rounds, targeted R2 run 38396072500). Next: C2 remaining gaps (league game lists by rookies or positions; "between" date ranges; "over 50% from three" on a free throw list; "best scoring games vs the Celtics by the Lakers" team scoring list drops the owner; two owners read the last). Open: a bare "players with 30 points" (a game or a season total) is not routed; team totals and team per-game floors keep their fixed values |
-| C1 | Samples stream. #324 merged: splits select the summary's sample first (wins/losses, dates, opponent, teammates, role, schedule, opponent quality, last N, stat conditions) and then bucket; player home/away buckets fixed for boolean `is_home`; summaries, team records and player/team comparisons apply every stat condition; "scoring N" thresholds (with joined "and N assists"); "compare the Lakers and Celtics" is a team comparison (R2 runs 37158029507, 37158280949). #333 merged (R2 runs 37204163105, 37204551083): conference and division opponents on player/team summaries, game lists, records, splits and comparisons, resolved season by season from 1996-97 (`_nba_alignment.py`, keyed by franchise team id; the served membership table still wins where it covers a season), so New Orleans counts as East through 2003-04 and the 7-team Pacific/Midwest divisions apply before 2004-05; multi-season opponent quality ("vs winning teams since 2015") is also season by season on those routes; "Lakers vs Warriors last 10 games" is their last 10 meetings, reaching back across seasons ("compare the Lakers and Warriors last 10 games" keeps each team's own); playoff records against a division answer; "vs the Pacific" and "vs Pacific teams" name the division and "vs the West coast" refuses; "compare LeBron and the Lakers" asks which reading instead of dropping the team. Fixture checks in `tests/test_opponent_groups.py`; real data in `tests/test_c1_opponent_groups_real_data.py` (alignment checked against how often each pair meets) | A head-to-head comparison with a stat condition refuses. "LeBron top 5 scoring games" lists 25 and reads 5 as a points threshold (sent to the Rankings stream). #337 merged: "Lakers and Warriors last 10 games vs the Celtics" is each team's games against Boston, "Lakers and Warriors record" is each team's record ("Lakers vs Warriors record" stays their meetings), quality bars apply on comparisons and after a division ("Atlantic Division winning teams"); fixture standings carry `team_abbr`/conference rank. #342 merged (R2 runs 37241437228, 37241881124): "Lakers and Nuggets series history" is their playoff history, "Lakers and Celtics leading scorers" ranks both rosters, "the best teams" is an opponent-quality term, "LeBron vs Curry against winning teams/the Celtics/the West" compares both players against that group, and "LeBron vs Curry's Warriors" stays a single-player game list. #344: team, player and league-wide streaks against a conference, division or quality bar ("longest winning streak vs the West"); a second group word refuses. #345 merged: team and player occurrence leaders against a conference, division or quality bar ("which team has the most 120 point games vs the West"); the resolved "vs <group>" phrase is masked before the player scan so "West" is not read as a surname. #347 merged: distinct player counts ("how many players scored 40 vs the Warriors") keep the opponent, special events and a default season. #348 merged (R2 runs 37261597991, 37261998223): distinct counts with two or more conditions ("how many players had 30 and 10"); "Lakers and Warriors playoff record" with no time words is their whole playoff history (4-2 in 2023 on real data) and publishes that range, while "this postseason"/"2026" keep one season. #349 merged (R2 runs 37262919099, 37263735267): comma lists ("25 points, 5 rebounds, 5 assists") and three-way "and" lists keep every condition (one condition was silently dropped, giving 36 instead of 18); distinct player counts apply "off the bench"/"as a starter" (starter roles are served from 2024-25) and their headline counts players. #351 merged (R2 runs 37264170937, 37285651046): "most triple doubles off the bench" filters the occurrence leaderboard by role (only lineup wording; "starting in 2023-24" is time); "between 20 and 30 points and 10 rebounds" is one ranged condition ("20-30" in headlines); player-count headlines name the opponent. Slice 11: "at most 5 points"/"5 points or fewer" are upper bounds (read as 5+), distinct player counts take upper bounds and lists ("under 10 points and 10 rebounds" counted games), "5 assists between 2023 and 2025" is a season span (read as an assist range, 0 instead of 166), and summaries/records/splits apply every condition in a list (dropped the second); thresholded count headlines read "games with 5+ assists". #352/#353 merged: "or fewer", "at most", verb-led and points-allowed bounds ("held opponents to 100 or fewer") are ceilings; points-allowed floors ("allow 110 or more"); "in at least 10 games" repeat counts. #354 merged: opponent box-score bounds ("allow 15+ threes", "opponents had 20 turnovers", "held opponents to 10 threes"; "shot" reads attempts) on records, finders, summaries, compares, splits and team streaks. Slice 14: later list items keep the opponent subject ("gave up 15 threes and 50 rebounds", "held teams to 10 threes and 100 points"); points allowed on team streaks; "best record when opponents made 15+ threes" ranks the matching games; "Lakers record vs Celtics when they have 15+ threes" keeps the Lakers as subject (#356 merged). Slice 15: final margins ("won by 10+" no longer reads as 10+ points; "lost by 20 or more", "decided by 3 or fewer", "within 5 points", "by double digits", bare "won by 1" is exact) on records, finders, summaries, compares and team streaks; player rows use the team margin; outcome streaks keep own bounds ("winning streak with 15+ threes", "streak of 120 point wins") (#359 merged). Slice 16: adjective game lists with a second condition ("LeBron 30 point games with 10 assists", "Lakers record in 120 point games with 15+ threes"); a "with <number> <stat>" bound is never a teammate when only read scope follows it, and "or" alternatives repeat the first clause. Slice 17: separated lists ("30 point games did LeBron have with 5+ threes"), good/bad/winning/losing opponents after a stat bound, record leaderboards keep a bare bound ("best record with 15 threes") and drop teams under a fifth of the leader's sample games. Slice 18: every glossary opponent-quality term ("vs playoff teams", "against teams that made the playoffs", "contenders") is read scope after a stat bound, and a quality term no team meets ("non-playoff teams" when all qualified) gives no games instead of the unfiltered sample. Slice 19: operator words inside a condition list are read ("games with 30 points and 10 or more assists" kept only the assists; a clause it cannot read still refuses), and "more than N" is the same strict floor as "over N" instead of a bare number. Slice 20: "record when LeBron plays at least 35 minutes" applies the minutes bound (it answered with the whole record, and the ceiling form gave no games); negated bounds read the right way round ("no fewer than 10" is a floor, "not over 2" a ceiling), and "record in games with no more than 10 turnovers" no longer reads "no ..." as a missing player. Slice 21: player clauses inside a team-record sample ("when LeBron plays and scores 30" is his 30-point games, not team points; "when Luka sits/rests" is absence; "... but loses" keeps only losses), a second player's clause on a player route refuses instead of being dropped, and "below N" is a ceiling. Slice 22: team and opponent totals on a player's games ("LeBron games when the Lakers score 120", "30 point games when opponents score 120", "when opponents make 15 threes") read the team rows of the same game instead of the player's own stat, the player's own bound beside them is kept, and "opponents score 120" / "below 100" bound the opponent on team records too. Slice 23: "his team / LA / the opposing team scores 120", "the Lakers allow 120" and "commit 20 turnovers" are team or opponent totals; a team named beside "vs <opponent>" restricts to his games for it; a team total beside a player event no longer refuses; and "highest scoring games with 10 assists" ranks by points with the assist bound kept. Slice 24: a rank word names the ranking stat and "with 30 points" / "30 point games" / "a 30 minute game" stay game conditions ("most rebounds in a game with 30 points" refused, "top 5 games by assists with 30 points" dropped the points, "fewest points in a 30 minute game" dropped the minutes). Slice 25: "10 assists at most/max", "30 minutes or under", "no-more-than" and "never more than" are ceilings, "when held to 100" is at most 100, "vs below/above .500 teams" filters opponents, and team "lowest scoring games" run lowest first. Slice 26: a team's own stat beside an opponent bound ("make 15 threes and allow under 110") is kept, "close games" (final margin 5 or fewer) and "blowouts" (15 or more) filter by margin, and bare shooting rates ("shoot 50 percent", "50% or better", "at most 40%") are read and keep a "with 30 points" beside them; the wording picks the rate (FT%, 3P%, TS%, eFG%) and an opponent's bare rate refuses (#432 merged). Slice 27: a clause keeps its own subject ("when the opponent scores 110 and makes 15 threes", "when teams score 110" bound the opponent; "when opponents score 110 and they shoot 50%" is the team's shooting; "the Celtics shoot 50%" beside the Lakers refuses instead of answering for Boston), and "when LeBron is held to 20", "when opponents were held to 100" and "when held to 40% shooting" are ceilings (#433 merged). Slice 28: a list of shooting rates keeps each one ("80% from the line and 40% from three"), and abbreviations ("ts 60%", "efg 55%", "fg 50%") and "from 3s" are read (#434 merged). Slice 29: "when they shoot 50%" after "vs Celtics" keeps the Lakers as subject (it answered Boston's record), game-clock wording ("with 5 minutes left", "in the final 2 minutes") refuses instead of reading minutes played, and another player's stat clause on a player's games ("when Davis scores 30") refuses instead of reading the first player's points, and "LeBron games when LA scores 120" is his team's total. Slice 30: points-allowed ranges ("when allowing between 100 and 110", "opponents score between 100 and 110") bound the opponent (it answered every game or read the team's own points), "when held to under 100" is a strict ceiling (it refused), and "Lakers record when a player scores 40" refuses until a team's players' games are read on records (it answered every game) (#436 merged). Slice 31: "Lakers record when a player / someone / anyone scores 40" reads the team's best single-player line in each game (`top_player_<stat>` from player rows) on records, game lists, summaries and best-record boards; a ceiling ("a player scores under 10") or another team's player refuses (#437 merged). Slice 32: a team's own clause list keeps every item ("when they score 120 and make 15 threes" kept only the points), a team named in a joined clause is the opponent ("when they shoot 50% and the Celtics score 110" answered Boston's record), "hold/holding opponents to under 100", "give up less than 100", "the opposition / another team scores 120" and opponent box-stat ranges ("opponents had between 40 and 50 rebounds") bound the opponent, and a name it cannot place on a team record ("when Davis scores 30") refuses (#439 merged). Slice 33: a joined clause that names the team itself is its own ("when the Lakers score 120 and the Celtics score 110" answered as Boston; "and LA makes 15 threes" was dropped, and LA for another team refuses), a joined "and make 15 threes" after a range or ceiling is kept, opponent ranges without "between" ("opponents had 40 to 50 rebounds", "allowing 10-15 threes") bound the opponent, and "when opposition scores 120" answers (#440 merged). Slice 34: points-allowed ranges without "between" ("opponents score 100 to 110", "they allow 100-110 points") bound the opponent, "the opposition" and "another team" lead opponent clauses ("... scores 110 and makes 15 threes" put the threes on the team), a clause naming the team itself after "vs <opponent>" reads on to the joined opponent clause, and a stat clause naming a team outside the game ("vs Celtics ... and the Knicks score 110", "Knicks and Celtics score 110") or the opponent's shooting on a record refuses instead of answering for Boston or the team's own stat (#441 merged). Slice 35: "N% shooting" is a floor ("50% shooting games", "on 50% shooting", "30 point games shooting 50%" ignored or refused the rate), "the Lakers' opponents score 110" bounds the opponent, "stats in close games / in games with ..." is the sample's summary, and "with 5 minutes rest", a team-named clause on a team compare ("Lakers vs Celtics when the Celtics score 110" bounded both) and two-player subjects ("LeBron and Luka games with 30 points" answered for LeBron alone) refuse (#442 merged). Slice 36: shooting rates with a bound word or range ("under 40% shooting", "at least 50% shooting", "between 40 and 50 percent", "from the floor", "beyond the arc") are read (they were dropped or read as a 50-point floor), "at least"/"at most" no longer rank a list, records read the opponent's rate ("when opponents shoot 50%", "when the Celtics shoot 50%" in games against Boston, "opponents shot between 40 and 50 percent"), and "force 15 turnovers", "15 forced turnovers" and "with 15 opponent turnovers" bound the opponent's turnovers (they read the team's own, were dropped, or refused as a teammate) (#447 merged). Slice 37: wording the readers dropped and answered with the wrong sample now refuses: an unresolved teammate on a player's games ("LeBron games with Davis" returned every game), a second opponent ("vs Celtics and Knicks" kept Boston), another team's opponents ("the Celtics' opponents score 110" answered Boston's record), season lists with a condition ("120 point seasons" listed games) and "when the score was 120" (#448 merged). Slice 38: "vs winning / good / above or below .500 / losing / Western / Eastern opponents" and "vs Western teams" read the same groups as "... teams" (they returned every game), "vs Celtics, at home" keeps Boston as the opponent (it answered Boston's whole record), and "vs Celtics, Knicks and Heat", "vs ranked opponents" and "vs LA opponents" refuse (#451 merged). Slice 39: opponent lists ("vs Celtics, Knicks and Heat", "vs Celtics and Knicks", "vs Celtics or Knicks") filter games against any of them on records, game lists, summaries and team/player streaks, keeping the team named before the list (Boston had become the team); "vs contending / elite / great / strong / weak / poor opponents" read the glossary's contenders / top / good / bad teams; "top 5 games" ranks by points like "best 5 games" ("vs Celtics" listed the last 5, "vs good opponents" gave a summary) (#452 merged). Slice 40: "60% true shooting", "65% ts", "55% efg" and "effective field goal shooting" filter on TS%/eFG% (a team record with "true shooting" became a team-leader board because any "%" counted as a ranking word); "with 10 or fewer opponent turnovers" no longer refuses when the route read the ceiling; "vs teams that scored 120 / shoot 50% / made 15 threes" read the opponent's line in those games (they read the team's own stat), "vs teams that have a winning record" is the .500 bar, and season descriptions the data lacks ("teams that won 50 games", "teams that allow 120", "poor shooting / high scoring / good defensive teams") and "when the score is tied" refuse; a player's stretch vs a team list reads the list (the Knicks became his team) (#454 merged). Slice 41: "vs top 10 defenses / offenses" no longer errors when the ratings table names teams by id only; "vs teams that score 115 points per game" (read the team's own points) and "vs teams who average 115" (became a player list) refuse as season descriptions; "vs teams that are winning / losing" read the groups; a team's "top 5 games", "best games", "worst games" and "games by margin" rank by final margin (listed by date) (#456 merged). Slice 42: "vs top / bottom N defenses / offenses", "elite / bad defenses" read the latest ratings table on records, game lists and stretch boards (they returned every game); a team's "best wins" and "top 5 wins" rank by margin, a singular "best game" / "biggest win" / "worst loss" is one game, "best 3 point games" ranks by threes (it read a 3-point floor), "Lakers top 5 games with 120 points" ranks the team's games (it became an empty player board), and "vs teams that shoot 50% per game" refuses as a season description (#457 merged). Slice 43: "biggest win / best game / highest scoring game each season" (and "every", "per", "by season"; "top 2 ... each season") lists each season's top games across every served season unless a span is named (it gave one game, or the span's top 25); "vs good / elite / top 3 defensive (offensive) teams" are the rating groups (refused, or a player-summary error); "best three pointer games" and "top 5 three pointer games" rank by threes (they became "best three games" or a points list); a threshold list "by season" ("30 point games by season", "how many ... each season") keeps every game; "Lakers top 5 games with 120 points and 30 assists" ranks the team's games (it became a team board) (#458 merged). Slice 44: "Lakers record by opponent", "split by opponent", "against every opponent", "LeBron averages by opponent / vs each team" are an opponent split (one row per opponent; they gave the whole sample), and "by opponent points" stays a ranking; opponent lists apply on split routes ("home and away record vs Celtics and Knicks" kept Boston only); a player's stretch vs a comma list ("vs Celtics, Knicks and Heat" read the Celtics as a second player) and a list closed by "and" before the subject ("against the Celtics and Knicks, Lakers best stretch") read correctly; "top 2 games with 30 points each season" names its count, so it ranks each season (#459 merged). Slice 45: a teammate named by one word ("Lakers record without Davis", "LeBron stats with Austin", "when Davis sits") is read when exactly one player of that name played for the team, or beside the player, in the requested seasons (it refused); a player's own games take "with <teammate>" ("LeBron games with Anthony Davis" refused), only for a player who was on his side, with scope after the name ("with Davis this season / vs Celtics") or after a bound ("with 30 points and Davis"); a person after a bound who is not a teammate refuses; "with LeBron and Davis" refuses instead of keeping LeBron only; "wins and losses split" / "split by wins and losses" are the win/loss split; "10 game window / span" is a 10 game stretch; "biggest blowout(s)" rank blowout wins (one game when singular) (#460 merged). Slice 46: two teammates at once ("Lakers record with LeBron and Davis", "LeBron stats without Davis and Reaves") filter on both when both played on the subject's side in the span (they refused, or kept the first name); three teams compare side by side ("Lakers vs Celtics vs Knicks", "compare Lakers, Celtics and Knicks since 2024-25" dropped one team or listed one team's games), with a condition beside them refusing. Open: "Lakers vs Warriors last 10 games with 120 points" compares each team's own games (stated reading); player "most 30 point games vs the East" goes to season leaders and refuses (Rankings area); "this decade" on a pair playoff record reads one season; conditions are joined across players ("Jokic had 30, Murray had 10 assists"); a single-team opponent shows as its abbreviation in count headlines |
-| C2 | Remaining gaps (2026-10-07, stream 3). Streak counts (PR #383): "how many 10 game winning streaks do the Celtics have", "how many times did the Lakers win 5 straight / win 6 games in a row", "how many players have had 5 straight 20 point games", "how many teams won 8 straight last season" count separate runs of that length (a 12-game run is one 10+ run) and list them; "winning streaks of 5 or more games", "streaks of 5+ straight double doubles", "games with a three", an opponent-points-only streak and "since 2024" on streaks (the three-season default overwrote it) answer. Independent check: two rounds, every count re-derived from raw rows; real data targeted R2 runs 37594051110, 37595445876. Franchise identity (PR #384): team and opponent filters match the franchise team_id, so "Nets record in 2002-03" (New Jersey, 49-33), "Thunder playoff appearances" (Seattle seasons), "vs the Thunder" and "Thunder record without Durant" keep earlier names, with a caveat naming them; a historical abbreviation alone stays its era. Independent check: three rounds (with/without player and occurrence-count splits fixed); R2 runs 37597362987, 37598110537. Playoff appearances (PR #385): "how many times have the Lakers made the playoffs" counts seasons (it counted games); "how many Finals appearances does LeBron have" (10; it refused as team-grain) and player boards count seasons with a game played at that stage; last appearance, longest/current runs, droughts and misses for teams and players; "most consecutive playoff appearances" (Spurs 22, 1997-98 to 2018-19), "longest playoff drought" (Kings 16) and "which teams made/missed the playoffs" (latest postseason) boards; "against teams that made the playoffs" stays an opponent filter. Independent check: two rounds (missed/made lists, league droughts, player runs, ties fixed); R2 runs 37599476304 and the follow-up. League boards one row per franchise (PR #386): multi-season record, team-leader, playoff round record, decade (named per decade) and title boards and league occurrence boards merged Seattle/Oklahoma City etc. (R2 runs 37605782216, 37606524832). PR #387: "fewest playoff appearances" ranks from zero and never cuts a tie, "teams that missed the playoffs in 2024-25" answers, plural "winning streaks" list every run of 2+ (a cut list says how many there were) (R2 37607823336). Opponent clauses: "when playing / facing / beating teams that made (missed) the playoffs" and "opponents who ..." filter opponents (they switched to playoff games); "how many times did the Lakers beat / lose to the Celtics" counts wins or losses against them (PR #388, R2 37609743520). Span totals (PR #389, R2 37611167645): "most points since 2023", "all-time scoring leaders", "most threes over the last 3 seasons" rank the total over the span (they ranked per game); "per game", "average", "in a (single) season" keep the per-game or season board. Margin counts (PR #390, R2 37612004687, 37612573581): "how many times did the Lakers win by 20" counts every 20+ win (a bare margin of 10 or more is a floor; "won by 1" and "exactly 20" stay exact), and "beat the Celtics by 20" / "lose to the Knicks by 10 or more" keep the margin with the opponent; "most points in any season" is the single-season board; "beat the 76ers by 10" keeps the margin; passive "were the Lakers beaten by (the Celtics by) 20" counts losses; the headline names home/road . Opponent record lists (PR #391, R2 37613336543, 37614164880): "how many times did the Lakers lose (on the road)" / "how often do they lose" count losses (they counted every game); "which teams beat the Lakers", "teams the Lakers lost to", "who did the Celtics beat in 2024-25" list every team with a win (or loss) against that team with a headline naming them, "twice" / "more than twice" / "at least 6 times" set the minimum, "at home" is the named team's home, and "beaten the Celtics the most" ranks every team; a multi-season count board no longer needs one meeting per season; two teams, a player subject, a margin, "only once", "last", "by the most" or "beat the buzzer" stay on their own readings; player won/lost counts read "has lost 1 game"; yes/no "did they lose their last game" keeps every game. Player series records (this PR): "LeBron playoff series record", "how many playoff series has LeBron won", "LeBron Finals series record", "LeBron series wins against the Nuggets" count the series his teams played in which he appeared (they refused: player rows carry no series), every playoff season unless a span is named; "Lakers series wins" without "playoff" is the series record; "season series" stays the regular-season head-to-head. Independent check (a separate session, every number re-derived): LeBron 2015-16..2019-20 14-2 and Finals 4-6 confirmed (R2 37615276269); "LeBron and Curry playoff series record" answered LeBron alone and "series record when LeBron scores 30" dropped the condition (with the Lakers named it answered LeBron's record instead), so a second player or a single-game condition on a series record now refuses with a note naming the reading. Season totals (#394 merged; independent check two rounds; R2 37624539442): "how many players scored 2000 points", "players with 1,000 points this season", "players with 500 rebounds / 100 steals", "how many Lakers players have 1000 points", "rookies with 1000 points" list every player whose total reaches the number (no game ever has, so it is a total; they cut "2000" to "200", refused or counted games), "how many" counts players and the list comes with the count; "in a season since 2010" lists player seasons and counts players, a span without it is combined; home/road, opponent, wins/losses and dates apply and are named in the headline; a single game, a per-season repeat ("in each of", "both"), a game window, game totals or a second condition stay off the list. Shooters (#395 merged; independent check two rounds; R2 37626818792, 37628080295; window and opponent boards now scale attempt floors to the sample): "best three point shooters", "best 3pt shooters", "best free throw shooters" rank 3P% / FT% with the board's attempt floor (points, or no metric), and "Lakers best three point shooters" / "Lakers best 3 point percentage" / "Lakers worst free throw shooters" rank the team's players (a game list; "worst" was ignored); a bare "best shooters" stays unread. Loss/win phrasing (#396 merged; independent check three rounds; R2 37629433019, 37630286223): "Lakers losses to the Celtics", "defeats to", "at the hands of", "wins / victories over the Celtics", "Lakers record in losses to the Celtics" read the Celtics as the subject (or "defeats" as wins); "Lakers games beaten by the Celtics" counted wins and "games beaten by at least 20" every loss; "was LeBron's team beaten" read "was" as Washington. They keep the named team, its losses or wins and the margin; "wins over 120 points" stays strict. A margin beside the opponent is kept ("Lakers losses to the Celtics by 10 or more", "games beaten by 10 by the Celtics"), and "76ers" after "beaten by"/"wins over" is the team. .500 opponents (#397 merged; independent check two rounds; R2 37631848595, 37655829451): "vs .500 teams", "wins over .500 teams", "teams .500 or better" read the winning-teams bar (the filter was dropped, or "or better" refused as OR); "teams .500 or below / or worse" read a new win% <= .500 bar (refused). Team counts (#398 merged; independent check two rounds; R2 37657294540, 37658365866; negations, game conditions, streaks, margins, exact counts and player subjects refuse rather than count games): "how many teams have the Lakers beaten / lost to", "how many teams beat the Lakers (twice)" count the teams on the "which teams" board (they counted every game or loss); "how many losses to the Celtics do the Lakers have" answers (it did not route); "Lakers lost to / beat 76ers" keep the opponent. OR game lists (#400 merged; independent check four rounds; R2 37754831493): "LeBron 20 points or 10 assists" lists all 47 games (each clause was capped at 25 before the merge: 28); "last 10 games with 20 points or 10 assists" is the 10 most recent matches (18); "how many of his last 10 games had 20 points or 10 assists" keeps the window on every clause (17 instead of 9); a ranked OR list ("top 5 scoring games with 30 points or 10 assists") orders by the ranking stat; "in the playoffs" / "since 2024" written once apply to every clause (the playoff form listed regular-season games, the span refused); "top 3 games by assists with 20 points or 10 rebounds" keeps each clause's bound. Teams by record (#401 merged; independent check five rounds; R2 37759679541): "which teams have a winning record" listed every team and "how many teams have a winning record" counted every team (no bar); "how many teams are over .500 / are .500 or better / or worse", "finished under .500 last season", "winning / losing teams" list every team at the bar with a headline naming them and the home/road and date window ("winning teams" is the glossary's .500-or-better bar, as an opponent filter); a month is read within the board's season (October was today's year); "against teams that are .500 or better" / "opponents that finished .500 or worse", "vs teams that are over / under .500" and "against teams with a winning / losing record" read the opponent bar (11-13, 36-0; they refused or gave 47-13); named spans ("from 2023-24 to 2025-26", "over the last 2 seasons") apply to bars and teams played; "how many winning teams did the Lakers beat" (60 games) and "teams that are .500 or better have the Lakers beaten" refuse, as does a month over a multi-season span; "how many teams did the Lakers play / have the Celtics faced" counts distinct opponents (it counted games); "how many teams did LeBron score 30 against" counts his opponents in those games (it read "11 teams have had a game"); conference, playoff-made, back-to-back, extra numbers, "every season" or "by month" on a bar, and "played for", "twice" or "when ..." on teams played, refuse, as do windows the parser does not apply ("before the all star break", "between January and March", "regular season and playoffs", two named seasons). Teams by win total (#402 merged; independent check three rounds; R2 37859112031): "how many teams have 40 wins" / "won 40 games last season" did not route; "teams with 40 wins" was a top 10 with no headline. The count is the season board's team seasons with a headline naming them; present tense ("have 40 wins", "at least 40", "40+") is this season, "have had / won 40" and "a 40 win season" are every season since 1996-97, "how many different teams" counts franchises; streak counts ("won 5 games in a row") stay on the streak board; two seasons joined by "and" and filters the board cannot read ("at home") refuse. Ranked stat games (#403 merged; independent check five rounds; R2 37859689111): "LeBron top 3 assist games with 20 points" read "3 assist" as a bar and gave a league board; "top 3 rebounding games with 20 points" found nothing; "biggest 3 ..." ignored the 3; "Celtics top 3 games by points with 15 threes" dropped the threes and "by threes with 120 points" ranked by points. They rank the subject's games by the named stat with the condition (one condition; "and", "allowed", "where/while" keep their old reading), with scope words before the condition, over spans ("from 2023-24 to 2025-26"), and in OR lists ("three point games with 30 points or 10 assists" ranks by threes); team top games over a span list games ("Lakers highest scoring games since 2024" was a one-row summary), only for a named stat; opponent stats ("points allowed") keep the summary. Copula "was" and months over spans (#404 merged; independent check four rounds; R2 37860335739): "how many games was LeBron over 30 points" / "how often was Jokic held under 20" read "was" as Washington (0 games); the Wizards' own "how many times WAS scored 120" keeps the team. A month repeated in each season of a span ("Lakers record in March from 2023-24 to 2025-26": 1-2 for 6-4; "LeBron career stats in Feb") refuses on every route; a window with its year ("since January 2025", "since Mar. 3, 2025") answers. "Facing" (#405 merged; independent check two rounds; R2 37861750195): "Lakers record facing winning teams / the Celtics" read no filter (47-13 for 11-13 / 4-8); "how many wins do the Lakers have over winning teams" counted every win (47 for 11). "facing" reads as "against" ("facing elimination", "a deficit", "a back to back" keep their readings) and "wins / have over" an opponent group reads as "against" it. Yes/no last game (#406 merged; independent check two rounds; R2 37863001917): "did LeBron score 30 last game" answered with his last 30-point game (32 on 2026-09-26; his last game had 22). A yes/no question about the last game (also "most recent", "latest", "last night", "last playoff / home / road game") lists that game and answers "No: LeBron James had 22 points in his last game (2026-10-06 vs the Miami Heat)"; wins/losses, triple and double doubles and opponent scope ("his last game against the Boston Celtics") are checked; "was LeBron over 30 points last game" is not a Wizards question while "WAS points over 110" stays one; "any Lakers player", "both" and bounds the answer cannot phrase ("win by 10") get no yes/no. Month-year dates (#407 merged; independent check three rounds; R2 37889458952): "since Jan. 2025" / "Jan, 2025" read the month in the current season (2026-01-01: 32-12 for 75-29); "from January 2024 to March 2025", "January 2024 to March 2025", "Jan 2025 - Mar 2025" dropped the dates (86-34 for 53-21). A month with a period or comma keeps its year, a season label stays a season ("Jan. 2024-25" is January 2025), month-year ranges are first to last day, and two separate months ("March 2024 and March 2025") refuse. Team players' games (#408 merged; independent check four rounds; R2 37890276274): "did any Lakers player score 40", "Lakers players with 40 point games", "how many Lakers players scored 30", "anyone on the Lakers score 30" read the team's points ("60 games with 40+ points"); they list the team's players' games and count players ("1 Los Angeles Lakers player has had a game with 40+ points"); "how many times has a Lakers player scored 40" counts games; a second stat, a repeat count, without-player, quarters, conference/division, opponent quality, averages and other modifiers refuse; records and leaders keep their boards. Rank direction and conditions (#409 merged; independent check three rounds; R2 37891468372): "LeBron lowest 3 scoring games" / "worst 3 scoring games" / "fewest 3 rebounding games" ranked highest first (the count between the rank word and the stat was ignored); "worst turnover games" put the most first; "Celtics fewest points allowed" ranked the Celtics' own points; "top 3 scoring games while shooting 5 threes", "where they / the Celtics made 20 threes", "when he had 10 assists" dropped the condition. They rank from the bottom (turnovers and fouls rank the most first), points allowed ranks the opponent's score, and a while/when/where clause about the subject (he/she, they or the team's own name) filters the games; "at least 10 assist games" stays a bar; a clause about another team keeps its old reading. Independent check: three rounds, every list re-derived from raw rows. Open: "Lakers top 3 scoring games where the Celtics made 15 threes" reads the Celtics as the subject; conditions on a points-allowed ranking and "games allowing fewest points" are unread. Last qualifying game (#410 merged; independent check three rounds; R2 37917440332): "LeBron's last 30 point game" read "30" as a game count (his last 30 qualifying games, ranked by points); "Lakers last 130 point game" asked for 130 games; "Jokic last triple double" listed every one. A number before a stat word and a game noun is the bar ("30 pt game", "5 3-pointer game", "point outing / performance"), a singular game is the most recent one, "when did LeBron last score 30" and "the last time Jokic had a triple double" are that game, "3 most recent" / "latest 3" count, and last-N lists without a ranking word read newest first; "last 10 pts", "last 10 threes" and "last 10 points per game" stay windows, and streak and season forms ("the last time the Lakers won 10 straight", "won 60 games") keep their readings. Independent check: three rounds, every game re-derived from raw rows. Open: "how many games since his last 30 point game" counts rows; "last 30 point game in his last 20" returns nothing; "last 30 point, 10 assist game" (comma) and "last 30 point triple double" drop the points; "when did the Lakers last win by 20" and "30 in back to back games" are unread. Yes/no OR on the last game (#411 merged; independent check two rounds; R2 37918201207): "did LeBron score 30 or 10 assists last game" listed his last game meeting either clause (2026-09-26) instead of checking his last game, and "did LeBron score more than 22 last game" read no bound. Each OR clause is a check on that one game and either passing is a yes ("No: LeBron James had 22 points and 8 assists in his last game"); a verb before "more than / less than / fewer than N" names the stat; "did LeBron or AD score 30 last game" / "did the Lakers or Celtics win" refuse (they listed one subject's game). Independent check: two rounds, every answer re-derived from raw rows. Open: two subjects' last games, a win/loss clause in an OR ("did the Lakers win or score 120"), "did LeBron play last night"; "most games scoring more than 30" and "teams with pace more than 100" drop the bound as their "over" forms do. Season averages (#412 merged; independent check four rounds; R2 37921598559): "how many players average 25 points" counted players with one 25-point game, "players averaging 25 ppg" errored and "Lakers players averaging 20" counted team games. Average wording (average/averaging/averaged, ppg/rpg/apg/spg/bpg, a bare number before a time or place word) lists and counts players whose per-game average reaches the number: decimals (1.5 steals, .5 blocks), strict "over / more than" ("more than 25 points per game"), team, position and role, opponent, home/road, wins/losses, dates, seasons and spans; a season board states its games floor ("at least 20 games") and opponent or window samples count every player's games. Under / up to, two stats, per 36/100, shooting, minutes, ages, conferences and season comparisons refuse; "in a game" keeps the single-game reading. Independent check: four rounds, every count and average re-derived from raw rows. Open: "from january to march" (no year), "this month", "before christmas" drop the dates; "in road wins", "so far", "per night" bare forms are unrouted. Played last night and win/loss ORs (#413 merged; independent check two rounds; R2 37922524983): "did LeBron play last night" summarised his last game without an answer; it is checked against his team's last game ("Yes: LeBron James played in the Los Angeles Lakers' last game (2026-10-06 vs the Miami Heat): 22 points, 10 rebounds and 8 assists" / "No: ... did not play ...; his last game was ..."). "did the Lakers win or score 120 last game" refused; a win/loss clause is one OR check. "play well / the whole game / point guard", the play-in, and ORs mixing a team and a player ("did the Lakers lose or did LeBron score 40") get no yes/no or refuse. Independent check: two rounds, 186-query OR grid and constructed no-play data re-derived from raw rows. Open: "did LeBron play in the Heat's last game" (a team he is not on), "LA's last game"; regular season only unless the playoffs are named. Other-team clauses (#414 merged; independent check three rounds; R2 38086087439): "Lakers top 3 scoring games where the Celtics made 15 threes" listed the Celtics' own games (the clause's team became the subject); "Lakers highest scoring games when the opponent scored 120" ranked by the opponent's points. The named team is the opponent and its number an opponent bound ("Lakers games against the Celtics when the Celtics scored 120", "Lakers record when the Celtics made 15 threes": 1-4), the subject's own name stays its own number, and the rank word ranks the subject's stat ("top 3 scoring", "top 3 games by points"). Two sides compared ("Lakers vs Celtics when ..."), "at"/"@" forms and clauses without a number keep their readings. Independent check: three rounds, a 30x29 team-pair sweep (4,350 queries) and every list re-derived from raw rows. Open: "Lakers games at the Celtics" reads the Celtics' games (no "at" opponent); player subjects ("LeBron ... when the Celtics made 15 threes") read the Celtics as his team; "between 100 and 110" / "at most" opponent bounds; "Lakers games with the most opponent turnovers". Games since (#415 merged; independent check three rounds; R2 38087885558): "how many games since LeBron's last 30 point game" counted his 30-point games ("1 game with 30+ points") and "since the Lakers lost" counted every loss. The most recent qualifying game (a bound, two bounds, a triple or double double, a win or loss, an opponent, home/road, a named season) is found and every game the subject has played since is counted through the latest season: "LeBron James has played 1 game since his last game with 30+ points (32 points on 2026-09-26 vs the New York Knicks)". "Lakers last loss / win" is one game. Date windows ("since january (has) LeBron scored 30", "since the all star break") keep their count reading; two players and bounds the answer cannot name ("won by 20") refuse. Independent check: three rounds, 34 counts re-derived from raw rows. Open: "since his last 30 point playoff game", "since the Lakers lost at home / to the Celtics", "before january" inside the condition, conditions last met before the two-season window; "how many days since" is unanswered. "At" a team (#416 merged; independent check four rounds; R2 38089476358): "Lakers games at the Celtics", "Lakers record at Boston", "LAL@BOS", "LeBron stats at Boston" read the at-team as the subject (the Celtics' record; LeBron filtered to Boston). A team after "at" / "@" is the road opponent ("Lakers record at Boston": 1-5), the subject's own team is home ("Celtics record at Boston": 23-7; "Tatum points against the Lakers at Boston": his home games), an opponent already named is the road team; compared sides, subjectless questions, "at home / the half / min 30", and a team after beat / lost to keep their readings. A player's team is read from the latest season (one team; cached per data generation). Independent check: four rounds, every record and list re-derived from raw rows, two-generation cache reproduction. Open: player questions over other seasons or a career ("LeBron career averages at Boston") keep the old reading (per-game home/road needed); "teams that beat the Lakers at Boston" ignores the venue. Named seasons (this PR): "Lakers record this season vs last season" answered 2024-25 alone, "Lakers record 2025-26 vs 2024-25" and "LeBron 2023-24 vs 2025-26" the default season, and "Lakers record in 2016 and 2020" the current season. Two or more named seasons (explicit, bare years read as the season ending in them, "this / last season", joined by vs, versus, compared to, than, and, or, commas) are a season split of one player's or one team's sample: one row per season, seasons between them left out ("2023-24 vs 2025-26" skips 2024-25), a named season without games named in a caveat, badge "Seasons". The split answers only when the one-season reading is a player summary, team record or game list with no unsupported filter and every filter it applies passes to the split (another player's condition, a second player or opponent, an unresolved teammate, a team-points bound and an opposing player refuse); comparisons, leaderboards, a second split and a last-N window refuse rather than pool the seasons or answer one; "in 2024 and 2025" stays a span; months or playoff rounds named for two seasons and "the season before" keep their readings. Split summaries also drop empty context keys their sample does not take (a set one refuses) instead of raising. Open: "LeBron by month against Curry" errors (the split's advanced metrics need team rows; on main); "Lakers points allowed per game" and "opponent field goal percentage" read the team's own stats on main (the season split refuses them); "this season and last season" on comparisons and game lists refuses where a span would answer; "Lakers, Celtics and Knicks record 2024-25 vs 2025-26" answers the Celtics alone (main reads the list that way for one season too). One-possession games (#449 merged; independent check seven rounds; R2 38391901172): "Lakers record in one possession games", "Lakers one possession wins", "how many one possession games did the Lakers win", "LeBron stats in one possession games", "Lakers vs Celtics in one possession games" and "which team has the best record in one possession games" read a schedule-context flag that the served data carries for 2024-25 and 2025-26 only, on team records and player summaries; every other season and route refused. "One-possession games", "games (decided) within one possession" and "one-possession wins / losses / record" now read a final margin of 3 or fewer from the score, like "close games" (5 or fewer), on every route that reads a margin; "excluding / non- one-possession games" are decided by 4+ ("excluding close games" 6+ and "non-blowout games" 14 or fewer: they read as the excluded games). A bare "within one possession", a score during the game ("in the final minute", "in the 4th quarter"), a team after "losses to" (it read as the subject) and a comparison with another margin keep the flag and its refusal, as does a question whose stat bound or number the margin reading would drop ("with 10 reb", "when LeBron gets 30": the margin takes the parse's one stat slot; "with 30+ points" reads both). The schedule-context build derives one possession from the two rows' points instead of the stored team plus_minus (served 2024-25 / 2025-26 checked against the score in R2). Corpus diff 1 intended ("Celtics one-possession record"), 546 QA strings unchanged. Open: "close losses to the Celtics" reads Boston as the subject, "close games in the final minute" drops the clock and "excluding close losses" reads the close losses (all on main); "this season vs last season" and "2023-24 vs 2024-25" answer one season on records and summaries (every filter, not only this one); leaderboards in one-possession games ("most points in one possession games") refuse, as close games do. Point differential and team boards (#430 merged; independent check nine rounds; R2 38194446821): "Lakers point differential" ranked team games by points; "which team has the best point differential" and "point differential leaders" ranked players' plus-minus; "best point differential ever" refused; "who has the best plus minus on the Lakers" / "who has the highest ppg on the Lakers" / "top 3 Lakers players in rebounds" listed team games or summarized the team. Point differential / points differential / point diff / scoring margin / scoring differential / average margin / net points are the team's average final margin (a game summary: "are 47-13 in 60 games, outscoring opponents by 16.9 points per game"), with home / road, opponent, last-N, season, span and month windows applied; a threshold, ranking or grouping keeps the game list. A league board ranks teams; "ever" / "of all time" / "seasons" are team seasons (filtered ones refuse). "best / highest / top ... on the <team>" is a board of that team's players. "In / for / over the month of March" is March for every stat. A window the dates do not read ("this month", "until March", "over the last two months", "in the 2025 calendar year") refuses on these summaries and on every team-player board (the "most" path answered the season on main). A team's margin comes from the score: the stored team plus_minus disagrees with it in 20 / 14 / 9 rows of 2021-22 / 2022-23 / 2023-24 (fractional values, a wrong sign), so the team loader, the player loader's team margin, the team boards and top team games derive it from the two rows' points (R2 found the Lakers' 2023-24 differential read +0.61 for +0.60). Independent check: nine rounds (four on the readings, three on the rebase over month splits and month ranges, two on the score margin), every margin and board re-derived from the game rows, corpus diff 57 intended, 621 QA strings unchanged. Open: the schedule-context build still derives one-possession games from the stored column (rebuild with the score margin); "which team has the best point differential in the last 2 weeks" drops teams under the board's games floor; "who may have the best plus minus" refuses ("may" reads as a month); the best-month phrase says "plus minus per game" where "point differential" reads better; the unread windows above still answer the season on other routes ("Lakers average points this month"). Month ranges and named date windows (#429 merged; independent check five rounds; R2 38193203200): "Lakers record from January to March", "between Nov and Jan", "Jan-Mar", "in January and February", "before / after / through March" and "in the month of March" read the whole season or the first month. Month spans without days read as whole months (years from the season, or one named year: "from March 2025 to January" spans 2024-25 and 2025-26); "in January and March", "in March vs / or April", a backwards span, a range named for two seasons and a yearless cut over several seasons ("before March in the last 3 seasons") refuse. Calendar landmarks the dates do not place ("after Christmas", "before the All-Star break", "since the trade deadline", "after Thanksgiving", "since New Year's", "allstar break") refuse instead of reading the whole season; "since / after the All-Star break" reads as before, a player named for a landmark (Rakeem Christmas) stays the player, and leaderboards "since the trade deadline" keep their date-anchor refusal. Independent check: five rounds (three on the ranges, two on the landmark and month-of / versus guard), every window re-derived from the game rows, corpus diff 52 intended, 621 QA strings unchanged. Open: "March compared to April" without "in", "in March and in April", "since All-Star weekend", "how many Lakers players scored 30 since the trade deadline" (that route skips the guard), "Christmas day games" (no Christmas window); opponent shooting with a month range still refuses. Ranked three-point games (#428 merged; independent check three rounds; R2 38191836484): "Curry top 3 three point games" and "Lakers top 3 3 point games" ranked games by points or listed the league. A named player or team ranks its own games by threes made ("top / best N three point / 3 point / 3pt / three-pointer games"), with an opponent, venue or season clause kept; the league form "top 5 three point games" reads as before. Independent check: three rounds, every ranking re-derived from the game rows, corpus diff 9 intended. Open: "who on the Lakers had the top 3 three point games" (a team's players). Opponent shooting (#427 merged; independent check four rounds; R2 38191555291): "Lakers games where the opponent shot under 40 percent" filtered the Lakers' own shooting, "held opponents to under 45 percent shooting" dropped the bound and "holding opponents under 40 percent shooting" read 40 points allowed. Team game lists and counts read the opponent's rate ("(the) opponent(s) / other team / opposing team shot under / over / at least / at most N percent", "held / holding / limited / kept opponents (to) [under] N percent [shooting]", no operator after "held" is a ceiling), with areas from three / downtown / behind the arc (3P%), from the line / the stripe (FT%), from the field (FG%); decimals are rates, not points. Team records and player game lists refuse (they cannot apply the opponent's rate), as do a second clause with no new subject ("... and scored under 100", "..., 35 percent from three") and an unknown area ("from the corner", "from 2 point range"); a season after the clause is the sample. Independent check: four rounds, every count re-derived from the opponent's row, corpus diff 25 intended, 621 QA strings unchanged. Open: opponent rates on team records and player game lists; "from January to March" after the clause refuses until month ranges land. Team subject: "over" and "in <city>" (#426 merged; independent check three rounds, the third on a small-sample games floor for opponent and window boards; R2 38190958536): "who led the Lakers in scoring over the Celtics", "Lakers leading scorer over the Celtics" and "Lakers record over the Celtics" read the Celtics as the team; "which Laker scored the most points in Boston", "who scored the most for the Lakers in Boston" and "Lakers record in Boston" did too. "over <team>" after a different subject is the opponent (a number after "over" stays a threshold; a player's own team, a possessive or a span word after the team, "the over" and "over min" are left as they were); "in <city>" after a team subject is road games there (its own city is home; a player "in Miami", "drafted / traded / born in", "the bubble" are left as they were). Independent check: two rounds, every record and board re-derived from raw rows, corpus diff 10 differences (all new test strings), 621 QA strings unchanged. Open: "Lakers record over the Celtics last season" / "over the Celtics last 10 games" keep the old reading (the span-word guard); multi-city "in Miami and Boston"; "Lakers leading scorer in Boston" refuses. Month splits (#425 merged; independent check four rounds; R2 38170085573): "LeBron points per game by month", "Lakers record by month" and "best month for LeBron" were season summaries, "Lakers best month" listed games, "Lakers home vs road" refused and "Lakers home and away record" refused. Player and team splits take a calendar month ("by month", "month by month", "monthly", "each month"): one row per month of one year, so a span keeps each year apart; rates are the month's totals, a counting stat also shows the month's total. "best / worst month", "best scoring / shooting / 3 point shooting / free throw shooting month", "highest scoring month" and "which month did he score the most" rank the months (a player by points per game, a team by record, ties named) and answer with the month; "which month did he have the most 30 point games" counts the qualifying games and "which month did the Lakers win the most games" counts wins over every game. "home vs road", "home and away", "road vs home" are the home/away split. "this month" / "last month" stay date windows; "fewest" qualifying games is not read off the split; "which month did he score the most points" ranks the month's total. Comparisons ("LeBron vs Curry by month"), leaders ("Lakers leading scorer by month") and a team asked about in a player's games ("Lakers best month in LeBron's 30 point games") refuse rather than drop the month. Independent check: four rounds, every bucket and ranking re-derived from raw rows, 6,523-string corpus diff (43 intended), 546 QA strings unchanged. Open: "Lakers record by month in LeBron's 30 point games" refuses (the player split would answer it); the split table shows no FG%/FT% column and a 1-3 game month can top a ranking; "top 3 shooting months" keeps the summary; "LeBron and Curry points by month" drops Curry (base reading, also without the month); "Lakers vs Celtics by month" stays a team comparison; a calendar month pooled across seasons ("LeBron in March over his career") is not a split. Missed games (#424 merged; independent check three rounds; R2 38150539148): "how many games has LeBron missed", "games LeBron missed", "how many home games did LeBron miss" counted the games he played (60). They count his one team's games he did not play, over the season, a span ("from 2023-24 to 2025-26", "the last 3 seasons"), home/road, an opponent or dates, and say so ("LeBron James missed 15 Los Angeles Lakers games ..."); a player with more than one team in the span, and two named seasons ("in 2024-25 and 2025-26"), refuse. Another player's stats in those games, missed shots, records and streaks keep their old readings. Independent check: three rounds on a data root with rows removed, every count and game list re-derived, 5,731-string corpus diff (11 intended). Open: "Reaves points in games LeBron missed", "Lakers record in games LeBron missed", "how many consecutive games has LeBron missed" and "before the all star break" keep base readings (wrong). Margin rankings (#423 merged; independent check two rounds; R2 38149442703): "Lakers biggest win", "worst loss", "largest margin of victory", "closest games" listed games by date; "LeBron biggest win" was a season summary. Biggest / largest wins (also road, home, playoff) rank by the winning margin, worst losses by the losing margin, closest games / wins / losses by the smallest margin, "biggest blowouts" are wins; a player's list ranks his team's margin and shows it; a count ("5 biggest wins") sets the length. Filters a game list cannot apply (back to backs, rest, national TV) keep the old refusal; "best wins" and years are not counts. Independent check: two rounds, every order re-derived from raw rows, 5,780-string corpus diff (11 intended). Team players, counted and ranked (#422 merged; independent check three rounds; R2 38148788573): "Lakers player with the most 30 point games" listed team games; "which Lakers player has the most triple doubles" ranked the whole league; "which Laker ..." read no team; "how many 40 point games have Lakers players had" counted players (1, not 2); "how many times did a Lakers player score 40" counted team games; "Celtics players with a triple double" refused. A team named with a player subject ranks that team's players (occurrence boards with a team filter; season leaders per game or total; "in a game" lists player games), also against a named opponent; singular nicknames ("which Laker", "by a Celtic") are the team's player; event counts of a team's players count games. Independent check: three rounds, every board and count re-derived from raw rows, 6,131-string corpus diff (21 intended). Open: "which Laker scored the most points in Boston" reads the team as BOS; "best shooting games by a Lakers player" lists team games. Stat spellings (#421 merged; independent check two rounds; R2 38107433360): "5 3-pointers / 3 pointers / three pointers / 3pt", "10 free throws", "10 field goals", "five threes", "ten rebounds", "twenty-five points" read no bound (every game answered); "5 3 point games" and "10 3-point attempts" read a 3-point floor; "games with 10 free throw attempts / 10 fta / 20 fga / 8 3pa" were taken as a leaderboard qualifier and dropped; "3pt fg%" read fg%. Each spelling is rewritten to the form the readers know; attempt thresholds are thresholds when no rate is asked (rate qualifiers like "minimum 100 attempts" stay); "free throws missed", "won by 3pts", "two point field goals" are left as on base. Independent check: two rounds, 30+ counts re-derived from raw rows, 5,721-string corpus diff (20 intended). Also fixes #420's multi-word own bounds ("at least 20 free throws and at least 20 opponent free throws"). Open: "LeBron top 3 three point games" (no span) reads points. Opponent bounds beside the team's own (#420 merged; independent check four rounds; R2 38106501667): "at least 15 turnovers and at least 15 opponent turnovers" dropped the own floor; "most opponent points with at least 15 opponent turnovers" ranked the team's points; "the Lakers forced the most turnovers", "ranked / sorted by opponent X" and "opponent free throws / 3 pointers / free throw attempts" ranked the team's own number or nothing; "120 points allowed" returned no games; "held the opponent to 100" was dropped. Own bounds are re-read with the opponent phrases taken out; "N <stat> allowed / given up" and "held them to [under] N [stat] (and N stat)" are opponent bounds; opponent shooting rates (fg / 3pt / ft / efg / ts percentage) rank and bound; "lowest first" (with a comma) sorts ascending. Independent check: four rounds, 50+ lists re-derived from raw rows, 6,020-string corpus diff (23 intended). Open: "held opponents to under 90 points and 10 threes" refuses (compound authorization reads a 10-three floor); "LeBron top 3 three point games" reads points; "the Celtics held them to" resolves the team to Boston; "where the opponent shot under 40 percent" filters the team's own rate. Record bars against one team (#419 merged; independent check three rounds; R2 38106075482): "which teams have a winning record against the Lakers" listed every opponent (5-7 included); "which teams have the Lakers beaten that are over .500" dropped the bar; "how many winning teams have the Lakers beaten" refused; "Lakers record over teams over .500" gave the whole record (47-13). Head-to-head bars (winning / losing record, over / under / .500 or better / worse, "a better than .500 record") keep only teams at the bar against that opponent; a bar on the teams a beat / lost-to board lists (winning, losing, playoff teams, over / under .500, "with a winning record", "that made the playoffs") counts a team only in seasons it met the bar (latest standings); "record over <quality teams>" and "opponents over .500" are the opponent bar; no team at the bar is answered ("No team has a winning record against ..."); shooting bars ("Jokic shot .500 or better vs") still refuse. Independent check: three rounds, every record re-derived from raw rows, 5,734-string corpus diff (34 intended). Player other-team clauses (#418 merged; independent check two rounds; R2 38091333904): "LeBron top scoring games when the Celtics made 15 threes" and "LeBron points when the Celtics scored 120" read the Celtics as LeBron's team (no games). A team named only inside the clause that is not his team in the latest season is now his opponent, and its number an opponent bound; his own team in the clause, a team named outside it ("with the Celtics", "for the Heat") or an explicit opponent keep the old reading. Independent check: two rounds, counts and averages re-derived from raw rows. Open: the clause over other seasons or a career keeps the old reading (team by season needed). Opponent-stat rankings (#417 merged; independent check two rounds; R2 38090843015): "Lakers games with the most opponent turnovers" ranked the Lakers' own turnovers and "fewest opponent rebounds" ranked the Lakers' rebounds highest first. "most / fewest / top N by opponent <stat>", "opponents had the most <stat>" and "they forced the most turnovers" rank the opponent's number in that direction; "at least / at most / over / N+ opponent <stat>" is an opponent bound ("how many Lakers games had at least 15 opponent turnovers": 29); a bound on the team's own stat stays; the ranked or bounded opponent number is shown with the rows. Independent check: two rounds, 35+ orders re-derived from raw rows. Open: a ranking plus an opponent bound ranks the team's own stat; own and opponent bounds on the same stat; "the Lakers forced the most turnovers"; multi-word stats ("opponent free throws"), "ranked / sorted by opponent X", player opponent rankings. Open: "how many players average 25 points" counts single games (league and team); "Lakers players hit 5 3-pointers" is unread; Open: reversed ranges answer the whole span; short-month player leaderboards refuse; numeric dates ("1/1/2024 to 3/31/2025") are misread; Open: "did any Lakers player score 40" reads the team's points; OR forms ("30 or 10 assists last game"), "more than 22" and "over 100" without "points" parse no bound; "did LeBron play last night" returns nothing; "LeBron's last 30 point game" reads as last 30 games; Open: "Lakers record over teams over .500" is unread; Open: per-season month records (6-4) are not computed; "was LeBron over 30 points last game" and "did LeBron score over 30 last game" answer with his last 30-point game, not his last game; "LeBron was over 30 points how many times" still reads WAS; "since Jan. 2025" / "Jan, 2025" is read as 2026-01-01; cross-season "from January 2024 to March 2025" drops the dates; "in March this season and last season" reads one season; "before the all star break" / "on Christmas" over a span drop the window. Open: "while / where" conditions are dropped; league-wide "top 5 assist games with 20 points" refuses; "worst/lowest N" ignores direction; "in N three games" and "by plus-minus" (hyphen) do not read; Open: "teams with 40 wins this year / over the last 2 seasons" (list form) errors; "how many teams have the most wins" reads "Result has recorded 6 wins"; Open: "Lakers record in March from 2023-24 to 2025-26" reads March of the last season only (1-2; every March gives 6-4); "facing" sets no opponent filter ("Lakers record facing winning teams" 47-13); "which teams have a winning record against the Lakers" lists every opponent, "in close games" / "when scoring 120" drop or misapply the condition, "how many wins do the Lakers have over winning teams" counts every win (47; "Lakers wins over winning teams" gives 11), "which teams have the Lakers beaten that are over .500" drops the bar; "LeBron top 3 assist games with 20 points" reads "3 assist" as a bar and gives a league board (its OR form refuses); two players' series records side by side;  "how many teams have 50 wins" refuses and "how many teams scored 120" reads "Result has had 4 games"; "Lakers losses to the Knicks and Celtics" drops the Lakers; "was Bradley Beal's team" reads Washington; "players with 1500 points in each of the last 2 seasons" and "1500 points or 600 rebounds" refuse | Next: remaining C2 history views. Deployed: production build of #385 verified READY on Vercel (includes #383-#385); #386 onward wait on Vercel's 100-deployments/day free limit (each PR push builds a preview) and the live query cannot be probed from the agent sandbox (proxy 403). Open: a bare "Lakers winning streaks since 2024" (no length) gives the longest only; player run spans name the requested range, not his first season; zero-count headlines use abbreviations ("The LAL have won 0 games ... against the PHI") and player won/lost counts read "has recorded"; "teams beaten by 20+" is unrouted; "most conference finals appearances" with no game at that round in range returns no result |
-| D1 / D2 | Open; O1 inventory done | The served generation has no play-by-play, clutch, on/off or lineup files, and period stats, starter roles and schedule context only for 2024-25 and 2025-26 (section 2a). New NBA pulls are parked with refresh (no reachable runner, 2026-10-04). Ready for the next refresh: standings keep conference/division and rebuild `team_conference_membership` per season (1996-97 onward once each season is re-pulled; Midwest division accepted) |
-| O1 | Served data verified; merged (#320) | Active generation `queue-d-production-0574735-20260716` (684 files): every core slice 1996-97..2025-26 present with the league's exact game counts and consistent box scores (targeted R2 run 37130724578). 57 of 60 slices carry legacy manifests only. `python -m nbatools.commands.ops.served_coverage` reprints it. Deployed latency measured from the production monitor: first query median 16.7 s, 22 of 24 runs over the 15 s limit |
-| O2 | Rollover and speed fixes merged (#320); refresh stays manual (parked) | The latest season now follows the served games (2026-27 becomes current at its first final game); refresh pulls the calendar season; readiness flags a missing season from November 1. R2 file-exists checks come from the generation manifest, and compiled patterns stay cached: warm queries 6-7 s to 0.2-0.35 s, a cold career query 75 s to 25 s, top scorers cold 11 s to 3 s (runs 37118449909 vs 37130724578). Publication now writes `metadata/player_names.csv`; the name index reading it (sent to stream 1) removes the 145 MB, 9 s cold-start load at the next published generation. Career queries (after #319): cold 15-23 s, warm 5.8 s; they build 30 full season frames (698 MB) before selecting one player, peak RSS 1.2 GB against 1024 MB production functions (OOM risk inferred, not observed); per-season player filtering before concat sent to stream 2 (run 37133184207). With that filtering (#318 head, run 37156742933): peak RSS 541 MB, cold 15.6 s, warm 5.5 s; warm stays slow because the 128 MB frame cache evicts and reloads the 30 seasons (1.4 s when every season fits); caching the per-player frame was suggested to stream 2. Deployed first query after #320: 13.3 s with no retry, against a 16.7 s median before (monitor run 37156411994); the remaining cold cost is mostly the name index, which waits on the next published generation. Concurrent R2 downloads (#334) cut the cold profile from 40.8 s to 21.4 s: player name index 13.0 s to 2.3 s, cold career 20.6 s to 10.9 s, peak RSS 517 MB to 613 MB (runs 37203557138 main vs 37203555215). A cheaper frame-size estimate (#335) took a warm career query from 5.6 s to 3.3 s. Remembering a published generation's freshness date (#338) removed manifest hashing from every answer: warm "Celtics record last 10 games" 0.27 s to 0.03 s and "Jokic vs Embiid 2024-25" 0.27 s to 0.09 s (runs 37221554495 main vs 37221552704). The follow-up does the same for the manifest rows behind `/freshness` and `/readiness`, which the site calls on every page load. Refresh automation parked 2026-10-04: GitHub-hosted runners cannot reach the NBA (stats.nba.com times out, cdn.nba.com 403; reachability runs 37187347774, 37187608214, 37187843846), and the owner's computer, the chosen fallback, is unavailable; the owner said refresh timing is low priority. Kept for whoever resumes: `download-generation`, `changed-files`, `publish-generation --only-if-changed-from` (stale-base guarded), `prune-generations` (#330), and per-season conference membership rebuilt from standings in every refresh. Resume by running those from a machine the NBA allows (a scheduled-task runner was built and reviewed, then dropped; see PR #332 history) |
-| E | Open | Integrated acceptance, without replacing per-feature delivery checks |
+| K01 | Correct player/team identity and covered scope: aliases/accent spelling, one same-name collision, one renamed player, historical franchise, partial-career label | I exists in prior A1/C2; N/L/D unassessed for this checkpoint |
+| K02 | Player summary/team record: explicit season, explicit date range + opponent, last-N window versus qualifying last-N with one threshold | Prior A2; S5; integrated acceptance unassessed |
+| K03 | Find/count: two AND thresholds including exact zero, strict versus inclusive bound, grouped OR, games versus distinct-player count, qualified zero result | Prior B1/C1; integrated acceptance unassessed |
+| K04 | Ranking: totals versus per-game, ratio-of-totals shooting with declared attempts floor, top-N versus last-N, one event-count ranking and tie policy | Prior B1/C2; integrated acceptance unassessed |
+| K05 | Cross-subject conditions: own-player/team versus opponent stat in one request, plus home/road; another entity and threshold | S3; integrated acceptance unassessed |
+| K06 | Comparisons: two players with same named sample/basis; two teams' independent samples versus explicit head-to-head meetings; opponent filter retained | Prior C1/C2; integrated acceptance unassessed |
+| K07 | Splits: filter before home/away split; team and player named-season splits with non-adjacent seasons; opponent + threshold or participation retained | S1/S2/S4; #450 is implementation evidence only |
+| K08 | Participation: one and two qualified teammates played/did-not-play; add one stat bound; show membership/coverage distinction and separate injury-status safety controls | P0a/S4; integrated acceptance unassessed |
+| K09 | Sequences: team winning streak and player threshold-appearance streak; count distinct runs; best N-game stretch versus last N; excluded-game/season continuity | Prior C2; integrated acceptance unassessed |
+| K10 | Playoff/history: game versus series record versus appearances; one round/series-situation filter; one franchise/title-count query with exact definition and covered span | Prior C2; integrated acceptance unassessed |
+| K11 | Population/ownership: league, named team's players, rookie and broad-position game lists; named opponent stays opponent, historical roster slice and missing-roster safety | #455 pending at revision; integrated acceptance unassessed |
+| K12 | Answer delivery: actual subject/sample/basis labels; count/list/split/comparison rendering; valid zero versus no-data; snapshot freshness disclosure; representative cold/warm behavior | P3/O; integrated acceptance unassessed |
 
-Update these rows as work lands. Keep this one queue; no new phase tracker.
+For each statistical row, use controlled discriminating rows AND representative
+qualified real-data numeric checks. Exercise a second entity/value and unfamiliar
+wording; pairwise modifier coverage plus targeted three-way cases is enough, not
+an exhaustive word/number cross-product. Positive obligations may not be replaced
+by refusal expectations. Safety controls have separate IDs/results and never
+inflate the positive completion rate. New siblings outside these obligations stay
+in the carry-forward list rather than continually expanding Core-1 by accident.
 
-Parallel workstreams. The remaining queue splits into four streams that can
-run as separate threads. Each owns its modules; a shared file has one owner,
-and other streams send changes to that owner rather than editing it.
+P3 acceptance uses a fixed integration candidate and served generation, the chosen
+input path, and actual desktop/mobile result rendering. Exercise reused renderers
+with representative outputs and changed ones directly; no owner screenshot tour.
+Run applicable CI, required real-data tests, broad Raw QA/filter sweep at integration,
+plus independent numerical/meaning review. Compare source keys/coverage with the
+claims; 'two paths agree' or a changed output fingerprint is not correctness.
 
-| Stream | Packages | Owns | Starts |
-| --- | --- | --- | --- |
-| 1. Identity | A1b (`player_id` selection for identical names, lineup "with X and Y" and legacy alias scans through the resolver) | `entity_resolution.py`, `_matchup_utils.py`, lineup scans | Now |
-| 2. Samples and combinations | A2 rest ("in the last N" vs "last N with a condition", last N meetings), then C1 | `_date_utils.py`, `_parse_helpers.py` season/date helpers, `data_utils.select_most_recent_games`, `team_record.py`, summaries/splits | Now; C1 after B1's operation contract |
-| 3. Operations and rankings | B1 (compound occurrence rankings, "10+ assists and 0 turnovers", qualified rate leaders, games played), then C2 | `_leaderboard_eligibility.py`, `season_leaders.py`, `season_team_leaders.py`, occurrence leaders, `_compound_event_authorization.py`, finders | Now |
-| 4. Data and runtime | O1 (generation manifest, data view in section 2a, deployed checks), O2 (calendar/refresh, performance), then D1/D2 source slices | `data_source.py`, pipelines, workflows, deployment docs | Now; D after O1 |
+Measure common summaries/records/rankings/comparisons and heavier history/career
+requests on a declared repeatable sample. Retain goals: warm common p95 <= 3 s,
+cold common <= 10 s, admitted historical <= 20 s without unhandled timeout. Report
+sample size, first-request versus warm, and p95 only when measurement supports it.
+Do not infer these from one monitor run or raise thresholds to claim success.
+If unmet, keep K12 operational acceptance open with a specific repair/dependency.
 
-Shared files and owners: `natural_query.py` routing (stream 3; others keep
-their edits to small, separate hunks and rebase often), the Raw QA corpus and
-frontend-copy fixtures (append or edit only your own case ids), this queue
-(each stream updates only its own rows), and the full R2 run (one at a time;
-streams use targeted runs per change). E (integrated acceptance) starts once
-streams 2 and 3 land their contracts.
+Close Core-1 only with its full bound positive set accepted and I/N/L/D evidence,
+no unresolved wrong/unverified required answer, honest coverage, and required
+checks/review passed. Record remaining broader scope explicitly. Snapshot acceptance
+is NOT unattended-current-data acceptance; do not rename it full release readiness.
 
-Validation cadence: a full R2 run (Raw QA replay about 30 minutes, serialized) is
-not a per-fix wait. Keep building the next fix while one runs, verify each fix
-with its focused needs_data tests and relevant Raw QA cases, and run the full
-replay once per batch or integration point.
+## 7. O - Independent snapshot/runtime work
+
+**O1: inspect compact identity metadata first.** Verify the actual served generation
+and whether `metadata/player_names.csv` exists/is used. Inspect
+`generation_publication.py` / `_write_player_names` and the reader. The writer can
+derive this lookup from staged existing player-game rows; a fresh NBA pull is not
+intrinsically needed. Do not assume it is missing or automatically beneficial.
+
+If missing, stage the existing immutable snapshot, derive/validate metadata, compare
+identity results and measured cold/warm cost, then publish only under existing
+write authority and deployment safeguards. Preserve original NBA data dates,
+checksums/lineage, unchanged stats and last-good rollback. A metadata-only generation
+is not new coverage. Without publication access, leave that exact gate open, deliver
+the validated candidate/evidence, and continue independent work; never widen a
+read-only key or ask the owner to restore their laptop as a runner.
+
+**O2: distinguish possible work from source blockers.** Maintain in this section a
+short list of stored, derivable, missing and unverified inputs with consumer and
+exact next action. Existing period/role slices and derivable game/reference facts
+need not wait for missing play-by-play/lineup datasets. Start one representative
+qualified slice with a real consumer, not a full-history collection campaign.
+
+**O3: measured deployment repairs.** Profile read/index construction, frame
+selection/cache, computation, serialization and render time. Fix observed costs,
+including generation-aware caches and bounded reads, before proposing a new DB or
+host. Preserve cost/security controls; in-process counters are not evidence of a
+global provider spending cap. Product acceptance is not the availability monitor.
+
+**Parked: fresh NBA acquisition and unattended refresh.** October 4 direction remains.
+Prior hosted-runner reachability failures and unavailable laptop fallback are leads,
+not a reason to retry blindly or a permanent source impossibility claim. Resume
+only under the applicable owner priority/access decision. Reuse the staged refresh,
+validation, immutable publication and last-good path. The eventual operational gate
+requires a reachable authorized runner/source, a successful update reaching the app,
+a failed update preserving last-good, live/frozen-clock rollover tests and budgets.
+Existing `download-generation`, `changed-files`, conditional publication and pruning
+work is retained; verify actual CLI help/runbook before executing consequential steps.
+
+## 8. Carry-forward scope (not silently completed by Core-1)
+
+These preserve the original program and the unfinished boundary; implementation
+status must be reconciled before work, not assumed from old examples. Specific
+unresolved examples/evidence remain in the immutable prior queue and current PRs.
+
+| Retained area | Next dependency-backed direction |
+| --- | --- |
+| Remaining A/B/C combinations | Transfer newly discovered requested combinations outside K01-K12 here with root cause; use shared request semantics, not another endless phrase stream |
+| Identity/availability edge cases | Shared-name cross-filters, on/off name paths, membership timing and qualified absence; distinguish whole-game from on-court presence |
+| Dates/samples and opposing metrics | Remaining selector/window, repeated-month/season, opponent-metric summary and multi-subject cases: reproduce current code first; do not preserve an old wrong-answer workaround |
+| Counts, rankings and sequences | Additional compound/grouped/population/eligibility/series conditions and meaningful combinations beyond the bound checkpoint |
+| Historical reference | Remaining playoff/championship membership, awards, calendar/reference facts with qualified sources; participation-based title counts are not an invented official ring roster |
+| D1 roles/context | Needed pre-2024-25 starter/bench/period/context coverage, team bench outputs and reference joins; existing qualified slices may ship first |
+| D2 specialized inputs | Separate period, play-by-play/clutch, lineup and on/off subpackages with exact grain, denominators, sources and representative validation; no fabricated data |
+| Unattended freshness | Parked acquisition/refresh and tested rollover remain open until actual authorized operation is proved |
+| Guided tools/profiles | Retained later surfaces on verified shared engine/data, not a substitute for ordinary natural search |
+
+At Core-1 completion, the lead chooses the next coherent row by dependency and
+user value, records why here, binds its acceptance and continues under existing
+authority. No fresh whole-project plan or owner-written test battery is required.
+A genuine new source/cost/product decision is escalated with the smallest action.
+
+## 9. Evidence, validation and durable continuation
+
+For each selected PR record a compact semantic contract, required case IDs,
+independent expected meanings/values, base/candidate SHA, one generation, executed
+checks/counts, actual checker evidence, deployed result and remaining issues.
+Make every requested clause accounted for. Maintain fixture versus real-data,
+implementation versus deployment, and safety versus feature-completion distinctions.
+
+Reuse focused commands while editing, `make test-preflight` / `make test` for high
+fan-in integration, and the existing targeted/full R2 workflow. CI's data-free or
+all-suite selection does not mean required remote data ran. Required assertions,
+missing data or all-skipped acceptance remain blockers even before P0b enforcement.
+A documentation-only plan change runs `make docs-governance` / `git diff --check`,
+not a new full remote NBA corpus. Do not fabricate independent or human review.
+
+Update the Resume checkpoint at work start, review-ready, merge, actual block and
+session limit. Add the active package's I/N/L/D evidence to the table or PR pointer;
+replace stale next actions and owner/file claims. Preserve unresolved findings.
+Minimum successor handoff:
+
+```text
+Updated date; controlling package/case IDs; next incomplete stage
+Live main checked; task branch and exact candidate SHA; PR
+Owner/lane and overlapping work; pushed/unpushed/dirty state
+Pinned generation and relevant coverage
+Tests: exact command/run, selected/executed/skipped, result and scope
+Independent checker: actual session/review, findings fixed/open
+Deployment: URL/revision/generation, checked or still pending
+Blocker: exact dependency/access and what may proceed independently
+NEXT: one concrete action/command, expected outcome, then next package
+```
+
+A PR comment may hold detail while the checkpoint points to it. Keep needed code,
+tests and conclusions in tracked repo/PR state; do not depend exclusively on a
+private conversation, expiring artifact or local ignored output. Do not commit
+credentials or synthetic facts as real data. No new handoff subsystem is needed.
+
+A successor verifies the checkpoint against live state, preserves newer commits,
+and performs NEXT. If that action already succeeded, record evidence and advance;
+if blocked, state the actual dependency and choose the named independent task.
+Do not restart all audits, reconstruct old threads, or ask the owner to choose a
+technical task. Report: Now answers; Still unfinished; Verification; Next; Needed
+from you (normally nothing). Work continues only within an actual active session.

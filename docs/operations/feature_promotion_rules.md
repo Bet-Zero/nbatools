@@ -3,9 +3,10 @@
 ## 1. Purpose
 
 Deliver desired NBA-statistics capabilities end to end, with evidence that the
-answers are correct. This policy implements the owner's 2026-10-02 direction:
-a required question is unfinished until it answers correctly. Temporary safe
-refusal is containment, not feature completion.
+answers are correct. This policy implements the owner's October 2 delegation
+and October 15 shared-interpretation/finite-core direction: a required question
+is unfinished until it answers correctly. Temporary safe refusal is containment,
+not feature completion. Checkpoint completion is not whole-product completion.
 
 This policy does not itself change runtime behavior, data, corpus expectations,
 or historical acceptance. Read [AGENTS.md](../../AGENTS.md) for delegation and
@@ -46,10 +47,12 @@ ordinary desired question a negative input because the app currently refuses it.
 ### 3.2 Preflight
 
 In the existing queue item or PR, state the examples, intended meaning, needed
-data/calculation, reusable components, and acceptance checks. Agents resolve
-technical choices. Ask the owner only for genuinely unresolved product intent,
-necessary access, new cost, or consequential actions outside authorization.
-Do not manufacture a separate planning phase for an ordinary feature.
+data/calculation, reusable components, and acceptance checks. Bind required
+positive obligations to explicit case IDs before tuning; keep safety controls
+separate. Agents resolve technical choices. Ask the owner only for genuinely
+unresolved product intent, necessary access, new cost, or consequential actions
+outside authorization. Do not manufacture a separate planning phase for an
+ordinary feature or let an expanding phrase list replace a finite acceptance set.
 
 ### 3.3 Data contract
 
@@ -58,7 +61,8 @@ define them and the consumer in [data contracts](../reference/data_contracts.md)
 Keep raw/processed/derived layers distinct. Investigate a missing source; do not
 stop at 'dataset absent'. Do not fabricate coverage, historical completeness,
 injury status, or membership. Blocked dependencies remain open and must not stop
-independent feature work.
+independent feature work. Preserve the owner's parked fresh-acquisition decision;
+existing qualified-snapshot derivations do not inherently require a new NBA pull.
 
 ### 3.4 Route / result contract
 
@@ -68,6 +72,12 @@ condition reaches and affects the intended computation; a condition need not
 change the numeric answer on every sample to have been applied.
 Reuse result sections; extend consumers when an extension is necessary.
 
+Check meaning before deriving numbers. Absent participation is not evidence of
+injury or its cause; participation is not healthy/available/active status, and
+whole-game participation is not simultaneous on-court presence. A test that deletes
+player rows cannot establish an injury-specific expected answer. Independent
+arithmetic of a incorrectly interpreted request is still incorrect acceptance.
+
 ### 3.5 Parser support
 
 Support the concept across full questions, fragments, shorthand, and reasonable
@@ -76,6 +86,9 @@ A technically readable fragment is not permission to answer a different query.
 Genuine ambiguity calls for clarification or explicit supported choices, not
 silent invention. Follow the shared route-finalization structure in the parser
 guardrails; do not launch a parser rewrite without a concrete delivery reason.
+Deliver reusable interpretation with actual consumers; an extraction alone is
+not a completed capability. Evaluate language alternatives on verified subsets
+rather than assuming the incumbent or an AI translator must win.
 
 ### 3.6 Raw QA cases
 
@@ -106,7 +119,9 @@ required keys, validated immutable generation, deployed availability, feature
 smoke, and honest unavailable-data handling. For unchanged data, cite/recheck
 the existing applicable generation rather than publish a duplicate.
 Record implementation and deployed verification separately if one is pending.
-Do not count an undeployed feature as verified live behavior.
+Do not count an undeployed feature as verified live behavior. Availability
+monitoring is not whole-product numerical or latency acceptance. Metadata-only
+publication must preserve underlying data dates and must not claim new coverage.
 
 ### 3.9 Release docs
 
@@ -124,20 +139,32 @@ Use one exact code revision and one pinned dataset for comparisons. Disclose
 skips, missing access, and unverified numeric/deployed behavior.
 
 A checker independently examines material semantic/data changes and checks
-answers against data. Record agent review as agent review, not human acceptance.
-Existing Raw QA human-review states retain their literal meaning; an old
-`human_review_pending` label alone is not an owner dependency or engineering
-stop. Do not invent unsupported schema states or counterfeit human receipts.
+intended meaning as well as answers against data. Record agent review as agent
+review, not human acceptance. Existing Raw QA human-review states retain their
+literal meaning; an old `human_review_pending` label alone is not an owner
+dependency or engineering stop. Do not invent unsupported schema states or
+counterfeit human receipts. An installed bot or review invitation is not evidence
+that the independent check actually ran.
+
+Required numerical tests must execute and pass on the accepted candidate and
+immutable generation. A green outer workflow cannot override required job failure,
+missing data, zero execution or all-required-skipped results. While workflow
+enforcement is being repaired, the lead must inspect underlying results and block
+dependent acceptance manually. Keep legitimately exploratory tests identifiable;
+do not reclassify failing required tests to make a candidate pass. Changes to
+gating require positive and failure-path verification, including empty/skip cases.
 
 ## 4. Per-feature contract
 
 Use one compact record in the existing queue item/PR:
 
-- Desired examples and the complete meaning they must answer.
+- Desired examples and complete meaning, bounded required case IDs, and separate
+  safety/ambiguity cases.
 - Reused/new data and calculations; real dependencies or exclusions.
 - Positive numeric/scope/output checks, unfamiliar variants, and relevant
   negative/collision regressions.
-- Actual test/review results, code revision, dataset, and deployment status.
+- Actual test/review results and selected/executed/skipped counts, exact code
+  revision, dataset, and deployment status.
 - Still-unanswered desired examples and exact continuation, if any.
 
 A desired-answer requirement cannot pass with refusal, missing data, or a
@@ -169,7 +196,8 @@ desired capabilities merely to match current passing tests.
 
 A failed check requires diagnosis and repair. Do not soften it to declare the
 capability done. Optional refactoring, additional evidence machinery, and
-unrelated maintenance are not automatic blockers.
+unrelated maintenance are not automatic blockers. Core-1 acceptance does not
+close broader retained requirements or unattended refresh/rollover.
 
 ## 7. Non-goals
 
@@ -184,4 +212,5 @@ privacy/consent requirements. Task artifacts follow the
 Agents apply this path to finish capabilities, not to explain why they remain
 unsupported. Reviewers assess correct useful behavior and material evidence.
 Owner updates lead with newly answered questions and explicit remaining work;
-implementation detail stays in the change record.
+implementation detail stays in the change record. Successors resume from the
+current checkpoint reached through AGENTS.md, not a new planning phase.
