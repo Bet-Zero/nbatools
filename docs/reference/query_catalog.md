@@ -87,6 +87,16 @@ If a feature is not reflected here, it should not be assumed shipped.
   with `metadata.unsupported_filters=["award_query"]` and do not infer winners
   from stat leaderboards
 
+### Ranked game conditions
+
+The candidate game-list path keeps a ranking metric separate from an exact-zero
+condition: `best scoring games by Nuggets vs Warriors without turnovers` ranks
+points only after filtering the owner's turnovers to zero. `with no`, `with zero`
+and bare `with 0` have the same equality meaning, including signed plus/minus;
+`0+`, `at least 0` and `0 or more` remain lower bounds. Named owner/opponent and
+row-count clauses retain their roles. Fixture checks cover these combinations;
+required real-data and deployed acceptance remain pending.
+
 ### 2.2 Time/context filters
 
 - explicit season: `2025-26`

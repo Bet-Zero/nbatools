@@ -63,7 +63,9 @@ def test_team_zero_is_a_filter_beside_scoring_rank(zero_team_games, condition, o
     )
 
 
-@pytest.mark.parametrize("condition", ["with 0+ turnovers", "with at least 0 turnovers"])
+@pytest.mark.parametrize(
+    "condition", ["with 0+ turnovers", "with at least 0 turnovers", "with 0 turnovers or more"]
+)
 def test_explicit_zero_floor_keeps_all_games(zero_team_games, condition):
     result = execute_natural_query(f"Nuggets best scoring games vs Warriors {condition} in 2025-26")
     assert result.result_status == "ok"
@@ -77,7 +79,9 @@ def test_player_zero_filter_matches_raw_ids_and_structured():
         "pts", ascending=False
     )
     assert 0 < len(expected) <= 25
-    natural = execute_natural_query("Jrue Holiday top 25 scoring games with no turnovers in 2025-26")
+    natural = execute_natural_query(
+        "Jrue Holiday top 25 scoring games with no turnovers in 2025-26"
+    )
     structured = execute_structured_query(
         "player_game_finder",
         player="Jrue Holiday",
@@ -91,3 +95,73 @@ def test_player_zero_filter_matches_raw_ids_and_structured():
         rows = result.to_dict()["sections"]["finder"]
         assert {r["game_id"] for r in rows} == set(expected.game_id)
         assert [r["pts"] for r in rows] == sorted(expected.pts, reverse=True)
+
+
+@pytest.mark.parametrize("phrase", ["zero plus-minus", "0 plus minus"])
+def test_exact_zero_signed_metric_excludes_negative_values(phrase):
+    players = pd.read_csv(FIXTURE / "data/raw/player_game_stats/2025-26_regular_season.csv")
+    expected = players.loc[players.player_name.eq("Bam Adebayo") & players.plus_minus.eq(0)]
+    assert 0 < len(expected) <= 8
+    result = execute_natural_query(f"Bam Adebayo top 8 scoring games with {phrase} in 2025-26")
+    assert result.result_status == "ok"
+    rows = result.to_dict()["sections"]["finder"]
+    assert {r["game_id"] for r in rows} == set(expected.game_id)
+    assert all(r["plus_minus"] == 0 for r in rows)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Bam Adebayo top 8 scoring games with 0 blocks or more in 2025-26",
+        "Bam Adebayo top 8 scoring games in at least 0 block games in 2025-26",
+    ],
+)
+def test_zero_floor_comparator_outside_matched_number(query):
+    players = pd.read_csv(FIXTURE / "data/raw/player_game_stats/2025-26_regular_season.csv")
+    expected = (
+        players.loc[players.player_name.eq("Bam Adebayo")]
+        .sort_values("pts", ascending=False)
+        .head(8)
+    )
+    result = execute_natural_query(query)
+    assert result.result_status == "ok"
+    rows = result.to_dict()["sections"]["finder"]
+    assert [r["pts"] for r in rows] == list(expected.pts)
+    assert max(r["pts"] for r in rows) == 31
+
+
+def test_shooting_zero_or_more_preserves_positive_blocks():
+    players = pd.read_csv(FIXTURE / "data/raw/player_game_stats/2025-26_regular_season.csv")
+    expected = players.loc[
+        players.player_name.eq("Bam Adebayo") & (players.fgm / players.fga > 0.5)
+    ]
+    result = execute_natural_query(
+        "Bam Adebayo games shooting over 50% with 0 blocks or more in 2025-26"
+    )
+    assert result.result_status == "ok"
+    rows = result.to_dict()["sections"]["finder"]
+    assert {r["game_id"] for r in rows}.issubset(set(expected.game_id))
+    assert len(rows) == min(25, len(expected))
+    assert any(r["blk"] > 0 for r in rows)
+
+
+@pytest.mark.parametrize(
+    "owner",
+    ["top 4 scoring games by Knicks vs Nuggets", "top 4 scoring games vs Nuggets by Knicks"],
+)
+@pytest.mark.parametrize(
+    "condition", ["with 0+ blocks", "with at least 0 blocks", "with 0 blocks or more"]
+)
+def test_row_limit_owner_and_floor_keep_game_list_operation(owner, condition):
+    teams = pd.read_csv(FIXTURE / "data/raw/team_game_stats/2025-26_regular_season.csv")
+    expected = (
+        teams.loc[teams.team_abbr.eq("NYK") & teams.opponent_team_abbr.eq("DEN")]
+        .sort_values(["pts", "game_date"], ascending=[False, False])
+        .head(4)
+    )
+    result = execute_natural_query(f"{owner} {condition} in 2025-26")
+    assert result.result_status == "ok"
+    rows = result.to_dict()["sections"]["finder"]
+    assert [(r["game_id"], r["pts"]) for r in rows] == list(
+        expected[["game_id", "pts"]].itertuples(index=False, name=None)
+    )

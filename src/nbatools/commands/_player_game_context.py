@@ -1349,10 +1349,12 @@ def _event_condition(match: re.Match, stat: str) -> dict:
         and "+" not in match.group()
         and "at least" not in match.group()
         and "or more" not in match.group()
+        and not re.match(r"\s+or\s+more\b", match.string[match.end() :])
+        and not re.search(r"\bat\s+least\s+$", match.string[: match.start()])
     )
     return {
         "stat": stat,
-        "min_value": None if explicit_zero else float(number),
+        "min_value": 0.0 if explicit_zero else float(number),
         "max_value": 0.0 if explicit_zero else None,
     }
 
