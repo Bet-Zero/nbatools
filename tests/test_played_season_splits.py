@@ -168,6 +168,7 @@ def test_teammate_minutes_do_not_become_team_minutes(played_sample, axis):
         "with at least 24 points against Knicks with Thompson playing",
         "against Knicks with Thompson playing and at least 24 points",
         "with Thompson and at least 24 points against Knicks",
+        "against Knicks when he scores at least 24 points with Thompson playing",
     ],
 )
 def test_stat_clause_does_not_hide_later_teammate(played_sample, period, clause):
@@ -234,3 +235,29 @@ def test_separate_team_bound_and_named_presence_are_both_applied(played_sample):
     assert row["wins"] == expected.wl.eq("W").sum()
     assert row["losses"] == expected.wl.eq("L").sum()
     assert result.metadata["with_player"] == "LeBron James"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record in games with 120 points with LeBron scoring 30 points",
+        "Stephen Curry averages against Knicks with Thompson playing and his shoes blue in 2023-24 and 2025-26",
+        "Warriors record with Thompson and Green playing against Knicks with Wiggins playing in 2023-24 and 2025-26",
+        "Stephen Curry averages with Thompson playing and Green scoring 20 points against Knicks in 2023-24 and 2025-26",
+    ],
+)
+def test_unapplied_teammate_clauses_never_return_partial_answers(played_sample, query):
+    # Teammate-owned stat predicates and a third participant are unfinished
+    # capabilities. Containment must not be mistaken for positive support.
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("bound", ["at least 20 points", "under 20 points", "over 20 points"])
+def test_teammate_comparator_is_not_sample_scope(played_sample, bound):
+    result = execute_natural_query(
+        f"Stephen Curry averages with Thompson and Green {bound} against Knicks in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]

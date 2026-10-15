@@ -16,6 +16,7 @@ from nbatools.commands._franchise import team_value_mask
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.entity_resolution import (
+    PLAYER_ALIASES,
     _get_player_first_name_index,
     _strip_accents,
     player_ids_for_name,
@@ -50,7 +51,11 @@ def name_before_scope(fragment: str | None) -> str:
         if _STAT_COUNT_PHRASE.match(text, conjunction.end()):
             text = text[: conjunction.start()]
             break
-    text = _SCOPE_WORD.sub("", text).strip()
+    scope = _SCOPE_WORD.search(text)
+    if scope and not _STAT_COUNT_PHRASE.match(text[scope.start() :].lstrip()):
+        text = text[: scope.start()].strip()
+    # "at least 20 points" / "under 20 points" after a name qualify that
+    # participant; unlike "at home", they must survive as an unread predicate.
     return re.sub(r"\s+(?:both\s+)?playing$", "", text)
 
 
@@ -159,7 +164,7 @@ def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
             continue
         fragment = name_before_scope(fragment)
         fragment = re.split(r"\s+(?:record|games?)\b", fragment, maxsplit=1)[0]
-        parts = [part.strip(" .") for part in fragment.split(" and ")]
+        parts = [name_before_scope(part.strip(" .")) for part in fragment.split(" and ")]
         clauses.append(("with" if match.group(1) == "with" else "without", parts))
     return clauses
 
@@ -171,7 +176,30 @@ def _words(text: str) -> list[str]:
 
 def _only_the_name(part: str, name: str) -> bool:
     """Whether the part is the name and nothing else: "davis and reaves out" is not."""
-    return set(_words(part)) <= set(_words(name))
+    words = _words(part)
+    return bool(words) and (
+        set(words) <= set(_words(name))
+        or any(_words(alias) == words and value == name for alias, value in PLAYER_ALIASES.items())
+    )
+
+
+def has_unread_participation_clause(
+    text: str, *, with_player: str | None, without_player: str | None
+) -> bool:
+    """A resolved name is insufficient if another requested clause is left over.
+
+    Check every explicit participation fragment against the names actually sent
+    to execution. This preserves ownership: "LeBron scoring 30" is not simply
+    "LeBron", and an extra teammate cannot disappear after resolving a pair.
+    Stat predicates and sample scope were separated by the shared fragment reader;
+    this helper never assigns a teammate's predicate to the query's subject.
+    """
+    applied = {"with": with_player, "without": without_player}
+    for mode, parts in availability_name_clauses(text):
+        names = (applied[mode] or "").split(" and ")
+        if not all(any(_only_the_name(part, name) for name in names) for part in parts):
+            return True
+    return False
 
 
 def availability_pair(

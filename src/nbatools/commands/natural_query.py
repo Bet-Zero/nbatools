@@ -390,6 +390,7 @@ from nbatools.commands._playoff_record_route_utils import (
 from nbatools.commands._teammate_resolution import (
     availability_name_clauses,
     availability_pair,
+    has_unread_participation_clause,
     name_before_scope,
     resolve_teammate,
     shares_side,
@@ -6628,6 +6629,24 @@ def _route_parsed_query(parsed: dict) -> dict:
         if "unresolved_player_availability" not in existing_unsupported:
             existing_unsupported.append("unresolved_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
+
+    if (
+        route in _WITH_PLAYER_SUPPORTED_ROUTES | _WITHOUT_PLAYER_SUPPORTED_ROUTES
+        and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
+        and has_unread_participation_clause(
+            q,
+            with_player=route_kwargs.get("with_player"),
+            without_player=route_kwargs.get("without_player"),
+        )
+    ):
+        route_kwargs["unsupported_filters"] = list(
+            dict.fromkeys(
+                [
+                    *(route_kwargs.get("unsupported_filters") or []),
+                    "unread_participation_clause",
+                ]
+            )
+        )
 
     # "LeBron games when the Lakers score 120": a team-subject bound is the
     # team's total, read from the team rows of the player's games.
