@@ -8553,7 +8553,7 @@ _PLAYER_GROUP_WORDS = re.compile(
 # "under 25 year olds") is something the team's list would drop.
 _OWNER_LIST_TAIL_WORDS = frozenset(
     """
-    a an the of in on at to for by from with without and or as so vs versus against
+    a an any the of in on at to for by from with without and or as so vs versus against
     games game ever all time times please only just their his its far yet now today
     tonight this since during before after between through thru until til till over
     under above below more less fewer than least most at most or more exactly each every
