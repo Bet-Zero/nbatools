@@ -34,6 +34,10 @@ def played_sample(tmp_path, monkeypatch):
                 | (players.player_name.eq("Draymond Green") & players.game_id.isin(gsw_ids[1::5]))
             )
         ]
+        lal_ids = sorted(players.loc[players.team_abbr.eq("LAL"), "game_id"].unique())
+        players = players.loc[
+            ~(players.player_name.eq("LeBron James") & players.game_id.isin(lal_ids[::4]))
+        ]
         players.to_csv(path, index=False)
         present = set(players.loc[players.player_name.eq("Jayson Tatum"), "game_id"])
         teams = pd.read_csv(root / f"data/raw/team_game_stats/{season}_regular_season.csv")
@@ -49,6 +53,10 @@ def played_sample(tmp_path, monkeypatch):
                 & players.game_id.isin(present)
             ],
         }
+        lebron = set(players.loc[players.player_name.eq("LeBron James"), "game_id"])
+        expected[season]["lakers_bound"] = teams.loc[
+            teams.team_abbr.eq("LAL") & teams.pts.ge(120) & teams.game_id.isin(lebron)
+        ]
         klay = set(players.loc[players.player_name.eq("Klay Thompson"), "game_id"])
         green = set(players.loc[players.player_name.eq("Draymond Green"), "game_id"])
         expected[season]["curry_bound"] = players.loc[
@@ -154,10 +162,16 @@ def test_teammate_minutes_do_not_become_team_minutes(played_sample, axis):
 
 
 @pytest.mark.parametrize("period", ["in 2025-26", "in 2023-24 and 2025-26"])
-def test_stat_clause_does_not_hide_later_teammate(played_sample, period):
-    result = execute_natural_query(
-        f"Stephen Curry averages with at least 24 points against Knicks with Thompson playing {period}"
-    )
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "with at least 24 points against Knicks with Thompson playing",
+        "against Knicks with Thompson playing and at least 24 points",
+        "with Thompson and at least 24 points against Knicks",
+    ],
+)
+def test_stat_clause_does_not_hide_later_teammate(played_sample, period, clause):
+    result = execute_natural_query(f"Stephen Curry averages {clause} {period}")
     assert result.result_status == "ok"
     assert result.metadata["with_player"] == "Klay Thompson"
     if "and" in period:
@@ -172,7 +186,14 @@ def test_stat_clause_does_not_hide_later_teammate(played_sample, period):
         assert row["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
 
 
-def test_team_pair_transfers_both_names_and_rows(played_sample, monkeypatch):
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "against Knicks with Thompson and Green playing",
+        "with Thompson and Green playing against Knicks",
+    ],
+)
+def test_team_pair_transfers_both_names_and_rows(played_sample, monkeypatch, clause):
     original = team_split_summary._summarize_bucket
     seen = {}
 
@@ -181,9 +202,7 @@ def test_team_pair_transfers_both_names_and_rows(played_sample, monkeypatch):
         return original(frame, bucket)
 
     monkeypatch.setattr(team_split_summary, "_summarize_bucket", capture)
-    result = execute_natural_query(
-        "Warriors record against Knicks with Thompson and Green playing in 2023-24 and 2025-26"
-    )
+    result = execute_natural_query(f"Warriors record {clause} in 2023-24 and 2025-26")
     assert result.result_status == "ok"
     assert result.metadata["with_player"] == "Klay Thompson and Draymond Green"
     for row in result.to_dict()["sections"]["split_comparison"]:
@@ -201,3 +220,17 @@ def test_on_court_is_never_whole_game_participation(played_sample, presence, per
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
     assert result.metadata.get("with_player") is None
+
+
+def test_separate_team_bound_and_named_presence_are_both_applied(played_sample):
+    result = execute_natural_query("Lakers record in games with 120 points with LeBron in 2025-26")
+    assert result.result_status == "ok"
+    expected = played_sample["2025-26"]["lakers_bound"]
+    sections = result.to_dict()["sections"]
+    assert {r["game_id"] for r in sections["game_log"]} == set(expected.game_id)
+    assert 0 < len(expected) < 19  # The unfiltered 120+ sample has 19 games.
+    row = sections["summary"][0]
+    assert row["games"] == len(expected)
+    assert row["wins"] == expected.wl.eq("W").sum()
+    assert row["losses"] == expected.wl.eq("L").sum()
+    assert result.metadata["with_player"] == "LeBron James"

@@ -39,7 +39,19 @@ _SCOPE_WORD = re.compile(
 
 def name_before_scope(fragment: str | None) -> str:
     """The name in an availability fragment, without the scope after it."""
-    return _SCOPE_WORD.sub("", (fragment or "").strip().lower())
+    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE
+
+    text = (fragment or "").strip().lower()
+    # A named participation clause and a box-score predicate are independent
+    # conditions. Find their boundary before removing scope ("at least" is a
+    # comparator, whereas "at home" is scope). Leave unknown predicates intact
+    # so they cannot be mistaken for a fully resolved name.
+    for conjunction in re.finditer(r"\s+and\s+", text):
+        if _STAT_COUNT_PHRASE.match(text, conjunction.end()):
+            text = text[: conjunction.start()]
+            break
+    text = _SCOPE_WORD.sub("", text).strip()
+    return re.sub(r"\s+(?:both\s+)?playing$", "", text)
 
 
 def resolve_teammate(
@@ -125,10 +137,31 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
     return side
 
 
-_PAIR = re.compile(
-    r"\b(with|without|w/o)\s+(?!\d)(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
-    r"|versus|against|at|on|from|during|when|while)\b|[?.!,;:]|$)"
+_AVAILABILITY_CLAUSE = re.compile(
+    r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:with|without|w/o)\b|[?!,;:]|$)"
 )
+
+
+def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
+    """Explicit participation names, with common stat/scope boundaries.
+
+    All clauses are inspected: an earlier "with 24 points" must not hide a
+    later teammate, and an opponent after two names must not hide the second.
+    The same fragments drive pair detection and resolution. Unknown name tails
+    remain present so resolution fails rather than accepting only the first.
+    """
+    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE
+
+    clauses = []
+    for match in _AVAILABILITY_CLAUSE.finditer(text):
+        fragment = match.group(2).strip(" .")
+        if _STAT_COUNT_PHRASE.match(fragment):
+            continue
+        fragment = name_before_scope(fragment)
+        fragment = re.split(r"\s+(?:record|games?)\b", fragment, maxsplit=1)[0]
+        parts = [part.strip(" .") for part in fragment.split(" and ")]
+        clauses.append(("with" if match.group(1) == "with" else "without", parts))
+    return clauses
 
 
 def _words(text: str) -> list[str]:
@@ -154,12 +187,14 @@ def availability_pair(
     """("with" | "without", "A and B") when both names are the subject's teammates."""
     from nbatools.commands._matchup_utils import detect_player
 
-    m = _PAIR.search(text)
-    if not m or (team is None and player is None):
+    if team is None and player is None:
         return None
-    parts = [part.strip(" .") for part in m.group(2).split(" and ")]
-    if len(parts) != 2:
+    candidates = [
+        (mode, parts) for mode, parts in availability_name_clauses(text) if len(parts) == 2
+    ]
+    if len(candidates) != 1:
         return None
+    mode, parts = candidates[0]
     side = _same_side_rows(team, player, season, start_season, end_season, season_type)
     if side is None:
         return None
@@ -179,5 +214,4 @@ def availability_pair(
         names.append(name)
     if names[0] == names[1]:
         return None
-    mode = "with" if m.group(1) == "with" else "without"
     return mode, " and ".join(names)

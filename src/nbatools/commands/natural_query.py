@@ -388,6 +388,7 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands._teammate_resolution import (
+    availability_name_clauses,
     availability_pair,
     name_before_scope,
     resolve_teammate,
@@ -584,18 +585,9 @@ def _multi_player_availability_boundary(q: str) -> bool:
     ):
         return True
 
-    with_without = re.search(
-        r"\b(?:with|without|w/o)\s+(?!\d)(.+?)(?=\s+(?:record|games?|this|that|last|in|for)\b|$)",
-        q,
-    )
-    if not with_without or " and " not in with_without.group(1):
-        return False
-
-    left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
-    # "with LeBron and Davis": a bare surname is a second player too.
-    return bool(
-        (detect_player(left) or _bare_surname(left))
-        and (detect_player(right) or _bare_surname(right))
+    return any(
+        len(parts) > 1 and (detect_player(parts[0]) or _bare_surname(parts[0]))
+        for _, parts in availability_name_clauses(q)
     )
 
 
