@@ -192,6 +192,8 @@ def test_stat_clause_does_not_hide_later_teammate(played_sample, period, clause)
     [
         "against Knicks with Thompson and Green playing",
         "with Thompson and Green playing against Knicks",
+        "with Klay Thompson and Draymond Green playing against Knicks",
+        "against Knicks with Klay Thompson and Draymond Green playing",
     ],
 )
 def test_team_pair_transfers_both_names_and_rows(played_sample, monkeypatch, clause):

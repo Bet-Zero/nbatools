@@ -395,6 +395,7 @@ from nbatools.commands._teammate_resolution import (
     availability_pair,
     has_unread_participation_clause,
     name_before_scope,
+    read_participation_name_spans,
     resolve_teammate,
     shares_side,
 )
@@ -3342,6 +3343,30 @@ def _build_parse_state(query: str) -> dict:
                 with_player, unresolved_with_player = teammate, None
             elif teammate and unresolved_without_player and not without_player:
                 without_player, unresolved_without_player = teammate, None
+        if (team or player) and _multi_player_availability_boundary(q):
+            # Resolve the full name clause before choosing the subject/route.
+            # Otherwise "Warriors record with Klay Thompson and Draymond Green"
+            # can mistake the first fully named teammate for the subject of a split.
+            pair = availability_pair(
+                q,
+                team=team,
+                player=player,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+            )
+            if pair:
+                if pair[0] == "with":
+                    with_player, unresolved_with_player = pair[1], None
+                else:
+                    without_player, unresolved_without_player = pair[1], None
+                if player in pair[1].split(" and "):
+                    subject_text = list(q)
+                    for start, end in read_participation_name_spans(q, (pair[1],)):
+                        subject_text[start:end] = " " * (end - start)
+                    subject = detect_player_resolved("".join(subject_text))
+                    player = subject.resolved if subject.is_confident else None
         trailing = re.search(
             r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
             r"|in|vs\.?|versus|against|at|on|from|during)\b)",
