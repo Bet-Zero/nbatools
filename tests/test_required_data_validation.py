@@ -206,3 +206,55 @@ def test_parameterized_node_selection_runs_only_the_required_case(sandbox) -> No
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert report["selected"] == report["passed"] == 1
+
+
+def test_automatic_collection_budget_stops_before_execution_even_with_xdist_env(sandbox) -> None:
+    sandbox[1]["VALIDATION_MAX_TESTS"] = "2"
+    body = (
+        '@pytest.mark.parametrize("number", range(3))\n'
+        "def test_expansion(number):\n"
+        "    from pathlib import Path\n"
+        '    Path("must-not-execute").touch()\n'
+    )
+    result, report = run_gate(sandbox, body, parallel=True)
+    assert result.returncode != 0
+    assert report["selected"] == 3
+    assert report["executed"] == 0
+    assert report["required_test_limit"] == 2
+    assert not (sandbox[0] / "must-not-execute").exists()
+
+
+def test_automatic_selection_within_budget_executes_normally(sandbox) -> None:
+    sandbox[1]["VALIDATION_MAX_TESTS"] = "2"
+    result, report = run_gate(sandbox, "def test_good():\n    assert 7 * 6 == 42\n", parallel=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert report["selected"] == report["executed"] == report["passed"] == 1
+    assert report["required_test_limit"] == 2
+
+
+def test_ranked_zero_data_fixtures_obey_guard_but_required_skips_still_fail(sandbox) -> None:
+    root, env = sandbox
+    filename = "test_ranked_zero_conditions_real_data.py"
+    (root / "tests" / filename).write_text((ROOT / "tests" / filename).read_text())
+    (root / "tests/conftest.py").write_text(
+        "import importlib.util\n"
+        f"spec = importlib.util.spec_from_file_location('real_conftest', {str(ROOT / 'tests/conftest.py')!r})\n"
+        "module = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\n"
+        "_skip_needs_data = module._skip_needs_data\n"
+    )
+    ordinary = subprocess.run(
+        [sys.executable, "-m", "pytest", "-n", "0", "-q", f"tests/{filename}"],
+        cwd=root,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert ordinary.returncode == 0, ordinary.stdout + ordinary.stderr
+    assert "10 skipped" in ordinary.stdout
+    result, report = run_gate(sandbox, "", selection=f"tests/{filename}")
+    assert result.returncode != 0
+    assert report["selected"] == report["skipped"] == 10
+    assert report["executed"] == report["passed"] == report["errors"] == 0
+    assert report["pytest_exit"] == 0
+    assert report["conclusion"] == "failure"
