@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "2f484f2331956e24c306fd3ea1ed544c99d853c7",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_played_season_splits_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
