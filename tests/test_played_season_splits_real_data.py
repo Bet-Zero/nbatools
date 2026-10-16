@@ -12,6 +12,7 @@ import pytest
 from nbatools.commands import player_split_summary, team_split_summary
 from nbatools.data_source import data_read_csv
 from nbatools.query_service import execute_natural_query
+from tests.played_sample_oracle import attach_raw_team_outcomes
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 SEASONS = ["2023-24", "2025-26"]
@@ -32,6 +33,11 @@ def _qualified_sample(kind):
             (teams, ["game_id", "team_id"]),
         ):
             assert not frame.empty, f"Required source missing: {season}"
+            assert {"season", "season_type"}.issubset(frame.columns), "Missing source slice labels"
+            assert frame.season.eq(season).all(), f"Wrong source season: {season}"
+            assert frame.season_type.eq("Regular Season").all(), (
+                f"Wrong source season type: {season}"
+            )
             assert not frame[key].isna().any().any(), f"Null source keys: {season}"
             assert not frame.duplicated(key).any(), f"Duplicate source keys: {season}"
         base = (
@@ -40,6 +46,10 @@ def _qualified_sample(kind):
             else players.loc[players.player_name.eq("Jaylen Brown") & players.team_abbr.eq("BOS")]
         )
         assert not base.empty, f"Required subject coverage missing: {season}"
+        if kind == "player":
+            # Raw player CSVs do not supply W/L. Join the independent team rows
+            # before choosing the opponent witness; do not consult engine output.
+            base = attach_raw_team_outcomes(base, teams)
         played = [
             _keys(players.loc[players.player_name.eq(name) & players.team_abbr.eq("BOS")])
             for name in NAMES
