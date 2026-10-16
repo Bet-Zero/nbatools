@@ -395,7 +395,7 @@ from nbatools.commands._teammate_resolution import (
     availability_pair,
     has_unread_participation_clause,
     name_before_scope,
-    read_participation_name_spans,
+    resolve_participation_subject,
     resolve_teammate,
     shares_side,
 )
@@ -3347,6 +3347,7 @@ def _build_parse_state(query: str) -> dict:
             # Resolve the full name clause before choosing the subject/route.
             # Otherwise "Warriors record with Klay Thompson and Draymond Green"
             # can mistake the first fully named teammate for the subject of a split.
+            player = resolve_participation_subject(q, player)
             pair = availability_pair(
                 q,
                 team=team,
@@ -3361,12 +3362,6 @@ def _build_parse_state(query: str) -> dict:
                     with_player, unresolved_with_player = pair[1], None
                 else:
                     without_player, unresolved_without_player = pair[1], None
-                if player in pair[1].split(" and "):
-                    subject_text = list(q)
-                    for start, end in read_participation_name_spans(q, (pair[1],)):
-                        subject_text[start:end] = " " * (end - start)
-                    subject = detect_player_resolved("".join(subject_text))
-                    player = subject.resolved if subject.is_confident else None
         trailing = re.search(
             r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
             r"|in|vs\.?|versus|against|at|on|from|during)\b)",
@@ -6625,17 +6620,21 @@ def _route_parsed_query(parsed: dict) -> dict:
         ) + ["unresolved_player_availability"]
 
     if (
-        route in ("player_game_summary", "player_game_finder", "player_split_summary")
-        and route_kwargs.get("player")
+        route in _WITH_PLAYER_SUPPORTED_ROUTES | _WITHOUT_PLAYER_SUPPORTED_ROUTES
+        and (
+            route_kwargs.get("player")
+            or route_kwargs.get("with_player")
+            or route_kwargs.get("without_player")
+        )
         and names_other_player_availability(
             q,
-            route_kwargs["player"],
+            route_kwargs.get("player"),
             (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
             also=(route_kwargs.get("opponent_player"),),
         )
     ):
-        # "in games LeBron plays 35 minutes and Luka sits": the player route
-        # reads only its own player, so the second clause would be dropped.
+        # A team or player sample must retain every participant clause,
+        # including a later "while Wiggins plays" after a resolved pair.
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "multi_player_availability" not in existing_unsupported:
             existing_unsupported.append("multi_player_availability")

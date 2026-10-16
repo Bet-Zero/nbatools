@@ -316,3 +316,43 @@ def test_consumed_pair_does_not_hide_later_conditional_participant(played_sample
     )
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("subject", ["Warriors record", "Stephen Curry averages"])
+@pytest.mark.parametrize("joining", ["when", "while"])
+def test_team_and_player_pairs_do_not_drop_third_participant(played_sample, subject, joining):
+    result = execute_natural_query(
+        f"{subject} with Klay Thompson and Draymond Green playing "
+        f"{joining} Andrew Wiggins plays against Knicks in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
+def test_leading_pair_keeps_actual_player_subject(played_sample, monkeypatch):
+    original = player_split_summary._summarize_bucket
+    seen = {}
+
+    def capture(frame, bucket):
+        seen[bucket] = set(frame.game_id)
+        return original(frame, bucket)
+
+    monkeypatch.setattr(player_split_summary, "_summarize_bucket", capture)
+    result = execute_natural_query(
+        "With Klay Thompson and Draymond Green playing, Stephen Curry averages "
+        "against Knicks with at least 29 points in 2023-24 and 2025-26"
+    )
+    assert result.result_status == "ok"
+    assert result.metadata["player"] == "Stephen Curry"
+    assert result.metadata["with_player"] == "Klay Thompson and Draymond Green"
+    rows = result.to_dict()["sections"]["split_comparison"]
+    for row in rows:
+        season = row["bucket"]
+        expected = played_sample[season]["curry_bound"]
+        expected = expected.loc[
+            expected.pts.ge(29)
+            & expected.game_id.isin(played_sample[season]["warriors_pair"].game_id)
+        ]
+        assert seen[season] == set(expected.game_id)
+        assert row["games"] == len(expected)
+        assert row["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)

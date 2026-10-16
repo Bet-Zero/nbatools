@@ -201,6 +201,32 @@ def read_participation_name_spans(
     ]
 
 
+def resolve_participation_subject(text: str, player: str | None) -> str | None:
+    """Find the subject outside complete named participation clauses.
+
+    A leading pair can be detected before the actual subject. Name reading must
+    precede same-side validation, which otherwise uses that incidental teammate
+    as the subject and excludes their own rows from the candidate population.
+    Unknown name tails and participant predicates are never consumed here.
+    """
+    from nbatools.commands._matchup_utils import detect_player, detect_player_resolved
+
+    subject_text = list(text)
+    participants = []
+    for _, parts, start, end in _participation_clauses(text):
+        names = [detect_player(part) for part in parts]
+        if not all(name and _only_the_name(part, name) for part, name in zip(parts, names)):
+            continue
+        participants.extend(names)
+        subject_text[start:end] = " " * (end - start)
+    if player not in participants:
+        return player
+    subject = detect_player_resolved("".join(subject_text))
+    if subject.is_confident:
+        return subject.resolved
+    return player if subject.confidence == "ambiguous" else None
+
+
 def _words(text: str) -> list[str]:
     plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
     return re.findall(r"[a-z0-9']+", plain.lower().replace("-", " ").replace(".", ""))
