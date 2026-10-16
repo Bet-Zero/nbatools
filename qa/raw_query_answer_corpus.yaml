@@ -9994,3 +9994,56 @@ cases:
       tags:
         - split
       notes: "Review the Warriors 2016 record when up 3-1."
+
+  - id: p1_s1_celtics_home_knicks_nonadjacent_seasons
+    query: "Celtics home record vs Knicks in 2023-24 and 2025-26"
+    category: split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_filters:
+      - kind: team
+        label: Opponent
+        value: NYK
+      - kind: location
+        label: Location
+        value: Home
+      - kind: season
+        label: Seasons
+        value: "2023-24, 2025-26"
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.opponent
+        equals: NYK
+      - path: result.metadata.season_type
+        equals: Regular Season
+      - path: result.metadata.split_type
+        equals: season
+      - path: result.metadata.season_list
+        equals: ["2023-24", "2025-26"]
+      - path: result.sections.summary.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.summary.0.season_start
+        equals: "2023-24"
+      - path: result.sections.summary.0.season_end
+        equals: "2025-26"
+      - path: result.sections.split_comparison.0.bucket
+        equals: "2023-24"
+      - path: result.sections.split_comparison.1.bucket
+        equals: "2025-26"
+    review_notes: >-
+      P1/S1 requires home and opponent conditions to survive an explicit
+      non-adjacent season split, excluding 2024-25. Exact raw team-game IDs,
+      counts, W/L and points plus both single-season controls are required in
+      test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls
+      in tests/test_c1_season_lists_real_data.py. This corpus case checks
+      displayed scope and bucket identity; it does not substitute for numerical
+      evidence on the same pinned generation or claim completed human review.
