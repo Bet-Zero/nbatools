@@ -7,7 +7,7 @@ Before it existed they were local-only, on one machine, undated and unretained.
 
 Four properties keep it working, and none is visible in a diff:
 
-1. **Every job declares its environment.** The credential lives on the
+1. **Every data job declares its environment.** The credential lives on the
    `r2-validation` GitHub Environment, deliberately, so ordinary CI stays
    secret-free. An environment secret reaches only a job that names that
    environment, so a job without the declaration receives three empty strings
@@ -164,6 +164,9 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
     from a real data failure.
     """
     for name, job in _jobs().items():
+        if name == "request":
+            assert "environment" not in job
+            continue
         assert job.get("environment") == ENVIRONMENT, (
             f"job {name!r} must declare `environment: {ENVIRONMENT}`; it has "
             f"{job.get('environment')!r}. The R2 credential lives on that "
@@ -305,6 +308,8 @@ def test_every_job_maps_exactly_the_secrets_the_engine_requires() -> None:
     )
 
     for name, job in _jobs().items():
+        if name == "request":
+            continue
         env = job.get("env", {})
         for variable, secret in SECRET_SOURCES.items():
             assert env.get(variable) == f"${{{{ secrets.{secret} }}}}", (
@@ -339,7 +344,7 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
 
     expected = f"${{{{ needs.{PREFLIGHT_JOB}.outputs.generation }}}}"
     for name, job in _jobs().items():
-        if name == PREFLIGHT_JOB:
+        if name in {PREFLIGHT_JOB, "request"}:
             continue
         pinned = job.get("env", {}).get(GENERATION_ENV)
         assert pinned == expected, (
@@ -370,7 +375,7 @@ def test_the_validation_gates_cannot_be_made_advisory(job_name: str) -> None:
     # every gate, and only a targeted run that names nothing for a gate skips it.
     condition = job.get("if")
     if condition is not None:
-        assert condition.startswith("inputs.scope == 'full'"), (
+        assert condition.startswith("needs.preflight.outputs.scope == 'full'"), (
             f"{job_name} may be skipped only outside the full scope; it has {condition!r}"
         )
 
@@ -405,7 +410,7 @@ def test_every_data_job_waits_for_the_credential_check() -> None:
     wait for it reports the symptom in parallel with the diagnosis.
     """
     for name, job in _jobs().items():
-        if name == PREFLIGHT_JOB:
+        if name in {PREFLIGHT_JOB, "request"}:
             continue
         assert PREFLIGHT_JOB in _needs(job), (
             f"job {name!r} does not wait for {PREFLIGHT_JOB!r}, so a missing "
@@ -455,7 +460,13 @@ def test_each_gate_has_a_timeout_that_fits_its_measured_runtime(job_name: str) -
     and a slow runner.
     """
     floors = {"raw-qa": 60, "filter-sweep": 20, "data-backed-tests": 60}
-    timeout = int(_job(job_name)["timeout-minutes"])
+    value = _job(job_name)["timeout-minutes"]
+    if job_name != "filter-sweep":
+        expected_manual = {"raw-qa": 75, "data-backed-tests": 60}[job_name]
+        assert value == "${{ github.event_name == 'push' && 20 || " + str(expected_manual) + " }}"
+        timeout = expected_manual
+    else:
+        timeout = int(value)
     assert timeout >= floors[job_name], (
         f"{job_name} allows {timeout} minutes; run 1 measured a runtime needing "
         f"at least {floors[job_name]}. A timeout here produces no verdict at all."
@@ -485,12 +496,13 @@ def test_a_targeted_run_is_labelled_as_one() -> None:
     inputs = workflow["on"]["workflow_dispatch"]["inputs"]
     assert inputs["scope"]["default"] == "full"
     assert inputs["scope"]["options"] == ["full", "targeted"]
-    assert "${{ inputs.scope }}" in workflow["run-name"]
+    assert "inputs.scope" in workflow["run-name"]
+    assert "automatic targeted" in workflow["run-name"]
 
 
 def test_every_gate_uses_the_once_resolved_candidate_sha() -> None:
     assert _job(PREFLIGHT_JOB)["outputs"]["candidate_sha"] == (
-        "${{ steps.revision.outputs.candidate_sha }}"
+        "${{ needs.request.outputs.candidate_sha }}"
     )
     for name in GATE_JOBS:
         checkout = next(s for s in _steps(name) if "actions/checkout@" in s.get("uses", ""))
@@ -509,19 +521,22 @@ def test_required_tests_use_the_strict_harness_and_candidate_identity() -> None:
         ("", "", False),
         (" ", "", False),
         (" ", "valid", False),
-        ("tests/test_x.py", "", True),
+        ("tests/test_required_data_validation.py", "", True),
         ("", "case-id", True),
     ],
 )
 def test_preflight_rejects_empty_requests_but_allows_unselected_jobs(
     tests: str, raw_qa: str, success: bool, tmp_path: Path
 ) -> None:
-    step = next(s for s in _steps(PREFLIGHT_JOB) if s.get("id") == "revision")
+    step = next(s for s in _steps("request") if s.get("id") == "resolve")
+    assert step["run"] == "python ../workflow/tools/resolve_r2_validation_request.py"
+    assert step["working-directory"] == "candidate"
     result = subprocess.run(
-        ["bash", "-e", "-c", step["run"]],
+        [sys.executable, str(ROOT / "tools/resolve_r2_validation_request.py")],
         cwd=ROOT,
         env={
             **os.environ,
+            "GITHUB_EVENT_NAME": "workflow_dispatch",
             "SCOPE": "targeted",
             "TESTS": tests,
             "RAW_QA_CASES": raw_qa,
@@ -531,3 +546,42 @@ def test_preflight_rejects_empty_requests_but_allows_unselected_jobs(
         text=True,
     )
     assert (result.returncode == 0) == success, result.stderr
+
+
+def test_automatic_trigger_is_only_a_dedicated_request_push() -> None:
+    assert set(_workflow()["on"]) == {"workflow_dispatch", "push"}
+    assert _workflow()["on"]["push"] == {
+        "branches": ["r2-validation/**"],
+        "paths": [".github/r2-validation-request.json"],
+    }
+    assert "r2-automatic-targeted" in _workflow()["concurrency"]["group"]
+    assert _workflow()["concurrency"]["cancel-in-progress"] == "false"
+
+
+def test_request_resolver_has_no_credentials_or_project_install() -> None:
+    request = _job("request")
+    assert "environment" not in request
+    assert "secrets." not in str(request)
+    assert "pip install" not in str(request)
+    assert _needs(_job(PREFLIGHT_JOB)) == ["request"]
+    assert _job(PREFLIGHT_JOB)["env"][GENERATION_ENV] == "${{ needs.request.outputs.generation }}"
+    checkout = next(s for s in _steps("request") if s.get("with", {}).get("path") == "candidate")
+    resolver = next(s for s in _steps("request") if s.get("with", {}).get("path") == "workflow")
+    assert resolver["with"]["ref"] == "${{ github.workflow_sha }}"
+    assert checkout["with"]["ref"] == (
+        "${{ github.event_name == 'push' && github.sha || inputs.target_ref }}"
+    )
+    assert checkout["with"]["fetch-depth"] == "2"
+    for name in _jobs():
+        for step in _steps(name):
+            if "actions/checkout@" in step.get("uses", ""):
+                assert step["with"]["persist-credentials"] == "false"
+
+
+def test_gate_selection_only_uses_validated_outputs() -> None:
+    for name in GATE_JOBS:
+        assert "inputs." not in str(_job(name))
+    step = next(s for s in _steps("data-backed-tests") if "needs_data" in s.get("name", ""))
+    assert step["env"]["VALIDATION_MAX_TESTS"] == (
+        "${{ needs.preflight.outputs.automatic == 'true' && '100' || '' }}"
+    )

@@ -40,7 +40,9 @@ def _qualify_rows(frame, keys, values):
     return frame.to_dict("records")
 
 
-@pytest.fixture(scope="module")
+# Match the function-scoped needs_data guard: ordinary no-data CI skips before
+# loading required rows, while the R2 harness still rejects every required skip.
+@pytest.fixture
 def teams():
     from nbatools.commands.freshness import manifest_entry
     from nbatools.data_source import data_read_csv
@@ -103,7 +105,7 @@ def _assert_ranked_answer(query, expected, metric, *, player=False):
     assert {row["season_type"] for row in actual} == {SEASON_TYPE}
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def zero_block_matchup(teams):
     knicks = _team_rows(teams, "NYK")
     # Select a real discriminating matchup, without assuming a particular
@@ -135,7 +137,7 @@ def test_team_zero_owner_opponent_and_top_n_2023_24(zero_block_matchup, owner_fi
     _assert_ranked_answer(f"top 2 scoring games {owner} {condition} in {SEASON}", expected, "blk")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def bam_games(teams):
     from nbatools.data_source import data_read_csv
 

@@ -188,19 +188,29 @@ require owner approval before the values reach a runner.
 them, the cause is the environment or workflow configuration, not the scope —
 widening the scope hides the fault instead of fixing it.
 
-Every job must therefore declare `environment: r2-validation`. A job that omits
-it receives all three as empty strings and fails as though the data were gone,
-which is silent in exactly the wrong way.
-`test_every_job_declares_the_environment_holding_the_credential` pins it for
-each job, not just the first.
+Every data-bearing job declares `environment: r2-validation`. The initial
+`request` job deliberately has no environment or secrets: it validates the
+request before project installation and before any data credential is released.
+The workflow policy tests enforce both sides of this separation.
 
 ### One generation, several parallel gates
 
-The workflow runs a `preflight` job that verifies the credential and resolves a
-single immutable generation, then runs three jobs against it in parallel: the Raw
-QA corpus, the filter execution sweep, and the `needs_data` suite
-(informational). Each pins `NBATOOLS_DATA_GENERATION` from the preflight's
-output, which the engine honours over the live pointer.
+The secret-free `request` job resolves the candidate SHA once. Its resolver
+comes from the fixed workflow revision, in a separate checkout, so a manually
+requested candidate need not contain the new request resolver. The `preflight`
+job verifies read access to one immutable generation, then the selected Raw QA,
+filter sweep and required `needs_data` jobs use that exact SHA and generation.
+Automatic requests name the generation explicitly; manual dispatch retains
+preflight resolution of the active generation. Every data job pins
+`NBATOOLS_DATA_GENERATION` from preflight rather than resolving it again.
+
+The numerical suite is blocking. Required assertions, missing data, skips,
+expected failures, empty selections and execution errors cannot become a pass.
+Its uploaded JSON/JUnit evidence records selected, executed, passed and skipped
+counts, failures/errors, code SHA and generation. A deliberately unselected job
+in targeted mode is distinct from a skipped required test. Older manual targets
+still need the strict numerical harness introduced by P0b when numerical tests
+are selected; they do not need the newer automatic-request resolver.
 
 Pinning once rather than per job is what makes the gates comparable. Resolved
 independently, a publication landing mid-run would leave one gate judging a
@@ -235,6 +245,66 @@ Raw QA case ids (`raw_qa_cases`) and `needs_data` test files or node ids
 filter sweep, and queues only behind an earlier targeted run of the same ref,
 so it reports in minutes. Its run name says `targeted`; a green targeted run
 is evidence for that change, not a full validation.
+
+### Agent-initiated targeted requests
+
+The owner authorized automatic targeted validation on 2026-10-15. An agent with
+existing same-repository push access can request it without asking the owner to
+use GitHub's manual dispatch UI. This extends the **same workflow**, with the
+same read-only environment; it creates no token, permission, paid service or data
+refresh path. Ordinary CI remains secret-free.
+
+After independently reviewing and testing the candidate, the agent creates a
+fresh `r2-validation/<task>-<candidate-short-sha>` branch at that exact candidate.
+The candidate must include this workflow extension. Add one final commit changing
+only `.github/r2-validation-request.json`, then push that branch normally (never
+force-push another session's work). That dedicated branch/path push starts the
+existing workflow automatically. The manifest has exactly these fields:
+
+```json
+{
+  "schema_version": 1,
+  "reviewed_sha": "<exact 40-character reviewed candidate SHA>",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": ["tests/<affected_real_data_test>.py::test_<required_case>"],
+  "raw_qa_cases": []
+}
+```
+
+Replace the illustrative selectors/SHA with actual affected requirements and the
+independently reviewed revision. Use the intended immutable generation; the
+example is a historical snapshot, not a freshness claim. Selectors are existing
+Python files under `tests/` or individual pytest node ids, and Raw QA ids name
+existing corpus cases. At least one selection is required. A misspelled node or
+case, unmarked numerical selection, or required skip fails acceptance.
+
+The resolver checks the push repository, full branch ref and exact pushed SHA.
+The request commit must have **one parent equal to `reviewed_sha`** and change
+only the manifest. It reports both the reviewed code SHA and the request SHA;
+all validation jobs check out the latter, whose code is identical to its parent.
+This binds evidence to the selected code but **cannot prove that independent
+review occurred**. Agents remain responsible for recording the real reviewer and
+findings in the candidate PR before pushing a request. A request branch is an
+evidence carrier, not a replacement feature branch or a merge approval.
+
+Automatic runs are targeted-only: no filter sweep, acquisition or publication.
+The request is capped at 8 KiB, 20 numerical selectors and 20 Raw QA cases, with
+no directories, globbing, shell options, duplicate selectors or unknown schema
+fields. The numerical harness caps collection at 100 selected tests and runs
+serially so an oversized collection aborts before test execution. Both automatic
+gates have a 20-minute timeout; request/preflight budgets are 5/10 minutes. All
+automatic requests share one concurrency group; running evidence is not cancelled
+by newer pushes, although GitHub can replace a queued pending run. Cancellation
+or timeout is incomplete evidence, never acceptance. Manual full/targeted limits
+and the full Raw QA/filter-sweep backstop remain available.
+
+Agents inspect the request, preflight and underlying selected gate conclusions,
+counts and artifacts, then record the run URL, request/reviewed SHAs, generation
+and any blockers in the existing checkpoint/PR. Environment protection or a real
+credential failure remains an explicit access blocker; never loosen protections
+or broaden credential scope to make a request run. Pushes authored with GitHub's
+workflow `GITHUB_TOKEN` do not recursively start workflows; use the already
+authorized agent/user repository connection, without provisioning a new token.
 
 ### Secret names versus variable names
 
