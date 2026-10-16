@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "05b2c7fd7bf9f368060f396865a2c4754c236620",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_ranked_zero_conditions_real_data.py",
+    "tests/test_c2_group_and_owner_game_lists_real_data.py",
+    "tests/test_c2_game_list_spans_and_teams_real_data.py",
+    "tests/test_c2_team_players_game_lists_real_data.py",
+    "tests/test_c1_ranked_stat_games_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
