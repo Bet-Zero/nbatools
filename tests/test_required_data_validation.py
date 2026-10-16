@@ -230,3 +230,31 @@ def test_automatic_selection_within_budget_executes_normally(sandbox) -> None:
     assert result.returncode == 0, result.stdout + result.stderr
     assert report["selected"] == report["executed"] == report["passed"] == 1
     assert report["required_test_limit"] == 2
+
+
+def test_ranked_zero_data_fixtures_obey_guard_but_required_skips_still_fail(sandbox) -> None:
+    root, env = sandbox
+    filename = "test_ranked_zero_conditions_real_data.py"
+    (root / "tests" / filename).write_text((ROOT / "tests" / filename).read_text())
+    (root / "tests/conftest.py").write_text(
+        "import importlib.util\n"
+        f"spec = importlib.util.spec_from_file_location('real_conftest', {str(ROOT / 'tests/conftest.py')!r})\n"
+        "module = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\n"
+        "_skip_needs_data = module._skip_needs_data\n"
+    )
+    ordinary = subprocess.run(
+        [sys.executable, "-m", "pytest", "-n", "0", "-q", f"tests/{filename}"],
+        cwd=root,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert ordinary.returncode == 0, ordinary.stdout + ordinary.stderr
+    assert "10 skipped" in ordinary.stdout
+    result, report = run_gate(sandbox, "", selection=f"tests/{filename}")
+    assert result.returncode != 0
+    assert report["selected"] == report["skipped"] == 10
+    assert report["executed"] == report["passed"] == report["errors"] == 0
+    assert report["pytest_exit"] == 0
+    assert report["conclusion"] == "failure"

@@ -209,3 +209,43 @@ def test_request_commit_cannot_change_candidate_code(repo):
     assert result.returncode != 0
     assert "only the request manifest" in result.stdout
     assert not outputs
+
+
+def test_symlink_manifest_fails_before_outputs(repo):
+    root, request = repo
+    (root / ".github").mkdir()
+    target = root / "request-data.json"
+    target.write_text(json.dumps(request))
+    (root / MANIFEST).symlink_to(target)
+    result, outputs = run_request(repo)
+    assert result.returncode != 0
+    assert "regular request manifest" in result.stdout
+    assert not outputs
+
+
+def test_manual_dispatch_full_can_resolve_an_older_candidate_without_new_resolver(repo):
+    # The workflow loads its resolver from the workflow SHA, not this old candidate.
+    result, outputs = run_request(
+        repo, env_changes={"GITHUB_EVENT_NAME": "workflow_dispatch", "SCOPE": "full"}
+    )
+    assert not (repo[0] / "tools/resolve_r2_validation_request.py").exists()
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs["scope"] == "full"
+    assert outputs["automatic"] == "false"
+    assert outputs["generation"] == ""
+
+
+def test_manual_targeted_resolution_preserves_exact_candidate_and_selection(repo):
+    result, outputs = run_request(
+        repo,
+        env_changes={
+            "GITHUB_EVENT_NAME": "workflow_dispatch",
+            "SCOPE": "targeted",
+            "TESTS": "tests/test_reviewed.py",
+            "RAW_QA_CASES": "",
+        },
+    )
+    assert result.returncode == 0
+    assert outputs["candidate_sha"] == _git(repo[0], "rev-parse", "HEAD")
+    assert outputs["tests"] == "tests/test_reviewed.py"
+    assert outputs["automatic"] == "false"
