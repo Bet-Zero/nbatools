@@ -43,7 +43,7 @@ def _run(query: str):
 
 # (filtered query, unfiltered control, badge label the filter would display)
 FILTER_PAIRS = [
-    # position groups: only season_leaders applies `position`
+    # position groups: season_leaders and the player game lists apply `position`
     (
         "best 10 game stretch by guards in 2023-24",
         "best 10 game stretch in 2023-24",

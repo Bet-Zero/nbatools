@@ -65,6 +65,8 @@ def extract_occurrence_event(text: str) -> dict | None:
             # "top 5 scoring games": a count of games to list, not 5+ points.
             if _RANKED_COUNT.search(text[: m.start()]):
                 continue
+            if re.search(r"\bat\s+least\s+$", text[: m.start()]):
+                return {"stat": stat, "min_value": float(m.group(1))}
             return _threshold_condition(stat, m.group(1), m.group(0))
 
     # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"

@@ -117,7 +117,6 @@ def test_player_record_against_one_opponent():
 @pytest.mark.parametrize(
     "query",
     [
-        "best shooting games by a guard this season",
         "best shooting games by a Laker",
         "best shooting games in the 2025 playoffs against the Celtics",
         "best shooting games by all-stars",
@@ -131,11 +130,6 @@ def test_player_record_against_one_opponent():
         "best shooting games in 10 years",
         "best shooting games in 100 games",
         "best shooting performances by the top 10 scorers",
-        "best shooting performances for rookies",
-        "best shooting performances among guards",
-        "best shooting games over 50% from deep for rookies",
-        "best shooting games over 50% from three for guards",
-        "best shooting games over 50% from three among centers",
         "best shooting games over 50% from three of rookies",
         "best shooting games over 50% from three under 25",
         "best shooting games over 50% from three over 30",
@@ -143,6 +137,8 @@ def test_player_record_against_one_opponent():
     ],
 )
 def test_league_game_lists_never_drop_an_unread_filter(query):
+    # Rookie and position-group lists are answered with the group applied
+    # (tests/test_c2_group_and_owner_game_lists.py).
     assert parse_query(query)["route"] != "player_game_finder"
 
 

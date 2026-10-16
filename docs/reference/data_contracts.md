@@ -1114,7 +1114,7 @@ Typically one row per **player-team-season roster entry**.
 ### Primary consumer(s)
 
 - season leaderboard enrichment when `team_abbr` is missing from season advanced datasets
-- future roster-aware filters or normalization flows
+- `player_game_finder` season-specific position and rookie population filters
 
 ### Notes
 
@@ -1125,6 +1125,31 @@ therefore enforces this table's schema, grain, slice labels, and checksum, but
 does not claim exact coverage of all `player_game_stats` player-team keys.
 Role and period execution use their dedicated exact player-game coverage
 contracts instead.
+
+For `player_game_finder` classification, each requested season file must contain
+rows for that season and `season` / `player_id`, plus `position` for a position
+filter and `experience_years` for a rookie filter. Position codes use the existing
+position-group mapping; rookie means a numeric experience value of zero.
+Experience values must be nonnegative whole numbers. Missing, blank or invalid
+requested values are unknown classifications, not evidence that a player is
+outside the population. Unrequested classification fields are not required.
+
+The join is by (`season`, `player_id`), retaining the player-game grain. A player
+listed under multiple team snapshots qualifies when a complete requested
+classification matches in at least one entry. An unknown entry alongside only
+nonmatching entries does not prove exclusion. These snapshot classifications do
+not establish game-date membership, injury status or on-court presence.
+
+When some candidate games cannot be classified, a nonempty result identifies
+itself in its result caveats as an **incomplete population**: the ranking covers
+the known classified subset and states the omitted game count. Its table also
+carries `population_scope` so text/CSV exports retain that limitation. It is not
+an exhaustive league ranking. If no qualifying games can be verified while
+unknown candidates remain, the response reports unavailable classification rather
+than a verified `no_match`. Missing, empty, wrong-season or required-column-less
+season files are unavailable; another season's rows cannot supply that coverage.
+Complete-population ranking remains unfinished wherever the snapshot lacks these
+classifications; unavailable-data containment is not numerical acceptance.
 
 ---
 
