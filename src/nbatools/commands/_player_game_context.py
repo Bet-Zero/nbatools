@@ -1333,7 +1333,30 @@ _EVENT_PATTERNS = (
         r"recording|recorded|dishing|dished|posting|posted)\s+(?:at\s+least\s+)?"
         rf"(?P<n>\d+)\+?\s+(?P<w>{STAT_PATTERN}|minutes?)\b{_NOT_A_FLOOR}"
     ),
+    # An explicit zero is a condition, not the ranking metric. Requiring the
+    # clause opener keeps opponent/team-owned clauses with their own readers.
+    re.compile(
+        rf"\b(?P<n>without(?:\s+any)?|with\s+(?:no|zero))\s+(?P<w>{STAT_PATTERN})\b"
+        r"(?![\s-]+(?:allowed|given\s+up))"
+    ),
 )
+
+
+def _event_condition(match: re.Match, stat: str) -> dict:
+    number = match.group("n")
+    explicit_zero = not number.isdigit() or (
+        float(number) == 0
+        and "+" not in match.group()
+        and "at least" not in match.group()
+        and "or more" not in match.group()
+        and not re.match(r"\s+or\s+more\b", match.string[match.end() :])
+        and not re.search(r"\bat\s+least\s+$", match.string[: match.start()])
+    )
+    return {
+        "stat": stat,
+        "min_value": 0.0 if explicit_zero else float(number),
+        "max_value": 0.0 if explicit_zero else None,
+    }
 
 
 # Near NBA single-game records: a bigger count names a team total.
@@ -1414,10 +1437,10 @@ def _game_events(text: str, patterns) -> list[dict]:
             if stat is None:
                 continue
             claimed.append(m.span())
-            if stat == "pts" and float(m.group("n")) < 10 and pattern is _EVENT_PATTERNS[1]:
+            if pattern is _EVENT_PATTERNS[1] and stat == "pts" and float(m.group("n")) < 10:
                 # "3 point games" are games decided by 3 points.
                 continue
-            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+            events.append(_event_condition(m, stat))
     return events
 
 
@@ -1450,16 +1473,17 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
             if stat is None:
                 continue
             claimed.append(m.span())
-            if stat == "pts" and float(m.group("n")) < 10 and pattern is _EVENT_PATTERNS[1]:
+            if pattern is _EVENT_PATTERNS[1] and stat == "pts" and float(m.group("n")) < 10:
                 # "3 point games" are games decided by 3 points.
                 continue
-            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+            events.append(_event_condition(m, stat))
     if not events:
         return
     ceiling = _EVENT_CEILING if route == "player_game_finder" else {}
-    if any(e["min_value"] >= ceiling.get(e["stat"], float("inf")) for e in events) or any(
-        a["stat"] == b["stat"] and not _same_bound(a, b) for a in events for b in events
-    ):
+    if any(
+        e["min_value"] is not None and e["min_value"] >= ceiling.get(e["stat"], float("inf"))
+        for e in events
+    ) or any(a["stat"] == b["stat"] and not _same_bound(a, b) for a in events for b in events):
         # "a 120 point game" is the team's total, not the player's; leave
         # the parse's reading (and its refusal) in place.
         return
@@ -1470,6 +1494,17 @@ def _apply_ranked_events(route: str | None, route_kwargs: dict, text: str) -> No
         for c in _kwargs_conditions(route_kwargs)
         if not (
             c["stat"] == ranking and any(e["stat"] != ranking and _same_bound(c, e) for e in events)
+        )
+    ]
+    # The generic threshold reader encodes bare "with 0 turnovers" as >= 0.
+    # The exact-zero event supersedes that vacuous floor, never a positive bound.
+    kept = [
+        c
+        for c in kept
+        if not (
+            c.get("min_value") == 0
+            and c.get("max_value") is None
+            and any(e["stat"] == c["stat"] and e.get("max_value") == 0 for e in events)
         )
     ]
     if any(c["stat"] == e["stat"] and not _same_bound(c, e) for c in kept for e in events):
@@ -1555,7 +1590,7 @@ def _apply_shooting_with_events(route: str | None, route_kwargs: dict, text: str
             continue
         ends.add(m.end())
         if not any(e["stat"] == stat for e in events):
-            events.append({"stat": stat, "min_value": float(m.group("n")), "max_value": None})
+            events.append(_event_condition(m, stat))
     if not events and len(shooting) == 1:
         if _kwargs_conditions(route_kwargs) or (
             route_kwargs.get("min_value") is not None or route_kwargs.get("max_value") is not None

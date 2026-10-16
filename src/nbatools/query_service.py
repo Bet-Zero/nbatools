@@ -393,8 +393,9 @@ def _build_applied_filters(
         applied_filters.append(
             {"label": "Nationally televised", "value": "True", "kind": "schedule"}
         )
-    if source.get("role"):
-        applied_filters.append({"label": "Role", "value": source["role"], "kind": "role"})
+    role = source.get("role") or route_kwargs.get("role")
+    if role:
+        applied_filters.append({"label": "Role", "value": role, "kind": "role"})
     if source.get("quarter") is not None:
         applied_filters.append(
             {"label": "Quarter", "value": str(source["quarter"]), "kind": "period"}
@@ -405,6 +406,8 @@ def _build_applied_filters(
         applied_filters.append(
             {"label": "Position", "value": source["position_filter"], "kind": "position"}
         )
+    if route_kwargs.get("rookies_only"):
+        applied_filters.append({"label": "Experience", "value": "Rookies", "kind": "position"})
     opponent_quality_value = _opponent_quality_surface_term(source.get("opponent_quality"))
     if opponent_quality_value:
         applied_filters.append(

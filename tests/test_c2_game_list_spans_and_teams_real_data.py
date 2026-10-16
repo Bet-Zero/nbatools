@@ -25,15 +25,27 @@ def test_lakers_worst_shooting_game_in_2023_24():
 
 
 def test_best_free_throw_games_over_90_percent_over_two_seasons():
-    from nbatools.commands.data_utils import load_player_games_for_seasons
-    from nbatools.query_service import execute_natural_query
+    from pathlib import Path
 
-    listed = execute_natural_query(
+    import pandas as pd
+
+    from nbatools.data_source import data_read_csv
+    from nbatools.query_service import execute_natural_query
+    from tests.shooting_rate_oracle import assert_shooting_rows
+
+    result = execute_natural_query(
         "worst free throw shooting games over 90% from 2022-23 to 2023-24"
-    ).result.to_dict()["sections"]["finder"]
-    rows = load_player_games_for_seasons(["2022-23", "2023-24"], "Regular Season")
-    rows = rows[rows["fta"] >= 5]
-    rates = rows["ftm"] / rows["fta"]
+    )
+    assert result.result_status == "ok"
+    listed = result.result.to_dict()["sections"]["finder"]
+    rows = pd.concat(
+        [
+            data_read_csv(Path(f"data/raw/player_game_stats/{season}_regular_season.csv"))
+            for season in ("2022-23", "2023-24")
+        ],
+        ignore_index=True,
+    )
+    rows = rows[(rows["fta"] >= 5) & (rows["ft_pct"] > 0.9)]
     assert listed and all(row["ft_pct"] > 0.9 and row["fta"] >= 5 for row in listed)
     assert {row["season"] for row in listed} <= {"2022-23", "2023-24"}
-    assert listed[0]["ft_pct"] == pytest.approx(float(rates[rates > 0.9].min()))
+    assert_shooting_rows(rows, listed, percentage="ft_pct", made="ftm", attempts="fta")

@@ -1441,6 +1441,16 @@ def canonicalize_ranked_stat_games(text: str) -> str:
             )
         return text
     tail = text[match.end() :]
+    # A named team after the ranking is an owner, not a stat or opponent.
+    # The owner-frame reader consumes this form directly. Rewriting only its
+    # ranking into "games by points" hides the owner from that reader and can
+    # fall through to a two-team comparison when a condition is also present.
+    from nbatools.commands.entity_resolution import TEAM_ALIASES
+
+    for owner in re.finditer(r"\b(?:by|for|from|of|among)\s+(?:the\s+)?", tail):
+        rest = tail[owner.end() :]
+        if any(re.match(rf"{re.escape(alias)}\b", rest) for alias in TEAM_ALIASES):
+            return text
     low = match.group("rank") in ("lowest", "fewest", "least", "worst")
     if low and match.group("stat") in ("scoring", "points"):
         # "lowest 3 scoring games" reads as written.
