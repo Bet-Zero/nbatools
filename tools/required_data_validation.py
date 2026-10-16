@@ -1,6 +1,6 @@
 """Fail closed on required numerical tests; write counts even when pytest fails.
 
-Used only by the manual R2 workflow. Ordinary pytest keeps its data-free skip
+Used only by the dedicated R2 workflow. Ordinary pytest keeps its data-free skip
 behavior. All selected needs_data tests are required here, including skips and
 expected failures: a successful collection or an xfail is not numeric evidence.
 """
@@ -17,7 +17,8 @@ import pytest
 
 
 class RequiredResults:
-    def __init__(self) -> None:
+    def __init__(self, max_tests: int | None = None) -> None:
+        self.max_tests = max_tests
         self.selected: set[str] = set()
         self.executed: set[str] = set()
         self.passed: set[str] = set()
@@ -28,6 +29,11 @@ class RequiredResults:
 
     def pytest_collection_finish(self, session) -> None:
         self.selected.update(item.nodeid for item in session.items)
+        if self.max_tests is not None and len(self.selected) > self.max_tests:
+            raise pytest.UsageError(
+                f"Automatic validation selected {len(self.selected)} tests; "
+                f"limit is {self.max_tests}"
+            )
 
     @pytest.hookimpl(optionalhook=True)
     def pytest_xdist_node_collection_finished(self, node, ids) -> None:
@@ -96,6 +102,10 @@ def main() -> int:
             raise ValueError("Checkout does not match the preflight-resolved candidate SHA")
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", generation) or generation == "legacy":
             raise ValueError("Required numerical validation needs a pinned immutable generation")
+        if limit := os.environ.get("VALIDATION_MAX_TESTS", ""):
+            results.max_tests = int(limit)
+            if not 1 <= results.max_tests <= 100:
+                raise ValueError("Automatic numerical test limit must be between 1 and 100")
         pytest_exit = int(
             pytest.main(
                 [
@@ -105,6 +115,8 @@ def main() -> int:
                     "--no-header",
                     "-q",
                     f"--junitxml={output / 'junit.xml'}",
+                    # Serial collection enforces the automatic cap before any test executes.
+                    *(["-n", "0"] if results.max_tests is not None else []),
                     *selection,
                 ],
                 plugins=[results],
@@ -135,6 +147,7 @@ def main() -> int:
         "generation": generation,
         "scope": os.environ.get("SCOPE", ""),
         "required_selection": selection,
+        "required_test_limit": results.max_tests,
         **counts,
         "pytest_exit": pytest_exit,
         "conclusion": "failure" if problems else "success",

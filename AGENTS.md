@@ -180,9 +180,14 @@ test-fast on PRs and the full-suite main/nightly/dispatch backstop. Do not suppr
 failures, remove backstops, raise audit/latency thresholds or weaken assertions.
 Dev advisories remain maintenance, not automatic unrelated feature blockers.
 
-Ordinary CI stays secret-free. Use the existing manual R2 workflow and its dedicated
-`r2-validation` environment. P0 may strengthen required validation in that existing
-path; it does not authorize new credentials, broader permissions, duplicate
+Ordinary CI stays secret-free. Use the existing R2 workflow and its dedicated
+`r2-validation` environment. Under the owner's 2026-10-15 authorization, agents
+may push a reviewed candidate plus a bounded manifest-only request commit to a
+fresh `r2-validation/**` branch to start targeted validation automatically; follow
+`docs/operations/deployment.md`. Manual dispatch/full validation remain available.
+The request's parent/SHA checks bind source identity, not review approval: agents
+must still obtain and record independent review before requesting validation.
+This path does not authorize new credentials, broader permissions, duplicate
 workflows, secret printing, or branch-protection changes. Keep fixed-plan limits,
 $0 metered overage, disabled public query-feedback persistence and separate
 publication authority. No new paid service/hosting migration by implication.

@@ -206,3 +206,27 @@ def test_parameterized_node_selection_runs_only_the_required_case(sandbox) -> No
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert report["selected"] == report["passed"] == 1
+
+
+def test_automatic_collection_budget_stops_before_execution_even_with_xdist_env(sandbox) -> None:
+    sandbox[1]["VALIDATION_MAX_TESTS"] = "2"
+    body = (
+        '@pytest.mark.parametrize("number", range(3))\n'
+        "def test_expansion(number):\n"
+        "    from pathlib import Path\n"
+        '    Path("must-not-execute").touch()\n'
+    )
+    result, report = run_gate(sandbox, body, parallel=True)
+    assert result.returncode != 0
+    assert report["selected"] == 3
+    assert report["executed"] == 0
+    assert report["required_test_limit"] == 2
+    assert not (sandbox[0] / "must-not-execute").exists()
+
+
+def test_automatic_selection_within_budget_executes_normally(sandbox) -> None:
+    sandbox[1]["VALIDATION_MAX_TESTS"] = "2"
+    result, report = run_gate(sandbox, "def test_good():\n    assert 7 * 6 == 42\n", parallel=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert report["selected"] == report["executed"] == report["passed"] == 1
+    assert report["required_test_limit"] == 2

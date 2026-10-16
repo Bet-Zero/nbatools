@@ -1,13 +1,15 @@
 name: R2 Real-Data Validation
-run-name: "R2 ${{ inputs.scope }} validation of ${{ inputs.target_ref }}"
+run-name: "R2 ${{ github.event_name == 'push' && 'automatic targeted' || inputs.scope }} validation of ${{ github.event_name == 'push' && github.sha || inputs.target_ref }}"
 
-# Manual-only by design. This workflow is the only GitHub Actions path that
+# Manual dispatch and bounded reviewed-candidate requests share this one path.
+# This workflow is the only GitHub Actions path that
 # should receive the temporary, bucket-scoped read-only NBA data credential.
 # Keep ordinary CI secret-free.
 #
 # Credentials are secrets on the `r2-validation` GitHub Environment, not
 # repository secrets, so they reach only the jobs that name that environment.
-# Every job below must declare it; a job that omits it receives three empty
+# Every data job below declares it; the request resolver is secret-free.
+# A data job that omits it receives three empty
 # strings and fails as though the data were gone. See
 # docs/operations/deployment.md#github-actions-secrets.
 #
@@ -23,6 +25,9 @@ run-name: "R2 ${{ inputs.scope }} validation of ${{ inputs.target_ref }}"
 # minutes. `targeted` is the per-change check: only the Raw QA cases and the
 # needs_data tests a change names, which takes minutes, and no filter sweep.
 on:
+  push:
+    branches: ["r2-validation/**"]
+    paths: [".github/r2-validation-request.json"]
   workflow_dispatch:
     inputs:
       target_ref:
@@ -56,7 +61,7 @@ permissions:
 # targeted run of the same ref, so a per-change check never sits behind a
 # 40-minute replay.
 concurrency:
-  group: ${{ inputs.scope == 'targeted' && format('r2-targeted-{0}', inputs.target_ref) || 'r2-real-data-validation' }}
+  group: ${{ github.event_name == 'push' && 'r2-automatic-targeted' || inputs.scope == 'targeted' && format('r2-targeted-{0}', inputs.target_ref) || 'r2-real-data-validation' }}
   cancel-in-progress: false
 
 env:
@@ -65,6 +70,44 @@ env:
   PYTHONUNBUFFERED: "1"
 
 jobs:
+  request:
+    name: Resolve and validate request without data credentials
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      candidate_sha: ${{ steps.resolve.outputs.candidate_sha }}
+      reviewed_sha: ${{ steps.resolve.outputs.reviewed_sha }}
+      generation: ${{ steps.resolve.outputs.generation }}
+      scope: ${{ steps.resolve.outputs.scope }}
+      tests: ${{ steps.resolve.outputs.tests }}
+      raw_qa_cases: ${{ steps.resolve.outputs.raw_qa_cases }}
+      automatic: ${{ steps.resolve.outputs.automatic }}
+    steps:
+      - name: Check out the resolver from this workflow revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: workflow
+          persist-credentials: false
+      - name: Check out the exact push or requested manual revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.target_ref }}
+          fetch-depth: 2
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Validate request before installation or credential access
+        id: resolve
+        env:
+          SCOPE: ${{ inputs.scope }}
+          TESTS: ${{ inputs.tests }}
+          RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
+        working-directory: candidate
+        run: python ../workflow/tools/resolve_r2_validation_request.py
+
   # ── Verify the credential once, and pin one generation for every gate ──
   #
   # Pinning here rather than per job is what makes the three gates comparable:
@@ -73,38 +116,29 @@ jobs:
   # never saw, and the disagreement would look like a bug in the engine.
   preflight:
     name: Verify read-only access and pin one generation
+    needs: request
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: r2-validation
     outputs:
       generation: ${{ steps.pin.outputs.generation }}
-      candidate_sha: ${{ steps.revision.outputs.candidate_sha }}
+      candidate_sha: ${{ needs.request.outputs.candidate_sha }}
+      reviewed_sha: ${{ needs.request.outputs.reviewed_sha }}
+      scope: ${{ needs.request.outputs.scope }}
+      tests: ${{ needs.request.outputs.tests }}
+      raw_qa_cases: ${{ needs.request.outputs.raw_qa_cases }}
+      automatic: ${{ needs.request.outputs.automatic }}
     env:
       R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
       R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      NBATOOLS_DATA_GENERATION: ${{ needs.request.outputs.generation }}
     steps:
-      - name: Check out requested revision
+      - name: Check out the resolved candidate
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.target_ref }}
-      - name: Resolve candidate once and reject empty targeted requests
-        id: revision
-        env:
-          SCOPE: ${{ inputs.scope }}
-          TESTS: ${{ inputs.tests }}
-          RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
-        run: |
-          echo "candidate_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          python - <<'PY'
-          import os
-          if os.environ["SCOPE"] == "targeted":
-              selections = [os.environ["TESTS"], os.environ["RAW_QA_CASES"]]
-              if not any(value.strip() for value in selections):
-                  raise SystemExit("Targeted validation requires tests or Raw QA cases")
-              if any(value and not value.strip() for value in selections):
-                  raise SystemExit("Whitespace-only required selection is invalid")
-          PY
+          ref: ${{ needs.request.outputs.candidate_sha }}
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -170,11 +204,11 @@ jobs:
   raw-qa:
     name: Raw QA corpus against real R2 data
     needs: preflight
-    if: inputs.scope == 'full' || inputs.raw_qa_cases != ''
+    if: needs.preflight.outputs.scope == 'full' || needs.preflight.outputs.raw_qa_cases != ''
     runs-on: ubuntu-latest
     # 42m30s observed on run 1 for 361 cases. Headroom for a growing corpus and
     # a slow runner, since a timeout here reports nothing at all.
-    timeout-minutes: 75
+    timeout-minutes: ${{ github.event_name == 'push' && 20 || 75 }}
     environment: r2-validation
     env:
       R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
@@ -185,6 +219,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -193,8 +228,8 @@ jobs:
 
       - name: Run Raw QA (full corpus, or the named cases when targeted)
         env:
-          SCOPE: ${{ inputs.scope }}
-          RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
+          SCOPE: ${{ needs.preflight.outputs.scope }}
+          RAW_QA_CASES: ${{ needs.preflight.outputs.raw_qa_cases }}
         run: |
           selection=""
           if [ "$SCOPE" = "targeted" ]; then
@@ -212,7 +247,7 @@ jobs:
       # A targeted run is a handful of cases, so print their report rows: the
       # evidence is then readable from the log without downloading the artifact.
       - name: Print targeted Raw QA report rows
-        if: always() && inputs.scope == 'targeted'
+        if: always() && needs.preflight.outputs.scope == 'targeted'
         run: |
           report=outputs/raw_query_answer_qa/r2_validation/report.jsonl
           if [ -f "$report" ]; then cat "$report"; fi
@@ -234,7 +269,7 @@ jobs:
   filter-sweep:
     name: Filter execution sweep against real R2 data
     needs: preflight
-    if: inputs.scope == 'full'
+    if: needs.preflight.outputs.scope == 'full'
     runs-on: ubuntu-latest
     # 521 pairs at roughly 0.75s each on run 1, so well inside this.
     timeout-minutes: 30
@@ -248,6 +283,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -277,9 +313,9 @@ jobs:
   data-backed-tests:
     name: Required numerical tests marked needs_data
     needs: preflight
-    if: inputs.scope == 'full' || inputs.tests != ''
+    if: needs.preflight.outputs.scope == 'full' || needs.preflight.outputs.tests != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: ${{ github.event_name == 'push' && 20 || 60 }}
     environment: r2-validation
     env:
       R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
@@ -290,6 +326,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.preflight.outputs.candidate_sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -298,9 +335,10 @@ jobs:
 
       - name: Required needs_data tests against the pinned candidate and generation
         env:
-          SCOPE: ${{ inputs.scope }}
-          TESTS: ${{ inputs.tests }}
+          SCOPE: ${{ needs.preflight.outputs.scope }}
+          TESTS: ${{ needs.preflight.outputs.tests }}
           VALIDATION_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+          VALIDATION_MAX_TESTS: ${{ needs.preflight.outputs.automatic == 'true' && '100' || '' }}
         run: python tools/required_data_validation.py
 
       - name: Upload required numerical evidence
