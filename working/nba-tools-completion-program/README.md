@@ -21,10 +21,10 @@ latest PR discussion/branch may be ahead of this main-branch record; check it.
 
 | Field | Current handoff |
 | --- | --- |
-| Program state | #472 merged9b67dec9718b1387d57f7563861d56374c678318; post-merge CI39007998709 passed. #473 merged d03701ddac9e052abe78b82727ac97bd1de7d031 after integrated CI39008084710; post-merge CI39008421541 passed. S4 consumer candidate under review; no production publication authorized or performed. |
-| Main / owner | Base main d03701ddac9e052abe78b82727ac97bd1de7d031. Lead /root owns codex/s4-qualified-participation-consumers, local /workspace/work/s4-consumers; checker /root/availability_checker. Shared query semantics remain single-writer; other #462 WIP preserved. |
+| Program state | #472 merged9b67dec9718b1387d57f7563861d56374c678318; post-merge CI39007998709 passed. #473 merged d03701ddac9e052abe78b82727ac97bd1de7d031; post-merge CI39008421541 passed. PR474 S4 runtime470f44a3f0f0f383952703af91edf338c11e5906 independently accepted; actual run39010415526 passed1/1zero skips. Final CI pending. No production publication authorized or performed. |
+| Main / owner | Base main d03701ddac9e052abe78b82727ac97bd1de7d031. Lead /root owns PR474 codex/s4-qualified-participation-consumers, local /workspace/work/s4-consumers (local equivalent509b3f3). Checker /root/availability_checker. Next test-only deployed checks UNPUSHED at /workspace/work/deployed-split-contracts, codex/deployed-split-contracts. Other #462 WIP preserved. |
 | Verification | #469 runtime0796d1ec: preflight7938passed1461skipped3subtests135.28sec;470focusedpassed22skipped;27status/court boundary tests and independent unfamiliar probes passed. Required NBA run [39004295670](https://github.com/Bet-Zero/nbatools/actions/runs/39004295670), request2d718f572f6b291ce08ee1690a98582a54e436b6:1selected/executed/passed0skip/fail/error/xfail,6.41sec on queue-d-production-0574735-20260716. Artifact12089464271 ZIP SHA256 `26174fd4ce52d923be478fc2f60e81fc0d2a9ed970b9ba277d75e4b6ebf66847`. Separate checker /root/availability_checker verified fresh raw receipts, CSV digest, all34semantic rows,119/109scores and240minutes/team, and approved final bounded semantics. Previous consumer run39003780254 also passed. |
-| Source/storage NEXT | S4 consumer preserves with-player through team/player splits and selects named seasons before loading/qualification. Controlled10tests and focused159 passed; cached qualified-source replay12queries passed, not fresh runner acceptance. Checker found unknown-player fallback, zero-minute participation and teammate-owned threshold misapplication; repairs added, independent re-review and final preflight pending. Next: obtain checker acceptance, then bounded read-only actual-data test and CI before merge. Permanent storage awaits protected environment setup and future explicit publication approval. |
+| Source/storage NEXT | S4 finalpreflight7984passed1468skipped135.63sec; focused177passed. Checker accepted correctedownership/unknownplayer/positive-minute behavior and freshactualoracle. ExactrequiredR2run39010415526 requestea1824ebeba7fb22e4c25e050ab1d109e07b73c4:1selected/executed/passed0skip/fail/error/xfail10.06sec. Artifact12092487073 ZIP4f97f4ec7791cef51375d05a1097a88b64349cfdaefcddf7901b5ab5d031132a. Next: merge474 only after finalCI, checkpostmerge; finish four deployedS1/S2/S3checks. Permanent storage and deployedS4 await protected environment setup and future explicit publication approval. |
 | Permanent-storage gate | CI artifacts are temporary staging only. Retain source URI/retrieval date/hash and bind CSV rows with `source_sha256`; stage against the pinned existing generation, validate coverage and lineage, publish only with existing write authority, verify object sizes/checksums and active pointer/runtime. Never use read-only validation credentials for writes. Request owner action only if the actual publication operation lacks available authority. |
 | Independent #467 | Candidate `26f10cde368b7efe8cabd1c716166f259a72e087` on `codex/p1-three-team-scope-independent-20261016` fixes final three-team subject retention. CI [39000450859](https://github.com/Bet-Zero/nbatools/actions/runs/39000450859) passed. Independent checker: 39 scoped tests plus raw-fixture March arithmetic and unfamiliar entity/clause probes. Maker: 66 focused tests. |
 | #467 NBA evidence | R2 [39000485209](https://github.com/Bet-Zero/nbatools/actions/runs/39000485209), request `48147b039e8416e17633efddb059b67f9e65c672`, reviewed parent `26f10cde368b7efe8cabd1c716166f259a72e087`: **2 selected/executed/passed, 0 skipped/failed/errors/xfails**, pinned generation above. Artifact 12088766782, ZIP SHA256 `819b7cf7eda43cb0a119cfa8506b94914b9922b47eba0b5ed8a73bb7656a68e9`. Raw QA/sweep unselected, not full-corpus acceptance. |
@@ -65,6 +65,15 @@ Independent raw expectations: LAL own>=110/opponent<110/home, 2023-24,
 road/entity/threshold probes; actual gate pending. Reconcile it with latest main
 before its own PR/CI. No runtime drift requires repeating already valid source
 arithmetic; new acceptance must still execute.
+
+S4 bounded actual evidence on the same pinned base plus four qualified official
+reports: games22300403/22300684 with Tatum (2023-24), Celtics1–1/115.5PPG,
+Brown13.5PTS6.5REB4.5AST; games22500338/22500823 without Tatum (2025-26),
+Celtics2–0/118.5PPG, Brown31PTS8REB7.5AST. Each opposite named-season bucket
+is qualified empty. Natural clause orders and structured queries match exact
+game/team/player IDs. This is four-game coverage, not seasonwide absence,
+injury/status, permanent storage or deployed S4 acceptance. A teammate-owned
+statistical condition is safely contained and remains an unfinished capability.
 
 ### First-session procedure
 
