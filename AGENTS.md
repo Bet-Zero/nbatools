@@ -81,6 +81,38 @@ direction when this temporary program eventually closes.
   No fresh owner prompt is needed at every routine package boundary. Do not claim
   background execution without an actual running service.
 
+### Avoid idle turns and blocked-branch deadlocks
+
+A Codex turn, a PR comment, and GitHub Actions do not themselves provide a
+continuously running coding agent. While an authorized interactive goal is active,
+advance to the next independent delivery step rather than concluding after
+publishing a checkpoint or seeing an expected blocked CI run. An actual scheduled
+thread wake-up must be configured in Codex/ChatGPT; repo text cannot create one.
+Do not claim a heartbeat, running agent, or background continuation that has not
+been verified. Use one active writer for shared semantics; avoid overlapping
+scheduled runs and unnecessary metered work.
+
+When a candidate has a stable, independently confirmed unmet requirement caused
+by absent qualified source data, record it once with its exact failing tests and
+source dependency. Do not rerun identical broad suites, spend the next turn
+re-explaining the block, or pile unrelated green features into its perpetually
+red branch. Preserve every unmet positive obligation and its failing evidence.
+Try a bounded source/qualification investigation; in parallel, branch from live
+main to extract a semantically independent, reviewable improvement whose normal
+CI and required numerical gates actually pass. Check dependencies before
+porting any code; if inseparable, choose another independent P1/O task instead.
+Never change desired positives to refusal/xfail/skip, suppress a gate, or merge
+a knowingly incorrect behavior just to make progress appear continuous.
+
+A successor reads the freshest pushed branch checkpoint and PR evidence if main's
+checkpoint has not caught up because the feature PR is unmergeable. At the next
+safe independent merge/operational checkpoint, synchronize a compact resume
+pointer back to the sole queue on main. No second tracker. Before any unavoidable
+turn end, record whether the stop was normal task completion, missing source,
+checker/access/approval, runtime error, usage limit, or actual scheduled wake-up;
+name exactly what can proceed without owner intervention. Turn completion is
+not project completion.
+
 ## Architecture and improvement rules
 
 Keep the Python service, established calculations, result types, React interface,
