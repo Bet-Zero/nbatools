@@ -10047,3 +10047,43 @@ cases:
       in tests/test_c1_season_lists_real_data.py. This corpus case checks
       displayed scope and bucket identity; it does not substitute for numerical
       evidence on the same pinned generation or claim completed human review.
+
+  - id: p1_s2_lebron_points_celtics_nonadjacent_seasons
+    query: "LeBron James averages with at least 25 points against Celtics in 2023-24 and 2025-26"
+    category: split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_filters:
+      - kind: team
+        label: Opponent
+        value: BOS
+      - kind: threshold
+        label: pts min
+        value: "25.0"
+      - kind: season
+        label: Seasons
+        value: "2023-24, 2025-26"
+    expected_sections:
+      - summary
+      - split_comparison
+    hard_assertions:
+      - path: result.metadata.player
+        equals: LeBron James
+      - path: result.metadata.opponent
+        equals: BOS
+      - path: result.metadata.min_value
+        equals: 25.0
+      - path: result.metadata.season_list
+        equals: ["2023-24", "2025-26"]
+      - path: result.metadata.split_type
+        equals: season
+    review_notes: >-
+      P1/S2 scope contract. Fixture test
+      test_player_points_opponent_nonadjacent_seasons_and_controls in
+      tests/test_c1_season_lists.py independently selects raw player-game IDs,
+      verifies points/rebounds/assists averages, inclusive threshold, opponent,
+      non-adjacent seasons and both one-season controls. This corpus case checks
+      declared scope only; qualified NBA raw-row numerical acceptance, empty-season
+      behavior and deployment remain pending. No NBA totals or human review claimed.
