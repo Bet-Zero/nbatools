@@ -46,6 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PACKAGE: ${{ inputs.package }}
+          PUBLICATION_MODE: ${{ inputs.mode }}
         run: python tools/r2_publication.py resolve --package "$PACKAGE"
 
   prepare:

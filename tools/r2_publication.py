@@ -349,7 +349,7 @@ def prepare(name, publisher, work, *, expected=None):
         "publication_state": "prepared_no_writes",
         "base_pointer": pointer,
     }
-    if expected:
+    if expected is not None:
         keys = set(receipt) - {"budget", "publication_state", "base_pointer"}
         if any(receipt[k] != expected.get(k) for k in keys):
             raise ValueError("Rebuilt snapshot differs from the owner-visible preparation")
@@ -488,6 +488,12 @@ def main():
     args = parser.parse_args()
     if args.mode == "resolve":
         check_main_revision(os.environ["GITHUB_SHA"])
+        if os.environ.get("PUBLICATION_MODE") == "publish":
+            audit = environment_audit()
+            if not audit.get("publication_ready"):
+                raise ValueError(
+                    "Configure protected publication environment before requesting publish"
+                )
         policy = json.loads(REGISTRY.read_text())
         if args.package not in policy["packages"]:
             raise ValueError("Package is not reviewed")

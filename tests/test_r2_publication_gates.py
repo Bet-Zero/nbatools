@@ -388,3 +388,59 @@ def test_writer_failure_retains_durable_unknown_outcome(tmp_path, monkeypatch):
     receipt = json.loads((work / "publication.json").read_text())
     assert receipt["publication_state"] == "publication_started_outcome_unknown"
     assert receipt["owner_approval"] == approvals
+
+
+def test_publish_resolver_blocks_before_github_can_create_unprotected_environment(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(gate.sys, "argv", ["r2_publication.py", "resolve"])
+    monkeypatch.setenv("PUBLICATION_MODE", "publish")
+    monkeypatch.setenv("GITHUB_SHA", "reviewed")
+    monkeypatch.setenv("GITHUB_OUTPUT", str(tmp_path / "outputs"))
+    monkeypatch.setattr(gate, "check_main_revision", lambda *a: None)
+    monkeypatch.setattr(gate, "environment_audit", lambda: {"publication_ready": False})
+    with pytest.raises(ValueError, match="Configure protected"):
+        gate.main()
+    assert not (tmp_path / "outputs").exists()
+    monkeypatch.setenv("PUBLICATION_MODE", "validate")
+    gate.main()
+    assert "publisher_sha=" in (tmp_path / "outputs").read_text()
+
+
+def test_empty_approval_snapshot_cannot_disable_rebuild_comparison(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    policy = json.loads(gate.REGISTRY.read_text())
+    package = policy["packages"]["opening-availability-v1"]
+    inventory = json.loads((ROOT / package["inventory"]).read_text())
+    monkeypatch.setattr(gate, "load_package", lambda *a: (policy, package, inventory))
+    monkeypatch.setattr(gate, "acquire_overlay", lambda *a: {"passed": 1})
+    monkeypatch.setattr(
+        gate,
+        "publisher_modules",
+        lambda *a: SimpleNamespace(_resolve_r2_target=lambda **k: (None, "bucket")),
+    )
+    monkeypatch.setattr(
+        gate, "verify_pointer_manifest", lambda *a: ({"generation_id": "base"}, {}, "basehash")
+    )
+    monkeypatch.setattr(gate, "bucket_budget", lambda *a: {"limit_bytes": 100})
+
+    def stage(command, **kwargs):
+        directory = Path(command[command.index("--work-dir") + 1])
+        gate.write_json(
+            directory / "local-validation.json",
+            dict(manifest_sha256="rebuilt", file_count=1, total_bytes=3),
+        )
+
+    monkeypatch.setattr(gate.subprocess, "run", stage)
+    receipt, *_ = gate.prepare("opening-availability-v1", tmp_path, tmp_path / "normal")
+    assert receipt["prepared_manifest_sha256"] == "rebuilt"
+    with pytest.raises(ValueError, match="owner-visible preparation"):
+        gate.prepare("opening-availability-v1", tmp_path, tmp_path / "empty", expected={})
+    with pytest.raises(ValueError, match="owner-visible preparation"):
+        gate.prepare(
+            "opening-availability-v1",
+            tmp_path,
+            tmp_path / "changed",
+            expected=receipt | {"prepared_manifest_sha256": "different"},
+        )

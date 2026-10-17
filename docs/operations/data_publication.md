@@ -12,6 +12,9 @@ After acceptance, select the reviewed `opening-availability-v1` package in
 Use **main** and **validate**. This rebuilds the complete immutable snapshot with
 existing read-only validation credentials, checks every source/code checksum,
 authenticates the existing base manifest, and reports total storage cost bounds.
+The qualified opening snapshot preserves all684existing objects and adds the
+eight source overlay objects plus the publisher-generated player-name index;
+693objects total402606523bytes. The full proposed manifest is retained for review.
 It never receives write credentials. A changed base requires a newly reviewed
 package; changing an input cannot override it.
 

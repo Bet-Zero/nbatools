@@ -45,6 +45,73 @@
     ],
     "publication_ready": false
   },
+  "full_manifest_confirmation": {
+    "added_objects": [
+      {
+        "path": "metadata/player_names.csv",
+        "sha256": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+        "size_bytes": 500982
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.csv",
+        "sha256": "abf680125868b72fd501b964f6cb9212dc04e651d55a55951a24fb6ed94b3ed2",
+        "size_bytes": 10669
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+        "sha256": "c9b47b3502862c7086bdfbea6d9f181a381051e1fc7197e5cdcba4fa721970d4",
+        "size_bytes": 113
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251021_GSWLAL.json",
+        "sha256": "abdff18f62b628aa701cc21baf4654b763908836f84749fec6de5bda331ff47b",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf.pdf",
+        "sha256": "d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf",
+        "size_bytes": 26763
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.identity.json",
+        "sha256": "e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59",
+        "size_bytes": 222
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.receipt.json",
+        "sha256": "7a9ca50e1d195be87ad979b75211b0a19ca8aa2a3419fc7be6755d37a1816eea",
+        "size_bytes": 300
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.profile.html",
+        "sha256": "fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a",
+        "size_bytes": 336723
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.receipt.json",
+        "sha256": "3638d89a47c60e8886d0aaafd535465b94b595dff5976079f2fd463ea583db39",
+        "size_bytes": 298
+      }
+    ],
+    "artifact_id": 12091112844,
+    "artifact_zip_sha256": "14cdc7ae68ceb0382da9dfe05c28c1706fbda8a26c967ad8811b49f50b487dbb",
+    "base_objects_unchanged": 684,
+    "changed_base_objects": [],
+    "counts": {
+      "errors": 0,
+      "executed": 1,
+      "failed": 0,
+      "passed": 1,
+      "selected": 1,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "manifest_sha256": "6268ad200f1cb71b4f2b59e59afba8bd852f3f9dc3b96bfcd5f73e6bc7e0b212",
+    "missing_base_objects": [],
+    "request_sha": "53c4226e582aff631a4b7203ff6ca89040dd14ae",
+    "reviewed_sha": "83fd1dff30e6384af1f5a4af0493fb169af1e6de",
+    "run_id": 39007194806
+  },
   "prepared": {
     "artifact_id": 12090016663,
     "artifact_zip_sha256": "35e7b0294dd64b7c8752351dd05d45129ea8977d16bd3cad0140033b447f53dd",
