@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "10ff2e2a8a3787471646a0156be02f677cebc1f2",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_subject_ownership_contract.py::test_s3_owned_scoring_and_venue_actual_data"
+  ],
+  "raw_qa_cases": []
+}
