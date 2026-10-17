@@ -1,9 +1,10 @@
 # Protected data publication
 
-## Protected GitHub Actions process (implementation under review)
+## Protected GitHub Actions process
 
-The owner superseded the terminal handoff on 2026-10-17. PR472 prepares a reusable
-manual workflow; it is not yet accepted or permission to publish. The owner does
+The owner superseded the terminal handoff on 2026-10-17. PR472 implements a reusable
+manual workflow. Independent implementation review and read-only source/snapshot
+qualification passed; merging setup is not permission to publish. The owner does
 not need to run terminal commands. The original reviewed script remains the
 snapshot validator behind the workflow, pinned by commit and checksums.
 
@@ -35,7 +36,7 @@ A receipt saying `publication_started_outcome_unknown` or
 and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
-## One-time account setup, only after workflow acceptance
+## One-time account setup
 
 The read-only audit in run39006702706 found `copilot`, `Preview`, `Production`
 and `r2-validation`; no publisher environment exists. It confirmed the API exposes
