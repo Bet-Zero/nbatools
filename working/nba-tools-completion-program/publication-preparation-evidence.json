@@ -1,0 +1,169 @@
+{
+  "artifact_id": 12091402461,
+  "artifact_zip_sha256": "d1a463a988792bb7b5494de84b7986c2f299d1781c693dd984c7de061e77d048",
+  "counts": {
+    "errors": 0,
+    "executed": 1,
+    "failed": 0,
+    "passed": 1,
+    "selected": 1,
+    "skipped": 0,
+    "xfailed": 0
+  },
+  "environment_audit": {
+    "blocker": "GitHub metadata/download unavailable: HTTP 404",
+    "environment": "r2-publication",
+    "environments": [
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 13992844085,
+        "name": "copilot",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 14834657009,
+        "name": "Preview",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 14834065991,
+        "name": "Production",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 23273460136,
+        "name": "r2-validation",
+        "protection_rules": []
+      }
+    ],
+    "publication_ready": false
+  },
+  "full_manifest_confirmation": {
+    "added_objects": [
+      {
+        "path": "metadata/player_names.csv",
+        "sha256": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+        "size_bytes": 500982
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.csv",
+        "sha256": "abf680125868b72fd501b964f6cb9212dc04e651d55a55951a24fb6ed94b3ed2",
+        "size_bytes": 10669
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+        "sha256": "c9b47b3502862c7086bdfbea6d9f181a381051e1fc7197e5cdcba4fa721970d4",
+        "size_bytes": 113
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251021_GSWLAL.json",
+        "sha256": "abdff18f62b628aa701cc21baf4654b763908836f84749fec6de5bda331ff47b",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf.pdf",
+        "sha256": "d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf",
+        "size_bytes": 26763
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.identity.json",
+        "sha256": "e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59",
+        "size_bytes": 222
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.receipt.json",
+        "sha256": "7a9ca50e1d195be87ad979b75211b0a19ca8aa2a3419fc7be6755d37a1816eea",
+        "size_bytes": 300
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.profile.html",
+        "sha256": "fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a",
+        "size_bytes": 336723
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.receipt.json",
+        "sha256": "3638d89a47c60e8886d0aaafd535465b94b595dff5976079f2fd463ea583db39",
+        "size_bytes": 298
+      }
+    ],
+    "artifact_id": 12091112844,
+    "artifact_zip_sha256": "14cdc7ae68ceb0382da9dfe05c28c1706fbda8a26c967ad8811b49f50b487dbb",
+    "base_objects_unchanged": 684,
+    "changed_base_objects": [],
+    "counts": {
+      "errors": 0,
+      "executed": 1,
+      "failed": 0,
+      "passed": 1,
+      "selected": 1,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "manifest_sha256": "6268ad200f1cb71b4f2b59e59afba8bd852f3f9dc3b96bfcd5f73e6bc7e0b212",
+    "missing_base_objects": [],
+    "request_sha": "53c4226e582aff631a4b7203ff6ca89040dd14ae",
+    "reviewed_sha": "83fd1dff30e6384af1f5a4af0493fb169af1e6de",
+    "run_id": 39007194806
+  },
+  "prepared": {
+    "artifact_id": 12090016663,
+    "artifact_zip_sha256": "35e7b0294dd64b7c8752351dd05d45129ea8977d16bd3cad0140033b447f53dd",
+    "base_generation": "queue-d-production-0574735-20260716",
+    "base_manifest_sha256": "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e",
+    "base_pointer": {
+      "generation_id": "queue-d-production-0574735-20260716",
+      "manifest_sha256": "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e",
+      "previous_generation_id": "legacy",
+      "published_at": "2026-07-16T11:19:01+00:00",
+      "schema_version": 1
+    },
+    "budget": {
+      "conservative_projected_bytes": 1167340718,
+      "current_bytes": 754734195,
+      "limit_bytes": 10000000000
+    },
+    "file_count": 693,
+    "generation_id": "availability-opening-631b259a-20261017",
+    "inventory_sha256": "afb7ea908e1c7da52b44f2b7416e4928579e610a600d01244eb4c231348b3b39",
+    "package": "opening-availability-v1",
+    "prepared_manifest_sha256": "6268ad200f1cb71b4f2b59e59afba8bd852f3f9dc3b96bfcd5f73e6bc7e0b212",
+    "publication_state": "prepared_no_writes",
+    "publisher_sha": "cb88329c65032df33a9781b6b3e62d40eab91b3e",
+    "registry_sha256": "1832dbee9a185f6d842bbf895025ba2ce1c65e0177bd07546d32ce4baef357d0",
+    "required_source_gate": {
+      "candidate_sha": "3ae073562a19b339ea387037deca30fe90a2677f",
+      "conclusion": "success",
+      "errors": 0,
+      "executed": 1,
+      "failed": 0,
+      "generation": "queue-d-production-0574735-20260716",
+      "passed": 1,
+      "problems": [],
+      "pytest_exit": 0,
+      "required_selection": [
+        "tests/test_pipeline_player_game_availability_real_data.py::test_official_opening_report_retains_real_source_and_explicit_absences"
+      ],
+      "required_test_limit": 100,
+      "scope": "targeted",
+      "selected": 1,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "schema_version": 1,
+    "script_sha256": "2695c78b322b7e8ad673f1f196bfa18a6ecef25730e2ef18750f33a4f59442ff",
+    "source_run_id": 39002683645,
+    "total_bytes": 402606523,
+    "workflow_run_id": "39006702706",
+    "workflow_sha": "17c4ea7cc2fa268674c07ffc825fc174db2bded2"
+  },
+  "request_sha": "17c4ea7cc2fa268674c07ffc825fc174db2bded2",
+  "reviewed_sha": "437654c6961cdf0f46f28d9b309c0d85811173a1",
+  "run_id": 39006702706
+}
