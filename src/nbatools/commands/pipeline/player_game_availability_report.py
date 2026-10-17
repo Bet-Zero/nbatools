@@ -24,7 +24,11 @@ from nbatools.commands.pipeline.player_game_availability_espn import (
 )
 
 SOURCE_ROOT = "https://statsdmz.nba.com/pdfs"
-STATUS = re.compile(\n    r"^\s*\d{1,3}\s+(.+?)\s+(DNP|DND|NWT|DID NOT PLAY|DID NOT DRESS)"\n    r"\s*(?:-\s*)?(.*?)\s*$",\n    re.I,\n)
+STATUS = re.compile(
+    r"^\s*\d{1,3}\s+(.+?)\s+(DNP|DND|NWT|DID NOT PLAY|DID NOT DRESS)"
+    r"\s*(?:-\s*)?(.*?)\s*$",
+    re.I,
+)
 TOTAL = re.compile(r"^\s*\d{3}:00\b.*\s(\d+)\s*$")
 HEADING = re.compile(r"^\s*(VISITOR|HOME):\s*(.+?)\s+\(\d+-\d+\)", re.I)
 DATE = re.compile(
