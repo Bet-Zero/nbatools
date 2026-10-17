@@ -71,7 +71,7 @@ def test_deployed_nonadjacent_seasons_keep_opponent_and_filter(kind):
     )
     payload = _query(query, "season-split-" + kind)
     assert payload["route"] == kind + "_split_summary"
-    metadata = payload["metadata"]
+    metadata = payload["result"]["metadata"]
     assert metadata["team" if kind == "team" else "player"] == (
         "BOS" if kind == "team" else "Stephen Curry"
     )
@@ -130,7 +130,7 @@ def test_deployed_own_and_opponent_scoring_have_distinct_owners(kind):
     assert len(expected) > 0
     payload = _query(question, "subject-ownership-" + kind)
     assert payload["route"] == ("team_record" if kind == "team" else "player_game_summary")
-    metadata = payload["metadata"]
+    metadata = payload["result"]["metadata"]
     assert metadata["team" if kind == "team" else "player"] == (
         "LAL" if kind == "team" else "LeBron James"
     )
