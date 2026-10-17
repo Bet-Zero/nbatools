@@ -250,8 +250,12 @@ Contract rules:
 - **Source truth:** NBA V3 `source_comment` is preserved verbatim; ESPN
   `didNotPlay=true` is retained only as an explicit DNP flag, never a claimed
   injury reason (ESPN generic reason text can also appear on played athletes).
-  Both sources preserve their own `source` provenance. For NBA V3,
-  `source_comment` is preserved verbatim;
+  Both sources preserve their own `source` provenance. The ESPN summary
+  `injuries` section is a **current-at-fetch** snapshot even when the requested
+  `boxscore` is a historical game. It must never be used as historical
+  injury/availability evidence for that game. Game-specific `didNotPlay` flags
+  and documented NBA V3 comments are distinct from contemporary injury reports.
+  For NBA V3, `source_comment` is preserved verbatim;
   do not transform coach decisions, illness, inactive and injuries into one
   injury statistic. `coverage_scope=listed_player_rows_only`
   establishes only positive source observations. Unlisted players might be
