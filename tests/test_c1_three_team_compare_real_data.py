@@ -51,3 +51,45 @@ def test_three_team_month_keeps_independent_real_game_samples(season, query, pre
     for abbr in ("LAL", "BOS", "NYK"):
         all_season = data_read_csv(f"data/raw/team_game_stats/{season}_regular_season.csv")
         assert len(expected[abbr][3]) < len(all_season[all_season.team_abbr.eq(abbr)])
+
+
+def test_deployed_three_team_month_matches_pinned_raw_rows():
+    """Read-only deployed verification; require the same immutable NBA generation."""
+    import json
+    import os
+    import urllib.request
+
+    base = "https://nbatools.vercel.app"
+    with urllib.request.urlopen(base + "/readiness", timeout=20) as response:
+        readiness = json.load(response)
+    assert readiness["ready"] is True
+    assert readiness["immutable_generation"] is True
+    assert readiness["active_generation"] == os.environ["NBATOOLS_DATA_GENERATION"]
+    query = "Lakers vs Celtics vs Knicks in March 2024"
+    request = urllib.request.Request(
+        base + "/query",
+        data=json.dumps(dict(query=query)).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=20) as response:
+        payload = json.load(response)
+    assert payload["ok"] is True
+    assert payload["route"] == "team_compare"
+    assert payload["result_status"] == "ok"
+    actual = payload["result"]["sections"]["summary"]
+    assert [row["team_name"] for row in actual] == ["LAL", "BOS", "NYK"]
+    source = data_read_csv("data/raw/team_game_stats/2023-24_regular_season.csv")
+    source = source[source.game_date.astype(str).str.startswith("2024-03")]
+    assert not source.duplicated(["game_id", "team_abbr"]).any()
+    for row in actual:
+        raw = source[source.team_abbr.eq(row["team_name"])]
+        assert not raw.empty
+        assert raw.wl.isin(["W", "L"]).all()
+        assert row["games"] == len(raw)
+        assert row["wins"] == int(raw.wl.eq("W").sum())
+        assert row["losses"] == int(raw.wl.eq("L").sum())
+        assert row["pts_avg"] == pytest.approx(float(raw.pts.mean()), abs=1e-3)
+    print(
+        "Deployed three-team exact month sample verified:", readiness["active_generation"], actual
+    )
