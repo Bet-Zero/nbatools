@@ -263,6 +263,7 @@ def select_player_summary_sample(
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
+    sample_seasons: list[str] | None = None,
 ) -> PlayerSample | NoResult:
     """Select the games in play: every filter, condition and last-N window.
 
@@ -270,7 +271,9 @@ def select_player_summary_sample(
     view ("home vs away splits in wins since January") splits the same
     sample the summary would describe.
     """
-    seasons = resolve_seasons(season, start_season, end_season)
+    seasons = resolve_seasons(season, start_season, end_season, selected_seasons=sample_seasons)
+    if sample_seasons is not None and df is not None:
+        df = df[df["season"].isin(seasons)].copy()
     notes: list[str] = []
     window_game_ids: set[str] | None = None
 
@@ -350,7 +353,9 @@ def select_player_summary_sample(
                     sample, without_player, seasons, season_type, team=team, opponent=opponent
                 )
             if with_player and not sample.empty:
-                sample = filter_with_player(sample, with_player, seasons, season_type, team=team)
+                sample = filter_with_player(
+                    sample, with_player, seasons, season_type, team=team, strict_team_match=True
+                )
             sample, _ = apply_schedule_context_filters(
                 sample,
                 seasons,
@@ -393,7 +398,9 @@ def select_player_summary_sample(
             )
 
         if with_player and not df.empty:
-            df = filter_with_player(df, with_player, seasons, season_type, team=team)
+            df = filter_with_player(
+                df, with_player, seasons, season_type, team=team, strict_team_match=True
+            )
     else:
         _player_arc_seasons = None
         df = apply_series_situation_filter(df, seasons, series_situation)

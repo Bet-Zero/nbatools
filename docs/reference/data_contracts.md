@@ -316,6 +316,13 @@ Contract rules:
   identities reject the answer rather than silently shrinking its denominator.
   Conjunctions qualify all players against the original candidate sample.
   Canonical positive-minute rows may additionally prove `played`, never absence.
+  Shared `filter_with_player` requires positive numeric canonical minutes and
+  same-team game identity; zero-minute rows and unresolved identities never
+  turn a requested presence condition into an unfiltered sample. Team/player
+  named-season splits select the named seasons before loading and qualifying
+  participation, so excluded intermediate seasons are not part of the sample.
+  A numerical condition attached to the teammate is not applied to the primary
+  subject; that combined capability remains unfinished.
   Conflicting report/positive observations reject. Same-team predicates bind team IDs; an explicit opponent clause permits
   opposing-team observations, with mixed side ownership rejected as ambiguous.
   Readers cache by immutable data generation and do not infer injury or on-court

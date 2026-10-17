@@ -804,6 +804,31 @@ def presence_states_player_condition(text: str) -> bool:
     )
 
 
+def presence_names_player_condition(text: str, player: str) -> bool:
+    """A named teammate owns an immediately attached numerical predicate."""
+    for match in re.finditer(
+        r"\b(?:with|without)\s+([\w .&'\-]+?)"
+        r"(?=\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes?|dished|"
+        r"has|had|records?|recorded|makes?|made|hits|plays?|played|playing)\b)",
+        text,
+    ):
+        named = detect_player(match.group(1).strip())
+        if (named and named.upper() == player.upper()) or (
+            not detect_team_in_text(match.group(1))
+            and player.lower().startswith(match.group(1).strip().lower() + " ")
+        ):
+            tail = text[match.end() :]
+            clause = re.split(
+                r"\b(?:and|when|while|against|versus|vs|in)\b|[,;]", tail, maxsplit=1
+            )[0]
+            after_presence = re.sub(r"^\s+(?:plays?|played|playing)\b", "", tail)
+            if re.search(r"\d", clause) or (
+                after_presence != tail and _states_player_condition(after_presence)
+            ):
+                return True
+    return False
+
+
 def detect_with_player(text: str) -> tuple[str | None, str]:
     """Detect whole-game presence patterns like ``with PLAYER`` / ``w/ PLAYER``.
 

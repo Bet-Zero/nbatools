@@ -85,6 +85,7 @@ def test_with_and_without_a_player_keep_his_earlier_franchise_games(monkeypatch)
             "game_id": [1, 3],
             "player_id": [201142, 201142],
             "player_name": ["Kevin Durant"] * 2,
+            "minutes": [30, 30],
             "team_abbr": ["SEA", "OKC"],
             "team_name": ["Seattle SuperSonics", "Oklahoma City Thunder"],
             "team_id": [OKC, OKC],

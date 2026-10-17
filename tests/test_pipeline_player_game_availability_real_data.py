@@ -256,7 +256,7 @@ def test_official_opening_report_qualified_absence_consumers(tmp_path, monkeypat
         reset_data_source_cache()
 
 
-def test_official_celtics_lakers_reports_qualify_nonadjacent_season_participation(tmp_path):
+def _stage_celtics_lakers_reports(tmp_path):
     """Acquire four exact reports needed by S4; staging is not publication."""
     targets = {"2023-24": {22300403, 22300684}, "2025-26": {22500338, 22500823}}
     root = tmp_path / "data"
@@ -323,3 +323,9 @@ def test_official_celtics_lakers_reports_qualify_nonadjacent_season_participatio
         "Explicit participation rows by season/state:",
         all_rows.groupby(["season", "participation_state"]).size().to_dict(),
     )
+
+    return root
+
+
+def test_official_celtics_lakers_reports_qualify_nonadjacent_season_participation(tmp_path):
+    _stage_celtics_lakers_reports(tmp_path)

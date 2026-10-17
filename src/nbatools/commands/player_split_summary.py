@@ -219,6 +219,7 @@ def build_result(
         last_n=last_n,
         df=df,
         last_n_scope=last_n_scope,
+        sample_seasons=split_seasons if split == "season" else None,
         **sample_filters,
     )
     if isinstance(sample, NoResult):

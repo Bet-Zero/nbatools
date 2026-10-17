@@ -133,21 +133,27 @@ def resolve_seasons(
     season: str | None,
     start_season: str | None,
     end_season: str | None,
+    *,
+    selected_seasons: list[str] | None = None,
 ) -> list[str]:
     if season and (start_season or end_season):
         raise ValueError("Use either --season or --start-season/--end-season, not both")
 
     if season:
-        return [season]
-
-    if start_season and end_season:
+        seasons = [season]
+    elif start_season and end_season:
         start = season_to_int(start_season)
         end = season_to_int(end_season)
         if end < start:
             raise ValueError("end_season must be greater than or equal to start_season")
-        return [int_to_season(y) for y in range(start, end + 1)]
-
-    raise ValueError("Provide either --season or both --start-season and --end-season")
+        seasons = [int_to_season(y) for y in range(start, end + 1)]
+    else:
+        raise ValueError("Provide either --season or both --start-season and --end-season")
+    if selected_seasons is not None:
+        if not selected_seasons or not set(selected_seasons).issubset(seasons):
+            raise ValueError("Selected seasons must be nonempty and within the requested span")
+        seasons = [value for value in seasons if value in selected_seasons]
+    return seasons
 
 
 # ---------------------------------------------------------------------------

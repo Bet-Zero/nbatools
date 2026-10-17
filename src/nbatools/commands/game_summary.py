@@ -18,6 +18,7 @@ from nbatools.commands.data_utils import (
     apply_last_n_sample,
     build_opponent_mask,
     describe_opponent_filter,
+    filter_with_player,
     filter_without_player,
     last_n_outcome,
     last_n_window_game_ids,
@@ -317,6 +318,7 @@ def select_team_summary_sample(
     team: str | None = None,
     opponent: str | None = None,
     without_player: str | None = None,
+    with_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -331,13 +333,16 @@ def select_team_summary_sample(
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
+    sample_seasons: list[str] | None = None,
 ) -> pd.DataFrame | NoResult:
     """Select one team's games in play: every filter, condition and last-N window.
 
     Shared by the team summary and the team split summary, so a split view
     splits the same sample the summary would describe.
     """
-    seasons = resolve_seasons(season, start_season, end_season)
+    seasons = resolve_seasons(season, start_season, end_season, selected_seasons=sample_seasons)
+    if sample_seasons is not None and df is not None:
+        df = df[df["season"].isin(seasons)].copy()
 
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
@@ -386,6 +391,10 @@ def select_team_summary_sample(
                 sample = filter_without_player(
                     sample, without_player, seasons, season_type, team=team, opponent=opponent
                 )
+            if with_player and not sample.empty:
+                sample = filter_with_player(
+                    sample, with_player, seasons, season_type, team=team, strict_team_match=True
+                )
             window_game_ids = last_n_window_game_ids(
                 sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
             )
@@ -411,6 +420,11 @@ def select_team_summary_sample(
                 df, without_player, seasons, season_type, team=team, opponent=opponent
             )
 
+        if with_player and not df.empty:
+            df = filter_with_player(
+                df, with_player, seasons, season_type, team=team, strict_team_match=True
+            )
+
         # Last N runs after every filter: on the qualifying games, or (window
         # scope) on the N most recent games in play.
         if last_n is not None and not df.empty:
@@ -431,6 +445,7 @@ def build_result(
     team: str | None = None,
     opponent: str | None = None,
     without_player: str | None = None,
+    with_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -457,6 +472,7 @@ def build_result(
         team=team,
         opponent=opponent,
         without_player=without_player,
+        with_player=with_player,
         home_only=home_only,
         away_only=away_only,
         wins_only=wins_only,
@@ -535,6 +551,7 @@ def build_result(
         or start_date is not None
         or end_date is not None
         or without_player is not None
+        or with_player is not None
         or total_games <= 5
     )
     game_log = _build_game_log_section(df) if include_game_log else None
