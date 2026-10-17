@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "3e6c7e802f145a85edea612ce8cd0415675e87ab",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_participation_season_splits_real_data.py::test_qualified_participation_and_opponent_survive_nonadjacent_season_splits"
+  ],
+  "raw_qa_cases": []
+}
