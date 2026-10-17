@@ -1865,8 +1865,8 @@ cases:
         equals: 15
     review_notes: "Public sweep fix: Reaves presence routes to team_record, not player_game_summary."
 
-  - id: pqa_availability_synonym_reaves_available
-    query: "How many games did the Lakers win with Reaves available?"
+  - id: pqa_participation_reaves_playing
+    query: "How many games did the Lakers win with Reaves playing?"
     category: player_availability_record
     priority: p1
     acceptance:
@@ -1900,7 +1900,27 @@ cases:
         equals: 36
       - path: result.sections.summary.0.losses
         equals: 0
-    review_notes: "Public acceptance Wave 2B: available/wins wording stays on team_record availability."
+    review_notes: "Positive participation control retained from Wave 2B; playing means recorded participation, not available roster status. Real-data values require revalidation on the pinned generation."
+
+
+  - id: pqa_availability_synonym_reaves_available
+    query: "How many games did the Lakers win with Reaves available?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: team_record_availability
+      variant: nearby_unsupported
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_availability.condition
+        equals: roster status
+    review_notes: "Status safety only, not completion of availability statistics. Player-game participation cannot prove active/available status. Positive played control remains a separate case."
 
   - id: lakers_record_with_reaves_without_luka_public_sweep
     query: "Lakers record with Reaves without Luka"
@@ -9974,3 +9994,96 @@ cases:
       tags:
         - split
       notes: "Review the Warriors 2016 record when up 3-1."
+
+  - id: p1_s1_celtics_home_knicks_nonadjacent_seasons
+    query: "Celtics home record vs Knicks in 2023-24 and 2025-26"
+    category: split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_filters:
+      - kind: team
+        label: Opponent
+        value: NYK
+      - kind: location
+        label: Location
+        value: Home
+      - kind: season
+        label: Seasons
+        value: "2023-24, 2025-26"
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.opponent
+        equals: NYK
+      - path: result.metadata.season_type
+        equals: Regular Season
+      - path: result.metadata.split_type
+        equals: season
+      - path: result.metadata.season_list
+        equals: ["2023-24", "2025-26"]
+      - path: result.sections.summary.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.summary.0.season_start
+        equals: "2023-24"
+      - path: result.sections.summary.0.season_end
+        equals: "2025-26"
+      - path: result.sections.split_comparison.0.bucket
+        equals: "2023-24"
+      - path: result.sections.split_comparison.1.bucket
+        equals: "2025-26"
+    review_notes: >-
+      P1/S1 requires home and opponent conditions to survive an explicit
+      non-adjacent season split, excluding 2024-25. Exact raw team-game IDs,
+      counts, W/L and points plus both single-season controls are required in
+      test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls
+      in tests/test_c1_season_lists_real_data.py. This corpus case checks
+      displayed scope and bucket identity; it does not substitute for numerical
+      evidence on the same pinned generation or claim completed human review.
+
+  - id: p1_s2_lebron_points_celtics_nonadjacent_seasons
+    query: "LeBron James averages with at least 25 points against Celtics in 2023-24 and 2025-26"
+    category: split
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_filters:
+      - kind: team
+        label: Opponent
+        value: BOS
+      - kind: threshold
+        label: pts min
+        value: "25.0"
+      - kind: season
+        label: Seasons
+        value: "2023-24, 2025-26"
+    expected_sections:
+      - summary
+      - split_comparison
+    hard_assertions:
+      - path: result.metadata.player
+        equals: LeBron James
+      - path: result.metadata.opponent
+        equals: BOS
+      - path: result.metadata.min_value
+        equals: 25.0
+      - path: result.metadata.season_list
+        equals: ["2023-24", "2025-26"]
+      - path: result.metadata.split_type
+        equals: season
+    review_notes: >-
+      P1/S2 scope contract. Fixture test
+      test_player_points_opponent_nonadjacent_seasons_and_controls in
+      tests/test_c1_season_lists.py independently selects raw player-game IDs,
+      verifies points/rebounds/assists averages, inclusive threshold, opponent,
+      non-adjacent seasons and both one-season controls. This corpus case checks
+      declared scope only; qualified NBA raw-row numerical acceptance, empty-season
+      behavior and deployment remain pending. No NBA totals or human review claimed.

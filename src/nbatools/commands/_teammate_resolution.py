@@ -16,6 +16,7 @@ from nbatools.commands._franchise import team_value_mask
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.entity_resolution import (
+    PLAYER_ALIASES,
     _get_player_first_name_index,
     _strip_accents,
     player_ids_for_name,
@@ -37,9 +38,31 @@ _SCOPE_WORD = re.compile(
 )
 
 
+def _name_clause_prefix(fragment: str) -> str:
+    """Keep the original name-clause span before independently read predicates/scope."""
+    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE, _STAT_COUNT_QUALIFIER
+
+    text = fragment
+    # A named participation clause and a box-score predicate are independent
+    # conditions. Find their boundary before removing scope ("at least" is a
+    # comparator, whereas "at home" is scope). Leave unknown predicates intact
+    # so they cannot be mistaken for a fully resolved name.
+    for conjunction in re.finditer(r"\s+and\s+", text):
+        if _STAT_COUNT_PHRASE.match(text, conjunction.end()):
+            text = text[: conjunction.start()]
+            break
+    scope = _SCOPE_WORD.search(text)
+    if scope and not re.match(rf"{_STAT_COUNT_QUALIFIER}\d", text[scope.start() :].lstrip()):
+        text = text[: scope.start()].strip()
+    # Numeric predicates qualify the participant regardless of metric support.
+    # In particular, minutes are not a box-score count in _STAT_COUNT_PHRASE.
+    return re.split(r"\s+(?:record|games?)\b", text, maxsplit=1)[0]
+
+
 def name_before_scope(fragment: str | None) -> str:
     """The name in an availability fragment, without the scope after it."""
-    return _SCOPE_WORD.sub("", (fragment or "").strip().lower())
+    text = _name_clause_prefix((fragment or "").strip().lower())
+    return re.sub(r"\s+(?:both\s+)?playing$", "", text)
 
 
 def resolve_teammate(
@@ -125,10 +148,83 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
     return side
 
 
-_PAIR = re.compile(
-    r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
-    r"|versus|against|at|on|from|during|when|while)\b|[?.!,;:]|$)"
+_AVAILABILITY_CLAUSE = re.compile(
+    r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:with|without|w/o)\b|[?!,;:]|$)"
 )
+
+
+def _participation_clauses(text: str) -> list[tuple[str, list[str], int, int]]:
+    """Explicit participation names, with common stat/scope boundaries.
+
+    All clauses are inspected: an earlier "with 24 points" must not hide a
+    later teammate, and an opponent after two names must not hide the second.
+    The same fragments drive pair detection and resolution. Unknown name tails
+    remain present so resolution fails rather than accepting only the first.
+    """
+    from nbatools.commands._matchup_utils import _STAT_COUNT_PHRASE
+
+    clauses = []
+    for match in _AVAILABILITY_CLAUSE.finditer(text):
+        fragment = match.group(2)
+        if _STAT_COUNT_PHRASE.match(fragment):
+            continue
+        fragment = _name_clause_prefix(fragment)
+        parts = [name_before_scope(part.strip(" .")) for part in fragment.split(" and ")]
+        clauses.append(
+            (
+                "with" if match.group(1) == "with" else "without",
+                parts,
+                match.start(),
+                match.start(2) + len(fragment),
+            )
+        )
+    return clauses
+
+
+def availability_name_clauses(text: str) -> list[tuple[str, list[str]]]:
+    return [(mode, parts) for mode, parts, _, _ in _participation_clauses(text)]
+
+
+def read_participation_name_spans(
+    text: str, applied: tuple[str | None, ...]
+) -> list[tuple[int, int]]:
+    """Explicit name spans already consumed by execution, excluding their predicates.
+
+    A conditional scanner must not reread 'and Green playing' inside a resolved
+    pair as a new participant. Unknown tails and extra names never earn a span.
+    """
+    names = [name for value in applied if value for name in value.split(" and ")]
+    return [
+        (start, end)
+        for _, parts, start, end in _participation_clauses(text)
+        if all(any(_only_the_name(part, name) for name in names) for part in parts)
+    ]
+
+
+def resolve_participation_subject(text: str, player: str | None) -> str | None:
+    """Find the subject outside complete named participation clauses.
+
+    A leading pair can be detected before the actual subject. Name reading must
+    precede same-side validation, which otherwise uses that incidental teammate
+    as the subject and excludes their own rows from the candidate population.
+    Unknown name tails and participant predicates are never consumed here.
+    """
+    from nbatools.commands._matchup_utils import detect_player, detect_player_resolved
+
+    subject_text = list(text)
+    participants = []
+    for _, parts, start, end in _participation_clauses(text):
+        names = [detect_player(part) for part in parts]
+        if not all(name and _only_the_name(part, name) for part, name in zip(parts, names)):
+            continue
+        participants.extend(names)
+        subject_text[start:end] = " " * (end - start)
+    if player not in participants:
+        return player
+    subject = detect_player_resolved("".join(subject_text))
+    if subject.is_confident:
+        return subject.resolved
+    return player if subject.confidence == "ambiguous" else None
 
 
 def _words(text: str) -> list[str]:
@@ -138,7 +234,30 @@ def _words(text: str) -> list[str]:
 
 def _only_the_name(part: str, name: str) -> bool:
     """Whether the part is the name and nothing else: "davis and reaves out" is not."""
-    return set(_words(part)) <= set(_words(name))
+    words = _words(part)
+    return bool(words) and (
+        set(words) <= set(_words(name))
+        or any(_words(alias) == words and value == name for alias, value in PLAYER_ALIASES.items())
+    )
+
+
+def has_unread_participation_clause(
+    text: str, *, with_player: str | None, without_player: str | None
+) -> bool:
+    """A resolved name is insufficient if another requested clause is left over.
+
+    Check every explicit participation fragment against the names actually sent
+    to execution. This preserves ownership: "LeBron scoring 30" is not simply
+    "LeBron", and an extra teammate cannot disappear after resolving a pair.
+    Stat predicates and sample scope were separated by the shared fragment reader;
+    this helper never assigns a teammate's predicate to the query's subject.
+    """
+    applied = {"with": with_player, "without": without_player}
+    for mode, parts in availability_name_clauses(text):
+        names = (applied[mode] or "").split(" and ")
+        if not all(any(_only_the_name(part, name) for name in names) for part in parts):
+            return True
+    return False
 
 
 def availability_pair(
@@ -154,12 +273,14 @@ def availability_pair(
     """("with" | "without", "A and B") when both names are the subject's teammates."""
     from nbatools.commands._matchup_utils import detect_player
 
-    m = _PAIR.search(text)
-    if not m or (team is None and player is None):
+    if team is None and player is None:
         return None
-    parts = [part.strip(" .") for part in m.group(2).split(" and ")]
-    if len(parts) != 2:
+    candidates = [
+        (mode, parts) for mode, parts in availability_name_clauses(text) if len(parts) == 2
+    ]
+    if len(candidates) != 1:
         return None
+    mode, parts = candidates[0]
     side = _same_side_rows(team, player, season, start_season, end_season, season_type)
     if side is None:
         return None
@@ -179,5 +300,4 @@ def availability_pair(
         names.append(name)
     if names[0] == names[1]:
         return None
-    mode = "with" if m.group(1) == "with" else "without"
     return mode, " and ".join(names)

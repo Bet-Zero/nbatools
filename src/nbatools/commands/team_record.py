@@ -368,6 +368,7 @@ def build_team_record_result(
                 season_type,
                 team=team,
                 strict_team_match=True,
+                opponent=opponent,
             )
             coverage_period = filter_without_player(
                 coverage_period,
@@ -376,6 +377,7 @@ def build_team_record_result(
                 season_type,
                 team=team,
                 strict_team_match=True,
+                opponent=opponent,
             )
         coverage_failure = period_coverage_failure(
             coverage_base,
@@ -420,7 +422,13 @@ def build_team_record_result(
             )
         if without_player and not sample.empty:
             sample = filter_without_player(
-                sample, without_player, seasons, season_type, team=team, strict_team_match=True
+                sample,
+                without_player,
+                seasons,
+                season_type,
+                team=team,
+                strict_team_match=True,
+                opponent=opponent,
             )
         sample, _ = apply_schedule_context_filters(
             sample,
@@ -492,6 +500,7 @@ def build_team_record_result(
             season_type,
             team=team,
             strict_team_match=True,
+            opponent=opponent,
         )
 
     df, schedule_notes = apply_schedule_context_filters(

@@ -785,6 +785,7 @@ class TestWithoutPlayer:
         assert parsed.get("with_player") == "Austin Reaves"
         assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
         assert parsed["route_kwargs"]["wins_only"] is True
+        assert "availability_status" in parsed["route_kwargs"]["unsupported_filters"]
 
     @pytest.mark.needs_data
     def test_public_query_wave_2c_count_short_lebron_triple_doubles(self):
@@ -959,8 +960,8 @@ class TestWithoutPlayer:
         assert len(sections["game_log"]) == summary["games"]
 
     @pytest.mark.needs_data
-    def test_single_player_available_win_count_executes_with_team_subject(self):
-        qr = execute_natural_query("How many games did the Lakers win with Reaves available?")
+    def test_single_player_playing_win_count_executes_with_team_subject(self):
+        qr = execute_natural_query("How many games did the Lakers win with Reaves playing?")
 
         assert qr.route == "team_record"
         assert qr.result.result_status == "ok"

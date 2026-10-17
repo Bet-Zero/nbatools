@@ -131,6 +131,27 @@ designation, both participant rows use `is_home=0` and `is_away=0`. Neutral
 participants must not be mislabeled as two away teams; trusted venue-relative
 filtering remains owned by the canonical game identity contract.
 
+### Participation is not status
+
+A player-game row establishes recorded game participation, not injury, health,
+active/inactive roster status or simultaneous on-court presence. Missing rows
+cannot establish the reason for an absence. Status-specific queries require a
+qualified status source, which is not currently present; they must not silently
+execute a played/did-not-play filter instead.
+
+A did-not-play answer also needs relevant team membership at the game date and
+complete participation coverage. A season roster or appearances elsewhere in
+the season does not by itself establish those facts. Pre-joining/post-departure
+games, unrelated opponents and unknown coverage cannot count as verified missed
+games. The shared `filter_without_player` entry point currently reports unavailable
+coverage instead of complementing appearances. No current stored dataset supplies
+the required evidence: roster snapshots lack effective dates, starter-role output
+is restricted to known player-game keys, and period output zero-completes only
+known whole-game participants. Optional game-log comments have no trusted DNP
+coverage contract. P0a remains open until qualified source rows, a consumer and
+required real-data evidence exist. Synthetic row omissions are controlled test
+assumptions, not a new NBA data source. Played-game filters remain available.
+
 Player sample-aware metrics such as:
 
 - USG%

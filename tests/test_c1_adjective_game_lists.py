@@ -91,7 +91,6 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record with 23",
         # A player named after the stat bound cannot be combined yet.
         "Lakers record in games with 15 threes and LeBron",
-        "Lakers record in games with 120 points with LeBron",
         "Lakers record when LeBron scores 30 in games with 120 points",
         # "or" before a season is not a stat alternative.
         "LeBron 30 point games with 10 assists in 2023-24 or 2024-25",

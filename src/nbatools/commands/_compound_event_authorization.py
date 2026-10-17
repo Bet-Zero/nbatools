@@ -327,7 +327,17 @@ def named_metrics(parsed: dict) -> tuple[str, ...]:
 _UNSUPPORTED_AVAILABILITY_STATUS = (
     (r"\b(?:injured|injury|injuries|hurt)\b", "injury status"),
     (r"\b(?:load\s+management|rest(?:ing|ed)?\s+(?:game|games|night))\b", "rest status"),
-    (r"\bhealthy\b", "health status"),
+    (r"\b(?:healthy|fully\s+fit)\b", "health status"),
+    (r"\b(?:sidelined|suspended|resting|rested|benched)\b", "absence reason"),
+    (r"\b(?:inactive|unavailable|questionable|doubtful|probable)\b", "roster status"),
+    # Active-player career boards are a population request, not game status.
+    # Here only a condition about a person's status is recognized.
+    (
+        r"\b(?:with|without|when|whenever|while|if|where|during|is|was|were|are)\b.*?\b(?:active|available)\b"
+        r"(?!\s+players?\b)",
+        "roster status",
+    ),
+    (r"\b(?:in|out\s+of)\s+the\s+lineup\b", "lineup status"),
 )
 
 
@@ -338,6 +348,8 @@ def unsupported_availability_status(parsed: dict) -> str | None:
     the status means - only that the question asked to filter on one and the
     product has no data that could.
     """
+    if parsed.get("requested_availability_status"):
+        return parsed["requested_availability_status"]
     text = parsed.get("normalized_query") or ""
     for pattern, label in _UNSUPPORTED_AVAILABILITY_STATUS:
         if re.search(pattern, text):

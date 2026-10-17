@@ -172,14 +172,6 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
         # A second name who is not a teammate.
         "LeBron stats with Davis and Curry",
         "Lakers record with LeBron and Tatum",
-        # Words after the second name change the meaning: not read as "with both".
-        "Lakers record with Davis and Reaves both out",
-        "Lakers record with Davis and Reaves out",
-        "Lakers record with Davis and Reaves injured",
-        "Lakers record with Davis and Reaves not playing",
-        "Lakers record with Davis and Reaves missing",
-        "LeBron James stats with Davis and Reaves injured",
-        "LeBron James stats with Davis and Reaves out",
     ],
 )
 def test_unread_availability_still_refuses(sparse_root, query):

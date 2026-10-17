@@ -8,6 +8,7 @@ from nbatools.commands._compound_event_authorization import (
     authorize_compound_event_route,
     declared_event_conditions,
     unrouted_compound_event_reason,
+    unsupported_availability_status,
 )
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
@@ -390,8 +391,11 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands._teammate_resolution import (
+    availability_name_clauses,
     availability_pair,
+    has_unread_participation_clause,
     name_before_scope,
+    resolve_participation_subject,
     resolve_teammate,
     shares_side,
 )
@@ -586,18 +590,9 @@ def _multi_player_availability_boundary(q: str) -> bool:
     ):
         return True
 
-    with_without = re.search(
-        r"\b(?:with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for)\b|$)",
-        q,
-    )
-    if not with_without or " and " not in with_without.group(1):
-        return False
-
-    left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
-    # "with LeBron and Davis": a bare surname is a second player too.
-    return bool(
-        (detect_player(left) or _bare_surname(left))
-        and (detect_player(right) or _bare_surname(right))
+    return any(
+        len(parts) > 1 and (detect_player(parts[0]) or _bare_surname(parts[0]))
+        for _, parts in availability_name_clauses(q)
     )
 
 
@@ -605,7 +600,14 @@ def _multi_player_availability_boundary(q: str) -> bool:
 # presence/absence flag. Every other route only ever receives with_player /
 # without_player as display metadata (set unconditionally by the parser) with
 # nothing downstream applying it - see _player_availability_unsupported_markers.
-_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record", "player_game_finder", "player_game_summary"}
+_WITH_PLAYER_SUPPORTED_ROUTES = {
+    "team_record",
+    "player_game_finder",
+    "player_game_summary",
+    "game_summary",
+    "player_split_summary",
+    "team_split_summary",
+}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
     "player_split_summary",
@@ -3341,8 +3343,27 @@ def _build_parse_state(query: str) -> dict:
                 with_player, unresolved_with_player = teammate, None
             elif teammate and unresolved_without_player and not without_player:
                 without_player, unresolved_without_player = teammate, None
+        if (team or player) and _multi_player_availability_boundary(q):
+            # Resolve the full name clause before choosing the subject/route.
+            # Otherwise "Warriors record with Klay Thompson and Draymond Green"
+            # can mistake the first fully named teammate for the subject of a split.
+            player = resolve_participation_subject(q, player)
+            pair = availability_pair(
+                q,
+                team=team,
+                player=player,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+            )
+            if pair:
+                if pair[0] == "with":
+                    with_player, unresolved_with_player = pair[1], None
+                else:
+                    without_player, unresolved_without_player = pair[1], None
         trailing = re.search(
-            r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
+            r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
             r"|in|vs\.?|versus|against|at|on|from|during)\b)",
             q,
         )
@@ -3573,6 +3594,10 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        # Preserve requested status before any participation canonicalization.
+        "requested_availability_status": unsupported_availability_status(
+            {"normalized_query": normalize_text(query)}
+        ),
         "month_rank": month_rank,
         "month_stat": month_stat,
         "month_split_blocked": month_split_blocked,
@@ -5219,6 +5244,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "opponent": opponent,
             "opponent_player": opponent_player,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -5244,6 +5270,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -6104,6 +6131,8 @@ def _route_parsed_query(parsed: dict) -> dict:
             # "Lakers record with LeBron and Davis": the games both played.
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
             route_kwargs[f"{pair[0]}_player"] = pair[1]
+            parsed = dict(parsed, with_player=None, without_player=None)
+            parsed[f"{pair[0]}_player"] = pair[1]
             notes.pop()
     elif (
         team
@@ -6338,6 +6367,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -6506,7 +6536,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
 
     if (
-        route == "team_record"
+        route in ("team_record", "game_summary", "team_split_summary")
         and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
         and (route_kwargs.get("stat") == "minutes" or presence_states_player_condition(q))
     ):
@@ -6520,17 +6550,25 @@ def _route_parsed_query(parsed: dict) -> dict:
             existing_unsupported.append("player_minutes_bound")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
+    pair_read = False
     if (
-        route in ("player_game_summary", "player_game_finder")
-        and route_kwargs.get("player")
+        route
+        in (
+            "player_game_summary",
+            "player_game_finder",
+            "player_split_summary",
+            "team_split_summary",
+            "game_summary",
+        )
+        and (route_kwargs.get("player") or route_kwargs.get("team"))
         and _multi_player_availability_boundary(q)
     ):
         # "LeBron stats with Davis and Austin": both teammates, or a refusal
         # rather than dropping one.
         pair = availability_pair(
             q,
-            team=None,
-            player=route_kwargs["player"],
+            team=route_kwargs.get("team"),
+            player=route_kwargs.get("player"),
             season=route_kwargs.get("season"),
             start_season=route_kwargs.get("start_season"),
             end_season=route_kwargs.get("end_season"),
@@ -6539,10 +6577,13 @@ def _route_parsed_query(parsed: dict) -> dict:
         if pair:
             route_kwargs.update(with_player=None, without_player=None)
             route_kwargs[f"{pair[0]}_player"] = pair[1]
+            parsed = dict(parsed, with_player=None, without_player=None)
+            parsed[f"{pair[0]}_player"] = pair[1]
+            pair_read = True
         else:
             route_kwargs["unsupported_filters"] = ["multi_player_availability"]
     elif (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and with_player
         and not route_kwargs.get("unsupported_filters")
@@ -6561,12 +6602,12 @@ def _route_parsed_query(parsed: dict) -> dict:
         else:
             route_kwargs["unsupported_filters"] = ["with_player"]
     trailing = re.search(
-        r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
+        r"\bwith\s+\d(?:(?!\b(?:with|without)\s+[a-z])[^,])*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
         r"|since|in|vs\.?|versus|against|at|on|from|during)\b)",
         q,
     )
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
         and not route_kwargs.get("with_player")
         and trailing
@@ -6579,25 +6620,30 @@ def _route_parsed_query(parsed: dict) -> dict:
         ) + ["unresolved_player_availability"]
 
     if (
-        route in ("player_game_summary", "player_game_finder")
-        and route_kwargs.get("player")
+        route in _WITH_PLAYER_SUPPORTED_ROUTES | _WITHOUT_PLAYER_SUPPORTED_ROUTES
+        and (
+            route_kwargs.get("player")
+            or route_kwargs.get("with_player")
+            or route_kwargs.get("without_player")
+        )
         and names_other_player_availability(
             q,
-            route_kwargs["player"],
+            route_kwargs.get("player"),
             (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
             also=(route_kwargs.get("opponent_player"),),
         )
     ):
-        # "in games LeBron plays 35 minutes and Luka sits": the player route
-        # reads only its own player, so the second clause would be dropped.
+        # A team or player sample must retain every participant clause,
+        # including a later "while Wiggins plays" after a resolved pair.
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])
         if "multi_player_availability" not in existing_unsupported:
             existing_unsupported.append("multi_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
 
     if (
-        route in ("player_game_summary", "player_game_finder")
+        route in ("player_game_summary", "player_game_finder", "player_split_summary")
         and route_kwargs.get("player")
+        and not pair_read
         and any(
             _names_a_person(f) or _names_a_person(name_before_scope(f))
             for f in (unresolved_with_player, unresolved_without_player)
@@ -6610,6 +6656,24 @@ def _route_parsed_query(parsed: dict) -> dict:
         if "unresolved_player_availability" not in existing_unsupported:
             existing_unsupported.append("unresolved_player_availability")
         route_kwargs["unsupported_filters"] = existing_unsupported
+
+    if (
+        route in _WITH_PLAYER_SUPPORTED_ROUTES | _WITHOUT_PLAYER_SUPPORTED_ROUTES
+        and (route_kwargs.get("with_player") or route_kwargs.get("without_player"))
+        and has_unread_participation_clause(
+            q,
+            with_player=route_kwargs.get("with_player"),
+            without_player=route_kwargs.get("without_player"),
+        )
+    ):
+        route_kwargs["unsupported_filters"] = list(
+            dict.fromkeys(
+                [
+                    *(route_kwargs.get("unsupported_filters") or []),
+                    "unread_participation_clause",
+                ]
+            )
+        )
 
     # "LeBron games when the Lakers score 120": a team-subject bound is the
     # team's total, read from the team rows of the player's games.
@@ -10862,6 +10926,24 @@ def _three_team_comparison(parsed: dict) -> dict | None:
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state; named seasons answer only as a season split."""
     out = _finalize_route_unchecked(parsed)
+    status = unsupported_availability_status(parsed)
+    if status:
+        kwargs = dict(out.get("route_kwargs") or {})
+        blocked = list(kwargs.get("unsupported_filters") or [])
+        if "availability_status" not in blocked:
+            blocked.append("availability_status")
+        kwargs["unsupported_filters"] = blocked
+        kwargs["unsupported_availability"] = {
+            **(kwargs.get("unsupported_availability") or {}),
+            "condition": status,
+        }
+        out["route_kwargs"] = kwargs
+        out["notes"] = list(out.get("notes") or []) + [
+            f"unsupported_boundary: {status} needs qualified status data; "
+            "played/did-not-play rows do not establish injury, health, roster status "
+            "or the reason for an absence"
+        ]
+        return out
     route = out.get("route")
     if (
         parsed.get("season_list")
@@ -11483,6 +11565,8 @@ def parse_query(query: str) -> dict:
     if since is not None:
         return since
     out = _parse_query_once(query)
+    if "availability_status" in (out.get("route_kwargs") or {}).get("unsupported_filters", []):
+        return out
     if ONE_POSSESSION_TERM_PRESENT.search(query.lower()):
         # "one possession games with 10 reb": the margin the rewrite adds can
         # take the parse's one stat slot and drop a bound the question named.
