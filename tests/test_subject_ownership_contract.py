@@ -138,12 +138,6 @@ def _check_subjects(season, monkeypatch):
             } in labels
 
 
-@pytest.mark.fixture_data
-@pytest.mark.query
-def test_s3_owned_scoring_and_venue_fixture(monkeypatch):
-    _check_subjects("2025-26", monkeypatch)
-
-
 @pytest.mark.needs_data
 @pytest.mark.query
 def test_s3_owned_scoring_and_venue_actual_data(monkeypatch):
