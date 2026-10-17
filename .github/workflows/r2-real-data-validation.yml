@@ -430,6 +430,7 @@ jobs:
             work/prepared/prepared.json
             work/prepared/staging/local-validation.json
             work/prepared/staging/base-manifest.json
+            work/prepared/staging/validation/generations/*/metadata/generation_manifest.json
             work/policy/environment-audit.json
           retention-days: 30
           if-no-files-found: error

@@ -59,6 +59,10 @@ def test_reviewed_opening_package_complete_snapshot_prepare(tmp_path):
                 work / "prepared.json",
                 work / "staging/local-validation.json",
                 work / "staging/base-manifest.json",
+                work
+                / "staging/validation/generations"
+                / package["generation_id"]
+                / "metadata/generation_manifest.json",
             ):
                 if source.exists():
                     shutil.copy2(source, destination / source.name)
