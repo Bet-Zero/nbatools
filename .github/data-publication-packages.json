@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "repository": "Bet-Zero/nbatools",
+  "environment": "r2-publication",
+  "owner_id": 205859440,
+  "max_bucket_bytes": 10000000000,
+  "max_snapshot_bytes": 1000000000,
+  "max_snapshot_objects": 3000,
+  "packages": {
+    "opening-availability-v1": {
+      "publisher_sha": "cb88329c65032df33a9781b6b3e62d40eab91b3e",
+      "script": "working/nba-tools-completion-program/publish-opening-availability.py",
+      "script_sha256": "2695c78b322b7e8ad673f1f196bfa18a6ecef25730e2ef18750f33a4f59442ff",
+      "inventory": "working/nba-tools-completion-program/opening-availability-inventory.json",
+      "inventory_sha256": "afb7ea908e1c7da52b44f2b7416e4928579e610a600d01244eb4c231348b3b39",
+      "generation_id": "availability-opening-631b259a-20261017",
+      "deployed_checks": [
+        {
+          "query": "Lakers record without LeBron James on October 21 2025",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 1,
+            "wins": 0,
+            "losses": 1,
+            "pts_avg": 109.0
+          }
+        },
+        {
+          "query": "Warriors record without Moses Moody on October 21 2025",
+          "summary": {
+            "team_name": "Golden State Warriors",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 119.0
+          }
+        }
+      ]
+    }
+  }
+}

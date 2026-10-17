@@ -25,6 +25,17 @@ run-name: "R2 ${{ github.event_name == 'push' && 'automatic targeted' || inputs.
 # minutes. `targeted` is the per-change check: only the Raw QA cases and the
 # needs_data tests a change names, which takes minutes, and no filter sweep.
 on:
+  workflow_call:
+    inputs:
+      publication_package:
+        type: string
+        required: true
+      publication_mode:
+        type: string
+        required: true
+      publication_publisher_sha:
+        type: string
+        required: true
   push:
     branches: ["r2-validation/**"]
     paths: [".github/r2-validation-request.json"]
@@ -71,6 +82,7 @@ env:
 
 jobs:
   request:
+    if: inputs.publication_package == ''
     name: Resolve and validate request without data credentials
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -311,6 +323,9 @@ jobs:
   # partial skip, empty selection, xfail, missing data, or pytest execution error.
   # A targeted Raw-QA-only run legitimately leaves this job unselected.
   data-backed-tests:
+    permissions:
+      contents: read
+      actions: read
     name: Required numerical tests marked needs_data
     needs: preflight
     if: needs.preflight.outputs.scope == 'full' || needs.preflight.outputs.tests != ''
@@ -339,6 +354,7 @@ jobs:
           TESTS: ${{ needs.preflight.outputs.tests }}
           VALIDATION_SHA: ${{ needs.preflight.outputs.candidate_sha }}
           VALIDATION_MAX_TESTS: ${{ needs.preflight.outputs.automatic == 'true' && '100' || '' }}
+          GH_TOKEN: ${{ github.token }}
           NBATOOLS_ACQUISITION_OUTPUT: outputs/required_data_validation/acquired_data
         run: python tools/required_data_validation.py
 
@@ -350,3 +366,77 @@ jobs:
           path: outputs/required_data_validation/
           if-no-files-found: warn
           retention-days: 7
+
+  publication-readonly:
+    name: Read-only publication preparation or verification
+    if: inputs.publication_package != '' && github.repository == 'Bet-Zero/nbatools' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: r2-validation
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      PACKAGE: ${{ inputs.publication_package }}
+      MODE: ${{ inputs.publication_mode }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.publication_publisher_sha }}
+          path: publisher
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e "publisher[api]"
+      - name: Audit environment policy without modifying settings
+        run: python tools/r2_publication.py audit --work work/policy
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: inputs.publication_mode == 'verify'
+        with:
+          name: publication-result-${{ github.run_id }}
+          path: published
+      - name: Run only the selected read-only operation
+        run: |
+          case "$MODE" in
+            prepare) python tools/r2_publication.py prepare --package "$PACKAGE" --publisher publisher --work work/prepared ;;
+            verify) python tools/r2_publication.py verify --package "$PACKAGE" --publisher publisher --prepared published/publication.json --work work/verified ;;
+            *) echo 'Unsupported read-only publication operation' >&2; exit 1 ;;
+          esac
+      - name: Show the immutable approval tuple
+        if: inputs.publication_mode == 'prepare'
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('### Prepared snapshot: no production writes\n\n```json\n')
+              output.write(Path('work/prepared/prepared.json').read_text())
+              output.write('```\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always() && inputs.publication_mode == 'prepare'
+        with:
+          name: publication-prepared-${{ github.run_id }}
+          path: |
+            work/prepared/prepared.json
+            work/prepared/staging/local-validation.json
+            work/prepared/staging/base-manifest.json
+            work/policy/environment-audit.json
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always() && inputs.publication_mode == 'verify'
+        with:
+          name: publication-verified-${{ github.run_id }}
+          path: work/verified/receipt.json
+          retention-days: 30
+          if-no-files-found: error
