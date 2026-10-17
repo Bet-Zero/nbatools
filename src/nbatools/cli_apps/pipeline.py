@@ -567,7 +567,7 @@ def backfill_game_availability(
     ),
     limit: int | None = typer.Option(None, "--limit", help="Maximum number of games to import"),
     source: str = typer.Option(
-        "stats", "--source", help="stats (NBA V3) or espn (matched game summary)"
+        "report", "--source", help="report (NBA Final Box PDF), stats, or espn"
     ),
 ) -> None:
     """Collect source-reported DNP observations; never infer complete absences."""

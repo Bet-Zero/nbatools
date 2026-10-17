@@ -21,6 +21,7 @@ from nbatools.commands.pipeline.pull_player_game_starter_roles import (
 
 SOURCE = "nba_stats_boxscoretraditionalv3"
 ESPN_SOURCE = "espn_game_summary"
+REPORT_SOURCE = "nba_official_finalbox"
 COVERAGE = "listed_player_rows_only"
 COLUMNS = (
     "game_id",
@@ -140,7 +141,9 @@ def normalize_boxscore_availability(
     frame["game_date"] = str(game_date)
     frame["season"] = str(season)
     frame["season_type"] = str(season_type)
-    if source != SOURCE and not re.fullmatch(r"espn_game_summary:\d+", source):
+    if source != SOURCE and not re.fullmatch(
+        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8})", source
+    ):
         raise ValueError("Unrecognized availability source")
     frame["source"] = source
     frame["coverage_scope"] = COVERAGE
@@ -157,7 +160,9 @@ def validate_availability(frame: pd.DataFrame) -> None:
         raise ValueError("Conflicting duplicate player-game availability")
     if not frame["participation_state"].isin(["played", "did_not_play", "unknown"]).all():
         raise ValueError("Unknown participation state")
-    allowed = frame["source"].eq(SOURCE) | frame["source"].str.fullmatch(r"espn_game_summary:\d+")
+    allowed = frame["source"].eq(SOURCE) | frame["source"].str.fullmatch(
+        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8})"
+    )
     if not allowed.all() or not frame["coverage_scope"].eq(COVERAGE).all():
         raise ValueError("Untrusted availability source or completeness claim")
     if frame[["game_id", "team_id", "player_id", "season", "season_type"]].isna().any().any():
@@ -201,7 +206,7 @@ def backfill(
     This collects DNP rows without changing the existing starter-role importer.
     No R2 publication or whole-sample without-player activation occurs here.
     """
-    if source not in {"stats", "espn"}:
+    if source not in {"stats", "espn", "report"}:
         raise ValueError("Source must be stats or espn")
     if cached_boxscores is not None and source != "stats":
         raise ValueError("Cached NBA Stats JSON is incompatible with ESPN source")
@@ -266,7 +271,19 @@ def backfill(
         if len(expected) != 2:
             raise ValueError("Game does not identify two distinct teams")
         source_name = SOURCE
-        if source == "espn":
+        if source == "report":
+            from nbatools.commands.pipeline.player_game_availability_report import (
+                official_report_as_v3,
+            )
+
+            raw, report_ref = official_report_as_v3(
+                game_id=ident, game_date=str(row.game_date),
+                season=season, season_type=season_type,
+                home_team_id=int(row.home_team_id),
+                away_team_id=int(row.away_team_id), data_root=root,
+            )
+            source_name = f"{REPORT_SOURCE}:{report_ref}"
+        elif source == "espn":
             from nbatools.commands.pipeline.player_game_availability_espn import (
                 espn_boxscore_as_v3,
             )

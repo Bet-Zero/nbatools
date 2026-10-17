@@ -233,9 +233,15 @@ Contract rules:
   player_id, player_name, participation_state, source_minutes, source_comment,
   source, coverage_scope`.
 - **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
-  uses official NBA Stats `BoxScoreTraditionalV3.PlayerStats`, archived
-  official V3 JSON, or `--source espn` game summaries when NBA servers are
-  unreachable. The ESPN adapter matches the exact game date, both teams, both
+  prefers **NBA Official Final Box PDFs**, which list the game's playing,
+  DNP/DND and inactive athletes with historical reasons. `--source report`
+  validates PDF game date, visitor/home teams and both final scores against
+  existing NBA game logs, plus unambiguous NBA player identities. PDFs are
+  fetched from `statsdmz.nba.com/pdfs/YYYYMMDD/YYYYMMDD_AWAYHOME.pdf` with
+  `pypdf`. For missing PDFs, official Stats `BoxScoreTraditionalV3.PlayerStats`,
+  archived V3 JSON or `--source espn` can collect explicitly listed player
+  observations. The ESPN and Stats options do not certify complete inactive
+  lists, and are not automatic substitutes for official Final Box coverage. The ESPN adapter matches the exact game date, both teams, both
   final scores, and resolves every reported athlete to a unique NBA player ID
   for that team/season; unresolved identities fail rather than substitute
   ESPN IDs for NBA IDs. ESPN rows keep the ESPN event ID in the `source` field.
@@ -272,8 +278,12 @@ Contract rules:
   contract have been reviewed. Code and synthetic tests do not establish served
   1996-97+ coverage or production publication.
 - **Backfill operation:** 
-  `nbatools-cli pipeline backfill-game-availability --season 2025-26 --limit 3`
-  pulls a bounded number of official finalized games. 
+  `nbatools-cli pipeline backfill-game-availability --season 2025-26 --source report --limit 3`
+  pulls a bounded number of finalized NBA Official Final Box reports.
+  NBA.com scorer PDFs were verified reachable from a GitHub-hosted runner, even
+  though NBA Stats and CDN endpoints were not. The official PDF includes game
+  date, team, scoring, DNP and inactive information, but the producer still
+  refuses ambiguous player identities and unsupported seasons or missing data. 
   `--cached-boxscores PATH` can instead read
   retained NBA Stats V3 boxscore JSON without external fetches. Existing
   pipeline publication/version checks and read-only runtime access remain unchanged.
