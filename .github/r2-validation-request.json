@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9895ee04ec9b0144e314dac3e9981e3737b6aacc",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_pipeline_player_game_availability_real_data.py::test_official_celtics_lakers_reports_qualify_nonadjacent_season_participation"
+  ],
+  "raw_qa_cases": []
+}
