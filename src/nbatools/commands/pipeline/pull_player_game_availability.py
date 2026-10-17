@@ -201,8 +201,13 @@ def backfill(
     games_path = root / "raw" / "games" / f"{season}_{safe}.csv"
     games = pd.read_csv(games_path, dtype={"game_id": str})
     required = {
-        "game_id", "game_date", "season", "season_type",
-        "is_final", "home_team_id", "away_team_id",
+        "game_id",
+        "game_date",
+        "season",
+        "season_type",
+        "is_final",
+        "home_team_id",
+        "away_team_id",
     }
     if not required.issubset(games.columns) or games.empty:
         raise ValueError("Finalized game catalog missing required columns/rows")
