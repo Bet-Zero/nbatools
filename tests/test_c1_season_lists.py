@@ -317,3 +317,18 @@ def test_player_points_opponent_nonadjacent_seasons_and_controls(monkeypatch):
         assert len(log) == len(expected[season])
         assert keys(log) == keys(expected[season])
         assert_values(sections["summary"][0], expected[season])
+
+
+@pytest.mark.parametrize("home,away", [(1, 0), (0, 1), (0, 0)])
+def test_s1_source_venue_contract_accepts_home_away_and_neutral(home, away):
+    from tests.test_c1_season_lists_real_data import _assert_venue_flags
+
+    _assert_venue_flags(pd.DataFrame({"is_home": [home], "is_away": [away]}))
+
+
+@pytest.mark.parametrize("home,away", [(1, 1), (2, 0), (0, -1), (None, 0), (0, None)])
+def test_s1_source_venue_contract_rejects_invalid_flags(home, away):
+    from tests.test_c1_season_lists_real_data import _assert_venue_flags
+
+    with pytest.raises(AssertionError):
+        _assert_venue_flags(pd.DataFrame({"is_home": [home], "is_away": [away]}))

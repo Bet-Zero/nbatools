@@ -9,6 +9,13 @@ from nbatools.data_source import data_read_csv
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 
 
+def _assert_venue_flags(raw):
+    """Neutral venues are neither home nor away under the canonical contract."""
+    assert raw.is_home.isin([True, False]).all()
+    assert raw.is_away.isin([True, False]).all()
+    assert not (raw.is_home.eq(True) & raw.is_away.eq(True)).any()
+
+
 def _split(query: str) -> dict:
     from nbatools.query_service import execute_natural_query
 
@@ -79,8 +86,7 @@ def test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls(monk
         assert raw.season.eq(season).all() and raw.season_type.eq("Regular Season").all()
         assert not raw.duplicated(["season", "game_id", "team_id"]).any()
         assert raw.wl.isin(["W", "L"]).all()
-        assert raw.is_home.isin([True, False]).all() and raw.is_away.isin([True, False]).all()
-        assert raw.is_home.ne(raw.is_away).all()
+        _assert_venue_flags(raw)
         points = pd.to_numeric(raw.pts, errors="coerce")
         assert (points.notna() & points.ge(0) & points.mod(1).eq(0)).all()
         rows = raw.to_dict("records")
