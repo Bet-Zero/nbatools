@@ -339,6 +339,7 @@ jobs:
           TESTS: ${{ needs.preflight.outputs.tests }}
           VALIDATION_SHA: ${{ needs.preflight.outputs.candidate_sha }}
           VALIDATION_MAX_TESTS: ${{ needs.preflight.outputs.automatic == 'true' && '100' || '' }}
+          NBATOOLS_ACQUISITION_OUTPUT: outputs/required_data_validation/acquired_data
         run: python tools/required_data_validation.py
 
       - name: Upload required numerical evidence

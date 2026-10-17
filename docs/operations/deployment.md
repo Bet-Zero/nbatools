@@ -287,7 +287,11 @@ review occurred**. Agents remain responsible for recording the real reviewer and
 findings in the candidate PR before pushing a request. A request branch is an
 evidence carrier, not a replacement feature branch or a merge approval.
 
-Automatic runs are targeted-only: no filter sweep, acquisition or publication.
+Automatic runs are targeted-only: no filter sweep or publication. The owner's
+2026-10-17 completion-program direction additionally authorizes bounded NBA
+source acquisition through these existing runners, retaining original sources
+and derived evidence in the existing artifacts. This does not enable unattended
+refresh, grant write credentials, or make temporary artifacts permanent storage.
 The request is capped at 8 KiB, 20 numerical selectors and 20 Raw QA cases, with
 no directories, globbing, shell options, duplicate selectors or unknown schema
 fields. The numerical harness caps collection at 100 selected tests and runs
@@ -414,6 +418,15 @@ Publication stages and validates the full snapshot, uploads immutable
 conditionally switches `metadata/active_generation.json`. A partial upload or
 pointer conflict leaves the last-good generation active. Treat failed
 publication or missing required generation objects as a deploy blocker.
+Availability overlays additionally require canonical final-game/team matches,
+per-game import digests, and the exact report reference with retained PDF bytes
+and checksum receipts. `validate_staged_generation` enforces these checks before
+remote writes. Stage acquired `raw/player_game_availability/` and
+`raw/player_game_availability_sources/` together over the downloaded base
+snapshot; preserve its core datasets and freshness dates. Use the existing
+`--only-if-changed-from` base manifest protection for publication. Acquisition
+artifacts alone are temporary evidence, not permanent publication.
+
 [Cloudflare documents `If-Match` and `If-None-Match` as supported conditional
 operations for S3-compatible `PutObject`](https://developers.cloudflare.com/r2/api/s3/api/);
 the publisher uses those preconditions for immutable objects and pointer

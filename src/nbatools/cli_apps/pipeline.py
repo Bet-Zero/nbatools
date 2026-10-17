@@ -553,3 +553,31 @@ def auto_refresh(
         raise typer.Exit(code=1)
 
     run_auto_refresh(seconds, include_playoffs=include_playoffs)
+
+
+@app.command("backfill-game-availability")
+def backfill_game_availability(
+    season: str = typer.Option(..., "--season", help="NBA season, e.g. 2025-26"),
+    season_type: str = typer.Option("Regular Season", "--season-type"),
+    cached_boxscores: Path | None = typer.Option(
+        None, "--cached-boxscores", help="Directory of retained NBA Stats V3 JSON box scores"
+    ),
+    game_id: list[int] | None = typer.Option(
+        None, "--game-id", help="Specific finalized game ID (repeatable)"
+    ),
+    limit: int | None = typer.Option(None, "--limit", help="Maximum number of games to import"),
+    source: str = typer.Option(
+        "report", "--source", help="report (NBA Final Box PDF), stats, or espn"
+    ),
+) -> None:
+    """Collect source-reported DNP observations; never infer complete absences."""
+    from nbatools.commands.pipeline.pull_player_game_availability import run
+
+    run(
+        season,
+        season_type,
+        cached_boxscores=cached_boxscores,
+        game_ids=game_id,
+        limit=limit,
+        source=source,
+    )

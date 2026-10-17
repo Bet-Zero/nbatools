@@ -218,6 +218,118 @@ Contract rules:
 
 ---
 
+
+## 1A-availability. Official player-game participation and DNP observations
+
+**Optional new additive dataset**:
+`data/raw/player_game_availability/{season}_{season_type_safe}.csv`
+
+- **Grain:** one player explicitly listed in one NBA game box score, identified by
+  `(game_id, team_id, player_id)`; no rows are manufactured for
+  unlisted players. Source team/game IDs are checked against the canonical
+  finalized games catalog (two teams). The source's listed player rows are
+  retained **before** starter-role filtering discards box-score nonplayers.
+- **Fields:** `game_id, game_date, season, season_type, team_id, team_abbr,
+  player_id, player_name, participation_state, source_minutes, source_comment,
+  source, source_sha256, identity_source_sha256, coverage_scope`.
+- **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
+  prefers **NBA Official Final Box PDFs**, which list the game's playing,
+  DNP/DND and inactive athletes with historical reasons. `--source report`
+  validates PDF game date, visitor/home teams and both final scores against
+  existing NBA game logs, plus unambiguous NBA player identities. PDFs are
+  fetched from `statsdmz.nba.com/pdfs/YYYYMMDD/YYYYMMDD_AWAYHOME.pdf` with
+  `pypdf`. For missing PDFs, official Stats `BoxScoreTraditionalV3.PlayerStats`,
+  archived V3 JSON or `--source espn` can collect explicitly listed player
+  observations. The ESPN and Stats options do not certify complete inactive
+  lists, and are not automatic substitutes for official Final Box coverage. The ESPN adapter matches the exact game date, both teams, both
+  final scores, home/away sides and completed status in both scoreboard and
+  summary header, and resolves every reported athlete to a unique NBA player ID
+  for that team/season; unresolved identities fail rather than substitute
+  ESPN IDs for NBA IDs. ESPN rows keep the ESPN event ID in the `source` field.
+  The separate importer does not refetch every core stat or modify the existing
+  starter-role producer. Output uses resumable local checkpoint writes and
+  atomic final CSV replacement. The module never publishes to R2 itself.
+  Per-game `.imports.json` receipts bind the selected source and a normalized
+  SHA256 of every saved player row. Resume requires matching rows and catalog
+  scope; missing receipts, changed/truncated rows, and source switches trigger
+  reacquisition. A full atomic `.partial.csv` preserves completed imports after
+  interruption. These receipts verify local import integrity, not upstream
+  authenticity, complete rosters, raw-response retention or R2 durability.
+  The report adapter reads played names/minutes directly from scorer-report
+  lines and requires their player IDs to match the canonical game's participant
+  IDs; it never fills a missing PDF participant from local statistics. Original
+  PDF bytes are retained under `data/raw/player_game_availability_sources/`
+  by SHA256, with a report-reference JSON receipt recording URL, retrieval time,
+  byte count and raw filename. Report rows carry `source_sha256` to bind them
+  to those exact bytes even if a provider later revises a report. Other adapters
+  currently leave that field empty and remain pending original-source retention.
+  These files must accompany publication inputs. Identity lookup may use the
+  immediately preceding season's canonical player/team IDs; that lookup never
+  establishes current membership or absence without an explicit report row.
+  If no candidate exists, the official CDN game box score supplies identity only:
+  exact game/date/finality, home/away teams and final scores must match first.
+  Ambiguous IDs/names and canonical identity conflicts reject the import. CDN
+  A CDN HTTP403 may instead use a unique NBA API static-catalog candidate to
+  select an official NBA profile URL. The profile's retained HTML must confirm
+  `PERSON_ID`, `FIRST_NAME`, `LAST_NAME` and `DISPLAY_FIRST_LAST` in its structured
+  `props.pageProps.player.info`; the SDK catalog alone is not accepted evidence.
+  Current profile team/status fields are ignored. A derived identity index binds
+  each used profile's ID/name and original HTML hash; publication verifies all
+  HTML receipts and canonical global-ID consistency. These HTML/index files stay
+  alongside the report sources and must accompany permanent publication.
+  Source
+  status/minutes do not determine output participation, and unlisted PDF players
+  never become rows. `identity_source_sha256` binds any fallback to retained
+  original JSON bytes and URL/time/hash/size receipts. Publication revalidates
+  that JSON's game envelope and every row's ID/team/name mapping.
+  Generation publication rejects availability overlays without valid import
+  digests, canonical final-game/team scope, the exact away/home report reference,
+  and matching retained PDF bytes/receipt. Temporary checkpoints, contradictory
+  rows and sources without retained report provenance fail before any R2 write.
+  The bounded official-report numerical test retains these actual source files
+  and derived CSVs in the existing validation artifact; artifact staging is
+  temporary and does not satisfy permanent R2 publication.
+- **States:** `played` requires positive game minutes,
+  `did_not_play` requires an explicit upstream
+  DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
+  `unknown` covers ambiguous zero/absent minutes without
+  an explicit nonparticipation statement. Contradictions are rejected.
+- **Source truth:** NBA V3 `source_comment` is preserved verbatim; ESPN
+  `didNotPlay=true` is retained only as an explicit DNP flag, never a claimed
+  injury reason (ESPN generic reason text can also appear on played athletes).
+  Both sources preserve their own `source` provenance. The ESPN summary
+  `injuries` section is a **current-at-fetch** snapshot even when the requested
+  `boxscore` is a historical game. It must never be used as historical
+  injury/availability evidence for that game. Game-specific `didNotPlay` flags
+  and documented NBA V3 comments are distinct from contemporary injury reports.
+  For NBA V3, `source_comment` is preserved verbatim;
+  do not transform coach decisions, illness, inactive and injuries into one
+  injury statistic. `coverage_scope=listed_player_rows_only`
+  establishes only positive source observations. Unlisted players might be
+  outside the game-day roster OR omitted from the particular box-score source.
+  The dataset alone **does not** certify a complete game-day roster,
+  complete player/team tenure, or all missed games.
+- **Consumer and promotion:** this is a required input for qualified future
+  `without_player` execution; the currently unsupported
+  full absence capability remains open until the source includes all required
+  membership/participation evidence for each requested sample and exact
+  `(game_id, team_id, player_id)` checks pass. Do not
+  substitute a missing game-log row. It is valid to expose a narrowly
+  labeled, source-reported DNP subset only once its own results and coverage
+  contract have been reviewed. Code and synthetic tests do not establish served
+  1996-97+ coverage or production publication.
+- **Backfill operation:**
+  `nbatools-cli pipeline backfill-game-availability --season 2025-26 --source report --limit 3`
+  pulls a bounded number of finalized NBA Official Final Box reports.
+  NBA.com scorer PDFs were verified reachable from a GitHub-hosted runner, even
+  though NBA Stats and CDN endpoints were not. The official PDF includes game
+  date, team, scoring, DNP and inactive information, but the producer still
+  refuses ambiguous player identities and unsupported seasons or missing data.
+  `--cached-boxscores PATH` can instead read
+  retained NBA Stats V3 boxscore JSON without external fetches. Existing
+  pipeline publication/version checks and read-only runtime access remain unchanged.
+
+
 ## 1B. `player_game_period_stats`
 
 ### Path pattern

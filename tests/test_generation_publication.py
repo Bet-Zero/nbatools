@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 import pytest
 from typer.testing import CliRunner
 
@@ -23,6 +24,196 @@ from nbatools.commands.pipeline.generation_publication import (
 from nbatools.data_source import ACTIVE_GENERATION_PATH, LOCAL_DATA_ROOT_ENV
 
 pytestmark = pytest.mark.engine
+
+
+def _write_availability_fixture(root: Path) -> Path:
+    from nbatools.commands.pipeline.player_game_availability_report import _archive_report
+    from nbatools.commands.pipeline.pull_player_game_availability import (
+        _game_digest,
+        normalize_boxscore_availability,
+    )
+
+    source = root / "raw/player_game_availability_sources"
+    url = "https://statsdmz.nba.com/pdfs/20251021/20251021_BOSNYK.pdf"
+    _archive_report(b"%PDF controlled publication fixture, not NBA evidence", url, source)
+    receipt = json.loads((source / "20251021_BOSNYK.json").read_text())
+    raw = pd.DataFrame(
+        [
+            dict(
+                gameId=22500001,
+                teamId=1,
+                teamTricode="BOS",
+                personId=10,
+                firstName="A",
+                familyName="Player",
+                minutes="25:00",
+                comment="",
+            ),
+            dict(
+                gameId=22500001,
+                teamId=2,
+                teamTricode="NYK",
+                personId=20,
+                firstName="B",
+                familyName="Player",
+                minutes=None,
+                comment="DNP",
+            ),
+        ]
+    )
+    raw.attrs["source_sha256"] = receipt["sha256"]
+    rows = normalize_boxscore_availability(
+        raw,
+        game_id=22500001,
+        game_date="2025-10-21",
+        season="2025-26",
+        season_type="Regular Season",
+        expected_team_ids={1, 2},
+        source="nba_official_finalbox:20251021_BOSNYK",
+    )
+    path = root / "raw/player_game_availability/2025-26_regular_season.csv"
+    path.parent.mkdir(parents=True)
+    rows.to_csv(path, index=False)
+    path.with_suffix(".imports.json").write_text(
+        json.dumps(
+            {
+                "22500001": {
+                    "source": "report",
+                    "sha256": _game_digest(rows),
+                }
+            }
+        )
+    )
+    games = root / "raw/games/2025-26_regular_season.csv"
+    games.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            dict(
+                game_id=22500001,
+                game_date="2025-10-21",
+                season="2025-26",
+                season_type="Regular Season",
+                home_team_id=2,
+                away_team_id=1,
+                is_final=True,
+            )
+        ]
+    ).to_csv(games, index=False)
+    teams = root / "raw/team_game_stats/2025-26_regular_season.csv"
+    teams.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            dict(game_id=22500001, team_id=1, team_abbr="BOS"),
+            dict(game_id=22500001, team_id=2, team_abbr="NYK"),
+        ]
+    ).to_csv(teams, index=False)
+    return path
+
+
+def test_checksum_valid_wrong_report_matchup_is_rejected(tmp_path):
+    from nbatools.commands.pipeline.pull_player_game_availability import _game_digest
+
+    _write_valid_source(tmp_path, "baseline")
+    path = _write_availability_fixture(tmp_path)
+    rows = pd.read_csv(path)
+    rows["source"] = "nba_official_finalbox:20251021_LALGSW"
+    rows.to_csv(path, index=False)
+    path.with_suffix(".imports.json").write_text(
+        json.dumps(
+            {
+                "22500001": {
+                    "source": "report",
+                    "sha256": _game_digest(rows),
+                }
+            }
+        )
+    )
+    directory = tmp_path / "raw/player_game_availability_sources"
+    receipt = json.loads((directory / "20251021_BOSNYK.json").read_text())
+    receipt["source_url"] = "https://statsdmz.nba.com/pdfs/20251021/20251021_LALGSW.pdf"
+    (directory / "20251021_LALGSW.json").write_text(json.dumps(receipt))
+    with pytest.raises(GenerationValidationError, match="matchup"):
+        publish_local_generation("bad-matchup", source_dir=tmp_path, data_root=tmp_path)
+
+
+def test_valid_availability_overlay_preserves_baseline_and_source_bytes(tmp_path):
+    _write_valid_source(tmp_path, "baseline")
+    path = _write_availability_fixture(tmp_path)
+    baseline = (tmp_path / "raw/sample.csv").read_bytes()
+    publish_local_generation("with-availability", source_dir=tmp_path, data_root=tmp_path)
+    staged = tmp_path / "generations/with-availability"
+    assert (staged / "raw/sample.csv").read_bytes() == baseline
+    assert (staged / path.relative_to(tmp_path)).read_bytes() == path.read_bytes()
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "malformed",
+        "unreceipted",
+        "truncated",
+        "wrong_date",
+        "wrong_team",
+        "wrong_season",
+        "nonfinal",
+        "duplicate",
+        "contradictory_dnp",
+        "missing_pdf",
+        "missing_receipt",
+        "altered_pdf",
+        "wrong_url",
+        "unsafe_path",
+        "row_hash",
+        "unfinished",
+    ],
+)
+def test_unverified_availability_blocks_publication_before_remote_writes(tmp_path, defect):
+    _write_valid_source(tmp_path, "baseline")
+    path = _write_availability_fixture(tmp_path)
+    rows = pd.read_csv(path)
+    source_receipt = tmp_path / "raw/player_game_availability_sources/20251021_BOSNYK.json"
+    receipt = json.loads(source_receipt.read_text())
+    pdf = source_receipt.parent / receipt["raw_file"]
+    if defect == "malformed":
+        path.write_text("bad,data\n1,2\n")
+    elif defect == "unreceipted":
+        path.with_suffix(".imports.json").unlink()
+    elif defect == "truncated":
+        rows.iloc[:1].to_csv(path, index=False)
+    elif defect in {"wrong_date", "wrong_team", "wrong_season", "contradictory_dnp", "row_hash"}:
+        column, value = {
+            "wrong_date": ("game_date", "2000-01-01"),
+            "wrong_team": ("team_id", 99),
+            "wrong_season": ("season", "2024-25"),
+            "contradictory_dnp": ("source_minutes", 10),
+            "row_hash": ("source_sha256", "a" * 64),
+        }[defect]
+        rows.loc[1, column] = value
+        rows.to_csv(path, index=False)
+    elif defect == "nonfinal":
+        games = tmp_path / "raw/games/2025-26_regular_season.csv"
+        frame = pd.read_csv(games)
+        frame["is_final"] = False
+        frame.to_csv(games, index=False)
+    elif defect == "duplicate":
+        pd.concat([rows, rows.iloc[:1]]).to_csv(path, index=False)
+    elif defect == "missing_pdf":
+        pdf.unlink()
+    elif defect == "missing_receipt":
+        source_receipt.unlink()
+    elif defect == "altered_pdf":
+        pdf.write_bytes(b"%PDF changed")
+    elif defect in {"wrong_url", "unsafe_path"}:
+        receipt["source_url" if defect == "wrong_url" else "raw_file"] = "../wrong"
+        source_receipt.write_text(json.dumps(receipt))
+    else:
+        path.with_suffix(".partial.csv").write_text(path.read_text())
+    client = FakeR2Client()
+    with pytest.raises(GenerationValidationError, match="Availability"):
+        publish_r2_generation(
+            "bad-availability", source_dir=tmp_path, client=client, bucket_name="test-bucket"
+        )
+    assert client.put_order == []
 
 
 class FakeBody:
@@ -608,3 +799,63 @@ def _sha256(path: Path) -> str:
 
 def _etag(payload: bytes) -> str:
     return hashlib.md5(payload, usedforsecurity=False).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "defect", [None, "missing", "corrupt", "wrong_game", "wrong_mapping", "wrong_url"]
+)
+def test_retained_identity_source_is_required_and_game_bound(tmp_path, defect):
+    from nbatools.commands.pipeline.pull_player_game_availability import _game_digest
+
+    _write_valid_source(tmp_path, "baseline")
+    path = _write_availability_fixture(tmp_path)
+    rows = pd.read_csv(path)
+    game = dict(gameId="0022500001", gameStatus=3, gameTimeUTC="2025-10-22T02:00:00Z")
+    for side, ident, abbr, first in (("awayTeam", 1, "BOS", "A"), ("homeTeam", 2, "NYK", "B")):
+        game[side] = dict(
+            teamId=ident,
+            teamTricode=abbr,
+            score=100,
+            players=[dict(personId=ident * 10, firstName=first, familyName="Player")],
+        )
+    if defect == "wrong_game":
+        game["gameId"] = "0022500099"
+    if defect == "wrong_mapping":
+        game["homeTeam"]["players"][0]["personId"] = 99
+    raw = json.dumps(dict(game=game)).encode()
+    digest = hashlib.sha256(raw).hexdigest()
+    directory = tmp_path / "raw/player_game_availability_sources"
+    identity_path = directory / f"{digest}.identity.json"
+    identity_path.write_bytes(raw)
+    receipt = dict(
+        source_url="https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022500001.json",
+        retrieved_at="2026-10-17T00:00:00+00:00",
+        sha256=digest,
+        size_bytes=len(raw),
+        raw_file=identity_path.name,
+    )
+    if defect == "wrong_url":
+        receipt["source_url"] = "https://example.com/unqualified.json"
+    (directory / f"{digest}.receipt.json").write_text(json.dumps(receipt))
+    if defect == "missing":
+        identity_path.unlink()
+    if defect == "corrupt":
+        identity_path.write_bytes(b"{}")
+    rows["identity_source_sha256"] = digest
+    rows.to_csv(path, index=False)
+    path.with_suffix(".imports.json").write_text(
+        json.dumps({"22500001": dict(source="report", sha256=_game_digest(rows))})
+    )
+    teams_path = tmp_path / "raw/team_game_stats/2025-26_regular_season.csv"
+    teams = pd.read_csv(teams_path)
+    teams["pts"] = 100
+    teams.to_csv(teams_path, index=False)
+    if defect is None:
+        publish_local_generation("identity", source_dir=tmp_path, data_root=tmp_path)
+    else:
+        client = FakeR2Client()
+        with pytest.raises(GenerationValidationError):
+            publish_r2_generation(
+                "bad-identity", source_dir=tmp_path, client=client, bucket_name="test-bucket"
+            )
+        assert client.put_order == []
