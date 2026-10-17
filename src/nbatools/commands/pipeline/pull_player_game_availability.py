@@ -277,10 +277,13 @@ def backfill(
             )
 
             raw, report_ref = official_report_as_v3(
-                game_id=ident, game_date=str(row.game_date),
-                season=season, season_type=season_type,
+                game_id=ident,
+                game_date=str(row.game_date),
+                season=season,
+                season_type=season_type,
                 home_team_id=int(row.home_team_id),
-                away_team_id=int(row.away_team_id), data_root=root,
+                away_team_id=int(row.away_team_id),
+                data_root=root,
             )
             source_name = f"{REPORT_SOURCE}:{report_ref}"
         elif source == "espn":

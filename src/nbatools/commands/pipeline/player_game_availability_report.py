@@ -72,12 +72,12 @@ def _parse_sections(text: str, game_date: str) -> tuple[list[str], list[list[str
             positions.append((index, match.group(1).upper(), match.group(2).strip()))
     if len(positions) != 2 or [v[1] for v in positions] != ["VISITOR", "HOME"]:
         raise ValueError("Final Box missing distinct VISITOR and HOME team headings")
-    finish = next((i for i in range(positions[1][0] + 1, len(lines))
-                   if "SCORE BY PERIOD" in lines[i]), None)
+    finish = next(
+        (i for i in range(positions[1][0] + 1, len(lines)) if "SCORE BY PERIOD" in lines[i]), None
+    )
     if finish is None:
         raise ValueError("Final Box missing scoreboard section")
-    sections = [lines[positions[0][0] + 1:positions[1][0]],
-                lines[positions[1][0] + 1:finish]]
+    sections = [lines[positions[0][0] + 1 : positions[1][0]], lines[positions[1][0] + 1 : finish]]
     return [p[2] for p in positions], sections, lines
 
 
@@ -124,12 +124,13 @@ def _inactives(lines: list[str]) -> list[tuple[str, list[tuple[str, str]]]]:
             continue
         team, first = match.groups()
         joined = [first]
-        for value in lines[index + 1:index + 5]:
+        for value in lines[index + 1 : index + 5]:
             part = value.strip()
             if not part or re.match(
                 r"^(Inactive:|Points in the Paint|2nd Chance Points|"
                 r"Fast Break Points|Biggest Lead|Technical fouls|Lead Changes)",
-                part, re.I,
+                part,
+                re.I,
             ):
                 break
             joined.append(part)
@@ -173,20 +174,31 @@ def _identify(
     return ident, str(subset[subset.player_id.eq(ident)].iloc[0].player_name)
 
 
-def _record(game_id: int, team_id: int, abbr: str, ident: int,
-            name: str, minutes: object, reason: str) -> dict:
+def _record(
+    game_id: int, team_id: int, abbr: str, ident: int, name: str, minutes: object, reason: str
+) -> dict:
     first, _, rest = str(name).partition(" ")
     return {
-        "gameId": game_id, "teamId": team_id, "teamTricode": abbr,
-        "personId": ident, "firstName": first, "familyName": rest or first,
-        "minutes": minutes, "comment": reason,
+        "gameId": game_id,
+        "teamId": team_id,
+        "teamTricode": abbr,
+        "personId": ident,
+        "firstName": first,
+        "familyName": rest or first,
+        "minutes": minutes,
+        "comment": reason,
     }
 
 
 def official_report_as_v3(
     *,
-    game_id: int, game_date: str, season: str, season_type: str,
-    home_team_id: int, away_team_id: int, data_root: Path,
+    game_id: int,
+    game_date: str,
+    season: str,
+    season_type: str,
+    home_team_id: int,
+    away_team_id: int,
+    data_root: Path,
 ) -> tuple[pd.DataFrame, str]:
     """Build source-listed played/DNP/inactive rows for one verified NBA report."""
     safe = season_type.lower().replace(" ", "_")
@@ -219,8 +231,9 @@ def official_report_as_v3(
             if nba_id in used:
                 raise ValueError("Duplicate NBA player game participation row")
             used.add(nba_id)
-            rows.append(_record(game_id, ident, abbr, nba_id,
-                                player.player_name, player.minutes, ""))
+            rows.append(
+                _record(game_id, ident, abbr, nba_id, player.player_name, player.minutes, "")
+            )
     for ident, section in zip(team_ids, sections):
         for line in section:
             match = STATUS.match(line)
@@ -229,16 +242,24 @@ def official_report_as_v3(
             name, status, reason = match.groups()
             nba_id, full_name = _identify(people, ident, name, used, surname=False)
             used.add(nba_id)
-            rows.append(_record(game_id, ident, by_id[ident][0], nba_id,
-                                full_name, None, status.upper() + " - " + reason))
+            rows.append(
+                _record(
+                    game_id,
+                    ident,
+                    by_id[ident][0],
+                    nba_id,
+                    full_name,
+                    None,
+                    status.upper() + " - " + reason,
+                )
+            )
     for ident, (label, absent) in zip(team_ids, inactives):
         if not _name(expected_names[ident]).endswith(_name(label)):
             raise ValueError("Final Box inactive list assigned to wrong team")
         for name, reason in absent:
             nba_id, full_name = _identify(people, ident, name, used, surname=True)
             used.add(nba_id)
-            rows.append(_record(game_id, ident, by_id[ident][0], nba_id,
-                                full_name, None, reason))
+            rows.append(_record(game_id, ident, by_id[ident][0], nba_id, full_name, None, reason))
     if not rows or {row["teamId"] for row in rows} != set(team_ids):
         raise ValueError("No trustworthy game-day NBA report rows for both teams")
     return pd.DataFrame(rows), ref

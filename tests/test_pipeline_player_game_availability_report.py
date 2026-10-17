@@ -41,33 +41,79 @@ def nba_rows(tmp_path, monkeypatch):
         (root / "raw" / data_type).mkdir(parents=True)
     pd.DataFrame(
         [
-            dict(game_id="0022500002", game_date="2025-10-21", season="2025-26",
-                 season_type="Regular Season", is_final=True,
-                 home_team_id=2, away_team_id=1)
+            dict(
+                game_id="0022500002",
+                game_date="2025-10-21",
+                season="2025-26",
+                season_type="Regular Season",
+                is_final=True,
+                home_team_id=2,
+                away_team_id=1,
+            )
         ]
     ).to_csv(root / "raw/games/2025-26_regular_season.csv", index=False)
     pd.DataFrame(
         [
-            dict(game_id="0022500002", team_id=1, team_abbr="GSW",
-                 team_name="Golden State Warriors", pts=119),
-            dict(game_id="0022500002", team_id=2, team_abbr="LAL",
-                 team_name="Los Angeles Lakers", pts=109),
+            dict(
+                game_id="0022500002",
+                team_id=1,
+                team_abbr="GSW",
+                team_name="Golden State Warriors",
+                pts=119,
+            ),
+            dict(
+                game_id="0022500002",
+                team_id=2,
+                team_abbr="LAL",
+                team_name="Los Angeles Lakers",
+                pts=109,
+            ),
         ]
     ).to_csv(root / "raw/team_game_stats/2025-26_regular_season.csv", index=False)
     pd.DataFrame(
         [
-            dict(game_id="0022500002", team_id=1, player_id=30,
-                 player_name="Stephen Curry", minutes=32.0),
-            dict(game_id="0022500002", team_id=2, player_id=77,
-                 player_name="Luka Doncic", minutes=40.0),
-            dict(game_id="0022500003", team_id=1, player_id=32,
-                 player_name="Trayce Jackson-Davis", minutes=4.0),
-            dict(game_id="0022500003", team_id=1, player_id=4,
-                 player_name="Moses Moody", minutes=10.0),
-            dict(game_id="0022500003", team_id=2, player_id=9,
-                 player_name="Bronny James", minutes=5.0),
-            dict(game_id="0022500003", team_id=2, player_id=23,
-                 player_name="LeBron James", minutes=30.0),
+            dict(
+                game_id="0022500002",
+                team_id=1,
+                player_id=30,
+                player_name="Stephen Curry",
+                minutes=32.0,
+            ),
+            dict(
+                game_id="0022500002",
+                team_id=2,
+                player_id=77,
+                player_name="Luka Doncic",
+                minutes=40.0,
+            ),
+            dict(
+                game_id="0022500003",
+                team_id=1,
+                player_id=32,
+                player_name="Trayce Jackson-Davis",
+                minutes=4.0,
+            ),
+            dict(
+                game_id="0022500003",
+                team_id=1,
+                player_id=4,
+                player_name="Moses Moody",
+                minutes=10.0,
+            ),
+            dict(
+                game_id="0022500003",
+                team_id=2,
+                player_id=9,
+                player_name="Bronny James",
+                minutes=5.0,
+            ),
+            dict(
+                game_id="0022500003",
+                team_id=2,
+                player_id=23,
+                player_name="LeBron James",
+                minutes=30.0,
+            ),
         ]
     ).to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
     monkeypatch.setattr(report, "_fetch_report_text", lambda _: PDF_TEXT)
@@ -76,8 +122,13 @@ def nba_rows(tmp_path, monkeypatch):
 
 def _get(root):
     return report.official_report_as_v3(
-        game_id=22500002, game_date="2025-10-21", season="2025-26",
-        season_type="Regular Season", home_team_id=2, away_team_id=1, data_root=root,
+        game_id=22500002,
+        game_date="2025-10-21",
+        season="2025-26",
+        season_type="Regular Season",
+        home_team_id=2,
+        away_team_id=1,
+        data_root=root,
     )
 
 
@@ -85,14 +136,24 @@ def test_official_report_includes_dnp_and_inactive_with_date_qualification(nba_r
     raw, reference = _get(nba_rows)
     assert reference == "20251021_GSWLAL"
     selected = normalize_boxscore_availability(
-        raw, game_id=22500002, game_date="2025-10-21", season="2025-26",
-        season_type="Regular Season", expected_team_ids={1, 2},
+        raw,
+        game_id=22500002,
+        game_date="2025-10-21",
+        season="2025-26",
+        season_type="Regular Season",
+        expected_team_ids={1, 2},
         source=f"nba_official_finalbox:{reference}",
     )
     assert len(selected) == 6
     status = dict(zip(selected.player_id, selected.participation_state))
-    assert status == {30: "played", 32: "did_not_play", 4: "did_not_play",
-                      77: "played", 9: "did_not_play", 23: "did_not_play"}
+    assert status == {
+        30: "played",
+        32: "did_not_play",
+        4: "did_not_play",
+        77: "played",
+        9: "did_not_play",
+        23: "did_not_play",
+    }
     # Two Lakers named James: Bronny's explicit DNP is consumed BEFORE the
     # inactive surname-only "James", which uniquely denotes LeBron here.
     assert selected.loc[selected.player_id.eq(23), "source_comment"].iloc[0] == (
@@ -116,8 +177,10 @@ def test_official_report_source_can_stage_one_final_game(nba_rows):
         (PDF_TEXT.replace("Warriors (1-0)", "Timberwolves (1-0)"), "heading"),
         (PDF_TEXT.replace("32 109", "32 110"), "score"),
         (PDF_TEXT.replace("Inactive: Lakers", "Inactive: Celtics"), "inactive list"),
-        (PDF_TEXT.replace("Inactive: Warriors - Moody", "Inactive: Warriors - Unknown"),
-         "identity unresolved"),
+        (
+            PDF_TEXT.replace("Inactive: Warriors - Moody", "Inactive: Warriors - Unknown"),
+            "identity unresolved",
+        ),
     ],
 )
 def test_mismatched_or_unresolved_pdf_source_refuses(nba_rows, monkeypatch, text, match):
