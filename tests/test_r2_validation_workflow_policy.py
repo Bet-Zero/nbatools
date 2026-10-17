@@ -344,7 +344,7 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
 
     expected = f"${{{{ needs.{PREFLIGHT_JOB}.outputs.generation }}}}"
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request"}:
+        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
             continue
         pinned = job.get("env", {}).get(GENERATION_ENV)
         assert pinned == expected, (
@@ -410,7 +410,7 @@ def test_every_data_job_waits_for_the_credential_check() -> None:
     wait for it reports the symptom in parallel with the diagnosis.
     """
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request"}:
+        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
             continue
         assert PREFLIGHT_JOB in _needs(job), (
             f"job {name!r} does not wait for {PREFLIGHT_JOB!r}, so a missing "
@@ -549,7 +549,7 @@ def test_preflight_rejects_empty_requests_but_allows_unselected_jobs(
 
 
 def test_automatic_trigger_is_only_a_dedicated_request_push() -> None:
-    assert set(_workflow()["on"]) == {"workflow_dispatch", "push"}
+    assert set(_workflow()["on"]) == {"workflow_dispatch", "push", "workflow_call"}
     assert _workflow()["on"]["push"] == {
         "branches": ["r2-validation/**"],
         "paths": [".github/r2-validation-request.json"],
@@ -585,3 +585,20 @@ def test_gate_selection_only_uses_validated_outputs() -> None:
     assert step["env"]["VALIDATION_MAX_TESTS"] == (
         "${{ needs.preflight.outputs.automatic == 'true' && '100' || '' }}"
     )
+
+
+def test_publication_reuse_has_separate_fixed_package_validation():
+    """Publication compares an approved base/target; it does not use query preflight."""
+    job = _job("publication-readonly")
+    assert job["environment"] == ENVIRONMENT
+    assert "inputs.publication_package != ''" in job["if"]
+    assert "github.ref == 'refs/heads/main'" in job["if"]
+    assert job["permissions"] == {"contents": "read", "actions": "read"}
+    commands = "\n".join(step.get("run", "") for step in job["steps"])
+    assert "r2_publication.py prepare" in commands
+    assert "r2_publication.py verify" in commands
+    assert "r2_publication.py publish" not in commands
+    helper = (ROOT / "tools/r2_publication.py").read_text()
+    assert 'verify_pointer_manifest(client, bucket, inventory["base_generation"])' in helper
+    assert "prepared_manifest_sha256" in helper
+    assert "Active base changed during snapshot preparation" in helper

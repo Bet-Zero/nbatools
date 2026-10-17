@@ -127,16 +127,19 @@ Use this process when recreating the storage setup for a future operator.
 9. Add the variables listed above to the local `.env` file.
 10. Add the same variables to Vercel project environment variables before
     enabling deployed `DATA_SOURCE=r2` reads.
-11. Add the three secret variables to GitHub Actions repository secrets, so
-    automated validation can read the generation. See
+11. Add the read-only validation values only to the dedicated `r2-validation`
+    GitHub environment secrets, never repository secrets. See
     [GitHub Actions Secrets](#github-actions-secrets) below.
 
 The deployed runtime token should not have account-wide R2 admin or object-write
 permissions. It needs only the canonical-data reads used by query execution.
 Keep approved publication credentials operator-controlled and outside the
-deployed runtime. For an approved publication, inject the operator's
-write-scoped `R2_*` values only into that local command process; do not copy
-them into Vercel runtime configuration.
+deployed runtime. The protected manual publication workflow under review in
+PR472 confines write authority to a dedicated `r2-publication` environment and
+requires owner approval. It reuses the immutable publisher and existing read-only
+validation workflow. See the [protected data publication procedure](data_publication.md) for setup qualification.
+Do not copy write credentials into Vercel, ordinary CI, repository secrets or
+Codex Cloud. No production publication is authorized merely by merging setup.
 
 If a future owner-approved promotion enables query feedback, create a separate
 bucket such as `nbatools-feedback` and a separate R2 token scoped to that
