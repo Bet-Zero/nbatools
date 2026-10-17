@@ -1,0 +1,340 @@
+{
+  "holdouts_sha256": "d65cf93f47b03bd9263105ecb91bb3e4936e73c9bbfb5a08d2261bbab39c1027",
+  "oracle_script_sha256": "9947ee4ad6440b2a385ddb6b7fa62d4c6c0499b6b7dad27ca323e3d2973a863a",
+  "valid_count": 20,
+  "control_count": 8,
+  "candidate_not_read_or_executed": true,
+  "method": "Direct pandas selections from retained canonical raw CSVs; opponent points and player W/L joined by game/team; explicit report participation only. No application query or candidate executed.",
+  "limitations": [
+    "Staged four-report availability overlay is not permanently published.",
+    "No 2024-25 team truth used or claimed; every named season is 2023-24 or 2025-26.",
+    "Controls are separate from 20 positive capability questions.",
+    "Rounded API averages compared with absolute tolerance 0.001."
+  ],
+  "cases": [
+    {
+      "id": "p2_s1_1",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "pts_sum": 222.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "pts_sum": 258.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s1_2",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "pts_sum": 251.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "pts_sum": 257.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s1_3",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 1,
+          "wins": 0,
+          "losses": 1,
+          "pts_sum": 99.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 0,
+          "losses": 2,
+          "pts_sum": 220.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s1_4",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "pts_sum": 222.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 0,
+          "losses": 2,
+          "pts_sum": 226.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s2_1",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "pts_sum": 33.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 0,
+          "losses": 2,
+          "pts_sum": 58.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s2_2",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 3,
+          "wins": 1,
+          "losses": 2,
+          "pts_sum": 99.0
+        },
+        {
+          "season": "2025-26",
+          "games": 3,
+          "wins": 3,
+          "losses": 0,
+          "pts_sum": 87.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s2_3",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "pts_sum": 27.0
+        },
+        {
+          "season": "2025-26",
+          "games": 3,
+          "wins": 2,
+          "losses": 1,
+          "pts_sum": 83.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s2_4",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "pts_sum": 30.0
+        },
+        {
+          "season": "2025-26",
+          "games": 3,
+          "wins": 1,
+          "losses": 2,
+          "pts_sum": 56.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s3_1",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 8,
+          "wins": 8,
+          "losses": 0,
+          "pts_sum": 975.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s3_2",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 10,
+          "wins": 10,
+          "losses": 0,
+          "pts_sum": 1170.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s3_3",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 11,
+          "wins": 8,
+          "losses": 3,
+          "pts_sum": 367.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s3_4",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 5,
+          "wins": 5,
+          "losses": 0,
+          "pts_sum": 156.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s4_1",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "pts_sum": 0.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "pts_sum": 237.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s4_2",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "pts_sum": 231.0
+        },
+        {
+          "season": "2025-26",
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "pts_sum": 0.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s4_3",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "pts_sum": 0.0
+        },
+        {
+          "season": "2025-26",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "pts_sum": 31.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s4_4",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "pts_sum": 27.0
+        },
+        {
+          "season": "2025-26",
+          "games": 0,
+          "wins": 0,
+          "losses": 0,
+          "pts_sum": 0.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s5_1",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 5,
+          "wins": 4,
+          "losses": 1,
+          "pts_sum": 634.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s5_2",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 8,
+          "wins": 7,
+          "losses": 1,
+          "pts_sum": 991.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s5_3",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 4,
+          "wins": 2,
+          "losses": 2,
+          "pts_sum": 151.0
+        }
+      ]
+    },
+    {
+      "id": "p2_s5_4",
+      "buckets": [
+        {
+          "season": "2023-24",
+          "games": 9,
+          "wins": 7,
+          "losses": 2,
+          "pts_sum": 311.0
+        }
+      ]
+    }
+  ]
+}

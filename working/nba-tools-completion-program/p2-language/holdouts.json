@@ -1,0 +1,1770 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/availability_checker",
+  "candidate_frozen_sha256": "31819d844129ffe7514cb915ce3699bac9bb41d484baef4fa6d527abe301cf6b",
+  "candidate_executed": false,
+  "data_generation": "queue-d-production-0574735-20260716",
+  "availability_overlay": "four qualified BOS-LAL reports; staged, unpublished",
+  "source_sha256": {
+    "/workspace/work/s4-local-replay/data/raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "/workspace/work/s4-local-replay/data/raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "/workspace/work/s4-local-replay/data/raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+    "/workspace/work/s4-local-replay/data/raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability/2025-26_regular_season.csv": "007105cfd9f12ae12334d3ba3cfa5253c914c2cb9f21d876249590f02cda441d",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec.pdf": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/20231225_BOSLAL.json": "e9252a7ec7074e8bcdec14da96e820522ceae3f08078650d858ccc539310754f",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/20240201_LALBOS.json": "f8878fda59fabf8aa25af8eeb5be8279ceac1f05d9edc8b301c1702733932a36",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/20251205_LALBOS.json": "d20fc5e0d2cd253606c29e82ae8e6dbb532b7cdf2b03609164dff1550d807bb7",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/20260222_BOSLAL.json": "d6c93d99dd8c5d75729118e48022d2726367c25b456f7c7035bd6e918a464136",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+    "/workspace/work/s4-local-replay/data/raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+  },
+  "valid_cases": [
+    {
+      "id": "p2_s1_1",
+      "family": "S1",
+      "query": "Split Denver’s road record against Utah by season: 2023-24 and 2025-26.",
+      "kind": "team",
+      "subject": "DEN",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "UTA",
+      "home": false,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 2,
+          "wins": 1,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22301154,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300524,
+              "team_id": 1610612743
+            }
+          ],
+          "sums": {
+            "pts": 222.0,
+            "reb": 77.0,
+            "ast": 56.0
+          },
+          "averages": {
+            "pts": 111.0,
+            "reb": 38.5,
+            "ast": 28.0
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 2,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22501112,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22500881,
+              "team_id": 1610612743
+            }
+          ],
+          "sums": {
+            "pts": 258.0,
+            "reb": 91.0,
+            "ast": 55.0
+          },
+          "averages": {
+            "pts": 129.0,
+            "reb": 45.5,
+            "ast": 27.5
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "DEN",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "UTA",
+        "home": false
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s1_2",
+      "family": "S1",
+      "query": "For 2025-26 and 2023-24, give Milwaukee’s home record versus Chicago separately for each season.",
+      "kind": "team",
+      "subject": "MIL",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "CHI",
+      "home": true,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 2,
+          "wins": 2,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22300300,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300190,
+              "team_id": 1610612749
+            }
+          ],
+          "sums": {
+            "pts": 251.0,
+            "reb": 101.0,
+            "ast": 57.0
+          },
+          "averages": {
+            "pts": 125.5,
+            "reb": 50.5,
+            "ast": 28.5
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 2,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22500722,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22500035,
+              "team_id": 1610612749
+            }
+          ],
+          "sums": {
+            "pts": 257.0,
+            "reb": 104.0,
+            "ast": 60.0
+          },
+          "averages": {
+            "pts": 128.5,
+            "reb": 52.0,
+            "ast": 30.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "MIL",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "CHI",
+        "home": true
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s1_3",
+      "family": "S1",
+      "query": "Against Miami, what was New York’s away record in each of 2023-24 and 2025-26?",
+      "kind": "team",
+      "subject": "NYK",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "MIA",
+      "home": false,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 1,
+          "wins": 0,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22301096,
+              "team_id": 1610612752
+            }
+          ],
+          "sums": {
+            "pts": 99.0,
+            "reb": 30.0,
+            "ast": 25.0
+          },
+          "averages": {
+            "pts": 99.0,
+            "reb": 30.0,
+            "ast": 25.0
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 0,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22500244,
+              "team_id": 1610612752
+            },
+            {
+              "game_id": 22500108,
+              "team_id": 1610612752
+            }
+          ],
+          "sums": {
+            "pts": 220.0,
+            "reb": 100.0,
+            "ast": 46.0
+          },
+          "averages": {
+            "pts": 110.0,
+            "reb": 50.0,
+            "ast": 23.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "NYK",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "MIA",
+        "home": false
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s1_4",
+      "family": "S1",
+      "query": "Show Minnesota’s record at home against Denver, split into 2025-26 and 2023-24.",
+      "kind": "team",
+      "subject": "MIN",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "DEN",
+      "home": true,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 2,
+          "wins": 1,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22300995,
+              "team_id": 1610612750
+            },
+            {
+              "game_id": 22300123,
+              "team_id": 1610612750
+            }
+          ],
+          "sums": {
+            "pts": 222.0,
+            "reb": 84.0,
+            "ast": 45.0
+          },
+          "averages": {
+            "pts": 111.0,
+            "reb": 42.0,
+            "ast": 22.5
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 0,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22500232,
+              "team_id": 1610612750
+            },
+            {
+              "game_id": 22500008,
+              "team_id": 1610612750
+            }
+          ],
+          "sums": {
+            "pts": 226.0,
+            "reb": 73.0,
+            "ast": 42.0
+          },
+          "averages": {
+            "pts": 113.0,
+            "reb": 36.5,
+            "ast": 21.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "MIN",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "DEN",
+        "home": true
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s2_1",
+      "family": "S2",
+      "query": "Nikola Jokic averages versus Dallas in 2023-24 and 2025-26, only games with 28 or more points, by season.",
+      "kind": "player",
+      "subject": 203999,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "DAL",
+      "own_min": 28,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 1,
+          "wins": 1,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22300006,
+              "team_id": 1610612743,
+              "player_id": 203999
+            }
+          ],
+          "sums": {
+            "pts": 33.0,
+            "reb": 14.0,
+            "ast": 9.0
+          },
+          "averages": {
+            "pts": 33.0,
+            "reb": 14.0,
+            "ast": 9.0
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 0,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22500415,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22500315,
+              "team_id": 1610612743,
+              "player_id": 203999
+            }
+          ],
+          "sums": {
+            "pts": 58.0,
+            "reb": 27.0,
+            "ast": 27.0
+          },
+          "averages": {
+            "pts": 29.0,
+            "reb": 13.5,
+            "ast": 13.5
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 203999,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "DAL",
+        "own_min": 28
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s2_2",
+      "family": "S2",
+      "query": "In 2025-26 and 2023-24 separately, average Jalen Brunson’s stats against Boston when he scores at least 24 points.",
+      "kind": "player",
+      "subject": 1628973,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "BOS",
+      "own_min": 24,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 3,
+          "wins": 1,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22301167,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300816,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300188,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            }
+          ],
+          "sums": {
+            "pts": 99.0,
+            "reb": 8.0,
+            "ast": 17.0
+          },
+          "averages": {
+            "pts": 33.0,
+            "reb": 2.6666666666666665,
+            "ast": 5.666666666666667
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 3,
+          "wins": 3,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22501168,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22500757,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22500018,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            }
+          ],
+          "sums": {
+            "pts": 87.0,
+            "reb": 7.0,
+            "ast": 23.0
+          },
+          "averages": {
+            "pts": 29.0,
+            "reb": 2.3333333333333335,
+            "ast": 7.666666666666667
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1628973,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "BOS",
+        "own_min": 24
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s2_3",
+      "family": "S2",
+      "query": "Against Oklahoma City, Anthony Edwards averages with at least 26 points, broken out for 2023-24 and 2025-26.",
+      "kind": "player",
+      "subject": 1630162,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "OKC",
+      "own_min": 26,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 1,
+          "wins": 1,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22300664,
+              "team_id": 1610612750,
+              "player_id": 1630162
+            }
+          ],
+          "sums": {
+            "pts": 27.0,
+            "reb": 4.0,
+            "ast": 4.0
+          },
+          "averages": {
+            "pts": 27.0,
+            "reb": 4.0,
+            "ast": 4.0
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 3,
+          "wins": 2,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22500686,
+              "team_id": 1610612750,
+              "player_id": 1630162
+            },
+            {
+              "game_id": 22500385,
+              "team_id": 1610612750,
+              "player_id": 1630162
+            },
+            {
+              "game_id": 22500064,
+              "team_id": 1610612750,
+              "player_id": 1630162
+            }
+          ],
+          "sums": {
+            "pts": 83.0,
+            "reb": 25.0,
+            "ast": 13.0
+          },
+          "averages": {
+            "pts": 27.666666666666668,
+            "reb": 8.333333333333334,
+            "ast": 4.333333333333333
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1630162,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "OKC",
+        "own_min": 26
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s2_4",
+      "family": "S2",
+      "query": "Give Derrick White’s averages by season for 2025-26 and 2023-24 versus New York, counting only his games with 15 or more points.",
+      "kind": "player",
+      "subject": 1628401,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "NYK",
+      "own_min": 15,
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 1,
+          "wins": 1,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22301227,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            }
+          ],
+          "sums": {
+            "pts": 30.0,
+            "reb": 3.0,
+            "ast": 3.0
+          },
+          "averages": {
+            "pts": 30.0,
+            "reb": 3.0,
+            "ast": 3.0
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 3,
+          "wins": 1,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22500757,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            },
+            {
+              "game_id": 22500320,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            },
+            {
+              "game_id": 22500018,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            }
+          ],
+          "sums": {
+            "pts": 56.0,
+            "reb": 7.0,
+            "ast": 13.0
+          },
+          "averages": {
+            "pts": 18.666666666666668,
+            "reb": 2.3333333333333335,
+            "ast": 4.333333333333333
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1628401,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "NYK",
+        "own_min": 15
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s3_1",
+      "family": "S3",
+      "query": "Denver’s 2023-24 road record when Denver scores at least 115 and its opponent scores under 115.",
+      "kind": "team",
+      "subject": "DEN",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "home": false,
+      "own_min": 115,
+      "opponent_lt": 115,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 8,
+          "wins": 8,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22301193,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300995,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300965,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300869,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300824,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300812,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300279,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300095,
+              "team_id": 1610612743
+            }
+          ],
+          "sums": {
+            "pts": 975.0,
+            "reb": 360.0,
+            "ast": 268.0
+          },
+          "averages": {
+            "pts": 121.875,
+            "reb": 45.0,
+            "ast": 33.5
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_record"
+      ],
+      "meaningful_metadata": {
+        "subject": "DEN",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "home": false,
+        "own_min": 115,
+        "opponent_lt": 115
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s3_2",
+      "family": "S3",
+      "query": "When their opponents score fewer than 108 points, Milwaukee’s home record scoring at least 108 in 2023-24.",
+      "kind": "team",
+      "subject": "MIL",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "home": true,
+      "own_min": 108,
+      "opponent_lt": 108,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 10,
+          "wins": 10,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22301162,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22301030,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300958,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300880,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300840,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300767,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300745,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300528,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300245,
+              "team_id": 1610612749
+            },
+            {
+              "game_id": 22300002,
+              "team_id": 1610612749
+            }
+          ],
+          "sums": {
+            "pts": 1170.0,
+            "reb": 485.0,
+            "ast": 271.0
+          },
+          "averages": {
+            "pts": 117.0,
+            "reb": 48.5,
+            "ast": 27.1
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_record"
+      ],
+      "meaningful_metadata": {
+        "subject": "MIL",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "home": true,
+        "own_min": 108,
+        "opponent_lt": 108
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s3_3",
+      "family": "S3",
+      "query": "On the road in 2023-24, Nikola Jokic’s averages when he scores at least 28 and the opposing team scores under 112.",
+      "kind": "player",
+      "subject": 203999,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "home": false,
+      "own_min": 28,
+      "opponent_lt": 112,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 11,
+          "wins": 8,
+          "losses": 3,
+          "ids": [
+            {
+              "game_id": 22301154,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301114,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300965,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300824,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300614,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300602,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300586,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300369,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300048,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300182,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300095,
+              "team_id": 1610612743,
+              "player_id": 203999
+            }
+          ],
+          "sums": {
+            "pts": 367.0,
+            "reb": 159.0,
+            "ast": 95.0
+          },
+          "averages": {
+            "pts": 33.36363636363637,
+            "reb": 14.454545454545455,
+            "ast": 8.636363636363637
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_game_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 203999,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "home": false,
+        "own_min": 28,
+        "opponent_lt": 112
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s3_4",
+      "family": "S3",
+      "query": "Jalen Brunson averages in 2023-24 home games where the opponents score under 105 and Brunson scores at least 27.",
+      "kind": "player",
+      "subject": 1628973,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "home": true,
+      "own_min": 27,
+      "opponent_lt": 105,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 5,
+          "wins": 5,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22301035,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300671,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300596,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300573,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            },
+            {
+              "game_id": 22300468,
+              "team_id": 1610612752,
+              "player_id": 1628973
+            }
+          ],
+          "sums": {
+            "pts": 156.0,
+            "reb": 16.0,
+            "ast": 44.0
+          },
+          "averages": {
+            "pts": 31.2,
+            "reb": 3.2,
+            "ast": 8.8
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_game_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1628973,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "home": true,
+        "own_min": 27,
+        "opponent_lt": 105
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s4_1",
+      "family": "S4",
+      "query": "Against the Lakers, Boston’s record by season in 2023-24 and 2025-26 when Jayson Tatum does not play.",
+      "kind": "team",
+      "subject": "BOS",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "LAL",
+      "participation": "without",
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 0,
+          "wins": 0,
+          "losses": 0,
+          "ids": [],
+          "sums": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "averages": {
+            "pts": null,
+            "reb": null,
+            "ast": null
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 2,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22500823,
+              "team_id": 1610612738
+            },
+            {
+              "game_id": 22500338,
+              "team_id": 1610612738
+            }
+          ],
+          "sums": {
+            "pts": 237.0,
+            "reb": 88.0,
+            "ast": 60.0
+          },
+          "averages": {
+            "pts": 118.5,
+            "reb": 44.0,
+            "ast": 30.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "BOS",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "LAL",
+        "participation": "without",
+        "participation_player_id": 1628369
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s4_2",
+      "family": "S4",
+      "query": "For 2025-26 and 2023-24 separately, Boston’s record versus Los Angeles Lakers with Jayson Tatum playing.",
+      "kind": "team",
+      "subject": "BOS",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "LAL",
+      "participation": "with",
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 2,
+          "wins": 1,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22300684,
+              "team_id": 1610612738
+            },
+            {
+              "game_id": 22300403,
+              "team_id": 1610612738
+            }
+          ],
+          "sums": {
+            "pts": 231.0,
+            "reb": 98.0,
+            "ast": 61.0
+          },
+          "averages": {
+            "pts": 115.5,
+            "reb": 49.0,
+            "ast": 30.5
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 0,
+          "wins": 0,
+          "losses": 0,
+          "ids": [],
+          "sums": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "averages": {
+            "pts": null,
+            "reb": null,
+            "ast": null
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": "BOS",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "LAL",
+        "participation": "with",
+        "participation_player_id": 1628369
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s4_3",
+      "family": "S4",
+      "query": "Derrick White’s averages against the Lakers without Jayson Tatum, separated into 2023-24 and 2025-26.",
+      "kind": "player",
+      "subject": 1628401,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "LAL",
+      "participation": "without",
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 0,
+          "wins": 0,
+          "losses": 0,
+          "ids": [],
+          "sums": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "averages": {
+            "pts": null,
+            "reb": null,
+            "ast": null
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 2,
+          "wins": 2,
+          "losses": 0,
+          "ids": [
+            {
+              "game_id": 22500823,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            },
+            {
+              "game_id": 22500338,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            }
+          ],
+          "sums": {
+            "pts": 31.0,
+            "reb": 10.0,
+            "ast": 14.0
+          },
+          "averages": {
+            "pts": 15.5,
+            "reb": 5.0,
+            "ast": 7.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1628401,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "LAL",
+        "participation": "without",
+        "participation_player_id": 1628369
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s4_4",
+      "family": "S4",
+      "query": "In 2025-26 and 2023-24, show Derrick White’s averages by season against Los Angeles Lakers with Jayson Tatum.",
+      "kind": "player",
+      "subject": 1628401,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "opponent": "LAL",
+      "participation": "with",
+      "split": true,
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 2,
+          "wins": 1,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22300684,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            },
+            {
+              "game_id": 22300403,
+              "team_id": 1610612738,
+              "player_id": 1628401
+            }
+          ],
+          "sums": {
+            "pts": 27.0,
+            "reb": 6.0,
+            "ast": 17.0
+          },
+          "averages": {
+            "pts": 13.5,
+            "reb": 3.0,
+            "ast": 8.5
+          }
+        },
+        {
+          "season": "2025-26",
+          "count": 0,
+          "wins": 0,
+          "losses": 0,
+          "ids": [],
+          "sums": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "averages": {
+            "pts": null,
+            "reb": null,
+            "ast": null
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_split_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 1628401,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24",
+          "2025-26"
+        ],
+        "opponent": "LAL",
+        "participation": "with",
+        "participation_player_id": 1628369
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s5_1",
+      "family": "S5",
+      "query": "How did Denver fare scoring at least 114 points within its final 8 games of 2023-24?",
+      "kind": "team",
+      "subject": "DEN",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "own_min": 114,
+      "last_n": 8,
+      "last_n_scope": "window",
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 5,
+          "wins": 4,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22301193,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301180,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301164,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301130,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301077,
+              "team_id": 1610612743
+            }
+          ],
+          "sums": {
+            "pts": 634.0,
+            "reb": 229.0,
+            "ast": 168.0
+          },
+          "averages": {
+            "pts": 126.8,
+            "reb": 45.8,
+            "ast": 33.6
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_record"
+      ],
+      "meaningful_metadata": {
+        "subject": "DEN",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "own_min": 114,
+        "last_n": 8,
+        "last_n_scope": "window"
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s5_2",
+      "family": "S5",
+      "query": "Denver’s record for its 8 most recent games scoring 114 or more points in 2023-24.",
+      "kind": "team",
+      "subject": "DEN",
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "own_min": 114,
+      "last_n": 8,
+      "last_n_scope": "qualifying",
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 8,
+          "wins": 7,
+          "losses": 1,
+          "ids": [
+            {
+              "game_id": 22301193,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301180,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301164,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301130,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301077,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301040,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22301026,
+              "team_id": 1610612743
+            },
+            {
+              "game_id": 22300995,
+              "team_id": 1610612743
+            }
+          ],
+          "sums": {
+            "pts": 991.0,
+            "reb": 377.0,
+            "ast": 257.0
+          },
+          "averages": {
+            "pts": 123.875,
+            "reb": 47.125,
+            "ast": 32.125
+          }
+        }
+      ],
+      "intended_routes": [
+        "team_record"
+      ],
+      "meaningful_metadata": {
+        "subject": "DEN",
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "own_min": 114,
+        "last_n": 8,
+        "last_n_scope": "qualifying"
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s5_3",
+      "family": "S5",
+      "query": "Average Nikola Jokic’s stats for games scoring at least 29 points within his final 9 appearances of 2023-24.",
+      "kind": "player",
+      "subject": 203999,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "own_min": 29,
+      "last_n": 9,
+      "last_n_scope": "window",
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 4,
+          "wins": 2,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22301164,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301114,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301099,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301071,
+              "team_id": 1610612743,
+              "player_id": 203999
+            }
+          ],
+          "sums": {
+            "pts": 151.0,
+            "reb": 54.0,
+            "ast": 28.0
+          },
+          "averages": {
+            "pts": 37.75,
+            "reb": 13.5,
+            "ast": 7.0
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_game_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 203999,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "own_min": 29,
+        "last_n": 9,
+        "last_n_scope": "window"
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    },
+    {
+      "id": "p2_s5_4",
+      "family": "S5",
+      "query": "For his 9 most recent games with 29 or more points in 2023-24, what were Nikola Jokic’s averages?",
+      "kind": "player",
+      "subject": 203999,
+      "season_type": "Regular Season",
+      "seasons": [
+        "2023-24"
+      ],
+      "own_min": 29,
+      "last_n": 9,
+      "last_n_scope": "qualifying",
+      "expected_buckets": [
+        {
+          "season": "2023-24",
+          "count": 9,
+          "wins": 7,
+          "losses": 2,
+          "ids": [
+            {
+              "game_id": 22301164,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301114,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301099,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301071,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301040,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22301009,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300995,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300965,
+              "team_id": 1610612743,
+              "player_id": 203999
+            },
+            {
+              "game_id": 22300937,
+              "team_id": 1610612743,
+              "player_id": 203999
+            }
+          ],
+          "sums": {
+            "pts": 311.0,
+            "reb": 119.0,
+            "ast": 66.0
+          },
+          "averages": {
+            "pts": 34.55555555555556,
+            "reb": 13.222222222222221,
+            "ast": 7.333333333333333
+          }
+        }
+      ],
+      "intended_routes": [
+        "player_game_summary"
+      ],
+      "meaningful_metadata": {
+        "subject": 203999,
+        "season_type": "Regular Season",
+        "seasons": [
+          "2023-24"
+        ],
+        "own_min": 29,
+        "last_n": 9,
+        "last_n_scope": "qualifying"
+      },
+      "empty_bucket_contract": "A zero-game season may be omitted only with explicit missing/empty-season caveat; no invented zero averages.",
+      "identity_contract": "Exact unordered game_id/team_id identities, plus player_id for player samples; no duplicate rows.",
+      "averages_tolerance": 0.001
+    }
+  ],
+  "controls": [
+    {
+      "id": "p2_control_1",
+      "category": "ambiguous_player",
+      "query": "Williams averages versus Denver in 2023-24.",
+      "expected_behavior": "Clarify which Williams; do not pick an identity.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_2",
+      "category": "ambiguous_subject",
+      "query": "Compare his averages against Miami in 2023-24 and 2025-26.",
+      "expected_behavior": "No player antecedent; require identity clarification.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_3",
+      "category": "ambiguous_team",
+      "query": "Los Angeles record versus Sacramento in 2023-24.",
+      "expected_behavior": "Lakers versus Clippers unresolved; require team clarification.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_4",
+      "category": "ambiguous_order",
+      "query": "Denver record in the last games scoring at least 114 in 2023-24.",
+      "expected_behavior": "Missing requested last-N count; do not invent a window.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_5",
+      "category": "injury_extra",
+      "query": "Derrick White averages against the Lakers in 2025-26 when Jayson Tatum is injured.",
+      "expected_behavior": "Participation evidence cannot establish injury condition; no ordinary absence substitution.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_6",
+      "category": "on_court_extra",
+      "query": "Derrick White averages against the Lakers in 2023-24 while Jayson Tatum is on the court.",
+      "expected_behavior": "Whole-game participation cannot establish simultaneous on-court statistics.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_7",
+      "category": "subjective_extra",
+      "query": "Denver road record in 2023-24 when Nikola Jokic looks exhausted.",
+      "expected_behavior": "Subjective exhaustion unavailable; do not drop the clause.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    },
+    {
+      "id": "p2_control_8",
+      "category": "medical_extra",
+      "query": "Boston record against the Lakers in 2025-26 when Derrick White is medically cleared.",
+      "expected_behavior": "Played or reported absence cannot establish medical clearance.",
+      "exclude_from_positive_denominator": true,
+      "allow_wrong_accepted_answer": false
+    }
+  ]
+}
