@@ -1,94 +1,37 @@
-name: NBA availability source reachability (temporary probe)
+name: Historic game-day roster source reachability (temporary probe)
 on:
   push:
     branches: ["ops/availability-source-probe-20261016"]
 permissions:
   contents: read
 jobs:
-  alt-source:
+  historic-roster-source:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 3
     steps:
-      - name: Probe public NBA scoreboard and box-score completeness
+      - name: Probe Sports Reference source once, no credentials or data publication
         shell: bash
         run: |
           python - <<'PY'
-          import json
-          import urllib.error
           import urllib.request
-          from collections import Counter
-
-          base = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/"
-          def get(s):
-              req = urllib.request.Request(base + s, headers={
-                  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
-                  "Accept": "application/json",
-              })
-              with urllib.request.urlopen(req, timeout=20) as response:
-                  return json.load(response)
-          try:
-              board = get("scoreboard?dates=20251021")
-              games = board.get("events", [])
-              print("ESPN events:", [(game.get("id"), game.get("name")) for game in games])
-              assert games, "No October 21 2025 NBA events"
-              selected = next((g for g in games if "Lakers" in str(g.get("name"))), games[0])
-              summary = get("summary?event=" + selected["id"])
-              box = summary.get("boxscore") or {}
-              statuses = []
-              for team in box.get("players", []):
-                  for group in team.get("statistics", []):
-                      for p in group.get("athletes", []):
-                          statuses.append((p.get("athlete", {}).get("displayName"), p.get("didNotPlay")))
-              print("Summary game id:", selected["id"])
-              print("Boxscore player rows:", len(statuses))
-              print("didNotPlay flags:", dict(Counter(str(v) for _,v in statuses)))
-              print("Sample reported DNP:", [name for name,flag in statuses if flag is True][:10])
-              print("Summary sections:", list(summary.keys()))
-              injury = summary.get("injuries")
-              print("Injury section type/count:", type(injury).__name__, len(injury) if injury else 0)
-              if injury:
-                  print("Injury entries sample:", str(injury)[:800])
-                  for team_injuries in injury:
-                      items = team_injuries.get("injuries") or []
-                      print("Team injury names:", team_injuries.get("team", {}).get("abbreviation"),
-                            [(a.get("athlete", {}).get("displayName"), a.get("status"),
-                              a.get("date"), a.get("details")) for a in items[:12]])
-
-              headers = summary.get("header", {})
-              print("Game header competitions:", [
-                  [(v.get("team", {}).get("abbreviation"), v.get("homeAway"),v.get("score"))
-                   for v in item.get("competitors", [])]
-                  for item in headers.get("competitions", [])
-              ][:2])
-
-              print("Boxscore sections:", list(box.keys()))
-              print("Team summary:", [
-                  (t.get("team", {}).get("abbreviation"), list(t.keys()))
-                  for t in box.get("players", [])
-              ])
-              for team in box.get("players", []):
-                  print("ESPN team id/abbr:", team.get("team", {}).get("id"), team.get("team", {}).get("abbreviation"))
-                  for group in team.get("statistics", []):
-                      print("Stat columns:", group.get("names"))
-                      for player in group.get("athletes", [])[:2]:
-                          print("Player example:", {
-                              k: player.get(k) for k in ("didNotPlay", "stats", "starter", "inactive", "reason")
-                          }, "athlete=", {
-                              k: player.get("athlete", {}).get(k)
-                              for k in ("id","displayName","fullName","status")
-                          })
-                  break
-              older = get("scoreboard?dates=20150115")
-              print("Older event count:", len(older.get("events", [])))
-              if older.get("events"):
-                  old_game = older["events"][0]
-                  print("Older first event id:", old_game.get("id"))
-                  old_summary = get("summary?event=" + old_game["id"])
-                  print("Older boxscore team count:",len(old_summary.get("boxscore", {}).get("players", [])))
-
-              assert statuses, "No player records in game summary"
-              assert any(flag is True for _,flag in statuses), "No explicit nonparticipant flags in this sample"
-          except Exception as exc:
-              print("ESPN probe failed:", type(exc).__name__, str(exc)[:250])
-              raise
+          import urllib.error
+          urls = [
+              "https://www.basketball-reference.com/boxscores/202510210LAL.html",
+              "https://www.basketball-reference.com/boxscores/201412290CHO.html",
+          ]
+          for url in urls:
+              try:
+                  request = urllib.request.Request(url, headers={
+                      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
+                      "Accept": "text/html",
+                  })
+                  with urllib.request.urlopen(request, timeout=12) as response:
+                      raw = response.read(350000).decode("utf-8", errors="replace")
+                      print(url, "status", response.status, "bytes", len(raw),
+                            "did_not_play", "Did Not Play" in raw,
+                            "inactive", "Inactive:" in raw)
+              except urllib.error.HTTPError as exc:
+                  print(url, "HTTP", exc.code)
+              except Exception as exc:
+                  print(url, type(exc).__name__, str(exc)[:120])
           PY
