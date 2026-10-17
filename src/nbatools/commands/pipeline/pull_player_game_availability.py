@@ -272,9 +272,13 @@ def backfill(
             )
 
             raw, event_id = espn_boxscore_as_v3(
-                game_id=ident, game_date=str(row.game_date), season=season,
-                season_type=season_type, home_team_id=int(row.home_team_id),
-                away_team_id=int(row.away_team_id), data_root=root,
+                game_id=ident,
+                game_date=str(row.game_date),
+                season=season,
+                season_type=season_type,
+                home_team_id=int(row.home_team_id),
+                away_team_id=int(row.away_team_id),
+                data_root=root,
             )
             source_name = f"{ESPN_SOURCE}:{event_id}"
         elif cached_boxscores is not None:
@@ -322,8 +326,12 @@ def run(
     source: str = "stats",
 ) -> None:
     result = backfill(
-        season, season_type, cached_boxscores=cached_boxscores,
-        game_ids=game_ids, limit=limit, source=source
+        season,
+        season_type,
+        cached_boxscores=cached_boxscores,
+        game_ids=game_ids,
+        limit=limit,
+        source=source,
     )
     print(
         f"Saved {len(result)} official player-game status observations "
