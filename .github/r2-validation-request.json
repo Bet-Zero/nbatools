@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "69151b737343ec9ee4096cfb77b54f1cc89c76ed",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_recent_window_meaning_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "recent_window_p2_s5_1",
+    "recent_window_p2_s5_3"
+  ]
+}
