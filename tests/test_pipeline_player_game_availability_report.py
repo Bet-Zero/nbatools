@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+
 import pandas as pd
 import pytest
 
@@ -116,7 +119,7 @@ def nba_rows(tmp_path, monkeypatch):
             ),
         ]
     ).to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
-    monkeypatch.setattr(report, "_fetch_report_text", lambda _: PDF_TEXT)
+    monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: PDF_TEXT)
     return root
 
 
@@ -184,7 +187,7 @@ def test_official_report_source_can_stage_one_final_game(nba_rows):
     ],
 )
 def test_mismatched_or_unresolved_pdf_source_refuses(nba_rows, monkeypatch, text, match):
-    monkeypatch.setattr(report, "_fetch_report_text", lambda _: text)
+    monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: text)
     with pytest.raises(ValueError, match=match):
         _get(nba_rows)
 
@@ -207,3 +210,28 @@ def test_missing_identity_does_not_publish_incomplete_report(nba_rows):
     with pytest.raises(ValueError, match="identity unresolved"):
         backfill("2025-26", root=nba_rows, source="report", limit=1)
     assert not (nba_rows / "raw/player_game_availability/2025-26_regular_season.csv").exists()
+
+
+def test_played_minutes_are_read_from_report_not_local_game_log(nba_rows):
+    raw, _ = _get(nba_rows)
+    assert raw.loc[raw.personId.eq(30), "minutes"].iloc[0] == "32:04"
+    assert raw.loc[raw.personId.eq(77), "minutes"].iloc[0] == "40:59"
+
+
+def test_missing_played_report_row_is_not_filled_from_local_stats(nba_rows, monkeypatch):
+    text = PDF_TEXT.replace("30 Stephen Curry G 32:04 6 14 23\n", "")
+    monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: text)
+    with pytest.raises(ValueError, match="played identities"):
+        _get(nba_rows)
+
+
+def test_original_report_receipt_preserves_bytes_url_and_checksum(tmp_path):
+    content = b"%PDF synthetic receipt storage fixture"
+    url = "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf"
+    report._archive_report(content, url, tmp_path)
+    receipt = json.loads((tmp_path / "20251021_GSWLAL.json").read_text())
+    assert receipt["source_url"] == url
+    assert receipt["sha256"] == hashlib.sha256(content).hexdigest()
+    assert receipt["size_bytes"] == len(content)
+    assert (tmp_path / receipt["raw_file"]).read_bytes() == content
+    assert receipt["retrieved_at"]

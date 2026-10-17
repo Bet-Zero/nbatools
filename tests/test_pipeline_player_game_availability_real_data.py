@@ -7,6 +7,11 @@ production publication or a claim that the whole NBA roster is complete.
 
 from __future__ import annotations
 
+import json
+import os
+import shutil
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -16,7 +21,7 @@ from nbatools.data_source import data_read_csv
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
 
 
-def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
+def _stage_opening_game(tmp_path):
     season = "2025-26"
     suffix = f"{season}_regular_season.csv"
     source = {
@@ -55,7 +60,12 @@ def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
         roster_path.mkdir(parents=True)
         rosters.to_csv(roster_path / f"{season}.csv", index=False)
 
-    rows = backfill(season, root=root, source="espn", game_ids=[game_id])
+    return root, game_id
+
+
+def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
+    root, game_id = _stage_opening_game(tmp_path)
+    rows = backfill("2025-26", root=root, source="espn", game_ids=[game_id])
     assert rows.game_id.eq(f"{game_id:010d}").all()
     assert rows.source.eq("espn_game_summary:401809244").all()
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
@@ -77,3 +87,52 @@ def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
         "NBA IDs verified:",
         int(rows.player_id.nunique()),
     )
+
+
+def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_path):
+    """Acquire one actual scorer report; retain publication inputs in CI evidence."""
+    root, game_id = _stage_opening_game(tmp_path)
+    evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
+    try:
+        rows = backfill("2025-26", root=root, source="report", game_ids=[game_id])
+    finally:
+        # These are fetched NBA bytes and derived rows, never fixture data.
+        # The existing validation workflow retains this directory as evidence;
+        # an artifact is staging, not permanent R2 publication.
+        for directory in ("player_game_availability_sources", "player_game_availability"):
+            source = root / "raw" / directory
+            if source.exists():
+                shutil.copytree(source, evidence / "raw" / directory, dirs_exist_ok=True)
+    assert rows.game_id.eq(f"{game_id:010d}").all()
+    assert rows.source.eq("nba_official_finalbox:20251021_GSWLAL").all()
+    assert rows.coverage_scope.eq("listed_player_rows_only").all()
+    assert rows.team_id.isin([1610612747, 1610612744]).all()
+    assert len(rows) >= 24
+    for name in ("LeBron James", "Moses Moody", "Bronny James", "Trayce Jackson-Davis"):
+        player = rows[rows.player_name.eq(name)]
+        assert len(player) == 1, name
+        assert player.iloc[0].participation_state == "did_not_play", name
+    receipt = evidence / "raw/player_game_availability_sources/20251021_GSWLAL.json"
+    manifest = json.loads(receipt.read_text())
+    assert rows.source_sha256.eq(manifest["sha256"]).all()
+    import hashlib
+
+    raw = receipt.parent / manifest["raw_file"]
+    assert hashlib.sha256(raw.read_bytes()).hexdigest() == manifest["sha256"]
+    assert raw.stat().st_size == manifest["size_bytes"]
+    assert manifest["source_url"].endswith("/20251021/20251021_GSWLAL.pdf")
+    (evidence / "validation.json").write_text(
+        json.dumps(
+            {
+                "game_id": f"{game_id:010d}",
+                "base_generation": os.environ.get("NBATOOLS_DATA_GENERATION"),
+                "candidate_sha": os.environ.get("VALIDATION_SHA"),
+                "rows": len(rows),
+                "source_receipt": str(receipt.relative_to(evidence)),
+                "publication_state": "staged_only",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    print("Verified official report rows:", len(rows), "source SHA256:", manifest["sha256"])

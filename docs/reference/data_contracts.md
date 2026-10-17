@@ -231,7 +231,7 @@ Contract rules:
   retained **before** starter-role filtering discards box-score nonplayers.
 - **Fields:** `game_id, game_date, season, season_type, team_id, team_abbr,
   player_id, player_name, participation_state, source_minutes, source_comment,
-  source, coverage_scope`.
+  source, source_sha256, coverage_scope`.
 - **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
   prefers **NBA Official Final Box PDFs**, which list the game's playing,
   DNP/DND and inactive athletes with historical reasons. `--source report`
@@ -255,6 +255,18 @@ Contract rules:
   reacquisition. A full atomic `.partial.csv` preserves completed imports after
   interruption. These receipts verify local import integrity, not upstream
   authenticity, complete rosters, raw-response retention or R2 durability.
+  The report adapter reads played names/minutes directly from scorer-report
+  lines and requires their player IDs to match the canonical game's participant
+  IDs; it never fills a missing PDF participant from local statistics. Original
+  PDF bytes are retained under `data/raw/player_game_availability_sources/`
+  by SHA256, with a report-reference JSON receipt recording URL, retrieval time,
+  byte count and raw filename. Report rows carry `source_sha256` to bind them
+  to those exact bytes even if a provider later revises a report. Other adapters
+  currently leave that field empty and remain pending original-source retention.
+  These files must accompany publication inputs.
+  The bounded official-report numerical test retains these actual source files
+  and derived CSVs in the existing validation artifact; artifact staging is
+  temporary and does not satisfy permanent R2 publication.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and

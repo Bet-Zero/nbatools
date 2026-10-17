@@ -8,14 +8,15 @@ an NBA player ID. Do not infer nonparticipation from a missing game-log row.
 
 from __future__ import annotations
 
+import hashlib
 import io
+import json
 import re
 import urllib.request
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
-from pypdf import PdfReader
 
 from nbatools.commands.pipeline.player_game_availability_espn import (
     _name,
@@ -30,6 +31,7 @@ STATUS = re.compile(
     re.I,
 )
 TOTAL = re.compile(r"^\s*\d{3}:00\b.*\s(\d+)\s*$")
+PLAYED = re.compile(r"^\s*\d{1,3}\s+(.+?)\s+(?:[CFG](?:-[CFG])?\s+)?(\d{1,3}:\d{2})\s+")
 HEADING = re.compile(r"^\s*(VISITOR|HOME):\s*(.+?)\s+\(\d+-\d+\)", re.I)
 DATE = re.compile(
     r"\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+"
@@ -37,7 +39,33 @@ DATE = re.compile(
 )
 
 
-def _fetch_report_text(url: str) -> str:
+def _archive_report(content: bytes, url: str, directory: Path) -> None:
+    """Retain the original scorer report and a reproducible checksum receipt."""
+    directory.mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256(content).hexdigest()
+    raw = directory / f"{digest}.pdf"
+    if not raw.exists():
+        temporary = raw.with_suffix(".tmp")
+        temporary.write_bytes(content)
+        temporary.replace(raw)
+    elif hashlib.sha256(raw.read_bytes()).hexdigest() != digest:
+        raise ValueError("Archived NBA report checksum mismatch")
+    receipt = directory / f"{Path(url).stem}.json"
+    payload = {
+        "source_url": url,
+        "retrieved_at": datetime.now(UTC).isoformat(),
+        "sha256": digest,
+        "size_bytes": len(content),
+        "raw_file": raw.name,
+    }
+    temporary = receipt.with_suffix(".tmp")
+    temporary.write_text(json.dumps(payload, sort_keys=True) + "\n")
+    temporary.replace(receipt)
+
+
+def _fetch_report_text(url: str, *, archive: Path | None = None) -> str:
+    from pypdf import PdfReader
+
     request = urllib.request.Request(
         url, headers={"User-Agent": "Mozilla/5.0 (NBATools official box-score ingest)"}
     )
@@ -53,6 +81,8 @@ def _fetch_report_text(url: str) -> str:
     text = reader.pages[0].extract_text(extraction_mode="layout")
     if "NATIONAL BASKETBALL ASSOCIATION" not in text or "FINAL BOX" not in text:
         raise ValueError("Source is not an NBA Final Box scorer report")
+    if archive is not None:
+        _archive_report(content, url, archive)
     return text
 
 
@@ -209,7 +239,8 @@ def official_report_as_v3(
     away, home = by_id[away_team_id][0], by_id[home_team_id][0]
     ref = f"{game_date.replace('-', '')}_{away}{home}"
     url = f"{SOURCE_ROOT}/{game_date.replace('-', '')}/{ref}.pdf"
-    headings, sections, all_lines = _parse_sections(_fetch_report_text(url), game_date)
+    text = _fetch_report_text(url, archive=data_root / "raw/player_game_availability_sources")
+    headings, sections, all_lines = _parse_sections(text, game_date)
     expected_names = _nba_team_names(data_root, season, safe, game_id)
     team_ids = (away_team_id, home_team_id)
     for name, section, ident in zip(headings, sections, team_ids):
@@ -224,16 +255,21 @@ def official_report_as_v3(
     played = played[played.game_id.map(int).eq(game_id)]
     used: set[int] = set()
     rows = []
-    for ident in team_ids:
+    for ident, section in zip(team_ids, sections):
         abbr = by_id[ident][0]
-        for player in played[played.team_id.eq(ident)].itertuples(index=False):
-            nba_id = int(player.player_id)
-            if nba_id in used:
-                raise ValueError("Duplicate NBA player game participation row")
+        report_ids = set()
+        for line in section:
+            match = PLAYED.match(line)
+            if match is None:
+                continue
+            name, minutes = match.groups()
+            nba_id, full_name = _identify(people, ident, name, used, surname=False)
             used.add(nba_id)
-            rows.append(
-                _record(game_id, ident, abbr, nba_id, player.player_name, player.minutes, "")
-            )
+            report_ids.add(nba_id)
+            rows.append(_record(game_id, ident, abbr, nba_id, full_name, minutes, ""))
+        expected = played[played.team_id.eq(ident)].player_id.astype(int)
+        if expected.duplicated().any() or not report_ids or report_ids != set(expected):
+            raise ValueError("Final Box played identities differ from canonical NBA game rows")
     for ident, section in zip(team_ids, sections):
         for line in section:
             match = STATUS.match(line)
@@ -262,4 +298,8 @@ def official_report_as_v3(
             rows.append(_record(game_id, ident, by_id[ident][0], nba_id, full_name, None, reason))
     if not rows or {row["teamId"] for row in rows} != set(team_ids):
         raise ValueError("No trustworthy game-day NBA report rows for both teams")
-    return pd.DataFrame(rows), ref
+    frame = pd.DataFrame(rows)
+    receipt = data_root / "raw/player_game_availability_sources" / f"{ref}.json"
+    if receipt.exists():
+        frame.attrs["source_sha256"] = json.loads(receipt.read_text())["sha256"]
+    return frame, ref

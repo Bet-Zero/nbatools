@@ -37,6 +37,7 @@ COLUMNS = (
     "source_minutes",
     "source_comment",
     "source",
+    "source_sha256",
     "coverage_scope",
 )
 _DNP = re.compile(
@@ -147,6 +148,7 @@ def normalize_boxscore_availability(
     ):
         raise ValueError("Unrecognized availability source")
     frame["source"] = source
+    frame["source_sha256"] = raw.attrs.get("source_sha256", "")
     frame["coverage_scope"] = COVERAGE
     return frame[list(COLUMNS)].sort_values(["team_id", "player_id"]).reset_index(drop=True)
 
@@ -166,6 +168,9 @@ def validate_availability(frame: pd.DataFrame) -> None:
     )
     if not allowed.all() or not frame["coverage_scope"].eq(COVERAGE).all():
         raise ValueError("Untrusted availability source or completeness claim")
+    hashes = frame["source_sha256"].fillna("").astype(str)
+    if not hashes.str.fullmatch(r"(?:[a-f0-9]{64})?").all():
+        raise ValueError("Invalid source SHA256")
     if frame[["game_id", "team_id", "player_id", "season", "season_type"]].isna().any().any():
         raise ValueError("Null availability identity")
     for field in ("game_id", "team_id", "player_id"):
@@ -274,6 +279,8 @@ def backfill(
     for path in (checkpoint,) if checkpoint.exists() else (target,):
         if path.exists():
             old = pd.read_csv(path, dtype={"game_id": str})
+            if "source_sha256" not in old:
+                old["source_sha256"] = ""
             if not old.empty:
                 validate_availability(old)
                 frames.append(old)
