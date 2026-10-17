@@ -32,6 +32,10 @@ jobs:
               lines=text.splitlines()
               print("source:",link,"bytes",len(data),"pages",len(reader.pages),"lines",len(lines))
               for i,line in enumerate(lines):
+                  if line.lstrip().startswith(("240:00","265:00","290:00","315:00")):
+                      print("TOTALROW",i, " ".join(line.split())[-65:])
+                  if line.lstrip().startswith("Inactive:"):
+                      print("INACTIVE FIRST",i, " ".join(line.split())[:125])
                   if any(term in line for term in (
                       "NATIONAL BASKETBALL", "VISITOR:", "HOME:", "Inactive:",
                       "DNP -", "DND -", "FINAL BOX", "SCORE BY PERIOD",
