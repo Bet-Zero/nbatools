@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "2fc9fc5bd11af49c9e1e717c72424a70767b00f5",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_c1_season_lists_real_data.py::test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls"
+  ],
+  "raw_qa_cases": [
+    "p1_s1_celtics_home_knicks_nonadjacent_seasons"
+  ]
+}
