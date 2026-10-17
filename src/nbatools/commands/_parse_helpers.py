@@ -962,8 +962,23 @@ _NUMBER_WORDS = {
 _NUMBER_WORD_PATTERN = "|".join(
     re.escape(word) for word in sorted(_NUMBER_WORDS, key=len, reverse=True)
 )
-_RECENT_WORD = r"(?:last|past|previous|prior|latest|most\s+recent)"
-_SAMPLE_UNIT = r"(?:games?|contests?|outings?|matchups?|meetings?|seasons?|starts?|wins?|losses)"
+_RECENT_WORD = r"(?:last|past|previous|prior|latest|final|most\s+recent)"
+_SAMPLE_UNIT = (
+    r"(?:games?|contests?|outings?|appearances?|matchups?|meetings?|seasons?|starts?|wins?|losses)"
+)
+
+
+def ambiguous_recent_sample(text: str) -> str | None:
+    """A recent sample needs both a count and an unambiguous row unit."""
+    if re.search(
+        rf"\b{_RECENT_WORD}\s+(?:\d+|{_NUMBER_WORD_PATTERN})\s+"
+        r"(?:playoff|postseason)\s+appearances?\b",
+        text,
+    ):
+        return "ambiguous: specify individual playoff games or playoff seasons"
+    if re.search(rf"\b{_RECENT_WORD}\s+(?:games|contests|outings|appearances)\b", text):
+        return "ambiguous: specify how many recent games to include"
+    return None
 
 
 _OPPONENT_COMMA = re.compile(
@@ -1067,10 +1082,13 @@ def canonicalize_sample_phrases(text: str) -> str:
     )
     # "previous/prior/latest/most recent N games" -> "last N games"
     text = re.sub(
-        rf"\b(?:previous|prior|latest|most\s+recent)\s+(\d+)\s+(?={_SAMPLE_UNIT}\b)",
+        rf"\b(?:previous|prior|latest|final|most\s+recent)\s+(\d+)\s+(?={_SAMPLE_UNIT}\b)",
         r"last \1 ",
         text,
     )
+    # Appearances in a numbered recent-game sample mean the player's games,
+    # not career/playoff appearance counts or time spent on the court.
+    text = re.sub(r"\blast\s+(\d+)\s+appearances?\b", r"last \1 games", text)
     # "past N games" too; "past N seasons" already has its own season reading.
     text = re.sub(
         r"\bpast\s+(\d+)\s+(?=(?:games?|contests?|outings?|matchups?|meetings?|starts?)\b)",

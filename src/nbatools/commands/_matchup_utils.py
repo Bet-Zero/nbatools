@@ -1184,12 +1184,14 @@ def detect_unresolved_player_typo_comparison(text: str) -> str | None:
 
 def detect_unresolved_player_summary_typo(text: str) -> str | None:
     """Return typoed leading player phrase from summary/averages shorthand."""
-    cleaned = strip_matchup_noise(text)
+    cleaned = re.sub(r"^average\s+", "", strip_matchup_noise(text))
     m = _SUMMARY_TYPO_PREFIX_RE.match(cleaned)
     if not m:
         return None
 
-    phrase = m.group(1).strip()
+    # Imperative "average" and possessive grammar are not name tokens. Keep
+    # the remaining full phrase for the existing partial-nickname typo check.
+    phrase = re.sub(r"'s$", "", m.group(1).strip())
     if len(phrase.split()) > 3:
         return None
     if any(word in _SUMMARY_TYPO_BLOCKED_NAME_WORDS for word in phrase.split()):
