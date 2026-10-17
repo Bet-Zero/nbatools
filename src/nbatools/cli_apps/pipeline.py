@@ -566,7 +566,10 @@ def backfill_game_availability(
         None, "--game-id", help="Specific finalized game ID (repeatable)"
     ),
     limit: int | None = typer.Option(
-        None, "--limit", help="Maximum number of official games to import"
+        None, "--limit", help="Maximum number of games to import"
+    ),
+    source: str = typer.Option(
+        "stats", "--source", help="stats (NBA V3) or espn (matched game summary)"
     ),
 ) -> None:
     """Collect source-reported DNP observations; never infer complete absences."""
@@ -578,4 +581,5 @@ def backfill_game_availability(
         cached_boxscores=cached_boxscores,
         game_ids=game_id,
         limit=limit,
+        source=source,
     )

@@ -20,6 +20,7 @@ from nbatools.commands.pipeline.pull_player_game_starter_roles import (
 )
 
 SOURCE = "nba_stats_boxscoretraditionalv3"
+ESPN_SOURCE = "espn_game_summary"
 COVERAGE = "listed_player_rows_only"
 COLUMNS = (
     "game_id",
@@ -88,6 +89,7 @@ def normalize_boxscore_availability(
     season: str,
     season_type: str,
     expected_team_ids: set[int],
+    source: str = SOURCE,
 ) -> pd.DataFrame:
     """Preserve source-listed played, DNP and unknown rows without inferring gaps."""
     names = {
@@ -138,7 +140,9 @@ def normalize_boxscore_availability(
     frame["game_date"] = str(game_date)
     frame["season"] = str(season)
     frame["season_type"] = str(season_type)
-    frame["source"] = SOURCE
+    if source != SOURCE and not re.fullmatch(r"espn_game_summary:\d+", source):
+        raise ValueError("Unrecognized availability source")
+    frame["source"] = source
     frame["coverage_scope"] = COVERAGE
     return frame[list(COLUMNS)].sort_values(["team_id", "player_id"]).reset_index(drop=True)
 
@@ -153,7 +157,8 @@ def validate_availability(frame: pd.DataFrame) -> None:
         raise ValueError("Conflicting duplicate player-game availability")
     if not frame["participation_state"].isin(["played", "did_not_play", "unknown"]).all():
         raise ValueError("Unknown participation state")
-    if not frame["source"].eq(SOURCE).all() or not frame["coverage_scope"].eq(COVERAGE).all():
+    allowed = frame["source"].eq(SOURCE) | frame["source"].str.fullmatch(r"espn_game_summary:\d+")
+    if not allowed.all() or not frame["coverage_scope"].eq(COVERAGE).all():
         raise ValueError("Untrusted availability source or completeness claim")
     if frame[["game_id", "team_id", "player_id", "season", "season_type"]].isna().any().any():
         raise ValueError("Null availability identity")
@@ -189,12 +194,17 @@ def backfill(
     cached_boxscores: Path | None = None,
     game_ids: list[int] | None = None,
     limit: int | None = None,
+    source: str = "stats",
 ) -> pd.DataFrame:
     """Fetch/cache official listed-player evidence with resumable, atomic output.
 
     This collects DNP rows without changing the existing starter-role importer.
     No R2 publication or whole-sample without-player activation occurs here.
     """
+    if source not in {"stats", "espn"}:
+        raise ValueError("Source must be stats or espn")
+    if cached_boxscores is not None and source != "stats":
+        raise ValueError("Cached NBA Stats JSON is incompatible with ESPN source")
     if limit is not None and limit < 1:
         raise ValueError("limit must be positive")
     safe = season_type.lower().replace(" ", "_")
@@ -255,7 +265,19 @@ def backfill(
         expected = {int(row.home_team_id), int(row.away_team_id)}
         if len(expected) != 2:
             raise ValueError("Game does not identify two distinct teams")
-        if cached_boxscores is not None:
+        source_name = SOURCE
+        if source == "espn":
+            from nbatools.commands.pipeline.player_game_availability_espn import (
+                espn_boxscore_as_v3,
+            )
+
+            raw, event_id = espn_boxscore_as_v3(
+                game_id=ident, game_date=str(row.game_date), season=season,
+                season_type=season_type, home_team_id=int(row.home_team_id),
+                away_team_id=int(row.away_team_id), data_root=root,
+            )
+            source_name = f"{ESPN_SOURCE}:{event_id}"
+        elif cached_boxscores is not None:
             path = cached_boxscores / f"boxscore_{ident:010d}.json"
             if not path.is_file():
                 raise FileNotFoundError(
@@ -271,6 +293,7 @@ def backfill(
             season=season,
             season_type=season_type,
             expected_team_ids=expected,
+            source=source_name,
         )
         # Preserve per-game progress after a network interruption.
         new.to_csv(checkpoint, mode="a", header=not checkpoint.exists(), index=False)
@@ -296,9 +319,11 @@ def run(
     cached_boxscores: Path | None = None,
     game_ids: list[int] | None = None,
     limit: int | None = None,
+    source: str = "stats",
 ) -> None:
     result = backfill(
-        season, season_type, cached_boxscores=cached_boxscores, game_ids=game_ids, limit=limit
+        season, season_type, cached_boxscores=cached_boxscores,
+        game_ids=game_ids, limit=limit, source=source
     )
     print(
         f"Saved {len(result)} official player-game status observations "

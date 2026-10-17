@@ -233,8 +233,12 @@ Contract rules:
   player_id, player_name, participation_state, source_minutes, source_comment,
   source, coverage_scope`.
 - **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
-  uses the already-adopted NBA Stats `BoxScoreTraditionalV3.PlayerStats`
-  endpoint, or previously archived unmodified V3 JSON with a matching game ID.
+  uses official NBA Stats `BoxScoreTraditionalV3.PlayerStats`, archived
+  official V3 JSON, or `--source espn` game summaries when NBA servers are
+  unreachable. The ESPN adapter matches the exact game date, both teams, both
+  final scores, and resolves every reported athlete to a unique NBA player ID
+  for that team/season; unresolved identities fail rather than substitute
+  ESPN IDs for NBA IDs. ESPN rows keep the ESPN event ID in the `source` field.
   The separate importer does not refetch every core stat or modify the existing
   starter-role producer. Output uses resumable local checkpoint writes and
   atomic final CSV replacement. The module never publishes to R2 itself.
@@ -243,7 +247,11 @@ Contract rules:
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
   `unknown` covers ambiguous zero/absent minutes without
   an explicit nonparticipation statement. Contradictions are rejected.
-- **Source truth:** `source_comment` is preserved verbatim;
+- **Source truth:** NBA V3 `source_comment` is preserved verbatim; ESPN
+  `didNotPlay=true` is retained only as an explicit DNP flag, never a claimed
+  injury reason (ESPN generic reason text can also appear on played athletes).
+  Both sources preserve their own `source` provenance. For NBA V3,
+  `source_comment` is preserved verbatim;
   do not transform coach decisions, illness, inactive and injuries into one
   injury statistic. `coverage_scope=listed_player_rows_only`
   establishes only positive source observations. Unlisted players might be
