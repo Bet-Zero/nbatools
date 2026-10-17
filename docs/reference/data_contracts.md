@@ -242,12 +242,19 @@ Contract rules:
   archived V3 JSON or `--source espn` can collect explicitly listed player
   observations. The ESPN and Stats options do not certify complete inactive
   lists, and are not automatic substitutes for official Final Box coverage. The ESPN adapter matches the exact game date, both teams, both
-  final scores, and resolves every reported athlete to a unique NBA player ID
+  final scores, home/away sides and completed status in both scoreboard and
+  summary header, and resolves every reported athlete to a unique NBA player ID
   for that team/season; unresolved identities fail rather than substitute
   ESPN IDs for NBA IDs. ESPN rows keep the ESPN event ID in the `source` field.
   The separate importer does not refetch every core stat or modify the existing
   starter-role producer. Output uses resumable local checkpoint writes and
   atomic final CSV replacement. The module never publishes to R2 itself.
+  Per-game `.imports.json` receipts bind the selected source and a normalized
+  SHA256 of every saved player row. Resume requires matching rows and catalog
+  scope; missing receipts, changed/truncated rows, and source switches trigger
+  reacquisition. A full atomic `.partial.csv` preserves completed imports after
+  interruption. These receipts verify local import integrity, not upstream
+  authenticity, complete rosters, raw-response retention or R2 durability.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and

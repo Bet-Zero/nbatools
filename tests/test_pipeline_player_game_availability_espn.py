@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from nbatools.commands.pipeline import player_game_availability_espn as adapter
+from nbatools.commands.pipeline import pull_player_game_availability as importer
 from nbatools.commands.pipeline.pull_player_game_availability import (
     backfill,
     normalize_boxscore_availability,
@@ -240,3 +241,64 @@ def test_source_dnp_must_not_discard_positive_minutes(sources):
     box["boxscore"]["players"][0]["statistics"][0]["athletes"][1]["stats"][0] = "20"
     with pytest.raises(ValueError, match="Contradictory"):
         backfill("2025-26", root=root, source="espn")
+
+
+@pytest.mark.parametrize("damage", ["truncated", "missing_receipt", "changed_minutes"])
+def test_resume_reacquires_unverified_game(sources, monkeypatch, damage):
+    root, _, box = sources
+    backfill("2025-26", root=root, source="espn")
+    target = root / "raw/player_game_availability/2025-26_regular_season.csv"
+    rows = pd.read_csv(target)
+    if damage == "truncated":
+        rows.iloc[:1].to_csv(target, index=False)
+    elif damage == "changed_minutes":
+        rows.loc[rows.player_id.eq(10), "source_minutes"] = 99
+        rows.to_csv(target, index=False)
+    else:
+        target.with_suffix(".imports.json").unlink()
+    calls = []
+    monkeypatch.setattr(adapter, "_get_json", lambda endpoint: calls.append(endpoint) or box)
+    repaired = backfill("2025-26", root=root, source="espn")
+    assert calls == ["summary?event=401809244"]
+    assert len(repaired) == 3
+    assert repaired.loc[repaired.player_id.eq(10), "source_minutes"].iloc[0] == 30
+    calls.clear()
+    backfill("2025-26", root=root, source="espn")
+    assert not calls, "verified complete import should resume without refetch"
+
+
+def test_source_switch_reacquires_instead_of_relabeling(sources, monkeypatch):
+    root, _, _ = sources
+    raw, _ = adapter.espn_boxscore_as_v3(
+        game_id=22500001,
+        game_date="2025-10-21",
+        season="2025-26",
+        season_type="Regular Season",
+        home_team_id=1610612747,
+        away_team_id=1610612744,
+        data_root=root,
+    )
+    backfill("2025-26", root=root, source="espn")
+    calls = []
+    monkeypatch.setattr(
+        importer, "fetch_starter_role_rows_for_game", lambda ident: calls.append(ident) or raw
+    )
+    changed = backfill("2025-26", root=root, source="stats")
+    assert calls == [22500001]
+    assert changed.source.eq(importer.SOURCE).all()
+    assert len(changed) == 3
+
+
+def test_failed_source_switch_preserves_last_good(sources, monkeypatch):
+    root, _, _ = sources
+    backfill("2025-26", root=root, source="espn")
+    target = root / "raw/player_game_availability/2025-26_regular_season.csv"
+    original = target.read_bytes()
+
+    def fail(_):
+        raise ConnectionError("source unavailable")
+
+    monkeypatch.setattr(importer, "fetch_starter_role_rows_for_game", fail)
+    with pytest.raises(ConnectionError):
+        backfill("2025-26", root=root, source="stats")
+    assert target.read_bytes() == original

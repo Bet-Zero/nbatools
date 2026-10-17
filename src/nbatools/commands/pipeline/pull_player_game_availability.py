@@ -8,6 +8,7 @@ alone do NOT establish a complete roster or all missed games.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -191,6 +192,23 @@ def _cached_boxscore(path: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _game_digest(frame: pd.DataFrame) -> str:
+    """Bind a completed import to all persisted rows, independent of CSV dtypes."""
+    stable = frame[list(COLUMNS)].copy()
+    for column in ("game_id", "team_id", "player_id"):
+        stable[column] = pd.to_numeric(stable[column], errors="raise").astype("int64")
+    stable["source_minutes"] = pd.to_numeric(stable["source_minutes"], errors="raise")
+    stable = stable.sort_values(["team_id", "player_id"])
+    payload = stable.to_csv(index=False, float_format="%.9g", na_rep="")
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
+    temporary = path.with_suffix(".tmp.csv")
+    frame.to_csv(temporary, index=False)
+    temporary.replace(path)
+
+
 def backfill(
     season: str,
     season_type: str = "Regular Season",
@@ -248,8 +266,12 @@ def backfill(
     directory.mkdir(parents=True, exist_ok=True)
     target = directory / f"{season}_{safe}.csv"
     checkpoint = target.with_suffix(".partial.csv")
+    receipts_path = target.with_suffix(".imports.json")
+    receipts = json.loads(receipts_path.read_text()) if receipts_path.exists() else {}
     frames = []
-    for path in (target, checkpoint):
+    # The checkpoint is an atomic full snapshot, not a potentially torn append.
+    # It supersedes the last completed target when an import was interrupted.
+    for path in (checkpoint,) if checkpoint.exists() else (target,):
         if path.exists():
             old = pd.read_csv(path, dtype={"game_id": str})
             if not old.empty:
@@ -265,11 +287,20 @@ def backfill(
 
     for row in games.itertuples(index=False):
         ident = int(row.game_id)
-        if not existing.empty and existing["game_id"].map(int).eq(ident).any():
-            continue
         expected = {int(row.home_team_id), int(row.away_team_id)}
         if len(expected) != 2:
             raise ValueError("Game does not identify two distinct teams")
+        previous = existing[existing["game_id"].map(int).eq(ident)]
+        receipt = receipts.get(str(ident), {})
+        if not previous.empty and receipt.get("source") == source:
+            if (
+                receipt.get("sha256") == _game_digest(previous)
+                and previous["game_date"].eq(str(row.game_date)).all()
+                and previous["season"].eq(season).all()
+                and previous["season_type"].eq(season_type).all()
+                and set(previous["team_id"].map(int)) == expected
+            ):
+                continue
         source_name = SOURCE
         if source == "report":
             from nbatools.commands.pipeline.player_game_availability_report import (
@@ -319,19 +350,23 @@ def backfill(
             expected_team_ids=expected,
             source=source_name,
         )
-        # Preserve per-game progress after a network interruption.
-        new.to_csv(checkpoint, mode="a", header=not checkpoint.exists(), index=False)
+        # Replace this game's old rows only after successful reacquisition.
+        # A source switch must fetch its own evidence, including added inactives.
+        existing = existing[~existing["game_id"].map(int).eq(ident)]
         existing = pd.concat([existing, new], ignore_index=True)
         validate_availability(existing)
+        _atomic_csv(existing, checkpoint)
+        receipts[str(ident)] = {"source": source, "sha256": _game_digest(new)}
+        receipt_tmp = receipts_path.with_suffix(".tmp.json")
+        receipt_tmp.write_text(json.dumps(receipts, sort_keys=True) + "\n")
+        receipt_tmp.replace(receipts_path)
 
     if existing.empty:
         raise ValueError("No verified source rows acquired")
     existing = existing.sort_values(["game_date", "game_id", "team_id", "player_id"])
     existing["game_id"] = existing["game_id"].map(lambda x: str(int(x)).zfill(10))
     validate_availability(existing)
-    tmp = target.with_suffix(".tmp.csv")
-    existing.to_csv(tmp, index=False)
-    tmp.replace(target)
+    _atomic_csv(existing, target)
     checkpoint.unlink(missing_ok=True)
     return existing.reset_index(drop=True)
 
