@@ -116,7 +116,26 @@ def test_three_teams_refuse_unread_conditions_instead_of_dropping_a_team(query):
     assert result.result_status == "no_result", (query, result.route, result.result_reason)
 
 
-def test_three_team_best_stretch_preserves_existing_specialized_route():
-    result = execute_natural_query("Lakers vs Celtics vs Knicks best 5 game stretch")
+@pytest.mark.parametrize("alias", ["stretch", "span", "window", "spell"])
+def test_three_team_best_stretch_preserves_existing_specialized_route(alias):
+    result = execute_natural_query(f"Lakers vs Celtics vs Knicks best 5 game {alias}")
     assert result.result_status == "ok"
-    assert result.result.to_dict()["sections"]["leaderboard"]
+    assert result.route == "team_stretch_leaderboard"
+    assert {row["team_abbr"] for row in result.result.to_dict()["sections"]["leaderboard"]} == {
+        "LAL",
+        "BOS",
+        "NYK",
+    }
+
+
+@pytest.mark.parametrize("alias", ["run"])
+def test_unimplemented_stretch_alias_does_not_drop_third_team(alias):
+    result = execute_natural_query(f"Lakers vs Celtics vs Knicks best 5 game {alias}")
+    assert result.result_status == "no_result", (result.route, result.result)
+
+
+@pytest.mark.parametrize("suffix", ["when Curry scores 30", "when Jokic has 10 assists"])
+def test_stretch_with_player_condition_never_substitutes_player_subject(suffix):
+    result = execute_natural_query(f"Warriors vs Nuggets vs Heat best 5 game stretch {suffix}")
+    assert result.result_status == "no_result", (result.route, result.result)
+    assert result.route == "team_compare"

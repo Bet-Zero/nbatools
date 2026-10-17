@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
+from nbatools.commands._parse_helpers import detect_stretch_query
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 
@@ -41,7 +42,7 @@ _READ_REST = re.compile(
 )
 
 
-def three_teams(query: str) -> tuple[list[str], bool] | None:
+def three_teams(query: str, *, allow_stretch: bool = True) -> tuple[list[str], bool] | None:
     """The three teams a comparison names, and whether the rest is read scope."""
     q = query.strip()
     for rx in _patterns():
@@ -54,13 +55,10 @@ def three_teams(query: str) -> tuple[list[str], bool] | None:
         rest = m.group(4)
         if _READ_REST.match(rest):
             return teams, True
-        if _STRETCH.search(rest):
+        if allow_stretch and detect_stretch_query(q) is not None:
             # "Lakers vs Celtics vs Knicks best 5 game stretch": the stretch board's.
             return None
         # "in wins", "longest win streak", "head to head": not read for three
         # teams, and another reader would drop one of them.
         return teams, False
     return None
-
-
-_STRETCH = re.compile(r"\b(?:stretch(?:es)?|span|window|run)\b")
