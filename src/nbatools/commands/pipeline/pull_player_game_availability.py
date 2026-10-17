@@ -104,7 +104,8 @@ def normalize_boxscore_availability(
     required = set(names.values())
     if frame.empty or not required.issubset(frame.columns):
         raise ValueError(f"Box score missing required player rows/columns: {required - set(frame)}")
-    if frame[list(required)].drop(columns=["source_minutes", "source_comment"]).isna().any().any():
+    identity_columns = sorted(required - {"source_minutes", "source_comment"})
+    if frame[identity_columns].isna().any().any():
         raise ValueError("Box score has missing player/team identity fields")
     for key in ("game_id", "team_id", "player_id"):
         frame[key] = pd.to_numeric(frame[key], errors="raise").astype("int64")
@@ -164,7 +165,9 @@ def validate_availability(frame: pd.DataFrame) -> None:
         raise ValueError("Played requires verified positive minutes")
     if (frame["participation_state"].eq("did_not_play") & minutes.gt(0)).any():
         raise ValueError("DNP conflicts with played minutes")
-    if (frame["participation_state"].eq("did_not_play") & ~frame["source_comment"].fillna("").str.match(_DNP)).any():
+    is_dnp = frame["participation_state"].eq("did_not_play")
+    has_explicit_dnp = frame["source_comment"].fillna("").str.match(_DNP)
+    if (is_dnp & ~has_explicit_dnp).any():
         raise ValueError("DNP requires an explicit nonparticipant statement")
 
 
@@ -197,7 +200,10 @@ def backfill(
     safe = season_type.lower().replace(" ", "_")
     games_path = root / "raw" / "games" / f"{season}_{safe}.csv"
     games = pd.read_csv(games_path, dtype={"game_id": str})
-    required = {"game_id", "game_date", "season", "season_type", "is_final", "home_team_id", "away_team_id"}
+    required = {
+        "game_id", "game_date", "season", "season_type",
+        "is_final", "home_team_id", "away_team_id",
+    }
     if not required.issubset(games.columns) or games.empty:
         raise ValueError("Finalized game catalog missing required columns/rows")
     if games["game_id"].duplicated().any():
@@ -247,7 +253,9 @@ def backfill(
         if cached_boxscores is not None:
             path = cached_boxscores / f"boxscore_{ident:010d}.json"
             if not path.is_file():
-                raise FileNotFoundError(f"Official box-score archive missing for game {ident:010d}: {path}")
+                raise FileNotFoundError(
+                    f"Official box-score archive missing for game {ident:010d}: {path}"
+                )
             raw = _cached_boxscore(path)
         else:
             raw = fetch_starter_role_rows_for_game(ident)
