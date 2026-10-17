@@ -1,0 +1,102 @@
+{
+  "artifact_id": 12091402461,
+  "artifact_zip_sha256": "d1a463a988792bb7b5494de84b7986c2f299d1781c693dd984c7de061e77d048",
+  "counts": {
+    "errors": 0,
+    "executed": 1,
+    "failed": 0,
+    "passed": 1,
+    "selected": 1,
+    "skipped": 0,
+    "xfailed": 0
+  },
+  "environment_audit": {
+    "blocker": "GitHub metadata/download unavailable: HTTP 404",
+    "environment": "r2-publication",
+    "environments": [
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 13992844085,
+        "name": "copilot",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 14834657009,
+        "name": "Preview",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 14834065991,
+        "name": "Production",
+        "protection_rules": []
+      },
+      {
+        "can_admins_bypass": true,
+        "deployment_branch_policy": null,
+        "id": 23273460136,
+        "name": "r2-validation",
+        "protection_rules": []
+      }
+    ],
+    "publication_ready": false
+  },
+  "prepared": {
+    "artifact_id": 12090016663,
+    "artifact_zip_sha256": "35e7b0294dd64b7c8752351dd05d45129ea8977d16bd3cad0140033b447f53dd",
+    "base_generation": "queue-d-production-0574735-20260716",
+    "base_manifest_sha256": "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e",
+    "base_pointer": {
+      "generation_id": "queue-d-production-0574735-20260716",
+      "manifest_sha256": "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e",
+      "previous_generation_id": "legacy",
+      "published_at": "2026-07-16T11:19:01+00:00",
+      "schema_version": 1
+    },
+    "budget": {
+      "conservative_projected_bytes": 1167340718,
+      "current_bytes": 754734195,
+      "limit_bytes": 10000000000
+    },
+    "file_count": 693,
+    "generation_id": "availability-opening-631b259a-20261017",
+    "inventory_sha256": "afb7ea908e1c7da52b44f2b7416e4928579e610a600d01244eb4c231348b3b39",
+    "package": "opening-availability-v1",
+    "prepared_manifest_sha256": "6268ad200f1cb71b4f2b59e59afba8bd852f3f9dc3b96bfcd5f73e6bc7e0b212",
+    "publication_state": "prepared_no_writes",
+    "publisher_sha": "cb88329c65032df33a9781b6b3e62d40eab91b3e",
+    "registry_sha256": "1832dbee9a185f6d842bbf895025ba2ce1c65e0177bd07546d32ce4baef357d0",
+    "required_source_gate": {
+      "candidate_sha": "3ae073562a19b339ea387037deca30fe90a2677f",
+      "conclusion": "success",
+      "errors": 0,
+      "executed": 1,
+      "failed": 0,
+      "generation": "queue-d-production-0574735-20260716",
+      "passed": 1,
+      "problems": [],
+      "pytest_exit": 0,
+      "required_selection": [
+        "tests/test_pipeline_player_game_availability_real_data.py::test_official_opening_report_retains_real_source_and_explicit_absences"
+      ],
+      "required_test_limit": 100,
+      "scope": "targeted",
+      "selected": 1,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "schema_version": 1,
+    "script_sha256": "2695c78b322b7e8ad673f1f196bfa18a6ecef25730e2ef18750f33a4f59442ff",
+    "source_run_id": 39002683645,
+    "total_bytes": 402606523,
+    "workflow_run_id": "39006702706",
+    "workflow_sha": "17c4ea7cc2fa268674c07ffc825fc174db2bded2"
+  },
+  "request_sha": "17c4ea7cc2fa268674c07ffc825fc174db2bded2",
+  "reviewed_sha": "437654c6961cdf0f46f28d9b309c0d85811173a1",
+  "run_id": 39006702706
+}

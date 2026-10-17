@@ -65,6 +65,7 @@ separate evidence claims; do not fabricate one from another.
 
 - [Data pipeline](operations/pipeline_runbook.md)
 - [Deployment](operations/deployment.md)
+- [Protected data publication](operations/data_publication.md)
 - [Observability](operations/observability.md)
 - [Recovery](operations/recovery.md)
 - [Feedback privacy and activation](operations/query_feedback_privacy.md)

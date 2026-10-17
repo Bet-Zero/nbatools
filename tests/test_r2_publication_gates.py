@@ -163,3 +163,228 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     assert (
         "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
     )
+
+
+def test_source_archive_validation_rejects_substitution_and_traversal(tmp_path, monkeypatch):
+    import zipfile
+
+    inventory = dict(
+        run_id=10,
+        artifact_id=20,
+        request_sha="request",
+        reviewed_sha="reviewed",
+        base_generation="base",
+        files=[{"path": "raw/evidence.csv"}],
+    )
+    summary = dict(
+        candidate_sha="request",
+        generation="base",
+        selected=2,
+        executed=2,
+        passed=2,
+        skipped=0,
+        failed=0,
+        errors=0,
+        xfailed=0,
+    )
+
+    def archive(extra=None, values=None):
+        stream = io.BytesIO()
+        with zipfile.ZipFile(stream, "w") as z:
+            z.writestr("summary.json", json.dumps(summary if values is None else values))
+            z.writestr("acquired_data/raw/evidence.csv", "a,b\n1,2\n")
+            if extra:
+                z.writestr(extra, "bad")
+        return stream.getvalue()
+
+    payload = archive()
+
+    def api(path, **kwargs):
+        if path.endswith("/zip"):
+            return payload
+        if path == "/actions/runs/10":
+            return dict(
+                head_sha="request",
+                conclusion="success",
+                path=".github/workflows/r2-real-data-validation.yml",
+            )
+        if path == "/actions/artifacts/20":
+            return dict(expired=False, workflow_run=dict(id=10, head_sha="request"))
+        if path == "/commits/request":
+            return {"parents": [{"sha": "reviewed"}]}
+        pytest.fail(path)
+
+    monkeypatch.setattr(gate, "api", api)
+    inventory["artifact_zip_sha256"] = gate.digest(payload)
+    gate.acquire_overlay(inventory, tmp_path / "good")
+    assert (tmp_path / "good/raw/evidence.csv").read_text() == "a,b\n1,2\n"
+    payload = archive("../escape")
+    inventory["artifact_zip_sha256"] = gate.digest(payload)
+    with pytest.raises(ValueError, match="Unsafe"):
+        gate.acquire_overlay(inventory, tmp_path / "bad")
+    assert not (tmp_path / "escape").exists()
+    payload = archive("acquired_data/unreviewed.csv")
+    inventory["artifact_zip_sha256"] = gate.digest(payload)
+    with pytest.raises(ValueError, match="inventory differs"):
+        gate.acquire_overlay(inventory, tmp_path / "bad")
+    payload = archive(values=summary | {"executed": 0, "passed": 0, "skipped": 2})
+    inventory["artifact_zip_sha256"] = gate.digest(payload)
+    with pytest.raises(ValueError, match="did not execute"):
+        gate.acquire_overlay(inventory, tmp_path / "bad")
+    inventory["artifact_zip_sha256"] = "unreviewed"
+    with pytest.raises(ValueError, match="checksum"):
+        gate.acquire_overlay(inventory, tmp_path / "bad")
+
+
+def test_bucket_budget_counts_existing_generations_and_never_prunes():
+    class Client:
+        def get_paginator(self, operation):
+            assert operation == "list_objects_v2"
+            return self
+
+        def paginate(self, **kwargs):
+            yield {"Contents": [{"Size": 60}]}
+            yield {"Contents": [{"Size": 40}]}
+
+    policy = dict(max_snapshot_bytes=50, max_snapshot_objects=3, max_bucket_bytes=10_000_149)
+    with pytest.raises(ValueError, match="storage ceiling"):
+        gate.bucket_budget(Client(), "bucket", policy, dict(total_bytes=50, file_count=3))
+    policy["max_bucket_bytes"] += 1
+    assert (
+        gate.bucket_budget(Client(), "bucket", policy, dict(total_bytes=50, file_count=3))[
+            "current_bytes"
+        ]
+        == 100
+    )
+    with pytest.raises(ValueError, match="size/object"):
+        gate.bucket_budget(Client(), "bucket", policy, dict(total_bytes=51, file_count=3))
+
+
+@pytest.mark.parametrize("corrupt,drift", [(False, False), (True, False), (False, True)])
+def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch, corrupt, drift):
+    from types import SimpleNamespace
+
+    monkeypatch.setenv("GITHUB_SHA", "code")
+    monkeypatch.setenv("GITHUB_RUN_ID", "run")
+    package = dict(
+        generation_id="target",
+        deployed_checks=[dict(query="verified question", summary={"games": 1})],
+    )
+    monkeypatch.setattr(gate, "load_package", lambda *a: ({}, package, {"base_generation": "base"}))
+    item = dict(path="raw/data.csv", size_bytes=3, sha256=gate.digest(b"abc"))
+    pointer = dict(generation_id="target", previous_generation_id="base")
+    reads = []
+
+    def verify_pointer(*args):
+        reads.append("pointer")
+        return (
+            pointer | ({"published_at": "changed"} if drift and len(reads) == 3 else {}),
+            {"files": [item]},
+            "hash",
+        )
+
+    monkeypatch.setattr(gate, "verify_pointer_manifest", verify_pointer)
+
+    class Client:
+        def get_object(self, **kwargs):
+            assert kwargs["Key"] == "generations/target/raw/data.csv"
+            return {"Body": io.BytesIO(b"bad" if corrupt else b"abc")}
+
+    module = SimpleNamespace(
+        _resolve_r2_target=lambda **k: (Client(), "bucket"),
+        _validate_r2_manifest_inventory=lambda *a: None,
+    )
+    monkeypatch.setattr(gate, "publisher_modules", lambda *a: module)
+    monkeypatch.setattr(
+        gate.requests,
+        "get",
+        lambda *a, **k: SimpleNamespace(
+            status_code=200, json=lambda: {"ready": True, "active_generation": "target"}
+        ),
+    )
+    monkeypatch.setattr(
+        gate.requests,
+        "post",
+        lambda *a, **k: SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "result_status": "ok",
+                "result": {"sections": {"summary": [{"games": 1}]}},
+            },
+        ),
+    )
+    source = tmp_path / "publication.json"
+    source.write_text(
+        json.dumps(
+            dict(
+                package="pkg",
+                registry_sha256=gate.digest(gate.REGISTRY.read_bytes()),
+                workflow_sha="code",
+                workflow_run_id="run",
+                generation_id="target",
+                prepared_manifest_sha256="hash",
+                file_count=1,
+            )
+        )
+    )
+    output = tmp_path / "verified"
+    if corrupt or drift:
+        with pytest.raises(ValueError):
+            gate.verify("pkg", tmp_path, output, source)
+        assert (
+            json.loads((output / "receipt.json").read_text())["publication_state"]
+            == "published_verification_failed"
+        )
+    else:
+        result = gate.verify("pkg", tmp_path, output, source)
+        assert result["publication_state"] == "published_and_verified"
+        assert result["verified_objects"] == [item]
+        assert len(reads) == 3
+
+
+def test_writer_failure_retains_durable_unknown_outcome(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    monkeypatch.setenv("GITHUB_SHA", "code")
+    monkeypatch.setenv("GITHUB_RUN_ID", "run")
+    monkeypatch.setattr(gate, "check_main_revision", lambda *a: None)
+    document, branches = protected_environment()
+    monkeypatch.setattr(
+        gate,
+        "environment_audit",
+        lambda: dict(publication_ready=True, configuration=document, branches=branches),
+    )
+    approvals = [
+        {"state": "approved", "user": {"id": gate.OWNER_ID}, "environments": [{"id": 123}]}
+    ]
+    monkeypatch.setattr(gate, "api", lambda *a: approvals)
+    work = tmp_path / "work"
+    expected = {"manifest": "owner-visible"}
+    prepared = tmp_path / "approved.json"
+    prepared.write_text(json.dumps(expected))
+
+    def writer(generation, **kwargs):
+        assert generation == "target"
+        assert kwargs["expected_base"] == "base"
+        assert kwargs["source_dir"] == work / "staging/data"
+        assert (
+            json.loads((work / "publication.json").read_text())["publication_state"]
+            == "publication_started_outcome_unknown"
+        )
+        raise RuntimeError("simulated failure after a write")
+
+    def prepare(*args, **kwargs):
+        assert kwargs["expected"] == expected
+        return (
+            {"generation_id": "target", "base_generation": "base"},
+            SimpleNamespace(publish_r2_generation=writer),
+            None,
+            None,
+        )
+
+    monkeypatch.setattr(gate, "prepare", prepare)
+    with pytest.raises(RuntimeError, match="simulated"):
+        gate.publish("pkg", tmp_path, work, prepared)
+    receipt = json.loads((work / "publication.json").read_text())
+    assert receipt["publication_state"] == "publication_started_outcome_unknown"
+    assert receipt["owner_approval"] == approvals
