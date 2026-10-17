@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "56146c60b24b1b6f8fa91b93920f5fdade71bfff",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_pipeline_player_game_availability_real_data.py::test_official_opening_report_retains_real_source_and_explicit_absences"
+  ],
+  "raw_qa_cases": []
+}
