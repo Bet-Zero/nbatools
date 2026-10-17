@@ -43,6 +43,32 @@ jobs:
               print("Boxscore player rows:", len(statuses))
               print("didNotPlay flags:", dict(Counter(str(v) for _,v in statuses)))
               print("Sample reported DNP:", [name for name,flag in statuses if flag is True][:10])
+              print("Summary sections:", list(summary.keys()))
+              print("Boxscore sections:", list(box.keys()))
+              print("Team summary:", [
+                  (t.get("team", {}).get("abbreviation"), list(t.keys()))
+                  for t in box.get("players", [])
+              ])
+              for team in box.get("players", []):
+                  print("ESPN team id/abbr:", team.get("team", {}).get("id"), team.get("team", {}).get("abbreviation"))
+                  for group in team.get("statistics", []):
+                      print("Stat columns:", group.get("names"))
+                      for player in group.get("athletes", [])[:2]:
+                          print("Player example:", {
+                              k: player.get(k) for k in ("didNotPlay", "stats", "starter", "inactive", "reason")
+                          }, "athlete=", {
+                              k: player.get("athlete", {}).get(k)
+                              for k in ("id","displayName","fullName","status")
+                          })
+                  break
+              older = get("scoreboard?dates=20150115")
+              print("Older event count:", len(older.get("events", [])))
+              if older.get("events"):
+                  old_game = older["events"][0]
+                  print("Older first event id:", old_game.get("id"))
+                  old_summary = get("summary?event=" + old_game["id"])
+                  print("Older boxscore team count:",len(old_summary.get("boxscore", {}).get("players", [])))
+
               assert statuses, "No player records in game summary"
               assert any(flag is True for _,flag in statuses), "No explicit nonparticipant flags in this sample"
           except Exception as exc:
