@@ -15,27 +15,26 @@ require a new agent to read that history before starting the task below.
 
 ## Resume checkpoint
 
-Replace this checkpoint as work advances; do not append a second live tracker.
-The revision below is an observation, not an instruction to reset newer main.
+Replace this checkpoint as work advances; do not append another active diary.
+This is a verified 2026-10-16 snapshot, not a frozen head to reset to. The
+latest PR discussion/branch may be ahead of this main-branch record; check it.
 
 | Field | Current handoff |
 | --- | --- |
-| State | Updated 2026-10-15 continuation: P0b merged; P0a absence containment published as unaccepted WIP; P0c roster/ranked-condition repair independently fixture-reviewed; P1 played-season split implementation under review with held-out parser findings being repaired. |
-| Live main checked | `668e08ad99922c1321299f2d33df4b65c4787e2d`; fetched and verified locally. #462 head `d14b5054a0566b8bd8ef7cb2cc0cb2c41cd63271`, #455 head `99505bbfd08cab6fed1da8eb8e1db9eb10e6f032`, both open. No newer remote work overwritten. |
-| P0a candidate | Existing #462 / `claude/samples-stream-mm11at`; local `codex/p0a-qualification` at `b6ddc48465f998d8a5764a9dddd3f5bedd7c80da`, tree `8859d56cd4fbeec641d2e449f8527a4cac557a8e`, descendant of live d14b5054 and main668e08a. Contains shared missing-coverage containment; positive absence remains blocked. Prior reviewed status/played query code a066d8d5 retained. Publish this safe WIP without merging; no force push. |
-| P0b integration | #464 merged at `668e08ad99922c1321299f2d33df4b65c4787e2d`; reviewed PR head `185c4d6c70a15dd6be8509368a3419841252bb5b` (CI `38728378816` passed), branch `codex/p0b-required-validation`, code `fffd14f037c79b15f1f12b673c970da9b85a0461`, tree `c109235ea41b7123316294e68fc7d3c41a849bec`; single resolved code SHA/generation, blocking required numerical tests and explicit selected/executed/skipped/error evidence. Actual R2 run still pending; no NBA verification claimed |
-| Owner/lane | Lead owns parser/service and both candidate integration worktrees: #462 `codex/p0a-qualification` and #455 `codex/p0c-integration`. Roster maker `p0b_gate` completed ea3369c; independent `p0b_checker` accepted scoped #455 fixture semantics at86a65f0. `p0a_checker` reviews P1 played splits. Real-data and deployment acceptance remain separate; no background executor promised. |
-| P0c candidate | #455 preserved on `codex/p0c-integration`, code `86a65f0a494c711d8d5294c60c7cd1fe947aa2d3`, descendant of original99505bb and live main668e08a. Includes reviewed roster repair ea3369c (integrated fbf0687), ranked zero filters and owner canonicalization. All intended code committed; publication/checkpoint commit follows. No force push. |
-| P0c verification | Checker `p0b_checker`:377 focused tests/0skips plus16 independent exactCSV/controlled checks passed at86a65f0. Original roster oracles retained; missing/unknown classifications disclosed in caveats AND population_scope exported rows. Exactzero (including signed +/-) differs from0+/atleast0/or-more; rank/owner/opponent/topN preserved. Earlier fbf0687 broad preflight7713passed/1445skipped/3subtests; final86a65f0 broad preflight:7725passed/1445skipped/3subtests/4warnings in183.57s. Ruff/docs governance/diff pass. R2 numerical tests not executed, no merge approval. |
-| Data | Committed synthetic fixture only in this session. Historical R2 generation `queue-d-production-0574735-20260716` not accessed/reverified; fresh NBA acquisition remains parked. No data publication, model spending or credential expansion |
-| P0a verification | On b6ddc484: 16 new direct/natural/structured/played-control checks passed; Ruff/docs-governance/diff pass. Broad approved-context preflight: 7586 passed, 1442 skipped, 46 failed, 3 subtests passed, 4 warnings (169.49s). All 46 failures exercise positive absence expectations now blocked by missing qualification; tests remain enabled, not xfailed/reclassified. No broad-suite pass or absence acceptance claimed. |
-| P0a independent evidence | Checker `p0a_checker` reviewed b6ddc484/tree8859d56: 16 tests, independent HTTP200/no_result/empty sections with coverage explanation, eight status holdouts passed. Safety only. P1 fixture probes pass sampled S1/S2 nonadjacent seasons, S3 ownership+venue and S5 dates/window/qualifying; S4 played season splits refuse despite valid single-season controls (Celtics/Tatum vs Lakers: eight IDs per2023-24/2025-26, each7-1; Brown23.625/27.5ppg). Source inspection found no qualified absence producer. |
-| P0b independent evidence | Checker `p0b_checker`: 63 focused tests plus ten independent subprocess scenarios; required arithmetic failure, partial/collection/missing-data skips, typo, zero execution, syntax error and XPASS all block. Final test-path-only fix reviewed; docs governance, Ruff and diff checks pass. All blocking CI passed on final PR head `185c4d6`; full-suite PR job legitimately unselected. Main post-merge lint/docs/frontend/security plus full/fast tests on Python 3.11/3.12/3.13 all passed at `668e08a`; this secret-free CI is not R2 acceptance |
-| Blocking findings | No current stored source proves general game-date membership plus complete participation: roster snapshots lack effective dates; starter-role output drops non-player-game keys; periods zero-complete known participants only; optional comments lack trusted DNP coverage. Shared absence helper now returns explicit unavailable coverage instead of fabricated complements. Required positive absence tests remain enabled and unfinished; inherited NYK-as-Tatum-absence expected sample corrected. No P0a/K08 acceptance or merge approval. |
-| Access/deployment | Git fetch/push works in approved local execution context; GitHub connector reads/writes work. GitHub CLI API is Forbidden, no dispatch tool available, and no configured runtime R2 credentials/NBA dataset. Direct production health read was blocked by network proxy403 before reaching the site; this does not establish production health. No credentials printed, acquisition, publication or spending. |
-| Exact next action | Publish reviewed #45586a65f0 with final broad checks passing, then finish repairing checker-disclosed P1 defects on #462: a bound before a later bare-name teammate can drop that teammate; on-the-court must stay on/off; team teammate pairs must transfer into season splits. Preserve46 enabled absence obligations and do not merge without required qualified real-data acceptance. |
-| Independent continuation | P1 sampled S1/S2 nonadjacent seasons,S3 ownership+venue,S5 date/window versus qualifying passed fixture checks; S4basic played split now works atc86330b, but held-out clause/oncourt/pair findings block its acceptance. Existing named-player shooting with joined and0blocks remains an inherited unfinished case outside #455 bounded with/without ranking repair. O1 metadata source inspected, served generation unverified. |
-| Owner action | No routine technical choice needed. Access-dependent acceptance stays open; no request to restore an owner laptop |
+| Program state | P0b numerical gates (#464), P0c ranked lists (#455), and automatic bounded R2 requests (#465) merged. #462 remains a mixed, unmergeable P0a/P1 branch; S1 selected real-data validation passed; S2 raw-NBA verification is next. No whole-Core-1 or deployed-feature acceptance claimed. |
+| Main checked | `cd34e977f3a501b4c2c35986e4b4d27e15771100` at inspection. Fetch actual main first and preserve newer work, including this docs-only continuity update. |
+| Blocked branch | [#462](https://github.com/Bet-Zero/nbatools/pull/462), `claude/samples-stream-mm11at`, inspected head `13df00fb843...` (resolve full SHA from GitHub); 29 changed files, 33 commits. Check its most recent Resume checkpoint and PR discussion before acting. |
+| CI evidence | Latest PR runs [38989943786](https://github.com/Bet-Zero/nbatools/actions/runs/38989943786) and [38989802921](https://github.com/Bet-Zero/nbatools/actions/runs/38989802921) failed with **46 positive did-not-play/absence tests** on otherwise passing broad jobs (~7,934 tests passed). The failures are real; don't relabel or pretend the branch is mergeable. |
+| Root data dependency | The served snapshot does not currently establish game-date team membership AND complete participation/non-participation for the relevant players. Missing player box-score rows are not proof of injury or a qualified missed game. A defended refusal is safety containment, not completed positive absence support (K08 remains open). |
+| Verified P1 S1 | Independent checker approved test-only candidate `b4cdc20aa480a77afea9badc4e04c4b193840545`; bounded R2 [38989747302](https://github.com/Bet-Zero/nbatools/actions/runs/38989747302) passed one required numerical test and one Raw QA case on `queue-d-production-0574735-20260716`, no skipped required tests. This is selected snapshot evidence, not deployment verification. |
+| P1 S2 | Fixture/corpus behavior reviewed at `42e3a9c1a...`, but independent raw-NBA oracle, qualifier/empty-season controls, real-data validation and deployment are still open. Prior branch checkpoint names an exact S2 test/corpus/action; retain that evidence. |
+| Agent execution | The latest #462 checkpoint reports **no running agent**; GitHub CI and R2-validation automation execute tests, not Codex coding turns. Whether the user's Codex thread has a returning scheduled task is NOT observable in GitHub. Do not claim one exists. |
+| Immediate correction | Stop using one red #462 PR as the only delivery vessel. Freeze its safety/positive-absence requirements and evidence. Inspect dependencies; port the smallest independently correct S1/S2/P1 slice onto a **separate current-main-based green candidate** when feasible, with reviewer and required R2 evidence. Keep #462's 46 unmet tests and source dependency active, not waived. If extraction depends on unqualified absence, choose an unaffected P1 S3/S5 or independent O task. |
+| Separate source work | Proactively investigate a qualified game-date membership/complete-participation source within existing permissions; do not invent or scrape unapproved data. A real source blocker stops K08 acceptance, not other delivery. |
+| Exact NEXT | Examine #462 current head, cherry-pick dependency graph and its S1/S2 reviews, then start the **smallest independently mergeable P1 delivery PR** from latest main. Verify the candidate's intended sample/meaning and green CI; run only required bounded R2, obtain a separate checker, merge when safe, and advance the checkpoint. |
+| Independent NEXT | If P1 cannot be isolated promptly, profile/validate O1's existing-snapshot compact identity metadata or tackle an unaffected P1 S3/S5 on its own branch. Do not wait idle for the 46 absent-data failures. |
+| Liveness/scheduling | For genuine recurring Codex execution, an authorized returning-to-the-same-thread scheduled task or supported long-running Goal must be set up **in Codex**. A GitHub workflow cannot schedule a Codex chat; user-facing activation is a one-time platform action, not code or another queue. Avoid concurrent writers. |
+| Owner action | No routine engineering or test decision. If the user wants unattended reactivation after a Codex turn ends, enable/confirm a Codex thread schedule once in its interface; new access/cost/meaning decisions still require explicit approval. |
 
 ### First-session procedure
 
@@ -60,14 +59,38 @@ execution environment (not the owner's laptop):
 
 ```sh
 DATA_SOURCE=local python -m pytest -q \
-  tests/test_c1_availability_words.py tests/test_c1_teammate_names.py
+  tests/test_participation_coverage.py tests/test_played_season_splits.py
 ```
 
-These are fixture checks, not real NBA verification. The first file is on #462,
-not the observed main. A passing baseline may reproduce the defect because its
-expected meaning is wrong. Inspect `_availability_words`, the normalization
-callers and those tests before changing expectations. The new negative-status
-and positive-participation assertions must expose the difference.
+These are fixture-only checks on #462, not real NBA verification and not a
+request to treat the mixed candidate as releasable. The 46 known positive
+absence requirements remain open and intentionally fail its normal suite.
+When extracting independent work, test the isolated candidate separately and
+keep missing-source evidence and regression expectations traceable on #462.
+
+### How to resume execution without an endless red PR
+
+1. Check the current #462 diff/commits and the approved S1/S2 evidence. Find the
+   smallest truly independent P1 delivery that does **not** rely on invented
+   absences. Start its candidate from live main and carry only necessary code,
+   positive tests and corpus cases. If no such slice exists, move to another
+   independent package rather than refactoring the blocked P0a all night.
+2. Verify that new PR with a real checker, required selected/executed/skipped
+   counts on pinned R2 where applicable, broad applicable CI and actual output.
+   Merge only green and correctly scoped changes; do not use the status of #462
+   as a substitute for the isolated candidate's own evidence.
+3. Leave #462's 46 required absence obligations open on their original candidate.
+   Don't delete, mark expected failure, weaken, or disguise them as safety passes.
+   Investigate source sufficiency separately. A future qualified dataset/contract
+   unlocks their implementation. More unrelated P1 commits on #462 only increase
+   the unmergeable backlog.
+4. After a safe independent merge, publish one concise checkpoint to this same
+   queue on main and update #462's PR discussion. If a Codex turn ends, its
+   successor uses the latest pushed PR checkpoint and checks whether a scheduled
+   thread wake-up is **actually** enabled. Do not claim invisible automation.
+
+The aim is continuous *forward progress*, not removal of legitimate failure gates
+or pretending an interactive Codex turn is an always-on service.
 
 ## 1. Preserved product and starting evidence
 
