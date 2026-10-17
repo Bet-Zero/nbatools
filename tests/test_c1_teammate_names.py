@@ -9,7 +9,8 @@ LeBron and Davis" kept LeBron only. "Lakers wins and losses split" refused,
 
 Every fixture player plays every game, so the availability tests drop some
 of Anthony Davis's and Austin Reaves's rows from a copy of the fixture.
-Expected values come from that copy's rows.
+Expected values come from that copy's rows; explicit synthetic observations
+record the declared game-day participation independently of missing stat rows.
 """
 
 from __future__ import annotations
@@ -47,6 +48,19 @@ def sparse_root(tmp_path, monkeypatch):
     drop = pd.Series(False, index=players.index)
     for name, games in out.items():
         drop |= (players["player_name"] == name) & players["game_id"].isin(games)
+    # This is controlled fixture evidence for the explicit schedule above,
+    # never real NBA data or an inference from the saved sparse player file.
+    observations = players[
+        ["game_id", "game_date", "season", "season_type", "team_id", "player_id", "player_name"]
+    ].copy()
+    observations["participation_state"] = "played"
+    observations.loc[drop, "participation_state"] = "did_not_play"
+    observations["coverage_scope"] = "listed_player_rows_only"
+    observations["source"] = "nba_official_finalbox:20251021_GSWLAL"
+    observations["source_sha256"] = "a" * 64
+    evidence = root / "data/raw/player_game_availability/2025-26_regular_season.csv"
+    evidence.parent.mkdir(parents=True, exist_ok=True)
+    observations.to_csv(evidence, index=False)
     players[~drop].to_csv(root / PLAYERS, index=False)
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root))
     reset_data_source_cache()

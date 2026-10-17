@@ -8,6 +8,7 @@ from nbatools.commands._compound_event_authorization import (
     authorize_compound_event_route,
     declared_event_conditions,
     unrouted_compound_event_reason,
+    unsupported_availability_status,
 )
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
@@ -3573,6 +3574,10 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        "requested_availability_status": unsupported_availability_status(
+            {"normalized_query": normalize_text(query)}
+        ),
+        "requested_on_off": on_off_request,
         "month_rank": month_rank,
         "month_stat": month_stat,
         "month_split_blocked": month_split_blocked,
@@ -10862,6 +10867,48 @@ def _three_team_comparison(parsed: dict, *, allow_stretch: bool = True) -> dict 
 def _finalize_route(parsed: dict) -> dict:
     """Route a parse state; named seasons answer only as a season split."""
     out = _finalize_route_unchecked(parsed)
+    status = unsupported_availability_status(parsed)
+    requested_on_off = parsed.get("requested_on_off")
+    kwargs = dict(out.get("route_kwargs") or {})
+    unsupported = None
+    if status:
+        unsupported = "availability_status"
+        kwargs["unsupported_availability"] = {
+            **(kwargs.get("unsupported_availability") or {}),
+            "condition": status,
+        }
+    elif requested_on_off:
+        members = requested_on_off["lineup_members"]
+        # A whole-game consumer cannot answer court presence. The on/off
+        # consumer must retain the requested participant and query subject.
+        if not (
+            members
+            and out.get("route") == "player_on_off"
+            and kwargs.get("lineup_members") == members
+            and kwargs.get("presence_state") == requested_on_off["presence_state"]
+            and (not parsed.get("player") or parsed["player"] in members)
+            and not parsed.get("record_intent")
+            and parsed.get("stat")
+            in {None, "minutes", "plus_minus", "off_rating", "def_rating", "net_rating"}
+            and parsed.get("min_value") is None
+            and parsed.get("max_value") is None
+        ):
+            unsupported = "on_court_presence"
+    if unsupported:
+        kwargs["unsupported_filters"] = list(
+            dict.fromkeys(
+                [
+                    *(kwargs.get("unsupported_filters") or []),
+                    unsupported,
+                ]
+            )
+        )
+        out["route_kwargs"] = kwargs
+        out["notes"] = list(out.get("notes") or []) + [
+            "unsupported_boundary: participation does not establish health/status "
+            "or on-court presence; the requested condition needs qualified data and a consumer"
+        ]
+        return out
     route = out.get("route")
     named_three = three_teams(parsed["normalized_query"], allow_stretch=False)
     if named_three is not None:
@@ -11497,6 +11544,10 @@ def parse_query(query: str) -> dict:
     if since is not None:
         return since
     out = _parse_query_once(query)
+    if {"availability_status", "on_court_presence"}.intersection(
+        (out.get("route_kwargs") or {}).get("unsupported_filters", [])
+    ):
+        return out
     if ONE_POSSESSION_TERM_PRESENT.search(query.lower()):
         # "one possession games with 10 reb": the margin the rewrite adds can
         # take the parse's one stat slot and drop a bound the question named.

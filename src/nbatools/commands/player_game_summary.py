@@ -347,7 +347,7 @@ def select_player_summary_sample(
                 sample = filter_by_opponent_player(sample, opponent_player, seasons, season_type)
             if without_player and not sample.empty:
                 sample = filter_without_player(
-                    sample, without_player, seasons, season_type, team=team
+                    sample, without_player, seasons, season_type, team=team, opponent=opponent
                 )
             if with_player and not sample.empty:
                 sample = filter_with_player(sample, with_player, seasons, season_type, team=team)
@@ -388,7 +388,9 @@ def select_player_summary_sample(
             df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
 
         if without_player and not df.empty:
-            df = filter_without_player(df, without_player, seasons, season_type, team=team)
+            df = filter_without_player(
+                df, without_player, seasons, season_type, team=team, opponent=opponent
+            )
 
         if with_player and not df.empty:
             df = filter_with_player(df, with_player, seasons, season_type, team=team)

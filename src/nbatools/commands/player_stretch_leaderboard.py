@@ -237,7 +237,9 @@ def build_result(
         df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
 
     if without_player and not df.empty:
-        df = filter_without_player(df, without_player, seasons, season_type, team=team)
+        df = filter_without_player(
+            df, without_player, seasons, season_type, team=team, opponent=opponent
+        )
 
     if df.empty:
         return NoResult(query_class="leaderboard", reason="no_match")

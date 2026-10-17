@@ -196,7 +196,9 @@ def _window_game_ids(
     if opponent_player and not sample.empty:
         sample = filter_by_opponent_player(sample, opponent_player, seasons, season_type)
     if without_player and not sample.empty:
-        sample = filter_without_player(sample, without_player, seasons, season_type, team=team)
+        sample = filter_without_player(
+            sample, without_player, seasons, season_type, team=team, opponent=opponent
+        )
     if with_player and not sample.empty:
         sample = filter_with_player(sample, with_player, seasons, season_type, team=team)
     if role and not sample.empty:
@@ -447,10 +449,10 @@ def build_result(
             )
         if without_player and not coverage_base.empty:
             coverage_base = filter_without_player(
-                coverage_base, without_player, seasons, season_type, team=team
+                coverage_base, without_player, seasons, season_type, team=team, opponent=opponent
             )
             coverage_period = filter_without_player(
-                coverage_period, without_player, seasons, season_type, team=team
+                coverage_period, without_player, seasons, season_type, team=team, opponent=opponent
             )
         if with_player and not coverage_base.empty:
             coverage_base = filter_with_player(
@@ -528,7 +530,9 @@ def build_result(
         df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
 
     if without_player and not df.empty:
-        df = filter_without_player(df, without_player, seasons, season_type, team=team)
+        df = filter_without_player(
+            df, without_player, seasons, season_type, team=team, opponent=opponent
+        )
 
     if with_player and not df.empty:
         df = filter_with_player(df, with_player, seasons, season_type, team=team)

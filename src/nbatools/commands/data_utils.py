@@ -2588,33 +2588,12 @@ def filter_without_player(
     season_type: str,
     team: str | None = None,
     strict_team_match: bool = False,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
 ) -> pd.DataFrame:
-    """Filter df to games where without_player did NOT play.
+    """Filter using explicit same-team game-day nonparticipation observations."""
+    from nbatools.commands._participation_observations import filter_absent
 
-    Specifically: exclude game_ids where without_player appeared for the
-    same team (or at all, if no team context).
-    """
-    if " and " in without_player:
-        # "without LeBron James and Anthony Davis": the games neither played.
-        for name in without_player.split(" and "):
-            df = filter_without_player(df, name, seasons, season_type, team, strict_team_match)
-        return df
-    player_df = load_player_games_for_seasons(seasons, season_type)
-    p_rows = player_game_ids(player_df, without_player, team=team)
-
-    if p_rows.empty:
-        return df.iloc[0:0].copy() if strict_team_match else df.copy()
-
-    if team:
-        # Only exclude games where the player was on the same team
-        # Franchise-aware: Durant's Seattle games are Thunder games with him.
-        team_games = set(p_rows.loc[team_value_mask(p_rows, team), "game_id"])
-        if strict_team_match and not team_games:
-            return df.iloc[0:0].copy()
-    else:
-        team_games = set(p_rows["game_id"])
-
-    return df[~df["game_id"].isin(team_games)].copy()
+    return filter_absent(df, without_player, seasons, season_type, opponent_context=bool(opponent))
 
 
 def filter_with_player(
