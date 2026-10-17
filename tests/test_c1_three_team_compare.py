@@ -82,3 +82,60 @@ def test_a_condition_beside_three_teams_refuses():
 
 def test_two_teams_keep_their_comparison():
     assert len(_summary("Lakers vs Celtics")) == 2
+
+
+@pytest.mark.parametrize(
+    ("query", "season", "month"),
+    [
+        ("Lakers vs Celtics vs Knicks in March", "2025-26", "2026-03"),
+        ("Lakers vs Celtics vs Knicks in March 2024", "2023-24", "2024-03"),
+        ("Lakers vs Celtics vs Knicks points per game", "2025-26", None),
+    ],
+)
+def test_three_teams_keep_month_and_explicit_scoring_scope(query, season, month):
+    """All three independently scoped team rows, not a two-team fallback."""
+    games = _games(season)
+    if month is not None:
+        games = games[games["game_date"].astype(str).str.startswith(month)]
+    expected = _expected(games)
+    assert all(row[1] > 0 for row in expected)
+    assert _summary(query) == expected
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers vs Celtics vs Knicks longest win streak",
+        "Lakers vs Celtics vs Knicks head to head",
+        "Lakers vs Celtics vs Knicks in wins",
+        "Lakers vs Celtics vs Knicks when LeBron scores 30",
+    ],
+)
+def test_three_teams_refuse_unread_conditions_instead_of_dropping_a_team(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", (query, result.route, result.result_reason)
+
+
+@pytest.mark.parametrize("alias", ["stretch", "span", "window", "spell"])
+def test_three_team_best_stretch_preserves_existing_specialized_route(alias):
+    result = execute_natural_query(f"Lakers vs Celtics vs Knicks best 5 game {alias}")
+    assert result.result_status == "ok"
+    assert result.route == "team_stretch_leaderboard"
+    assert {row["team_abbr"] for row in result.result.to_dict()["sections"]["leaderboard"]} == {
+        "LAL",
+        "BOS",
+        "NYK",
+    }
+
+
+@pytest.mark.parametrize("alias", ["run"])
+def test_unimplemented_stretch_alias_does_not_drop_third_team(alias):
+    result = execute_natural_query(f"Lakers vs Celtics vs Knicks best 5 game {alias}")
+    assert result.result_status == "no_result", (result.route, result.result)
+
+
+@pytest.mark.parametrize("suffix", ["when Curry scores 30", "when Jokic has 10 assists"])
+def test_stretch_with_player_condition_never_substitutes_player_subject(suffix):
+    result = execute_natural_query(f"Warriors vs Nuggets vs Heat best 5 game stretch {suffix}")
+    assert result.result_status == "no_result", (result.route, result.result)
+    assert result.route == "team_compare"

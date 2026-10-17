@@ -10813,9 +10813,9 @@ def _missed_games(parsed: dict) -> dict | None:
     return out
 
 
-def _three_team_comparison(parsed: dict) -> dict | None:
+def _three_team_comparison(parsed: dict, *, allow_stretch: bool = True) -> dict | None:
     """ "Lakers vs Celtics vs Knicks": three teams side by side (one was dropped)."""
-    found = three_teams(parsed["normalized_query"])
+    found = three_teams(parsed["normalized_query"], allow_stretch=allow_stretch)
     if found is None:
         return None
     teams, read = found
@@ -10863,6 +10863,20 @@ def _finalize_route(parsed: dict) -> dict:
     """Route a parse state; named seasons answer only as a season split."""
     out = _finalize_route_unchecked(parsed)
     route = out.get("route")
+    named_three = three_teams(parsed["normalized_query"], allow_stretch=False)
+    if named_three is not None:
+        teams, _ = named_three
+        kwargs = out.get("route_kwargs") or {}
+        retained = (
+            route == "team_stretch_leaderboard" and set(kwargs.get("teams") or []) == set(teams)
+        ) or (
+            route == "team_compare"
+            and [kwargs.get(key) for key in ("team_a", "team_b", "team_c")] == teams
+        )
+        if not retained:
+            # A recognized stretch may still be routed to a player query by an
+            # additional clause. Only consumers retaining all subjects may answer.
+            return _three_team_comparison(parsed, allow_stretch=False)
     if (
         parsed.get("season_list")
         and route
