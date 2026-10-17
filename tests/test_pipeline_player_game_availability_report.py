@@ -235,3 +235,18 @@ def test_original_report_receipt_preserves_bytes_url_and_checksum(tmp_path):
     assert receipt["size_bytes"] == len(content)
     assert (tmp_path / receipt["raw_file"]).read_bytes() == content
     assert receipt["retrieved_at"]
+
+
+def test_prior_season_resolves_identity_only_for_source_listed_inactive(nba_rows, monkeypatch):
+    path = nba_rows / "raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    prior = players[players.player_id.eq(4)]
+    prior.to_csv(nba_rows / "raw/player_game_stats/2024-25_regular_season.csv", index=False)
+    players[players.player_id.ne(4)].to_csv(path, index=False)
+    raw, _ = _get(nba_rows)
+    assert raw.loc[raw.personId.eq(4), "comment"].iloc[0].startswith("INACTIVE")
+    # Keeping the identity in old rows does not manufacture a missing report row.
+    text = PDF_TEXT.replace("Moody (Injury/Illness - Left Soleus; Strain)", "NONE")
+    monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: text)
+    raw, _ = _get(nba_rows)
+    assert 4 not in raw.personId.tolist()

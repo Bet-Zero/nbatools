@@ -263,7 +263,13 @@ Contract rules:
   byte count and raw filename. Report rows carry `source_sha256` to bind them
   to those exact bytes even if a provider later revises a report. Other adapters
   currently leave that field empty and remain pending original-source retention.
-  These files must accompany publication inputs.
+  These files must accompany publication inputs. Identity lookup may use the
+  immediately preceding season's canonical player/team IDs; that lookup never
+  establishes current membership or absence without an explicit report row.
+  Generation publication rejects availability overlays without valid import
+  digests, canonical final-game/team scope, the exact away/home report reference,
+  and matching retained PDF bytes/receipt. Temporary checkpoints, contradictory
+  rows and sources without retained report provenance fail before any R2 write.
   The bounded official-report numerical test retains these actual source files
   and derived CSVs in the existing validation artifact; artifact staging is
   temporary and does not satisfy permanent R2 publication.

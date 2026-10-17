@@ -15,7 +15,10 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from nbatools.commands.pipeline.pull_player_game_availability import backfill
+from nbatools.commands.pipeline.pull_player_game_availability import (
+    backfill,
+    validate_publication,
+)
 from nbatools.data_source import data_read_csv
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.engine]
@@ -60,12 +63,19 @@ def _stage_opening_game(tmp_path):
         roster_path.mkdir(parents=True)
         rosters.to_csv(roster_path / f"{season}.csv", index=False)
 
+    # Some source-listed inactives have no current-season appearances or were
+    # absent from the later roster snapshot. Prior qualified rows resolve IDs;
+    # only this game's report establishes their membership/nonparticipation.
+    prior = data_read_csv("data/raw/player_game_stats/2024-25_regular_season.csv")
+    prior.to_csv(root / "raw/player_game_stats/2024-25_regular_season.csv", index=False)
+
     return root, game_id
 
 
 def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
     root, game_id = _stage_opening_game(tmp_path)
     rows = backfill("2025-26", root=root, source="espn", game_ids=[game_id])
+    validate_publication(root)
     assert rows.game_id.eq(f"{game_id:010d}").all()
     assert rows.source.eq("espn_game_summary:401809244").all()
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
@@ -103,6 +113,7 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
             source = root / "raw" / directory
             if source.exists():
                 shutil.copytree(source, evidence / "raw" / directory, dirs_exist_ok=True)
+    validate_publication(root)
     assert rows.game_id.eq(f"{game_id:010d}").all()
     assert rows.source.eq("nba_official_finalbox:20251021_GSWLAL").all()
     assert rows.coverage_scope.eq("listed_player_rows_only").all()

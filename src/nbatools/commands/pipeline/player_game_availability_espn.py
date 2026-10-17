@@ -55,10 +55,19 @@ def _name(value: object) -> str:
 
 def _nba_players(root: Path, season: str, safe: str) -> pd.DataFrame:
     frames = []
-    for path in (
-        root / "raw/player_game_stats" / f"{season}_{safe}.csv",
-        root / "raw/rosters" / f"{season}.csv",
-    ):
+    start = int(season[:4])
+    previous = f"{start - 1}-{str(start)[-2:]}"
+    # Prior-season rows resolve identity only. The game-specific source must
+    # independently list the athlete under this team; no membership is inferred.
+    paths = [
+        path
+        for year in (season, previous)
+        for path in (
+            root / "raw/player_game_stats" / f"{year}_{safe}.csv",
+            root / "raw/rosters" / f"{year}.csv",
+        )
+    ]
+    for path in paths:
         if path.is_file():
             df = pd.read_csv(path)
             keys = {"team_id", "player_id", "player_name"}

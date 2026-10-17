@@ -353,6 +353,13 @@ def validate_staged_generation(stage: Path, generation_id: str) -> dict[str, Any
             raise GenerationValidationError(f"Generation file checksum mismatch: {key}")
 
     _validate_dataset_receipts(stage)
+    if (stage / "raw/player_game_availability").exists():
+        from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
+
+        try:
+            validate_publication(stage)
+        except (ValueError, KeyError, OSError, TypeError, AttributeError) as exc:
+            raise GenerationValidationError(f"Availability validation failed: {exc}") from exc
     return document
 
 

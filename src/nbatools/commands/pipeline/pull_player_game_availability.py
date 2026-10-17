@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import re
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -212,6 +213,91 @@ def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
     temporary = path.with_suffix(".tmp.csv")
     frame.to_csv(temporary, index=False)
     temporary.replace(path)
+
+
+def validate_publication(root: Path) -> None:
+    """Validate availability scope and retained source bytes before publication."""
+    directory = root / "raw/player_game_availability"
+    if not directory.exists():
+        return
+    for staging in (directory, root / "raw/player_game_availability_sources"):
+        if staging.exists() and any(
+            ".partial." in p.name or ".tmp" in p.name for p in staging.iterdir()
+        ):
+            raise ValueError("Availability staging contains unfinished imports")
+    for path in directory.glob("*.csv"):
+        frame = pd.read_csv(path, dtype={"game_id": str})
+        validate_availability(frame)
+        receipts = json.loads(path.with_suffix(".imports.json").read_text())
+        catalogs = {}
+        team_catalogs = {}
+        for game_id, rows in frame.groupby("game_id"):
+            if rows.season.nunique() != 1 or rows.season_type.nunique() != 1:
+                raise ValueError("Availability game spans multiple season scopes")
+            season, kind = rows.iloc[0][["season", "season_type"]]
+            filename = f"{season}_{str(kind).lower().replace(' ', '_')}.csv"
+            if filename != path.name:
+                raise ValueError("Availability filename does not match row season/type")
+            if filename not in catalogs:
+                catalogs[filename] = pd.read_csv(root / "raw/games" / filename)
+                team_catalogs[filename] = pd.read_csv(root / "raw/team_game_stats" / filename)
+            catalog = catalogs[filename]
+            game = catalog[pd.to_numeric(catalog.game_id).eq(int(game_id))]
+            if len(game) != 1:
+                raise ValueError("Availability game has no unique canonical game")
+            game = game.iloc[0]
+            if str(game.is_final).lower() not in {"true", "1"}:
+                raise ValueError("Availability game is not final")
+            if (
+                game.season != season
+                or game.season_type != kind
+                or not rows.game_date.eq(str(game.game_date)).all()
+                or set(rows.team_id.map(int)) != {int(game.home_team_id), int(game.away_team_id)}
+            ):
+                raise ValueError("Availability date/team/season differs from canonical game")
+            receipt = receipts.get(str(int(game_id)), {})
+            if receipt.get("source") != "report" or receipt.get("sha256") != _game_digest(rows):
+                raise ValueError("Availability import is incomplete or lacks source provenance")
+            if rows.source.nunique() != 1 or rows.source_sha256.nunique() != 1:
+                raise ValueError("Availability game has inconsistent source identity")
+            source = str(rows.iloc[0].source)
+            matched = re.fullmatch(r"nba_official_finalbox:(\d{8}_[A-Z]{4,8})", source)
+            digest = str(rows.iloc[0].source_sha256)
+            if matched is None or re.fullmatch(r"[a-f0-9]{64}", digest) is None:
+                raise ValueError("Availability publication requires retained official source")
+            reference = matched.group(1)
+            day = str(game.game_date).replace("-", "")
+            teams = team_catalogs[filename]
+            teams = teams[pd.to_numeric(teams.game_id).eq(int(game_id))]
+            if len(teams) != 2 or teams.team_id.nunique() != 2:
+                raise ValueError("Availability lacks canonical team-game identities")
+            abbrs = dict(zip(teams.team_id.map(int), teams.team_abbr))
+            if not rows.team_abbr.eq(rows.team_id.map(abbrs)).all():
+                raise ValueError("Availability team abbreviations differ from canonical teams")
+            expected_reference = (
+                f"{day}_{abbrs[int(game.away_team_id)]}{abbrs[int(game.home_team_id)]}"
+            )
+            if reference != expected_reference:
+                raise ValueError("Availability source matchup differs from canonical game")
+            source_dir = root / "raw/player_game_availability_sources"
+            source_receipt = json.loads((source_dir / f"{reference}.json").read_text())
+            retrieved = datetime.fromisoformat(str(source_receipt.get("retrieved_at", "")))
+            expected_url = f"https://statsdmz.nba.com/pdfs/{day}/{reference}.pdf"
+            if (
+                not reference.startswith(day + "_")
+                or source_receipt.get("source_url") != expected_url
+                or source_receipt.get("sha256") != digest
+                or source_receipt.get("raw_file") != f"{digest}.pdf"
+                or retrieved.tzinfo is None
+            ):
+                raise ValueError("Availability original-source receipt is inconsistent")
+            raw = (source_dir / f"{digest}.pdf").read_bytes()
+            if (
+                not raw.startswith(b"%PDF")
+                or len(raw) != source_receipt.get("size_bytes")
+                or hashlib.sha256(raw).hexdigest() != digest
+            ):
+                raise ValueError("Availability original-source bytes differ from receipt")
 
 
 def backfill(
