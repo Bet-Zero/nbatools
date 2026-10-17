@@ -9974,3 +9974,129 @@ cases:
       tags:
         - split
       notes: "Review the Warriors 2016 record when up 3-1."
+
+  - id: s5_team_date_opponent
+    query: "Celtics record vs Knicks from 2023-11-01 to 2024-03-01"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: date
+        label: "Date range"
+        value: "2023-11-01 – 2024-03-01"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 3
+      - path: result.sections.summary.0.pts_avg
+        equals: 121.0
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
+
+  - id: s5_player_date_opponent
+    query: "Stephen Curry averages vs Lakers from 2024-01-01 to 2024-03-31"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: date
+        label: "Date range"
+        value: "2024-01-01 – 2024-03-31"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 3
+      - path: result.sections.summary.0.pts_avg
+        equals: 36.333
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
+
+  - id: s5_team_last_n_window
+    query: "Celtics record scoring at least 110 points in their last 10 games in 2023-24"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: window
+        label: "Sample selection"
+        value: "Check conditions within the last 10 games"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 6
+      - path: result.sections.summary.0.pts_avg
+        equals: 127.0
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
+
+  - id: s5_team_last_n_qualifying
+    query: "Celtics record in their last 10 games scoring at least 110 points in 2023-24"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: window
+        label: "Sample selection"
+        value: "Select the last 10 games matching the conditions"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 10
+      - path: result.sections.summary.0.pts_avg
+        equals: 125.5
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
+
+  - id: s5_player_last_n_window
+    query: "Stephen Curry averages scoring at least 30 points in his last 10 games in 2023-24"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: window
+        label: "Sample selection"
+        value: "Check conditions within the last 10 games"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 2
+      - path: result.sections.summary.0.pts_avg
+        equals: 33.0
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
+
+  - id: s5_player_last_n_qualifying
+    query: "Stephen Curry averages in his last 10 games scoring at least 30 points in 2023-24"
+    category: sample_order
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+    expected_filters:
+      - kind: window
+        label: "Sample selection"
+        value: "Select the last 10 games matching the conditions"
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 10
+      - path: result.sections.summary.0.pts_avg
+        equals: 36.4
+    review_notes: "S5 pinned 2023-24 raw-row oracle; fixture/actual contract tests also assert exact selected identities and averages."
