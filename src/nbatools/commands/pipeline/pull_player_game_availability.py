@@ -317,9 +317,15 @@ def validate_publication(root: Path) -> None:
                 )
                 identity_raw = (source_dir / f"{identity_hash}.identity.json").read_bytes()
                 retrieved = datetime.fromisoformat(identity_receipt["retrieved_at"])
+                identity_payload = json.loads(identity_raw)
+                profiles = identity_payload.get("source_kind") == "official_player_profiles"
+                expected_identity_url = (
+                    "derived:official_profile_identities_v1"
+                    if profiles
+                    else f"{IDENTITY_ROOT}/boxscore_{int(game_id):010d}.json"
+                )
                 if (
-                    identity_receipt.get("source_url")
-                    != f"{IDENTITY_ROOT}/boxscore_{int(game_id):010d}.json"
+                    identity_receipt.get("source_url") != expected_identity_url
                     or identity_receipt.get("sha256") != identity_hash
                     or identity_receipt.get("raw_file") != f"{identity_hash}.identity.json"
                     or identity_receipt.get("size_bytes") != len(identity_raw)
@@ -327,19 +333,45 @@ def validate_publication(root: Path) -> None:
                     or hashlib.sha256(identity_raw).hexdigest() != identity_hash
                 ):
                     raise ValueError("Availability identity source receipt/bytes mismatch")
-                identities = live_identity_rows(
-                    json.loads(identity_raw),
-                    game_id=int(game_id),
-                    game_date=str(game.game_date),
-                    home_team_id=int(game.home_team_id),
-                    away_team_id=int(game.away_team_id),
-                    by_id={int(t.team_id): (t.team_abbr, t.pts) for t in teams.itertuples()},
-                )
+                if profiles:
+                    from nbatools.commands.pipeline.player_game_availability_espn import (
+                        _nba_players,
+                    )
+                    from nbatools.commands.pipeline.player_game_availability_profiles import (
+                        validate_profile_index,
+                    )
+
+                    identities = validate_profile_index(identity_payload, source_dir)
+                    canonical = _nba_players(root, season, str(kind).lower().replace(" ", "_"))
+                    for item in identities.itertuples():
+                        if (
+                            canonical.player_id.eq(item.player_id)
+                            & ~canonical.normalized.eq(item.normalized)
+                        ).any():
+                            raise ValueError(
+                                "Official profile conflicts with canonical NBA identity"
+                            )
+                        if not (
+                            rows.player_id.eq(item.player_id) & rows.team_id.eq(item.team_id)
+                        ).any():
+                            raise ValueError("Official profile identity is not used by this report")
+                    identities = pd.concat(
+                        [canonical, identities], ignore_index=True
+                    ).drop_duplicates()
+                else:
+                    identities = live_identity_rows(
+                        identity_payload,
+                        game_id=int(game_id),
+                        game_date=str(game.game_date),
+                        home_team_id=int(game.home_team_id),
+                        away_team_id=int(game.away_team_id),
+                        by_id={int(t.team_id): (t.team_abbr, t.pts) for t in teams.itertuples()},
+                    )
                 for row in rows.itertuples():
                     match = identities[
                         identities.player_id.eq(row.player_id) & identities.team_id.eq(row.team_id)
                     ]
-                    if len(match) != 1 or match.iloc[0].normalized != _name(row.player_name):
+                    if match.empty or set(match.normalized) != {_name(row.player_name)}:
                         raise ValueError("Availability row differs from retained official identity")
 
 

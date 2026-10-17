@@ -381,3 +381,78 @@ def test_live_identity_global_id_conflict_rejects_but_trade_is_valid(nba_rows, m
     pd.concat([canonical, pd.DataFrame([other])]).to_csv(path, index=False)
     rows, _ = _get(nba_rows)
     assert rows[rows.personId.eq(99)].iloc[0].teamId == 1
+
+
+def _profile_html(ident=99, name="Alex Toohey"):
+    first, _, last = name.partition(" ")
+    info = dict(
+        PERSON_ID=ident,
+        FIRST_NAME=first,
+        LAST_NAME=last,
+        DISPLAY_FIRST_LAST=name,
+        TEAM_ID=999,
+        ROSTERSTATUS="Active",
+    )
+    payload = dict(props=dict(pageProps=dict(player=dict(info=info))))
+    return (
+        '<script id="__NEXT_DATA__" type="application/json">' + json.dumps(payload) + "</script>"
+    ).encode()
+
+
+def test_profile_structure_checks_id_name_and_ignores_current_status():
+    from nbatools.commands.pipeline.player_game_availability_profiles import profile_identity
+
+    assert profile_identity(_profile_html(), 99, "Alex Toohey") == "Alex Toohey"
+    for ident, name in ((100, "Alex Toohey"), (99, "Different Person")):
+        with pytest.raises(ValueError, match="differs"):
+            profile_identity(_profile_html(), ident, name)
+    with pytest.raises(ValueError, match="structured"):
+        profile_identity(b"<title>Alex Toohey</title>", 99, "Alex Toohey")
+
+
+def test_profile_fallback_retains_source_and_blocks_corrupt_publication(nba_rows, monkeypatch):
+    import io
+    import urllib.error
+
+    from nba_api.stats.static import players
+
+    from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
+
+    def unavailable(*a, **k):
+        raise urllib.error.HTTPError("https://cdn.nba.com", 403, "Forbidden", {}, None)
+
+    def pdf(url, *, archive):
+        report._archive_report(b"%PDF controlled profile fixture", url, archive)
+        return PDF_TEXT.replace("Moody (", "Toohey (")
+
+    monkeypatch.setattr(report, "_fetch_live_identities", unavailable)
+    monkeypatch.setattr(report, "_fetch_report_text", pdf)
+    monkeypatch.setattr(players, "get_players", lambda: [dict(id=99, full_name="Alex Toohey")])
+    monkeypatch.setattr(
+        report.urllib.request, "urlopen", lambda *a, **k: io.BytesIO(_profile_html())
+    )
+    rows = backfill("2025-26", root=nba_rows, source="report")
+    player = rows[rows.player_id.eq(99)].iloc[0]
+    assert player.team_id == 1  # current profile deliberately names team999
+    assert player.participation_state == "did_not_play"
+    assert len(rows) == 6
+    validate_publication(nba_rows)
+    source = nba_rows / "raw/player_game_availability_sources"
+    html = next(source.glob("*.profile.html"))
+    html.write_bytes(b"changed")
+    with pytest.raises(ValueError, match="receipt/bytes"):
+        validate_publication(nba_rows)
+
+
+def test_profile_candidate_ambiguity_never_fetches(nba_rows, monkeypatch):
+    from nba_api.stats.static import players
+
+    from nbatools.commands.pipeline.player_game_availability_profiles import fetch_profile_for_name
+
+    monkeypatch.setattr(
+        players,
+        "get_players",
+        lambda: [dict(id=99, full_name="Alex Toohey"), dict(id=100, full_name="Other Toohey")],
+    )
+    with pytest.raises(ValueError, match="unique"):
+        fetch_profile_for_name("Toohey", 1, True, nba_rows)

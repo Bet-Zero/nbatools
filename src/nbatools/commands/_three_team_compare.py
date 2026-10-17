@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
+from nbatools.commands._parse_helpers import detect_stretch_query
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 
@@ -35,11 +36,13 @@ def _patterns() -> tuple[re.Pattern, ...]:
 _READ_REST = re.compile(
     r"^(?:\s+(?:in|during|for|this|last|since|from|to|through|the|season|seasons|"
     r"regular|playoffs?|postseason|at|home|on|road|away|games?|stats?|records?|"
-    r"comparison|\d{4}(?:-\d{2})?|\d+))*\s*[?.!]?$"
+    r"comparison|per|game|points|ppg|scoring|averages?|of|and|"
+    r"january|february|march|april|may|june|october|november|december|"
+    r"\d{4}(?:-\d{2})?|\d+))*\s*[?.!]?$"
 )
 
 
-def three_teams(query: str) -> tuple[list[str], bool] | None:
+def three_teams(query: str, *, allow_stretch: bool = True) -> tuple[list[str], bool] | None:
     """The three teams a comparison names, and whether the rest is read scope."""
     q = query.strip()
     for rx in _patterns():
@@ -52,12 +55,10 @@ def three_teams(query: str) -> tuple[list[str], bool] | None:
         rest = m.group(4)
         if _READ_REST.match(rest):
             return teams, True
-        if _CONDITION.search(rest):
-            return teams, False
-        # "Lakers vs Celtics vs Knicks best 5 game stretch": another reader's.
-        return None
+        if allow_stretch and detect_stretch_query(q) is not None:
+            # "Lakers vs Celtics vs Knicks best 5 game stretch": the stretch board's.
+            return None
+        # "in wins", "longest win streak", "head to head": not read for three
+        # teams, and another reader would drop one of them.
+        return teams, False
     return None
-
-
-# A condition beside the three teams that the comparison cannot apply.
-_CONDITION = re.compile(r"\b(?:when|whenever|while|if|with|without|vs\.?|versus|against)\b")

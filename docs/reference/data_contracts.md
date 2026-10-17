@@ -269,6 +269,15 @@ Contract rules:
   If no candidate exists, the official CDN game box score supplies identity only:
   exact game/date/finality, home/away teams and final scores must match first.
   Ambiguous IDs/names and canonical identity conflicts reject the import. CDN
+  A CDN HTTP403 may instead use a unique NBA API static-catalog candidate to
+  select an official NBA profile URL. The profile's retained HTML must confirm
+  `PERSON_ID`, `FIRST_NAME`, `LAST_NAME` and `DISPLAY_FIRST_LAST` in its structured
+  `props.pageProps.player.info`; the SDK catalog alone is not accepted evidence.
+  Current profile team/status fields are ignored. A derived identity index binds
+  each used profile's ID/name and original HTML hash; publication verifies all
+  HTML receipts and canonical global-ID consistency. These HTML/index files stay
+  alongside the report sources and must accompany permanent publication.
+  Source
   status/minutes do not determine output participation, and unlisted PDF players
   never become rows. `identity_source_sha256` binds any fallback to retained
   original JSON bytes and URL/time/hash/size receipts. Publication revalidates

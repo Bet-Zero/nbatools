@@ -12,6 +12,7 @@ import hashlib
 import io
 import json
 import re
+import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
@@ -328,22 +329,39 @@ def official_report_as_v3(
     played = pd.read_csv(source, dtype={"game_id": str})
     played = played[played.game_id.map(int).eq(game_id)]
     identity_digest = ""
+    cdn_unavailable = False
+    profile_records = []
 
     def identify(ident, name, used, *, surname):
-        nonlocal people, identity_digest
+        nonlocal people, identity_digest, cdn_unavailable
         try:
             return _identify(people, ident, name, used, surname=surname)
         except UnresolvedIdentity:
             if identity_digest:
                 raise
-            extra, identity_digest = _fetch_live_identities(
-                data_root / "raw/player_game_availability_sources",
-                game_id=game_id,
-                game_date=game_date,
-                home_team_id=home_team_id,
-                away_team_id=away_team_id,
-                by_id=by_id,
-            )
+            if not cdn_unavailable:
+                try:
+                    extra, identity_digest = _fetch_live_identities(
+                        data_root / "raw/player_game_availability_sources",
+                        game_id=game_id,
+                        game_date=game_date,
+                        home_team_id=home_team_id,
+                        away_team_id=away_team_id,
+                        by_id=by_id,
+                    )
+                except urllib.error.HTTPError as exc:
+                    if exc.code != 403:
+                        raise
+                    cdn_unavailable = True
+            if cdn_unavailable:
+                from nbatools.commands.pipeline.player_game_availability_profiles import (
+                    fetch_profile_for_name,
+                )
+
+                extra, record = fetch_profile_for_name(
+                    name, ident, surname, data_root / "raw/player_game_availability_sources"
+                )
+                profile_records.append(record)
             for row in extra.itertuples(index=False):
                 same = people[people.team_id.eq(row.team_id)]
                 if (
@@ -401,6 +419,14 @@ def official_report_as_v3(
     if not rows or {row["teamId"] for row in rows} != set(team_ids):
         raise ValueError("No trustworthy game-day NBA report rows for both teams")
     frame = pd.DataFrame(rows)
+    if profile_records:
+        from nbatools.commands.pipeline.player_game_availability_profiles import (
+            archive_profile_index,
+        )
+
+        identity_digest = archive_profile_index(
+            profile_records, data_root / "raw/player_game_availability_sources"
+        )
     frame.attrs["identity_source_sha256"] = identity_digest
     receipt = data_root / "raw/player_game_availability_sources" / f"{ref}.json"
     if receipt.exists():

@@ -118,7 +118,16 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
     assert rows.source.eq("nba_official_finalbox:20251021_GSWLAL").all()
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
     assert rows.team_id.isin([1610612747, 1610612744]).all()
-    assert len(rows) >= 24
+    assert len(rows) == 34
+    assert rows.participation_state.value_counts().to_dict() == {"played": 20, "did_not_play": 14}
+    assert rows.groupby("team_abbr").size().to_dict() == {"GSW": 17, "LAL": 17}
+    assert rows[rows.participation_state.eq("played")].groupby("team_abbr").size().to_dict() == {
+        "GSW": 11,
+        "LAL": 9,
+    }
+    assert rows.groupby("team_abbr").source_minutes.sum().to_dict() == pytest.approx(
+        {"GSW": 240, "LAL": 240}
+    )
     for name in (
         "LeBron James",
         "Moses Moody",
@@ -159,11 +168,10 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
 def test_official_missing_player_profile_identity_sources(tmp_path):
     """Acquire a bounded official identity source; do not infer team membership."""
     import hashlib
-    import re
     import urllib.request
     from datetime import UTC, datetime
 
-    from nbatools.commands.pipeline.player_game_availability_espn import _name
+    from nbatools.commands.pipeline.player_game_availability_profiles import profile_identity
 
     evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
     directory = evidence / "raw/player_identity_sources"
@@ -185,26 +193,5 @@ def test_official_missing_player_profile_identity_sources(tmp_path):
             raw_file=f"{digest}.html",
         )
         (directory / f"{ident}.json").write_text(json.dumps(receipt, indent=2) + "\n")
-        text = raw.decode("utf-8")
-        matched = re.search(r'<script[^>]*id="__NEXT_DATA__"[^>]*>(.*?)</script>', text, re.S)
-        assert matched, "Official profile lacks structured Next data"
-        payload = json.loads(matched.group(1))
-        candidates = []
-
-        def visit(node):
-            if isinstance(node, dict):
-                if str(node.get("personId")) == str(ident):
-                    candidates.append(node)
-                for value in node.values():
-                    visit(value)
-            elif isinstance(node, list):
-                for value in node:
-                    visit(value)
-
-        visit(payload)
-        (directory / f"{ident}.structured.json").write_text(json.dumps(candidates, indent=2) + "\n")
-        assert any(
-            _name(f"{row.get('firstName', '')} {row.get('lastName', '')}") == _name(name)
-            for row in candidates
-        ), f"No structured official ID/name match for {ident}"
+        assert profile_identity(raw, ident, name) == name
         print("Verified official profile identity:", ident, name, digest)
