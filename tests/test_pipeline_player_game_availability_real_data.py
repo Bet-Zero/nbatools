@@ -7,8 +7,6 @@ production publication or a claim that the whole NBA roster is complete.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
@@ -66,10 +64,16 @@ def test_2025_opening_lakers_warriors_explicit_dnp_and_nba_id_match(tmp_path):
     assert rows.participation_state.eq("did_not_play").any()
     # The reported DNP is a source observation, not an invented injury or
     # an inference about athletes missing from the ESPN game box score.
-    assert rows.loc[rows.participation_state.eq("did_not_play"), "source_comment"].str.startswith(
-        "DNP - ESPN confirmed"
-    ).all()
-
-    evidence = Path("outputs/required_data_validation/player_game_availability_sample.csv")
-    evidence.parent.mkdir(parents=True, exist_ok=True)
-    rows.to_csv(evidence, index=False)
+    assert (
+        rows.loc[rows.participation_state.eq("did_not_play"), "source_comment"]
+        .str.startswith("DNP - ESPN confirmed")
+        .all()
+    )
+    print(
+        "Verified game-day observations:",
+        len(rows),
+        "source-reported DNP:",
+        int(rows.participation_state.eq("did_not_play").sum()),
+        "NBA IDs verified:",
+        int(rows.player_id.nunique()),
+    )
