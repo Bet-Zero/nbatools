@@ -83,6 +83,7 @@ def test_a_condition_beside_three_teams_refuses():
 def test_two_teams_keep_their_comparison():
     assert len(_summary("Lakers vs Celtics")) == 2
 
+
 @pytest.mark.parametrize(
     ("query", "season", "month"),
     [
