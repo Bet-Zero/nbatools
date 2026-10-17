@@ -1,37 +1,39 @@
-name: Historic game-day roster source reachability (temporary probe)
+name: NBA official inactive/report endpoints (temporary read-only probe)
 on:
   push:
     branches: ["ops/availability-source-probe-20261016"]
 permissions:
   contents: read
 jobs:
-  historic-roster-source:
+  official-scoring-source:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Probe Sports Reference source once, no credentials or data publication
+      - name: Probe official game boxscore/inactive and final scorer reports
         shell: bash
         run: |
           python - <<'PY'
           import urllib.request
           import urllib.error
-          urls = [
-              "https://www.basketball-reference.com/boxscores/202510210LAL.html",
-              "https://www.basketball-reference.com/boxscores/201412290CHO.html",
+          urls=[
+           "https://www.nba.com/game/0022500002/box-score",
+           "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf",
+           "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL_book.pdf",
+           "https://statsdmz.nba.com/pdfs/20250204/20250204_BOSCLE.pdf",
           ]
           for url in urls:
               try:
-                  request = urllib.request.Request(url, headers={
-                      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
-                      "Accept": "text/html",
+                  req=urllib.request.Request(url,headers={
+                    "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
+                    "Referer":"https://www.nba.com/","Accept":"text/html,application/pdf",
                   })
-                  with urllib.request.urlopen(request, timeout=12) as response:
-                      raw = response.read(350000).decode("utf-8", errors="replace")
-                      print(url, "status", response.status, "bytes", len(raw),
-                            "did_not_play", "Did Not Play" in raw,
-                            "inactive", "Inactive:" in raw)
-              except urllib.error.HTTPError as exc:
-                  print(url, "HTTP", exc.code)
-              except Exception as exc:
-                  print(url, type(exc).__name__, str(exc)[:120])
+                  with urllib.request.urlopen(req,timeout=14) as resp:
+                      data=resp.read(200000)
+                      print(url,"HTTP",resp.status,"TYPE",resp.headers.get("Content-Type"),
+                            "LEN",len(data),"PDF",data[:4]==b"%PDF",
+                            "INACTIVE?",b"Inactive Players" in data)
+              except urllib.error.HTTPError as e:
+                  print(url,"HTTP",e.code)
+              except Exception as e:
+                  print(url,type(e).__name__,str(e)[:130])
           PY
