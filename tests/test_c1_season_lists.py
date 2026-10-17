@@ -242,3 +242,93 @@ def test_two_opponents_per_named_season():
         team = _rows("team_game_stats", season)
         team = team[(team["team_abbr"] == "LAL") & team["opponent_team_abbr"].isin(["BOS", "NYK"])]
         assert (row["games"], row["wins"]) == (len(team), int((team["wl"] == "W").sum()))
+
+
+def test_player_points_opponent_nonadjacent_seasons_and_controls(monkeypatch):
+    """S2: an own-points bound and opponent select the same raw player games."""
+    from nbatools.commands import player_split_summary
+    from nbatools.query_service import execute_natural_query
+
+    seasons = ["2023-24", "2025-26"]
+    expected = {}
+    for season in seasons:
+        raw = _rows("player_game_stats", season)
+        player = raw[raw.player_name.eq("LeBron James")]
+        opponent = player[player.opponent_team_abbr.eq("BOS")]
+        expected[season] = opponent[opponent.pts.ge(25)]
+        assert 0 < len(expected[season]) < len(opponent)
+        assert len(player[player.pts.ge(25)]) > len(expected[season])
+    assert any(frame.pts.eq(25).any() for frame in expected.values())
+    # At least one requested sample discriminates inclusive from strict bounds.
+    middle = _rows("player_game_stats", "2024-25")
+    assert (
+        middle.player_name.eq("LeBron James")
+        & middle.opponent_team_abbr.eq("BOS")
+        & middle.pts.ge(25)
+    ).any()
+
+    def keys(frame):
+        return set(zip(frame.season, frame.game_id, frame.team_id, frame.player_id))
+
+    def assert_values(row, frame):
+        assert row["games"] == len(frame)
+        for metric in ("pts", "reb", "ast"):
+            assert row[f"{metric}_avg"] == pytest.approx(frame[metric].mean(), abs=0.001)
+        assert row["pts_sum"] == frame.pts.sum()
+
+    def assert_labels(result):
+        assert result.result_status == "ok", result.metadata
+        assert result.metadata["player"] == "LeBron James"
+        assert result.metadata["opponent"] == "BOS"
+        assert result.metadata["season_type"] == "Regular Season"
+        assert result.metadata["min_value"] == 25
+        filters = result.metadata["applied_filters"]
+        assert {"kind": "team", "label": "Opponent", "value": "BOS"} in filters
+        assert {"kind": "threshold", "label": "pts min", "value": "25.0"} in filters
+
+    captured = []
+    summarize = player_split_summary._summarize_bucket
+
+    def capture(frame, bucket):
+        captured.append((bucket, frame.copy()))
+        return summarize(frame, bucket)
+
+    monkeypatch.setattr(player_split_summary, "_summarize_bucket", capture)
+    question = "LeBron James averages with at least 25 points against Celtics in "
+    combined = execute_natural_query(question + "2023-24 and 2025-26")
+    assert_labels(combined)
+    assert combined.route == "player_split_summary"
+    assert combined.metadata["season_list"] == seasons
+    assert [season for season, _ in captured] == seasons
+    sections = combined.result.to_dict()["sections"]
+    assert [row["bucket"] for row in sections["split_comparison"]] == seasons
+    assert sections["summary"][0]["games_total"] == sum(map(len, expected.values()))
+    for row, (season, frame) in zip(sections["split_comparison"], captured):
+        assert len(frame) == len(expected[season])
+        assert keys(frame) == keys(expected[season])
+        assert_values(row, expected[season])
+    for season in seasons:
+        single = execute_natural_query(question + season)
+        assert_labels(single)
+        assert single.route == "player_game_summary"
+        assert single.metadata["season"] == season
+        sections = single.result.to_dict()["sections"]
+        log = pd.DataFrame(sections["game_log"])
+        assert len(log) == len(expected[season])
+        assert keys(log) == keys(expected[season])
+        assert_values(sections["summary"][0], expected[season])
+
+
+@pytest.mark.parametrize("home,away", [(1, 0), (0, 1), (0, 0)])
+def test_s1_source_venue_contract_accepts_home_away_and_neutral(home, away):
+    from tests.test_c1_season_lists_real_data import _assert_venue_flags
+
+    _assert_venue_flags(pd.DataFrame({"is_home": [home], "is_away": [away]}))
+
+
+@pytest.mark.parametrize("home,away", [(1, 1), (2, 0), (0, -1), (None, 0), (0, None)])
+def test_s1_source_venue_contract_rejects_invalid_flags(home, away):
+    from tests.test_c1_season_lists_real_data import _assert_venue_flags
+
+    with pytest.raises(AssertionError):
+        _assert_venue_flags(pd.DataFrame({"is_home": [home], "is_away": [away]}))
