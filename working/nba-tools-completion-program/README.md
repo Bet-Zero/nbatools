@@ -21,10 +21,10 @@ latest PR discussion/branch may be ahead of this main-branch record; check it.
 
 | Field | Current handoff |
 | --- | --- |
-| Program state | #468 merged ascb88329c; post-merge full/fast CI39003446595 passed. #469 runtime0796d1ec3401bd88faac0acaf34261ccf148fa30 accepted: final CI39004272358, preflight and required NBA consumer gate all passed; final documentation descendant CI is the remaining premerge check. Permanent R2 publication is still pending, not completed by staging or merge. |
-| Main / owner | Live main `cb88329c65032df33a9781b6b3e62d40eab91b3e`. Lead Codex /root owns `codex/qualified-absence-consumer` in `/workspace/work/qualified-absence`, PR469; independent checker /root/availability_checker. Prior remote runtime42772dd8811358c9f62f0d62efc0d2830f6e3f0c. This checkpoint descendant adds reviewed status/on-court containment. PR462 and all46 positive obligations remain intact. |
+| Program state | #469 merged `1e55ae945894d89119afe5627f8e20066af9c01f`; post-merge full/fast CI39004787964 passed. #470 S1/S2 candidate `b7b08b1acb10a39ce05af161c059347b459c7dd0` passed CI39005243656 and required pinned NBA checks; independent review accepted. This final documentation descendant needs normal CI before merge. Permanent R2 publication remains pending. |
+| Main / owner | Live main `1e55ae945894d89119afe5627f8e20066af9c01f`. Lead /root owns PR470, `codex/verify-season-contracts`, local `/workspace/work/season-contracts`. Checker `/root/availability_checker`. S3 tests-only candidate `10ff2e2a8a3787471646a0156be02f677cebc1f2` on `codex/verify-subject-ownership` is pushed; its bounded numerical request is running. Runtime remains unchanged from #469. |
 | Verification | #469 runtime0796d1ec: preflight7938passed1461skipped3subtests135.28sec;470focusedpassed22skipped;27status/court boundary tests and independent unfamiliar probes passed. Required NBA run [39004295670](https://github.com/Bet-Zero/nbatools/actions/runs/39004295670), request2d718f572f6b291ce08ee1690a98582a54e436b6:1selected/executed/passed0skip/fail/error/xfail,6.41sec on queue-d-production-0574735-20260716. Artifact12089464271 ZIP SHA256 `26174fd4ce52d923be478fc2f60e81fc0d2a9ed970b9ba277d75e4b6ebf66847`. Separate checker /root/availability_checker verified fresh raw receipts, CSV digest, all34semantic rows,119/109scores and240minutes/team, and approved final bounded semantics. Previous consumer run39003780254 also passed. |
-| Source/storage NEXT | Merge #469 after final documentation CI passes, preserving0796d1ec runtime; inspect post-merge fullCI. Then reconcile #462 with qualified evidence. Its remaining multi-opponent Tatum requirement needs explicit effective-dated/exact-date membership proving unrelated-team nonmembership; existing season roster or omitted rows cannot supply it. Membership alone must never create DNP. Preserve every positive expectation while acquiring/qualifying the necessary source; advance independent S1/S2 if blocked. |
+| Source/storage NEXT | Merge #470 after final documentation CI passes, then inspect post-merge CI. S1/S2 required run [39005269965](https://github.com/Bet-Zero/nbatools/actions/runs/39005269965), request `a6e46a3f07c8678d47d3e42163dfc99c2d6d418e`: 3 selected/executed/passed, 0 skips/failures/errors/xfails, 20.17sec. Artifact12090707380 ZIP SHA256 `f2910e8ae3fca8a51c2e275fe7c8149472a0f6881f2a52b817ba293e51b803a3`. Checker verified all five source CSVs unchanged and independently derived values below. Initial run39004968232 remains failed (mistaken positive LAL source assumption); neither thresholds nor positive feature obligations were weakened. |
 | Permanent-storage gate | CI artifacts are temporary staging only. Retain source URI/retrieval date/hash and bind CSV rows with `source_sha256`; stage against the pinned existing generation, validate coverage and lineage, publish only with existing write authority, verify object sizes/checksums and active pointer/runtime. Never use read-only validation credentials for writes. Request owner action only if the actual publication operation lacks available authority. |
 | Independent #467 | Candidate `26f10cde368b7efe8cabd1c716166f259a72e087` on `codex/p1-three-team-scope-independent-20261016` fixes final three-team subject retention. CI [39000450859](https://github.com/Bet-Zero/nbatools/actions/runs/39000450859) passed. Independent checker: 39 scoped tests plus raw-fixture March arithmetic and unfamiliar entity/clause probes. Maker: 66 focused tests. |
 | #467 NBA evidence | R2 [39000485209](https://github.com/Bet-Zero/nbatools/actions/runs/39000485209), request `48147b039e8416e17633efddb059b67f9e65c672`, reviewed parent `26f10cde368b7efe8cabd1c716166f259a72e087`: **2 selected/executed/passed, 0 skipped/failed/errors/xfails**, pinned generation above. Artifact 12088766782, ZIP SHA256 `819b7cf7eda43cb0a119cfa8506b94914b9922b47eba0b5ed8a73bb7656a68e9`. Raw QA/sweep unselected, not full-corpus acceptance. |
@@ -32,6 +32,26 @@ latest PR discussion/branch may be ahead of this main-branch record; check it.
 | Preserved requirements | #462 head13df00fb84f142a0f4803ac196ebe9ff3a1355db remains intact with46positive obligations. Lead local future worktree `/workspace/work/462-integration`, branchcodex/resume-462-integration, has UNPUSHED ported remaining shared-reader hunks and explicit synthetic observation fixture; its availability-word suite88passed1failed (BOS+NYKwithoutTatum lacks qualified nonmembership). No expected outputs weakened. This is incomplete integration, not actual NBA acceptance; S1/S2 and K01-K12 remain open. |
 | Runtime / owner direction | Owner confirmed persistent Goal activation is unavailable; do not request it again or claim background continuation. Use existing GitHub Actions runners for NBA scorer reports and R2 read-only validation despite Codex Cloud proxy failure. Do not request additional R2 credentials. Continue authorized tasks within the active session and update this same checkpoint. |
 | Needed from owner | Actual publication operation requested using the checked [operator handoff](opening-availability-publication.md); no response/receipt yet. Existing separately controlled write authority is unavailable in this session. Do not request new credentials. Consumer implementation and CI proceed independently. |
+
+S1/S2 accepted numerical scope on `queue-d-production-0574735-20260716`:
+BOS home versus NYK: 2023-24 **3 games, 2–1, 356 points**; 2025-26 **2 games,
+1–1, 212 points**. Curry >=25 versus POR: **2 games/58 points** and **3 games/121
+points**. Curry >=25 versus LAL: **3 games/109 points** and an explicitly empty
+2025-26 sample (his sole recorded appearance scored23). The positive 2024-25
+LAL sample, **3 games/112 points**, must remain excluded. Exact raw IDs, PTS/REB/AST
+means, labels, structured/natural splits and one-season controls passed. Fixture
+suite51passed; checker held-out GSW away/NYK and Curry>=28/BOS passed. Deployed
+S1/S2 verification and the remaining K07/S4 obligations stay open.
+
+S3 request `248b8e245d35168e423aaa4785bc124f9e04a631` on
+`r2-validation/subject-ownership-10ff2e2a` selects
+`tests/test_subject_ownership_contract.py::test_s3_owned_scoring_and_venue_actual_data`.
+Independent raw expectations: LAL own>=110/opponent<110/home, 2023-24,
+**8 games, 8–0, 998 points**; LeBron own>=25/opponent<110/home, **8 games,
+7–1, 228 points**. Tests-only candidate passed fixture and independent unfamiliar
+road/entity/threshold probes; actual gate pending. Reconcile it with latest main
+before its own PR/CI. No runtime drift requires repeating already valid source
+arithmetic; new acceptance must still execute.
 
 ### First-session procedure
 
