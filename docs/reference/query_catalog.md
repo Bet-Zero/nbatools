@@ -513,6 +513,13 @@ Examples:
 
 ### Season splits
 
+Named opponents remain attached beside punctuation and season-grouping clauses,
+for example `Split Denver's road record against Utah by season: 2023-24 and
+2025-26`. The opponent reader retains following conditions instead of consuming
+them as part of the team name. Bounded raw-data acceptance covers Denver away
+at Utah and Minnesota home against Denver; deployed verification is separate.
+This does not establish support for unknown or non-NBA qualified team names.
+
 Examples:
 
 - `Lakers record this season vs last season`, `LeBron stats this season compared to last season`
