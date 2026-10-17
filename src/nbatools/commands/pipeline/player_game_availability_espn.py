@@ -115,9 +115,7 @@ def espn_boxscore_as_v3(
         if len(competitors) != 2:
             continue
         try:
-            scores = {
-                _abbr(c["team"]["abbreviation"]): int(c["score"]) for c in competitors
-            }
+            scores = {_abbr(c["team"]["abbreviation"]): int(c["score"]) for c in competitors}
         except (KeyError, TypeError, ValueError):
             continue
         if scores == {team: info[1] for team, info in teams.items()}:
@@ -146,8 +144,7 @@ def espn_boxscore_as_v3(
             for athlete in stat.get("athletes", []):
                 espn_name = str((athlete.get("athlete") or {}).get("displayName") or "")
                 ids = persons[
-                    persons.team_id.eq(nba_team_id)
-                    & persons.normalized.eq(_name(espn_name))
+                    persons.team_id.eq(nba_team_id) & persons.normalized.eq(_name(espn_name))
                 ].player_id.unique()
                 if len(ids) != 1:
                     raise ValueError(
@@ -170,10 +167,14 @@ def espn_boxscore_as_v3(
                 words = str(nba_name).split(" ", 1)
                 output.append(
                     {
-                        "gameId": game_id, "teamId": nba_team_id, "teamTricode": team,
-                        "personId": int(ids[0]), "firstName": words[0],
+                        "gameId": game_id,
+                        "teamId": nba_team_id,
+                        "teamTricode": team,
+                        "personId": int(ids[0]),
+                        "firstName": words[0],
                         "familyName": words[1] if len(words) > 1 else words[0],
-                        "minutes": minutes, "comment": comment,
+                        "minutes": minutes,
+                        "comment": comment,
                     }
                 )
     if len(seen) != 2 or not output:
