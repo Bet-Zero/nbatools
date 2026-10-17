@@ -19,51 +19,104 @@ def sources(tmp_path, monkeypatch):
     root = tmp_path / "data"
     for subdir in ("games", "team_game_stats", "player_game_stats"):
         (root / "raw" / subdir).mkdir(parents=True)
-    pd.DataFrame([{
-        "game_id": "0022500001", "game_date": "2025-10-21", "season": "2025-26",
-        "season_type": "Regular Season", "is_final": True,
-        "home_team_id": 1610612747, "away_team_id": 1610612744,
-    }]).to_csv(root / "raw/games/2025-26_regular_season.csv", index=False)
-    pd.DataFrame([
-        {"game_id": "0022500001", "team_id": 1610612747, "team_abbr": "LAL", "pts": 109},
-        {"game_id": "0022500001", "team_id": 1610612744, "team_abbr": "GSW", "pts": 119},
-    ]).to_csv(root / "raw/team_game_stats/2025-26_regular_season.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "game_id": "0022500001",
+                "game_date": "2025-10-21",
+                "season": "2025-26",
+                "season_type": "Regular Season",
+                "is_final": True,
+                "home_team_id": 1610612747,
+                "away_team_id": 1610612744,
+            }
+        ]
+    ).to_csv(root / "raw/games/2025-26_regular_season.csv", index=False)
+    pd.DataFrame(
+        [
+            {"game_id": "0022500001", "team_id": 1610612747, "team_abbr": "LAL", "pts": 109},
+            {"game_id": "0022500001", "team_id": 1610612744, "team_abbr": "GSW", "pts": 119},
+        ]
+    ).to_csv(root / "raw/team_game_stats/2025-26_regular_season.csv", index=False)
     # A source-reported DNP need not appear in this game log; his verified
     # NBA ID is resolved from a different game with the SAME team/season.
-    pd.DataFrame([
-        {"game_id": "0022500002", "team_id": 1610612747,
-         "player_id": 10, "player_name": "LeBron James"},
-        {"game_id": "0022500002", "team_id": 1610612747,
-         "player_id": 11, "player_name": "Bronny James"},
-        {"game_id": "0022500002", "team_id": 1610612744,
-         "player_id": 20, "player_name": "Jimmy Butler III"},
-    ]).to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "game_id": "0022500002",
+                "team_id": 1610612747,
+                "player_id": 10,
+                "player_name": "LeBron James",
+            },
+            {
+                "game_id": "0022500002",
+                "team_id": 1610612747,
+                "player_id": 11,
+                "player_name": "Bronny James",
+            },
+            {
+                "game_id": "0022500002",
+                "team_id": 1610612744,
+                "player_id": 20,
+                "player_name": "Jimmy Butler III",
+            },
+        ]
+    ).to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
 
     event = {
         "id": "401809244",
-        "competitions": [{"competitors": [
-            {"team": {"abbreviation": "LAL"}, "score": "109"},
-            {"team": {"abbreviation": "GS"}, "score": "119"},
-        ]}],
+        "competitions": [
+            {
+                "competitors": [
+                    {"team": {"abbreviation": "LAL"}, "score": "109"},
+                    {"team": {"abbreviation": "GS"}, "score": "119"},
+                ]
+            }
+        ],
     }
-    boxscore = {"boxscore": {"players": [
-        {
-            "team": {"abbreviation": "LAL"},
-            "statistics": [{"names": ["MIN", "PTS"], "athletes": [
-                {"athlete": {"displayName": "LeBron James"}, "didNotPlay": False,
-                 "stats": ["30", "18"]},
-                {"athlete": {"displayName": "Bronny James"}, "didNotPlay": True,
-                 "stats": ["--", "--"], "reason": "COACH'S DECISION"},
-            ]}],
-        },
-        {
-            "team": {"abbreviation": "GS"},
-            "statistics": [{"names": ["MIN", "PTS"], "athletes": [
-                {"athlete": {"displayName": "Jimmy Butler"}, "didNotPlay": False,
-                 "stats": ["35", "31"], "reason": "COACH'S DECISION"},
-            ]}],
-        },
-    ]}}
+    boxscore = {
+        "boxscore": {
+            "players": [
+                {
+                    "team": {"abbreviation": "LAL"},
+                    "statistics": [
+                        {
+                            "names": ["MIN", "PTS"],
+                            "athletes": [
+                                {
+                                    "athlete": {"displayName": "LeBron James"},
+                                    "didNotPlay": False,
+                                    "stats": ["30", "18"],
+                                },
+                                {
+                                    "athlete": {"displayName": "Bronny James"},
+                                    "didNotPlay": True,
+                                    "stats": ["--", "--"],
+                                    "reason": "COACH'S DECISION",
+                                },
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "team": {"abbreviation": "GS"},
+                    "statistics": [
+                        {
+                            "names": ["MIN", "PTS"],
+                            "athletes": [
+                                {
+                                    "athlete": {"displayName": "Jimmy Butler"},
+                                    "didNotPlay": False,
+                                    "stats": ["35", "31"],
+                                    "reason": "COACH'S DECISION",
+                                },
+                            ],
+                        }
+                    ],
+                },
+            ]
+        }
+    }
     monkeypatch.setattr(adapter, "_scoreboard", lambda _: {"events": [event]})
     monkeypatch.setattr(adapter, "_get_json", lambda _: boxscore)
     return root, event, boxscore
@@ -74,7 +127,9 @@ def test_espn_player_game_is_verified_and_source_reported(sources):
     rows = backfill("2025-26", root=root, source="espn")
     assert len(rows) == 3
     assert dict(zip(rows.player_id, rows.participation_state)) == {
-        10: "played", 11: "did_not_play", 20: "played",
+        10: "played",
+        11: "did_not_play",
+        20: "played",
     }
     assert rows.source.eq("espn_game_summary:401809244").all()
     dnp = rows.loc[rows.player_id.eq(11)].iloc[0]
@@ -93,9 +148,9 @@ def test_game_score_mismatch_is_not_reconciled_by_team_names(sources):
 
 def test_espn_unmapped_or_traded_player_is_not_given_someone_elses_id(sources):
     root, _event, box = sources
-    box["boxscore"]["players"][0]["statistics"][0]["athletes"][1][
-        "athlete"
-    ]["displayName"] = "A Random Athlete"
+    box["boxscore"]["players"][0]["statistics"][0]["athletes"][1]["athlete"]["displayName"] = (
+        "A Random Athlete"
+    )
     with pytest.raises(ValueError, match="Unresolved ESPN-to-NBA"):
         backfill("2025-26", root=root, source="espn")
     assert not (root / "raw/player_game_availability/2025-26_regular_season.csv").exists()
@@ -112,12 +167,19 @@ def test_espn_dnp_flag_not_reinterpreted_as_injury(sources):
     _root, _event, box = sources
     box["boxscore"]["players"][0]["statistics"][0]["athletes"][1]["reason"] = "INJURY"
     raw, event = adapter.espn_boxscore_as_v3(
-        game_id=22500001, game_date="2025-10-21", season="2025-26",
-        season_type="Regular Season", home_team_id=1610612747,
-        away_team_id=1610612744, data_root=_root,
+        game_id=22500001,
+        game_date="2025-10-21",
+        season="2025-26",
+        season_type="Regular Season",
+        home_team_id=1610612747,
+        away_team_id=1610612744,
+        data_root=_root,
     )
     result = normalize_boxscore_availability(
-        raw, game_id=22500001, game_date="2025-10-21", season="2025-26",
+        raw,
+        game_id=22500001,
+        game_date="2025-10-21",
+        season="2025-26",
         season_type="Regular Season",
         expected_team_ids={1610612747, 1610612744},
         source=f"espn_game_summary:{event}",
@@ -130,8 +192,10 @@ def test_espn_athlete_identity_conflict_fails_instead_of_guessing(sources):
     root, _event, box = sources
     players = pd.read_csv(root / "raw/player_game_stats/2025-26_regular_season.csv")
     players.loc[len(players)] = {
-        "game_id": "0022500002", "team_id": 1610612747,
-        "player_id": 90, "player_name": "Bronny James",
+        "game_id": "0022500002",
+        "team_id": 1610612747,
+        "player_id": 90,
+        "player_name": "Bronny James",
     }
     players.to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
     with pytest.raises(ValueError, match="Unresolved ESPN-to-NBA"):
