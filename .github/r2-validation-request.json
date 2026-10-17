@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "664b7e49ec38900eed3560304a19440d7f370340",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_opponent_entity_span_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "opponent_span_p2_s1_1",
+    "opponent_span_p2_s1_4"
+  ]
+}
