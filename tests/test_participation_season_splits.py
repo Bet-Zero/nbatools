@@ -122,6 +122,9 @@ def test_participation_survives_named_season_split(
         )
         assert rows[0]["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
         assert "no games in " + empty_season in result.result.to_dict()["caveats"]
+    from tests.participation_contract_helpers import assert_single_season_controls
+
+    assert_single_season_controls(kind, relation, selected_season, expected, monkeypatch)
     for result in results[:2]:
         badges = {row["label"]: row["value"] for row in result.metadata["applied_filters"]}
         assert badges[relation.capitalize() + " player"] == "Jayson Tatum"

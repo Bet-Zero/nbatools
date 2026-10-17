@@ -116,6 +116,9 @@ def test_qualified_participation_and_opponent_survive_nonadjacent_season_splits(
                                 expected[stat].mean(), abs=0.001
                             )
                         assert "no games in " + empty in result.result.to_dict()["caveats"]
+                    from tests.participation_contract_helpers import assert_single_season_controls
+
+                    assert_single_season_controls(kind, relation, selected, expected, monkeypatch)
                     for result in results[:2]:
                         badges = {
                             row["label"]: row["value"] for row in result.metadata["applied_filters"]
