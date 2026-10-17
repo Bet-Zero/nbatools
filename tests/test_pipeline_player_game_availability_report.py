@@ -476,3 +476,19 @@ def test_inactive_surname_preserves_compound_name_and_true_ambiguity():
     )
     with pytest.raises(ValueError, match="candidate IDs=2"):
         report._identify(pd.concat([people, another]), 2, "Smith Jr.", set(), surname=True)
+
+
+@pytest.mark.parametrize(
+    "heading", ["SCORE BY PERIOD", "SCORE BYPERIOD", "SCORE  BY  PERIOD", "SCORE BY PERIODCeltics"]
+)
+def test_report_scoreboard_tolerates_pdf_word_spacing(heading):
+    text = PDF_TEXT.replace("SCORE BY PERIOD", heading)
+    names, sections, _ = report._parse_sections(text, "2025-10-21")
+    assert names == ["Golden State Warriors", "LOS ANGELES LAKERS"]
+    assert [report._score(section) for section in sections] == [119, 109]
+    assert not any(heading in line for section in sections for line in section)
+
+
+def test_report_without_scoreboard_still_rejected():
+    with pytest.raises(ValueError, match="missing scoreboard"):
+        report._parse_sections(PDF_TEXT.replace("SCORE BY PERIOD", "UNRECOGNIZED"), "2025-10-21")

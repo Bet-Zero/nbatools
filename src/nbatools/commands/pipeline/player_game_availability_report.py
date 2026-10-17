@@ -174,7 +174,12 @@ def _parse_sections(text: str, game_date: str) -> tuple[list[str], list[list[str
     if len(positions) != 2 or [v[1] for v in positions] != ["VISITOR", "HOME"]:
         raise ValueError("Final Box missing distinct VISITOR and HOME team headings")
     finish = next(
-        (i for i in range(positions[1][0] + 1, len(lines)) if "SCORE BY PERIOD" in lines[i]), None
+        (
+            i
+            for i in range(positions[1][0] + 1, len(lines))
+            if re.match(r"\s*SCORE\s*BY\s*PERIOD", lines[i])
+        ),
+        None,
     )
     if finish is None:
         raise ValueError("Final Box missing scoreboard section")
