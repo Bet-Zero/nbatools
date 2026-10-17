@@ -195,3 +195,62 @@ def test_official_missing_player_profile_identity_sources(tmp_path):
         (directory / f"{ident}.json").write_text(json.dumps(receipt, indent=2) + "\n")
         assert profile_identity(raw, ident, name) == name
         print("Verified official profile identity:", ident, name, digest)
+
+
+def test_official_opening_report_qualified_absence_consumers(tmp_path, monkeypatch):
+    """Source-derived DNP sample reaches record consumers with exact NBA values."""
+    from nbatools.commands.data_utils import filter_without_player
+    from nbatools.data_source import reset_data_source_cache
+    from nbatools.query_service import execute_natural_query, execute_structured_query
+
+    root, game_id = _stage_opening_game(tmp_path)
+    evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
+    try:
+        backfill("2025-26", root=root, source="report", game_ids=[game_id])
+    finally:
+        for directory in ("player_game_availability_sources", "player_game_availability"):
+            source = root / "raw" / directory
+            if source.exists():
+                shutil.copytree(source, evidence / "raw" / directory, dirs_exist_ok=True)
+    validate_publication(root)
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
+    # The local staging tree contains copies from the runner-pinned generation.
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    reset_data_source_cache()
+    try:
+        for team, name, wins, losses, points in [
+            ("LAL", "LeBron James", 0, 1, 109),
+            ("LAL", "LeBron James and Maxi Kleber", 0, 1, 109),
+            ("GSW", "Moses Moody", 1, 0, 119),
+        ]:
+            result = execute_structured_query(
+                "team_record",
+                team=team,
+                season="2025-26",
+                without_player=name,
+                start_date="2025-10-21",
+                end_date="2025-10-21",
+            )
+            assert result.result_status == "ok", result.result_reason
+            row = result.result.to_dict()["sections"]["summary"][0]
+            assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (
+                1,
+                wins,
+                losses,
+                points,
+            )
+        natural = execute_natural_query("Lakers record without LeBron James on October 21 2025")
+        assert natural.result_status == "ok", natural.result_reason
+        row = natural.result.to_dict()["sections"]["summary"][0]
+        assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (1, 0, 1, 109)
+        teams = pd.read_csv(root / "raw/team_game_stats/2025-26_regular_season.csv")
+        candidate = teams.loc[teams.game_id.eq(game_id) & teams.team_abbr.eq("LAL")]
+        assert len(candidate) == 1
+        assert filter_without_player(candidate, "Luka Dončić", ["2025-26"], "Regular Season").empty
+        broader = teams.loc[teams.team_abbr.eq("LAL")]
+        assert len(broader) > 1
+        with pytest.raises(ValueError, match="coverage"):
+            filter_without_player(broader, "LeBron James", ["2025-26"], "Regular Season")
+    finally:
+        reset_data_source_cache()

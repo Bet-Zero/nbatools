@@ -309,15 +309,20 @@ Contract rules:
   outside the game-day roster OR omitted from the particular box-score source.
   The dataset alone **does not** certify a complete game-day roster,
   complete player/team tenure, or all missed games.
-- **Consumer and promotion:** this is a required input for qualified future
-  `without_player` execution; the currently unsupported
-  full absence capability remains open until the source includes all required
-  membership/participation evidence for each requested sample and exact
-  `(game_id, team_id, player_id)` checks pass. Do not
-  substitute a missing game-log row. It is valid to expose a narrowly
-  labeled, source-reported DNP subset only once its own results and coverage
-  contract have been reviewed. Code and synthetic tests do not establish served
-  1996-97+ coverage or production publication.
+- **Consumer and promotion:** shared `filter_without_player` uses explicit
+  report observations for each requested player across the complete candidate
+  sample. `did_not_play` selects; `played` excludes. Missing or unknown
+  observations, duplicate player/game identities, mismatched dates and ambiguous
+  identities reject the answer rather than silently shrinking its denominator.
+  Conjunctions qualify all players against the original candidate sample.
+  Canonical positive-minute rows may additionally prove `played`, never absence.
+  Conflicting report/positive observations reject. Same-team predicates bind team IDs; an explicit opponent clause permits
+  opposing-team observations, with mixed side ownership rejected as ambiguous.
+  Readers cache by immutable data generation and do not infer injury or on-court
+  absence. Publication lineage is validated before activation. This consumer
+  does not certify complete rosters, unlisted players, full-season coverage or
+  permanent publication. Required broader positive queries stay unfinished until
+  their entire requested samples have qualified source observations.
 - **Backfill operation:**
   `nbatools-cli pipeline backfill-game-availability --season 2025-26 --source report --limit 3`
   pulls a bounded number of finalized NBA Official Final Box reports.

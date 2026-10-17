@@ -92,6 +92,17 @@ def test_with_and_without_a_player_keep_his_earlier_franchise_games(monkeypatch)
         }
     )
     monkeypatch.setattr(data_utils, "load_player_games_for_seasons", lambda s, t: durant)
+    # Explicit synthetic game-day observations preserve the franchise case;
+    # absence is declared, not inferred from Durant's sparse appearance rows.
+    from nbatools.commands import _participation_observations
+
+    team["game_date"] = ["2008-01-01", "2008-01-03", "2009-01-01", "2009-01-03"]
+    evidence = team.assign(
+        player_id=201142,
+        player_name="Kevin Durant",
+        participation_state=["played", "did_not_play", "played", "did_not_play"],
+    )
+    monkeypatch.setattr(_participation_observations, "load_observations", lambda s, t: evidence)
     sample = team[team_value_mask(team, "OKC")]
     seasons = ["2007-08", "2008-09"]
     without = data_utils.filter_without_player(

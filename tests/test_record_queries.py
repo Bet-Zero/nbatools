@@ -360,6 +360,39 @@ def _write_without_player_data(tmp_path, safe="regular_season"):
         [f"2098-99_2_99_{i}" for i in range(3, 6)],
     )
     _write_csv(tmp_path / f"data/raw/player_game_stats/2098-99_{safe}.csv", player_rows)
+    # Explicit synthetic report observations declare the intended memberships
+    # and absences. Sparse player-stat rows are not the evidence of absence.
+    team_path = tmp_path / f"data/raw/team_game_stats/2098-99_{safe}.csv"
+    teams = pd.read_csv(team_path)
+    game_ids = {value: i + 1 for i, value in enumerate(teams.game_id.unique())}
+    teams.game_id = teams.game_id.map(game_ids)
+    teams.to_csv(team_path, index=False)
+    player_frame = pd.DataFrame(player_rows)
+    player_frame.game_id = player_frame.game_id.map(game_ids)
+    _write_csv(tmp_path / f"data/raw/player_game_stats/2098-99_{safe}.csv", player_frame)
+    evidence = []
+    alpha = teams.loc[teams.team_abbr.eq("ALP")]
+    for i, (_, game) in enumerate(alpha.iterrows()):
+        for pid, name, tid, state in [
+            (23, "LeBron James", 1, "played" if i < 5 else "did_not_play"),
+            (30, "Stephen Curry", int(game.opponent_team_id), "played"),
+        ]:
+            evidence.append(
+                dict(
+                    game_id=game.game_id,
+                    game_date=game.game_date,
+                    season="2098-99",
+                    season_type=game.season_type,
+                    team_id=tid,
+                    player_id=pid,
+                    player_name=name,
+                    participation_state=state,
+                    source="nba_official_finalbox:20990101_ALPOTH",
+                    source_sha256="a" * 64,
+                    coverage_scope="listed_player_rows_only",
+                )
+            )
+    _write_csv(tmp_path / f"data/raw/player_game_availability/2098-99_{safe}.csv", evidence)
 
 
 # ===================================================================
