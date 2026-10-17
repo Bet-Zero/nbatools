@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "83fd1dff30e6384af1f5a4af0493fb169af1e6de",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_r2_publication_real_data.py::test_reviewed_opening_package_complete_snapshot_prepare"
+  ],
+  "raw_qa_cases": []
+}
