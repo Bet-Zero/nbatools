@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "0b92117f59310ba3078bc17c6250136bcc43b52d",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_sample_order_contract_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "s5_team_date_opponent",
+    "s5_player_date_opponent",
+    "s5_team_last_n_window",
+    "s5_team_last_n_qualifying",
+    "s5_player_last_n_window",
+    "s5_player_last_n_qualifying"
+  ]
+}
