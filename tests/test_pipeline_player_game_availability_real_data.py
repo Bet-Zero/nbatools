@@ -154,3 +154,57 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
         + "\n"
     )
     print("Verified official report rows:", len(rows), "source SHA256:", manifest["sha256"])
+
+
+def test_official_missing_player_profile_identity_sources(tmp_path):
+    """Acquire a bounded official identity source; do not infer team membership."""
+    import hashlib
+    import re
+    import urllib.request
+    from datetime import UTC, datetime
+
+    from nbatools.commands.pipeline.player_game_availability_espn import _name
+
+    evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
+    directory = evidence / "raw/player_identity_sources"
+    directory.mkdir(parents=True, exist_ok=True)
+    expected = {1642893: "Alex Toohey", 1643024: "Chris Mañon"}
+    for ident, name in expected.items():
+        url = f"https://www.nba.com/player/{ident}"
+        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(request, timeout=20) as response:
+            raw = response.read(2_000_001)
+        assert len(raw) <= 2_000_000
+        digest = hashlib.sha256(raw).hexdigest()
+        (directory / f"{digest}.html").write_bytes(raw)
+        receipt = dict(
+            source_url=url,
+            retrieved_at=datetime.now(UTC).isoformat(),
+            sha256=digest,
+            size_bytes=len(raw),
+            raw_file=f"{digest}.html",
+        )
+        (directory / f"{ident}.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        text = raw.decode("utf-8")
+        matched = re.search(r'<script[^>]*id="__NEXT_DATA__"[^>]*>(.*?)</script>', text, re.S)
+        assert matched, "Official profile lacks structured Next data"
+        payload = json.loads(matched.group(1))
+        candidates = []
+
+        def visit(node):
+            if isinstance(node, dict):
+                if str(node.get("personId")) == str(ident):
+                    candidates.append(node)
+                for value in node.values():
+                    visit(value)
+            elif isinstance(node, list):
+                for value in node:
+                    visit(value)
+
+        visit(payload)
+        (directory / f"{ident}.structured.json").write_text(json.dumps(candidates, indent=2) + "\n")
+        assert any(
+            _name(f"{row.get('firstName', '')} {row.get('lastName', '')}") == _name(name)
+            for row in candidates
+        ), f"No structured official ID/name match for {ident}"
+        print("Verified official profile identity:", ident, name, digest)
