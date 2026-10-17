@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "f2f9fdba56e88ca874eb63e3cfabc446b6464d61",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_pipeline_player_game_availability_real_data.py::test_official_missing_player_profile_identity_sources"
+  ],
+  "raw_qa_cases": []
+}
