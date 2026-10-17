@@ -15,6 +15,7 @@ import re
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -25,6 +26,74 @@ from nbatools.commands.pipeline.player_game_availability_espn import (
 )
 
 SOURCE_ROOT = "https://statsdmz.nba.com/pdfs"
+IDENTITY_ROOT = "https://cdn.nba.com/static/json/liveData/boxscore"
+
+
+def live_identity_rows(payload, *, game_id, game_date, home_team_id, away_team_id, by_id):
+    """Validate official game identity; never consume its participation fields."""
+    game = payload["game"]
+    when = datetime.fromisoformat(game["gameTimeUTC"].replace("Z", "+00:00"))
+    if (
+        str(game["gameId"]) != f"{game_id:010d}"
+        or game["gameStatus"] != 3
+        or when.tzinfo is None
+        or when.astimezone(ZoneInfo("America/New_York")).date().isoformat() != game_date
+    ):
+        raise ValueError("Official identity box score has wrong game/date/finality")
+    rows = []
+    for side, ident in (("homeTeam", home_team_id), ("awayTeam", away_team_id)):
+        team = game[side]
+        abbr, score = by_id[ident]
+        if team["teamId"] != ident or team["teamTricode"] != abbr or team["score"] != score:
+            raise ValueError("Official identity box score has wrong team/side/score")
+        if not team["players"]:
+            raise ValueError("Official identity box score has no player identities")
+        for player in team["players"]:
+            player_id = player["personId"]
+            first, last = player["firstName"], player["familyName"]
+            if (
+                type(player_id) is not int
+                or player_id <= 0
+                or not first.strip()
+                or not last.strip()
+            ):
+                raise ValueError("Invalid official player identity")
+            name = f"{first.strip()} {last.strip()}"
+            rows.append(
+                dict(team_id=ident, player_id=player_id, player_name=name, normalized=_name(name))
+            )
+    frame = pd.DataFrame(rows)
+    if frame.player_id.duplicated().any() or frame.duplicated(["team_id", "normalized"]).any():
+        raise ValueError("Ambiguous official player identities")
+    return frame
+
+
+def _fetch_live_identities(directory: Path, **scope):
+    url = f"{IDENTITY_ROOT}/boxscore_{scope['game_id']:010d}.json"
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        raw = response.read(2_000_001)
+    if len(raw) > 2_000_000:
+        raise ValueError("Oversized official identity box score")
+    digest = hashlib.sha256(raw).hexdigest()
+    directory.mkdir(parents=True, exist_ok=True)
+    target = directory / f"{digest}.identity.json"
+    temporary = target.with_suffix(".tmp")
+    temporary.write_bytes(raw)
+    temporary.replace(target)
+    receipt = dict(
+        source_url=url,
+        retrieved_at=datetime.now(UTC).isoformat(),
+        sha256=digest,
+        size_bytes=len(raw),
+        raw_file=target.name,
+    )
+    temporary = directory / f"{digest}.receipt.tmp"
+    temporary.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+    temporary.replace(directory / f"{digest}.receipt.json")
+    return live_identity_rows(json.loads(raw), **scope), digest
+
+
 STATUS = re.compile(
     r"^\s*\d{1,3}\s+(.+?)\s+(DNP|DND|NWT|DID NOT PLAY|DID NOT DRESS)"
     r"\s*(?:-\s*)?(.*?)\s*$",
@@ -181,6 +250,10 @@ def _nba_team_names(root: Path, season: str, safe: str, game_id: int) -> dict[in
     return dict(zip(df.team_id.astype(int), df.team_name.astype(str)))
 
 
+class UnresolvedIdentity(ValueError):
+    """No known candidate; ambiguity and duplicate rows are separate errors."""
+
+
 def _identify(
     people: pd.DataFrame, team_id: int, name: str, used: set[int], *, surname: bool
 ) -> tuple[int, str]:
@@ -194,7 +267,8 @@ def _identify(
         ]
     ids = subset.player_id.unique()
     if len(ids) != 1:
-        raise ValueError(
+        error = UnresolvedIdentity if len(ids) == 0 else ValueError
+        raise error(
             f"Official scorer identity unresolved: {name!r} team={team_id}, "
             f"candidate IDs={len(ids)}"
         )
@@ -253,6 +327,34 @@ def official_report_as_v3(
     source = data_root / "raw/player_game_stats" / f"{season}_{safe}.csv"
     played = pd.read_csv(source, dtype={"game_id": str})
     played = played[played.game_id.map(int).eq(game_id)]
+    identity_digest = ""
+
+    def identify(ident, name, used, *, surname):
+        nonlocal people, identity_digest
+        try:
+            return _identify(people, ident, name, used, surname=surname)
+        except UnresolvedIdentity:
+            if identity_digest:
+                raise
+            extra, identity_digest = _fetch_live_identities(
+                data_root / "raw/player_game_availability_sources",
+                game_id=game_id,
+                game_date=game_date,
+                home_team_id=home_team_id,
+                away_team_id=away_team_id,
+                by_id=by_id,
+            )
+            for row in extra.itertuples(index=False):
+                same = people[people.team_id.eq(row.team_id)]
+                if (
+                    same.normalized.eq(row.normalized) & ~same.player_id.eq(row.player_id)
+                ).any() or (
+                    people.player_id.eq(row.player_id) & ~people.normalized.eq(row.normalized)
+                ).any():
+                    raise ValueError("Official identity conflicts with canonical NBA identity")
+            people = pd.concat([people, extra], ignore_index=True).drop_duplicates()
+            return _identify(people, ident, name, used, surname=surname)
+
     used: set[int] = set()
     rows = []
     for ident, section in zip(team_ids, sections):
@@ -263,7 +365,7 @@ def official_report_as_v3(
             if match is None:
                 continue
             name, minutes = match.groups()
-            nba_id, full_name = _identify(people, ident, name, used, surname=False)
+            nba_id, full_name = identify(ident, name, used, surname=False)
             used.add(nba_id)
             report_ids.add(nba_id)
             rows.append(_record(game_id, ident, abbr, nba_id, full_name, minutes, ""))
@@ -276,7 +378,7 @@ def official_report_as_v3(
             if match is None:
                 continue
             name, status, reason = match.groups()
-            nba_id, full_name = _identify(people, ident, name, used, surname=False)
+            nba_id, full_name = identify(ident, name, used, surname=False)
             used.add(nba_id)
             rows.append(
                 _record(
@@ -293,12 +395,13 @@ def official_report_as_v3(
         if not _name(expected_names[ident]).endswith(_name(label)):
             raise ValueError("Final Box inactive list assigned to wrong team")
         for name, reason in absent:
-            nba_id, full_name = _identify(people, ident, name, used, surname=True)
+            nba_id, full_name = identify(ident, name, used, surname=True)
             used.add(nba_id)
             rows.append(_record(game_id, ident, by_id[ident][0], nba_id, full_name, None, reason))
     if not rows or {row["teamId"] for row in rows} != set(team_ids):
         raise ValueError("No trustworthy game-day NBA report rows for both teams")
     frame = pd.DataFrame(rows)
+    frame.attrs["identity_source_sha256"] = identity_digest
     receipt = data_root / "raw/player_game_availability_sources" / f"{ref}.json"
     if receipt.exists():
         frame.attrs["source_sha256"] = json.loads(receipt.read_text())["sha256"]

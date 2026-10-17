@@ -119,7 +119,13 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
     assert rows.team_id.isin([1610612747, 1610612744]).all()
     assert len(rows) >= 24
-    for name in ("LeBron James", "Moses Moody", "Bronny James", "Trayce Jackson-Davis"):
+    for name in (
+        "LeBron James",
+        "Moses Moody",
+        "Bronny James",
+        "Trayce Jackson-Davis",
+        "Alex Toohey",
+    ):
         player = rows[rows.player_name.eq(name)]
         assert len(player) == 1, name
         assert player.iloc[0].participation_state == "did_not_play", name
@@ -141,6 +147,7 @@ def test_official_opening_report_retains_real_source_and_explicit_absences(tmp_p
                 "rows": len(rows),
                 "source_receipt": str(receipt.relative_to(evidence)),
                 "publication_state": "staged_only",
+                "identity_source_sha256": rows.identity_source_sha256.fillna("").unique().tolist(),
             },
             indent=2,
         )

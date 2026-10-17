@@ -16,6 +16,8 @@ from nbatools.commands.pipeline.pull_player_game_availability import (
 
 pytestmark = pytest.mark.engine
 
+_DOWNLOAD_IDENTITIES = report._fetch_live_identities
+
 PDF_TEXT = """NATIONAL BASKETBALL ASSOCIATION OFFICIAL SCORER'S REPORT
 FINAL BOX
 Tuesday, October 21, 2025 Crypto.com Arena, Los Angeles, CA
@@ -120,6 +122,14 @@ def nba_rows(tmp_path, monkeypatch):
         ]
     ).to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
     monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: PDF_TEXT)
+    monkeypatch.setattr(
+        report,
+        "_fetch_live_identities",
+        lambda *args, **kwargs: (
+            pd.DataFrame(columns=["team_id", "player_id", "player_name", "normalized"]),
+            "a" * 64,
+        ),
+    )
     return root
 
 
@@ -250,3 +260,124 @@ def test_prior_season_resolves_identity_only_for_source_listed_inactive(nba_rows
     monkeypatch.setattr(report, "_fetch_report_text", lambda _, **kwargs: text)
     raw, _ = _get(nba_rows)
     assert 4 not in raw.personId.tolist()
+
+
+def _live_payload(root):
+    canonical = pd.read_csv(root / "raw/player_game_stats/2025-26_regular_season.csv")
+    teams = {}
+    for side, ident, abbr, score in (("awayTeam", 1, "GSW", 119), ("homeTeam", 2, "LAL", 109)):
+        players = []
+        for row in canonical[canonical.team_id.eq(ident)].itertuples():
+            first, _, last = row.player_name.partition(" ")
+            players.append(dict(personId=row.player_id, firstName=first, familyName=last))
+        teams[side] = dict(teamId=ident, teamTricode=abbr, score=score, players=players)
+    teams["awayTeam"]["players"].append(dict(personId=99, firstName="Alex", familyName="Toohey"))
+    return dict(
+        game=dict(gameId="0022500002", gameStatus=3, gameTimeUTC="2025-10-22T02:00:00Z", **teams)
+    )
+
+
+def _live_scope():
+    return dict(
+        game_id=22500002,
+        game_date="2025-10-21",
+        home_team_id=2,
+        away_team_id=1,
+        by_id={1: ("GSW", 119), 2: ("LAL", 109)},
+    )
+
+
+def test_live_identity_supplies_only_source_listed_rookie(nba_rows, monkeypatch):
+    payload = _live_payload(nba_rows)
+    extra = report.live_identity_rows(payload, **_live_scope())
+    monkeypatch.setattr(report, "_fetch_live_identities", lambda *a, **k: (extra, "a" * 64))
+    monkeypatch.setattr(
+        report, "_fetch_report_text", lambda *a, **k: PDF_TEXT.replace("Moody (", "Toohey (")
+    )
+    rows, _ = _get(nba_rows)
+    assert rows[rows.personId.eq(99)].iloc[0]["comment"].startswith("INACTIVE")
+    assert not rows.personId.eq(4).any()  # Moody is in identity index but not this PDF.
+    assert rows.attrs["identity_source_sha256"] == "a" * 64
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("gameId", "0022500003"),
+        ("gameStatus", 2),
+        ("gameTimeUTC", "2025-10-21T02:00:00Z"),
+        ("gameTimeUTC", "2025-10-22T02:00:00"),
+    ],
+)
+def test_live_identity_rejects_wrong_game(nba_rows, field, value):
+    payload = _live_payload(nba_rows)
+    payload["game"][field] = value
+    with pytest.raises(ValueError):
+        report.live_identity_rows(payload, **_live_scope())
+
+
+@pytest.mark.parametrize("field,value", [("teamId", 2), ("score", 120), ("teamTricode", "BOS")])
+def test_live_identity_rejects_wrong_team(nba_rows, field, value):
+    payload = _live_payload(nba_rows)
+    payload["game"]["awayTeam"][field] = value
+    with pytest.raises(ValueError):
+        report.live_identity_rows(payload, **_live_scope())
+
+
+def test_live_identity_rejects_duplicate_and_conflicting_ids(nba_rows, monkeypatch):
+    payload = _live_payload(nba_rows)
+    players = payload["game"]["awayTeam"]["players"]
+    players[-1]["personId"] = 30
+    with pytest.raises(ValueError, match="Ambiguous"):
+        report.live_identity_rows(payload, **_live_scope())
+    players[-1]["personId"] = 99
+    players[0]["personId"] = 999
+    extra = report.live_identity_rows(payload, **_live_scope())
+    monkeypatch.setattr(report, "_fetch_live_identities", lambda *a, **k: (extra, "a" * 64))
+    monkeypatch.setattr(
+        report, "_fetch_report_text", lambda *a, **k: PDF_TEXT.replace("Moody (", "Toohey (")
+    )
+    with pytest.raises(ValueError, match="conflicts"):
+        _get(nba_rows)
+
+
+def test_canonical_identities_do_not_fetch_live_source(nba_rows, monkeypatch):
+    def unexpected(*a, **k):
+        pytest.fail("Unnecessary identity source request")
+
+    monkeypatch.setattr(report, "_fetch_live_identities", unexpected)
+    _get(nba_rows)
+
+
+def test_identity_download_retains_exact_bytes(nba_rows, monkeypatch):
+    import io
+
+    raw = json.dumps(_live_payload(nba_rows)).encode()
+    monkeypatch.setattr(report.urllib.request, "urlopen", lambda *a, **k: io.BytesIO(raw))
+    directory = nba_rows / "raw/player_game_availability_sources"
+    rows, digest = _DOWNLOAD_IDENTITIES(directory, **_live_scope())
+    receipt = json.loads((directory / f"{digest}.receipt.json").read_text())
+    assert (directory / receipt["raw_file"]).read_bytes() == raw
+    assert receipt["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert receipt["size_bytes"] == len(raw)
+    assert rows.player_id.eq(99).any()
+
+
+def test_live_identity_global_id_conflict_rejects_but_trade_is_valid(nba_rows, monkeypatch):
+    path = nba_rows / "raw/player_game_stats/2025-26_regular_season.csv"
+    canonical = pd.read_csv(path)
+    extra = report.live_identity_rows(_live_payload(nba_rows), **_live_scope())
+    monkeypatch.setattr(report, "_fetch_live_identities", lambda *a, **k: (extra, "a" * 64))
+    monkeypatch.setattr(
+        report, "_fetch_report_text", lambda *a, **k: PDF_TEXT.replace("Moody (", "Toohey (")
+    )
+    other = dict(
+        game_id=22500003, team_id=2, player_id=99, player_name="Different Person", minutes=10
+    )
+    pd.concat([canonical, pd.DataFrame([other])]).to_csv(path, index=False)
+    with pytest.raises(ValueError, match="conflicts"):
+        _get(nba_rows)
+    other["player_name"] = "Alex Toohey"
+    pd.concat([canonical, pd.DataFrame([other])]).to_csv(path, index=False)
+    rows, _ = _get(nba_rows)
+    assert rows[rows.personId.eq(99)].iloc[0].teamId == 1

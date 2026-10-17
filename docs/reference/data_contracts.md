@@ -231,7 +231,7 @@ Contract rules:
   retained **before** starter-role filtering discards box-score nonplayers.
 - **Fields:** `game_id, game_date, season, season_type, team_id, team_abbr,
   player_id, player_name, participation_state, source_minutes, source_comment,
-  source, source_sha256, coverage_scope`.
+  source, source_sha256, identity_source_sha256, coverage_scope`.
 - **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
   prefers **NBA Official Final Box PDFs**, which list the game's playing,
   DNP/DND and inactive athletes with historical reasons. `--source report`
@@ -266,6 +266,13 @@ Contract rules:
   These files must accompany publication inputs. Identity lookup may use the
   immediately preceding season's canonical player/team IDs; that lookup never
   establishes current membership or absence without an explicit report row.
+  If no candidate exists, the official CDN game box score supplies identity only:
+  exact game/date/finality, home/away teams and final scores must match first.
+  Ambiguous IDs/names and canonical identity conflicts reject the import. CDN
+  status/minutes do not determine output participation, and unlisted PDF players
+  never become rows. `identity_source_sha256` binds any fallback to retained
+  original JSON bytes and URL/time/hash/size receipts. Publication revalidates
+  that JSON's game envelope and every row's ID/team/name mapping.
   Generation publication rejects availability overlays without valid import
   digests, canonical final-game/team scope, the exact away/home report reference,
   and matching retained PDF bytes/receipt. Temporary checkpoints, contradictory

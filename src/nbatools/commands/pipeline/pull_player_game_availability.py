@@ -39,6 +39,7 @@ COLUMNS = (
     "source_comment",
     "source",
     "source_sha256",
+    "identity_source_sha256",
     "coverage_scope",
 )
 _DNP = re.compile(
@@ -150,6 +151,7 @@ def normalize_boxscore_availability(
         raise ValueError("Unrecognized availability source")
     frame["source"] = source
     frame["source_sha256"] = raw.attrs.get("source_sha256", "")
+    frame["identity_source_sha256"] = raw.attrs.get("identity_source_sha256", "")
     frame["coverage_scope"] = COVERAGE
     return frame[list(COLUMNS)].sort_values(["team_id", "player_id"]).reset_index(drop=True)
 
@@ -169,7 +171,7 @@ def validate_availability(frame: pd.DataFrame) -> None:
     )
     if not allowed.all() or not frame["coverage_scope"].eq(COVERAGE).all():
         raise ValueError("Untrusted availability source or completeness claim")
-    hashes = frame["source_sha256"].fillna("").astype(str)
+    hashes = frame[["source_sha256", "identity_source_sha256"]].fillna("").astype(str).stack()
     if not hashes.str.fullmatch(r"(?:[a-f0-9]{64})?").all():
         raise ValueError("Invalid source SHA256")
     if frame[["game_id", "team_id", "player_id", "season", "season_type"]].isna().any().any():
@@ -299,6 +301,47 @@ def validate_publication(root: Path) -> None:
             ):
                 raise ValueError("Availability original-source bytes differ from receipt")
 
+            identity_hashes = rows.identity_source_sha256.fillna("").unique()
+            if len(identity_hashes) != 1:
+                raise ValueError("Inconsistent availability identity source")
+            if identity_hashes[0]:
+                from nbatools.commands.pipeline.player_game_availability_report import (
+                    IDENTITY_ROOT,
+                    _name,
+                    live_identity_rows,
+                )
+
+                identity_hash = identity_hashes[0]
+                identity_receipt = json.loads(
+                    (source_dir / f"{identity_hash}.receipt.json").read_text()
+                )
+                identity_raw = (source_dir / f"{identity_hash}.identity.json").read_bytes()
+                retrieved = datetime.fromisoformat(identity_receipt["retrieved_at"])
+                if (
+                    identity_receipt.get("source_url")
+                    != f"{IDENTITY_ROOT}/boxscore_{int(game_id):010d}.json"
+                    or identity_receipt.get("sha256") != identity_hash
+                    or identity_receipt.get("raw_file") != f"{identity_hash}.identity.json"
+                    or identity_receipt.get("size_bytes") != len(identity_raw)
+                    or retrieved.tzinfo is None
+                    or hashlib.sha256(identity_raw).hexdigest() != identity_hash
+                ):
+                    raise ValueError("Availability identity source receipt/bytes mismatch")
+                identities = live_identity_rows(
+                    json.loads(identity_raw),
+                    game_id=int(game_id),
+                    game_date=str(game.game_date),
+                    home_team_id=int(game.home_team_id),
+                    away_team_id=int(game.away_team_id),
+                    by_id={int(t.team_id): (t.team_abbr, t.pts) for t in teams.itertuples()},
+                )
+                for row in rows.itertuples():
+                    match = identities[
+                        identities.player_id.eq(row.player_id) & identities.team_id.eq(row.team_id)
+                    ]
+                    if len(match) != 1 or match.iloc[0].normalized != _name(row.player_name):
+                        raise ValueError("Availability row differs from retained official identity")
+
 
 def backfill(
     season: str,
@@ -365,8 +408,9 @@ def backfill(
     for path in (checkpoint,) if checkpoint.exists() else (target,):
         if path.exists():
             old = pd.read_csv(path, dtype={"game_id": str})
-            if "source_sha256" not in old:
-                old["source_sha256"] = ""
+            for column in ("source_sha256", "identity_source_sha256"):
+                if column not in old:
+                    old[column] = ""
             if not old.empty:
                 validate_availability(old)
                 frames.append(old)

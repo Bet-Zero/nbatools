@@ -799,3 +799,63 @@ def _sha256(path: Path) -> str:
 
 def _etag(payload: bytes) -> str:
     return hashlib.md5(payload, usedforsecurity=False).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "defect", [None, "missing", "corrupt", "wrong_game", "wrong_mapping", "wrong_url"]
+)
+def test_retained_identity_source_is_required_and_game_bound(tmp_path, defect):
+    from nbatools.commands.pipeline.pull_player_game_availability import _game_digest
+
+    _write_valid_source(tmp_path, "baseline")
+    path = _write_availability_fixture(tmp_path)
+    rows = pd.read_csv(path)
+    game = dict(gameId="0022500001", gameStatus=3, gameTimeUTC="2025-10-22T02:00:00Z")
+    for side, ident, abbr, first in (("awayTeam", 1, "BOS", "A"), ("homeTeam", 2, "NYK", "B")):
+        game[side] = dict(
+            teamId=ident,
+            teamTricode=abbr,
+            score=100,
+            players=[dict(personId=ident * 10, firstName=first, familyName="Player")],
+        )
+    if defect == "wrong_game":
+        game["gameId"] = "0022500099"
+    if defect == "wrong_mapping":
+        game["homeTeam"]["players"][0]["personId"] = 99
+    raw = json.dumps(dict(game=game)).encode()
+    digest = hashlib.sha256(raw).hexdigest()
+    directory = tmp_path / "raw/player_game_availability_sources"
+    identity_path = directory / f"{digest}.identity.json"
+    identity_path.write_bytes(raw)
+    receipt = dict(
+        source_url="https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022500001.json",
+        retrieved_at="2026-10-17T00:00:00+00:00",
+        sha256=digest,
+        size_bytes=len(raw),
+        raw_file=identity_path.name,
+    )
+    if defect == "wrong_url":
+        receipt["source_url"] = "https://example.com/unqualified.json"
+    (directory / f"{digest}.receipt.json").write_text(json.dumps(receipt))
+    if defect == "missing":
+        identity_path.unlink()
+    if defect == "corrupt":
+        identity_path.write_bytes(b"{}")
+    rows["identity_source_sha256"] = digest
+    rows.to_csv(path, index=False)
+    path.with_suffix(".imports.json").write_text(
+        json.dumps({"22500001": dict(source="report", sha256=_game_digest(rows))})
+    )
+    teams_path = tmp_path / "raw/team_game_stats/2025-26_regular_season.csv"
+    teams = pd.read_csv(teams_path)
+    teams["pts"] = 100
+    teams.to_csv(teams_path, index=False)
+    if defect is None:
+        publish_local_generation("identity", source_dir=tmp_path, data_root=tmp_path)
+    else:
+        client = FakeR2Client()
+        with pytest.raises(GenerationValidationError):
+            publish_r2_generation(
+                "bad-identity", source_dir=tmp_path, client=client, bucket_name="test-bucket"
+            )
+        assert client.put_order == []
