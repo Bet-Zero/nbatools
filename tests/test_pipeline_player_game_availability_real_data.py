@@ -254,3 +254,72 @@ def test_official_opening_report_qualified_absence_consumers(tmp_path, monkeypat
             filter_without_player(broader, "LeBron James", ["2025-26"], "Regular Season")
     finally:
         reset_data_source_cache()
+
+
+def test_official_celtics_lakers_reports_qualify_nonadjacent_season_participation(tmp_path):
+    """Acquire four exact reports needed by S4; staging is not publication."""
+    targets = {"2023-24": {22300403, 22300684}, "2025-26": {22500338, 22500823}}
+    root = tmp_path / "data"
+    evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
+    for season in targets:
+        for kind in ("games", "team_game_stats", "player_game_stats"):
+            path = f"raw/{kind}/{season}_regular_season.csv"
+            frame = data_read_csv(f"data/{path}")
+            destination = root / path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            frame.to_csv(destination, index=False)
+        teams = pd.read_csv(root / f"raw/team_game_stats/{season}_regular_season.csv")
+        actual = teams.loc[teams.team_abbr.eq("BOS") & teams.opponent_team_abbr.eq("LAL")]
+        assert set(actual.game_id.astype(int)) == targets[season]
+    for season in ("2022-23", "2024-25"):
+        # Identity-only prior rows never supply participation or dated membership.
+        frame = data_read_csv(f"data/raw/player_game_stats/{season}_regular_season.csv")
+        frame.to_csv(root / f"raw/player_game_stats/{season}_regular_season.csv", index=False)
+
+    observations = []
+    try:
+        for season, games in targets.items():
+            rows = backfill(season, root=root, source="report", game_ids=sorted(games))
+            assert set(rows.game_id.astype(int)) == games
+            assert rows.coverage_scope.eq("listed_player_rows_only").all()
+            assert rows.source.str.startswith("nba_official_finalbox:").all()
+            assert rows.source_sha256.str.fullmatch(r"[0-9a-f]{64}").all()
+            assert not rows.duplicated(["game_id", "player_id"]).any()
+            assert rows.team_id.isin([1610612738, 1610612747]).all()
+            canonical = pd.read_csv(root / f"raw/player_game_stats/{season}_regular_season.csv")
+            canonical = canonical.loc[canonical.game_id.isin(games)]
+            played = rows.loc[rows.participation_state.eq("played")]
+            assert set(zip(played.game_id.astype(int), played.team_id, played.player_id)) == set(
+                zip(canonical.game_id, canonical.team_id, canonical.player_id)
+            )
+            assert played.groupby(
+                ["game_id", "team_id"]
+            ).source_minutes.sum().tolist() == pytest.approx([240] * 4, abs=0.02)
+            tatum = rows.loc[rows.player_id.eq(1628369)]
+            assert set(tatum.game_id.astype(int)) == games
+            assert tatum.team_id.eq(1610612738).all()
+            state = "played" if season == "2023-24" else "did_not_play"
+            assert tatum.participation_state.eq(state).all()
+            if state == "did_not_play":
+                assert tatum.source_comment.fillna("").str.len().gt(0).all()
+            observations.append(rows)
+        validate_publication(root)
+    finally:
+        # Retain raw evidence even on failure for diagnosis; never publish it here.
+        for directory in ("player_game_availability_sources", "player_game_availability"):
+            source = root / "raw" / directory
+            if source.exists():
+                shutil.copytree(source, evidence / "raw" / directory, dirs_exist_ok=True)
+        for season, games in targets.items():
+            for kind in ("games", "team_game_stats", "player_game_stats"):
+                path = root / f"raw/{kind}/{season}_regular_season.csv"
+                frame = pd.read_csv(path)
+                target = evidence / "canonical_selected" / kind / path.name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                frame.loc[frame.game_id.isin(games)].to_csv(target, index=False)
+    all_rows = pd.concat(observations, ignore_index=True)
+    print("Verified official report games:", sorted(all_rows.game_id.astype(int).unique().tolist()))
+    print(
+        "Explicit participation rows by season/state:",
+        all_rows.groupby(["season", "participation_state"]).size().to_dict(),
+    )
