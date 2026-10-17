@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pandas as pd
 import pytest
 
@@ -67,14 +69,17 @@ def sources(tmp_path, monkeypatch):
         "id": "401809244",
         "competitions": [
             {
+                "date": "2025-10-22T02:00:00Z",
+                "status": {"type": {"completed": True}},
                 "competitors": [
-                    {"team": {"abbreviation": "LAL"}, "score": "109"},
-                    {"team": {"abbreviation": "GS"}, "score": "119"},
-                ]
+                    {"team": {"abbreviation": "LAL"}, "score": "109", "homeAway": "home"},
+                    {"team": {"abbreviation": "GS"}, "score": "119", "homeAway": "away"},
+                ],
             }
         ],
     }
     boxscore = {
+        "header": deepcopy(event),
         "boxscore": {
             "players": [
                 {
@@ -115,7 +120,7 @@ def sources(tmp_path, monkeypatch):
                     ],
                 },
             ]
-        }
+        },
     }
     monkeypatch.setattr(adapter, "_scoreboard", lambda _: {"events": [event]})
     monkeypatch.setattr(adapter, "_get_json", lambda _: boxscore)
@@ -199,4 +204,39 @@ def test_espn_athlete_identity_conflict_fails_instead_of_guessing(sources):
     }
     players.to_csv(root / "raw/player_game_stats/2025-26_regular_season.csv", index=False)
     with pytest.raises(ValueError, match="Unresolved ESPN-to-NBA"):
+        backfill("2025-26", root=root, source="espn")
+
+
+@pytest.mark.parametrize("location", ["scoreboard", "summary"])
+@pytest.mark.parametrize("defect", ["date", "naive_date", "home_away", "unfinished", "score"])
+def test_source_game_identity_must_match(sources, location, defect):
+    root, event, box = sources
+    candidate = event if location == "scoreboard" else box["header"]
+    competition = candidate["competitions"][0]
+    if defect == "date":
+        competition["date"] = "2000-01-01T02:00:00Z"
+    elif defect == "naive_date":
+        competition["date"] = "2025-10-21T22:00:00"
+    elif defect == "home_away":
+        competition["competitors"][0]["homeAway"] = "away"
+    elif defect == "unfinished":
+        competition["status"]["type"]["completed"] = False
+    else:
+        competition["competitors"][0]["score"] = "108"
+    with pytest.raises(ValueError, match="match|summary identity"):
+        backfill("2025-26", root=root, source="espn")
+    assert not (root / "raw/player_game_availability/2025-26_regular_season.csv").exists()
+
+
+def test_summary_event_id_must_match_scoreboard(sources):
+    root, _, box = sources
+    box["header"]["id"] = "999"
+    with pytest.raises(ValueError, match="summary identity"):
+        backfill("2025-26", root=root, source="espn")
+
+
+def test_source_dnp_must_not_discard_positive_minutes(sources):
+    root, _, box = sources
+    box["boxscore"]["players"][0]["statistics"][0]["athletes"][1]["stats"][0] = "20"
+    with pytest.raises(ValueError, match="Contradictory"):
         backfill("2025-26", root=root, source="espn")

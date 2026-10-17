@@ -221,7 +221,7 @@ Contract rules:
 
 ## 1A-availability. Official player-game participation and DNP observations
 
-**Optional new additive dataset**: 
+**Optional new additive dataset**:
 `data/raw/player_game_availability/{season}_{season_type_safe}.csv`
 
 - **Grain:** one player explicitly listed in one NBA game box score, identified by
@@ -277,13 +277,13 @@ Contract rules:
   labeled, source-reported DNP subset only once its own results and coverage
   contract have been reviewed. Code and synthetic tests do not establish served
   1996-97+ coverage or production publication.
-- **Backfill operation:** 
+- **Backfill operation:**
   `nbatools-cli pipeline backfill-game-availability --season 2025-26 --source report --limit 3`
   pulls a bounded number of finalized NBA Official Final Box reports.
   NBA.com scorer PDFs were verified reachable from a GitHub-hosted runner, even
   though NBA Stats and CDN endpoints were not. The official PDF includes game
   date, team, scoring, DNP and inactive information, but the producer still
-  refuses ambiguous player identities and unsupported seasons or missing data. 
+  refuses ambiguous player identities and unsupported seasons or missing data.
   `--cached-boxscores PATH` can instead read
   retained NBA Stats V3 boxscore JSON without external fetches. Existing
   pipeline publication/version checks and read-only runtime access remain unchanged.

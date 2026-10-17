@@ -11,8 +11,10 @@ import json
 import re
 import unicodedata
 import urllib.request
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -107,23 +109,46 @@ def espn_boxscore_as_v3(
     if {ident for ident, _ in teams.values()} != {home_team_id, away_team_id}:
         raise ValueError("NBA game catalog conflicts with team-game source")
     matched = []
-    for event in _scoreboard(game_date).get("events", []):
-        competitions = event.get("competitions") or []
-        if len(competitions) != 1:
-            continue
-        competitors = competitions[0].get("competitors") or []
-        if len(competitors) != 2:
-            continue
+
+    def verified_competition(event: dict) -> bool:
+        """Bind a completed source event to NBA date, sides and final scores."""
         try:
-            scores = {_abbr(c["team"]["abbreviation"]): int(c["score"]) for c in competitors}
-        except (KeyError, TypeError, ValueError):
-            continue
-        if scores == {team: info[1] for team, info in teams.items()}:
+            competitions = event["competitions"]
+            if len(competitions) != 1:
+                return False
+            competition = competitions[0]
+            stamp = datetime.fromisoformat(competition["date"].replace("Z", "+00:00"))
+            if stamp.tzinfo is None:
+                return False
+            if stamp.astimezone(ZoneInfo("America/New_York")).date().isoformat() != game_date:
+                return False
+            if competition["status"]["type"]["completed"] is not True:
+                return False
+            competitors = competition["competitors"]
+            if len(competitors) != 2:
+                return False
+            expected = {
+                team: ("home" if ident == home_team_id else "away", score)
+                for team, (ident, score) in teams.items()
+            }
+            actual = {
+                _abbr(c["team"]["abbreviation"]): (c["homeAway"], int(c["score"]))
+                for c in competitors
+            }
+            return actual == expected
+        except (KeyError, TypeError, ValueError, AttributeError):
+            return False
+
+    for event in _scoreboard(game_date).get("events", []):
+        if verified_competition(event) and str(event.get("id", "")).isdigit():
             matched.append(str(event["id"]))
     if len(matched) != 1:
         raise ValueError(f"No unique score/team/date match for NBA game {game_id}")
     event_id = matched[0]
     summary = _get_json(f"summary?event={event_id}")
+    header = summary.get("header") or {}
+    if str(header.get("id")) != event_id or not verified_competition(header):
+        raise ValueError("ESPN summary identity/date/status differs from verified NBA game")
     raw_teams = (summary.get("boxscore") or {}).get("players") or []
     if len(raw_teams) != 2:
         raise ValueError("ESPN box score missing the two teams")
@@ -161,8 +186,6 @@ def espn_boxscore_as_v3(
                 # ESPN reason can be a default even for players who played;
                 # retain only the explicit didNotPlay flag, not an injury cause.
                 comment = "DNP - ESPN confirmed didNotPlay" if played else ""
-                if played:
-                    minutes = None
                 nba_name = persons.loc[persons.player_id.eq(int(ids[0]))].iloc[0].player_name
                 words = str(nba_name).split(" ", 1)
                 output.append(
