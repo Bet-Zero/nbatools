@@ -218,6 +218,55 @@ Contract rules:
 
 ---
 
+
+## 1A-availability. Official player-game participation and DNP observations
+
+**Optional new additive dataset**: 
+`data/raw/player_game_availability/{season}_{season_type_safe}.csv`
+
+- **Grain:** one player explicitly listed in one NBA game box score, identified by
+  `(game_id, team_id, player_id)`; no rows are manufactured for
+  unlisted players. Source team/game IDs are checked against the canonical
+  finalized games catalog (two teams). The source's listed player rows are
+  retained **before** starter-role filtering discards box-score nonplayers.
+- **Fields:** `game_id, game_date, season, season_type, team_id, team_abbr,
+  player_id, player_name, participation_state, source_minutes, source_comment,
+  source, coverage_scope`.
+- **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
+  uses the already-adopted NBA Stats `BoxScoreTraditionalV3.PlayerStats`
+  endpoint, or previously archived unmodified V3 JSON with a matching game ID.
+  The separate importer does not refetch every core stat or modify the existing
+  starter-role producer. Output uses resumable local checkpoint writes and
+  atomic final CSV replacement. The module never publishes to R2 itself.
+- **States:** `played` requires positive game minutes,
+  `did_not_play` requires an explicit upstream
+  DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
+  `unknown` covers ambiguous zero/absent minutes without
+  an explicit nonparticipation statement. Contradictions are rejected.
+- **Source truth:** `source_comment` is preserved verbatim;
+  do not transform coach decisions, illness, inactive and injuries into one
+  injury statistic. `coverage_scope=listed_player_rows_only`
+  establishes only positive source observations. Unlisted players might be
+  outside the game-day roster OR omitted from the particular box-score source.
+  The dataset alone **does not** certify a complete game-day roster,
+  complete player/team tenure, or all missed games.
+- **Consumer and promotion:** this is a required input for qualified future
+  `without_player` execution; the currently unsupported
+  full absence capability remains open until the source includes all required
+  membership/participation evidence for each requested sample and exact
+  `(game_id, team_id, player_id)` checks pass. Do not
+  substitute a missing game-log row. It is valid to expose a narrowly
+  labeled, source-reported DNP subset only once its own results and coverage
+  contract have been reviewed. Code and synthetic tests do not establish served
+  1996-97+ coverage or production publication.
+- **Backfill operation:** 
+  `nbatools-cli pipeline backfill-game-availability --season 2025-26 --limit 3`
+  pulls a bounded number of official finalized games. 
+  `--cached-boxscores PATH` can instead read
+  retained NBA Stats V3 boxscore JSON without external fetches. Existing
+  pipeline publication/version checks and read-only runtime access remain unchanged.
+
+
 ## 1B. `player_game_period_stats`
 
 ### Path pattern
