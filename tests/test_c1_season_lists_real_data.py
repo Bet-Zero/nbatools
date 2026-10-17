@@ -244,7 +244,10 @@ def test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls(monk
         assert_values(single.to_dict()["sections"]["summary"][0], season)
 
 
-def test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls(monkeypatch):
+@pytest.mark.parametrize("opponent,opponent_name", [("POR", "Trail Blazers"), ("LAL", "Lakers")])
+def test_curry_points_nonadjacent_seasons_and_single_season_controls(
+    monkeypatch, opponent, opponent_name
+):
     """S2: source-selected player games, independent of either query path."""
     import pandas as pd
 
@@ -278,14 +281,20 @@ def test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls(monk
             values = pd.to_numeric(raw[metric], errors="coerce")
             assert (values.notna() & values.ge(0) & values.mod(1).eq(0)).all()
         subject = raw.loc[raw.player_name.eq("Stephen Curry")]
-        selected = subject.loc[subject.opponent_team_abbr.eq("LAL") & subject.pts.ge(25)]
-        assert not selected.empty, f"Required positive S2 sample missing: {season}"
+        selected = subject.loc[subject.opponent_team_abbr.eq(opponent) & subject.pts.ge(25)]
+        if (opponent, season) in {("LAL", "2025-26"), ("POR", "2024-25")}:
+            # Preserve the initially failed positive-source assumption as an
+            # explicit empty-season control; POR supplies both positive seasons.
+            assert selected.empty
+            assert subject.opponent_team_abbr.eq(opponent).any()
+        else:
+            assert not selected.empty, f"Required positive S2 sample missing: {season}"
         if season in seasons:
             expected[season] = selected
             unfiltered.append(subject)
-        # The intervening season must have positive games, yet never enter output.
+        # LAL has positive intervening games; POR supplies positive endpoints.
     raw_subject = pd.concat(unfiltered)
-    assert len(raw_subject.loc[raw_subject.opponent_team_abbr.eq("LAL")]) > sum(
+    assert len(raw_subject.loc[raw_subject.opponent_team_abbr.eq(opponent)]) > sum(
         len(frame) for frame in expected.values()
     ), "Threshold must discriminate the requested source sample"
     assert len(raw_subject.loc[raw_subject.pts.ge(25)]) > sum(
@@ -316,12 +325,13 @@ def test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls(monk
         return summarize(frame, bucket)
 
     monkeypatch.setattr(player_split_summary, "_summarize_bucket", capture)
-    common = dict(player="Stephen Curry", opponent="LAL", stat="pts", min_value=25)
+    common = dict(player="Stephen Curry", opponent=opponent, stat="pts", min_value=25)
+    positive_seasons = [season for season in seasons if not expected[season].empty]
     for entry in ("natural", "structured"):
         captured.clear()
         combined = (
             execute_natural_query(
-                "Stephen Curry averages with at least 25 points against Lakers in 2023-24 and 2025-26"
+                f"Stephen Curry averages with at least 25 points against {opponent_name} in 2023-24 and 2025-26"
             )
             if entry == "natural"
             else execute_structured_query(
@@ -334,16 +344,19 @@ def test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls(monk
             )
         )
         assert combined.result_status == "ok", combined.metadata
-        assert [season for season, _ in captured] == seasons
+        assert [season for season, _ in captured] == positive_seasons
         sections = combined.to_dict()["sections"]
-        assert [row["bucket"] for row in sections["split_comparison"]] == seasons
+        assert [row["bucket"] for row in sections["split_comparison"]] == positive_seasons
+        caveats = combined.result.caveats
+        for season in set(seasons) - set(positive_seasons):
+            assert any(f"no games in {season}" in note for note in caveats)
         assert sections["summary"][0]["games_total"] == sum(map(len, expected.values()))
         if entry == "natural":
             assert combined.metadata["player"] == "Stephen Curry"
-            assert combined.metadata["opponent"] == "LAL"
+            assert combined.metadata["opponent"] == opponent
             assert combined.metadata["season_list"] == seasons
             assert combined.metadata["min_value"] == 25
-            assert {"kind": "team", "label": "Opponent", "value": "LAL"} in combined.metadata[
+            assert {"kind": "team", "label": "Opponent", "value": opponent} in combined.metadata[
                 "applied_filters"
             ]
             assert {"kind": "threshold", "label": "pts min", "value": "25.0"} in combined.metadata[
@@ -356,11 +369,15 @@ def test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls(monk
         for season in seasons:
             single = (
                 execute_natural_query(
-                    f"Stephen Curry averages with at least 25 points against Lakers in {season}"
+                    f"Stephen Curry averages with at least 25 points against {opponent_name} in {season}"
                 )
                 if entry == "natural"
                 else execute_structured_query("player_game_summary", season=season, **common)
             )
+            if expected[season].empty:
+                assert single.result_status == "no_result"
+                assert single.result_reason == "no_match"
+                continue
             assert single.result_status == "ok", single.metadata
             sections = single.to_dict()["sections"]
             log = pd.DataFrame(sections["game_log"])
