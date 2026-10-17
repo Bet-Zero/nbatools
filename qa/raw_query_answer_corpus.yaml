@@ -10189,3 +10189,70 @@ cases:
       equals: 113.0
     review_notes: Regression from frozen P2 comparison; independent raw-row oracle,
       not a fresh held-out example. Deployed verification separate.
+
+  - id: recent_window_p2_s5_1
+    query: How did Denver fare scoring at least 114 points within its final 8 games
+      of 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 5
+    hard_assertions:
+    - path: result.metadata.last_n
+      equals: 8
+    - path: result.metadata.last_n_scope
+      equals: window
+    - path: result.sections.summary.0.games
+      equals: 5
+    - path: result.sections.summary.0.wins
+      equals: 4
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 126.8
+    - path: result.sections.summary.0.reb_avg
+      equals: 45.8
+    - path: result.sections.summary.0.ast_avg
+      equals: 33.6
+    review_notes: Post-P2 repair regression, not a rerun or changed frozen comparison.
+      Team summary route independently accepted as equivalent requested W/L/sample output.
+  - id: recent_window_p2_s5_3
+    query: Average Nikola Jokic’s stats for games scoring at least 29 points within
+      his final 9 appearances of 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 4
+    hard_assertions:
+    - path: result.metadata.last_n
+      equals: 9
+    - path: result.metadata.last_n_scope
+      equals: window
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 2
+    - path: result.sections.summary.0.pts_avg
+      equals: 37.75
+    - path: result.sections.summary.0.reb_avg
+      equals: 13.5
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    review_notes: Post-P2 repair regression, not a rerun or changed frozen comparison.
+      Player summary preserves the requested identity, window and averages.
