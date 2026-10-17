@@ -565,9 +565,7 @@ def backfill_game_availability(
     game_id: list[int] | None = typer.Option(
         None, "--game-id", help="Specific finalized game ID (repeatable)"
     ),
-    limit: int | None = typer.Option(
-        None, "--limit", help="Maximum number of games to import"
-    ),
+    limit: int | None = typer.Option(None, "--limit", help="Maximum number of games to import"),
     source: str = typer.Option(
         "stats", "--source", help="stats (NBA V3) or espn (matched game summary)"
     ),
