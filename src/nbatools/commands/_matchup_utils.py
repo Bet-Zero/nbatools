@@ -813,8 +813,9 @@ def presence_names_player_condition(text: str, player: str) -> bool:
         text,
     ):
         named = detect_player(match.group(1).strip())
-        if (named and named.upper() == player.upper()) or player.lower().startswith(
-            match.group(1).strip().lower() + " "
+        if (named and named.upper() == player.upper()) or (
+            not detect_team_in_text(match.group(1))
+            and player.lower().startswith(match.group(1).strip().lower() + " ")
         ):
             tail = text[match.end() :]
             clause = re.split(
