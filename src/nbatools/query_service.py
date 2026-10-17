@@ -527,6 +527,22 @@ def _build_applied_filters(
         last_n = route_kwargs.get("last_n")
     if last_n is not None:
         applied_filters.append({"label": "Last N games", "value": str(last_n), "kind": "window"})
+        scope = route_kwargs.get("last_n_scope") or source.get("last_n_scope") or "qualifying"
+        if scope == "window":
+            selection = f"Check conditions within the last {last_n} games"
+        elif scope == "qualifying":
+            selection = f"Select the last {last_n} games matching the conditions"
+        elif scope == "outcome_window":
+            losses = route_kwargs.get("losses_only", source.get("losses_only"))
+            wins = route_kwargs.get("wins_only", source.get("wins_only"))
+            unit = "wins" if wins else "losses" if losses else "games"
+            selection = f"Check conditions within the last {last_n} {unit}"
+        else:
+            selection = None
+        if selection:
+            applied_filters.append(
+                {"label": "Sample selection", "value": selection, "kind": "window"}
+            )
 
     return applied_filters
 
@@ -606,6 +622,8 @@ def _build_query_metadata(
         "season_type": parsed.get("season_type"),
         "start_date": parsed.get("start_date"),
         "end_date": parsed.get("end_date"),
+        "last_n": route_kwargs.get("last_n", parsed.get("last_n")),
+        "last_n_scope": route_kwargs.get("last_n_scope", parsed.get("last_n_scope")),
         "player": player,
         "team": team,
         "opponent": parsed.get("opponent"),
@@ -3613,6 +3631,8 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "season_type": kwargs.get("season_type"),
         "start_date": kwargs.get("start_date"),
         "end_date": kwargs.get("end_date"),
+        "last_n": kwargs.get("last_n"),
+        "last_n_scope": kwargs.get("last_n_scope", "qualifying") if kwargs.get("last_n") else None,
         "player": player,
         "team": team,
         "opponent": kwargs.get("opponent"),

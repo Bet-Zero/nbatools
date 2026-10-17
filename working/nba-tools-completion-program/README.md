@@ -21,10 +21,10 @@ latest PR discussion/branch may be ahead of this main-branch record; check it.
 
 | Field | Current handoff |
 | --- | --- |
-| Program state | #474 merged d670f6596ab951d1eb2e78a60d12f138413f37d8 after finalCI39011115409 passed; S4 staged-source numerical acceptance includes12split+8single-seasoncontrols. Post-mergeCI pending. S1/S2/S3 deployed numerical checks independently accepted; test-only gate now integration-ready. No production publication authorized or performed. |
-| Main / owner | Main d670f6596ab951d1eb2e78a60d12f138413f37d8. Lead /root owns codex/deployed-split-contracts and S5 codex/s5-sample-order at /workspace/work/s5-sample-order. S5 candidate0b92117f59310ba3078bc17c6250136bcc43b52d, requestc08cbc6c9c51e4858e1722b5f1ae2e99502e0d88 for6actual+6rawQA; finalpreflight pending. Checker /root/availability_checker. Other #462 WIP preserved. |
+| Program state | PR474 S4 mergedd670f6596ab951d1eb2e78a60d12f138413f37d8; postmergeCI39011350432 passed. PR475 deployedS1/S2/S3 gate mergedb9141dad07d7b6f5f6be37a38a6b06343630cb77. PR476 S5 numerical/RawQA independently accepted; integrate latestmain and finishnormalCI. No production publication authorized or performed. |
+| Main / owner | Lead /root owns S5 codex/s5-sample-order at /workspace/work/s5-sample-order; checker /root/availability_checker. S4 PR474 merged d670f6596ab951d1eb2e78a60d12f138413f37d8 afterCI39011115409; postmergeCI39011350432 passed. DeployedS1/S2/S3 gate PR475 merged b9141dad07d7b6f5f6be37a38a6b06343630cb77 afterCI39011428680 passed; postmergeCI pending. Other #462 WIP preserved. |
 | Verification | #469 runtime0796d1ec: preflight7938passed1461skipped3subtests135.28sec;470focusedpassed22skipped;27status/court boundary tests and independent unfamiliar probes passed. Required NBA run [39004295670](https://github.com/Bet-Zero/nbatools/actions/runs/39004295670), request2d718f572f6b291ce08ee1690a98582a54e436b6:1selected/executed/passed0skip/fail/error/xfail,6.41sec on queue-d-production-0574735-20260716. Artifact12089464271 ZIP SHA256 `26174fd4ce52d923be478fc2f60e81fc0d2a9ed970b9ba277d75e4b6ebf66847`. Separate checker /root/availability_checker verified fresh raw receipts, CSV digest, all34semantic rows,119/109scores and240minutes/team, and approved final bounded semantics. Previous consumer run39003780254 also passed. |
-| Source/storage NEXT | S4 finalpreflight7984passed1468skipped135.63sec; focused177passed. Checker accepted correctedownership/unknownplayer/positive-minute behavior and freshactualoracle. ExactrequiredR2run39010415526 requestea1824ebeba7fb22e4c25e050ab1d109e07b73c4:1selected/executed/passed0skip/fail/error/xfail10.06sec. Artifact12092487073 ZIP4f97f4ec7791cef51375d05a1097a88b64349cfdaefcddf7901b5ab5d031132a. Refreshedcontrolsrun39010782922 request74889a418a66a707af06d71f79c54444602b2491 passed1/1zero skips; artifact12092751702 ZIP427daca3b9deb23283d9cb4fa5fb60077841bc0af5ca06e3667e994506f04b30. Next: completeCI/merge for deployedS1/S2/S3gate and check474postmergeCI; finishS5actual/CI acceptance. Permanent storage and deployedS4 await protected environment setup and future explicit publication approval. |
+| Source/storage NEXT | S5 frozen six-case contract binds test_sample_order_contract_real_data to rawQA IDs s5_team_date_opponent, s5_player_date_opponent, s5_team_last_n_window, s5_team_last_n_qualifying, s5_player_last_n_window, s5_player_last_n_qualifying. Calculations already select correct rows; new Sample selection badge distinguishes window/qualifying and effective outcomes. Controlled10 + focused102 passed; cached actual6 and rawQA6 passed; checker accepted bounded runner request. Reviewed0b92117f59310ba3078bc17c6250136bcc43b52d requestc08cbc6c9c51e4858e1722b5f1ae2e99502e0d88 run39011364134 passed6numerical0skips9.46sec and6rawQA/42assertions. Finalpreflight7994passed1474skipped135.40sec. Checkeraccepted freshresults/independentrawarithmetic. Next: finalCI/merge476 then deployedS5; prepare boundedP2comparison using verifiedsubset. S4 controls evidence retained below. Permanent publication remains unapproved. |
 | Permanent-storage gate | CI artifacts are temporary staging only. Retain source URI/retrieval date/hash and bind CSV rows with `source_sha256`; stage against the pinned existing generation, validate coverage and lineage, publish only with existing write authority, verify object sizes/checksums and active pointer/runtime. Never use read-only validation credentials for writes. Request owner action only if the actual publication operation lacks available authority. |
 | Independent #467 | Candidate `26f10cde368b7efe8cabd1c716166f259a72e087` on `codex/p1-three-team-scope-independent-20261016` fixes final three-team subject retention. CI [39000450859](https://github.com/Bet-Zero/nbatools/actions/runs/39000450859) passed. Independent checker: 39 scoped tests plus raw-fixture March arithmetic and unfamiliar entity/clause probes. Maker: 66 focused tests. |
 | #467 NBA evidence | R2 [39000485209](https://github.com/Bet-Zero/nbatools/actions/runs/39000485209), request `48147b039e8416e17633efddb059b67f9e65c672`, reviewed parent `26f10cde368b7efe8cabd1c716166f259a72e087`: **2 selected/executed/passed, 0 skipped/failed/errors/xfails**, pinned generation above. Artifact 12088766782, ZIP SHA256 `819b7cf7eda43cb0a119cfa8506b94914b9922b47eba0b5ed8a73bb7656a68e9`. Raw QA/sweep unselected, not full-corpus acceptance. |
@@ -54,7 +54,7 @@ points**. Curry >=25 versus LAL: **3 games/109 points** and an explicitly empty
 LAL sample, **3 games/112 points**, must remain excluded. Exact raw IDs, PTS/REB/AST
 means, labels, structured/natural splits and one-season controls passed. Fixture
 suite51passed; checker held-out GSW away/NYK and Curry>=28/BOS passed. Deployed
-S1/S2 deployed numerical verification is accepted below; remaining K07/S4 publication and rendering obligations stay open.
+S1/S2 verification and the remaining K07/S4 obligations stay open.
 
 S3 request `248b8e245d35168e423aaa4785bc124f9e04a631` on
 `r2-validation/subject-ownership-10ff2e2a` selects
@@ -65,6 +65,15 @@ Independent raw expectations: LAL own>=110/opponent<110/home, 2023-24,
 road/entity/threshold probes; actual gate pending. Reconcile it with latest main
 before its own PR/CI. No runtime drift requires repeating already valid source
 arithmetic; new acceptance must still execute.
+
+S5 evidence: numerical artifact12091999945 ZIPe3a5494e5a8b7ea16be736f6f92277fb8d19337460ab1ed9ce33a5c286f373b3;
+rawQA artifact12092762362 ZIPc8785c92975ffdb977cbed574a90b5e79c98a8609cac0f3248273afe7191295f.
+BOS date+NYK3games3–0/363PTS; last10 window>=110:6games5–1/762PTS;
+last10 qualifying:10games8–2/1255PTS. Curry date+LAL3games2–1/109PTS;
+last10 window>=30:2games1–1/66PTS; last10 qualifying:10games6–4/364PTS.
+ExactIDs/REB/AST/labels independently verified. Wider product-review fields retain
+human_review_pending/missing_variants; no invented human signoff or family closure.
+DeployedS5 and boundedP2 remain unfinished. No paid model/provider authorized here.
 
 S1/S2/S3 deployed numerical evidence: corrected reviewed9da2e10f7fb694274bb9c1154b598d37fb0e54f1,
 request6555c70b7381945b68bc180e5848ebe385ef3a63, run39010886782 passed4/4zero skips.
