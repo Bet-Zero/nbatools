@@ -44,6 +44,17 @@ jobs:
               print("didNotPlay flags:", dict(Counter(str(v) for _,v in statuses)))
               print("Sample reported DNP:", [name for name,flag in statuses if flag is True][:10])
               print("Summary sections:", list(summary.keys()))
+              injury = summary.get("injuries")
+              print("Injury section type/count:", type(injury).__name__, len(injury) if injury else 0)
+              if injury:
+                  print("Injury entries sample:", str(injury)[:800])
+              headers = summary.get("header", {})
+              print("Game header competitions:", [
+                  [(v.get("team", {}).get("abbreviation"), v.get("homeAway"),v.get("score"))
+                   for v in item.get("competitors", [])]
+                  for item in headers.get("competitions", [])
+              ][:2])
+
               print("Boxscore sections:", list(box.keys()))
               print("Team summary:", [
                   (t.get("team", {}).get("abbreviation"), list(t.keys()))
