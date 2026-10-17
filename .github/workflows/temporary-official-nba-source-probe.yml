@@ -1,45 +1,51 @@
-name: Official NBA source reachability (temporary probe)
+name: NBA availability source reachability (temporary probe)
 on:
   push:
     branches: ["ops/availability-source-probe-20261016"]
 permissions:
   contents: read
 jobs:
-  official-source:
+  alt-source:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - name: Probe official public NBA box scores without credentials
+      - name: Probe public NBA scoreboard and box-score completeness
         shell: bash
         run: |
           python - <<'PY'
           import json
           import urllib.error
           import urllib.request
+          from collections import Counter
 
-          urls = {
-              "NBA CDN live": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022400001.json",
-              "NBA Stats V3": "https://stats.nba.com/stats/boxscoretraditionalv3?GameID=0022400001&StartPeriod=0&EndPeriod=0&StartRange=0&EndRange=0&RangeType=0",
-          }
-          headers = {
-              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
-              "Referer": "https://www.nba.com/",
-              "Origin": "https://www.nba.com",
-          }
-          ok = 0
-          for label, url in urls.items():
-              try:
-                  with urllib.request.urlopen(
-                      urllib.request.Request(url, headers=headers), timeout=18
-                  ) as response:
-                      raw = response.read(250000)
-                      payload = json.loads(raw)
-                  print(label, "status=200", "json_keys=", list(payload)[:8])
-                  ok += 1
-              except urllib.error.HTTPError as exc:
-                  print(label, "HTTP status", exc.code)
-              except Exception as exc:
-                  print(label, type(exc).__name__, str(exc)[:200])
-          if not ok:
-              raise SystemExit("Neither official source is reachable from this runner")
+          base = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/"
+          def get(s):
+              req = urllib.request.Request(base + s, headers={
+                  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
+                  "Accept": "application/json",
+              })
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  return json.load(response)
+          try:
+              board = get("scoreboard?dates=20251021")
+              games = board.get("events", [])
+              print("ESPN events:", [(game.get("id"), game.get("name")) for game in games])
+              assert games, "No October 21 2025 NBA events"
+              selected = next((g for g in games if "Lakers" in str(g.get("name"))), games[0])
+              summary = get("summary?event=" + selected["id"])
+              box = summary.get("boxscore") or {}
+              statuses = []
+              for team in box.get("players", []):
+                  for group in team.get("statistics", []):
+                      for p in group.get("athletes", []):
+                          statuses.append((p.get("athlete", {}).get("displayName"), p.get("didNotPlay")))
+              print("Summary game id:", selected["id"])
+              print("Boxscore player rows:", len(statuses))
+              print("didNotPlay flags:", dict(Counter(str(v) for _,v in statuses)))
+              print("Sample reported DNP:", [name for name,flag in statuses if flag is True][:10])
+              assert statuses, "No player records in game summary"
+              assert any(flag is True for _,flag in statuses), "No explicit nonparticipant flags in this sample"
+          except Exception as exc:
+              print("ESPN probe failed:", type(exc).__name__, str(exc)[:250])
+              raise
           PY
