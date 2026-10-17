@@ -321,7 +321,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Summarize a filtered team game sample.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
-        + ("stat", "min_value", "max_value", "opponent_quality")
+        + ("stat", "min_value", "max_value", "opponent_quality", "with_player")
         + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={"season_type": SEASON_TYPE_VALUES},
@@ -564,6 +564,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "rank_stat",
             "rank_order",
             "split_seasons",
+            "with_player",
+            "without_player",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,
@@ -595,6 +597,8 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "rank_stat",
             "rank_order",
             "split_seasons",
+            "with_player",
+            "without_player",
         ),
         allowed_values={
             "season_type": SEASON_TYPE_VALUES,

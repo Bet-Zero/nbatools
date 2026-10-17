@@ -87,6 +87,7 @@ from nbatools.commands._matchup_utils import (
     extract_player_comparison,
     extract_team_comparison,
     names_other_player_availability,
+    presence_names_player_condition,
     presence_states_player_condition,
 )
 from nbatools.commands._natural_query_execution import (  # noqa: F401
@@ -606,7 +607,14 @@ def _multi_player_availability_boundary(q: str) -> bool:
 # presence/absence flag. Every other route only ever receives with_player /
 # without_player as display metadata (set unconditionally by the parser) with
 # nothing downstream applying it - see _player_availability_unsupported_markers.
-_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record", "player_game_finder", "player_game_summary"}
+_WITH_PLAYER_SUPPORTED_ROUTES = {
+    "team_record",
+    "player_game_finder",
+    "player_game_summary",
+    "game_summary",
+    "player_split_summary",
+    "team_split_summary",
+}
 _WITHOUT_PLAYER_SUPPORTED_ROUTES = {
     "team_record",
     "player_split_summary",
@@ -5224,6 +5232,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "opponent": opponent,
             "opponent_player": opponent_player,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -5249,6 +5258,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -5835,6 +5845,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -6343,6 +6354,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "team": team,
             "opponent": opponent,
             "without_player": without_player,
+            "with_player": with_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -10910,6 +10922,23 @@ def _finalize_route(parsed: dict) -> dict:
         ]
         return out
     route = out.get("route")
+    if any(
+        presence_names_player_condition(parsed["normalized_query"], name)
+        for name in (
+            parsed.get("with_player"),
+            parsed.get("without_player"),
+            parsed.get("unresolved_with_player"),
+            parsed.get("unresolved_without_player"),
+        )
+        if name
+    ):
+        kwargs["unsupported_filters"] = [
+            *(kwargs.get("unsupported_filters") or []),
+            "teammate_stat_condition",
+        ]
+        out["route_kwargs"] = kwargs
+        return out
+
     named_three = three_teams(parsed["normalized_query"], allow_stretch=False)
     if named_three is not None:
         teams, _ = named_three
@@ -11544,7 +11573,7 @@ def parse_query(query: str) -> dict:
     if since is not None:
         return since
     out = _parse_query_once(query)
-    if {"availability_status", "on_court_presence"}.intersection(
+    if {"availability_status", "on_court_presence", "teammate_stat_condition"}.intersection(
         (out.get("route_kwargs") or {}).get("unsupported_filters", [])
     ):
         return out

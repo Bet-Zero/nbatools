@@ -748,6 +748,11 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "try a single-player absence query such as 'Lakers record without LeBron' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "teammate_stat_condition":
+        return (
+            "A numerical condition on the named teammate is not supported by this query; "
+            "it was not applied to the primary player or team instead."
+        )
     if filter_id == "player_minutes_bound":
         return (
             "a player's own condition (minutes, points, assists) can't be combined "
