@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "26f10cde368b7efe8cabd1c716166f259a72e087",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_c1_three_team_compare_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
