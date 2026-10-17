@@ -287,7 +287,11 @@ review occurred**. Agents remain responsible for recording the real reviewer and
 findings in the candidate PR before pushing a request. A request branch is an
 evidence carrier, not a replacement feature branch or a merge approval.
 
-Automatic runs are targeted-only: no filter sweep, acquisition or publication.
+Automatic runs are targeted-only: no filter sweep or publication. The owner's
+2026-10-17 completion-program direction additionally authorizes bounded NBA
+source acquisition through these existing runners, retaining original sources
+and derived evidence in the existing artifacts. This does not enable unattended
+refresh, grant write credentials, or make temporary artifacts permanent storage.
 The request is capped at 8 KiB, 20 numerical selectors and 20 Raw QA cases, with
 no directories, globbing, shell options, duplicate selectors or unknown schema
 fields. The numerical harness caps collection at 100 selected tests and runs

@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands.pipeline.player_game_availability_espn import _name
+from nbatools.commands.pipeline.player_game_availability_espn import _name, _surname
 
 DERIVATION = "derived:official_profile_identities_v1"
 
@@ -62,7 +62,7 @@ def fetch_profile_for_name(name: str, team_id: int, surname: bool, directory: Pa
         p
         for p in players.get_players()
         if _name(p["full_name"]) == normalized
-        or (surname and _name(p["full_name"]).split()[-1] == normalized)
+        or (surname and _surname(p["full_name"]) == normalized)
     ]
     if len(candidates) != 1:
         raise ValueError("Official profile requires a unique NBA identity candidate")

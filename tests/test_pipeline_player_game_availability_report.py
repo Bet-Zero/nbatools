@@ -456,3 +456,23 @@ def test_profile_candidate_ambiguity_never_fetches(nba_rows, monkeypatch):
     )
     with pytest.raises(ValueError, match="unique"):
         fetch_profile_for_name("Toohey", 1, True, nba_rows)
+
+
+def test_inactive_surname_preserves_compound_name_and_true_ambiguity():
+    people = pd.DataFrame(
+        [
+            dict(team_id=2, player_id=10, player_name="Nick Smith Jr."),
+            dict(team_id=2, player_id=20, player_name="Dorian Finney-Smith"),
+        ]
+    )
+    people["normalized"] = people.player_name.map(report._name)
+    assert report._identify(people, 2, "Smith Jr.", set(), surname=True) == (10, "Nick Smith Jr.")
+    assert report._identify(people, 2, "Finney-Smith", set(), surname=True) == (
+        20,
+        "Dorian Finney-Smith",
+    )
+    another = pd.DataFrame(
+        [dict(team_id=2, player_id=30, player_name="Dennis Smith Jr.", normalized="dennis smith")]
+    )
+    with pytest.raises(ValueError, match="candidate IDs=2"):
+        report._identify(pd.concat([people, another]), 2, "Smith Jr.", set(), surname=True)

@@ -53,6 +53,14 @@ def _name(value: object) -> str:
     return " ".join(parts)
 
 
+def _surname(value: object) -> str:
+    """Keep compound last names intact before punctuation/suffix normalization."""
+    parts = str(value or "").strip().split()
+    while parts and parts[-1].lower().rstrip(".") in {"jr", "sr", "ii", "iii", "iv"}:
+        parts.pop()
+    return _name(parts[-1]) if parts else ""
+
+
 def _nba_players(root: Path, season: str, safe: str) -> pd.DataFrame:
     frames = []
     start = int(season[:4])

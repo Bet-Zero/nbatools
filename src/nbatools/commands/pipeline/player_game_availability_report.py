@@ -24,6 +24,7 @@ from nbatools.commands.pipeline.player_game_availability_espn import (
     _name,
     _nba_players,
     _nba_teams,
+    _surname,
 )
 
 SOURCE_ROOT = "https://statsdmz.nba.com/pdfs"
@@ -263,7 +264,7 @@ def _identify(
     if subset.player_id.nunique() != 1 and surname:
         subset = people[
             people.team_id.eq(team_id)
-            & people.normalized.map(lambda n: bool(n) and n.split()[-1] == normalized)
+            & people.player_name.map(_surname).eq(normalized)
             & ~people.player_id.isin(used)
         ]
     ids = subset.player_id.unique()
