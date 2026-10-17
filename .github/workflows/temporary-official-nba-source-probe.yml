@@ -48,6 +48,12 @@ jobs:
               print("Injury section type/count:", type(injury).__name__, len(injury) if injury else 0)
               if injury:
                   print("Injury entries sample:", str(injury)[:800])
+                  for team_injuries in injury:
+                      items = team_injuries.get("injuries") or []
+                      print("Team injury names:", team_injuries.get("team", {}).get("abbreviation"),
+                            [(a.get("athlete", {}).get("displayName"), a.get("status"),
+                              a.get("date"), a.get("details")) for a in items[:12]])
+
               headers = summary.get("header", {})
               print("Game header competitions:", [
                   [(v.get("team", {}).get("abbreviation"), v.get("homeAway"),v.get("score"))
