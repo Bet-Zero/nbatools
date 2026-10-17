@@ -4189,14 +4189,44 @@ def build_period_filter_note(
 
 def detect_on_off(text: str) -> dict | None:
     """Detect single-player on/off phrasing."""
+    from nbatools.commands._teammate_resolution import _only_the_name
+
     player_fragment = r"[\w .&'\-]+?"
+    court_states = list(re.finditer(r"\b(on|off)\s+(?:the\s+)?(?:court|floor)\b", text))
+    comparison = re.search(
+        r"\bon\s+(?:the\s+)?(?:court|floor)\s+(?:vs\.?|versus)\s+"
+        r"off\s+(?:the\s+)?(?:court|floor)\b",
+        text,
+    )
+    if len(court_states) > 1 and not (len(court_states) == 2 and comparison):
+        return {"lineup_members": [], "presence_state": "both"}
+    # Read owned court conditions before broad subject phrases. An unresolved
+    # target remains unresolved; finding another player elsewhere is not repair.
+    explicit = list(
+        re.finditer(
+            rf"\b(?P<mode>with|without|when|whenever|while|if)\s+"
+            rf"(?P<target>{player_fragment})\s+(?:(?:is|was|were)\s+)?"
+            r"(?P<state>on|off)\s+(?:the\s+)?(?:court|floor)\b",
+            text,
+        )
+    )
+    if explicit:
+        clause = explicit[0]
+        state = clause.group("state")
+        if clause.group("mode") == "without":
+            state = "off" if state == "on" else "on"
+        target = clause.group("target").strip()
+        player = detect_player(target)
+        if len(explicit) != 1 or not player or not _only_the_name(target, player):
+            return {"lineup_members": [], "presence_state": state}
+        if state == "on" and re.search(
+            r"\b(?:vs\.?|versus)\s+off\s+(?:the\s+)?(?:floor|court)\b", text
+        ):
+            state = "both"
+        return {"lineup_members": [player], "presence_state": state}
     phrase_patterns = (
-        (rf"\bwith\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "on"),
-        (rf"\bwith\s+({player_fragment})\s+on\s+court\b", "on"),
-        (rf"\bwithout\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "off"),
-        (rf"\bwithout\s+({player_fragment})\s+on\s+court\b", "off"),
-        (rf"\b({player_fragment})\s+on\s+court\b", "on"),
-        (rf"\b({player_fragment})\s+off\s+court\b", "off"),
+        (rf"\b({player_fragment})\s+on\s+(?:the\s+)?court\b", "on"),
+        (rf"\b({player_fragment})\s+off\s+(?:the\s+)?court\b", "off"),
         (rf"\b({player_fragment})\s+sitting\b", "off"),
     )
 
@@ -4204,7 +4234,15 @@ def detect_on_off(text: str) -> dict | None:
         match = re.search(pattern, text)
         if not match:
             continue
-        player = detect_player(match.group(1).strip())
+        fragment = match.group(1).strip()
+        player = detect_player(fragment)
+        # Bare syntax is one person's name with optional summary words, not
+        # a license to search across another subject or an unread condition.
+        bare_name = re.sub(
+            r"\b(?:(?:net|offensive|defensive)\s+rating|stats|statistics)\b", "", fragment
+        ).strip()
+        if player and not _only_the_name(bare_name, player):
+            return {"lineup_members": [], "presence_state": presence_state}
         if player:
             if presence_state == "on" and re.search(
                 r"\b(?:vs\.?|versus)\s+off\s+(?:the\s+)?(?:floor|court)\b", text
