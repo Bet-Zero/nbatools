@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "5156561795c58f45637ca9ca4e05e5644ab41a6c",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_c1_season_lists_real_data.py::test_celtics_home_knicks_nonadjacent_seasons_and_single_season_controls",
+    "tests/test_c1_season_lists_real_data.py::test_curry_points_lakers_nonadjacent_seasons_and_single_season_controls"
+  ],
+  "raw_qa_cases": []
+}
