@@ -62,6 +62,7 @@ SECRET_SOURCES = {
     "R2_SECRET_ACCESS_KEY": "R2_VALIDATION_SECRET_ACCESS_KEY",
 }
 SECRET_ENV_VARS = tuple(SECRET_SOURCES)
+SECRET_FREE_JOBS = {"request", "retain-backup", "restore-backup", "retain-restore-receipt"}
 
 # The job that verifies the credential and pins the generation every other job
 # reads, so that all gates judge the same immutable data.
@@ -164,8 +165,9 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
     from a real data failure.
     """
     for name, job in _jobs().items():
-        if name == "request":
+        if name in SECRET_FREE_JOBS:
             assert "environment" not in job
+            assert not any(secret in str(job) for secret in SECRET_SOURCES.values())
             continue
         assert job.get("environment") == ENVIRONMENT, (
             f"job {name!r} must declare `environment: {ENVIRONMENT}`; it has "
@@ -315,7 +317,7 @@ def test_every_job_maps_exactly_the_secrets_the_engine_requires() -> None:
     )
 
     for name, job in _jobs().items():
-        if name == "request":
+        if name in SECRET_FREE_JOBS:
             continue
         env = job.get("env", {})
         for variable, secret in SECRET_SOURCES.items():
@@ -351,7 +353,7 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
 
     expected = f"${{{{ needs.{PREFLIGHT_JOB}.outputs.generation }}}}"
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
+        if name in SECRET_FREE_JOBS | {PREFLIGHT_JOB, "publication-readonly"}:
             continue
         pinned = job.get("env", {}).get(GENERATION_ENV)
         assert pinned == expected, (
@@ -417,7 +419,7 @@ def test_every_data_job_waits_for_the_credential_check() -> None:
     wait for it reports the symptom in parallel with the diagnosis.
     """
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
+        if name in SECRET_FREE_JOBS | {PREFLIGHT_JOB, "publication-readonly"}:
             continue
         assert PREFLIGHT_JOB in _needs(job), (
             f"job {name!r} does not wait for {PREFLIGHT_JOB!r}, so a missing "
@@ -609,3 +611,31 @@ def test_publication_reuse_has_separate_fixed_package_validation():
     assert 'verify_pointer_manifest(client, bucket, inventory["base_generation"])' in helper
     assert "prepared_manifest_sha256" in helper
     assert "Active base changed during snapshot preparation" in helper
+
+
+def test_backup_is_explicit_bounded_and_credential_separated():
+    retain = _job("retain-backup")
+    assert _needs(retain) == ["preflight", "data-backed-tests"]
+    assert "github.event_name == 'push'" in retain["if"]
+    assert "refs/heads/r2-validation/cloud-backup-" in retain["if"]
+    assert (
+        "needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup'"
+        in retain["if"]
+    )
+    assert "needs.data-backed-tests.result == 'success'" in retain["if"]
+    assert retain["permissions"] == {"contents": "write", "actions": "read"}
+    restore = _job("restore-backup")
+    assert _needs(restore) == ["preflight", "retain-backup"]
+    assert restore["permissions"] == {"contents": "read"}
+    assert _needs(_job("retain-restore-receipt")) == ["restore-backup"]
+    for name in SECRET_FREE_JOBS - {"request"}:
+        body = str(_job(name))
+        assert "secrets." not in body and "environment" not in _job(name)
+        assert "--clobber" not in body and "continue-on-error" not in body
+
+
+def test_cloud_operations_require_explicit_selection():
+    operations = ROOT / "tests/cloud_operations_real_data.py"
+    assert operations.is_file()
+    assert not operations.name.startswith("test_")
+    assert not operations.name.endswith("_test.py")

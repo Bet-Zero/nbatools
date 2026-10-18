@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-10-18",
+  "bounded_recovery": {
+    "mounted_object_lookup": "c10936b absent",
+    "known_old_paths": "/workspace/work/k06-runtime, /workspace/work/462-integration, /workspace/nbatools/work/462-integration absent",
+    "github_commit_lookup": "422 No commit found for SHA c10936b",
+    "stopped_environment_reopen_capability": "not exposed by current environment tools",
+    "prior_remote_history_audit": "accepted PR498 evidence; not repeated"
+  },
+  "preserved": {
+    "historical_feature_prs": "491–494 and462 untouched",
+    "superseded_checkpoint_branch": "docs/cloud-acceptance-scope-correction retained at ff7ecfd5dadc22e61b81c8ee563f3f948ca222bd",
+    "earlier_request": "92af9091f31983c683a4baca136e80948fa88341 verified by git ls-remote at r2-validation/setup-one-game-a168089",
+    "durable_nba_slice": "e4900f515bc2536859293599efdd7ba7889a7969; nine recovered local files independently hash-match committed ZIP",
+    "current_setup_code": "7aa2c7d1134669efad2eb384bae00a4f34b1d0e0; independently reviewed; remote branch setup/cloud-operations-20261018",
+    "cleanup": "none; no reset, force-push, pruning or worktree deletion"
+  },
+  "unavailable": "c10936b and any unique unpublished stopped-runner ports cannot be preserved unless that original volume can be restored; no present cloud workflow requires it"
+}

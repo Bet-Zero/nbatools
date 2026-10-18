@@ -5,6 +5,74 @@ immutable runtime data. It separates safe local proof from any production
 mutation. External backup controls and live recovery evidence remain explicit
 operational gates.
 
+## Manual cloud backup and freshness preparation (2026-10-18)
+
+The October setup package adds `tools/cloud_backup.py` to the **existing**
+read-only R2 validation workflow. It exports the pinned active generation byte
+for byte, including derived names, every source observation, dataset receipt and
+the original authenticated generation manifest. Limits are 3,000 files, 1 GB
+expanded data and a 200 MB ZIP. It performs no bucket writes or pruning.
+
+An independently reviewed manifest-only request on
+`r2-validation/cloud-backup-<unique-id>` must select exactly
+`tests/cloud_operations_real_data.py::test_full_generation_backup`.
+After that required test passes, a separate job with no R2 environment or
+credentials retains `generation.zip` and `backup-receipt.json` in the permanent,
+non-latest GitHub release `cloud-backup-<run-id>`. A third runner downloads the
+release, verifies its archive hash, safe inventory, original manifest, every
+file hash and existing dataset/source contracts, then exercises the real loader.
+Its restore receipt is added to the release without overwriting assets.
+Actions artifacts are transport only (the full export expires after one day),
+not the backup. A failed restore leaves the release intact and is not success.
+Verified execution: [run 39117892814](https://github.com/Bet-Zero/nbatools/actions/runs/39117892814)
+exported and restored all 703 files / 402,749,125 bytes of
+`availability-opening-s4-v1-20261017`; the separate runner loaded 26,651 player-game
+rows without R2 credentials. Permanent [backup and receipts](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-39117892814)
+include the exact archive and original manifest hashes. The same run's manual
+freshness attempt **failed** at `pull_games` after 96.2 seconds and prepared no
+candidate. Restore success is not successful acquisition/freshness.
+
+A release on the same GitHub account protects against R2 loss, not loss of the
+GitHub account; no separate-account disaster-recovery claim is made.
+
+From another clean cloud checkout with installed project dependencies:
+
+```bash
+gh release download cloud-backup-<run-id> --repo Bet-Zero/nbatools \
+  --pattern generation.zip --pattern backup-receipt.json --dir recovered
+python -m tools.cloud_backup recovered/generation.zip \
+  recovered/backup-receipt.json recovered/data
+```
+
+Restore requires no R2 credential. Keep the release receipt and the reviewed
+workflow commit as the trust reference. Never restore over an existing directory.
+This verifies an offline full-data restore; it does not exercise a live Vercel
+rollback or replace protected production publication approval.
+
+`python -m tools.cloud_refresh plan --output refresh-plan.json` resolves the
+current NBA season and records the existing acquisition → raw validation →
+processed build → receipt sequence without network calls. Explicit execution:
+
+```bash
+python -m tools.cloud_refresh run recovered/generation.zip \
+  recovered/backup-receipt.json --work fresh-attempt --timeout 150
+```
+
+The command restores into a new isolated directory and runs the existing pipeline
+in a fresh subprocess with local data selection and no R2/GitHub credentials.
+Every planned stage must succeed before a new immutable candidate is prepared
+and validated. Failure, skip, partial execution or timeout retains the original
+backup, emits `fresh-attempt/refresh-attempt.json`, exits nonzero and prepares no
+candidate. `--season 2025-26` is available for a bounded known-season source check;
+otherwise it resolves the actual current season. Neither command publishes,
+installs a schedule, runs `auto_refresh.py`, or calls generation pruning.
+
+Automatic acquisition/refresh/publication remains **off and unfinished**. A manual
+backup has no daily RPO guarantee. Source-route diagnostics must be reported as
+failures where blocked, even when the backup/restore setup workflow is green.
+Execution receipts and unresolved source/access findings belong in the sole
+completion checkpoint and the setup PR, not a second operational queue.
+
 ## Approved recovery objectives
 
 John Matthew approved these Queue E objectives on 2026-07-22:
@@ -55,9 +123,11 @@ DNS/cache propagation, or human response, so they are not an RTO or RPO.
 
 ## Prepared live drill boundary
 
-The current production pointer retains `legacy` as its previous generation, so
-the ordinary root-level `rollback-generation --target r2` command is not a safe
-live drill. It correctly refuses that unmanifested target. E-03B therefore uses
+The July E-03B plan was prepared when the production pointer retained `legacy`
+as its previous generation; root-level rollback correctly refused that
+unmanifested target. This is historical: October production now retains a
+validated immutable previous generation (see the completion checkpoint). That
+read-only verification is not a live rollback. The separately scoped E-03B plan uses
 an isolated prefix in the existing bucket and never writes root
 `metadata/active_generation.json` or root `generations/` objects.
 
@@ -83,7 +153,7 @@ generation, local manifest, isolated prefix, object and byte counts, and
 operation ceilings. The plain account ID is not written to the plan. Any field
 change invalidates the plan hash and therefore any later authorization.
 
-The approved-source boundary currently contains 684 manifested files and
+That July approved-source boundary contains 684 manifested files and
 401,730,141 source bytes. The prepared drill hard-stops above 689 live isolated
 objects, 401,900,000 uploaded bytes, 695 Class A operations, 3,448 Class B
 operations, or 690 deletes. It also caps downloaded byte verification at

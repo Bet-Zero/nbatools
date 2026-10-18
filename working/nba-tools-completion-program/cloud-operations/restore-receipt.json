@@ -1,0 +1,10 @@
+{
+  "archive_sha256": "fef91156538a6b6c946910fddcf904f6640b91fa21e7afe1ff630c861157a97f",
+  "data_bytes": 402749125,
+  "files": 703,
+  "generation_id": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "production_writes": 0,
+  "r2_credentials_used": false,
+  "restored_at": "2026-10-18T10:09:08.266379+00:00"
+}
