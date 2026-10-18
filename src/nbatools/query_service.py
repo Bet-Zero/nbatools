@@ -462,17 +462,9 @@ def _build_applied_filters(
                     }
                 )
     else:
-        stat = source.get("stat") or route_kwargs.get("stat")
-        min_value = (
-            source.get("min_value")
-            if source.get("min_value") is not None
-            else route_kwargs.get("min_value")
-        )
-        max_value = (
-            source.get("max_value")
-            if source.get("max_value") is not None
-            else route_kwargs.get("max_value")
-        )
+        stat = route_kwargs.get("stat", source.get("stat"))
+        min_value = route_kwargs.get("min_value", source.get("min_value"))
+        max_value = route_kwargs.get("max_value", source.get("max_value"))
         if stat and min_value is not None:
             label = f"{_filter_stat_label(stat)} min"
             applied_filters.append(
@@ -665,7 +657,7 @@ def _build_query_metadata(
                 or is_compound_event_refusal(route_kwargs)
                 or publishes_condition_metric_as_stat(route, route_kwargs)
             )
-            else parsed.get("stat") or route_kwargs.get("stat")
+            else route_kwargs.get("stat", parsed.get("stat"))
         ),
         # What the rows are ordered by, said outright. A compound occurrence
         # route ranks by a count of matching games, and reading its ranking off
@@ -681,16 +673,8 @@ def _build_query_metadata(
         "unsupported_scope": route_kwargs.get("unsupported_scope"),
         "requested_aggregation": route_kwargs.get("requested_aggregation"),
         "available_aggregation": route_kwargs.get("available_aggregation"),
-        "min_value": (
-            parsed.get("min_value")
-            if parsed.get("min_value") is not None
-            else route_kwargs.get("min_value")
-        ),
-        "max_value": (
-            parsed.get("max_value")
-            if parsed.get("max_value") is not None
-            else route_kwargs.get("max_value")
-        ),
+        "min_value": route_kwargs.get("min_value", parsed.get("min_value")),
+        "max_value": route_kwargs.get("max_value", parsed.get("max_value")),
         "sort_by": parsed.get("sort_by") or route_kwargs.get("sort_by"),
         "ascending": route_kwargs.get("ascending"),
         "ranked_intent": bool(

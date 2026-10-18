@@ -1,0 +1,324 @@
+{
+  "reviewer": "/root/participation_request",
+  "baseline_revision": "eeeeb15a4186853d55b9100e76d89980fa06f97d",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "sources": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "method": "Python csv direct ID joins; independent of parser, engine filters or natural/structured agreement; bounded observed catalog, not full-season completeness",
+  "production_writes": 0,
+  "query": "LeBron James game summary against Celtics and Wizards when Lakers score at least 120 in 2023-24",
+  "player_id": 2544,
+  "team": "LAL",
+  "opponents": [
+    "BOS",
+    "WAS"
+  ],
+  "season": "2023-24",
+  "season_type": "Regular Season",
+  "condition": {
+    "owner": "player_team",
+    "stat": "team_pts",
+    "minimum_inclusive": 120
+  },
+  "candidate_rows": [
+    {
+      "game_id": 22300403,
+      "game_date": "2023-12-25",
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "team_id": 1610612747,
+      "team_abbr": "LAL",
+      "opponent_team_id": 1610612738,
+      "opponent_team_abbr": "BOS",
+      "pts": 16,
+      "reb": 9,
+      "ast": 8,
+      "team_pts": 115,
+      "opponent_pts": 126,
+      "wl": "L"
+    },
+    {
+      "game_id": 22300856,
+      "game_date": "2024-02-29",
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "team_id": 1610612747,
+      "team_abbr": "LAL",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "pts": 31,
+      "reb": 4,
+      "ast": 9,
+      "team_pts": 134,
+      "opponent_pts": 131,
+      "wl": "W"
+    },
+    {
+      "game_id": 22301103,
+      "game_date": "2024-04-03",
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "team_id": 1610612747,
+      "team_abbr": "LAL",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "pts": 25,
+      "reb": 7,
+      "ast": 9,
+      "team_pts": 125,
+      "opponent_pts": 120,
+      "wl": "W"
+    }
+  ],
+  "expected": {
+    "keys": [
+      [
+        22300856,
+        1610612747,
+        2544
+      ],
+      [
+        22301103,
+        1610612747,
+        2544
+      ]
+    ],
+    "games": 2,
+    "wins": 2,
+    "losses": 0,
+    "sums": {
+      "pts": 56,
+      "reb": 11,
+      "ast": 18
+    },
+    "means": {
+      "pts": 28.0,
+      "reb": 5.5,
+      "ast": 9.0
+    },
+    "rows": [
+      {
+        "game_id": 22300856,
+        "game_date": "2024-02-29",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 31,
+        "reb": 4,
+        "ast": 9,
+        "team_pts": 134,
+        "opponent_pts": 131,
+        "wl": "W"
+      },
+      {
+        "game_id": 22301103,
+        "game_date": "2024-04-03",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 25,
+        "reb": 7,
+        "ast": 9,
+        "team_pts": 125,
+        "opponent_pts": 120,
+        "wl": "W"
+      }
+    ]
+  },
+  "single_opponent_controls": {
+    "BOS": {
+      "keys": [],
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "sums": {
+        "pts": 0,
+        "reb": 0,
+        "ast": 0
+      },
+      "means": {
+        "pts": null,
+        "reb": null,
+        "ast": null
+      },
+      "rows": []
+    },
+    "WAS": {
+      "keys": [
+        [
+          22300856,
+          1610612747,
+          2544
+        ],
+        [
+          22301103,
+          1610612747,
+          2544
+        ]
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "sums": {
+        "pts": 56,
+        "reb": 11,
+        "ast": 18
+      },
+      "means": {
+        "pts": 28.0,
+        "reb": 5.5,
+        "ast": 9.0
+      },
+      "rows": [
+        {
+          "game_id": 22300856,
+          "game_date": "2024-02-29",
+          "player_id": 2544,
+          "player_name": "LeBron James",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612764,
+          "opponent_team_abbr": "WAS",
+          "pts": 31,
+          "reb": 4,
+          "ast": 9,
+          "team_pts": 134,
+          "opponent_pts": 131,
+          "wl": "W"
+        },
+        {
+          "game_id": 22301103,
+          "game_date": "2024-04-03",
+          "player_id": 2544,
+          "player_name": "LeBron James",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612764,
+          "opponent_team_abbr": "WAS",
+          "pts": 25,
+          "reb": 7,
+          "ast": 9,
+          "team_pts": 125,
+          "opponent_pts": 120,
+          "wl": "W"
+        }
+      ]
+    }
+  },
+  "opponent_owned_same_floor_control": {
+    "keys": [
+      [
+        22300403,
+        1610612747,
+        2544
+      ],
+      [
+        22300856,
+        1610612747,
+        2544
+      ],
+      [
+        22301103,
+        1610612747,
+        2544
+      ]
+    ],
+    "games": 3,
+    "wins": 2,
+    "losses": 1,
+    "sums": {
+      "pts": 72,
+      "reb": 20,
+      "ast": 26
+    },
+    "means": {
+      "pts": 24.0,
+      "reb": 6.666666666666667,
+      "ast": 8.666666666666666
+    },
+    "rows": [
+      {
+        "game_id": 22300403,
+        "game_date": "2023-12-25",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612738,
+        "opponent_team_abbr": "BOS",
+        "pts": 16,
+        "reb": 9,
+        "ast": 8,
+        "team_pts": 115,
+        "opponent_pts": 126,
+        "wl": "L"
+      },
+      {
+        "game_id": 22300856,
+        "game_date": "2024-02-29",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 31,
+        "reb": 4,
+        "ast": 9,
+        "team_pts": 134,
+        "opponent_pts": 131,
+        "wl": "W"
+      },
+      {
+        "game_id": 22301103,
+        "game_date": "2024-04-03",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 25,
+        "reb": 7,
+        "ast": 9,
+        "team_pts": 125,
+        "opponent_pts": 120,
+        "wl": "W"
+      }
+    ]
+  },
+  "incorrect_player_owned_same_floor": {
+    "keys": [],
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "sums": {
+      "pts": 0,
+      "reb": 0,
+      "ast": 0
+    },
+    "means": {
+      "pts": null,
+      "reb": null,
+      "ast": null
+    },
+    "rows": []
+  },
+  "baseline_finding": {
+    "single_BOS": "valid no_match; no observed LeBron/BOS candidate with LAL>=120",
+    "single_WAS": "ok; exact2expected IDs,team_pts>=120",
+    "list": "incorrect no_match; stale team=WAS during context ownership, fixed to LAL only after missing team clause application",
+    "ordering": "apply_player_game_context calls _apply_team_context before _apply_opponent_list"
+  }
+}

@@ -655,6 +655,9 @@ def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: st
 
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Read team/opponent bounds and the ranking stat of a player game list."""
+    # Ownership checks must see the complete opponent set and actual subject,
+    # not a scalar detection that mistook the last opponent for the team.
+    _apply_opponent_list(route, route_kwargs, text)
     _apply_allowed_ranking(route, route_kwargs, text)
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
@@ -670,7 +673,6 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
     _refuse_team_as_own_opponent(route_kwargs)
-    _apply_opponent_list(route, route_kwargs, text)
     _refuse_unread_samples(route, route_kwargs, text)
 
 
@@ -907,7 +909,9 @@ def _refuse_third_team_stat(route_kwargs: dict, text: str) -> None:
     as the subject's own stat, so refuse."""
     from nbatools.commands.natural_query import _teams_in_order
 
-    sides = {route_kwargs.get("team"), route_kwargs.get("opponent")}
+    opponent = route_kwargs.get("opponent")
+    opponents = [opponent] if isinstance(opponent, str) else opponent or []
+    sides = {route_kwargs.get("team"), *opponents}
     if not route_kwargs.get("team"):
         return
     for m in _TEAM_STAT_CLAUSE.finditer(text):
