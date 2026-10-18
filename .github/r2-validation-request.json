@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "053a8b8c00bbbc60731c95ddfdb4e8587c08dc9d",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_cloud_operations_real_data.py::test_full_generation_backup"
+  ],
+  "raw_qa_cases": []
+}
