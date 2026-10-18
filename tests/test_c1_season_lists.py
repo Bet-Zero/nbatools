@@ -108,7 +108,6 @@ def test_skipped_season_stays_out():
         "LeBron James stats when Reaves scores 20 this season vs last season",
         "LeBron James and Curry stats this season vs last season",
         "LeBron James stats when Davis sits this season vs last season",
-        "LeBron James when the Lakers score 120 2024-25 vs 2025-26",
         "LeBron James stats against Curry this season vs last season",
         # The team summary reads the team's own points for these (on main).
         "Lakers points allowed per game this season vs last season",
@@ -122,6 +121,25 @@ def test_routes_without_a_season_split_refuse(query):
 
     result = execute_natural_query(query)
     assert result.result_status == "no_result", (query, result.route, result.metadata)
+
+
+def test_player_season_split_applies_the_team_owned_scoring_bound():
+    # Deliberately promotes the former unsupported case: use the team's raw
+    # box score to qualify LeBron's games, then aggregate his own stat line.
+    result, buckets = _split("LeBron James when the Lakers score 120 2024-25 vs 2025-26")
+    assert result.metadata["conditions"] == [
+        {"stat": "team_pts", "min_value": 120, "max_value": None}
+    ]
+    for season in ("2024-25", "2025-26"):
+        teams = _rows("team_game_stats", season)
+        games = _rows("player_game_stats", season)
+        qualifying = teams[(teams.team_abbr == "LAL") & (teams.pts >= 120)]
+        expected = games[
+            (games.player_name == "LeBron James") & games.game_id.isin(qualifying.game_id)
+        ]
+        assert buckets[season]["games"] == len(expected)
+        for stat in ("pts", "reb", "ast"):
+            assert buckets[season][stat + "_avg"] == pytest.approx(expected[stat].mean(), abs=0.001)
 
 
 @pytest.mark.parametrize(

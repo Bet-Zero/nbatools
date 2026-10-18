@@ -984,7 +984,9 @@ function conditionText(metadata: ResultMetadata | undefined): string | null {
     const branches: string[] = [];
     for (const raw of source) {
       if (!raw || typeof raw !== "object" || typeof raw.stat !== "string") return null;
-      const stat = raw.stat === "opponent_pts" ? "opp pts" : raw.stat;
+      const owner = typeof raw.opponent_team === "string"
+        ? `${raw.opponent_team.toLowerCase()} ` : "";
+      const stat = owner + (raw.stat === "opponent_pts" ? "opp pts" : raw.stat);
       const bounds: string[] = [];
       for (const direction of ["min", "max"] as const) {
         if (typeof raw[`${direction}_value`] !== "number") continue;
@@ -1015,7 +1017,8 @@ function conditionText(metadata: ResultMetadata | undefined): string | null {
       if (typeof conditionRow.stat !== "string") continue;
       conditions.push(
         formatCondition(
-          conditionRow.stat,
+          (typeof conditionRow.opponent_team === "string"
+            ? `${conditionRow.opponent_team} ` : "") + conditionRow.stat,
           typeof conditionRow.min_value === "number"
             ? conditionRow.min_value
             : null,

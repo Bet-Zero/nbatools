@@ -24,6 +24,14 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 _PLAYER_ROUTES = ("player_game_finder", "player_game_summary")
+_PLAYER_CONTEXT_ROUTES = (*_PLAYER_ROUTES, "player_split_summary")
+_TEAM_CONTEXT_ROUTES = (
+    "team_record",
+    "game_finder",
+    "game_summary",
+    "team_streak_finder",
+    "team_split_summary",
+)
 
 _SCORE_VERB = r"scor(?:e|es|ed)|puts?\s+up|put\s+up"
 _TEAM_STAT_VERB = re.compile(
@@ -487,7 +495,9 @@ def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
     return found
 
 
-def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
+def _opponent_bounds(
+    text: str, opponent: str | list[str] | None = None
+) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
     found.extend(_opponent_shooting_bounds(text))
     for m in _OPP_STAT_BOUND.finditer(text):
@@ -515,6 +525,20 @@ def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
                 },
             )
         )
+    if isinstance(opponent, list):
+        for item in team_subject_stat_conditions(text):
+            if item["team"] in opponent:
+                found.append(
+                    (
+                        _Span(item["start"], item["end"]),
+                        {
+                            "stat": "opponent_" + item["stat"],
+                            "min_value": item["min_value"],
+                            "max_value": item["max_value"],
+                            "opponent_team": item["team"],
+                        },
+                    )
+                )
     return found
 
 
@@ -568,7 +592,16 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
         if "opponent_shooting" not in blocked:
             route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    if route not in ("game_finder", "team_record"):
+    if route not in _TEAM_CONTEXT_ROUTES:
+        opponent = route_kwargs.get("opponent")
+        if (
+            route not in _PLAYER_CONTEXT_ROUTES
+            and isinstance(opponent, list)
+            and any(item["team"] in opponent for item in team_subject_stat_conditions(text))
+        ):
+            # A route that cannot apply this owned bound must not turn it into
+            # a bound on the subject after narrowing the opponent sample.
+            _refuse(route_kwargs, "other_team_stat")
         if route and _OPP_SHOOTING.search(text):
             # "Lakers record when opponents shoot under 40 percent": only team
             # game lists read the opponent's rate; elsewhere it filtered the
@@ -577,7 +610,7 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
             if "opponent_shooting" not in blocked:
                 route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    found = _opponent_bounds(text)
+    found = _opponent_bounds(text, route_kwargs.get("opponent"))
     if not found:
         return
     for m, _ in found:
@@ -638,7 +671,7 @@ def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: st
         return
     # "most opponent turnovers with 120 points": the team's own bounds stay
     # conditions (they were dropped), and opponent bounds stay too.
-    found = _opponent_bounds(text)
+    found = _opponent_bounds(text, route_kwargs.get("opponent"))
     conditions = _own_bounds(text, [m.span()] + [b.span() for b, _ in found])
     conditions += [bound for _, bound in found]
     if conditions:
@@ -655,6 +688,9 @@ def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: st
 
 def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) -> None:
     """Read team/opponent bounds and the ranking stat of a player game list."""
+    # Ownership checks must see the complete opponent set and actual subject,
+    # not a scalar detection that mistook the last opponent for the team.
+    _apply_opponent_list(route, route_kwargs, text)
     _apply_allowed_ranking(route, route_kwargs, text)
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
@@ -670,7 +706,6 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     _apply_ranking_stat(route, route_kwargs, text)
     _apply_ranking_direction(route, route_kwargs, text)
     _refuse_team_as_own_opponent(route_kwargs)
-    _apply_opponent_list(route, route_kwargs, text)
     _refuse_unread_samples(route, route_kwargs, text)
 
 
@@ -714,8 +749,14 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     # contains a verb, while an explicit "WAS record" still names Washington.
     masked = mask_copula_team_lookalikes(text)
     outside = masked[:start] + " " * (end - start) + masked[end:]
+    # A team's name inside a condition is the condition's owner, not the
+    # query's subject. The bound reader resolves its side after list scope.
+    for item in team_subject_stat_conditions(text):
+        outside = (
+            outside[: item["start"]] + " " * (item["end"] - item["start"]) + outside[item["end"] :]
+        )
     owners = [team for _, _, team in _teams_in_order(outside)]
-    before = [team for _, _, team in _teams_in_order(masked[:start])]
+    before = [team for _, _, team in _teams_in_order(outside[:start])]
     if route != "team_compare" and (len(owners) == 1 or len(before) == 1):
         # A later condition may name another team. Keep the sole prefix
         # subject so the ownership guard can reject that condition honestly.
@@ -907,7 +948,9 @@ def _refuse_third_team_stat(route_kwargs: dict, text: str) -> None:
     as the subject's own stat, so refuse."""
     from nbatools.commands.natural_query import _teams_in_order
 
-    sides = {route_kwargs.get("team"), route_kwargs.get("opponent")}
+    opponent = route_kwargs.get("opponent")
+    opponents = [opponent] if isinstance(opponent, str) else opponent or []
+    sides = {route_kwargs.get("team"), *opponents}
     if not route_kwargs.get("team"):
         return
     for m in _TEAM_STAT_CLAUSE.finditer(text):
@@ -945,7 +988,7 @@ def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) 
     player = route_kwargs.get("player")
     if route and route not in _PLAYER_ROUTES:
         _refuse_unknown_name_stat(route_kwargs, text)
-        if route in ("team_record", "game_finder", "game_summary"):
+        if route in _TEAM_CONTEXT_ROUTES:
             _refuse_third_team_stat(route_kwargs, text)
         elif route == "team_compare":
             _refuse_compare_team_stat(route_kwargs, text)
@@ -1227,7 +1270,7 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
     the opponent's points: the threes became the bare stat the opponent
     bound replaced, so the answer counted every game under 110 allowed.
     """
-    if route not in ("team_record", "game_finder", "game_summary"):
+    if route not in _TEAM_CONTEXT_ROUTES:
         return
     conditions = _kwargs_conditions(route_kwargs)
     # Beside an opponent bound, or beside one own bound of a clause list
@@ -1707,7 +1750,7 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     The player's own bounds are read again from the question without the team
     clauses: "30 points when the Lakers score 120" kept only the 120 before.
     """
-    if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
+    if route not in _PLAYER_CONTEXT_ROUTES or not route_kwargs.get("player"):
         return
     opponent = route_kwargs.get("opponent")
     if (
@@ -1820,7 +1863,14 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             "min_value": item["min_value"],
             "max_value": item["max_value"],
         }
-        if not any(c["stat"] == target["stat"] and _same_bound(c, target) for c in context):
+        if item["side"] == "opponent" and item.get("team") in opponents:
+            target["opponent_team"] = item["team"]
+        if not any(
+            c["stat"] == target["stat"]
+            and _same_bound(c, target)
+            and c.get("opponent_team") == target.get("opponent_team")
+            for c in context
+        ):
             context.append(target)
 
     from nbatools.commands.natural_query import parse_query
