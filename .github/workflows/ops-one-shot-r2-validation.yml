@@ -1,0 +1,36 @@
+# One-time non-default-branch, read-only workflow dispatcher.
+# No R2 credentials, no publication; delete this file after its single use.
+name: One-time Read-Only R2 Validation Dispatch
+on:
+  push:
+    branches:
+      - ops/one-shot-readonly-publication-validate-20261018
+    paths:
+      - .github/workflows/ops-one-shot-r2-validation.yml
+permissions:
+  contents: read
+  actions: write
+jobs:
+  dispatch-readonly-validation:
+    if: >-
+      github.repository == 'Bet-Zero/nbatools' &&
+      github.ref == 'refs/heads/ops/one-shot-readonly-publication-validate-20261018'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch only approved no-write validate against reviewed main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          expected='f97584d04c061c400655210305d984237b607cd6'
+          actual="$(gh api repos/Bet-Zero/nbatools/branches/main --jq '.commit.sha')"
+          if [ "$actual" != "$expected" ]; then
+            echo 'Main revision changed; refusing to dispatch from this one-time request' >&2
+            exit 1
+          fi
+          gh workflow run r2-data-publication.yml \
+            --repo Bet-Zero/nbatools \
+            --ref main \
+            -f package=opening-s4-availability-v1 \
+            -f mode=validate
