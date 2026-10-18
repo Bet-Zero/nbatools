@@ -327,7 +327,15 @@ function isCountResult(data: QueryResponse): boolean {
 
 function countResultMode(data: QueryResponse): "player" | "team" {
   const metadata = data.result?.metadata;
-  return metadata?.player || metadata?.player_context ? "player" : "team";
+  // A league-wide player count has no pinned player. The route defines row
+  // grain; entity context only identifies a filter within that grain.
+  const route = data.route ?? metadata?.route;
+  if (route === "player_game_finder") return "player";
+  if (route === "game_finder") return "team";
+  const rows = data.result?.sections?.finder ?? [];
+  return metadata?.player || metadata?.player_context || rows.some(
+    row => row.player_id != null || row.player_name != null || row.player != null,
+  ) ? "player" : "team";
 }
 
 function shouldShowPlayerSummaryGameLog(data: QueryResponse): boolean {
