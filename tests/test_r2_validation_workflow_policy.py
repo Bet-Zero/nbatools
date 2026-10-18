@@ -189,7 +189,7 @@ def test_exactly_one_workflow_reads_the_r2_credential() -> None:
     )
     caller_name = "r2-data-publication.yml"
     assert readers == sorted([WORKFLOW.name, caller_name]), (
-        f"only the single data workflow and its narrow caller may refer to R2 "
+        "only the single data workflow and its narrow caller may refer to R2 "
         f"read-only secret names, found {readers}"
     )
 
