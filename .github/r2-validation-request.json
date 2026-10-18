@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "350d05e011ef884cba73c3690cc093b4753448db",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k03_find_count_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k03_a1",
+    "k03_a2",
+    "k03_b1",
+    "k03_b2",
+    "k03_b3",
+    "k03_b4",
+    "k03_c1",
+    "k03_c2",
+    "k03_d1",
+    "k03_d2",
+    "k03_e1",
+    "k03_e2"
+  ]
+}
