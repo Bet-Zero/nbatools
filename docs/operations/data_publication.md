@@ -43,11 +43,18 @@ A receipt saying `publication_started_outcome_unknown` or
 and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
+## Latest verified read-only execution (2026-10-18)
+
+The owner-triggered first attempt [39095431450](https://github.com/Bet-Zero/nbatools/actions/runs/39095431450) failed because a reusable workflow call did not pass its three existing read-only `R2_VALIDATION_*` secret names. [PR #489](https://github.com/Bet-Zero/nbatools/pull/489) fixed only that mapping, retaining the environment's credential isolation, deployment review, and no-write `validate` mode. The new [run 39099028557](https://github.com/Bet-Zero/nbatools/actions/runs/39099028557) **succeeded on merged main**, with the full proposed `opening-s4-availability-v1` snapshot: 703 objects, 402,749,125 bytes, manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`. Receipt artifact `12126046663` has ZIP SHA256 `3587b20ea0675ee8f92c4864e9fbd0c5761fa05169d53f7bad804434af3a6957`. State `prepared_no_writes`; **no R2 write, active pointer switch, or production publish was performed**.
+
+The attached GitHub environment audit in that same successful run still reports HTTP 404 / `publication_ready=false` for `r2-publication`, while the owner states that environment and all three `R2_PUBLICATION_*` secrets already exist in GitHub. This conflict is **unresolved**: do not recreate tokens/secrets or bypass safeguards; before any separately authorized production `publish`, reconcile the exact `Bet-Zero/nbatools` environment UI and API visibility, main-only reviewer protections and non-bypass policy. The owner has stopped Codex and general feature work. No automatic continuation or production publish is authorized by this receipt.
+
 ## One-time account setup
 
-The latest read-only audit in run39091103560 found `copilot`, `Preview`,
-`Production` and `r2-validation`; `r2-publication` was absent and its API request
-returned 404. Publication readiness is **false**. The API exposes
+Read-only audits in runs39091103560 and39099028557 list `copilot`, `Preview`,
+`Production` and `r2-validation`, and report API HTTP404 for `r2-publication`,
+even though the owner reports seeing that environment and all three existing writer
+secrets in the GitHub UI. Publication readiness remains **unverified**, not proved absent. The API exposes
 `can_admins_bypass`; the existing environments have no required-reviewer
 protection and are unsuitable for publisher credentials. Only the missing
 dedicated protected environment/account setup is needed. Reuse the accepted
@@ -57,8 +64,8 @@ The audit cannot retrieve existing secret values or establish whether the accoun
 custodian already has a suitable publisher token. Reuse that token when available.
 
 In [repository environments](https://github.com/Bet-Zero/nbatools/settings/environments),
-create **r2-publication** unless a later audit identifies an existing dedicated
-publisher environment. Restrict deployment
+first verify **r2-publication** and the existing protections on the *exact* `Bet-Zero/nbatools`
+repository; do not create a duplicate environment or token based on the current 404 alone. Restrict deployment
 branches to **main** (branch, not tag), require **Bet-Zero** as reviewer, and disable
 administrator bypass. Preserve stricter existing protections. If self-review is
 prevented, an authorized different initiator must start the run; never weaken that
