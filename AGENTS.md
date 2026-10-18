@@ -50,6 +50,19 @@ product exclusions or revive a superseded queue from an old branch.
   material new spending, or consequential action beyond authorization. Bring a
   recommendation and minimal exact action, not routine engineering homework.
 
+## Data availability before implementation
+
+Owner direction updated 2026-10-18: the backup laptop performs NBA acquisition
+when necessary; Codex development, testing and analysis stay in the cloud. R2
+remains central storage. Commercial source evaluation and cloud NBA access
+investigations are stopped; do not request a provider key. Before data-dependent
+work, follow `docs/operations/data_availability.md`, read the generated inventory
+for the active generation, and distinguish production coverage from staging and
+unknown completeness. Produce a bounded collection requirement for missing raw
+data; do not invent values or investigate providers repeatedly. The laptop does
+not run application development. Existing protected publication remains required.
+The owner explicitly resumed normal development on 2026-10-18 after accepting minimum cloud/data setup. Continue the saved completion program under the existing gates.
+
 ## Execution and session continuity
 
 The completion-program README is the sole active queue. Its Resume checkpoint is

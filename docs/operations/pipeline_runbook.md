@@ -2,6 +2,88 @@
 
 This document explains how the NBA Tools pipeline is operated.
 
+## Additional season inputs and rollover qualification
+
+`python -m tools.cloud_season_sources --output <new-directory>` manually retrieves
+bounded immutable official NBA captures through the accepted SportsDataverse
+mirror. It uses the existing advanced, standings and roster normalizers, preserves
+original JSON/license/hash receipts, and reconciles all30team W/L records against
+the previously accepted season game capture. Ordinary CI never fetches sources.
+The fixed2025-26 qualification covers582player advanced,30team advanced and
+30standings rows. The team source MIN column is not used as per-game minutes.
+The available29roster snapshots remain in `partial/rosters.csv`; missing NYK is
+recorded, and no incomplete canonical whole-league roster file is emitted.
+
+The original2026-27 schedule and empty pre-opening advanced table are retained
+separately for planning. Its1206regular game identities include6unresolved
+matchups, not an82-game-per-team completeness claim. These future rows never
+enter the existing completed-game schedule or become `Final`. An archive's
+filename, commit date or retrieval time cannot establish endpoint freshness:
+the mirror's2027Finder response actually has Season=null and30000older-season
+rows and must be rejected for the new season.
+
+Use explicit reviewed selectors in `tests/cloud_season_inputs_real_data.py` for
+new collection and durable Git recovery. `season-inputs-staging.zip` permanently
+retains canonical/raw outputs, partial roster evidence, source JSON and license.
+The manual command refuses an existing output directory, so it cannot overwrite
+a last-good season. This prepares additional inputs and rollover checks, not a
+whole-season refresh, successful live season rollover or unattended update.
+The full pipeline remains gated by qualified current core, exact period/on-off,
+and complete required inputs. Protected R2 publication and backup stay unchanged.
+
+## Cloud archival collection during the setup pause
+
+`python -m tools.cloud_nba_archive --output <new-staging-directory>` retrieves
+fixed-revision public NBA Stats captures from SportsDataverse and runs the existing
+games, team-game and player-game producers plus their three processed builders in
+an isolated cloud working directory. It does not need a laptop, source API key or
+R2 write credential. Default scope is deliberately one accepted CLE–NYK game
+(`0022500003`, 2025-10-22), not a completed season refresh. `--mirror-revision`
+requires an immutable full SHA; wider/new captures need independent qualification.
+
+The source NBA endpoint payload, mirror revision, CC BY 4.0 attribution, download
+time and every file hash are retained. Archive download time is **not** the NBA
+capture time. Canonical producer defaults still fetch the original source;
+explicit `raw_frame` inputs use their unchanged conversion paths. Legacy
+`player_game_stats.starter_flag` remains the old missing-position fallback and
+is not trusted starter evidence. Separate starter-role rows use actual full-game
+V3 positions, exact played identities and five-starter validation.
+
+Durable development staging and receipts are `core-archive-staging.zip` and
+`core-archive-receipt.json` in [PR502](https://github.com/Bet-Zero/nbatools/pull/502).
+This is permanent Git storage, not an expiring
+Actions artifact or a registered production publication package. It retains
+the original season payloads as well as the qualified one-game slice. PBP raw
+retrieval is recorded separately from canonical acceptance: sparse scores and
+duplicate action numbers currently fail the existing contract; no events are
+dropped or renumbered. Examined period archives contain zero totals and are
+unqualified. No exact on/off archive route has been identified.
+
+The existing read-only R2 runner can explicitly select
+`tests/cloud_source_routes_real_data.py::test_archived_core_collection` and
+`::test_durable_archive_recovery`, after review of the exact candidate. Neither
+test authorizes R2 uploads, pointer changes or unattended publication. The stock
+whole-season refresh still needs its remaining qualified sources; partial core
+archive success must not enable or be labeled successful unattended freshness.
+
+For the separate bounded CDN PBP route:
+
+```bash
+python -m tools.cloud_cdn_archive --output <new-staging-directory>
+```
+
+It downloads the pinned 19.3 MB public season archive (20 MB download ceiling,
+one 250 MB maximum expanded CSV), streams one game without general extraction,
+and verifies the exact archive SHA256. Original CSV records, license, source
+receipt and canonical output are preserved. The reviewed core identity/final-score
+context comes from the permanent Git bundle. Event identity and CDN chronology
+remain separate; no action is dropped or renumbered. The existing loader and
+score-state consumer must recover 605 events and 230 total points from durable
+`cdn-archive-staging.zip`; the nine-file immutable candidate is explicitly a scoped
+development subset. It does not authorize production publication or claim that the
+whole-season refresh is complete. Use the explicit reviewed runner selectors in
+`tests/cloud_cdn_routes_real_data.py`; ordinary CI must not fetch this archive.
+
 It covers:
 - core commands
 - workflow order

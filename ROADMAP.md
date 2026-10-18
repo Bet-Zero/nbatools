@@ -89,12 +89,16 @@ benefit and safe integration are demonstrated; no giant parallel engine.
 
 ## Historical snapshot versus unattended freshness
 
-Fresh NBA pulls/automatic refresh remain parked under the October 4 owner
-choice. Core-1 must clearly expose the actual snapshot's coverage and dates;
-relative wording must never disguise missing current data as a fresh answer.
-Unattended, up-to-date service remains a separate open operational requirement.
-It requires an authorized reachable runner/source, update and season-rollover
-verification, last-good preservation, and cost controls before completion.
+Owner direction updated October 18: data acquisition may use the backup laptop;
+cloud-only NBA source access and commercial API evaluation are no longer setup
+requirements. Codex develops, tests, processes and analyzes in the cloud against
+R2 snapshots. The acquisition machine is not a development dependency. Agents
+must inspect the generated active-generation inventory before data-dependent
+work and issue precise collection requirements for missing raw inputs. Cloud
+validation and existing separate owner-approved immutable publication transfer
+qualified collections into R2. Preserve last-good data and actual coverage dates.
+The owner explicitly resumed normal development on October 18 after accepting minimum cloud/data setup; continue the existing completion program.
+Automatic NBA refresh or unattended production publication is not enabled.
 
 Independently inspect existing-snapshot derivations and publication, including
 compact identity metadata, before proposing a hosting/database migration.

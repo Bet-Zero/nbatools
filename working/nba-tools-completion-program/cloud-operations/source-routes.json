@@ -1,0 +1,19 @@
+{
+  "classification": "source diagnostics, not universal core acquisition acceptance",
+  "core_games": {
+    "elapsed_seconds": 96.85,
+    "error_category": "read-timeout",
+    "failure": "existing pipeline exhausted normal acquisition retries; no canonical data produced",
+    "normal_attempts": 3,
+    "normal_timeout_seconds": 30,
+    "returned_canonical_csv": false
+  },
+  "espn_participation": {
+    "error_type": "ValueError",
+    "status": "unavailable-or-unqualified"
+  },
+  "official_live_boxscore": {
+    "error_type": "JSONDecodeError",
+    "status": "unavailable"
+  }
+}

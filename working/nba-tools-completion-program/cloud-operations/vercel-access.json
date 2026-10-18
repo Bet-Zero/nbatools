@@ -1,0 +1,61 @@
+{
+  "checked_at": "2026-10-18T10:33:16Z",
+  "owner_reconnected": true,
+  "team": {
+    "id": "team_1GXBdYTEHdvEtagohh8rPTb2",
+    "slug": "brents-projects-686e97fc",
+    "name": "Zero's projects",
+    "read": "success"
+  },
+  "project_listing": {
+    "scope": "explicit existing team; unfiltered and nbatools search",
+    "count": 0
+  },
+  "project_read": {
+    "name": "nbatools",
+    "http_status": 404,
+    "explicit_team_and_slug_tested": true
+  },
+  "deployment_listing": {
+    "app": "nbatools",
+    "count": 0
+  },
+  "known_deployment_read_http_status": 404,
+  "github_deployment_status": {
+    "main_sha": "38f4c9c5f65ec13d62d8a0e5a1ca51b203c04240",
+    "state": "success",
+    "target_url": "https://vercel.com/brents-projects-686e97fc/nbatools/4EScByrmkkY1Fw6fFaVzvhNG9n1J"
+  },
+  "conclusion": "Explicit team scope routes incorrectly for this connection; omit teamId and slug. Existing project and deployments are readable. No credential/owner access action needed for these operations; no live rollback executed.",
+  "mutations": 0,
+  "protection_bypass": false,
+  "new_credentials": false,
+  "latest_retry": {
+    "checked_at": "2026-10-18T10:37:39Z",
+    "owner_instruction": "try again now",
+    "get_project": "MCP -32001 Unknown tool(vercel.get_project)",
+    "list_projects": "MCP -32001 Unknown tool(vercel.list_projects)",
+    "bounded_recheck": "get_project still Unknown tool after20seconds",
+    "plugin_inventory": {
+      "installed": true,
+      "status": "ENABLED"
+    },
+    "conclusion": "Connector routing now fails before a Vercel permission response. Latest project authorization outcome cannot be verified. Do not infer another denied grant or request broader credentials from this error."
+  },
+  "verified_unscoped": {
+    "project_id": "prj_luTVKSLCFRQP3BYwk93XETz9WwCy",
+    "name": "nbatools",
+    "account_id": "team_1GXBdYTEHdvEtagohh8rPTb2",
+    "project_read": "success",
+    "deployment_listing": "success",
+    "production_deployment": "dpl_4EScByrmkkY1Fw6fFaVzvhNG9n1J",
+    "production_state": "READY",
+    "production_sha": "38f4c9c5f65ec13d62d8a0e5a1ca51b203c04240",
+    "previous_production_rollback_candidate": "dpl_628Fvdnwc1UK5vCEHHLAVraHEhjo",
+    "previous_production_sha": "9fb9670be7e44eeeb6cc39778adb545b5e2f1e88",
+    "same_project_explicit_team_scope": "404 Project not found",
+    "scope_workaround": "omit teamId and slug; preserve existing project",
+    "writes": 0,
+    "live_rollback_tested": false
+  }
+}

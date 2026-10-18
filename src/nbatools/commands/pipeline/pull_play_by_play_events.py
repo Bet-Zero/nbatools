@@ -14,6 +14,7 @@ from nbatools.commands.source_invariants import (
     ExpectedGameTerminalState,
     apply_play_by_play_trust_decisions,
     expected_game_terminal_states,
+    sort_play_by_play_timeline,
     validate_team_game_pair_invariants,
 )
 
@@ -66,7 +67,14 @@ def normalize_play_by_play_events(
     season: str,
     season_type: str,
     source_pull_date: str | None = None,
+    source: str = PBP_SOURCE,
+    source_schema_version: str = PBP_SCHEMA_VERSION,
 ) -> pd.DataFrame:
+    if (source, source_schema_version) not in {
+        (PBP_SOURCE, PBP_SCHEMA_VERSION),
+        ("cdn.nba.com.liveData.playbyplay", "cdn_live_pbp.v1"),
+    }:
+        raise ValueError("Unsupported play-by-play source/schema pair")
     out = raw.rename(columns=SOURCE_RENAME_MAP).copy()
     required = list(SOURCE_RENAME_MAP.values())
     missing = [col for col in required if col not in out.columns]
@@ -76,14 +84,14 @@ def normalize_play_by_play_events(
     pull_date = source_pull_date or date.today().isoformat()
     out["season"] = season
     out["season_type"] = season_type
-    out["pbp_source"] = PBP_SOURCE
+    out["pbp_source"] = source
     # Row normalization alone cannot prove whole-game completeness. The season
     # backfill stamps trust only after reconciling every terminal state with the
     # paired team final scores.
     out["pbp_source_trusted"] = 0
     out["pbp_validation_reason"] = "expected_final_score_not_validated"
     out["pbp_source_pull_date"] = pull_date
-    out["pbp_source_schema_version"] = PBP_SCHEMA_VERSION
+    out["pbp_source_schema_version"] = source_schema_version
 
     out["clock_seconds_remaining"] = out["clock"].map(parse_clock_seconds_remaining)
     out["score_home"] = out["score_home"].map(_normalize_score)
@@ -104,8 +112,19 @@ def normalize_play_by_play_events(
     ):
         out[col] = out[col].fillna("").astype(str).str.strip()
 
-    validated = validate_play_by_play_events_df(out[PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS])
-    return validated.sort_values(["game_id", "period", "action_number"]).reset_index(drop=True)
+    columns = list(PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS)
+    if source == "cdn.nba.com.liveData.playbyplay":
+        if "orderNumber" not in raw.columns:
+            raise ValueError("CDN play-by-play requires original orderNumber")
+        out["source_order_number"] = pd.to_numeric(raw["orderNumber"], errors="raise")
+        columns.extend(["source_order_number", "pbp_source_schema_version", "pbp_source_pull_date"])
+    ordered = out[columns]
+    if source == "cdn.nba.com.liveData.playbyplay":
+        ordered = sort_play_by_play_timeline(ordered)
+    validated = validate_play_by_play_events_df(ordered)
+    if source == PBP_SOURCE:
+        return validated.sort_values(["game_id", "period", "action_number"]).reset_index(drop=True)
+    return validated.reset_index(drop=True)
 
 
 def fetch_play_by_play_events_for_game(game_id: str) -> pd.DataFrame:

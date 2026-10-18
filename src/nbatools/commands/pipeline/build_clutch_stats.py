@@ -17,12 +17,13 @@ from nbatools.commands.pipeline.validate_raw import (
     validate_player_game_clutch_stats_df,
     validate_team_game_clutch_stats_df,
 )
+from nbatools.commands.source_invariants import sort_play_by_play_timeline
 
 CLUTCH_SOURCE = "play_by_play_events"
 
 
 def add_event_points(events: pd.DataFrame) -> pd.DataFrame:
-    out = events.sort_values(["game_id", "action_number"]).copy()
+    out = sort_play_by_play_timeline(events).copy()
     for score_col in ("score_home", "score_away"):
         out[score_col] = pd.to_numeric(out[score_col], errors="coerce")
         out[f"_{score_col}_previous"] = (

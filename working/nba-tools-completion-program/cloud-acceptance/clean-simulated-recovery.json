@@ -1,0 +1,34 @@
+{
+  "checks": [
+    "local_backup_manifest_and_checksums_valid",
+    "local_incomplete_target_refused_without_pointer_change",
+    "local_backup_restored_with_manifest_and_checksum_verification",
+    "local_pointer_switched_atomically_to_verified_generation",
+    "local_pre_rollback_generation_retained",
+    "in_memory_r2_backup_contains_immutable_generation",
+    "in_memory_r2_incomplete_target_refused_without_pointer_change",
+    "in_memory_r2_backup_restored_with_exact_bytes_and_metadata",
+    "in_memory_r2_pointer_switched_conditionally_to_verified_generation",
+    "in_memory_r2_pre_rollback_generation_retained"
+  ],
+  "completed_at": "2026-10-18T09:12:06.786747+00:00",
+  "drill": "immutable_generation_recovery",
+  "duration_ms": 9.057,
+  "measurements_ms": {
+    "in_memory_r2_restore": 0.003,
+    "in_memory_r2_rollback": 0.058,
+    "local_restore": 0.575,
+    "local_rollback": 0.522
+  },
+  "mode": "temporary_local_and_in_memory_r2",
+  "network_access": false,
+  "production_mutation": false,
+  "real_credentials_loaded": false,
+  "recovered_generations": {
+    "in_memory_r2": "drill-r2-one",
+    "local": "drill-local-one"
+  },
+  "schema_version": 1,
+  "started_at": "2026-10-18T09:12:06.777675+00:00",
+  "status": "passed"
+}

@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "run_id": 39122547977,
+  "reviewed_sha": "56241f6f300d85fdb30a892d0f188a1ed4d4f5a3",
+  "request_sha": "555127b4900c0327ed5eb72c3b72dc08a6af2ad1",
+  "generation": "availability-opening-s4-v1-20261017",
+  "required": {
+    "selected": 2,
+    "executed": 2,
+    "passed": 2,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "collection": {
+    "schema_version": 1,
+    "classification": "qualified archival development slice",
+    "collected_at": "2026-10-18T11:17:19.051702+00:00",
+    "mirror": "sportsdataverse/hoopR-nba-stats-raw",
+    "mirror_revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+    "attribution": "SportsDataverse hoopR NBA Stats raw captures, CC BY 4.0; original source stats.nba.com",
+    "sources": {
+      "teams.json": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamefinder/2026/regular-season.json",
+        "bytes": 461430,
+        "sha256": "4958a89f58571814b15031389a517b0db724589f108cd3581a83e526bf0dd728"
+      },
+      "players.json": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamelog/2026/regular-season_p.json",
+        "bytes": 5418698,
+        "sha256": "b2c45563c6ef7c203052597a361c2e5b4bdfcebf809e38db380bf3547813cb3f"
+      },
+      "boxscore.json": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500003.json",
+        "bytes": 19716,
+        "sha256": "c69bb72ec30a82fa61c81a071b81a5d18f8ecd1346bf79307451a96f5417eab4"
+      },
+      "pbp.json": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/playbyplayv3/2026/0022500003.json",
+        "bytes": 254455,
+        "sha256": "caa57ef9d16971715ea9a20144b3a6a4a147ee9f0ef1e09c8da16fcd814fad0d"
+      },
+      "LICENSE.md": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/LICENSE.md",
+        "bytes": 1071,
+        "sha256": "39f4e4d76b413282fadec978d2cb7996fd8ea952a6cc462235080d61b5fc0932"
+      }
+    },
+    "season_archive_inventory_only": {
+      "team_rows": 2460,
+      "player_rows": 26651
+    },
+    "game_id": "0022500003",
+    "season": "2025-26",
+    "season_type": "Regular Season",
+    "canonical_rows": {
+      "games": 1,
+      "team_game_stats": 2,
+      "player_game_stats": 21,
+      "player_game_starter_roles": 21,
+      "play_by_play_events": 0
+    },
+    "team_scores": {
+      "CLE": 111,
+      "NYK": 119
+    },
+    "play_by_play": {
+      "raw_actions": 521,
+      "canonical_rows": 0,
+      "duplicate_action_numbers": 24,
+      "blank_score_actions": 392,
+      "status": "canonical-rejected",
+      "reason": "Play-by-play score values must be present"
+    },
+    "limitations": [
+      "one game qualified; not season-wide acceptance",
+      "archive retrieval time is not original capture time",
+      "no fresh/live Stats acceptance",
+      "periods/on-off not supplied",
+      "no production publication acceptance"
+    ],
+    "r2_writes": 0,
+    "files": {
+      "data/processed/game_features/2025-26_regular_season.csv": {
+        "bytes": 584,
+        "sha256": "e41ec3a20def4d9e86e8b1926b6685b3379e88d738a80527e214b05348e839d4"
+      },
+      "data/processed/player_game_features/2025-26_regular_season.csv": {
+        "bytes": 1988,
+        "sha256": "5dd21f1d11fd46901771957df963f1e623e25ccab75d0f784bc88a97cfeebc4c"
+      },
+      "data/processed/team_game_features/2025-26_regular_season.csv": {
+        "bytes": 456,
+        "sha256": "4aa66b990a6a649f5d46be896645390bd11fd82873c89d5507500cdba2d77364"
+      },
+      "data/raw/games/2025-26_regular_season.csv": {
+        "bytes": 619,
+        "sha256": "5930158ac193ed8c586413e0d590683d5c09708103e957ca15e2d1bb0a59572e"
+      },
+      "data/raw/player_game_starter_roles/2025-26_regular_season.csv": {
+        "bytes": 2553,
+        "sha256": "9ff0eaf48fb4769815beebce6239042362a535661144936631b4bd116ec63e28"
+      },
+      "data/raw/player_game_stats/2025-26_regular_season.csv": {
+        "bytes": 4363,
+        "sha256": "4bd3a1a5c5643a3818fa5dc909b994637b228c700d14433cd15ab997f1c8c091"
+      },
+      "data/raw/team_game_stats/2025-26_regular_season.csv": {
+        "bytes": 639,
+        "sha256": "18f0239fc51c0cb6e9e5be0a8b174948334efb6d2e62f50ca8c8cf4eb5afeb8c"
+      },
+      "sources/LICENSE.md": {
+        "bytes": 1071,
+        "sha256": "39f4e4d76b413282fadec978d2cb7996fd8ea952a6cc462235080d61b5fc0932"
+      },
+      "sources/boxscore.json": {
+        "bytes": 19716,
+        "sha256": "c69bb72ec30a82fa61c81a071b81a5d18f8ecd1346bf79307451a96f5417eab4"
+      },
+      "sources/pbp.json": {
+        "bytes": 254455,
+        "sha256": "caa57ef9d16971715ea9a20144b3a6a4a147ee9f0ef1e09c8da16fcd814fad0d"
+      },
+      "sources/players.json": {
+        "bytes": 5418698,
+        "sha256": "b2c45563c6ef7c203052597a361c2e5b4bdfcebf809e38db380bf3547813cb3f"
+      },
+      "sources/selected-players.json": {
+        "bytes": 10997,
+        "sha256": "be7b537c32187373f43adb9c350190889744c7b5ac5b5ff26d31dea6e791a0a2"
+      },
+      "sources/selected-teams.json": {
+        "bytes": 1903,
+        "sha256": "3a80be07c5df0d5e80e82fe6817f153bd3cb115340bd80e3004fedfea1d01060"
+      },
+      "sources/teams.json": {
+        "bytes": 461430,
+        "sha256": "4958a89f58571814b15031389a517b0db724589f108cd3581a83e526bf0dd728"
+      }
+    }
+  },
+  "recovery": {
+    "state": "verified",
+    "rows": 21,
+    "points": 230,
+    "bundle_sha256": "76aad9d054c5edc6d699e26a72f89073b55908a247ee9c72dee414e2f70c99f1",
+    "r2_writes": 0
+  }
+}

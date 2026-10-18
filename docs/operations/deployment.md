@@ -490,6 +490,17 @@ after an explicitly approved publication.
 
 ## Vercel Frontend Build
 
+For the existing ChatGPT Vercel connection, project reads and deployment lists
+for `nbatools` work **without** `teamId` or `slug`. The project ID is
+`prj_luTVKSLCFRQP3BYwk93XETz9WwCy`; adding its returned account ID as explicit
+team scope currently returns404 for the same project. Use unscoped reads with
+that existing project ID. This verified routing difference supersedes earlier
+sign-in/project-grant diagnoses; do not create a new project, token or team.
+The observed production deployment `dpl_4EScByrmkkY1Fw6fFaVzvhNG9n1J` is READY;
+the listing also exposes a previous READY production rollback candidate. No live
+rollback, protection change or additional administration-write permission was
+tested. See `cloud-operations/vercel-access.json` in the completion program.
+
 Phase N2 deploys the React UI by running the frontend build during Vercel's
 project build:
 
