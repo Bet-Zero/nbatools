@@ -504,6 +504,28 @@ The approved source path for clutch execution is official `PlayByPlayV3` event
 data plus local score-state derivation. This section is the durable source
 boundary.
 
+Setup-only cloud development staging additionally supports a qualified archived
+official CDN feed as `pbp_source=cdn.nba.com.liveData.playbyplay`, with
+`pbp_source_schema_version=cdn_live_pbp.v1`. This is a distinct source, not NBA
+Stats V3. `source_order_number` preserves the CDN's original `orderNumber` as
+chronology; `action_number` preserves original `actionNumber` as event identity.
+Delayed supplemental records can have a later identity but an earlier timeline
+position. Ingestion, whole-game trust, loading and existing score-state consumers
+use the source timeline, without dropping or renumbering events. CDN rows require
+unique positive integral order values, one source/schema per game, forward periods,
+nonincreasing within-period clocks and nondecreasing scores; legacy Stats ordering
+and all existing terminal score/period gates remain intact.
+
+`tools/cloud_cdn_archive.py` retrieves one fixed game (`0022500003`) from an
+authenticated, pinned public archive; preserves the exact original selected CSV
+records, original archive checksum, Apache-2.0 attribution and source receipt;
+and writes a new staging directory. The bounded evidence is 605 events, ending
+NYK119–CLE111 in period4. Its scoped versioned receipt and nine-file immutable
+candidate validate an **isolated development subset**, not a complete season or
+registered production R2 package. No current freshness, NBA Stats equivalence,
+period/on-off replacement or new clutch-feature acceptance follows. All production
+source/base/registration/approval gates remain separate.
+
 The raw `play_by_play_events` dataset path, validation, and loader exist. The
 processed `player_game_clutch_stats` and `team_game_clutch_stats` derivation
 paths, validation, loaders, and coverage-gated route execution also exist for

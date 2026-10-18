@@ -10,7 +10,11 @@ from nbatools.commands.data_utils import (
     TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
     TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS,
 )
-from nbatools.commands.source_invariants import validate_team_game_pair_invariants
+from nbatools.commands.source_invariants import (
+    play_by_play_timeline_order,
+    validate_cdn_play_by_play_timeline,
+    validate_team_game_pair_invariants,
+)
 from nbatools.commands.validation_control import validate_raw_coverage
 
 PERIOD_WINDOW_LOOKUP = {
@@ -440,12 +444,13 @@ def validate_play_by_play_events_df(df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("Untrusted play-by-play rows must explain pbp_validation_reason")
 
     for game_id, group in validated.groupby("game_id", sort=False):
-        actions = group["action_number"]
+        actions = play_by_play_timeline_order(group)
         if not actions.is_monotonic_increasing:
             raise ValueError(
                 f"play_by_play_events action_number order invalid for game_id={game_id}"
             )
 
+    validate_cdn_play_by_play_timeline(validated)
     return validated
 
 

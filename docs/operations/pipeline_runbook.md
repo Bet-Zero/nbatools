@@ -37,6 +37,24 @@ test authorizes R2 uploads, pointer changes or unattended publication. The stock
 whole-season refresh still needs its remaining qualified sources; partial core
 archive success must not enable or be labeled successful unattended freshness.
 
+For the separate bounded CDN PBP route:
+
+```bash
+python -m tools.cloud_cdn_archive --output <new-staging-directory>
+```
+
+It downloads the pinned 19.3 MB public season archive (20 MB download ceiling,
+one 250 MB maximum expanded CSV), streams one game without general extraction,
+and verifies the exact archive SHA256. Original CSV records, license, source
+receipt and canonical output are preserved. The reviewed core identity/final-score
+context comes from the permanent Git bundle. Event identity and CDN chronology
+remain separate; no action is dropped or renumbered. The existing loader and
+score-state consumer must recover 605 events and 230 total points from durable
+`cdn-archive-staging.zip`; the nine-file immutable candidate is explicitly a scoped
+development subset. It does not authorize production publication or claim that the
+whole-season refresh is complete. Use the explicit reviewed runner selectors in
+`tests/cloud_cdn_routes_real_data.py`; ordinary CI must not fetch this archive.
+
 It covers:
 - core commands
 - workflow order
