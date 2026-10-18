@@ -675,6 +675,8 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
 
 
 _LIST_ROUTES = (
+    "team_compare",
+    "player_compare",
     "team_record",
     "game_finder",
     "game_summary",
@@ -713,8 +715,11 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     masked = mask_copula_team_lookalikes(text)
     outside = masked[:start] + " " * (end - start) + masked[end:]
     owners = [team for _, _, team in _teams_in_order(outside)]
-    if len(owners) == 1:
-        route_kwargs["team"] = owners[0]
+    before = [team for _, _, team in _teams_in_order(masked[:start])]
+    if route != "team_compare" and (len(owners) == 1 or len(before) == 1):
+        # A later condition may name another team. Keep the sole prefix
+        # subject so the ownership guard can reject that condition honestly.
+        route_kwargs["team"] = owners[0] if len(owners) == 1 else before[0]
     elif not owners and route.startswith("player_"):
         route_kwargs["team"] = None
     if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:

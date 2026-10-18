@@ -60,3 +60,39 @@ def test_structured_union_uses_the_same_scalar_display_contract():
     assert result.metadata["opponent"] == "BOS, NYK"
     assert not result.metadata.get("opponent_context")
     assert all(isinstance(item["value"], str) for item in result.metadata["applied_filters"])
+
+
+def test_third_team_condition_retains_the_subject_on_refusal():
+    result = execute_natural_query(
+        "Lakers record against Celtics and Wizards when Knicks score at least 110 in 2023-24"
+    )
+    assert result.result_status == "no_result"
+    assert "other_team_stat" in result.metadata["unsupported_filters"]
+    assert result.metadata["team"] == "LAL"
+
+
+def test_comparison_keeps_both_subjects_and_the_opponent_union():
+    query = "Lakers and Knicks record against Celtics and Wizards in 2023-24"
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "team_compare"
+    assert (kwargs["team_a"], kwargs["team_b"]) == ("LAL", "NYK")
+    assert not kwargs.get("team")
+    assert kwargs["opponent"] == ["BOS", "WAS"]
+    assert not kwargs.get("unsupported_filters")
+    meta = execute_natural_query(query).metadata
+    assert meta["opponents"] == ["BOS", "WAS"]
+    assert meta["team"] == "LAL, NYK"
+    assert not meta.get("opponent_context")
+
+
+def test_player_comparison_keeps_both_players_and_no_invented_team_filter():
+    parsed = parse_query(
+        "Compare LeBron James and Stephen Curry against Boston and Washington in 2023-24"
+    )
+    kwargs = parsed["route_kwargs"]
+    assert parsed["route"] == "player_compare"
+    assert (kwargs["player_a"], kwargs["player_b"]) == ("LeBron James", "Stephen Curry")
+    assert kwargs["team"] is None
+    assert kwargs["opponent"] == ["BOS", "WAS"]
+    assert not kwargs.get("unsupported_filters")
