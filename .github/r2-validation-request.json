@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "a227e9a7923472cf4dcfbbf1fab1769b63014186",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/cloud_season_inputs_real_data.py::test_season_inputs_collection",
+    "tests/cloud_season_inputs_real_data.py::test_durable_season_inputs_recovery",
+    "tests/cloud_season_inputs_real_data.py::test_public_nba_web_route_diagnostic"
+  ],
+  "raw_qa_cases": []
+}
