@@ -10,8 +10,8 @@ work on supported core datasets.
 ## Before implementing a data-dependent change
 
 1. Read the active generation's generated `inventory.md` and `inventory.json`.
-   Initial inventory: see the data-availability setup PR for its permanent
-   `data-inventory-<run-id>` release. Subsequent approved publications attach
+   Initial inventory: [permanent release data-inventory-39158132815](https://github.com/Bet-Zero/nbatools/releases/tag/data-inventory-39158132815)
+   from [read-only run39158132815](https://github.com/Bet-Zero/nbatools/actions/runs/39158132815). Subsequent approved publications attach
    inventories to `cloud-backup-<publication-run-id>` releases automatically.
    Releases/artifacts identify the exact generation and authenticated manifest
    SHA256. Never assume the newest report is still active after a rollback.
@@ -145,3 +145,42 @@ Codex then:
 No new production data has been published merely to test this handoff. The
 packaging/unpacking process is verified independently of a real future laptop
 collection; each collection still needs its own data qualification and approval.
+
+## Initial observed coverage (not a new publication)
+
+Read-only scan on October 18, 2026 at 15:19 America/Detroit verified all **703
+objects / 402,749,125 bytes** of `availability-opening-s4-v1-20261017` against
+manifest `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`.
+One required test was selected/executed/passed, with zero skips or errors. Reports
+are permanent release assets, not dependent on the seven-day Actions artifact.
+The full JSON SHA256 is
+`d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04`.
+
+Production contains 1996-97 through 2025-26 season files: **37,986 observed final
+games**, 786,773 player-game rows and 75,972 team-game rows. Those totals describe
+stored rows, not independently complete seasons. The 2025-26 core has 1,230
+regular-season and 85 playoff games; player rows 26,651/1,921 and team rows
+2,460/170 cover those observed game catalogs. Individual player completeness
+remains unknown. Period files exist for 2024-25 and 2025-26; their presence is
+not proof of every player/window or independent numerical accuracy.
+
+The inventory exposes **154 files requiring quality review**: 57 legacy game and
+57 legacy schedule files lack current site/trust columns; 40 historical team
+files have plus/minus consistency findings. Do not silently repair production
+or treat those fields as qualified. Validate the exact feature/data slice before
+use; issue details and example offending keys are preserved in the report.
+
+There is **no 2026-27 production season** in this snapshot. Production has no
+`raw/team_player_on_off_summary`, `raw/league_lineup_viz` or
+`raw/play_by_play_events` files. Five checksum-verified repository staging bundles
+are listed separately, including source/partial/noncanonical paths. Their
+coverage does not fill a production gap until validated and approved for
+publication. The sample collection request is illustrative and explicitly says
+its game is not in the production catalog; it does not assert an unobserved game
+or result exists.
+
+This completes minimum data-availability setup for cloud development under the
+owner's acquisition-laptop architecture. No commercial key, new service, or cloud
+NBA API route is required. Development remains paused until explicit owner
+resumption. A future missing-data request still requires acquisition; its new
+production generation still requires the existing separate approval.
