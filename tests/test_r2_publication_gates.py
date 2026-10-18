@@ -204,10 +204,10 @@ def test_backup_only_follows_approved_published_and_verified_generation():
     request = reusable["jobs"]["request"]
     assert "backup_generation" in json.dumps(request)
     restore = reusable["jobs"]["restore-backup"]
-    env = next(
-        step["env"] for step in restore["steps"] if "FRESHNESS_DIAGNOSTIC" in step.get("env", {})
-    )
-    assert "inputs.backup_generation == ''" in env["FRESHNESS_DIAGNOSTIC"]
+    # Owner now uses an acquisition laptop; no backup path may start NBA API calls.
+    assert "from tools.cloud_refresh import prepare" not in json.dumps(restore)
+    assert "result = prepare(" not in json.dumps(restore)
+    assert "tools.data_availability from-backup" in json.dumps(restore)
     assert "'state': 'not_requested'" in json.dumps(restore)
 
 

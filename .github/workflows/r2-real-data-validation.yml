@@ -455,6 +455,52 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+  retain-data-inventory:
+    name: Preserve read-only data inventory for cloud agents
+    needs: [preflight, data-backed-tests]
+    if: >-
+      startsWith(github.ref, 'refs/heads/r2-validation/data-inventory-') &&
+      needs.preflight.outputs.tests == 'tests/cloud_data_inventory_real_data.py::test_generate_production_inventory' &&
+      needs.data-backed-tests.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: required-numerical-${{ github.run_id }}
+          path: evidence
+      - name: Bind inventory to the validated generation
+        env:
+          EXPECTED_GENERATION: ${{ needs.preflight.outputs.generation }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path('evidence/acquired_data/data-inventory/inventory.json').read_text())
+          assert report['generation_id'] == os.environ['EXPECTED_GENERATION']
+          assert report['origin'] == 'active_production_r2'
+          assert report['production_writes'] == 0
+          assert report['evidence']['active_pointer']['manifest_sha256'] == report['evidence']['manifest_sha256']
+          assert report['file_count'] == len(report['files'])
+          assert all(f['integrity'] == 'verified' for f in report['files'])
+          PY
+      - name: Retain permanent inventory without R2 credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Bet-Zero/nbatools
+        run: >-
+          gh release create "data-inventory-$GITHUB_RUN_ID"
+          evidence/acquired_data/data-inventory/inventory.json
+          evidence/acquired_data/data-inventory/inventory.md
+          evidence/acquired_data/data-inventory/example-collection-request.json
+          --target "${{ needs.preflight.outputs.candidate_sha }}"
+          --title "Read-only data inventory $GITHUB_RUN_ID"
+          --notes "Authenticated production-generation inventory; no R2 writes. Check generation and timestamp before use."
+          --latest=false
+
   retain-backup:
     name: Preserve manual cloud backup independently of R2
     needs: [preflight, data-backed-tests]
@@ -516,19 +562,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: Bet-Zero/nbatools
           DATA_SOURCE: local
-          FRESHNESS_DIAGNOSTIC: ${{ inputs.backup_generation == '' && 'true' || 'false' }}
         run: |
           gh release download "cloud-backup-$GITHUB_RUN_ID" --pattern generation.zip --pattern backup-receipt.json --dir recovered
           python -m tools.cloud_backup recovered/generation.zip recovered/backup-receipt.json recovered/data
+          python -m tools.data_availability from-backup recovered/data --receipt recovered/backup-receipt.json --output data-inventory
           python -m tools.cloud_refresh plan --output refresh-plan.json
           python - <<'PY'
           import json, os
           from pathlib import Path
-          from tools.cloud_refresh import prepare
-          if os.environ['FRESHNESS_DIAGNOSTIC'] == 'true':
-              result = prepare('recovered/generation.zip', 'recovered/backup-receipt.json', 'manual-refresh-attempt', season='2025-26', timeout=150)
-          else:
-              result = {'state': 'not_requested', 'candidate': None, 'production_writes': 0, 'reason': 'Backup automation never starts acquisition or refresh'}
+          result = {'state': 'not_requested', 'candidate': None, 'production_writes': 0, 'reason': 'Owner direction: laptop acquisition only; no cloud API investigation or refresh'}
           Path('freshness-receipt.json').write_text(json.dumps(result, indent=2) + '\n')
           print('CLOUD_FRESHNESS_JSON', json.dumps(result, sort_keys=True))
           # This is an explicit setup diagnostic. Failed acquisition is retained
@@ -554,6 +596,7 @@ jobs:
           name: cloud-restore-receipt-${{ github.run_id }}
           path: |
             restore-receipt.json
+            data-inventory/
             refresh-plan.json
             freshness-receipt.json
           if-no-files-found: error
@@ -575,4 +618,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: Bet-Zero/nbatools
-        run: gh release upload "cloud-backup-$GITHUB_RUN_ID" restored/restore-receipt.json restored/refresh-plan.json restored/freshness-receipt.json
+        run: gh release upload "cloud-backup-$GITHUB_RUN_ID" restored/restore-receipt.json restored/refresh-plan.json restored/freshness-receipt.json restored/data-inventory/inventory.json restored/data-inventory/inventory.md
