@@ -1,0 +1,36 @@
+# One-time launcher for explicitly owner-authorized protected R2 publication.
+# No R2 credentials, no deployment approval bypass, no autonomous/scheduled runs.
+name: One-Time Owner-Approved R2 Publication Dispatch
+on:
+  push:
+    branches:
+      - ops/one-shot-owner-approved-r2-publish-20261018
+    paths:
+      - .github/workflows/ops-once-owner-approved-publish.yml
+permissions:
+  contents: read
+  actions: write
+jobs:
+  dispatch:
+    if: >-
+      github.repository == 'Bet-Zero/nbatools' &&
+      github.ref == 'refs/heads/ops/one-shot-owner-approved-r2-publish-20261018'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch owner-authorized package through existing protected main workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          expected='91adfea0daeadd3045e903af8e99bdaeff19bdad'
+          current="$(gh api repos/Bet-Zero/nbatools/branches/main --jq '.commit.sha')"
+          if [ "$current" != "$expected" ]; then
+            echo 'Main changed; refusing launch without fresh evaluation' >&2
+            exit 1
+          fi
+          gh workflow run r2-data-publication.yml \
+            --repo Bet-Zero/nbatools \
+            --ref main \
+            -f package=opening-s4-availability-v1 \
+            -f mode=publish
