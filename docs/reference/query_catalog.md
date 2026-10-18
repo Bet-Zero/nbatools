@@ -431,7 +431,7 @@ Current behavior:
 - missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
 - `player_on_off` is a shipped coverage-gated route, not an execution placeholder
 - whole-game `with_player` / `without_player` availability is not an on/off substitute
-- compound or multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` or `Lakers record with Reaves without Luka` is outside the current lineup/availability boundary and returns an explicit unsupported/no-result response rather than an unfiltered team record or player summary
+- whole-game two-teammate conjunctions support `with A and B`, `without A and B`, and explicit participation suffixes `both out`, `not playing`, `DNP` or `both playing`; a stat bound on the primary team/player may accompany the pair. Each absence predicate needs qualified evidence across the original candidate sample; an unrelated omitted player row is insufficient. Mixed with/without predicates, OR scopes, medical/status meaning and on-court presence are separate unfinished capabilities, not a broad unfiltered fallback
 
 ### Specific lineup summaries
 

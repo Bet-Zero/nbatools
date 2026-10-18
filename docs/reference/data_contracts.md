@@ -357,6 +357,11 @@ Contract rules:
   observations, duplicate player/game identities, mismatched dates and ambiguous
   identities reject the answer rather than silently shrinking its denominator.
   Conjunctions qualify all players against the original candidate sample.
+  Natural two-teammate clauses preserve the resolved pair and complete consumed
+  span so later guards still inspect other clauses. Explicit out/not-playing/DNP
+  suffixes select whole-game nonparticipation, never a medical reason; both-playing
+  suffixes select positive-minute appearances. Numeric bounds on the primary
+  subject remain independent predicates and displayed conditions name both players.
   Canonical positive-minute rows may additionally prove `played`, never absence.
   Shared `filter_with_player` requires positive numeric canonical minutes and
   same-team game identity; zero-minute rows and unresolved identities never
