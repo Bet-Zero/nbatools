@@ -35,6 +35,36 @@ candidate. Restore success is not successful acquisition/freshness.
 A release on the same GitHub account protects against R2 loss, not loss of the
 GitHub account; no separate-account disaster-recovery claim is made.
 
+### Backup automation after an approved publication
+
+The publication workflow now calls the **same** read-only export, durable GitHub
+release retention and separate credential-free restore after `mode=publish` has
+passed owner approval, publication and live verification. The caller pins the
+just-published immutable generation. A secret-free resolver requires the exact
+main SHA and trusted main publication workflow; its only selection is the existing
+full-generation backup test. It rejects other callers, branches, SHAs and mutable
+generations. Named read-only credentials still reach only `r2-validation` jobs;
+R2 publication credentials never reach backup or retention. No new credential,
+service, paid plan, production publisher, timer or pruning is introduced.
+
+This prepares automatic preservation when production changes through the approved
+pipeline, without repeatedly exporting an unchanged immutable snapshot. It does
+not install a daily backup schedule or claim a separately verified 24-hour RPO.
+Backup failure makes the workflow fail while retaining the already-published
+generation and prior backups; it does not switch or roll back production data.
+
+The automation hook is validated by caller/selection/credential/ordering policy
+tests, reusing the owner-accepted real export/restore evidence above. **A new live
+hook execution is not claimed:** no additional production publication was
+authorized or performed merely to trigger it. Check its export, retention and
+separate restore on the next legitimate owner-approved publication. Automatic
+backup does not start acquisition or freshness; its freshness receipt explicitly
+says `not_requested`. The separate full-season freshness requirement remains open.
+
+GitHub associates a reusable workflow's context with its caller; the resolver
+uses that caller identity, consistent with the
+[GitHub workflow context documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations).
+
 From another clean cloud checkout with installed project dependencies:
 
 ```bash

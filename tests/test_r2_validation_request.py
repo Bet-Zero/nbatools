@@ -249,3 +249,42 @@ def test_manual_targeted_resolution_preserves_exact_candidate_and_selection(repo
     assert outputs["candidate_sha"] == _git(repo[0], "rev-parse", "HEAD")
     assert outputs["tests"] == "tests/test_reviewed.py"
     assert outputs["automatic"] == "false"
+
+
+def _backup_env():
+    return {
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_WORKFLOW_REF": "Bet-Zero/nbatools/.github/workflows/r2-data-publication.yml@refs/heads/main",
+        "BACKUP_GENERATION": "approved-immutable-generation",
+        "TESTS": "tests/test_reviewed.py",
+        "RAW_QA_CASES": "must-not-run",
+    }
+
+
+def test_publication_backup_has_fixed_selection_and_pinned_generation(repo):
+    (repo[0] / "tests/cloud_operations_real_data.py").write_text("# controlled resolver fixture\n")
+    result, output = run_request(repo, env_changes=_backup_env())
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert output["candidate_sha"] == _git(repo[0], "rev-parse", "HEAD")
+    assert output["reviewed_sha"] == output["candidate_sha"]
+    assert output["generation"] == "approved-immutable-generation"
+    assert output["tests"] == "tests/cloud_operations_real_data.py::test_full_generation_backup"
+    assert output["raw_qa_cases"] == "" and output["scope"] == "targeted"
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"GITHUB_EVENT_NAME": "push"},
+        {"GITHUB_REPOSITORY": "someone/nbatools"},
+        {"GITHUB_REF": "refs/heads/feature"},
+        {"GITHUB_SHA": "0" * 40},
+        {"GITHUB_WORKFLOW_REF": "Bet-Zero/nbatools/.github/workflows/ci.yml@refs/heads/main"},
+        {"BACKUP_GENERATION": "legacy"},
+        {"BACKUP_GENERATION": "../not-a-generation"},
+    ],
+)
+def test_automatic_backup_rejects_untrusted_context_or_generation(repo, change):
+    result, output = run_request(repo, env_changes=_backup_env() | change)
+    assert result.returncode != 0 and output == {}

@@ -62,7 +62,28 @@ def resolve_request(env: dict[str, str]) -> dict[str, str]:
     if not SHA.fullmatch(actual_sha):
         raise ValueError("Checkout has no resolved candidate SHA")
     event_name = env.get("GITHUB_EVENT_NAME")
-    if event_name == "push":
+    if generation := env.get("BACKUP_GENERATION", ""):
+        if (
+            event_name != "workflow_dispatch"
+            or env.get("GITHUB_REPOSITORY") != REPOSITORY
+            or env.get("GITHUB_REF") != "refs/heads/main"
+            or env.get("GITHUB_SHA") != actual_sha
+            or env.get("GITHUB_WORKFLOW_REF")
+            != f"{REPOSITORY}/.github/workflows/r2-data-publication.yml@refs/heads/main"
+        ):
+            raise ValueError("Automatic backup requires the trusted main publication caller")
+        if not GENERATION.fullmatch(generation) or generation == "legacy":
+            raise ValueError("Automatic backup requires a pinned immutable generation")
+        # The caller runs only after protected owner approval, successful
+        # publication and live verification. Source is reviewed merged main;
+        # callers cannot supply arbitrary tests, scripts, branches or cases.
+        tests = _selection(
+            ["tests/cloud_operations_real_data.py::test_full_generation_backup"],
+            tests=True,
+            automatic=True,
+        )
+        cases, scope, reviewed_sha, automatic = [], "targeted", actual_sha, "true"
+    elif event_name == "push":
         event = json.loads(Path(env["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
         repository = event.get("repository", {})
         if (
