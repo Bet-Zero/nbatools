@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "972afababe03afb45e8dfbd9dabb07f97366c838",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k05_subject_ownership_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k05_a1",
+    "k05_a1_heldout",
+    "k05_a2",
+    "k05_a2_heldout",
+    "k05_b1",
+    "k05_b1_heldout",
+    "k05_b2",
+    "k05_b2_heldout"
+  ]
+}
