@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "48a63f4d692bb49fa2aee681f2dd4dc34d5db4b4",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_combined_availability_package_real_data.py::test_combined_reviewed_availability_source_package"
+  ],
+  "raw_qa_cases": []
+}
