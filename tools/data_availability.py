@@ -347,28 +347,41 @@ def staged_inventory(root=ROOT / "working/nba-tools-completion-program/cloud-ope
         if hashlib.sha256(zipped.read_bytes()).hexdigest() != bundle["sha256"]:
             raise ValueError(f"Staged bundle checksum mismatch: {name}")
         with zipfile.ZipFile(zipped) as archive:
-            members = sorted(
-                n
-                for n in archive.namelist()
-                if n.startswith(
-                    (
-                        "data/raw/",
-                        "data/processed/",
-                        "data/derived/",
-                        "raw/",
-                        "processed/",
-                        "derived/",
-                        "partial/",
-                    )
-                )
-                and n.endswith(".csv")
-            )
+            members = sorted(n for n in archive.namelist() if n.endswith(".csv"))
         result.append(
             {
                 "location": "development_staging_in_git",
                 "bundle": name,
                 "sha256": bundle["sha256"],
                 "dataset_paths": members,
+                "canonical_paths": [
+                    n
+                    for n in members
+                    if n.startswith(
+                        (
+                            "data/raw/",
+                            "data/processed/",
+                            "data/derived/",
+                            "raw/",
+                            "processed/",
+                            "derived/",
+                        )
+                    )
+                ],
+                "noncanonical_paths": [
+                    n
+                    for n in members
+                    if not n.startswith(
+                        (
+                            "data/raw/",
+                            "data/processed/",
+                            "data/derived/",
+                            "raw/",
+                            "processed/",
+                            "derived/",
+                        )
+                    )
+                ],
                 "note": (
                     "staged copy, not evidence of production coverage; paths may overlap production"
                 ),
