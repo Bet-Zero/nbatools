@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9679e2b4df3e81b17fee4ece3bc0b1058ef824a2",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_pipeline_player_game_availability_real_data.py::test_official_tatum_report_retains_exact_source"
+  ],
+  "raw_qa_cases": []
+}
