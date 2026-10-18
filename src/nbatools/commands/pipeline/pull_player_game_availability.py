@@ -464,7 +464,9 @@ def backfill(
             raise ValueError("Game does not identify two distinct teams")
         previous = existing[existing["game_id"].map(int).eq(ident)]
         receipt = receipts.get(str(ident), {})
-        if not previous.empty and receipt.get("source") == source:
+        # An explicitly supplied retained source must be verified and replayed,
+        # even when existing normalized rows have a valid local import digest.
+        if cached_reports is None and not previous.empty and receipt.get("source") == source:
             if (
                 receipt.get("sha256") == _game_digest(previous)
                 and previous["game_date"].eq(str(row.game_date)).all()

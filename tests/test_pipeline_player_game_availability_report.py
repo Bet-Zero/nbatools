@@ -597,3 +597,31 @@ def test_cached_import_uses_receipt_and_refuses_unresolved_identity(
 def test_cached_report_option_rejects_other_sources(tmp_path):
     with pytest.raises(ValueError, match="Cached reports only"):
         backfill("2025-26", source="stats", cached_reports=tmp_path)
+
+
+@pytest.mark.parametrize("change", ["corrupt", "missing", "revised"])
+def test_cached_repeat_import_revalidates_supplied_source(nba_rows, tmp_path, monkeypatch, change):
+    cache = tmp_path / "cache"
+    url = "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf"
+    report._archive_report(b"%PDF first controlled source", url, cache)
+    monkeypatch.setattr(report, "_report_text", lambda _: PDF_TEXT)
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    first = backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+    target = nba_rows / "raw/player_game_availability/2025-26_regular_season.csv"
+    previous = target.read_bytes()
+    receipt = json.loads((cache / "20251021_GSWLAL.json").read_text())
+    pdf = cache / receipt["raw_file"]
+    if change == "revised":
+        content = b"%PDF revised controlled source"
+        report._archive_report(content, url, cache)
+        replayed = backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+        assert replayed.source_sha256.eq(hashlib.sha256(content).hexdigest()).all()
+        assert not replayed.source_sha256.equals(first.source_sha256)
+    else:
+        if change == "missing":
+            pdf.unlink()
+        else:
+            pdf.write_bytes(b"%PDF corrupt source")
+        with pytest.raises((ValueError, FileNotFoundError)):
+            backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+        assert target.read_bytes() == previous
