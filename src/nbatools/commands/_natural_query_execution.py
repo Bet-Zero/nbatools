@@ -682,7 +682,7 @@ def _prepare_route_conditions(
         return kwargs, extra_conditions
 
     primary = primary_condition_from_kwargs(kwargs)
-    combined = []
+    combined = normalize_stat_conditions(kwargs.get("conditions"))
     if primary is not None:
         combined.append(primary)
     combined.extend(normalize_stat_conditions(extra_conditions))
@@ -691,7 +691,7 @@ def _prepare_route_conditions(
         return kwargs, extra_conditions
 
     routed = dict(kwargs)
-    routed["conditions"] = combined
+    routed["conditions"] = normalize_stat_conditions(combined)
     return routed, []
 
 
@@ -1358,6 +1358,13 @@ def _execute_or_query_build_result(query: str) -> tuple:
     if yes_no is not None:
         return yes_no
 
+    full = parse_query(query)
+    if any("opponent_team" in c for c in (full.get("route_kwargs") or {}).get("conditions") or []):
+        # Branch inheritance does not yet preserve named condition owners.
+        # This composition remains unfinished; never answer another team's
+        # games or relabel the flattened branches as an executed union.
+        raise ValueError("Named opponent stat conditions with OR are not yet supported.")
+
     base = _build_parse_state(query)
     conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
@@ -1475,6 +1482,13 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     of raw query string access.
     """
     route = parsed["route"]
+
+    if any(
+        "opponent_team" in c for c in (parsed.get("route_kwargs") or {}).get("conditions") or []
+    ):
+        # This older boolean tree reparses plain stat bounds and cannot carry
+        # an opponent owner. Do not discard an owned predicate on this path.
+        raise ValueError("Named opponent stat conditions with grouped logic are not yet supported.")
 
     if route in {"player_game_summary", "player_split_summary"}:
         if not expression_contains_boolean_ops(condition_text):

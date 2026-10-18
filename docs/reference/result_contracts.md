@@ -88,6 +88,14 @@ comma-separated display strings. They do not expose a singleton
 retains its existing scalar identity contract. Natural and structured requests
 use the same representation.
 
+An executed threshold condition may additionally carry `opponent_team` (a
+canonical team abbreviation). It qualifies the owner of an `opponent_*` stat
+at condition evaluation time. It does not narrow the base `opponents` sample:
+a last-N window is selected from that original sample first. Normalization and
+deduplication preserve the owner; missing row identity cannot satisfy it.
+Threshold metadata and display labels name the owner explicitly, such as
+`BOS Opp PTS min`. Conditions without this field retain their existing meaning.
+
 ### 1.4 No-result and error semantics
 
 `NoResult` is a first-class structured result. Its current canonical reasons

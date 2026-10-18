@@ -18,13 +18,14 @@ def normalize_stat_conditions(conditions: Any) -> list[dict[str, Any]]:
     The canonical representation is:
     ``{"stat": str, "min_value": float|None, "max_value": float|None}``.
     Extra descriptive keys such as ``text`` are preserved for metadata, but
-    execution only depends on the three canonical keys.
+    An optional ``opponent_team`` qualifies the bound's owner without changing
+    the base game sample (in particular, before a last-N window is selected).
     """
     if not conditions:
         return []
 
     normalized: list[dict[str, Any]] = []
-    seen: set[tuple[str, Any, Any]] = set()
+    seen: set[tuple[Any, ...]] = set()
     for raw in conditions:
         if hasattr(raw, "to_dict"):
             raw = raw.to_dict()
@@ -42,6 +43,8 @@ def normalize_stat_conditions(conditions: Any) -> list[dict[str, Any]]:
         }
         if "text" in raw:
             cond["text"] = raw.get("text")
+        if "opponent_team" in raw:
+            cond["opponent_team"] = str(raw.get("opponent_team") or "").upper()
         signature = stat_condition_signature(cond)
         if signature in seen:
             continue
@@ -67,10 +70,24 @@ def primary_condition_from_kwargs(kwargs: Mapping[str, Any]) -> dict[str, Any] |
     }
 
 
-def stat_condition_signature(condition: Mapping[str, Any]) -> tuple[str, Any, Any]:
+def stat_condition_signature(condition: Mapping[str, Any]) -> tuple[Any, ...]:
     """Return a comparable key for a stat-threshold condition."""
     stat = str(condition.get("stat") or "").lower()
-    return (stat, condition.get("min_value"), condition.get("max_value"))
+    key = (stat, condition.get("min_value"), condition.get("max_value"))
+    if "opponent_team" in condition:
+        return (*key, str(condition.get("opponent_team") or "").upper())
+    return key
+
+
+def condition_owner_mask(df: pd.DataFrame, condition: Mapping[str, Any]) -> pd.Series:
+    """Match a bound's named opponent at condition time; unknown identity fails closed."""
+    if "opponent_team" not in condition:
+        return pd.Series(True, index=df.index)
+    if not str(condition.get("stat") or "").startswith("opponent_"):
+        raise ValueError("Only opponent stats can name an opponent owner")
+    from nbatools.commands.data_utils import build_opponent_mask
+
+    return build_opponent_mask(df, condition.get("opponent_team"))
 
 
 def stat_conditions_cover(conditions: Any, expected: Any) -> bool:
@@ -122,6 +139,7 @@ def apply_stat_conditions(
     """
     out = attach_margin_stats(df, {c["stat"] for c in normalize_stat_conditions(conditions)})
     for cond in normalize_stat_conditions(conditions):
+        out = out[condition_owner_mask(out, cond)].copy()
         stat = cond["stat"]
         if stat not in allowed_stats:
             raise ValueError(f"Unsupported stat: {stat}")

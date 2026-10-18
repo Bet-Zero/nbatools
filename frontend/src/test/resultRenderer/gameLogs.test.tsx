@@ -5,6 +5,46 @@ import { makeResponse } from "./helpers";
 
 describe("ResultRenderer game-log patterns", () => {
 
+  it("names the opponent that owns the scoring condition", () => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        notes: [],
+        caveats: [],
+        metadata: {
+          opponents: ["BOS", "WAS"],
+          threshold_conditions: [
+            {
+              stat: "opponent_pts",
+              min_value: 110,
+              max_value: null,
+              opponent_team: "BOS",
+            },
+          ],
+          applied_filters: [
+            { kind: "team", label: "Opponent", value: "BOS, WAS" },
+            { kind: "threshold", label: "BOS Opp PTS min", value: "110" },
+          ],
+        },
+        sections: {
+          finder: [
+            {
+              game_id: 22300403,
+              player_id: 2544,
+              player_name: "LeBron James",
+              pts: 16,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultRenderer data={data} />);
+    expect(screen.getByText("110+ BOS OPP PTS")).toBeVisible();
+  });
+
+
   it.each([
     ["any", "40 (exclusive)", "12 (exclusive)", "> 40 PTS OR > 12 REB"],
     ["all", "40", "12", "40+ PTS AND 12+ REB"],

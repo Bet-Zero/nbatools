@@ -443,8 +443,9 @@ def _build_applied_filters(
     if conditions:
         for cond in conditions:
             stat = cond["stat"]
+            owner = f"{cond['opponent_team']} " if cond.get("opponent_team") else ""
             if cond.get("min_value") is not None:
-                label = f"{_filter_stat_label(stat)} min"
+                label = f"{owner}{_filter_stat_label(stat)} min"
                 applied_filters.append(
                     {
                         "label": label,
@@ -453,7 +454,7 @@ def _build_applied_filters(
                     }
                 )
             if cond.get("max_value") is not None:
-                label = f"{_filter_stat_label(stat)} max"
+                label = f"{owner}{_filter_stat_label(stat)} max"
                 applied_filters.append(
                     {
                         "label": label,
@@ -462,17 +463,9 @@ def _build_applied_filters(
                     }
                 )
     else:
-        stat = source.get("stat") or route_kwargs.get("stat")
-        min_value = (
-            source.get("min_value")
-            if source.get("min_value") is not None
-            else route_kwargs.get("min_value")
-        )
-        max_value = (
-            source.get("max_value")
-            if source.get("max_value") is not None
-            else route_kwargs.get("max_value")
-        )
+        stat = route_kwargs.get("stat", source.get("stat"))
+        min_value = route_kwargs.get("min_value", source.get("min_value"))
+        max_value = route_kwargs.get("max_value", source.get("max_value"))
         if stat and min_value is not None:
             label = f"{_filter_stat_label(stat)} min"
             applied_filters.append(
@@ -668,7 +661,7 @@ def _build_query_metadata(
                 or is_compound_event_refusal(route_kwargs)
                 or publishes_condition_metric_as_stat(route, route_kwargs)
             )
-            else parsed.get("stat") or route_kwargs.get("stat")
+            else route_kwargs.get("stat", parsed.get("stat"))
         ),
         # What the rows are ordered by, said outright. A compound occurrence
         # route ranks by a count of matching games, and reading its ranking off
@@ -684,16 +677,8 @@ def _build_query_metadata(
         "unsupported_scope": route_kwargs.get("unsupported_scope"),
         "requested_aggregation": route_kwargs.get("requested_aggregation"),
         "available_aggregation": route_kwargs.get("available_aggregation"),
-        "min_value": (
-            parsed.get("min_value")
-            if parsed.get("min_value") is not None
-            else route_kwargs.get("min_value")
-        ),
-        "max_value": (
-            parsed.get("max_value")
-            if parsed.get("max_value") is not None
-            else route_kwargs.get("max_value")
-        ),
+        "min_value": route_kwargs.get("min_value", parsed.get("min_value")),
+        "max_value": route_kwargs.get("max_value", parsed.get("max_value")),
         "sort_by": parsed.get("sort_by") or route_kwargs.get("sort_by"),
         "ascending": route_kwargs.get("ascending"),
         "ranked_intent": bool(
@@ -701,7 +686,9 @@ def _build_query_metadata(
             or parsed.get("season_high_intent")
             or parsed.get("top_n")
         ),
-        "threshold_conditions": normalize_stat_conditions(parsed.get("threshold_conditions")),
+        "threshold_conditions": normalize_stat_conditions(
+            route_kwargs.get("conditions") or parsed.get("threshold_conditions")
+        ),
         "extra_conditions": parsed.get("extra_conditions"),
         "conditions": route_kwargs.get("conditions") or parsed.get("conditions"),
         "occurrence_event": parsed.get("occurrence_event"),
