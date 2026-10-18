@@ -4,7 +4,7 @@
   "fresh_core": {
     "state": "not qualified",
     "direct_stats": "Existing accepted evidence: normal retries and bounded siblings time out. Not repeated.",
-    "public_nba_web_route": "new bounded ordinary-request diagnostic pending, no source acceptance",
+    "public_nba_web_route": "Actual cloud diagnostic39149759138: game boxscore and player/team traditional pages allHTTP403; noembeddedNextData. Three ordinary requests, no retry/bypass; stop.",
     "current_season": "2026-27 regular season starts2026-10-20 in actual official schedule; current empty advanced table is not fresh game data or proof of future acquisition"
   },
   "rejected_finder_2027": {
@@ -56,6 +56,15 @@
     "backup": "AcceptedPR504 protections unchanged; not retested"
   },
   "recommendation": "Use pinned exact-source captures for qualified development inputs and retain last-good generations. Full freshness needs a cloud-reachable authorized exact NBA Stats feed/collector for period, on-off, complete roster and current core. A public upstream mirror could add missing exact raw captures; otherwise qualify an authorized data-provider route before any credentials or spending request. Do not buy a generic scores/boxscore API expecting NBA Stats period/on-off equivalence.",
-  "owner_action_now": "none for this bounded setup integration; no justified credential or paid-plan request yet",
-  "acceptance": "Full laptop independence for every required data lifecycle remains unproven."
+  "owner_action_now": "Only external-contact permission pending: authorize the prepared SportsDataverse issue or keep it unsent. No credential, spending or production approval requested.",
+  "acceptance": "Full laptop independence for every required data lifecycle remains unproven.",
+  "actual_verification": {
+    "run_id": 39149759138,
+    "job_id": 117740963560,
+    "selected": 3,
+    "executed": 3,
+    "passed": 3,
+    "skipped": 0,
+    "classification": "twoactualcollection/recoverytests plusoneboundeddiagnostic;403notdataacceptance"
+  }
 }

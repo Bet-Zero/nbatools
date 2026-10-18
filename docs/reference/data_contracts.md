@@ -26,6 +26,16 @@ roster completeness or current freshness. Original JSON, canonical CSV,
 attribution and hashes are retained together in `lineup-archive-staging.zip`
 with its receipt in PR502. No new lineup runtime behavior or publication.
 
+Additional manual season-input qualification (PR505) retains original official
+Advanced/PerGame player/team tables and standings, applies the unchanged existing
+normalizers, and preserves582/30/30 canonical2025-26 rows with as-of date from the
+accepted completed-game capture. Independent W/L reconciliation covers all30teams;
+source team MIN is not used as player minutes-per-game. Source capture time remains
+unknown. The incomplete29team roster stays outside canonical rosters and does not
+establish historical membership. The official2026-27 schedule remains planning
+source JSON: future/TBD rows never become Final in the completed-game contract.
+These inputs do not provide exact period/on-off data or full current freshness.
+
 The goal is to keep query behavior stable as the repo grows. Commands should depend on explicit dataset contracts, not on accidental columns or vague assumptions.
 
 This is a living document. Update it whenever:
