@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "283ac2ff8d6d57f648fc15e169cc3bbbbf582a40",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k02_explicit_season_real_data.py",
+    "tests/test_sample_order_contract_real_data.py",
+    "tests/test_recent_window_meaning_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k02_a1",
+    "k02_a2",
+    "s5_team_date_opponent",
+    "s5_player_date_opponent",
+    "s5_team_last_n_window",
+    "s5_team_last_n_qualifying",
+    "s5_player_last_n_window",
+    "s5_player_last_n_qualifying",
+    "recent_window_p2_s5_1",
+    "k02_d2",
+    "recent_window_p2_s5_3",
+    "k02_d4",
+    "k02_booker_command"
+  ]
+}
