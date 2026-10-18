@@ -443,8 +443,9 @@ def _build_applied_filters(
     if conditions:
         for cond in conditions:
             stat = cond["stat"]
+            owner = f"{cond['opponent_team']} " if cond.get("opponent_team") else ""
             if cond.get("min_value") is not None:
-                label = f"{_filter_stat_label(stat)} min"
+                label = f"{owner}{_filter_stat_label(stat)} min"
                 applied_filters.append(
                     {
                         "label": label,
@@ -453,7 +454,7 @@ def _build_applied_filters(
                     }
                 )
             if cond.get("max_value") is not None:
-                label = f"{_filter_stat_label(stat)} max"
+                label = f"{owner}{_filter_stat_label(stat)} max"
                 applied_filters.append(
                     {
                         "label": label,

@@ -4,7 +4,11 @@ import math
 
 import pandas as pd
 
-from nbatools.commands._condition_utils import attach_opponent_stats, normalize_stat_conditions
+from nbatools.commands._condition_utils import (
+    attach_opponent_stats,
+    condition_owner_mask,
+    normalize_stat_conditions,
+)
 from nbatools.commands._franchise import franchise_caveat
 from nbatools.commands._streak_runs import best_runs_per_entity
 from nbatools.commands.data_utils import describe_opponent_filter
@@ -311,6 +315,7 @@ def build_result(
     # "longest win streak when opponents made 15+ threes": every extra
     # condition must hold in each game of the run.
     for extra in normalize_stat_conditions(conditions):
+        mask = mask & condition_owner_mask(filtered, extra)
         mask = mask & _build_condition_mask(
             filtered,
             stat=extra["stat"],
@@ -322,6 +327,8 @@ def build_result(
             min_value=extra.get("min_value"),
             max_value=extra.get("max_value"),
         )
+        if extra.get("opponent_team"):
+            extra_label = f"{extra['opponent_team']} {extra_label}"
         condition = f"{condition} and {extra_label}"
 
     if team is None:

@@ -535,6 +535,7 @@ def _opponent_bounds(
                             "stat": "opponent_" + item["stat"],
                             "min_value": item["min_value"],
                             "max_value": item["max_value"],
+                            "opponent_team": item["team"],
                         },
                     )
                 )
@@ -690,7 +691,6 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     # Ownership checks must see the complete opponent set and actual subject,
     # not a scalar detection that mistook the last opponent for the team.
     _apply_opponent_list(route, route_kwargs, text)
-    _apply_named_opponent_scope(route_kwargs, text)
     _apply_allowed_ranking(route, route_kwargs, text)
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
@@ -766,20 +766,6 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:
         return
     route_kwargs["opponent"] = list(dict.fromkeys(teams))
-
-
-def _apply_named_opponent_scope(route_kwargs: dict, text: str) -> None:
-    """A named opponent's condition only applies when that team is faced."""
-    opponents = route_kwargs.get("opponent")
-    if not isinstance(opponents, list):
-        return
-    named = {
-        item["team"] for item in team_subject_stat_conditions(text) if item["team"] in opponents
-    }
-    if len(named) > 1:
-        _refuse(route_kwargs, "other_team_stat")
-    elif named:
-        route_kwargs["opponent"] = [team for team in opponents if team in named]
 
 
 # "vs Celtics and Knicks": a second opponent the routes do not combine (only
@@ -1877,7 +1863,14 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             "min_value": item["min_value"],
             "max_value": item["max_value"],
         }
-        if not any(c["stat"] == target["stat"] and _same_bound(c, target) for c in context):
+        if item["side"] == "opponent" and item.get("team") in opponents:
+            target["opponent_team"] = item["team"]
+        if not any(
+            c["stat"] == target["stat"]
+            and _same_bound(c, target)
+            and c.get("opponent_team") == target.get("opponent_team")
+            for c in context
+        ):
             context.append(target)
 
     from nbatools.commands.natural_query import parse_query

@@ -84,7 +84,7 @@ def test_named_opponent_bound_never_selects_other_list_members(monkeypatch):
         summary = sections["summary"][0]
         assert (summary["games"], summary["wins"], summary["losses"]) == (1, 0, 1)
         assert (summary["pts_avg"], summary["reb_avg"], summary["ast_avg"]) == (115, 43, 24)
-        assert result.metadata["opponents"] == ["BOS"]
+        assert result.metadata["opponents"] == ["BOS", "WAS"]
         assert result.metadata["threshold_conditions"] == result.metadata["conditions"]
     result = execute_natural_query(ORACLE["query"].replace("Lakers score", "Celtics score"))
     _answer(
@@ -98,7 +98,7 @@ def test_named_opponent_bound_never_selects_other_list_members(monkeypatch):
             "means": {"pts": 16, "reb": 9, "ast": 8},
         },
     )
-    assert result.metadata["opponents"] == ["BOS"]
+    assert result.metadata["opponents"] == ["BOS", "WAS"]
 
 
 def test_named_opponent_bound_across_summary_split_and_streak(monkeypatch):
@@ -127,9 +127,9 @@ def test_named_opponent_bound_across_summary_split_and_streak(monkeypatch):
         )
         assert result.result_status == "ok", result.metadata
         sections = result.result.to_dict()["sections"]
-        assert result.metadata["opponents"] == ["BOS"]
+        assert result.metadata["opponents"] == ["BOS", "WAS"]
         assert result.metadata["conditions"] == [
-            {"stat": "opponent_pts", "min_value": 110, "max_value": None}
+            {"stat": "opponent_pts", "min_value": 110, "max_value": None, "opponent_team": "BOS"}
         ]
         row = sections[section][0]
         assert row["games"] == 1 and row["wins"] == 0 and row["losses"] == 1
@@ -149,3 +149,42 @@ def test_named_opponent_bound_across_summary_split_and_streak(monkeypatch):
         "Lakers longest winning streak against Celtics and Wizards when Celtics score at least 110 in 2023-24"
     )
     assert wins.result_status == "no_result" and wins.result_reason == "no_match"
+
+
+@pytest.mark.parametrize(
+    ("sample", "owner", "floor", "ids", "totals"),
+    [
+        ("in their last 3 games", "Celtics", 110, [], (0, 0, 0)),
+        ("in their last 4 games", "Celtics", 110, [22300403], (115, 43, 24)),
+        ("last 3 games", "Celtics", 110, [22300403], (115, 43, 24)),
+        ("in their last 1 games", "Wizards", 125, [], (0, 0, 0)),
+        ("in their last 3 games", "Wizards", 125, [22300856], (134, 45, 30)),
+    ],
+)
+def test_named_opponent_condition_preserves_the_original_window(
+    monkeypatch, sample, owner, floor, ids, totals
+):
+    from nbatools.commands import team_record
+
+    captured = []
+    compute = team_record._compute_record
+
+    def capture(frame):
+        captured.append(frame.copy())
+        return compute(frame)
+
+    monkeypatch.setattr(team_record, "_compute_record", capture)
+    query = f"Lakers record {sample} against Celtics and Wizards when {owner} score at least {floor} in 2023-24"
+    parsed = parse_query(query)["route_kwargs"]
+    assert parsed["last_n_scope"] == ("window" if sample.startswith("in") else "qualifying")
+    result = execute_natural_query(query)
+    assert result.metadata["opponents"] == ["BOS", "WAS"]
+    if ids:
+        assert captured
+        frame = captured[0]
+        assert sorted(frame.game_id.astype(int)) == ids
+        assert tuple(int(frame[stat].sum()) for stat in ("pts", "reb", "ast")) == totals
+        assert result.result_status == "ok"
+    else:
+        assert not captured or captured[0].empty
+        assert result.result_status == "no_result" and result.result_reason == "no_match"
