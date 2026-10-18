@@ -68,9 +68,10 @@ def validate_cdn_play_by_play_timeline(events: pd.DataFrame) -> None:
             continue
         if not group.pbp_source.eq(CDN_PBP_SOURCE).all():
             raise ValueError("Mixed play-by-play sources within a game")
-        if "pbp_source_schema_version" not in group or not group.pbp_source_schema_version.eq(
-            "cdn_live_pbp.v1"
-        ).all():
+        if (
+            "pbp_source_schema_version" not in group
+            or not group.pbp_source_schema_version.eq("cdn_live_pbp.v1").all()
+        ):
             raise ValueError("Unsupported CDN play-by-play schema")
         order = play_by_play_timeline_order(group)
         if order.duplicated().any() or not order.is_monotonic_increasing:
