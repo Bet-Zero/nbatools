@@ -5,6 +5,60 @@ import { makeResponse } from "./helpers";
 
 describe("ResultRenderer game-log patterns", () => {
 
+  it.each([
+    ["any", "40 (exclusive)", "12 (exclusive)", "> 40 PTS OR > 12 REB"],
+    ["all", "40", "12", "40+ PTS AND 12+ REB"],
+    ["all", "0", "0 (exclusive)", "0+ PTS AND > 0 REB"],
+  ] as const)("preserves %s filter boundaries in the summary strip", (mode, points, rebounds, expected) => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "finder", result_status: "ok", notes: [], caveats: [],
+        metadata: {
+          route: "player_game_finder", boolean_filter_mode: mode,
+          player_context: { player_id: 1630162, player_name: "Anthony Edwards" },
+          threshold_conditions: [
+            { stat: "pts", min_value: 40.0001, max_value: null },
+            { stat: "reb", min_value: 12.0001, max_value: null },
+          ],
+          applied_filters: [
+            { kind: "threshold", label: "pts min", value: points },
+            { kind: "threshold", label: "reb min", value: rebounds },
+          ],
+        },
+        sections: { finder: [{ game_id: 1, player_id: 1630162, player_name: "Anthony Edwards", pts: 44, reb: 13 }] },
+      },
+    });
+    render(<ResultRenderer data={data} />);
+    expect(screen.getByText(expected)).toBeInTheDocument();
+    expect(screen.queryByText("40.0+ PTS, 12.0+ REB")).not.toBeInTheDocument();
+  });
+
+  it.each([true, false])("preserves bounded OR and omits incomplete duplicate labels (complete=%s)", (complete) => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: { query_class: "finder", result_status: "ok", notes: [], caveats: [],
+        metadata: {
+          boolean_filter_mode: "any",
+          threshold_conditions: [
+            { stat: "pts", min_value: 20, max_value: 30 },
+            { stat: "reb", min_value: 12, max_value: null },
+          ],
+          applied_filters: [
+            { kind: "threshold", label: "pts min", value: "20" },
+            { kind: "threshold", label: "pts max", value: "30" },
+            ...(complete ? [{ kind: "threshold" as const, label: "reb min", value: "12" }] : []),
+          ],
+        },
+        sections: { finder: [{ game_id: 1, player_id: 1630162, pts: 25, reb: 12 }] },
+      },
+    });
+    render(<ResultRenderer data={data} />);
+    if (complete) expect(screen.getByText("(20+ PTS AND <= 30 PTS) OR 12+ REB")).toBeVisible();
+    else expect(screen.queryByText("Filter")).not.toBeInTheDocument();
+    expect(screen.queryByText("20+ PTS OR <= 30 PTS OR 12+ REB")).not.toBeInTheDocument();
+  });
+
   it("renders player game finder rows through the game-log pattern", () => {
     const data = makeResponse({
       query: "games where Jokic had over 25 points and 10 rebounds",

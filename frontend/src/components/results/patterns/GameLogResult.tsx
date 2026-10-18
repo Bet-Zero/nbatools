@@ -1,3 +1,4 @@
+import { thresholdFilterValue } from "../../thresholdFormatting";
 import type { ReactNode } from "react";
 import type {
   QueryResponse,
@@ -963,6 +964,40 @@ function contextItems(data: QueryResponse, rows: SectionRow[]): SummaryItem[] {
 }
 
 function conditionText(metadata: ResultMetadata | undefined): string | null {
+  const separator = metadata?.boolean_filter_mode === "any" ? " OR " : " AND ";
+  const applied = (metadata?.applied_filters ?? []).filter(
+    (filter) => filter.kind === "threshold",
+  );
+  if (applied.length > 0) {
+    // Reconstruct each branch before joining branches. A range is an AND even
+    // inside an OR. Omit this duplicate strip if metadata cannot prove coverage.
+    const source = [metadata?.threshold_conditions, metadata?.extra_conditions]
+      .flatMap((value) => Array.isArray(value) ? value : []);
+    const used = new Set<number>();
+    const branches: string[] = [];
+    for (const raw of source) {
+      if (!raw || typeof raw !== "object" || typeof raw.stat !== "string") return null;
+      const stat = raw.stat === "opponent_pts" ? "opp pts" : raw.stat;
+      const bounds: string[] = [];
+      for (const direction of ["min", "max"] as const) {
+        if (typeof raw[`${direction}_value`] !== "number") continue;
+        const matching = applied.flatMap((filter, index) =>
+          filter.label.toLowerCase() === `${stat} ${direction}` ? [index] : [],
+        );
+        if (matching.length !== 1 || used.has(matching[0])) return null;
+        const index = matching[0];
+        used.add(index);
+        const label = thresholdFilterValue(applied[index].label, String(applied[index].value));
+        if (!label) return null;
+        bounds.push(label);
+      }
+      if (!bounds.length) return null;
+      const branch = bounds.join(" AND ");
+      branches.push(bounds.length > 1 && separator === " OR " ? `(${branch})` : branch);
+    }
+    if (!branches.length || used.size !== applied.length) return null;
+    return branches.join(separator);
+  }
   const conditions: string[] = [];
   for (const key of ["threshold_conditions", "extra_conditions"]) {
     const raw = metadata?.[key];
@@ -1019,7 +1054,7 @@ function conditionText(metadata: ResultMetadata | undefined): string | null {
   }
 
   return conditions.length > 0
-    ? Array.from(new Set(conditions)).join(", ")
+    ? Array.from(new Set(conditions)).join(separator)
     : null;
 }
 
