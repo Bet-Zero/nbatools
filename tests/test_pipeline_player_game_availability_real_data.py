@@ -329,3 +329,71 @@ def _stage_celtics_lakers_reports(tmp_path):
 
 def test_official_celtics_lakers_reports_qualify_nonadjacent_season_participation(tmp_path):
     _stage_celtics_lakers_reports(tmp_path)
+
+
+def test_official_tatum_report_retains_exact_source(tmp_path):
+    """Owner-requested one-PDF capture, not an availability import or publication."""
+    import hashlib
+
+    from nbatools.commands.pipeline.player_game_availability_report import (
+        _fetch_report_text,
+        _inactives,
+        _parse_sections,
+        _score,
+    )
+
+    game_id = 22500702
+    url = "https://statsdmz.nba.com/pdfs/20260201/20260201_MILBOS.pdf"
+    evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
+    directory = evidence / "raw/player_game_availability_sources"
+    # This existing helper retains untouched bytes and their receipt before any
+    # date/team/score/target assertions. No identity/profile endpoint is called.
+    text = _fetch_report_text(url, archive=directory)
+    (directory / "20260201_MILBOS.extracted.txt").write_text(text)
+    receipt = json.loads((directory / "20260201_MILBOS.json").read_text())
+    raw = directory / receipt["raw_file"]
+    assert receipt["source_url"] == url
+    assert hashlib.sha256(raw.read_bytes()).hexdigest() == receipt["sha256"]
+    assert raw.stat().st_size == receipt["size_bytes"]
+
+    canonical = {}
+    for kind in ("games", "team_game_stats", "player_game_stats"):
+        frame = data_read_csv(f"data/raw/{kind}/2025-26_regular_season.csv")
+        selected = frame.loc[pd.to_numeric(frame.game_id).eq(game_id)]
+        target = evidence / "canonical_selected" / kind / "2025-26_regular_season.csv"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        selected.to_csv(target, index=False)
+        canonical[kind] = selected
+    games = canonical["games"]
+    assert len(games) == 1
+    game = games.iloc[0]
+    assert str(game.game_date) == "2026-02-01"
+    assert str(game.is_final).lower() in {"true", "1"}
+    assert int(game.away_team_id) == 1610612749
+    assert int(game.home_team_id) == 1610612738
+    teams = canonical["team_game_stats"]
+    assert len(teams) == 2
+    assert dict(zip(teams.team_id.astype(int), teams.pts.astype(int))) == {
+        1610612749: 79, 1610612738: 107,
+    }
+    names, sections, lines = _parse_sections(text, "2026-02-01")
+    assert names == ["MILWAUKEE BUCKS", "BOSTON CELTICS"]
+    assert [_score(section) for section in sections] == [79, 107]
+    inactive = _inactives(lines)
+    assert [team for team, _ in inactive] == ["Bucks", "Celtics"]
+    tatum = [(name, reason) for name, reason in inactive[1][1] if name == "Tatum"]
+    assert len(tatum) == 1, "The report must explicitly list Tatum in Boston's inactive section"
+    result = {
+        "game_id": f"{game_id:010d}",
+        "base_generation": os.environ.get("NBATOOLS_DATA_GENERATION"),
+        "candidate_sha": os.environ.get("VALIDATION_SHA"),
+        "source_sha256": receipt["sha256"],
+        "source_url": url,
+        "target_observation": {"team_id": 1610612738, "name": tatum[0][0], "comment": tatum[0][1]},
+        "publication_state": "staged_only",
+        "qualification": "source scope checked; full row/identity/minute review remains required",
+        "membership_limit": "one Boston game; no tenure or other-game nonmembership inference",
+        "production_writes": 0,
+    }
+    (evidence / "tatum-source-validation.json").write_text(json.dumps(result, indent=2) + "\n")
+    print("Official one-PDF capture:", json.dumps(result, sort_keys=True))
