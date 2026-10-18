@@ -118,6 +118,7 @@ export interface ResultMetadata {
   teams_context?: TeamIdentityContext[];
   opponent_context?: TeamIdentityContext | null;
   opponent?: string | null;
+  opponents?: string[];
   split_type?: string | null;
   grouped_boolean_used?: boolean;
   boolean_filter_mode?: "any" | "all" | "grouped" | null;

@@ -299,6 +299,10 @@ def build_result(
         df = apply_series_situation_filter(df, seasons, series_situation)
 
     if head_to_head:
+        if opponent:
+            # Explicit scope applies to both sides before pairing/windowing.
+            # A third-team opponent cannot turn into an unfiltered matchup.
+            df = df[build_opponent_mask(df, opponent)].copy()
         a_df, b_df = _build_team_head_to_head_frames(
             df,
             team_a=team_a,

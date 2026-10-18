@@ -1,0 +1,200 @@
+{
+  "generation": "availability-opening-s4-v1-20261017",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "method": "stdlib CSV row selection before engine comparison execution",
+  "cases": [
+    {
+      "id": "MO-C1",
+      "phase": "primary",
+      "kind": "team",
+      "query": "Lakers and Knicks record against Celtics and Wizards in 2023-24",
+      "entities": [
+        "LAL",
+        "NYK"
+      ],
+      "opponents": [
+        "BOS",
+        "WAS"
+      ],
+      "summaries": [
+        {
+          "entity": "LAL",
+          "name": "Los Angeles Lakers",
+          "keys": [
+            [
+              22300403,
+              1610612747,
+              1610612738
+            ],
+            [
+              22300684,
+              1610612747,
+              1610612738
+            ],
+            [
+              22300856,
+              1610612747,
+              1610612764
+            ],
+            [
+              22301103,
+              1610612747,
+              1610612764
+            ]
+          ],
+          "games": 4,
+          "wins": 3,
+          "losses": 1,
+          "sums": {
+            "pts": 488,
+            "reb": 189,
+            "ast": 105
+          }
+        },
+        {
+          "entity": "NYK",
+          "name": "New York Knicks",
+          "keys": [
+            [
+              22300028,
+              1610612752,
+              1610612764
+            ],
+            [
+              22300065,
+              1610612752,
+              1610612738
+            ],
+            [
+              22300188,
+              1610612752,
+              1610612738
+            ],
+            [
+              22300494,
+              1610612752,
+              1610612764
+            ],
+            [
+              22300579,
+              1610612752,
+              1610612764
+            ],
+            [
+              22300816,
+              1610612752,
+              1610612738
+            ],
+            [
+              22301167,
+              1610612752,
+              1610612738
+            ],
+            [
+              22301227,
+              1610612752,
+              1610612738
+            ]
+          ],
+          "games": 8,
+          "wins": 4,
+          "losses": 4,
+          "sums": {
+            "pts": 899,
+            "reb": 359,
+            "ast": 189
+          }
+        }
+      ]
+    },
+    {
+      "id": "MO-PC1",
+      "phase": "subsequent-support-investigation",
+      "kind": "player",
+      "query": "Compare LeBron James and Stephen Curry against Boston and Washington in 2023-24",
+      "entities": [
+        2544,
+        201939
+      ],
+      "opponents": [
+        "BOS",
+        "WAS"
+      ],
+      "summaries": [
+        {
+          "entity": 2544,
+          "name": "LeBron James",
+          "keys": [
+            [
+              22300403,
+              1610612747,
+              1610612738,
+              2544
+            ],
+            [
+              22300856,
+              1610612747,
+              1610612764,
+              2544
+            ],
+            [
+              22301103,
+              1610612747,
+              1610612764,
+              2544
+            ]
+          ],
+          "games": 3,
+          "wins": 2,
+          "losses": 1,
+          "sums": {
+            "pts": 72,
+            "reb": 20,
+            "ast": 26
+          }
+        },
+        {
+          "entity": 201939,
+          "name": "Stephen Curry",
+          "keys": [
+            [
+              22300362,
+              1610612744,
+              1610612738,
+              201939
+            ],
+            [
+              22300386,
+              1610612744,
+              1610612764,
+              201939
+            ],
+            [
+              22300834,
+              1610612744,
+              1610612764,
+              201939
+            ],
+            [
+              22300872,
+              1610612744,
+              1610612738,
+              201939
+            ]
+          ],
+          "games": 4,
+          "wins": 3,
+          "losses": 1,
+          "sums": {
+            "pts": 85,
+            "reb": 13,
+            "ast": 22
+          }
+        }
+      ]
+    }
+  ]
+}

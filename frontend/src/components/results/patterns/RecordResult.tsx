@@ -884,6 +884,9 @@ function teamRecordOpponentPhrase(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
 ): string {
+  if (metadata?.opponents?.length) {
+    return ` against ${metadata.opponents.join(" or ")}`;
+  }
   if (opponentGroup) {
     const season = teamRecordSeasonLabel(row, metadata);
     if (/^playoff teams$/i.test(opponentGroup) && season) {
