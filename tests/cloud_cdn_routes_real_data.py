@@ -54,6 +54,18 @@ def test_durable_cdn_recovery(tmp_path, monkeypatch, capfd):
             path.write_bytes(data)
     monkeypatch.setenv("DATA_SOURCE", "local")
     monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(restored))
+    # The parent runner pins production read-only R2. Offline recovery must not
+    # accidentally resolve that generation under the new local staging root.
+    for name in list(os.environ):
+        if name.startswith("R2_") or name in {
+            "NBATOOLS_DATA_GENERATION",
+            "GH_TOKEN",
+            "GITHUB_TOKEN",
+        }:
+            monkeypatch.delenv(name, raising=False)
+    from nbatools.data_source import reset_data_source_cache
+
+    reset_data_source_cache()
     frame = load_play_by_play_events_for_seasons(["2025-26"], "Regular Season")
     assert len(frame) == 605 and frame.action_number.nunique() == 605
     assert frame.pbp_source_trusted.eq(1).all()
