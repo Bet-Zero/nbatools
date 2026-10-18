@@ -115,7 +115,8 @@ def _validate_answers(receipt, cases):
         assert payload["result_status"] == "ok", payload
         assert not item["missing"] and not item["forbidden"]
         if case["id"] == "k02-b1":
-            assert "against NYK" in item["text"]
+            assert payload["result"]["metadata"]["opponent"] == "NYK"
+            assert any(phrase in item["text"] for phrase in ("against NYK", "against the Knicks"))
         if case["id"] in {"k04-c2", "k04-c2-heldout"}:
             table = next(t for t in item["tables"] if t["label"] == "Game log")
             cells = [cell for row in table["rows"] for cell in row]
