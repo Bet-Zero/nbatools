@@ -24,6 +24,14 @@ from nbatools.commands._parse_helpers import (
 from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 _PLAYER_ROUTES = ("player_game_finder", "player_game_summary")
+_PLAYER_CONTEXT_ROUTES = (*_PLAYER_ROUTES, "player_split_summary")
+_TEAM_CONTEXT_ROUTES = (
+    "team_record",
+    "game_finder",
+    "game_summary",
+    "team_streak_finder",
+    "team_split_summary",
+)
 
 _SCORE_VERB = r"scor(?:e|es|ed)|puts?\s+up|put\s+up"
 _TEAM_STAT_VERB = re.compile(
@@ -583,7 +591,16 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
         if "opponent_shooting" not in blocked:
             route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    if route not in ("game_finder", "team_record"):
+    if route not in _TEAM_CONTEXT_ROUTES:
+        opponent = route_kwargs.get("opponent")
+        if (
+            route not in _PLAYER_CONTEXT_ROUTES
+            and isinstance(opponent, list)
+            and any(item["team"] in opponent for item in team_subject_stat_conditions(text))
+        ):
+            # A route that cannot apply this owned bound must not turn it into
+            # a bound on the subject after narrowing the opponent sample.
+            _refuse(route_kwargs, "other_team_stat")
         if route and _OPP_SHOOTING.search(text):
             # "Lakers record when opponents shoot under 40 percent": only team
             # game lists read the opponent's rate; elsewhere it filtered the
@@ -985,7 +1002,7 @@ def _refuse_other_player_stat(route: str | None, route_kwargs: dict, text: str) 
     player = route_kwargs.get("player")
     if route and route not in _PLAYER_ROUTES:
         _refuse_unknown_name_stat(route_kwargs, text)
-        if route in ("team_record", "game_finder", "game_summary"):
+        if route in _TEAM_CONTEXT_ROUTES:
             _refuse_third_team_stat(route_kwargs, text)
         elif route == "team_compare":
             _refuse_compare_team_stat(route_kwargs, text)
@@ -1267,7 +1284,7 @@ def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) ->
     the opponent's points: the threes became the bare stat the opponent
     bound replaced, so the answer counted every game under 110 allowed.
     """
-    if route not in ("team_record", "game_finder", "game_summary"):
+    if route not in _TEAM_CONTEXT_ROUTES:
         return
     conditions = _kwargs_conditions(route_kwargs)
     # Beside an opponent bound, or beside one own bound of a clause list
@@ -1747,7 +1764,7 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
     The player's own bounds are read again from the question without the team
     clauses: "30 points when the Lakers score 120" kept only the 120 before.
     """
-    if route not in _PLAYER_ROUTES or not route_kwargs.get("player"):
+    if route not in _PLAYER_CONTEXT_ROUTES or not route_kwargs.get("player"):
         return
     opponent = route_kwargs.get("opponent")
     if (

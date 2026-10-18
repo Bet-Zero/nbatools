@@ -99,3 +99,53 @@ def test_named_opponent_bound_never_selects_other_list_members(monkeypatch):
         },
     )
     assert result.metadata["opponents"] == ["BOS"]
+
+
+def test_named_opponent_bound_across_summary_split_and_streak(monkeypatch):
+    from nbatools.commands import player_split_summary, team_split_summary
+
+    captured = []
+
+    def wrapper(compute):
+        def capture(frame, bucket):
+            captured.append(frame.copy())
+            return compute(frame, bucket)
+
+        return capture
+
+    for module in (team_split_summary, player_split_summary):
+        monkeypatch.setattr(module, "_summarize_bucket", wrapper(module._summarize_bucket))
+    for subject, section, player in [
+        ("Lakers game summary", "summary", False),
+        ("Lakers opponent splits", "split_comparison", False),
+        ("LeBron James opponent splits", "split_comparison", True),
+        ("Lakers longest losing streak", "streak", False),
+    ]:
+        captured.clear()
+        result = execute_natural_query(
+            f"{subject} against Celtics and Wizards when Celtics score at least 110 in 2023-24"
+        )
+        assert result.result_status == "ok", result.metadata
+        sections = result.result.to_dict()["sections"]
+        assert result.metadata["opponents"] == ["BOS"]
+        assert result.metadata["conditions"] == [
+            {"stat": "opponent_pts", "min_value": 110, "max_value": None}
+        ]
+        row = sections[section][0]
+        assert row["games"] == 1 and row["wins"] == 0 and row["losses"] == 1
+        assert (row["pts_avg"], row["reb_avg"], row["ast_avg"]) == (
+            (16, 9, 8) if player else (115, 43, 24)
+        )
+        if section == "split_comparison":
+            assert len(captured) == 1
+            assert captured[0].game_id.astype(int).tolist() == [22300403]
+            assert row["bucket"] == "BOS"
+        elif section == "streak":
+            assert row["streak_length"] == 1
+            assert int(row["start_game_id"]) == int(row["end_game_id"]) == 22300403
+        else:
+            assert [int(r["game_id"]) for r in sections["game_log"]] == [22300403]
+    wins = execute_natural_query(
+        "Lakers longest winning streak against Celtics and Wizards when Celtics score at least 110 in 2023-24"
+    )
+    assert wins.result_status == "no_result" and wins.result_reason == "no_match"
