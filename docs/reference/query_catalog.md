@@ -107,13 +107,15 @@ required real-data and deployed acceptance remain pending.
 - since season/year: `since 2020`, `since 2020-21`
 - last N seasons: `last 3 seasons`
 - career / all-time: `career`, `all-time`
-- last N games: `last 10 games`, `last ten games`, `previous 8 games`, `his 5 most recent games`
+- last N games: `last 10 games`, `last ten games`, `previous 8 games`, `his 5 most recent games`, `final 8 games`, `final 9 appearances`
   - window vs qualifying: `how many 30 point games in his last 10 games` counts inside his 10 most recent games;
     `last 5 games where he scored 30` and `last 10 wins` return the most recent qualifying games. Opponent,
     home/away, teammate availability, role and schedule context always choose the games in play first
   - Summary responses retain a `Sample selection` badge distinguishing conditions
     checked within the last N games from the last N games matching conditions.
     Outcome windows name wins/losses only when that outcome was requested.
+  - Numbered appearances mean player games. An unspecified recent-game count or ambiguous
+    playoff appearances asks for clarification rather than silently widening the sample.
 - last N meetings: `last 3 meetings with the Warriors`, `last meeting with the Celtics` (games vs that opponent)
 - rolling windows: `3-game stretch`, `5-game scoring stretch`, `rolling 10-game stretch`
 - month / date windows: `in March`, `since January`, `since January 1`, `since All-Star break`, `last 30 days`
@@ -512,13 +514,6 @@ Examples:
   month`, `which month did the Lakers win the most games` (every game counts)
 
 ### Season splits
-
-Named opponents remain attached beside punctuation and season-grouping clauses,
-for example `Split Denver's road record against Utah by season: 2023-24 and
-2025-26`. The opponent reader retains following conditions instead of consuming
-them as part of the team name. Bounded raw-data acceptance covers Denver away
-at Utah and Minnesota home against Denver; deployed verification is separate.
-This does not establish support for unknown or non-NBA qualified team names.
 
 Examples:
 
