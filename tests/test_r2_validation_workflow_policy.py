@@ -619,7 +619,7 @@ def test_backup_is_explicit_bounded_and_credential_separated():
     assert "github.event_name == 'push'" in retain["if"]
     assert "refs/heads/r2-validation/cloud-backup-" in retain["if"]
     assert (
-        "needs.preflight.outputs.tests == 'tests/test_cloud_operations_real_data.py::test_full_generation_backup'"
+        "needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup'"
         in retain["if"]
     )
     assert "needs.data-backed-tests.result == 'success'" in retain["if"]
@@ -632,3 +632,10 @@ def test_backup_is_explicit_bounded_and_credential_separated():
         body = str(_job(name))
         assert "secrets." not in body and "environment" not in _job(name)
         assert "--clobber" not in body and "continue-on-error" not in body
+
+
+def test_cloud_operations_require_explicit_selection():
+    operations = ROOT / "tests/cloud_operations_real_data.py"
+    assert operations.is_file()
+    assert not operations.name.startswith("test_")
+    assert not operations.name.endswith("_test.py")

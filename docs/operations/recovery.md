@@ -15,7 +15,7 @@ expanded data and a 200 MB ZIP. It performs no bucket writes or pruning.
 
 An independently reviewed manifest-only request on
 `r2-validation/cloud-backup-<unique-id>` must select exactly
-`tests/test_cloud_operations_real_data.py::test_full_generation_backup`.
+`tests/cloud_operations_real_data.py::test_full_generation_backup`.
 After that required test passes, a separate job with no R2 environment or
 credentials retains `generation.zip` and `backup-receipt.json` in the permanent,
 non-latest GitHub release `cloud-backup-<run-id>`. A third runner downloads the

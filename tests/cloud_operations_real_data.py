@@ -2,6 +2,8 @@
 
 Source failures are recorded as diagnostics, never relabeled source acceptance.
 The full backup test is independently gated before durable release preservation.
+This file deliberately requires an explicit selector; ordinary full test discovery
+must not launch setup acquisitions or full exports.
 """
 
 import hashlib

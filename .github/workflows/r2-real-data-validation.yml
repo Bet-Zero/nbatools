@@ -455,7 +455,7 @@ jobs:
     if: >-
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/heads/r2-validation/cloud-backup-') &&
-      needs.preflight.outputs.tests == 'tests/test_cloud_operations_real_data.py::test_full_generation_backup' &&
+      needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup' &&
       needs.data-backed-tests.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
