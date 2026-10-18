@@ -1,0 +1,449 @@
+{
+  "classification": "local restored-snapshot integration evidence; not R2 execution or whole-product acceptance",
+  "candidate_sha": "440182051dc8431a272bb641a741481f046d79cd",
+  "baseline_sha": "b2eacd1a87b9696f6da4134ea5a031f24d5fb7a3",
+  "authenticated_snapshot": {
+    "generation_id": "availability-opening-s4-v1-20261017",
+    "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+    "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+    "backup_archive_sha256": "fef91156538a6b6c946910fddcf904f6640b91fa21e7afe1ff630c861157a97f",
+    "generated_report_data_generation": "legacy",
+    "label_explanation": "Existing local flat data layout reports legacy. Physical source bytes authenticate to the named immutable generation; do not relabel this as a live R2 run."
+  },
+  "raw_qa": {
+    "started_at": "2026-10-18T20:36:48.279756+00:00",
+    "completed_at": "2026-10-18T20:39:42.536826+00:00",
+    "case_count": 514,
+    "expectation_case_counts": {
+      "fail": 10,
+      "pass": 504
+    },
+    "expectation_check_counts": {
+      "fail": 45,
+      "pass": 4490
+    },
+    "failed_case_ids": [
+      "suns_without_booker",
+      "suns_without_booker_shorthand",
+      "bucks_without_giannis",
+      "knicks_without_brunson",
+      "lakers_without_lebron",
+      "lakers_record_without_luka_public_sweep",
+      "pqa_availability_synonym_reaves_available",
+      "warriors_wins_without_curry",
+      "anthony_davis_without_lebron_summary",
+      "maxey_without_embiid_summary"
+    ],
+    "source_commit": "440182051dc8431a272bb641a741481f046d79cd",
+    "source_tree_clean": true,
+    "data_generation": "legacy",
+    "corpus_sha256": "20d797221fd10d0bb9aa76d3362ff7f4a26667f23ec919678d0c66806195af3e",
+    "output_sha256": "01cb5b3cbd9d57ceded0bf5515347efa97086dcd6199416e37f1a8143d486399"
+  },
+  "baseline_failed_subset": {
+    "case_count": 10,
+    "expectation_case_counts": {
+      "fail": 10
+    },
+    "expectation_check_counts": {
+      "fail": 45,
+      "pass": 22
+    },
+    "failed_case_ids": [
+      "suns_without_booker",
+      "suns_without_booker_shorthand",
+      "bucks_without_giannis",
+      "knicks_without_brunson",
+      "lakers_without_lebron",
+      "lakers_record_without_luka_public_sweep",
+      "pqa_availability_synonym_reaves_available",
+      "warriors_wins_without_curry",
+      "anthony_davis_without_lebron_summary",
+      "maxey_without_embiid_summary"
+    ],
+    "source_commit": "b2eacd1a87b9696f6da4134ea5a031f24d5fb7a3",
+    "data_generation": "legacy"
+  },
+  "failed_case_ids_identical": true,
+  "filter_sweep": {
+    "candidate": {
+      "schema_version": 2,
+      "status": "PASS_WITH_GAPS",
+      "exit_code": 0,
+      "configured_comparisons": 521,
+      "executed_comparisons": 521,
+      "comparable_comparisons": 477,
+      "no_signal_comparisons": 44,
+      "verdict_counts": {
+        "APPLIED": 145,
+        "REFUSED": 292,
+        "LIED": 0,
+        "DROPPED": 40,
+        "NO_SIGNAL": 44,
+        "ERROR": 0
+      },
+      "no_signal_reason_counts": {
+        "control_no_result:unsupported": 44
+      },
+      "data_generation": "legacy",
+      "config": "/workspace/work/resumption/split-display/qa/filter_execution_sweep.yaml",
+      "config_sha256": "4201f3875a8dfc551a2c307e7058903c3f9b0926253d67d8535f6a8b3ada0653",
+      "only": null,
+      "started_at": "2026-10-18T20:36:47.507719+00:00",
+      "completed_at": "2026-10-18T20:37:23.432965+00:00"
+    },
+    "baseline": {
+      "schema_version": 2,
+      "status": "PASS_WITH_GAPS",
+      "exit_code": 0,
+      "configured_comparisons": 521,
+      "executed_comparisons": 521,
+      "comparable_comparisons": 477,
+      "no_signal_comparisons": 44,
+      "verdict_counts": {
+        "APPLIED": 145,
+        "REFUSED": 292,
+        "LIED": 0,
+        "DROPPED": 40,
+        "NO_SIGNAL": 44,
+        "ERROR": 0
+      },
+      "no_signal_reason_counts": {
+        "control_no_result:unsupported": 44
+      },
+      "data_generation": "legacy",
+      "config": "/workspace/work/resumption/handoff/qa/filter_execution_sweep.yaml",
+      "config_sha256": "4201f3875a8dfc551a2c307e7058903c3f9b0926253d67d8535f6a8b3ada0653",
+      "only": null,
+      "started_at": "2026-10-18T20:38:52.275148+00:00",
+      "completed_at": "2026-10-18T20:39:24.979204+00:00"
+    },
+    "semantic_rows_identical": true,
+    "unfinished_dropped_rows": [
+      {
+        "seed": "player_summary",
+        "filter": "min_games",
+        "query": "Jokic averages in 2023-24 with at least 40 games",
+        "control_query": "Jokic averages in 2023-24",
+        "route": "player_game_summary",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_game_finder",
+        "filter": "min_games",
+        "query": "Jokic games over 30 points in 2023-24 with at least 40 games",
+        "control_query": "Jokic games over 30 points in 2023-24",
+        "route": "player_game_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_compare",
+        "filter": "min_games",
+        "query": "Jokic vs Embiid comparison in 2023-24 with at least 40 games",
+        "control_query": "Jokic vs Embiid comparison in 2023-24",
+        "route": "player_compare",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_split",
+        "filter": "min_games",
+        "query": "Jokic home vs away splits in 2023-24 with at least 40 games",
+        "control_query": "Jokic home vs away splits in 2023-24",
+        "route": "player_split_summary",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_streak",
+        "filter": "with_player",
+        "query": "Jokic longest streak with 30 points in 2023-24 with Anthony Davis",
+        "control_query": "Jokic longest streak with 30 points in 2023-24",
+        "route": "player_streak_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_streak",
+        "filter": "min_games",
+        "query": "Jokic longest streak with 30 points in 2023-24 with at least 40 games",
+        "control_query": "Jokic longest streak with 30 points in 2023-24",
+        "route": "player_streak_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_stretch",
+        "filter": "role_starter",
+        "query": "best 10 game stretch in 2023-24 as a starter",
+        "control_query": "best 10 game stretch in 2023-24",
+        "route": "player_stretch_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_stretch",
+        "filter": "role_bench",
+        "query": "best 10 game stretch in 2023-24 off the bench",
+        "control_query": "best 10 game stretch in 2023-24",
+        "route": "player_stretch_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "player_stretch",
+        "filter": "min_games",
+        "query": "best 10 game stretch in 2023-24 with at least 40 games",
+        "control_query": "best 10 game stretch in 2023-24",
+        "route": "player_stretch_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "season_team_leaders",
+        "filter": "min_games",
+        "query": "team points leaders in 2023-24 with at least 40 games",
+        "control_query": "team points leaders in 2023-24",
+        "route": "season_team_leaders",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "top_player_games",
+        "filter": "min_games",
+        "query": "highest scoring games in 2023-24 with at least 40 games",
+        "control_query": "highest scoring games in 2023-24",
+        "route": "top_player_games",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "top_team_games",
+        "filter": "min_games",
+        "query": "highest scoring team games in 2023-24 with at least 40 games",
+        "control_query": "highest scoring team games in 2023-24",
+        "route": "top_team_games",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_record",
+        "filter": "role_starter",
+        "query": "Lakers record in 2023-24 as a starter",
+        "control_query": "Lakers record in 2023-24",
+        "route": "team_record",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_record",
+        "filter": "role_bench",
+        "query": "Lakers record in 2023-24 off the bench",
+        "control_query": "Lakers record in 2023-24",
+        "route": "team_record",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_record_leaderboard",
+        "filter": "role_starter",
+        "query": "best record in 2023-24 as a starter",
+        "control_query": "best record in 2023-24",
+        "route": "team_record_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_record_leaderboard",
+        "filter": "role_bench",
+        "query": "best record in 2023-24 off the bench",
+        "control_query": "best record in 2023-24",
+        "route": "team_record_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_record_leaderboard",
+        "filter": "min_games",
+        "query": "best record in 2023-24 with at least 40 games",
+        "control_query": "best record in 2023-24",
+        "route": "team_record_leaderboard",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_matchup_record",
+        "filter": "role_starter",
+        "query": "Lakers vs Celtics record in 2023-24 as a starter",
+        "control_query": "Lakers vs Celtics record in 2023-24",
+        "route": "team_matchup_record",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_matchup_record",
+        "filter": "role_bench",
+        "query": "Lakers vs Celtics record in 2023-24 off the bench",
+        "control_query": "Lakers vs Celtics record in 2023-24",
+        "route": "team_matchup_record",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_matchup_record",
+        "filter": "min_games",
+        "query": "Lakers vs Celtics record in 2023-24 with at least 40 games",
+        "control_query": "Lakers vs Celtics record in 2023-24",
+        "route": "team_matchup_record",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_split",
+        "filter": "role_starter",
+        "query": "Lakers home vs away splits in 2023-24 as a starter",
+        "control_query": "Lakers home vs away splits in 2023-24",
+        "route": "team_split_summary",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_split",
+        "filter": "role_bench",
+        "query": "Lakers home vs away splits in 2023-24 off the bench",
+        "control_query": "Lakers home vs away splits in 2023-24",
+        "route": "team_split_summary",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_split",
+        "filter": "min_games",
+        "query": "Lakers home vs away splits in 2023-24 with at least 40 games",
+        "control_query": "Lakers home vs away splits in 2023-24",
+        "route": "team_split_summary",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_streak",
+        "filter": "role_starter",
+        "query": "Lakers longest winning streak in 2023-24 as a starter",
+        "control_query": "Lakers longest winning streak in 2023-24",
+        "route": "team_streak_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_streak",
+        "filter": "role_bench",
+        "query": "Lakers longest winning streak in 2023-24 off the bench",
+        "control_query": "Lakers longest winning streak in 2023-24",
+        "route": "team_streak_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_streak",
+        "filter": "min_games",
+        "query": "Lakers longest winning streak in 2023-24 with at least 40 games",
+        "control_query": "Lakers longest winning streak in 2023-24",
+        "route": "team_streak_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_occurrence",
+        "filter": "role_starter",
+        "query": "which team had the most 120 point games in 2023-24 as a starter",
+        "control_query": "which team had the most 120 point games in 2023-24",
+        "route": "team_occurrence_leaders",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_occurrence",
+        "filter": "role_bench",
+        "query": "which team had the most 120 point games in 2023-24 off the bench",
+        "control_query": "which team had the most 120 point games in 2023-24",
+        "route": "team_occurrence_leaders",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_occurrence",
+        "filter": "min_games",
+        "query": "which team had the most 120 point games in 2023-24 with at least 40 games",
+        "control_query": "which team had the most 120 point games in 2023-24",
+        "route": "team_occurrence_leaders",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_compare",
+        "filter": "role_starter",
+        "query": "Lakers vs Celtics comparison in 2023-24 as a starter",
+        "control_query": "Lakers vs Celtics comparison in 2023-24",
+        "route": "team_compare",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_compare",
+        "filter": "role_bench",
+        "query": "Lakers vs Celtics comparison in 2023-24 off the bench",
+        "control_query": "Lakers vs Celtics comparison in 2023-24",
+        "route": "team_compare",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "team_compare",
+        "filter": "min_games",
+        "query": "Lakers vs Celtics comparison in 2023-24 with at least 40 games",
+        "control_query": "Lakers vs Celtics comparison in 2023-24",
+        "route": "team_compare",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "game_finder",
+        "filter": "role_starter",
+        "query": "Lakers games over 120 points in 2023-24 as a starter",
+        "control_query": "Lakers games over 120 points in 2023-24",
+        "route": "game_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "game_finder",
+        "filter": "min_games",
+        "query": "Lakers games over 120 points in 2023-24 with at least 40 games",
+        "control_query": "Lakers games over 120 points in 2023-24",
+        "route": "game_finder",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "playoff_history",
+        "filter": "role_starter",
+        "query": "Lakers playoff history as a starter",
+        "control_query": "Lakers playoff history",
+        "route": "playoff_history",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "playoff_history",
+        "filter": "role_bench",
+        "query": "Lakers playoff history off the bench",
+        "control_query": "Lakers playoff history",
+        "route": "playoff_history",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "playoff_history",
+        "filter": "min_games",
+        "query": "Lakers playoff history with at least 40 games",
+        "control_query": "Lakers playoff history",
+        "route": "playoff_history",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "record_by_decade",
+        "filter": "role_starter",
+        "query": "Lakers record by decade as a starter",
+        "control_query": "Lakers record by decade",
+        "route": "record_by_decade",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "record_by_decade",
+        "filter": "role_bench",
+        "query": "Lakers record by decade off the bench",
+        "control_query": "Lakers record by decade",
+        "route": "record_by_decade",
+        "verdict": "DROPPED"
+      },
+      {
+        "seed": "record_by_decade",
+        "filter": "min_games",
+        "query": "Lakers record by decade with at least 40 games",
+        "control_query": "Lakers record by decade",
+        "route": "record_by_decade",
+        "verdict": "DROPPED"
+      }
+    ]
+  },
+  "acceptance": "Raw QA failed10absence/status cases; all10also fail current main. Filter sweep PASS_WITH_GAPS, including40dropped combinations and292refusals; not completed product capabilities. No assertions/requirements weakened.",
+  "production_writes": 0,
+  "new_nba_acquisition": false,
+  "full_r2_backstop": "Not dispatched in this resumption: full needs_data selection also invokes old cloud-source acquisition tests, contrary to current owner stop. Targeted reviewed feature numerical/QA and production browser requests used unchanged existing workflow. No workflow gate suppressed."
+}

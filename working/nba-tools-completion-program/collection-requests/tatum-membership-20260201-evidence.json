@@ -1,0 +1,227 @@
+{
+  "classification": "local analysis of verified production bytes; no new source collected",
+  "repository_revision": "db75d9a880d80511b5384387375bff728aa9f361",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "matched_production_files": [
+    {
+      "path": "raw/games/2025-26_regular_season.csv",
+      "sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620"
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37"
+    },
+    {
+      "path": "raw/player_game_stats/2025-26_regular_season.csv",
+      "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b"
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902"
+    }
+  ],
+  "games": [
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "home_team_id": "1610612738",
+      "away_team_id": "1610612747",
+      "home_team_abbr": "BOS",
+      "away_team_abbr": "LAL",
+      "is_final": "1"
+    },
+    {
+      "game_id": "0022500702",
+      "game_date": "2026-02-01",
+      "home_team_id": "1610612738",
+      "away_team_id": "1610612749",
+      "home_team_abbr": "BOS",
+      "away_team_abbr": "MIL",
+      "is_final": "1"
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "home_team_id": "1610612752",
+      "away_team_id": "1610612747",
+      "home_team_abbr": "NYK",
+      "away_team_abbr": "LAL",
+      "is_final": "1"
+    },
+    {
+      "game_id": "0022500823",
+      "game_date": "2026-02-22",
+      "home_team_id": "1610612747",
+      "away_team_id": "1610612738",
+      "home_team_abbr": "LAL",
+      "away_team_abbr": "BOS",
+      "is_final": "1"
+    },
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "home_team_id": "1610612739",
+      "away_team_id": "1610612738",
+      "home_team_abbr": "CLE",
+      "away_team_abbr": "BOS",
+      "is_final": "1"
+    },
+    {
+      "game_id": "0022500922",
+      "game_date": "2026-03-08",
+      "home_team_id": "1610612747",
+      "away_team_id": "1610612752",
+      "home_team_abbr": "LAL",
+      "away_team_abbr": "NYK",
+      "is_final": "1"
+    }
+  ],
+  "team_rows": [
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "opponent_team_id": "1610612747",
+      "opponent_team_abbr": "LAL",
+      "pts": "126",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "opponent_team_id": "1610612738",
+      "opponent_team_abbr": "BOS",
+      "pts": "105",
+      "wl": "L"
+    },
+    {
+      "game_id": "0022500702",
+      "game_date": "2026-02-01",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "opponent_team_id": "1610612749",
+      "opponent_team_abbr": "MIL",
+      "pts": "107",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500702",
+      "game_date": "2026-02-01",
+      "team_id": "1610612749",
+      "team_abbr": "MIL",
+      "opponent_team_id": "1610612738",
+      "opponent_team_abbr": "BOS",
+      "pts": "79",
+      "wl": "L"
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "opponent_team_id": "1610612752",
+      "opponent_team_abbr": "NYK",
+      "pts": "100",
+      "wl": "L"
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "team_id": "1610612752",
+      "team_abbr": "NYK",
+      "opponent_team_id": "1610612747",
+      "opponent_team_abbr": "LAL",
+      "pts": "112",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500823",
+      "game_date": "2026-02-22",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "opponent_team_id": "1610612747",
+      "opponent_team_abbr": "LAL",
+      "pts": "111",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500823",
+      "game_date": "2026-02-22",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "opponent_team_id": "1610612738",
+      "opponent_team_abbr": "BOS",
+      "pts": "89",
+      "wl": "L"
+    },
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "opponent_team_id": "1610612739",
+      "opponent_team_abbr": "CLE",
+      "pts": "109",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "team_id": "1610612739",
+      "team_abbr": "CLE",
+      "opponent_team_id": "1610612738",
+      "opponent_team_abbr": "BOS",
+      "pts": "98",
+      "wl": "L"
+    },
+    {
+      "game_id": "0022500922",
+      "game_date": "2026-03-08",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "opponent_team_id": "1610612752",
+      "opponent_team_abbr": "NYK",
+      "pts": "110",
+      "wl": "W"
+    },
+    {
+      "game_id": "0022500922",
+      "game_date": "2026-03-08",
+      "team_id": "1610612752",
+      "team_abbr": "NYK",
+      "opponent_team_id": "1610612747",
+      "opponent_team_abbr": "LAL",
+      "pts": "97",
+      "wl": "L"
+    }
+  ],
+  "tatum_positive_rows": [
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "player_id": "1628369",
+      "player_name": "Jayson Tatum",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "minutes": "27",
+      "pts": "20"
+    }
+  ],
+  "production_availability_game_ids": {
+    "2023-24": [
+      "22300403",
+      "22300684"
+    ],
+    "2025-26": [
+      "22500002",
+      "22500338",
+      "22500823"
+    ]
+  },
+  "unresolved": "Dated non-applicability/transfer qualification and consumer semantics require independent review. The requested report is not collected; source listing is not guaranteed. All 46 #462 positive obligations remain open."
+}
