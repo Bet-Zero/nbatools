@@ -808,3 +808,20 @@ describe("ResultRenderer summary patterns", () => {
     expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
   });
 });
+
+describe("summary threshold prose", () => {
+  it.each([
+    ["OPP PTS max", "110 (exclusive)", "with fewer than 110 OPP PTS"],
+    ["pts min", "25 (exclusive)", "with more than 25 PTS"],
+    ["pts min", "25", "with at least 25 PTS"],
+    ["tov max", "0", "with at most 0 TOV"],
+  ])("preserves the boundary of %s %s", (label, value, phrase) => {
+    render(<ResultRenderer data={makeResponse({ route: "player_game_summary", result: {
+      query_class: "summary", result_status: "ok", notes: [], caveats: [],
+      metadata: { player_context: { player_id: 2544, player_name: "LeBron James" }, applied_filters: [{ kind: "threshold", label, value }] },
+      sections: { summary: [{ player_name: "LeBron James", games: 8, pts_avg: 28.5, reb_avg: 7.25, ast_avg: 8.25 }] },
+    } })} />);
+    expect(screen.getByText(new RegExp(phrase))).toBeInTheDocument();
+    expect(screen.queryByText(/exclusive/)).not.toBeInTheDocument();
+  });
+});

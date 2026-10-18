@@ -11,7 +11,8 @@ if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base)) {
 const cases = JSON.parse(await readFile(input, "utf8"));
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
-if (!core && !summaryRanking) throw new Error("Expected complete identity/find-count or summary/ranking bundle");
+const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
+if (!core && !summaryRanking && !ownershipComparison) throw new Error("Expected complete identity/find-count or summary/ranking bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {

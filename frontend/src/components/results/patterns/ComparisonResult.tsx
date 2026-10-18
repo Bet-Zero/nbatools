@@ -313,6 +313,8 @@ function heroSentence(
   if (recentSentence && !headToHead) return recentSentence;
 
   if (headToHead && summary.length >= 2) {
+    const context = contextLabel(data.result?.metadata);
+    const sample = `this head-to-head sample${context ? ` for ${context}` : ""}`;
     const firstWins = numericValue(summary[0], "wins");
     const firstLosses = numericValue(summary[0], "losses");
     const secondRecord = recordText(summary[1]);
@@ -320,12 +322,12 @@ function heroSentence(
 
     if (firstWins !== null && firstLosses !== null && firstRecord) {
       if (firstWins > firstLosses) {
-        return `${first} ${leadVerb(entities[0])} ${second} ${firstRecord} in this head-to-head sample.`;
+        return `${first} ${leadVerb(entities[0])} ${second} ${firstRecord} in ${sample}.`;
       }
       if (firstWins < firstLosses && secondRecord) {
-        return `${second} ${leadVerb(entities[1])} ${first} ${secondRecord} in this head-to-head sample.`;
+        return `${second} ${leadVerb(entities[1])} ${first} ${secondRecord} in ${sample}.`;
       }
-      return `${first} and ${second} are tied ${firstRecord} in this head-to-head sample.`;
+      return `${first} and ${second} are tied ${firstRecord} in ${sample}.`;
     }
   }
 

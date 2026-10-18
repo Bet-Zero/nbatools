@@ -23,6 +23,9 @@ Final cached RawQA:12cases340checks pass. Initial broadpreflight8137passed/1550s
 
 Actual R2 accepted by independent checker /root/availability_checker: reviewed9252c42f20a06f1b89988976611e64ecc0695ff1, requeste71d1b9ac300f54a75a4ddc418ee807232814842, run39096800744 on queue-d-production-0574735-20260716.12selected/executed/passed, zero skips/errors;12RawQA340checks pass. Numericalartifact12125455448 ZIPd32d7f88fc200aa7d8d9ea96245a05e758265bb9a34c47c724f7feab2113e4c2; QAartifact12123939984 ZIPc77aab88fea000dffd76d6d0749e0ee793bfc36c321dc94d42ca6460cd6edcdb. Reversed order, complete/filtered/H2H/January samples independently accepted. All12manual review fields remain unreviewed; production browser acceptance pending.
 
+## Ownership/comparison browser checks (2026-10-18)
+
+The existing browser harness now binds all eight K05 and twelve K06 questions on desktop/mobile. The final 40 local executions pass frozen-source arithmetic, summary/comparison values, exact player game keys, distinct ordered comparison columns and their displayed values, plus opponent/date/venue and head-to-head meaning. Initial screenshots exposed omitted season context in head-to-head heroes and contradictory strict-threshold prose; bounded frontend repairs address both. Equivalent canonical team abbreviations and readable strict/date labels were independently reviewed without weakening identity or predicate ownership. All 468 frontend tests pass; before/after receipt hashes and selected screenshot hashes are retained in [ownership-comparison-browser-verification.json](ownership-comparison-browser-verification.json). This is qualified local `legacy` evidence only. Independent checker /root/availability_checker accepted all40 receipt/screenshot hashes and final visuals at2150e9c. CI, merge and the deployed selector remain required; no human review or production acceptance is inferred.
 
 October18 normal-development resumption: integrated current main3feb303 into reviewed
 `db75d9a880d80511b5384387375bff728aa9f361`; comparison runtime, frozen source oracle
@@ -39,3 +42,5 @@ QA12148562663 ZIPb8eed298bcfdc1fcd630257b7ea7518e545ed3d2b10c70aaa3df51bdf764b6f
 Checker physically verified both ZIP hashes and accepted actual results. CI39160306760
 and broad localpreflight8228passed1566skipped passed. Skips are not NBA acceptance.
 PR492 separately owns40production UI responses; no production data publication.
+
+PR492 resumption local acceptance: runtime-equivalent `f8a2235cf06b4cabb605639336dddc21ffd86dd1`, authenticated current generation, locked install/lint/build and468frontend tests passed. Independent checker `/root/comparison_checker` accepted40fresh local API/rendered answers, all40screenshot hashes,80readiness brackets and representative desktop/mobile visuals; controlled corruption probes reject wrong identity/value/scope/readiness. Fresh40production-response acceptance remains after actual deployment; no production data write.
