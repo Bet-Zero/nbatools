@@ -56,10 +56,10 @@ Read-only audits in runs39091103560 and39099028557 list `copilot`, `Preview`,
 even though the owner reports seeing that environment and all three existing writer
 secrets in the GitHub UI. Publication readiness remains **unverified**, not proved absent. The API exposes
 `can_admins_bypass`; the existing environments have no required-reviewer
-protection and are unsuitable for publisher credentials. Only the missing
-dedicated protected environment/account setup is needed. Reuse the accepted
-workflow and existing bucket; do not create duplicate publication infrastructure
-or repurpose an application or read-only validation environment.
+protection and are unsuitable for publisher credentials. The dedicated publisher environment's API visibility and protection policy
+still need verification; this is **not** evidence that account setup or credentials
+are absent. Reuse the accepted workflow, environment and existing bucket where
+verified. Do not create duplicate infrastructure or repurpose read-only environments.
 The audit cannot retrieve existing secret values or establish whether the account
 custodian already has a suitable publisher token. Reuse that token when available.
 
