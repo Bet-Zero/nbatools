@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from typing import NamedTuple
 
 from nbatools.commands._franchise import team_value_mask
 from nbatools.commands._player_identity import select_player_rows
@@ -127,8 +128,24 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
 
 _PAIR = re.compile(
     r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
-    r"|versus|against|at|on|from|during|when|while)\b|[?.!,;:]|$)"
+    r"|versus|against|at|on|from|during|when|while|with|without|w/o)\b|[?.!,;:]|$)"
 )
+
+_PAIR_PARTICIPATION = re.compile(
+    r"\s+(?:(?:are|were|is|was)\s+)?(?:both\s+)?"
+    r"(?P<state>out|not\s+playing|did\s+not\s+play|dnp|playing|played)$"
+)
+
+
+class AvailabilityPair(NamedTuple):
+    mode: str
+    players: str
+    start: int
+    end: int
+
+    def mask_clause(self, text: str) -> str:
+        """Preserve offsets while excluding the condition already consumed."""
+        return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
 
 
 def _words(text: str) -> list[str]:
@@ -150,15 +167,35 @@ def availability_pair(
     start_season: str | None,
     end_season: str | None,
     season_type: str,
-) -> tuple[str, str] | None:
-    """("with" | "without", "A and B") when both names are the subject's teammates."""
+) -> AvailabilityPair | None:
+    """A qualified two-teammate condition and its complete source span."""
     from nbatools.commands._matchup_utils import detect_player
 
-    m = _PAIR.search(text)
-    if not m or (team is None and player is None):
+    if team is None and player is None:
         return None
-    parts = [part.strip(" .") for part in m.group(2).split(" and ")]
+    # Stat-bound clauses can precede the named pair. They are not teammate
+    # predicates; inspect each complete with/without fragment instead of taking
+    # the first "with" in the question.
+    matches = list(_PAIR.finditer(text))
+    pairs = [m for m in matches if " and " in m.group(2)]
+    if len(pairs) != 1:
+        return None
+    m = pairs[0]
+    fragment = m.group(2)
+    mode = "with" if m.group(1) == "with" else "without"
+    suffix = _PAIR_PARTICIPATION.search(fragment)
+    if suffix:
+        state = suffix.group("state")
+        suffix_mode = "with" if state in ("playing", "played") else "without"
+        if mode == "without" and suffix_mode == "with":
+            return None
+        mode = suffix_mode
+        fragment = fragment[: suffix.start()]
+    parts = [part.strip(" .") for part in fragment.split(" and ")]
     if len(parts) != 2:
+        return None
+    if any(other is not m and detect_player(other.group(2)) for other in matches):
+        # A separate named presence/absence clause cannot be erased by the pair.
         return None
     side = _same_side_rows(team, player, season, start_season, end_season, season_type)
     if side is None:
@@ -179,5 +216,4 @@ def availability_pair(
         names.append(name)
     if names[0] == names[1]:
         return None
-    mode = "with" if m.group(1) == "with" else "without"
-    return mode, " and ".join(names)
+    return AvailabilityPair(mode, " and ".join(names), m.start(), m.end())

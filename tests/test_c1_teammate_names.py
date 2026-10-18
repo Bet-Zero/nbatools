@@ -186,18 +186,37 @@ def test_teammate_after_a_bound_or_before_an_opponent(sparse_root, query, keep):
         # A second name who is not a teammate.
         "LeBron stats with Davis and Curry",
         "Lakers record with LeBron and Tatum",
-        # Words after the second name change the meaning: not read as "with both".
-        "Lakers record with Davis and Reaves both out",
-        "Lakers record with Davis and Reaves out",
+        # Medical/status and unspecified missingness are not participation.
         "Lakers record with Davis and Reaves injured",
-        "Lakers record with Davis and Reaves not playing",
         "Lakers record with Davis and Reaves missing",
         "LeBron James stats with Davis and Reaves injured",
-        "LeBron James stats with Davis and Reaves out",
     ],
 )
 def test_unread_availability_still_refuses(sparse_root, query):
     assert execute_natural_query(query).result_status == "no_result"
+
+
+@pytest.mark.parametrize("suffix", ["both out", "out", "not playing"])
+@pytest.mark.parametrize("subject", ["Lakers record", "LeBron James stats"])
+def test_pair_absence_suffixes_apply_both_explicit_observations(sparse_root, suffix, subject):
+    root, out = sparse_root
+    player = subject.startswith("LeBron")
+    games = pd.read_csv(root / PLAYERS) if player else pd.read_csv(FIXTURE / TEAMS)
+    own = games.player_name.eq("LeBron James") if player else games.team_abbr.eq("LAL")
+    selected = games.loc[own & games.game_id.isin(out["Anthony Davis"] & out["Austin Reaves"])]
+    assert not selected.empty
+    result = execute_natural_query(f"{subject} with Davis and Reaves {suffix}")
+    assert result.result_status == "ok", result.metadata
+    sections = result.result.to_dict()["sections"]
+    assert {row["game_id"] for row in sections["game_log"]} == set(selected.game_id)
+    summary = sections["summary"][0]
+    assert summary["games"] == len(selected)
+    if not player:
+        assert (summary["wins"], summary["losses"]) == _team_record(selected)
+    for stat in ("pts", "reb", "ast"):
+        assert summary[stat + "_avg"] == pytest.approx(selected[stat].mean(), abs=0.001)
+    assert result.metadata["without_player"] == "Anthony Davis and Austin Reaves"
+    assert result.metadata["with_player"] is None
 
 
 def test_an_opponent_sitting(sparse_root):
