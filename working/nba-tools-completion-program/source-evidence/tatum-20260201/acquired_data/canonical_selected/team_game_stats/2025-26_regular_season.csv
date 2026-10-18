@@ -1,0 +1,3 @@
+game_id,season,season_type,game_date,team_id,team_abbr,team_name,opponent_team_id,opponent_team_abbr,opponent_team_name,is_home,is_away,wl,minutes,pts,fgm,fga,fg_pct,fg3m,fg3a,fg3_pct,ftm,fta,ft_pct,oreb,dreb,reb,ast,stl,blk,tov,pf,plus_minus
+22500702,2025-26,Regular Season,2026-02-01,1610612738,BOS,Boston Celtics,1610612749,MIL,Milwaukee Bucks,1,0,W,239,107,41,92,0.446,15,42,0.357,10,13,0.769,17,35,52,24,4,2,9,16,28
+22500702,2025-26,Regular Season,2026-02-01,1610612749,MIL,Milwaukee Bucks,1610612738,BOS,Boston Celtics,0,1,L,239,79,29,82,0.354,10,34,0.294,11,15,0.733,12,28,40,17,5,0,10,17,-28

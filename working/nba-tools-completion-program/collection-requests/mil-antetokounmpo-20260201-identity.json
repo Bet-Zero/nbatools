@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "collection_requirement_not_publication_approval",
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "dataset": "raw/player_game_availability",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "requested_nba_game_ids": [
+    "0022500702"
+  ],
+  "missing_nba_game_ids": [
+    "0022500702"
+  ],
+  "game_ids_not_in_production_catalog": [],
+  "team_ids": [
+    "1610612749"
+  ],
+  "player_ids": [
+    "1630828",
+    "203507"
+  ],
+  "unobserved_requested_keys": [
+    {
+      "game_id": "22500702",
+      "team_id": "1610612749",
+      "player_id": "1630828"
+    },
+    {
+      "game_id": "22500702",
+      "team_id": "1610612749",
+      "player_id": "203507"
+    }
+  ],
+  "key_absence_note": "Not observed in stored rows; absence does not establish DNP, injury or expected participation",
+  "required_columns": [
+    "coverage_scope",
+    "game_date",
+    "game_id",
+    "identity_source_sha256",
+    "participation_state",
+    "player_id",
+    "player_name",
+    "season",
+    "season_type",
+    "source",
+    "source_comment",
+    "source_minutes",
+    "source_sha256",
+    "team_abbr",
+    "team_id"
+  ],
+  "missing_columns": [],
+  "collection_needed": true,
+  "quality_review_required": true,
+  "unusable_fields": [],
+  "availability_note": "Present rows need trust review; player completeness is unknown",
+  "grain": "listed player-game participation",
+  "key_columns": [
+    "game_id",
+    "team_id",
+    "player_id"
+  ],
+  "source": "official boxscore participation or qualified final report",
+  "period_windows": [],
+  "completeness_requirement": "exact requested games/keys/windows; return all actual played rows, explicit DNP only from a complete qualified source; no inference from absence",
+  "acquisition_only": "backup laptop collects original responses + parameters + capture times; Codex validates/builds/tests in cloud",
+  "handoff": "immutable checksum-bound staging bundle; cloud review/read-only validation; registered package; separate owner-approved protected R2 publication",
+  "bounded_source_acquisition": {
+    "purpose": "Resolve two surname-only Antetokounmpo inactive entries in retained February 1 MIL@BOS Final Box. Do not reacquire the PDF. This blocks full-game import, not the independently clear Tatum/Boston one-game observation.",
+    "retained_pdf_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+    "source_requests": [
+      {
+        "method": "GET",
+        "url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022500702.json",
+        "parameters": {
+          "GameID": "0022500702"
+        },
+        "output": "sources/boxscore_0022500702.json",
+        "acceptance": "Original official source. Validate game/date/finality/MIL visitor79/BOS home107. Preserve complete player objects, names/person IDs/team IDs and any explicit nonplaying reason/status. A names-only list cannot pair PDF reasons; if no unique mapping exists retain original and leave unresolved."
+      }
+    ],
+    "target_ids": {
+      "Alex Antetokounmpo": 1630828,
+      "Giannis Antetokounmpo": 203507,
+      "Thanasis Antetokounmpo": 203648
+    },
+    "forbidden_inferences": [
+      "No assigning G League/injury reason by assumed status, ordering or career knowledge.",
+      "No tenure or other-game nonmembership inference.",
+      "No dropping unresolved listed rows and calling the full report imported."
+    ],
+    "retrieval_policy": "Exact backup-laptop collection requirement, prepared only. No cloud endpoint request, owner download request, credential, cost or publication triggered."
+  }
+}

@@ -135,8 +135,6 @@ def _archive_report(content: bytes, url: str, directory: Path) -> None:
 
 
 def _fetch_report_text(url: str, *, archive: Path | None = None) -> str:
-    from pypdf import PdfReader
-
     request = urllib.request.Request(
         url, headers={"User-Agent": "Mozilla/5.0 (NBATools official box-score ingest)"}
     )
@@ -144,6 +142,15 @@ def _fetch_report_text(url: str, *, archive: Path | None = None) -> str:
         if "application/pdf" not in response.headers.get("Content-Type", ""):
             raise ValueError("Official NBA final box returned a non-PDF response")
         content = response.read(1_500_001)
+    text = _report_text(content)
+    if archive is not None:
+        _archive_report(content, url, archive)
+    return text
+
+
+def _report_text(content: bytes) -> str:
+    from pypdf import PdfReader
+
     if not content.startswith(b"%PDF") or len(content) > 1_500_000:
         raise ValueError("Invalid NBA official scorer PDF")
     reader = PdfReader(io.BytesIO(content), strict=True)
@@ -152,8 +159,33 @@ def _fetch_report_text(url: str, *, archive: Path | None = None) -> str:
     text = reader.pages[0].extract_text(extraction_mode="layout")
     if "NATIONAL BASKETBALL ASSOCIATION" not in text or "FINAL BOX" not in text:
         raise ValueError("Source is not an NBA Final Box scorer report")
-    if archive is not None:
-        _archive_report(content, url, archive)
+    return text
+
+
+def _cached_report_text(url: str, cache: Path, archive: Path) -> str:
+    """Replay a retained original with its capture receipt; never fall back online."""
+    receipt_path = cache / f"{Path(url).stem}.json"
+    receipt_bytes = receipt_path.read_bytes()
+    receipt = json.loads(receipt_bytes)
+    digest = receipt.get("sha256", "")
+    captured = datetime.fromisoformat(receipt["retrieved_at"])
+    if (
+        not isinstance(digest, str)
+        or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+        or receipt.get("source_url") != url
+        or receipt.get("raw_file") != f"{digest}.pdf"
+        or captured.tzinfo is None
+    ):
+        raise ValueError("Cached NBA report receipt does not match requested source")
+    with (cache / receipt["raw_file"]).open("rb") as stream:
+        content = stream.read(1_500_001)
+    if len(content) != receipt.get("size_bytes") or hashlib.sha256(content).hexdigest() != digest:
+        raise ValueError("Cached NBA report bytes differ from receipt")
+    text = _report_text(content)
+    archive.mkdir(parents=True, exist_ok=True)
+    # Keep the original capture time rather than labeling replay a fresh fetch.
+    (archive / receipt["raw_file"]).write_bytes(content)
+    (archive / receipt_path.name).write_bytes(receipt_bytes)
     return text
 
 
@@ -310,6 +342,7 @@ def official_report_as_v3(
     home_team_id: int,
     away_team_id: int,
     data_root: Path,
+    cached_reports: Path | None = None,
 ) -> tuple[pd.DataFrame, str]:
     """Build source-listed played/DNP/inactive rows for one verified NBA report."""
     safe = season_type.lower().replace(" ", "_")
@@ -320,7 +353,12 @@ def official_report_as_v3(
     away, home = by_id[away_team_id][0], by_id[home_team_id][0]
     ref = f"{game_date.replace('-', '')}_{away}{home}"
     url = f"{SOURCE_ROOT}/{game_date.replace('-', '')}/{ref}.pdf"
-    text = _fetch_report_text(url, archive=data_root / "raw/player_game_availability_sources")
+    archive = data_root / "raw/player_game_availability_sources"
+    text = (
+        _fetch_report_text(url, archive=archive)
+        if cached_reports is None
+        else _cached_report_text(url, cached_reports, archive)
+    )
     headings, sections, all_lines = _parse_sections(text, game_date)
     expected_names = _nba_team_names(data_root, season, safe, game_id)
     team_ids = (away_team_id, home_team_id)
@@ -343,6 +381,8 @@ def official_report_as_v3(
         try:
             return _identify(people, ident, name, used, surname=surname)
         except UnresolvedIdentity:
+            if cached_reports is not None:
+                raise
             if identity_digest:
                 raise
             if not cdn_unavailable:

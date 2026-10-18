@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "run_id": 39167882144,
+  "reviewed_sha": "9679e2b4df3e81b17fee4ece3bc0b1058ef824a2",
+  "request_sha": "f379e7b571d42231c1606a7d36d2c635687a2694",
+  "artifact_id": 12151014194,
+  "artifact_zip_sha256": "831401ba5453e6b974f01368be1e412eb59da22705ba667cb9a904f7db502146",
+  "retrieval": "succeeded",
+  "required_validation": "failed literal visitor heading case; original failure preserved",
+  "production_writes": 0
+}

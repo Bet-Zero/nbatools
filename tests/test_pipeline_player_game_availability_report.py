@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -492,3 +494,134 @@ def test_report_scoreboard_tolerates_pdf_word_spacing(heading):
 def test_report_without_scoreboard_still_rejected():
     with pytest.raises(ValueError, match="missing scoreboard"):
         report._parse_sections(PDF_TEXT.replace("SCORE BY PERIOD", "UNRECOGNIZED"), "2025-10-21")
+
+
+@pytest.fixture
+def retained_report(tmp_path):
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "working/nba-tools-completion-program/source-evidence/tatum-20260201"
+        / "acquired_data/raw/player_game_availability_sources"
+    )
+    cache = tmp_path / "retained"
+    shutil.copytree(source, cache)
+    return cache
+
+
+def _no_network(*args, **kwargs):
+    raise AssertionError("Cached report replay must not use the network")
+
+
+def test_cached_original_replays_without_network_or_new_capture_time(
+    retained_report, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    url = "https://statsdmz.nba.com/pdfs/20260201/20260201_MILBOS.pdf"
+    archive = tmp_path / "archive"
+    text = report._cached_report_text(url, retained_report, archive)
+    names, sections, _ = report._parse_sections(text, "2026-02-01")
+    assert [name.casefold() for name in names] == ["milwaukee bucks", "boston celtics"]
+    assert [report._score(section) for section in sections] == [79, 107]
+    receipt = json.loads((archive / "20260201_MILBOS.json").read_text())
+    for name in ("20260201_MILBOS.json", receipt["raw_file"]):
+        assert (archive / name).read_bytes() == (retained_report / name).read_bytes()
+
+
+@pytest.mark.parametrize("damage", ["url", "path", "sha", "time", "size", "bytes", "missing"])
+def test_cached_report_corruption_never_falls_back_online(
+    retained_report, tmp_path, monkeypatch, damage
+):
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    path = retained_report / "20260201_MILBOS.json"
+    receipt = json.loads(path.read_text())
+    if damage == "url":
+        receipt["source_url"] = receipt["source_url"].replace("MILBOS", "BOSMIL")
+    elif damage == "path":
+        receipt["raw_file"] = "../outside.pdf"
+    elif damage == "sha":
+        receipt["sha256"] = "invalid"
+    elif damage == "time":
+        receipt["retrieved_at"] = "2026-10-18T21:28:17"
+    elif damage == "size":
+        receipt["size_bytes"] += 1
+    elif damage == "bytes":
+        (retained_report / receipt["raw_file"]).write_bytes(b"%PDF changed")
+    else:
+        (retained_report / receipt["raw_file"]).unlink()
+    path.write_text(json.dumps(receipt))
+    archive = tmp_path / "archive"
+    with pytest.raises((ValueError, FileNotFoundError)):
+        report._cached_report_text(
+            receipt["source_url"]
+            if damage != "url"
+            else "https://statsdmz.nba.com/pdfs/20260201/20260201_MILBOS.pdf",
+            retained_report,
+            archive,
+        )
+    assert not archive.exists()
+
+
+def test_cached_import_uses_receipt_and_refuses_unresolved_identity(
+    nba_rows, tmp_path, monkeypatch
+):
+    cache = tmp_path / "cache"
+    report._archive_report(
+        b"%PDF controlled importer fixture",
+        "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf",
+        cache,
+    )
+    monkeypatch.setattr(report, "_report_text", lambda _: PDF_TEXT)
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    monkeypatch.setattr(report, "_fetch_live_identities", _no_network)
+    rows = backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+    assert len(rows) == 6
+    assert rows.source_sha256.eq(
+        hashlib.sha256(b"%PDF controlled importer fixture").hexdigest()
+    ).all()
+    path = nba_rows / "raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    players.loc[players.player_id.ne(4)].to_csv(path, index=False)
+    with pytest.raises(report.UnresolvedIdentity):
+        report.official_report_as_v3(
+            game_id=22500002,
+            game_date="2025-10-21",
+            season="2025-26",
+            season_type="Regular Season",
+            home_team_id=2,
+            away_team_id=1,
+            data_root=nba_rows,
+            cached_reports=cache,
+        )
+
+
+def test_cached_report_option_rejects_other_sources(tmp_path):
+    with pytest.raises(ValueError, match="Cached reports only"):
+        backfill("2025-26", source="stats", cached_reports=tmp_path)
+
+
+@pytest.mark.parametrize("change", ["corrupt", "missing", "revised"])
+def test_cached_repeat_import_revalidates_supplied_source(nba_rows, tmp_path, monkeypatch, change):
+    cache = tmp_path / "cache"
+    url = "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf"
+    report._archive_report(b"%PDF first controlled source", url, cache)
+    monkeypatch.setattr(report, "_report_text", lambda _: PDF_TEXT)
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    first = backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+    target = nba_rows / "raw/player_game_availability/2025-26_regular_season.csv"
+    previous = target.read_bytes()
+    receipt = json.loads((cache / "20251021_GSWLAL.json").read_text())
+    pdf = cache / receipt["raw_file"]
+    if change == "revised":
+        content = b"%PDF revised controlled source"
+        report._archive_report(content, url, cache)
+        replayed = backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+        assert replayed.source_sha256.eq(hashlib.sha256(content).hexdigest()).all()
+        assert not replayed.source_sha256.equals(first.source_sha256)
+    else:
+        if change == "missing":
+            pdf.unlink()
+        else:
+            pdf.write_bytes(b"%PDF corrupt source")
+        with pytest.raises((ValueError, FileNotFoundError)):
+            backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+        assert target.read_bytes() == previous

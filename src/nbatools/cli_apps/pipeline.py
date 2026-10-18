@@ -562,6 +562,9 @@ def backfill_game_availability(
     cached_boxscores: Path | None = typer.Option(
         None, "--cached-boxscores", help="Directory of retained NBA Stats V3 JSON box scores"
     ),
+    cached_reports: Path | None = typer.Option(
+        None, "--cached-reports", help="Retained Final Box PDFs and capture receipts; offline only"
+    ),
     game_id: list[int] | None = typer.Option(
         None, "--game-id", help="Specific finalized game ID (repeatable)"
     ),
@@ -577,6 +580,7 @@ def backfill_game_availability(
         season,
         season_type,
         cached_boxscores=cached_boxscores,
+        cached_reports=cached_reports,
         game_ids=game_id,
         limit=limit,
         source=source,
