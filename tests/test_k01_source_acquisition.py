@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 GENERATION = "queue-d-production-0574735-20260716"
 MANIFEST_SHA = "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e"
 PLAYER_SEASONS = ["1996-97", "1997-98", "1998-99", "1999-00", "2000-01", "2001-02", "2007-08"]
-TEAM_SEASONS = ["2007-08", "2008-09", "2024-25"]
+TEAM_SEASONS = PLAYER_SEASONS[:6] + ["2007-08", "2008-09", "2024-25"]
 
 
 def test_retain_k01_historical_sources(tmp_path):
@@ -48,7 +48,7 @@ def test_retain_k01_historical_sources(tmp_path):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(raw)
         receipts.append(dict(item, rows=len(frame)))
-    assert len(receipts) >= 10
+    assert len(receipts) >= 16
     (output / "receipt.json").write_text(
         json.dumps(
             {
