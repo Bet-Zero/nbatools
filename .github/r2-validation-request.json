@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "b00441dde694e29e0676b32422b9c30087c9749b",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k01_source_acquisition.py::test_retain_k01_historical_sources"
+  ],
+  "raw_qa_cases": []
+}
