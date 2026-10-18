@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "da414ca3f77e2f7e520541c0cfcab7b0282add1a",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_ownership_comparison_browser.py::test_deployed_ownership_comparison_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
