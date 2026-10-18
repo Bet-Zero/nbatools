@@ -99,3 +99,44 @@ def test_archived_core_collection(tmp_path, capfd):
     (output / "archive-collection.json").write_text(json.dumps(receipt, indent=2) + "\n")
     with capfd.disabled():
         print("ARCHIVE_COLLECTION_JSON " + json.dumps(receipt), flush=True)
+
+
+def test_durable_archive_recovery(capfd):
+    import io
+    import zipfile
+
+    import pandas as pd
+
+    root = (
+        Path(__file__).resolve().parents[1]
+        / "working/nba-tools-completion-program/cloud-operations"
+    )
+    reference = json.loads((root / "core-archive-receipt.json").read_text())
+    payload = (root / "core-archive-staging.zip").read_bytes()
+    assert hashlib.sha256(payload).hexdigest() == reference["durable_bundle"]["sha256"]
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        receipt = json.loads(archive.read("receipt.json"))
+        assert set(archive.namelist()) == set(receipt["files"]) | {"receipt.json"}
+        for name, record in receipt["files"].items():
+            data = archive.read(name)
+            assert len(data) == record["bytes"]
+            assert hashlib.sha256(data).hexdigest() == record["sha256"]
+        frame = pd.read_csv(
+            io.BytesIO(archive.read("data/raw/player_game_stats/2025-26_regular_season.csv"))
+        )
+        assert len(frame) == 21 and frame.pts.sum() == 230
+        assert frame.player_id.nunique() == 21
+    with capfd.disabled():
+        print(
+            "ARCHIVE_RECOVERY_JSON "
+            + json.dumps(
+                {
+                    "state": "verified",
+                    "rows": 21,
+                    "points": 230,
+                    "bundle_sha256": reference["durable_bundle"]["sha256"],
+                    "r2_writes": 0,
+                }
+            ),
+            flush=True,
+        )

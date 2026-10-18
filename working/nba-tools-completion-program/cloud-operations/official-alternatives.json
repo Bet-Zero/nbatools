@@ -1,0 +1,77 @@
+{
+  "classification": "diagnostic only; no acquisition acceptance",
+  "results": [
+    {
+      "source": "leaguegamelog",
+      "timeout_seconds": 12,
+      "attempts": 1,
+      "status": "unavailable",
+      "error_type": "ReadTimeout",
+      "elapsed_seconds": 12.07
+    },
+    {
+      "source": "playergamelogs",
+      "timeout_seconds": 12,
+      "attempts": 1,
+      "status": "unavailable",
+      "error_type": "ReadTimeout",
+      "elapsed_seconds": 12.03
+    },
+    {
+      "source": "teamgamelogs",
+      "timeout_seconds": 12,
+      "attempts": 1,
+      "status": "unavailable",
+      "error_type": "ReadTimeout",
+      "elapsed_seconds": 12.05
+    },
+    {
+      "url": "https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json",
+      "attempts": 1,
+      "timeout_seconds": 12,
+      "http_status": 403,
+      "bytes": 425,
+      "sha256": "7061b3d2d2a4e36ea5cbe94c9a9f586542d7cde55ffc637ac382e98ad147ab24",
+      "status": "http-failure"
+    },
+    {
+      "url": "https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_2.json",
+      "attempts": 1,
+      "timeout_seconds": 12,
+      "http_status": 403,
+      "bytes": 431,
+      "sha256": "a74393ca4ad5db1e33fea96db1b4c00438140f256b0303f0d2976dc558d6277c",
+      "status": "http-failure"
+    },
+    {
+      "url": "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
+      "attempts": 1,
+      "timeout_seconds": 12,
+      "http_status": 403,
+      "bytes": 445,
+      "sha256": "bc16a7d6cdc08b1d89c604d258adce9415b748c1b83bd1f96fc62fae258ba15c",
+      "status": "http-failure"
+    },
+    {
+      "url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022400001.json",
+      "attempts": 1,
+      "timeout_seconds": 12,
+      "http_status": 403,
+      "bytes": 443,
+      "sha256": "fc994b08f467c88de596bd53f40f2a0105025c634e6e3f20787288606e518115",
+      "status": "http-failure"
+    },
+    {
+      "url": "https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_0022400001.json",
+      "attempts": 1,
+      "timeout_seconds": 12,
+      "http_status": 403,
+      "bytes": 447,
+      "sha256": "4180ef9d945bd8f4d52922d87902314f07cfe261c36aea50160ac181ac427e1f",
+      "status": "http-failure"
+    }
+  ],
+  "run_id": 39121953133,
+  "reviewed_sha": "702f767853e976e081e6bda6f82ce7d8dbeb6336",
+  "request_sha": "a29ad6d8da4aee3fd9809b55758ec9b06c24205f"
+}
