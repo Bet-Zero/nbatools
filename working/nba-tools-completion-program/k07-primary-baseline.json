@@ -1,0 +1,1544 @@
+{
+  "runtime": "2150e9c",
+  "source_oracle_commit": "e701cf5",
+  "evidence": "qualified cached local data; not production acceptance",
+  "cases": [
+    {
+      "id": "K07-A1",
+      "query": "Celtics record at home against Knicks in 2023-24 and 2025-26 by season",
+      "response": {
+        "query_class": "split_summary",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Celtics record at home against Knicks in 2023-24 and 2025-26 by season",
+          "route": "team_split_summary",
+          "query_class": "split_summary",
+          "season": null,
+          "start_season": "2023-24",
+          "end_season": "2025-26",
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "BOS",
+          "opponent": "NYK",
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "season",
+          "season_list": [
+            "2023-24",
+            "2025-26"
+          ],
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "scope_kind": "season_range",
+          "applied_filters": [
+            {
+              "label": "Opponent",
+              "value": "NYK",
+              "kind": "team"
+            },
+            {
+              "label": "Location",
+              "value": "Home",
+              "kind": "location"
+            },
+            {
+              "label": "Seasons",
+              "value": "2023-24, 2025-26",
+              "kind": "season"
+            }
+          ],
+          "team_context": {
+            "team_abbr": "BOS"
+          },
+          "opponent_context": {
+            "team_abbr": "NYK"
+          },
+          "confidence": 0.9,
+          "intent": "split_summary"
+        },
+        "notes": [],
+        "caveats": [
+          "filtered to games vs NYK"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "team_name": "Boston Celtics",
+              "season_start": "2023-24",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 5
+            }
+          ],
+          "split_comparison": [
+            {
+              "bucket": "2023-24",
+              "games": 3,
+              "wins": 2,
+              "losses": 1,
+              "win_pct": 0.667,
+              "pts_avg": 118.667,
+              "reb_avg": 35.667,
+              "ast_avg": 25.333,
+              "stl_avg": 6.0,
+              "blk_avg": 6.667,
+              "fg3m_avg": 18.0,
+              "tov_avg": 10.0,
+              "plus_minus_avg": 5.667,
+              "efg_pct_avg": 0.605,
+              "ts_pct_avg": 0.637
+            },
+            {
+              "bucket": "2025-26",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "win_pct": 0.5,
+              "pts_avg": 106.0,
+              "reb_avg": 41.0,
+              "ast_avg": 20.0,
+              "stl_avg": 5.0,
+              "blk_avg": 3.0,
+              "fg3m_avg": 10.0,
+              "tov_avg": 10.0,
+              "plus_minus_avg": -8.0,
+              "efg_pct_avg": 0.52,
+              "ts_pct_avg": 0.553
+            }
+          ]
+        }
+      },
+      "captured": [
+        {
+          "bucket": "2023-24",
+          "keys": [
+            [
+              22300188,
+              1610612738
+            ],
+            [
+              22301167,
+              1610612738
+            ],
+            [
+              22301227,
+              1610612738
+            ]
+          ],
+          "games": 3,
+          "sums": {
+            "pts": 356.0,
+            "reb": 107.0,
+            "ast": 76.0
+          }
+        },
+        {
+          "bucket": "2025-26",
+          "keys": [
+            [
+              22500320,
+              1610612738
+            ],
+            [
+              22500757,
+              1610612738
+            ]
+          ],
+          "games": 2,
+          "sums": {
+            "pts": 212.0,
+            "reb": 82.0,
+            "ast": 40.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "K07-A2",
+      "query": "Stephen Curry averages with at least 25 points against Portland in 2023-24 and 2025-26 by season",
+      "response": {
+        "query_class": "split_summary",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Stephen Curry averages with at least 25 points against Portland in 2023-24 and 2025-26 by season",
+          "route": "player_split_summary",
+          "query_class": "split_summary",
+          "season": null,
+          "start_season": "2023-24",
+          "end_season": "2025-26",
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Stephen Curry",
+          "team": null,
+          "opponent": "POR",
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "pts",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": 25.0,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": true,
+          "threshold_conditions": [
+            {
+              "stat": "pts",
+              "min_value": 25.0,
+              "max_value": null,
+              "text": "at least 25 points"
+            }
+          ],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "season",
+          "season_list": [
+            "2023-24",
+            "2025-26"
+          ],
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+          ],
+          "scope_kind": "season_range",
+          "applied_filters": [
+            {
+              "label": "Opponent",
+              "value": "POR",
+              "kind": "team"
+            },
+            {
+              "label": "pts min",
+              "value": "25.0",
+              "kind": "threshold"
+            },
+            {
+              "label": "Seasons",
+              "value": "2023-24, 2025-26",
+              "kind": "season"
+            }
+          ],
+          "opponent_context": {
+            "team_abbr": "POR"
+          },
+          "confidence": 1.0,
+          "intent": "split_summary"
+        },
+        "notes": [],
+        "caveats": [
+          "filtered to games vs POR"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "player_name": "Stephen Curry",
+              "season_start": "2023-24",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 5
+            }
+          ],
+          "split_comparison": [
+            {
+              "bucket": "2023-24",
+              "games": 2,
+              "wins": 2,
+              "losses": 0,
+              "win_pct": 1.0,
+              "minutes_avg": 32.0,
+              "pts_avg": 29.0,
+              "reb_avg": 4.0,
+              "ast_avg": 1.5,
+              "stl_avg": 0.0,
+              "blk_avg": 0.0,
+              "fg3m_avg": 3.5,
+              "plus_minus_avg": 4.0,
+              "efg_pct_avg": 0.625,
+              "ts_pct_avg": 0.688,
+              "pts_sum": 58.0,
+              "usg_pct_avg": 31.152,
+              "ast_pct_avg": 8.108,
+              "reb_pct_avg": 7.101,
+              "tov_pct_avg": 10.602
+            },
+            {
+              "bucket": "2025-26",
+              "games": 3,
+              "wins": 0,
+              "losses": 3,
+              "win_pct": 0.0,
+              "minutes_avg": 32.0,
+              "pts_avg": 40.333,
+              "reb_avg": 3.667,
+              "ast_avg": 3.0,
+              "stl_avg": 1.333,
+              "blk_avg": 1.0,
+              "fg3m_avg": 9.333,
+              "plus_minus_avg": -8.0,
+              "efg_pct_avg": 0.789,
+              "ts_pct_avg": 0.807,
+              "pts_sum": 121.0,
+              "usg_pct_avg": 36.781,
+              "ast_pct_avg": 24.107,
+              "reb_pct_avg": 6.818,
+              "tov_pct_avg": 11.77
+            }
+          ]
+        }
+      },
+      "captured": [
+        {
+          "bucket": "2023-24",
+          "keys": [
+            [
+              22300399,
+              1610612744,
+              201939
+            ],
+            [
+              22301214,
+              1610612744,
+              201939
+            ]
+          ],
+          "games": 2,
+          "sums": {
+            "pts": 58.0,
+            "reb": 8.0,
+            "ast": 3.0
+          }
+        },
+        {
+          "bucket": "2025-26",
+          "keys": [
+            [
+              22500056,
+              1610612744,
+              201939
+            ],
+            [
+              22500097,
+              1610612744,
+              201939
+            ],
+            [
+              22501221,
+              1610612744,
+              201939
+            ]
+          ],
+          "games": 3,
+          "sums": {
+            "pts": 121.0,
+            "reb": 11.0,
+            "ast": 9.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "K07-B1",
+      "query": "Bucks record with at least 45 rebounds in 2023-24 and 2025-26 by season",
+      "response": {
+        "query_class": "unknown",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "metadata": {
+          "query_text": "Bucks record with at least 45 rebounds in 2023-24 and 2025-26 by season",
+          "route": null,
+          "query_class": null,
+          "season": null,
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "MIL",
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": [
+            "season_split"
+          ],
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "reb",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": 45.0,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": true,
+          "threshold_conditions": [
+            {
+              "stat": "reb",
+              "min_value": 45.0,
+              "max_value": null,
+              "text": "at least 45 rebounds"
+            }
+          ],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "season",
+          "season_list": [
+            "2023-24",
+            "2025-26"
+          ],
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "unsupported_boundary: named seasons are compared one row per season for one player's or one team's games with filters the season split runs; this one also asks for unresolved_player_availability",
+            "season_split filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: season_split)"
+          ],
+          "scope_kind": "single_season",
+          "team_context": {
+            "team_abbr": "MIL"
+          },
+          "confidence": 0.29999999999999993,
+          "intent": "unsupported"
+        },
+        "notes": [
+          "unsupported_boundary: named seasons are compared one row per season for one player's or one team's games with filters the season split runs; this one also asks for unresolved_player_availability",
+          "season_split filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: season_split)"
+        ],
+        "caveats": [],
+        "sections": {}
+      },
+      "captured": []
+    },
+    {
+      "id": "K07-B2",
+      "query": "Devin Booker averages with at least 6 assists in 2023-24 and 2025-26 by season",
+      "response": {
+        "query_class": "split_summary",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Devin Booker averages with at least 6 assists in 2023-24 and 2025-26 by season",
+          "route": "player_split_summary",
+          "query_class": "split_summary",
+          "season": null,
+          "start_season": "2023-24",
+          "end_season": "2025-26",
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Devin Booker",
+          "team": null,
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "ast",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": 6.0,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": true,
+          "threshold_conditions": [
+            {
+              "stat": "ast",
+              "min_value": 6.0,
+              "max_value": null,
+              "text": "at least 6 assists"
+            }
+          ],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "season",
+          "season_list": [
+            "2023-24",
+            "2025-26"
+          ],
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+          ],
+          "scope_kind": "season_range",
+          "applied_filters": [
+            {
+              "label": "ast min",
+              "value": "6.0",
+              "kind": "threshold"
+            },
+            {
+              "label": "Seasons",
+              "value": "2023-24, 2025-26",
+              "kind": "season"
+            }
+          ],
+          "confidence": 1.0,
+          "intent": "split_summary"
+        },
+        "notes": [],
+        "caveats": [],
+        "sections": {
+          "summary": [
+            {
+              "player_name": "Devin Booker",
+              "season_start": "2023-24",
+              "season_end": "2025-26",
+              "season_type": "Regular Season",
+              "split": "season",
+              "games_total": 82
+            }
+          ],
+          "split_comparison": [
+            {
+              "bucket": "2023-24",
+              "games": 46,
+              "wins": 31,
+              "losses": 15,
+              "win_pct": 0.674,
+              "minutes_avg": 36.717,
+              "pts_avg": 25.957,
+              "reb_avg": 4.826,
+              "ast_avg": 8.348,
+              "stl_avg": 0.804,
+              "blk_avg": 0.37,
+              "fg3m_avg": 1.978,
+              "plus_minus_avg": 6.5,
+              "efg_pct_avg": 0.529,
+              "ts_pct_avg": 0.593,
+              "ast_sum": 384.0,
+              "usg_pct_avg": 29.223,
+              "ast_pct_avg": 35.019,
+              "reb_pct_avg": 7.563,
+              "tov_pct_avg": 10.725
+            },
+            {
+              "bucket": "2025-26",
+              "games": 36,
+              "wins": 21,
+              "losses": 15,
+              "win_pct": 0.583,
+              "minutes_avg": 34.944,
+              "pts_avg": 25.111,
+              "reb_avg": 4.25,
+              "ast_avg": 7.889,
+              "stl_avg": 0.75,
+              "blk_avg": 0.278,
+              "fg3m_avg": 1.889,
+              "plus_minus_avg": 4.75,
+              "efg_pct_avg": 0.493,
+              "ts_pct_avg": 0.583,
+              "ast_sum": 284.0,
+              "usg_pct_avg": 30.129,
+              "ast_pct_avg": 35.258,
+              "reb_pct_avg": 6.821,
+              "tov_pct_avg": 12.519
+            }
+          ]
+        }
+      },
+      "captured": [
+        {
+          "bucket": "2023-24",
+          "keys": [
+            [
+              22300035,
+              1610612756,
+              1626164
+            ],
+            [
+              22300041,
+              1610612756,
+              1626164
+            ],
+            [
+              22300062,
+              1610612756,
+              1626164
+            ],
+            [
+              22300131,
+              1610612756,
+              1626164
+            ],
+            [
+              22300214,
+              1610612756,
+              1626164
+            ],
+            [
+              22300236,
+              1610612756,
+              1626164
+            ],
+            [
+              22300247,
+              1610612756,
+              1626164
+            ],
+            [
+              22300288,
+              1610612756,
+              1626164
+            ],
+            [
+              22300308,
+              1610612756,
+              1626164
+            ],
+            [
+              22300317,
+              1610612756,
+              1626164
+            ],
+            [
+              22300333,
+              1610612756,
+              1626164
+            ],
+            [
+              22300347,
+              1610612756,
+              1626164
+            ],
+            [
+              22300363,
+              1610612756,
+              1626164
+            ],
+            [
+              22300387,
+              1610612756,
+              1626164
+            ],
+            [
+              22300405,
+              1610612756,
+              1626164
+            ],
+            [
+              22300418,
+              1610612756,
+              1626164
+            ],
+            [
+              22300436,
+              1610612756,
+              1626164
+            ],
+            [
+              22300456,
+              1610612756,
+              1626164
+            ],
+            [
+              22300473,
+              1610612756,
+              1626164
+            ],
+            [
+              22300489,
+              1610612756,
+              1626164
+            ],
+            [
+              22300503,
+              1610612756,
+              1626164
+            ],
+            [
+              22300554,
+              1610612756,
+              1626164
+            ],
+            [
+              22300567,
+              1610612756,
+              1626164
+            ],
+            [
+              22300604,
+              1610612756,
+              1626164
+            ],
+            [
+              22300661,
+              1610612756,
+              1626164
+            ],
+            [
+              22300677,
+              1610612756,
+              1626164
+            ],
+            [
+              22300705,
+              1610612756,
+              1626164
+            ],
+            [
+              22300757,
+              1610612756,
+              1626164
+            ],
+            [
+              22300774,
+              1610612756,
+              1626164
+            ],
+            [
+              22300796,
+              1610612756,
+              1626164
+            ],
+            [
+              22300818,
+              1610612756,
+              1626164
+            ],
+            [
+              22300934,
+              1610612756,
+              1626164
+            ],
+            [
+              22300955,
+              1610612756,
+              1626164
+            ],
+            [
+              22300961,
+              1610612756,
+              1626164
+            ],
+            [
+              22300976,
+              1610612756,
+              1626164
+            ],
+            [
+              22301002,
+              1610612756,
+              1626164
+            ],
+            [
+              22301025,
+              1610612756,
+              1626164
+            ],
+            [
+              22301059,
+              1610612756,
+              1626164
+            ],
+            [
+              22301092,
+              1610612756,
+              1626164
+            ],
+            [
+              22301110,
+              1610612756,
+              1626164
+            ],
+            [
+              22301125,
+              1610612756,
+              1626164
+            ],
+            [
+              22301138,
+              1610612756,
+              1626164
+            ],
+            [
+              22301185,
+              1610612756,
+              1626164
+            ],
+            [
+              22301194,
+              1610612756,
+              1626164
+            ],
+            [
+              22301203,
+              1610612756,
+              1626164
+            ],
+            [
+              22301228,
+              1610612756,
+              1626164
+            ]
+          ],
+          "games": 46,
+          "sums": {
+            "pts": 1194.0,
+            "reb": 222.0,
+            "ast": 384.0
+          }
+        },
+        {
+          "bucket": "2025-26",
+          "keys": [
+            [
+              22500025,
+              1610612756,
+              1626164
+            ],
+            [
+              22500053,
+              1610612756,
+              1626164
+            ],
+            [
+              22500068,
+              1610612756,
+              1626164
+            ],
+            [
+              22500075,
+              1610612756,
+              1626164
+            ],
+            [
+              22500099,
+              1610612756,
+              1626164
+            ],
+            [
+              22500104,
+              1610612756,
+              1626164
+            ],
+            [
+              22500120,
+              1610612756,
+              1626164
+            ],
+            [
+              22500154,
+              1610612756,
+              1626164
+            ],
+            [
+              22500182,
+              1610612756,
+              1626164
+            ],
+            [
+              22500190,
+              1610612756,
+              1626164
+            ],
+            [
+              22500221,
+              1610612756,
+              1626164
+            ],
+            [
+              22500226,
+              1610612756,
+              1626164
+            ],
+            [
+              22500239,
+              1610612756,
+              1626164
+            ],
+            [
+              22500281,
+              1610612756,
+              1626164
+            ],
+            [
+              22500299,
+              1610612756,
+              1626164
+            ],
+            [
+              22500418,
+              1610612756,
+              1626164
+            ],
+            [
+              22500499,
+              1610612756,
+              1626164
+            ],
+            [
+              22500524,
+              1610612756,
+              1626164
+            ],
+            [
+              22500538,
+              1610612756,
+              1626164
+            ],
+            [
+              22500555,
+              1610612756,
+              1626164
+            ],
+            [
+              22500564,
+              1610612756,
+              1626164
+            ],
+            [
+              22500754,
+              1610612756,
+              1626164
+            ],
+            [
+              22500773,
+              1610612756,
+              1626164
+            ],
+            [
+              22500892,
+              1610612756,
+              1626164
+            ],
+            [
+              22500928,
+              1610612756,
+              1626164
+            ],
+            [
+              22500941,
+              1610612756,
+              1626164
+            ],
+            [
+              22500986,
+              1610612756,
+              1626164
+            ],
+            [
+              22501031,
+              1610612756,
+              1626164
+            ],
+            [
+              22501036,
+              1610612756,
+              1626164
+            ],
+            [
+              22501050,
+              1610612756,
+              1626164
+            ],
+            [
+              22501081,
+              1610612756,
+              1626164
+            ],
+            [
+              22501099,
+              1610612756,
+              1626164
+            ],
+            [
+              22501114,
+              1610612756,
+              1626164
+            ],
+            [
+              22501157,
+              1610612756,
+              1626164
+            ],
+            [
+              22501164,
+              1610612756,
+              1626164
+            ],
+            [
+              22501228,
+              1610612756,
+              1626164
+            ]
+          ],
+          "games": 36,
+          "sums": {
+            "pts": 904.0,
+            "reb": 153.0,
+            "ast": 284.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "K07-C1",
+      "query": "Nuggets home vs away splits against Timberwolves with at least 110 points in 2023-24",
+      "response": {
+        "query_class": "split_summary",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Nuggets home vs away splits against Timberwolves with at least 110 points in 2023-24",
+          "route": "team_split_summary",
+          "query_class": "split_summary",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "DEN",
+          "opponent": "MIN",
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "pts",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": 110.0,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": true,
+          "threshold_conditions": [
+            {
+              "stat": "pts",
+              "min_value": 110.0,
+              "max_value": null,
+              "text": "at least 110 points"
+            }
+          ],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "home_away",
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "scope_kind": "single_season",
+          "applied_filters": [
+            {
+              "label": "Opponent",
+              "value": "MIN",
+              "kind": "team"
+            },
+            {
+              "label": "Location",
+              "value": "Home",
+              "kind": "location"
+            },
+            {
+              "label": "Location",
+              "value": "Away",
+              "kind": "location"
+            },
+            {
+              "label": "pts min",
+              "value": "110.0",
+              "kind": "threshold"
+            }
+          ],
+          "team_context": {
+            "team_abbr": "DEN"
+          },
+          "opponent_context": {
+            "team_abbr": "MIN"
+          },
+          "confidence": 1.0,
+          "intent": "split_summary"
+        },
+        "notes": [],
+        "caveats": [
+          "filtered to games vs MIN"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "team_name": "Denver Nuggets",
+              "season_start": "2023-24",
+              "season_end": "2023-24",
+              "season_type": "Regular Season",
+              "split": "home_away",
+              "games_total": 2
+            }
+          ],
+          "split_comparison": [
+            {
+              "bucket": "home",
+              "games": 1,
+              "wins": 1,
+              "losses": 0,
+              "win_pct": 1.0,
+              "pts_avg": 116.0,
+              "reb_avg": 44.0,
+              "ast_avg": 31.0,
+              "stl_avg": 7.0,
+              "blk_avg": 8.0,
+              "fg3m_avg": 11.0,
+              "tov_avg": 13.0,
+              "plus_minus_avg": 9.0,
+              "efg_pct_avg": 0.62,
+              "ts_pct_avg": 0.623
+            },
+            {
+              "bucket": "away",
+              "games": 1,
+              "wins": 1,
+              "losses": 0,
+              "win_pct": 1.0,
+              "pts_avg": 115.0,
+              "reb_avg": 49.0,
+              "ast_avg": 26.0,
+              "stl_avg": 5.0,
+              "blk_avg": 1.0,
+              "fg3m_avg": 14.0,
+              "tov_avg": 17.0,
+              "plus_minus_avg": 3.0,
+              "efg_pct_avg": 0.605,
+              "ts_pct_avg": 0.634
+            }
+          ]
+        }
+      },
+      "captured": [
+        {
+          "bucket": "home",
+          "keys": [
+            [
+              22301164,
+              1610612743
+            ]
+          ],
+          "games": 1,
+          "sums": {
+            "pts": 116.0,
+            "reb": 44.0,
+            "ast": 31.0
+          }
+        },
+        {
+          "bucket": "away",
+          "keys": [
+            [
+              22300995,
+              1610612743
+            ]
+          ],
+          "games": 1,
+          "sums": {
+            "pts": 115.0,
+            "reb": 49.0,
+            "ast": 26.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "K07-C2",
+      "query": "Jalen Brunson home vs away averages against Celtics with at least 20 points in 2023-24",
+      "response": {
+        "query_class": "split_summary",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Jalen Brunson home vs away averages against Celtics with at least 20 points in 2023-24",
+          "route": "player_split_summary",
+          "query_class": "split_summary",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Jalen Brunson",
+          "team": null,
+          "opponent": "BOS",
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "pts",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": 20.0,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": true,
+          "threshold_conditions": [
+            {
+              "stat": "pts",
+              "min_value": 20.0,
+              "max_value": null,
+              "text": "at least 20 points"
+            }
+          ],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": "home_away",
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+          ],
+          "scope_kind": "single_season",
+          "applied_filters": [
+            {
+              "label": "Opponent",
+              "value": "BOS",
+              "kind": "team"
+            },
+            {
+              "label": "Location",
+              "value": "Home",
+              "kind": "location"
+            },
+            {
+              "label": "Location",
+              "value": "Away",
+              "kind": "location"
+            },
+            {
+              "label": "pts min",
+              "value": "20.0",
+              "kind": "threshold"
+            }
+          ],
+          "opponent_context": {
+            "team_abbr": "BOS"
+          },
+          "confidence": 1.0,
+          "intent": "split_summary"
+        },
+        "notes": [],
+        "caveats": [
+          "filtered to games vs BOS"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "player_name": "Jalen Brunson",
+              "season_start": "2023-24",
+              "season_end": "2023-24",
+              "season_type": "Regular Season",
+              "split": "home_away",
+              "games_total": 4
+            }
+          ],
+          "split_comparison": [
+            {
+              "bucket": "home",
+              "games": 1,
+              "wins": 0,
+              "losses": 1,
+              "win_pct": 0.0,
+              "minutes_avg": 38.0,
+              "pts_avg": 34.0,
+              "reb_avg": 3.0,
+              "ast_avg": 9.0,
+              "stl_avg": 1.0,
+              "blk_avg": 0.0,
+              "fg3m_avg": 4.0,
+              "plus_minus_avg": -12.0,
+              "efg_pct_avg": 0.56,
+              "ts_pct_avg": 0.615,
+              "usg_pct_avg": 39.167,
+              "ast_pct_avg": 52.048,
+              "reb_pct_avg": 5.053,
+              "tov_pct_avg": 12.642
+            },
+            {
+              "bucket": "away",
+              "games": 3,
+              "wins": 1,
+              "losses": 2,
+              "win_pct": 0.333,
+              "minutes_avg": 34.333,
+              "pts_avg": 29.333,
+              "reb_avg": 2.0,
+              "ast_avg": 4.0,
+              "stl_avg": 0.667,
+              "blk_avg": 0.0,
+              "fg3m_avg": 3.0,
+              "plus_minus_avg": -4.333,
+              "efg_pct_avg": 0.615,
+              "ts_pct_avg": 0.634,
+              "usg_pct_avg": 31.905,
+              "ast_pct_avg": 21.007,
+              "reb_pct_avg": 3.495,
+              "tov_pct_avg": 6.724
+            }
+          ]
+        }
+      },
+      "captured": [
+        {
+          "bucket": "away",
+          "keys": [
+            [
+              22300188,
+              1610612752,
+              1628973
+            ],
+            [
+              22301167,
+              1610612752,
+              1628973
+            ],
+            [
+              22301227,
+              1610612752,
+              1628973
+            ]
+          ],
+          "games": 3,
+          "sums": {
+            "pts": 88.0,
+            "reb": 6.0,
+            "ast": 12.0
+          }
+        },
+        {
+          "bucket": "home",
+          "keys": [
+            [
+              22300816,
+              1610612752,
+              1628973
+            ]
+          ],
+          "games": 1,
+          "sums": {
+            "pts": 34.0,
+            "reb": 3.0,
+            "ast": 9.0
+          }
+        }
+      ]
+    }
+  ]
+}

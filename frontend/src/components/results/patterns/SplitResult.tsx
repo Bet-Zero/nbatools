@@ -455,6 +455,14 @@ function seasonLabel(
   metadata: ResultMetadata | undefined,
   row: SectionRow,
 ): string | null {
+  const seasons = metadata?.season_list;
+  if (
+    Array.isArray(seasons) &&
+    seasons.length > 0 &&
+    seasons.every(value => typeof value === "string" && /^\d{4}-\d{2}$/.test(value))
+  ) {
+    return seasons.join(", ");
+  }
   const start =
     metadataText(metadata, "start_season") ??
     textValue(row, "season_start") ??
