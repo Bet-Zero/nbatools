@@ -124,3 +124,6 @@ acceptance. Checker /root/availability_checker independently verified the Booker
 repair, polite summary versus explicit list wording, genuine-name-typo refusal
 and43-game win-only subset. Bounded13numerical+13RawQA request approved conditional
 on normalCI. Actual runner and deployed K02 verification remain pending.
+
+
+Actual receipt accepted 2026-10-18: reviewed283ac2ff8d6d57f648fc15e169cc3bbbbf582a40, request03eba117ede8e91e2546723a3c848871bf2bc4ac, run39095527971. Pinned queue-d-production-0574735-20260716. All13 required tests selected/executed/passed with0skips/errors;13RawQA183checks passed. Numericalartifact12124377166 ZIP8093835eddc4a5a10192d2f9b63dbd4ed35efb5e58a3c323e4a9f26ed08ba72d; QAartifact12123999627 ZIP704be73021f681ef06bc3d3856d329feeb7b82c19646d65ea0d87dbb3a53b4fd. Independentchecker accepted exact source arithmetic, keys, and request linkage. Humanreview remains unreviewed; productionD remains open (local browser found an undefined opponent label).
