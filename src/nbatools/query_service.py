@@ -349,8 +349,10 @@ def _build_applied_filters(
                 "kind": "division",
             }
         )
-    if source.get("opponent"):
-        applied_filters.append({"label": "Opponent", "value": source["opponent"], "kind": "team"})
+    opponent = route_kwargs.get("opponent", source.get("opponent"))
+    if opponent:
+        value = ", ".join(opponent) if isinstance(opponent, list) else opponent
+        applied_filters.append({"label": "Opponent", "value": value, "kind": "team"})
     if source.get("without_player"):
         applied_filters.append(
             {"label": "Without player", "value": source["without_player"], "kind": "player"}
@@ -584,9 +586,12 @@ def _build_query_metadata(
     route_kwargs = parsed.get("route_kwargs")
     if not isinstance(route_kwargs, dict):
         route_kwargs = {}
-    if isinstance(route_kwargs.get("team"), list):
+    if "team" in route_kwargs:
+        team = route_kwargs["team"]
+    if isinstance(team, list):
         # "Lakers and Celtics leading scorers" ranks both teams.
-        team = ", ".join(route_kwargs["team"])
+        team = ", ".join(team)
+    opponent = route_kwargs.get("opponent", parsed.get("opponent"))
     unsupported_filters = parsed.get("unsupported_filters") or route_kwargs.get(
         "unsupported_filters"
     )
@@ -626,7 +631,7 @@ def _build_query_metadata(
         "last_n_scope": route_kwargs.get("last_n_scope", parsed.get("last_n_scope")),
         "player": player,
         "team": team,
-        "opponent": parsed.get("opponent"),
+        "opponent": ", ".join(opponent) if isinstance(opponent, list) else opponent,
         "opponent_conference": parsed.get("opponent_conference")
         or route_kwargs.get("opponent_conference"),
         "opponent_division": parsed.get("opponent_division")
@@ -747,6 +752,8 @@ def _build_query_metadata(
     )
     if applied_filters:
         meta["applied_filters"] = applied_filters
+    if isinstance(opponent, list):
+        meta["opponents"] = opponent
 
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
@@ -758,7 +765,7 @@ def _build_query_metadata(
         meta,
         player_values=player_values,
         team_values=team_values,
-        opponent_value=parsed.get("opponent"),
+        opponent_value=opponent if isinstance(opponent, str) else None,
     )
 
     # Phase D fields: confidence, intent, alternates
@@ -3644,7 +3651,11 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "last_n_scope": kwargs.get("last_n_scope", "qualifying") if kwargs.get("last_n") else None,
         "player": player,
         "team": team,
-        "opponent": kwargs.get("opponent"),
+        "opponent": (
+            ", ".join(kwargs["opponent"])
+            if isinstance(kwargs.get("opponent"), list)
+            else kwargs.get("opponent")
+        ),
         "opponent_conference": kwargs.get("opponent_conference"),
         "opponent_division": kwargs.get("opponent_division"),
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
@@ -3690,6 +3701,8 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
     applied_filters = [] if unsupported_filters else _build_applied_filters(kwargs)
     if applied_filters:
         metadata["applied_filters"] = applied_filters
+    if isinstance(kwargs.get("opponent"), list):
+        metadata["opponents"] = kwargs["opponent"]
 
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
@@ -3701,7 +3714,9 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         metadata,
         player_values=player_values,
         team_values=team_values,
-        opponent_value=kwargs.get("opponent"),
+        opponent_value=(
+            kwargs.get("opponent") if isinstance(kwargs.get("opponent"), str) else None
+        ),
     )
 
     query_desc = f"structured:{route}"

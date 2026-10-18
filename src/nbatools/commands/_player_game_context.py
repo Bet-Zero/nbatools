@@ -704,16 +704,19 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
         # "vs Celtics and the Knicks score 110", "LeBron games vs Celtics and
         # Lakers won": a clause about the last team.
         return
-    if route_kwargs.get("team") in teams[1:]:
-        # "Knicks record vs Heat and Celtics", "LeBron games vs Celtics and
-        # Knicks": a later team in the list was read as the subject.
-        from nbatools.commands.natural_query import _teams_in_order
+    from nbatools.commands.entity_resolution import mask_copula_team_lookalikes
+    from nbatools.commands.natural_query import _teams_in_order
 
-        before = [team for _, _, team in _teams_in_order(text[:start])]
-        if before:
-            route_kwargs["team"] = before[0]
-        elif route.startswith("player_"):
-            route_kwargs["team"] = None
+    # Resolve the subject outside the complete opponent span, in either clause
+    # order. Mask in full context before removing spans: "what was New York"
+    # contains a verb, while an explicit "WAS record" still names Washington.
+    masked = mask_copula_team_lookalikes(text)
+    outside = masked[:start] + " " * (end - start) + masked[end:]
+    owners = [team for _, _, team in _teams_in_order(outside)]
+    if len(owners) == 1:
+        route_kwargs["team"] = owners[0]
+    elif not owners and route.startswith("player_"):
+        route_kwargs["team"] = None
     if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:
         return
     route_kwargs["opponent"] = list(dict.fromkeys(teams))

@@ -80,6 +80,14 @@ Metadata values are populated when they apply and are known. A field being
 part of the shared vocabulary does not justify inventing a value when the
 engine did not resolve one.
 
+For executed team scopes, metadata uses the final route arguments rather than
+the initial name detections. Explicit opponent unions expose `opponents` as an
+ordered abbreviation list and keep `opponent` and the applied-filter value as
+comma-separated display strings. They do not expose a singleton
+`opponent_context`. Record prose names the alternatives with "or"; one opponent
+retains its existing scalar identity contract. Natural and structured requests
+use the same representation.
+
 ### 1.4 No-result and error semantics
 
 `NoResult` is a first-class structured result. Its current canonical reasons

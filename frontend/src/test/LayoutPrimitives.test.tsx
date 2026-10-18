@@ -20,6 +20,18 @@ import {
 
 const originalMatchMedia = window.matchMedia;
 
+it("shows an opponent union as text without a false singleton identity", () => {
+  const data = makeResponse();
+  data.result!.metadata = {
+    team: "NYK", opponent: "MIA, WAS", opponents: ["MIA", "WAS"],
+    applied_filters: [{ label: "Opponent", value: "MIA, WAS", kind: "team" }],
+  };
+  render(<ResultContextSummary data={data} />);
+  const context = screen.getByLabelText("Result context");
+  expect(context).toHaveTextContent("MIA, WAS");
+  expect(context).not.toHaveTextContent("Washington Wizards");
+});
+
 function mockReducedMotion(matches: boolean) {
   Object.defineProperty(window, "matchMedia", {
     configurable: true,

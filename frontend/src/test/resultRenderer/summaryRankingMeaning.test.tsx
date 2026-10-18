@@ -5,6 +5,19 @@ import { formatValue, formatAverageValue, formatProseValue } from "../../compone
 import { makeResponse } from "./helpers";
 
 describe("summary and ranking display meaning", () => {
+  it("names every opponent in a union without a singleton identity", () => {
+    render(<ResultRenderer data={makeResponse({ route: "team_record", result: {
+      query_class: "summary", result_status: "ok", notes: [], caveats: [],
+      metadata: {
+        team: "NYK", opponent: "MIA, WAS", opponents: ["MIA", "WAS"],
+        applied_filters: [{ label: "Opponent", value: "MIA, WAS", kind: "team" }],
+      },
+      sections: { summary: [{ team_name: "New York Knicks", games: 3, wins: 2, losses: 1, win_pct: 0.667 }] },
+    } })} />);
+    expect(screen.getByText(/against MIA or WAS/)).toBeInTheDocument();
+    expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
+  });
+
   it("names an abbreviation-only opponent without inventing a full name", () => {
     render(<ResultRenderer data={makeResponse({ route: "team_record", result: {
       query_class: "summary", result_status: "ok", notes: [], caveats: [],

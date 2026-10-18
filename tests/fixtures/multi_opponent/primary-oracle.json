@@ -1,0 +1,299 @@
+{
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "baseline_revision": "1159d3c7659b7040d0a0aa3d180391eccebbba05",
+  "reviewer": "/root/comparison_checker",
+  "source_method": "stdlib CSV selection and reciprocal team-score/venue validation; no engine selection or parsing used",
+  "scope": "PTS/REB/AST and WL on observed immutable snapshot; historical plus_minus findings unqualified; no absence or season completeness inference",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37"
+  },
+  "cases": [
+    {
+      "id": "MO-A1",
+      "phase": "primary",
+      "operation": "record",
+      "subject": "NYK",
+      "opponents": [
+        "MIA",
+        "WAS"
+      ],
+      "seasons": [
+        "2023-24"
+      ],
+      "venue": "away",
+      "query": "New York away record against Miami and Washington in 2023-24",
+      "subject_id": 1610612752,
+      "subject_name": "New York Knicks",
+      "buckets": [
+        {
+          "bucket": "all",
+          "games": 3,
+          "wins": 2,
+          "losses": 1,
+          "keys": [
+            [
+              22300028,
+              1610612752,
+              1610612764
+            ],
+            [
+              22300494,
+              1610612752,
+              1610612764
+            ],
+            [
+              22301096,
+              1610612752,
+              1610612748
+            ]
+          ],
+          "sums": {
+            "pts": 340,
+            "reb": 123,
+            "ast": 78
+          },
+          "means": {
+            "pts": 113.33333333333333,
+            "reb": 41,
+            "ast": 26
+          }
+        }
+      ],
+      "all_game_keys": [
+        [
+          22300028,
+          1610612752,
+          1610612764
+        ],
+        [
+          22300494,
+          1610612752,
+          1610612764
+        ],
+        [
+          22301096,
+          1610612752,
+          1610612748
+        ]
+      ]
+    },
+    {
+      "id": "MO-A2",
+      "phase": "primary",
+      "operation": "season_split",
+      "subject": "NYK",
+      "opponents": [
+        "MIA",
+        "WAS"
+      ],
+      "seasons": [
+        "2023-24",
+        "2025-26"
+      ],
+      "venue": "away",
+      "query": "Against Miami and Washington, what was New York away record in each of 2023-24 and 2025-26?",
+      "subject_id": 1610612752,
+      "subject_name": "New York Knicks",
+      "buckets": [
+        {
+          "bucket": "2023-24",
+          "games": 3,
+          "wins": 2,
+          "losses": 1,
+          "keys": [
+            [
+              22300028,
+              1610612752,
+              1610612764
+            ],
+            [
+              22300494,
+              1610612752,
+              1610612764
+            ],
+            [
+              22301096,
+              1610612752,
+              1610612748
+            ]
+          ],
+          "sums": {
+            "pts": 340,
+            "reb": 123,
+            "ast": 78
+          },
+          "means": {
+            "pts": 113.33333333333333,
+            "reb": 41,
+            "ast": 26
+          }
+        },
+        {
+          "bucket": "2025-26",
+          "games": 3,
+          "wins": 1,
+          "losses": 2,
+          "keys": [
+            [
+              22500108,
+              1610612752,
+              1610612748
+            ],
+            [
+              22500244,
+              1610612752,
+              1610612748
+            ],
+            [
+              22500718,
+              1610612752,
+              1610612764
+            ]
+          ],
+          "sums": {
+            "pts": 352,
+            "reb": 150,
+            "ast": 80
+          },
+          "means": {
+            "pts": 117.33333333333333,
+            "reb": 50,
+            "ast": 26.666666666666668
+          }
+        }
+      ],
+      "all_game_keys": [
+        [
+          22300028,
+          1610612752,
+          1610612764
+        ],
+        [
+          22300494,
+          1610612752,
+          1610612764
+        ],
+        [
+          22301096,
+          1610612752,
+          1610612748
+        ],
+        [
+          22500108,
+          1610612752,
+          1610612748
+        ],
+        [
+          22500244,
+          1610612752,
+          1610612748
+        ],
+        [
+          22500718,
+          1610612752,
+          1610612764
+        ]
+      ]
+    },
+    {
+      "id": "MO-B1",
+      "phase": "primary",
+      "operation": "opponent_split",
+      "subject": "LAL",
+      "opponents": [
+        "BOS",
+        "WAS"
+      ],
+      "seasons": [
+        "2023-24"
+      ],
+      "venue": null,
+      "query": "Lakers opponent splits against Celtics and Wizards in 2023-24",
+      "subject_id": 1610612747,
+      "subject_name": "Los Angeles Lakers",
+      "buckets": [
+        {
+          "bucket": "BOS",
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "keys": [
+            [
+              22300403,
+              1610612747,
+              1610612738
+            ],
+            [
+              22300684,
+              1610612747,
+              1610612738
+            ]
+          ],
+          "sums": {
+            "pts": 229,
+            "reb": 95,
+            "ast": 54
+          },
+          "means": {
+            "pts": 114.5,
+            "reb": 47.5,
+            "ast": 27
+          }
+        },
+        {
+          "bucket": "WAS",
+          "games": 2,
+          "wins": 2,
+          "losses": 0,
+          "keys": [
+            [
+              22300856,
+              1610612747,
+              1610612764
+            ],
+            [
+              22301103,
+              1610612747,
+              1610612764
+            ]
+          ],
+          "sums": {
+            "pts": 259,
+            "reb": 94,
+            "ast": 51
+          },
+          "means": {
+            "pts": 129.5,
+            "reb": 47,
+            "ast": 25.5
+          }
+        }
+      ],
+      "all_game_keys": [
+        [
+          22300403,
+          1610612747,
+          1610612738
+        ],
+        [
+          22300684,
+          1610612747,
+          1610612738
+        ],
+        [
+          22300856,
+          1610612747,
+          1610612764
+        ],
+        [
+          22301103,
+          1610612747,
+          1610612764
+        ]
+      ]
+    }
+  ]
+}

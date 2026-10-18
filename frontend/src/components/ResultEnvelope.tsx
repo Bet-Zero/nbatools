@@ -575,7 +575,9 @@ function buildContextChips(
     if (typeof metadata.season === "string") {
       chips.push({ key: "season", label: "Season", value: metadata.season });
     }
-    if (typeof metadata.opponent === "string") {
+    if (metadata.opponents?.length) {
+      chips.push({ key: "opponent", label: "vs", value: metadata.opponents.join(", ") });
+    } else if (typeof metadata.opponent === "string") {
       const opponentIdentity = resolveTeamIdentity({
         teamId: metadata.opponent_context?.team_id,
         teamAbbr: metadata.opponent_context?.team_abbr,
