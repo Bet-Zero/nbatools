@@ -123,6 +123,24 @@ jobs:
       R2_VALIDATION_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
       R2_VALIDATION_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
 
+  backup:
+    name: Back up owner-approved generation after live verification
+    needs: [resolve, verify]
+    if: inputs.mode == 'publish' && needs.verify.result == 'success'
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/r2-real-data-validation.yml
+    with:
+      publication_package: ""
+      publication_mode: ""
+      publication_publisher_sha: ""
+      backup_generation: ${{ needs.resolve.outputs.generation_id }}
+    secrets:
+      R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_VALIDATION_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_VALIDATION_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+
   receipt:
     name: Preserve durable publication receipt
     needs: [publish, verify]

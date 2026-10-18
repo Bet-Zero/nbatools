@@ -198,7 +198,7 @@ def test_exactly_one_workflow_reads_the_r2_credential() -> None:
     caller = yaml.load((WORKFLOWS / caller_name).read_text(), Loader=yaml.BaseLoader)
     expected = {name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()}
     for name, job in caller["jobs"].items():
-        if name in {"prepare", "verify"}:
+        if name in {"prepare", "verify", "backup"}:
             assert job["uses"] == "./.github/workflows/r2-real-data-validation.yml"
             assert job["secrets"] == expected
         else:
@@ -578,8 +578,9 @@ def test_request_resolver_has_no_credentials_or_project_install() -> None:
     resolver = next(s for s in _steps("request") if s.get("with", {}).get("path") == "workflow")
     assert resolver["with"]["ref"] == "${{ github.workflow_sha }}"
     assert checkout["with"]["ref"] == (
-        "${{ github.event_name == 'push' && github.sha || inputs.target_ref }}"
+        "${{ inputs.backup_generation != '' && github.sha || github.event_name == 'push' && github.sha || inputs.target_ref }}"
     )
+    assert "backup_generation" not in _workflow()["on"]["workflow_dispatch"]["inputs"]
     assert checkout["with"]["fetch-depth"] == "2"
     for name in _jobs():
         for step in _steps(name):

@@ -36,6 +36,11 @@ on:
       publication_publisher_sha:
         type: string
         required: true
+      backup_generation:
+        description: "Internal read-only backup after approved publication and live verification"
+        type: string
+        required: false
+        default: ""
     secrets:
       R2_VALIDATION_ACCOUNT_ID:
         required: true
@@ -111,7 +116,7 @@ jobs:
       - name: Check out the exact push or requested manual revision
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'push' && github.sha || inputs.target_ref }}
+          ref: ${{ inputs.backup_generation != '' && github.sha || github.event_name == 'push' && github.sha || inputs.target_ref }}
           fetch-depth: 2
           path: candidate
           persist-credentials: false
@@ -124,6 +129,7 @@ jobs:
           SCOPE: ${{ inputs.scope }}
           TESTS: ${{ inputs.tests }}
           RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
+          BACKUP_GENERATION: ${{ inputs.backup_generation }}
         working-directory: candidate
         run: python ../workflow/tools/resolve_r2_validation_request.py
 
@@ -453,14 +459,15 @@ jobs:
     name: Preserve manual cloud backup independently of R2
     needs: [preflight, data-backed-tests]
     if: >-
-      github.event_name == 'push' &&
-      startsWith(github.ref, 'refs/heads/r2-validation/cloud-backup-') &&
+      ((github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/heads/r2-validation/cloud-backup-')) ||
+      (inputs.backup_generation != '' && github.ref == 'refs/heads/main')) &&
       needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup' &&
       needs.data-backed-tests.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # No R2 environment or secrets. Existing repository token only, for this
-    # explicit backup release. No cron, production deployment or publication.
+    # backup release. No cron, production deployment or R2 publication.
     permissions:
       contents: write
       actions: read
@@ -486,7 +493,7 @@ jobs:
           if receipt['r2_writes'] != 0 or receipt['production_pointer_unchanged'] is not True or not 0 < archive.stat().st_size <= 200_000_000 or archive.stat().st_size != receipt['archive_bytes'] or hashlib.sha256(archive.read_bytes()).hexdigest() != receipt['archive_sha256']:
               raise ValueError('Backup failed the retention gate')
           PY
-          gh release create "cloud-backup-$GITHUB_RUN_ID" evidence/acquired_data/cloud-backup/generation.zip evidence/acquired_data/cloud-backup/backup-receipt.json --target "$GITHUB_SHA" --title "Manual NBA cloud backup $GITHUB_RUN_ID" --notes "Validated byte-exact read-only R2 export. Independent restore result is attached after the separate runner finishes. No production publication or scheduled refresh." --latest=false
+          gh release create "cloud-backup-$GITHUB_RUN_ID" evidence/acquired_data/cloud-backup/generation.zip evidence/acquired_data/cloud-backup/backup-receipt.json --target "$GITHUB_SHA" --title "NBA cloud backup $GITHUB_RUN_ID" --notes "Validated byte-exact read-only R2 export. Independent restore result is attached after the separate runner finishes. No production publication or scheduled refresh." --latest=false
 
   restore-backup:
     name: Restore durable release on a separate secret-free runner
@@ -509,21 +516,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: Bet-Zero/nbatools
           DATA_SOURCE: local
+          FRESHNESS_DIAGNOSTIC: ${{ inputs.backup_generation == '' && 'true' || 'false' }}
         run: |
           gh release download "cloud-backup-$GITHUB_RUN_ID" --pattern generation.zip --pattern backup-receipt.json --dir recovered
           python -m tools.cloud_backup recovered/generation.zip recovered/backup-receipt.json recovered/data
           python -m tools.cloud_refresh plan --output refresh-plan.json
           python - <<'PY'
-          import json
+          import json, os
           from pathlib import Path
           from tools.cloud_refresh import prepare
-          result = prepare('recovered/generation.zip', 'recovered/backup-receipt.json', 'manual-refresh-attempt', season='2025-26', timeout=150)
+          if os.environ['FRESHNESS_DIAGNOSTIC'] == 'true':
+              result = prepare('recovered/generation.zip', 'recovered/backup-receipt.json', 'manual-refresh-attempt', season='2025-26', timeout=150)
+          else:
+              result = {'state': 'not_requested', 'candidate': None, 'production_writes': 0, 'reason': 'Backup automation never starts acquisition or refresh'}
           Path('freshness-receipt.json').write_text(json.dumps(result, indent=2) + '\n')
           print('CLOUD_FRESHNESS_JSON', json.dumps(result, sort_keys=True))
           # This is an explicit setup diagnostic. Failed acquisition is retained
           # as failed and cannot be treated as fresh data or a candidate.
           assert result['production_writes'] == 0
-          assert result['state'] in {'failed', 'prepared_no_writes'}
+          assert result['state'] in {'failed', 'prepared_no_writes', 'not_requested'}
           if result['state'] == 'failed':
               assert result['candidate'] is None
           PY
