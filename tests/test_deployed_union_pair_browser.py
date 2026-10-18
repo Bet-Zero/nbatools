@@ -114,6 +114,73 @@ def _owned_window_cases():
     return cases
 
 
+def _owned_player_cases():
+    oracle = json.loads(
+        (ROOT / "tests/fixtures/list_owned_stats/primary-source-oracle.json").read_text()
+    )
+    for path, digest in oracle["sources"].items():
+        assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+    players = data_read_csv("raw/player_game_stats/2023-24_regular_season.csv")
+    teams = data_read_csv("raw/team_game_stats/2023-24_regular_season.csv")
+    candidates = players.loc[
+        players.player_id.eq(2544) & players.opponent_team_abbr.isin(oracle["opponents"])
+    ]
+    candidates = (
+        candidates.merge(
+            teams[["game_id", "team_id", "pts", "wl"]].rename(columns={"pts": "team_pts"}),
+            on=["game_id", "team_id"],
+            validate="many_to_one",
+        )
+        .merge(
+            teams[["game_id", "team_id", "pts"]].rename(
+                columns={"team_id": "opponent_team_id", "pts": "opponent_pts"}
+            ),
+            on=["game_id", "opponent_team_id"],
+            validate="many_to_one",
+        )
+        .sort_values(["game_date", "game_id"])
+    )
+    assert len(candidates) == len(oracle["candidate_rows"])
+    for (_, row), expected in zip(candidates.iterrows(), oracle["candidate_rows"]):
+        assert all(row[key] == value for key, value in expected.items())
+    cases = []
+    for owner, stat in (("Lakers", "team_pts"), ("Celtics", "opponent_pts")):
+        selected = candidates.loc[candidates[stat].ge(120)]
+        if owner == "Celtics":
+            selected = selected.loc[selected.opponent_team_abbr.eq("BOS")]
+        rows = [
+            row for row in oracle["candidate_rows"] if row["game_id"] in selected.game_id.tolist()
+        ]
+        expected = dict(
+            rows=rows,
+            games=len(rows),
+            wins=sum(row["wl"] == "W" for row in rows),
+            losses=sum(row["wl"] == "L" for row in rows),
+            sums={stat: sum(row[stat] for row in rows) for stat in ("pts", "reb", "ast")},
+        )
+        if owner == "Lakers":
+            assert expected == {key: oracle["expected"][key] for key in expected}
+        condition = dict(stat=stat, min_value=120, max_value=None)
+        if owner == "Celtics":
+            condition["opponent_team"] = "BOS"
+        cases.append(
+            dict(
+                id="owned-player-team" if owner == "Lakers" else "owned-player-opponent",
+                kind="owned-player",
+                owner=owner,
+                condition=condition,
+                expected=expected,
+                query=oracle["query"].replace("when Lakers score", f"when {owner} score"),
+                text=[
+                    "LeBron James",
+                    "BOS, WAS",
+                    "FILTER\n120+ TEAM PTS" if owner == "Lakers" else "FILTER\n120+ BOS OPP PTS",
+                ],
+            )
+        )
+    return cases
+
+
 def _cases():
     unions = {case["id"]: case for case in _load_oracle("primary-oracle.json")}
     comparisons = _load_oracle("comparison-primary-oracle.json")
@@ -235,6 +302,7 @@ def _cases():
         ),
     ]
     cases += _owned_window_cases()
+    cases += _owned_player_cases()
     for case in cases:
         case["forbidden"] = case.get("forbidden", []) + ["undefined", "NaN", "Infinity"]
         if case["kind"] not in ("empty", "guard", "owned-window"):
@@ -242,7 +310,7 @@ def _cases():
         if case["kind"] == "season_split":
             case["text"].append(", ".join(case["expected"]["seasons"]))
             case["forbidden"].append("2023-24 to 2025-26")
-    assert len(cases) == len({case["id"] for case in cases}) == 12
+    assert len(cases) == len({case["id"] for case in cases}) == 14
     return cases
 
 
@@ -453,6 +521,64 @@ def _owned_window(item, case, metadata, sections):
     assert cells["W-L"] == "0-1" and int(cells["Games"]) == 1 and float(cells["PPG"]) == 115
 
 
+def _owned_player(item, case, metadata, sections):
+    assert item["payload"]["route"] == "player_game_summary"
+    assert metadata["player"] == "LeBron James" and metadata["player_context"]["player_id"] == 2544
+    assert metadata["season"] == "2023-24"
+    assert metadata["opponents"] == ["BOS", "WAS"] and metadata["opponent"] == "BOS, WAS"
+    assert not metadata.get("opponent_context")
+    assert metadata["stat"] == case["condition"]["stat"] and metadata["min_value"] == 120
+    assert metadata["conditions"] == metadata["threshold_conditions"] == [case["condition"]]
+    threshold_label = "team_pts min" if case["owner"] == "Lakers" else "BOS OPP PTS min"
+    assert any(
+        f["label"] == threshold_label and f["kind"] == "threshold" and float(f["value"]) == 120
+        for f in metadata["applied_filters"]
+    )
+    assert metadata["team"] == ("LAL" if case["owner"] == "Lakers" else None)
+    if case["owner"] == "Lakers":
+        assert metadata["team_context"]["team_id"] == 1610612747
+    else:
+        assert not metadata.get("team_context")
+    expected = case["expected"]
+    assert len(sections["summary"]) == 1
+    summary = sections["summary"][0]
+    assert summary["player_name"] == "LeBron James"
+    _summary(summary, expected)
+    for stat, value in expected["sums"].items():
+        assert summary[stat + "_sum"] == value
+    rows = sections["game_log"]
+    assert len(rows) == expected["games"]
+    for actual, truth in zip(rows, expected["rows"]):
+        for field in (
+            "game_id",
+            "player_id",
+            "team_id",
+            "opponent_team_id",
+            "pts",
+            "reb",
+            "ast",
+            "wl",
+        ):
+            assert actual[field] == truth[field]
+    table = _table(item, "Game log")
+    assert len(table["rows"]) == expected["games"]
+    # Public game logs show newest first; API sections retain chronological order.
+    for displayed, truth in zip(table["rows"], reversed(expected["rows"])):
+        cells = dict(zip(table["headers"], displayed))
+        assert truth["team_abbr"] in cells["TM"]
+        assert truth["opponent_team_abbr"] in cells["Opp"]
+        assert cells["W/L"] == truth["wl"]
+        for stat in ("pts", "reb", "ast"):
+            assert float(cells[stat.upper()]) == truth[stat]
+    footers = {row[0]: dict(zip(table["headers"], row)) for row in table["footers"]}
+    assert set(footers) == {"Average", "Total"}
+    for stat, value in expected["sums"].items():
+        assert float(footers["Total"][stat.upper()]) == value
+        assert float(footers["Average"][stat.upper()]) == pytest.approx(
+            value / expected["games"], abs=0.051
+        )
+
+
 def _validate_answers(receipt, cases):
     by_id, seen = {case["id"]: case for case in cases}, set()
     assert not receipt["failures"]
@@ -483,6 +609,8 @@ def _validate_answers(receipt, cases):
             _union(item, case, metadata, sections)
         elif case["kind"] == "owned-window":
             _owned_window(item, case, metadata, sections)
+        elif case["kind"] == "owned-player":
+            _owned_player(item, case, metadata, sections)
         else:
             _participation(item, case, metadata, sections)
     assert seen == {(viewport, ident) for viewport in ("desktop", "mobile") for ident in by_id}

@@ -13,7 +13,7 @@ const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
 const splits = cases.length === 12 && cases.every(item => /^k07[_-]/.test(item.id));
-const unionPairIds = ["union-record", "union-seasons", "union-opponent-split", "union-team-comparison", "union-player-comparison", "pair-out", "pair-playing", "pair-player-bound", "pair-qualified-empty", "pair-third-player", "owned-window", "owned-qualifying"];
+const unionPairIds = ["union-record", "union-seasons", "union-opponent-split", "union-team-comparison", "union-player-comparison", "pair-out", "pair-playing", "pair-player-bound", "pair-qualified-empty", "pair-third-player", "owned-window", "owned-qualifying", "owned-player-team", "owned-player-opponent"];
 const unionPairs = cases.length === unionPairIds.length && unionPairIds.every(id => cases.some(item => item.id === id));
 if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
