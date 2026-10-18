@@ -1,0 +1,124 @@
+{
+  "scope": "Independently frozen language probes before the next K04 implementation; no interpreter execution. Expected meanings, not fresh numerical acceptance. Keep withheld until implementation is frozen.",
+  "valid": [
+    {
+      "id": "u1",
+      "query": "For 2023-24, rank the leading 4 scorers by points per game, requiring 50 games played.",
+      "meaning": {
+        "metric": "pts_per_game",
+        "limit": 4,
+        "min_games": 50,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u2",
+      "query": "Among players who appeared in at least 50 games in 2023-24, which 4 accumulated the most points?",
+      "meaning": {
+        "metric": "pts_total",
+        "limit": 4,
+        "min_games": 50,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u3",
+      "query": "Show the top 3 in free throw accuracy in 2023-24, with a floor of 250 free throw attempts.",
+      "meaning": {
+        "metric": "ft_pct",
+        "ratio": "sum(ftm)/sum(fta)",
+        "limit": 3,
+        "min_fta": 250,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u4",
+      "query": "With at least 250 three-point attempts in 2023-24, rank 3 players by three-point shooting percentage.",
+      "meaning": {
+        "metric": "fg3_pct",
+        "ratio": "sum(fg3m)/sum(fg3a)",
+        "limit": 3,
+        "min_fg3a": 250,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u5",
+      "query": "Who had the most 35-point games in 2023-24? Give the leading 4 players.",
+      "meaning": {
+        "metric": "event_count",
+        "event": {
+          "pts_min": 35
+        },
+        "limit": 4,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u6",
+      "query": "Rank the first 3 players by how often they recorded at least 8 assists and zero turnovers in 2023-24.",
+      "meaning": {
+        "metric": "event_count",
+        "event": {
+          "ast_min": 8,
+          "tov_min": 0,
+          "tov_max": 0
+        },
+        "limit": 3,
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u7",
+      "query": "Devin Booker: show his 4 highest-scoring games in 2023-24.",
+      "meaning": {
+        "subject": "Devin Booker",
+        "metric": "pts",
+        "grain": "player_game",
+        "limit": 4,
+        "order": "points descending, date descending",
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u8",
+      "query": "Average Devin Booker's final 4 appearances of 2023-24.",
+      "meaning": {
+        "subject": "Devin Booker",
+        "grain": "player_game_summary",
+        "last_n": 4,
+        "selection": "latest appearances before averaging",
+        "season": "2023-24"
+      }
+    },
+    {
+      "id": "u9",
+      "query": "Rank 4 players by points per game in 2023-24 with at least 4 games played.",
+      "meaning": {
+        "metric": "pts_per_game",
+        "limit": 4,
+        "min_games": 4,
+        "season": "2023-24",
+        "note": "same numeral independently owns rank limit and eligibility"
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "c1",
+      "query": "Rank 4 players by points in 2023-24, requiring 50 games played.",
+      "meaning": "Points total versus points per game is not explicitly selected; disclose the documented default or clarify, never claim an explicit requested metric."
+    },
+    {
+      "id": "c2",
+      "query": "Top 4 players by free throw percentage in 2023-24 with at least 250 three-point attempts.",
+      "meaning": "Eligibility belongs to three-point attempts, not free throws; honor that cross-stat floor if supported or refuse, never silently replace with 250 free throw attempts."
+    },
+    {
+      "id": "c3",
+      "query": "Top 4 players by points per game in 2023-24 against teams with at least 50 wins.",
+      "meaning": "50-win predicate belongs to opponents, not player games played; honor qualified opponent wins or refuse."
+    }
+  ]
+}

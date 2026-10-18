@@ -10837,3 +10837,1534 @@ cases:
     review_notes: Independent unfamiliar wording exposed an unresolved-player error
       on the record preposition; now a regression, not unseen language evidence. Exact
       SEA era keys/WL checked by K01 test.
+
+  - id: k04_a1
+    query: Top 5 players by total points in 2023-24 with at least 40 games played
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.pts_total
+      equals: 2370.0
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1629029
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Shai Gilgeous-Alexander
+    - path: result.sections.leaderboard.1.games_played
+      equals: 75
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.pts_total
+      equals: 2254.0
+    - path: result.sections.leaderboard.1.player_id
+      equals: 1628983
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.2.games_played
+      equals: 73
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.pts_total
+      equals: 2222.0
+    - path: result.sections.leaderboard.2.player_id
+      equals: 203507
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.3.games_played
+      equals: 77
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.pts_total
+      equals: 2212.0
+    - path: result.sections.leaderboard.3.player_id
+      equals: 1628973
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Nikola Jokić
+    - path: result.sections.leaderboard.4.games_played
+      equals: 79
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.pts_total
+      equals: 2085.0
+    - path: result.sections.leaderboard.4.player_id
+      equals: 203999
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_a1_heldout
+    query: Across 2023-24, which 5 players accumulated the most points, requiring 40 or more games
+      played?
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.pts_total
+      equals: 2370.0
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1629029
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Shai Gilgeous-Alexander
+    - path: result.sections.leaderboard.1.games_played
+      equals: 75
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.pts_total
+      equals: 2254.0
+    - path: result.sections.leaderboard.1.player_id
+      equals: 1628983
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.2.games_played
+      equals: 73
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.pts_total
+      equals: 2222.0
+    - path: result.sections.leaderboard.2.player_id
+      equals: 203507
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.3.games_played
+      equals: 77
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.pts_total
+      equals: 2212.0
+    - path: result.sections.leaderboard.3.player_id
+      equals: 1628973
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Nikola Jokić
+    - path: result.sections.leaderboard.4.games_played
+      equals: 79
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.pts_total
+      equals: 2085.0
+    - path: result.sections.leaderboard.4.player_id
+      equals: 203999
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_a2
+    query: Top 5 players by points per game in 2023-24 with at least 40 games played
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.pts_per_game
+      equals: 33.857142857142854
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1629029
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.pts_per_game
+      equals: 30.438356164383563
+    - path: result.sections.leaderboard.1.player_id
+      equals: 203507
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Shai Gilgeous-Alexander
+    - path: result.sections.leaderboard.2.games_played
+      equals: 75
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.pts_per_game
+      equals: 30.053333333333335
+    - path: result.sections.leaderboard.2.player_id
+      equals: 1628983
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.3.games_played
+      equals: 77
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.pts_per_game
+      equals: 28.727272727272727
+    - path: result.sections.leaderboard.3.player_id
+      equals: 1628973
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Kevin Durant
+    - path: result.sections.leaderboard.4.games_played
+      equals: 75
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.pts_per_game
+      equals: 27.093333333333334
+    - path: result.sections.leaderboard.4.player_id
+      equals: 201142
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_a2_heldout
+    query: For players with at least 40 appearances in 2023-24, give the 5 highest scoring averages
+      per game.
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.pts_per_game
+      equals: 33.857142857142854
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1629029
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.pts_per_game
+      equals: 30.438356164383563
+    - path: result.sections.leaderboard.1.player_id
+      equals: 203507
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Shai Gilgeous-Alexander
+    - path: result.sections.leaderboard.2.games_played
+      equals: 75
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.pts_per_game
+      equals: 30.053333333333335
+    - path: result.sections.leaderboard.2.player_id
+      equals: 1628983
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.3.games_played
+      equals: 77
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.pts_per_game
+      equals: 28.727272727272727
+    - path: result.sections.leaderboard.3.player_id
+      equals: 1628973
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Kevin Durant
+    - path: result.sections.leaderboard.4.games_played
+      equals: 75
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.pts_per_game
+      equals: 27.093333333333334
+    - path: result.sections.leaderboard.4.player_id
+      equals: 201142
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_b1
+    query: Top 5 players by three point percentage in 2023-24 minimum 300 attempts
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Grayson Allen
+    - path: result.sections.leaderboard.0.games_played
+      equals: 75
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.fg3_pct
+      equals: 0.4606741573033708
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1628960
+    - path: result.sections.leaderboard.0.fg3m_total
+      equals: 205
+    - path: result.sections.leaderboard.0.fg3a_total
+      equals: 445
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Mike Conley
+    - path: result.sections.leaderboard.1.games_played
+      equals: 76
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.fg3_pct
+      equals: 0.4419753086419753
+    - path: result.sections.leaderboard.1.player_id
+      equals: 201144
+    - path: result.sections.leaderboard.1.fg3m_total
+      equals: 179
+    - path: result.sections.leaderboard.1.fg3a_total
+      equals: 405
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Norman Powell
+    - path: result.sections.leaderboard.2.games_played
+      equals: 76
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.fg3_pct
+      equals: 0.4348958333333333
+    - path: result.sections.leaderboard.2.player_id
+      equals: 1626181
+    - path: result.sections.leaderboard.2.fg3m_total
+      equals: 167
+    - path: result.sections.leaderboard.2.fg3a_total
+      equals: 384
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: CJ McCollum
+    - path: result.sections.leaderboard.3.games_played
+      equals: 66
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.fg3_pct
+      equals: 0.42908438061041293
+    - path: result.sections.leaderboard.3.player_id
+      equals: 203468
+    - path: result.sections.leaderboard.3.fg3m_total
+      equals: 239
+    - path: result.sections.leaderboard.3.fg3a_total
+      equals: 557
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Jrue Holiday
+    - path: result.sections.leaderboard.4.games_played
+      equals: 69
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.fg3_pct
+      equals: 0.42857142857142855
+    - path: result.sections.leaderboard.4.player_id
+      equals: 201950
+    - path: result.sections.leaderboard.4.fg3m_total
+      equals: 138
+    - path: result.sections.leaderboard.4.fg3a_total
+      equals: 322
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_b1_heldout
+    query: 'Rank 2023-24 players by three-point accuracy: at least 300 three-point attempts, top 5.'
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Grayson Allen
+    - path: result.sections.leaderboard.0.games_played
+      equals: 75
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.fg3_pct
+      equals: 0.4606741573033708
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1628960
+    - path: result.sections.leaderboard.0.fg3m_total
+      equals: 205
+    - path: result.sections.leaderboard.0.fg3a_total
+      equals: 445
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Mike Conley
+    - path: result.sections.leaderboard.1.games_played
+      equals: 76
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.fg3_pct
+      equals: 0.4419753086419753
+    - path: result.sections.leaderboard.1.player_id
+      equals: 201144
+    - path: result.sections.leaderboard.1.fg3m_total
+      equals: 179
+    - path: result.sections.leaderboard.1.fg3a_total
+      equals: 405
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Norman Powell
+    - path: result.sections.leaderboard.2.games_played
+      equals: 76
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.fg3_pct
+      equals: 0.4348958333333333
+    - path: result.sections.leaderboard.2.player_id
+      equals: 1626181
+    - path: result.sections.leaderboard.2.fg3m_total
+      equals: 167
+    - path: result.sections.leaderboard.2.fg3a_total
+      equals: 384
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: CJ McCollum
+    - path: result.sections.leaderboard.3.games_played
+      equals: 66
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.fg3_pct
+      equals: 0.42908438061041293
+    - path: result.sections.leaderboard.3.player_id
+      equals: 203468
+    - path: result.sections.leaderboard.3.fg3m_total
+      equals: 239
+    - path: result.sections.leaderboard.3.fg3a_total
+      equals: 557
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Jrue Holiday
+    - path: result.sections.leaderboard.4.games_played
+      equals: 69
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.fg3_pct
+      equals: 0.42857142857142855
+    - path: result.sections.leaderboard.4.player_id
+      equals: 201950
+    - path: result.sections.leaderboard.4.fg3m_total
+      equals: 138
+    - path: result.sections.leaderboard.4.fg3a_total
+      equals: 322
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_b2
+    query: Top 5 players by free throw percentage in 2023-24 minimum 200 attempts
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Stephen Curry
+    - path: result.sections.leaderboard.0.games_played
+      equals: 74
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.ft_pct
+      equals: 0.9228395061728395
+    - path: result.sections.leaderboard.0.player_id
+      equals: 201939
+    - path: result.sections.leaderboard.0.ftm_total
+      equals: 299
+    - path: result.sections.leaderboard.0.fta_total
+      equals: 324
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Damian Lillard
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.ft_pct
+      equals: 0.9202334630350194
+    - path: result.sections.leaderboard.1.player_id
+      equals: 203081
+    - path: result.sections.leaderboard.1.ftm_total
+      equals: 473
+    - path: result.sections.leaderboard.1.fta_total
+      equals: 514
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Paul George
+    - path: result.sections.leaderboard.2.games_played
+      equals: 74
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.ft_pct
+      equals: 0.9072164948453608
+    - path: result.sections.leaderboard.2.player_id
+      equals: 202331
+    - path: result.sections.leaderboard.2.ftm_total
+      equals: 264
+    - path: result.sections.leaderboard.2.fta_total
+      equals: 291
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Kyrie Irving
+    - path: result.sections.leaderboard.3.games_played
+      equals: 58
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.ft_pct
+      equals: 0.9047619047619048
+    - path: result.sections.leaderboard.3.player_id
+      equals: 202681
+    - path: result.sections.leaderboard.3.ftm_total
+      equals: 190
+    - path: result.sections.leaderboard.3.fta_total
+      equals: 210
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Lauri Markkanen
+    - path: result.sections.leaderboard.4.games_played
+      equals: 55
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.ft_pct
+      equals: 0.8989169675090253
+    - path: result.sections.leaderboard.4.player_id
+      equals: 1628374
+    - path: result.sections.leaderboard.4.ftm_total
+      equals: 249
+    - path: result.sections.leaderboard.4.fta_total
+      equals: 277
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_b2_heldout
+    query: With a floor of 200 free-throw attempts, who had the 5 highest free-throw percentages in
+      2023-24?
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Stephen Curry
+    - path: result.sections.leaderboard.0.games_played
+      equals: 74
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.ft_pct
+      equals: 0.9228395061728395
+    - path: result.sections.leaderboard.0.player_id
+      equals: 201939
+    - path: result.sections.leaderboard.0.ftm_total
+      equals: 299
+    - path: result.sections.leaderboard.0.fta_total
+      equals: 324
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Damian Lillard
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.ft_pct
+      equals: 0.9202334630350194
+    - path: result.sections.leaderboard.1.player_id
+      equals: 203081
+    - path: result.sections.leaderboard.1.ftm_total
+      equals: 473
+    - path: result.sections.leaderboard.1.fta_total
+      equals: 514
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Paul George
+    - path: result.sections.leaderboard.2.games_played
+      equals: 74
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.ft_pct
+      equals: 0.9072164948453608
+    - path: result.sections.leaderboard.2.player_id
+      equals: 202331
+    - path: result.sections.leaderboard.2.ftm_total
+      equals: 264
+    - path: result.sections.leaderboard.2.fta_total
+      equals: 291
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Kyrie Irving
+    - path: result.sections.leaderboard.3.games_played
+      equals: 58
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.ft_pct
+      equals: 0.9047619047619048
+    - path: result.sections.leaderboard.3.player_id
+      equals: 202681
+    - path: result.sections.leaderboard.3.ftm_total
+      equals: 190
+    - path: result.sections.leaderboard.3.fta_total
+      equals: 210
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Lauri Markkanen
+    - path: result.sections.leaderboard.4.games_played
+      equals: 55
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.ft_pct
+      equals: 0.8989169675090253
+    - path: result.sections.leaderboard.4.player_id
+      equals: 1628374
+    - path: result.sections.leaderboard.4.ftm_total
+      equals: 249
+    - path: result.sections.leaderboard.4.fta_total
+      equals: 277
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c1
+    query: Stephen Curry top 3 scoring games in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 3
+    hard_assertions:
+    - path: result.sections.finder.0.game_id
+      equals: 22300699
+    - path: result.sections.finder.0.player_id
+      equals: 201939
+    - path: result.sections.finder.0.team_abbr
+      equals: GSW
+    - path: result.sections.finder.0.season
+      equals: 2023-24
+    - path: result.sections.finder.0.pts
+      equals: 60
+    - path: result.sections.finder.0.reb
+      equals: 6
+    - path: result.sections.finder.0.ast
+      equals: 4
+    - path: result.sections.finder.1.game_id
+      equals: 22300650
+    - path: result.sections.finder.1.player_id
+      equals: 201939
+    - path: result.sections.finder.1.team_abbr
+      equals: GSW
+    - path: result.sections.finder.1.season
+      equals: 2023-24
+    - path: result.sections.finder.1.pts
+      equals: 46
+    - path: result.sections.finder.1.reb
+      equals: 3
+    - path: result.sections.finder.1.ast
+      equals: 7
+    - path: result.sections.finder.2.game_id
+      equals: 22300733
+    - path: result.sections.finder.2.player_id
+      equals: 201939
+    - path: result.sections.finder.2.team_abbr
+      equals: GSW
+    - path: result.sections.finder.2.season
+      equals: 2023-24
+    - path: result.sections.finder.2.pts
+      equals: 42
+    - path: result.sections.finder.2.reb
+      equals: 2
+    - path: result.sections.finder.2.ast
+      equals: 2
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c1_heldout
+    query: In 2023-24, show Stephen Curry’s 3 highest-point games.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 3
+    hard_assertions:
+    - path: result.sections.finder.0.game_id
+      equals: 22300699
+    - path: result.sections.finder.0.player_id
+      equals: 201939
+    - path: result.sections.finder.0.team_abbr
+      equals: GSW
+    - path: result.sections.finder.0.season
+      equals: 2023-24
+    - path: result.sections.finder.0.pts
+      equals: 60
+    - path: result.sections.finder.0.reb
+      equals: 6
+    - path: result.sections.finder.0.ast
+      equals: 4
+    - path: result.sections.finder.1.game_id
+      equals: 22300650
+    - path: result.sections.finder.1.player_id
+      equals: 201939
+    - path: result.sections.finder.1.team_abbr
+      equals: GSW
+    - path: result.sections.finder.1.season
+      equals: 2023-24
+    - path: result.sections.finder.1.pts
+      equals: 46
+    - path: result.sections.finder.1.reb
+      equals: 3
+    - path: result.sections.finder.1.ast
+      equals: 7
+    - path: result.sections.finder.2.game_id
+      equals: 22300733
+    - path: result.sections.finder.2.player_id
+      equals: 201939
+    - path: result.sections.finder.2.team_abbr
+      equals: GSW
+    - path: result.sections.finder.2.season
+      equals: 2023-24
+    - path: result.sections.finder.2.pts
+      equals: 42
+    - path: result.sections.finder.2.reb
+      equals: 2
+    - path: result.sections.finder.2.ast
+      equals: 2
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c2
+    query: Stephen Curry stats in his last 3 games of 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      game_log: 3
+      summary: 1
+    hard_assertions:
+    - path: result.sections.game_log.0.game_id
+      equals: 22301155
+    - path: result.sections.game_log.0.player_id
+      equals: 201939
+    - path: result.sections.game_log.0.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.0.season
+      equals: 2023-24
+    - path: result.sections.game_log.0.pts
+      equals: 23
+    - path: result.sections.game_log.0.reb
+      equals: 7
+    - path: result.sections.game_log.0.ast
+      equals: 8
+    - path: result.sections.game_log.1.game_id
+      equals: 22301169
+    - path: result.sections.game_log.1.player_id
+      equals: 201939
+    - path: result.sections.game_log.1.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.1.season
+      equals: 2023-24
+    - path: result.sections.game_log.1.pts
+      equals: 22
+    - path: result.sections.game_log.1.reb
+      equals: 7
+    - path: result.sections.game_log.1.ast
+      equals: 8
+    - path: result.sections.game_log.2.game_id
+      equals: 22301182
+    - path: result.sections.game_log.2.player_id
+      equals: 201939
+    - path: result.sections.game_log.2.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.2.season
+      equals: 2023-24
+    - path: result.sections.game_log.2.pts
+      equals: 33
+    - path: result.sections.game_log.2.reb
+      equals: 4
+    - path: result.sections.game_log.2.ast
+      equals: 5
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.0
+    - path: result.sections.summary.0.pts_sum
+      equals: 78
+    - path: result.sections.summary.0.reb_avg
+      equals: 6.0
+    - path: result.sections.summary.0.reb_sum
+      equals: 18
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    - path: result.sections.summary.0.ast_sum
+      equals: 21
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c2_heldout
+    query: For Stephen Curry’s 3 most recent appearances of 2023-24, give his averages.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      game_log: 3
+      summary: 1
+    hard_assertions:
+    - path: result.sections.game_log.0.game_id
+      equals: 22301155
+    - path: result.sections.game_log.0.player_id
+      equals: 201939
+    - path: result.sections.game_log.0.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.0.season
+      equals: 2023-24
+    - path: result.sections.game_log.0.pts
+      equals: 23
+    - path: result.sections.game_log.0.reb
+      equals: 7
+    - path: result.sections.game_log.0.ast
+      equals: 8
+    - path: result.sections.game_log.1.game_id
+      equals: 22301169
+    - path: result.sections.game_log.1.player_id
+      equals: 201939
+    - path: result.sections.game_log.1.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.1.season
+      equals: 2023-24
+    - path: result.sections.game_log.1.pts
+      equals: 22
+    - path: result.sections.game_log.1.reb
+      equals: 7
+    - path: result.sections.game_log.1.ast
+      equals: 8
+    - path: result.sections.game_log.2.game_id
+      equals: 22301182
+    - path: result.sections.game_log.2.player_id
+      equals: 201939
+    - path: result.sections.game_log.2.team_abbr
+      equals: GSW
+    - path: result.sections.game_log.2.season
+      equals: 2023-24
+    - path: result.sections.game_log.2.pts
+      equals: 33
+    - path: result.sections.game_log.2.reb
+      equals: 4
+    - path: result.sections.game_log.2.ast
+      equals: 5
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.0
+    - path: result.sections.summary.0.pts_sum
+      equals: 78
+    - path: result.sections.summary.0.reb_avg
+      equals: 6.0
+    - path: result.sections.summary.0.reb_sum
+      equals: 18
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    - path: result.sections.summary.0.ast_sum
+      equals: 21
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c3
+    query: Jalen Brunson top 4 scoring games in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 4
+    hard_assertions:
+    - path: result.sections.finder.0.game_id
+      equals: 22301070
+    - path: result.sections.finder.0.player_id
+      equals: 1628973
+    - path: result.sections.finder.0.team_abbr
+      equals: NYK
+    - path: result.sections.finder.0.season
+      equals: 2023-24
+    - path: result.sections.finder.0.pts
+      equals: 61
+    - path: result.sections.finder.0.reb
+      equals: 4
+    - path: result.sections.finder.0.ast
+      equals: 6
+    - path: result.sections.finder.1.game_id
+      equals: 22300333
+    - path: result.sections.finder.1.player_id
+      equals: 1628973
+    - path: result.sections.finder.1.team_abbr
+      equals: NYK
+    - path: result.sections.finder.1.season
+      equals: 2023-24
+    - path: result.sections.finder.1.pts
+      equals: 50
+    - path: result.sections.finder.1.reb
+      equals: 6
+    - path: result.sections.finder.1.ast
+      equals: 9
+    - path: result.sections.finder.2.game_id
+      equals: 22301149
+    - path: result.sections.finder.2.player_id
+      equals: 1628973
+    - path: result.sections.finder.2.team_abbr
+      equals: NYK
+    - path: result.sections.finder.2.season
+      equals: 2023-24
+    - path: result.sections.finder.2.pts
+      equals: 45
+    - path: result.sections.finder.2.reb
+      equals: 3
+    - path: result.sections.finder.2.ast
+      equals: 8
+    - path: result.sections.finder.3.game_id
+      equals: 22300960
+    - path: result.sections.finder.3.player_id
+      equals: 1628973
+    - path: result.sections.finder.3.team_abbr
+      equals: NYK
+    - path: result.sections.finder.3.season
+      equals: 2023-24
+    - path: result.sections.finder.3.pts
+      equals: 45
+    - path: result.sections.finder.3.reb
+      equals: 1
+    - path: result.sections.finder.3.ast
+      equals: 4
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c3_heldout
+    query: List Jalen Brunson’s 4 highest-scoring games during 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 4
+    hard_assertions:
+    - path: result.sections.finder.0.game_id
+      equals: 22301070
+    - path: result.sections.finder.0.player_id
+      equals: 1628973
+    - path: result.sections.finder.0.team_abbr
+      equals: NYK
+    - path: result.sections.finder.0.season
+      equals: 2023-24
+    - path: result.sections.finder.0.pts
+      equals: 61
+    - path: result.sections.finder.0.reb
+      equals: 4
+    - path: result.sections.finder.0.ast
+      equals: 6
+    - path: result.sections.finder.1.game_id
+      equals: 22300333
+    - path: result.sections.finder.1.player_id
+      equals: 1628973
+    - path: result.sections.finder.1.team_abbr
+      equals: NYK
+    - path: result.sections.finder.1.season
+      equals: 2023-24
+    - path: result.sections.finder.1.pts
+      equals: 50
+    - path: result.sections.finder.1.reb
+      equals: 6
+    - path: result.sections.finder.1.ast
+      equals: 9
+    - path: result.sections.finder.2.game_id
+      equals: 22301149
+    - path: result.sections.finder.2.player_id
+      equals: 1628973
+    - path: result.sections.finder.2.team_abbr
+      equals: NYK
+    - path: result.sections.finder.2.season
+      equals: 2023-24
+    - path: result.sections.finder.2.pts
+      equals: 45
+    - path: result.sections.finder.2.reb
+      equals: 3
+    - path: result.sections.finder.2.ast
+      equals: 8
+    - path: result.sections.finder.3.game_id
+      equals: 22300960
+    - path: result.sections.finder.3.player_id
+      equals: 1628973
+    - path: result.sections.finder.3.team_abbr
+      equals: NYK
+    - path: result.sections.finder.3.season
+      equals: 2023-24
+    - path: result.sections.finder.3.pts
+      equals: 45
+    - path: result.sections.finder.3.reb
+      equals: 1
+    - path: result.sections.finder.3.ast
+      equals: 4
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c4
+    query: Jalen Brunson stats in his last 4 games of 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      game_log: 4
+      summary: 1
+    hard_assertions:
+    - path: result.sections.game_log.0.game_id
+      equals: 22301149
+    - path: result.sections.game_log.0.player_id
+      equals: 1628973
+    - path: result.sections.game_log.0.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.0.season
+      equals: 2023-24
+    - path: result.sections.game_log.0.pts
+      equals: 45
+    - path: result.sections.game_log.0.reb
+      equals: 3
+    - path: result.sections.game_log.0.ast
+      equals: 8
+    - path: result.sections.game_log.1.game_id
+      equals: 22301167
+    - path: result.sections.game_log.1.player_id
+      equals: 1628973
+    - path: result.sections.game_log.1.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.1.season
+      equals: 2023-24
+    - path: result.sections.game_log.1.pts
+      equals: 39
+    - path: result.sections.game_log.1.reb
+      equals: 2
+    - path: result.sections.game_log.1.ast
+      equals: 4
+    - path: result.sections.game_log.2.game_id
+      equals: 22301175
+    - path: result.sections.game_log.2.player_id
+      equals: 1628973
+    - path: result.sections.game_log.2.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.2.season
+      equals: 2023-24
+    - path: result.sections.game_log.2.pts
+      equals: 30
+    - path: result.sections.game_log.2.reb
+      equals: 1
+    - path: result.sections.game_log.2.ast
+      equals: 11
+    - path: result.sections.game_log.3.game_id
+      equals: 22301190
+    - path: result.sections.game_log.3.player_id
+      equals: 1628973
+    - path: result.sections.game_log.3.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.3.season
+      equals: 2023-24
+    - path: result.sections.game_log.3.pts
+      equals: 40
+    - path: result.sections.game_log.3.reb
+      equals: 8
+    - path: result.sections.game_log.3.ast
+      equals: 7
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.pts_avg
+      equals: 38.5
+    - path: result.sections.summary.0.pts_sum
+      equals: 154
+    - path: result.sections.summary.0.reb_avg
+      equals: 3.5
+    - path: result.sections.summary.0.reb_sum
+      equals: 14
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.5
+    - path: result.sections.summary.0.ast_sum
+      equals: 30
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_c4_heldout
+    query: Average Jalen Brunson’s stats over his final 4 games of 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      game_log: 4
+      summary: 1
+    hard_assertions:
+    - path: result.sections.game_log.0.game_id
+      equals: 22301149
+    - path: result.sections.game_log.0.player_id
+      equals: 1628973
+    - path: result.sections.game_log.0.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.0.season
+      equals: 2023-24
+    - path: result.sections.game_log.0.pts
+      equals: 45
+    - path: result.sections.game_log.0.reb
+      equals: 3
+    - path: result.sections.game_log.0.ast
+      equals: 8
+    - path: result.sections.game_log.1.game_id
+      equals: 22301167
+    - path: result.sections.game_log.1.player_id
+      equals: 1628973
+    - path: result.sections.game_log.1.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.1.season
+      equals: 2023-24
+    - path: result.sections.game_log.1.pts
+      equals: 39
+    - path: result.sections.game_log.1.reb
+      equals: 2
+    - path: result.sections.game_log.1.ast
+      equals: 4
+    - path: result.sections.game_log.2.game_id
+      equals: 22301175
+    - path: result.sections.game_log.2.player_id
+      equals: 1628973
+    - path: result.sections.game_log.2.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.2.season
+      equals: 2023-24
+    - path: result.sections.game_log.2.pts
+      equals: 30
+    - path: result.sections.game_log.2.reb
+      equals: 1
+    - path: result.sections.game_log.2.ast
+      equals: 11
+    - path: result.sections.game_log.3.game_id
+      equals: 22301190
+    - path: result.sections.game_log.3.player_id
+      equals: 1628973
+    - path: result.sections.game_log.3.team_abbr
+      equals: NYK
+    - path: result.sections.game_log.3.season
+      equals: 2023-24
+    - path: result.sections.game_log.3.pts
+      equals: 40
+    - path: result.sections.game_log.3.reb
+      equals: 8
+    - path: result.sections.game_log.3.ast
+      equals: 7
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.pts_avg
+      equals: 38.5
+    - path: result.sections.summary.0.pts_sum
+      equals: 154
+    - path: result.sections.summary.0.reb_avg
+      equals: 3.5
+    - path: result.sections.summary.0.reb_sum
+      equals: 14
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.5
+    - path: result.sections.summary.0.ast_sum
+      equals: 30
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_d1
+    query: Top 5 players with the most 40 point games in 2023-24
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.games_40p
+      equals: 13.0
+    - path: result.sections.leaderboard.0.player_id
+      equals: 1629029
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.1.games_played
+      equals: 77
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.games_40p
+      equals: 11.0
+    - path: result.sections.leaderboard.1.player_id
+      equals: 1628973
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Joel Embiid
+    - path: result.sections.leaderboard.2.games_played
+      equals: 39
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.games_40p
+      equals: 9.0
+    - path: result.sections.leaderboard.2.player_id
+      equals: 203954
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: De'Aaron Fox
+    - path: result.sections.leaderboard.3.games_played
+      equals: 74
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.games_40p
+      equals: 8.0
+    - path: result.sections.leaderboard.3.player_id
+      equals: 1628368
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.4.games_played
+      equals: 73
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.games_40p
+      equals: 8.0
+    - path: result.sections.leaderboard.4.player_id
+      equals: 203507
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_d1_heldout
+    query: In 2023-24, who had the 5 largest counts of games scoring at least 40 points?
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.leaderboard.0.games_played
+      equals: 70
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.games_pts_40+
+      equals: 13.0
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Jalen Brunson
+    - path: result.sections.leaderboard.1.games_played
+      equals: 77
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.games_pts_40+
+      equals: 11.0
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Joel Embiid
+    - path: result.sections.leaderboard.2.games_played
+      equals: 39
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.games_pts_40+
+      equals: 9.0
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: De'Aaron Fox
+    - path: result.sections.leaderboard.3.games_played
+      equals: 74
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.games_pts_40+
+      equals: 8.0
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.leaderboard.4.games_played
+      equals: 73
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.games_pts_40+
+      equals: 8.0
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_d2
+    query: Top 5 players with the most games with 10 assists and zero turnovers in 2023-24
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Tyrese Haliburton
+    - path: result.sections.leaderboard.0.games_played
+      equals: 69
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.games_ast_10+_tov_0
+      equals: 8.0
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Fred VanVleet
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.games_ast_10+_tov_0
+      equals: 4.0
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Chris Paul
+    - path: result.sections.leaderboard.2.games_played
+      equals: 58
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.games_ast_10+_tov_0
+      equals: 4.0
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Nikola Jokić
+    - path: result.sections.leaderboard.3.games_played
+      equals: 79
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.games_ast_10+_tov_0
+      equals: 3.0
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Dennis Schröder
+    - path: result.sections.leaderboard.4.games_played
+      equals: 80
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.games_ast_10+_tov_0
+      equals: 2.0
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.
+  - id: k04_d2_heldout
+    query: Who posted the most games with at least 10 assists and no turnovers in 2023-24? Show the
+      leading 5 players.
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - leaderboard
+    expected_row_counts:
+      leaderboard: 5
+    hard_assertions:
+    - path: result.sections.leaderboard.0.rank
+      equals: 1
+    - path: result.sections.leaderboard.0.player_name
+      equals: Tyrese Haliburton
+    - path: result.sections.leaderboard.0.games_played
+      equals: 69
+    - path: result.sections.leaderboard.0.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.0.games_ast_10+_tov_0
+      equals: 8.0
+    - path: result.sections.leaderboard.1.rank
+      equals: 2
+    - path: result.sections.leaderboard.1.player_name
+      equals: Fred VanVleet
+    - path: result.sections.leaderboard.1.games_played
+      equals: 73
+    - path: result.sections.leaderboard.1.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.1.games_ast_10+_tov_0
+      equals: 4.0
+    - path: result.sections.leaderboard.2.rank
+      equals: 3
+    - path: result.sections.leaderboard.2.player_name
+      equals: Chris Paul
+    - path: result.sections.leaderboard.2.games_played
+      equals: 58
+    - path: result.sections.leaderboard.2.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.2.games_ast_10+_tov_0
+      equals: 4.0
+    - path: result.sections.leaderboard.3.rank
+      equals: 4
+    - path: result.sections.leaderboard.3.player_name
+      equals: Nikola Jokić
+    - path: result.sections.leaderboard.3.games_played
+      equals: 79
+    - path: result.sections.leaderboard.3.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.3.games_ast_10+_tov_0
+      equals: 3.0
+    - path: result.sections.leaderboard.4.rank
+      equals: 5
+    - path: result.sections.leaderboard.4.player_name
+      equals: Dennis Schröder
+    - path: result.sections.leaderboard.4.games_played
+      equals: 80
+    - path: result.sections.leaderboard.4.season
+      equals: 2023-24
+    - path: result.sections.leaderboard.4.games_ast_10+_tov_0
+      equals: 2.0
+    review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
+      evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
+      Human review and deployed rendering remain separate.

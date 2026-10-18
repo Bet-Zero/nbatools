@@ -943,5 +943,337 @@
   "latencyScope": "Observed browser requests; not a declared cold/warm performance acceptance sample",
   "scope": "Local rebuilt app and retained qualified CSV subset; not production readiness, permanent storage or latency acceptance",
   "screenshots": "Initial local captures may include entrance-animation opacity; production harness disables screenshot animations.",
-  "validation": "52 responses passed exact counts, exposed full game/team/player keys and K01 summary arithmetic; reviewed route adapters preserve count-only limitations."
+  "validation": "52 responses passed exact counts, exposed full game/team/player keys and K01 summary arithmetic; reviewed route adapters preserve count-only limitations.",
+  "production": {
+    "run_id": 39094178858,
+    "reviewed_sha": "035ca7e325bf6ea746cca7ab14ef350dece47a24",
+    "request_sha": "0449e51c808bf683fc2c435e6f96d990770eebef",
+    "artifact_id": 12124426605,
+    "zip_sha256": "293b1f9181a616e50a9642afcce9edffb120cdac43be7c378a2585e2b005b08c",
+    "selected_executed_passed_tests": 1,
+    "skips": 0,
+    "browser_responses": 52,
+    "readiness_brackets": 104,
+    "generation": "queue-d-production-0574735-20260716",
+    "assets": [
+      "https://nbatools.vercel.app/assets/index-BKKGDLgN.js"
+    ],
+    "independent_review": "/root/availability_checker revalidated all52rawanswers and screenshot hashes; boundedK01 D accepted. K03D blocked by league player rows rendered as team score table; never claim wholebrowseracceptance from green harness.",
+    "defect": "K03-D1 player_game_finder shows20player-games but no player column and fabricated SCORE51\u201345/OPPPTS45/MARGIN+6 for Edwards51PTS row. API arithmetic is correct; frontend uses wrong grain.",
+    "screenshots": [
+      {
+        "id": "k01_a1_plain",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_a1_plain.png",
+        "screenshotSha256": "462521a5c88a8a8226fe75e7c5257e759f11c4555866b9f846cea272249dffd3"
+      },
+      {
+        "id": "k01_a1_accent",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_a1_accent.png",
+        "screenshotSha256": "3d19c8500d6598454fe77f7fd163dd489a001cb2035fe831ca61d2650b12a8e1"
+      },
+      {
+        "id": "k01_a1_alias",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_a1_alias.png",
+        "screenshotSha256": "7c9e219d30f24dea8da6b04023f3af1051ce4ce1ba7a0a709b2483bcc2f9270b"
+      },
+      {
+        "id": "k01_a2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_a2.png",
+        "screenshotSha256": "bfaf5414c32de95345000079cd9d35757290a078793fd5c757b21277e2e910b0"
+      },
+      {
+        "id": "k01_b1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_b1.png",
+        "screenshotSha256": "8807ddceae1a6c57b8f51eb4a65b5ca6469c20ac5007a30dbba8afc7322b65e8"
+      },
+      {
+        "id": "k01_b1_collision",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_b1_collision.png",
+        "screenshotSha256": "68d464f2c038c74ed92b7c3294e7615391953673401be4cd5fb044858e7eb5a0"
+      },
+      {
+        "id": "k01_c1_old",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_c1_old.png",
+        "screenshotSha256": "f1154579a8bfd34c04e1607609103c169445703e49f2785f4c0d179d18922160"
+      },
+      {
+        "id": "k01_c1_new",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_c1_new.png",
+        "screenshotSha256": "6ba32364d8d4fb1f6105d09d04fc30c22ef7d72bd6e4e468f77426dd69f5116e"
+      },
+      {
+        "id": "k01_c1_union",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_c1_union.png",
+        "screenshotSha256": "ed2cf504af10d682845947afb0c5a312b1f1160b38633b85f49d6cddbbada7de"
+      },
+      {
+        "id": "k01_d1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_d1.png",
+        "screenshotSha256": "d3c137acc4f898297d3dc47b8a8abd562925b6b83785c27a1873640f8ffdccf3"
+      },
+      {
+        "id": "k01_d1_era",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_d1_era.png",
+        "screenshotSha256": "f1dd744b411ee2abe4f5a0b56505d89f86016a9d3eb2d8fd85bc0d9f23bc2600"
+      },
+      {
+        "id": "k01_d1_wording",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_d1_wording.png",
+        "screenshotSha256": "9edf275bbaa33ac4027c529086b42aa67846e01168d13092b8d89b6d1880b878"
+      },
+      {
+        "id": "k01_e1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_e1.png",
+        "screenshotSha256": "27b396466c0c0d8caf4d7a291a4ad3b3339e3689ef850027747f5ac0ce6e7e35"
+      },
+      {
+        "id": "k01_e1_season",
+        "viewport": "desktop",
+        "screenshot": "desktop-k01_e1_season.png",
+        "screenshotSha256": "6e85633e1c4bea0bfedcd510fb14497f2562e206a9a6f640ccc3bdcab9c42f88"
+      },
+      {
+        "id": "k03-a1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-a1.png",
+        "screenshotSha256": "c307bc5276a657b5c0f794d14055ad3d50e9c43744bcb104eca9ea91d94bbd2f"
+      },
+      {
+        "id": "k03-a2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-a2.png",
+        "screenshotSha256": "bd5ba7a59b531e109253e582d5c519113ac88e55de4d17945d631c28c8004f2d"
+      },
+      {
+        "id": "k03-b1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-b1.png",
+        "screenshotSha256": "536417e061fb8c254f98d670373d4983d0043828aa5d22b774e23718ae7cdd17"
+      },
+      {
+        "id": "k03-b2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-b2.png",
+        "screenshotSha256": "c75d9ced5ef08394a6a215db8ec88e94622edd1936c58fe36c7f56529561ec7e"
+      },
+      {
+        "id": "k03-b3",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-b3.png",
+        "screenshotSha256": "0e260926f26ab7d975ae1aaf81e9c53ff8178c9ea2dce55e1799343345c2b53a"
+      },
+      {
+        "id": "k03-b4",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-b4.png",
+        "screenshotSha256": "187984a6a28cf8a280206e93dd137c0908dc174343575d446eeb686f789ef8fb"
+      },
+      {
+        "id": "k03-c1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-c1.png",
+        "screenshotSha256": "26317dec9f60cad60e03fe1c64bd5fe746b5d026c8d5d20424ff69cc171e88e5"
+      },
+      {
+        "id": "k03-c2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-c2.png",
+        "screenshotSha256": "151e39644d3f26597f5a4a29aa173ada5505c333a9d2c12066981630d114e36c"
+      },
+      {
+        "id": "k03-d1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-d1.png",
+        "screenshotSha256": "43ab6c2c749d66d934307623b2953f1c82dc1589e956aad9d392b4d3ad4b82ea"
+      },
+      {
+        "id": "k03-d2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-d2.png",
+        "screenshotSha256": "5b99274932da0dbfab9c7e34fa7db84ecaad9648098198352380921d35beac61"
+      },
+      {
+        "id": "k03-e1",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-e1.png",
+        "screenshotSha256": "1f22be41bf866809165044c2bb0ede59240902f0f469caefc1fce89c86a09231"
+      },
+      {
+        "id": "k03-e2",
+        "viewport": "desktop",
+        "screenshot": "desktop-k03-e2.png",
+        "screenshotSha256": "e691e9610123aa5407fe001ffb5ff5399e18f8a60ce6907d42b3bb073ecb2df3"
+      },
+      {
+        "id": "k01_a1_plain",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_a1_plain.png",
+        "screenshotSha256": "5454ef741fc92ec6a0bd7cefd36a02331257cbd694b936e30a492e03bdd0cad3"
+      },
+      {
+        "id": "k01_a1_accent",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_a1_accent.png",
+        "screenshotSha256": "3a7ed9df7da6b221ff3d2e6cb561ae9e2a159330a022371dc9fc20b6bd072c30"
+      },
+      {
+        "id": "k01_a1_alias",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_a1_alias.png",
+        "screenshotSha256": "b794e991fdf320199b2cc746ad00ad225f50193641fde0d3c04ef97e3bc52467"
+      },
+      {
+        "id": "k01_a2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_a2.png",
+        "screenshotSha256": "7b463b5f1140692b44654d248a4320be1838f3ac9877a551fe4dfd7df7399d65"
+      },
+      {
+        "id": "k01_b1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_b1.png",
+        "screenshotSha256": "63c310d1267fd2f1adfca3872cd92c4758f9db9820af2bdf56fe9fe895e9b682"
+      },
+      {
+        "id": "k01_b1_collision",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_b1_collision.png",
+        "screenshotSha256": "7aa009392e53f268649a636abb77408193e7533e3c98437606a4d1d09e13058c"
+      },
+      {
+        "id": "k01_c1_old",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_c1_old.png",
+        "screenshotSha256": "769c38aefa2dd381d800e0adda5001d62caadc65315735acc3a100aa20bddaee"
+      },
+      {
+        "id": "k01_c1_new",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_c1_new.png",
+        "screenshotSha256": "9ca6c6a11e87dafeed65884c7b65e0a1821902c333a260ac0e831f45caf2e2a4"
+      },
+      {
+        "id": "k01_c1_union",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_c1_union.png",
+        "screenshotSha256": "6b588dae3971f092f08a47b043caee86d943e75b774395658d49fadbe82040a2"
+      },
+      {
+        "id": "k01_d1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_d1.png",
+        "screenshotSha256": "bdee67cb11fec766027124d25dadb04c0efd2e30ec5f52ba00f6268910b1c073"
+      },
+      {
+        "id": "k01_d1_era",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_d1_era.png",
+        "screenshotSha256": "ddcc94ede223e9a003dc602111b223f56c78adfcd3434e74b6c97f8ae88800c3"
+      },
+      {
+        "id": "k01_d1_wording",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_d1_wording.png",
+        "screenshotSha256": "6021587f9db731ace04a90df484b1bbf3d6c73f74fde7b11ecd70a09b4608e51"
+      },
+      {
+        "id": "k01_e1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_e1.png",
+        "screenshotSha256": "5773867dae8d170f8181298219aa6fa81f736a184474bf1c004ba8dd0deaebc2"
+      },
+      {
+        "id": "k01_e1_season",
+        "viewport": "mobile",
+        "screenshot": "mobile-k01_e1_season.png",
+        "screenshotSha256": "920689db0cae3866f9ff90530e467013aeeb3b5db9bb10a69dc51651fe884eda"
+      },
+      {
+        "id": "k03-a1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-a1.png",
+        "screenshotSha256": "385921e10da3d7021cbbec0a2cc8f8ef0ca7579a45216c947b09eccce61f1bb1"
+      },
+      {
+        "id": "k03-a2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-a2.png",
+        "screenshotSha256": "bebdb4ec008ca75b8b53bd4368cc4c5a76835b2fcbd9574439da4e082d4fabe8"
+      },
+      {
+        "id": "k03-b1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-b1.png",
+        "screenshotSha256": "2b355370fa0ea29dbbf6ea840153202712d1435fc46ad23bdb6103d964f9ae77"
+      },
+      {
+        "id": "k03-b2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-b2.png",
+        "screenshotSha256": "950ecce62c3eddd2a83280f4925b74b10b9de1e33c8ee6e5aa1065dc079cff65"
+      },
+      {
+        "id": "k03-b3",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-b3.png",
+        "screenshotSha256": "c60ddd9d8c714d41a62e3c350f7f8838ad3cba392ae6907fbe138be524df88e1"
+      },
+      {
+        "id": "k03-b4",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-b4.png",
+        "screenshotSha256": "f8777b6284e6b7a55c43eded0bce9718349b150cd0257267fe3f8d5f8de044fe"
+      },
+      {
+        "id": "k03-c1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-c1.png",
+        "screenshotSha256": "5d2fa900cd274ababd61bb8bd8468e23e91a149c7d5b5fce49d79cff70caa4d7"
+      },
+      {
+        "id": "k03-c2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-c2.png",
+        "screenshotSha256": "87c032538089f6a54aeb4ff3b45572eecfc58384b862e833339108e5a8c9e40f"
+      },
+      {
+        "id": "k03-d1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-d1.png",
+        "screenshotSha256": "1e377ab784f80f5b7553b45c9ce3d26cf9487d069cbcfebf7405721b36121339"
+      },
+      {
+        "id": "k03-d2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-d2.png",
+        "screenshotSha256": "e464f6ba218670f06adc620ede2996d8bffbf4d632de103bfa10840fd70320ac"
+      },
+      {
+        "id": "k03-e1",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-e1.png",
+        "screenshotSha256": "66bc932b68adf65705a9e312c93e1f7d23a24cb9790fb608e80388d28e6c11d8"
+      },
+      {
+        "id": "k03-e2",
+        "viewport": "mobile",
+        "screenshot": "mobile-k03-e2.png",
+        "screenshotSha256": "87fac75cb846534ba4e18c171a68799b620d50b1c62d75c0427e70e634f48b04"
+      }
+    ],
+    "latency_acceptance": false
+  }
 }

@@ -69,6 +69,17 @@ def extract_occurrence_event(text: str) -> dict | None:
                 return {"stat": stat, "min_value": float(m.group(1))}
             return _threshold_condition(stat, m.group(1), m.group(0))
 
+    # Explicit inclusive event floor, using the shared stat vocabulary.
+    event_floor = re.search(
+        rf"\bgames?\s+(?:scoring|grabbing|dishing)\s+at\s+least\s+(\d+)\s+({_COMPOUND_STAT_WORDS})\b",
+        text,
+    )
+    if event_floor:
+        return {
+            "stat": _COMPOUND_STAT_MAP[event_floor.group(2)],
+            "min_value": float(event_floor.group(1)),
+        }
+
     # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"
     games_with_patterns = [
         (r"\bgames?\s+(?:with|scoring|of)\s+(\d+)\+?\s+(?:or\s+more\s+)?(points?|pts)\b", "pts"),
@@ -467,7 +478,7 @@ def wants_occurrence_leaderboard(text: str) -> bool:
         re.search(
             # "at most 1 turnover" is a bound, not a ranking.
             r"\b((?<!\bat )(?<!\bno )most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking"
-            r"|who\s+leads?)\b",
+            r"|who\s+leads?|(?:largest|highest|most)\s+counts?)\b",
             text,
         )
     )

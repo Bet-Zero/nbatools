@@ -2705,7 +2705,7 @@ _NUMBER_BEFORE_STAT = re.compile(
 # A shooting rate the attempt qualifier would qualify.
 _RATE_ASKED = re.compile(
     r"%|\bpercent(?:age)?s?\b|\bpct\b|\bshooting\b|\bshooters?\b|\befficien\w*|"
-    r"\befg\b|\bts\b|\bmin(?:imum)?\b|\bqualif\w*"
+    r"\baccuracy\b|\befg\b|\bts\b|\bmin(?:imum)?\b|\bqualif\w*"
 )
 
 
