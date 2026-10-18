@@ -491,9 +491,12 @@ def collection_request(
     requested_fields = sorted(set(fields) | set(spec.required_columns) | set(spec.key_columns))
     if dataset in {"raw/player_game_stats", "raw/team_game_stats"}:
         requested_fields = sorted(set(requested_fields) | set(CORE_STATS))
+    # Schema presence does not make every field nonnullable (e.g. source_comment).
+    # Explicitly requested fields, identity keys and statistical values must be usable.
+    usable_fields = set(fields) | set(spec.key_columns) | (set(CORE_STATS) & available)
     unusable = [
         c
-        for c in requested_fields
+        for c in sorted(usable_fields)
         if source
         and source[0].get("rows", 0) > 0
         and source[0].get("null_counts", {}).get(c) == source[0]["rows"]
