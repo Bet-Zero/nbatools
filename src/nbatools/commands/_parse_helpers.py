@@ -4763,13 +4763,16 @@ def wants_finder(text: str) -> bool:
     Triggers on phrases like 'show me', 'list', 'find', 'give me',
     'what games', 'which games', 'show all', 'show every', 'show games'.
     """
-    return bool(
+    explicit_list = bool(
         re.search(
-            r"\b(show\s+me|list|find|give\s+me|what\s+games|which\s+games"
-            r"|show\s+all|show\s+every|show\s+games)\b",
+            r"\b(list|find|what\s+games|which\s+games|show\s+all|show\s+every|show\s+games)\b",
             text,
         )
     )
+    # Polite response verbs do not select an output grain when the request
+    # already names a summary/average. Explicit game-list wording still wins.
+    response_command = bool(re.search(r"\b(show\s+me|give\s+me)\b", text))
+    return explicit_list or (response_command and not wants_summary(text))
 
 
 def wants_count(text: str) -> bool:

@@ -1132,6 +1132,12 @@ _SPLIT_VS_CONTEXT_RE = re.compile(
 _ON_OFF_VS_CONTEXT_RE = re.compile(
     r"\b(?:on\s+(?:the\s+)?floor|on\s+court|off\s+(?:the\s+)?floor|off\s+court)\b"
 )
+# Request verbs belong to the summary command, not to the candidate identity.
+# Strip only this anchored grammar; retain the complete remaining name so typo
+# protection cannot fall back to a recognized surname or nickname.
+_SUMMARY_COMMAND_PREFIX_RE = re.compile(
+    r"^(?:please\s+)?(?:(?:show|give|tell)(?:\s+me)?\s+|average\s+)"
+)
 _SUMMARY_TYPO_PREFIX_RE = re.compile(r"^([a-z][a-z .&'\-]+?)\s+(?:averages?|average|stats?|stat)\b")
 _SUMMARY_TYPO_BLOCKED_NAME_WORDS = frozenset(
     {
@@ -1194,12 +1200,12 @@ def detect_unresolved_player_typo_comparison(text: str) -> str | None:
 
 def detect_unresolved_player_summary_typo(text: str) -> str | None:
     """Return typoed leading player phrase from summary/averages shorthand."""
-    cleaned = re.sub(r"^average\s+", "", strip_matchup_noise(text))
+    cleaned = _SUMMARY_COMMAND_PREFIX_RE.sub("", strip_matchup_noise(text))
     m = _SUMMARY_TYPO_PREFIX_RE.match(cleaned)
     if not m:
         return None
 
-    # Imperative "average" and possessive grammar are not name tokens. Keep
+    # Imperative command and possessive grammar are not name tokens. Keep
     # the remaining full phrase for the existing partial-nickname typo check.
     phrase = re.sub(r"'s$", "", m.group(1).strip())
     if len(phrase.split()) > 3:
