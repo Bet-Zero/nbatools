@@ -17,6 +17,15 @@ The raw archived PBP is retained but fails the existing score/key contract;
 period/on-off coverage is not supplied by this route. This does not authorize
 publishing an incomplete season or replacing an immutable production snapshot.
 
+A separate bounded cloud archival check used the unchanged LeagueLineupViz
+normalizer/validator on the mirror's exact `GroupQuantity=5`, `MinutesMin=10`,
+2025-26 regular-season payload: 2,594 rows across 30 teams. Every five-player ID
+list and numeric field matched the retained source in independent checking.
+This qualifies that source threshold only, not sub-10-minute lineups, independent
+roster completeness or current freshness. Original JSON, canonical CSV,
+attribution and hashes are retained together in `lineup-archive-staging.zip`
+with its receipt in PR502. No new lineup runtime behavior or publication.
+
 The goal is to keep query behavior stable as the repo grows. Commands should depend on explicit dataset contracts, not on accidental columns or vague assumptions.
 
 This is a living document. Update it whenever:

@@ -1,3 +1,5 @@
+Additional qualified archive route: existing LeagueLineupViz normalizer/validator accepted2594five-player lineups across30teams with source MinutesMin=10. Independent checker matched every ID/numeric field and source/CSV hashes; held-outBOS199.6MIN,122.6OFF,104.7DEF,17.9NET. Permanent lineup-archive-staging.zip SHA9d37915e5f58cc600a02a84f8d5a2f5c9a2bd8582764adef0cc076afaf52d16f. Shape-trusted membership is not independent roster-completeness proof; no sub10minute or fresh/live coverage claim.
+
 Separate cloud runner acceptance:39122547977 reviewed56241f6/request555127b,2selected/executed/passed,zero skips/failures/errors. Actual core collection and permanent Git ZIP recovery succeeded;21NBAplayers/230PTS, all15file inventories/hashes verified. Final normal CI and integration are recorded inPR502.
 
 PR502 follow-up: Vercel existing-project/deployment reads work when teamId and slug are omitted. Explicit scope still404; no new owner sign-in/token is needed. Production dpl_4EScByrmkkY1Fw6fFaVzvhNG9n1J is READY; rollback candidates are readable but no live rollback was executed. This supersedes the historical connector/access diagnosis below.

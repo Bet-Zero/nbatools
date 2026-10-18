@@ -2,7 +2,7 @@
   "schema_version": 1,
   "run_id": 39122547977,
   "reviewed_sha": "56241f6f300d85fdb30a892d0f188a1ed4d4f5a3",
-  "request_sha": "555127b",
+  "request_sha": "555127b4900c0327ed5eb72c3b72dc08a6af2ad1",
   "generation": "availability-opening-s4-v1-20261017",
   "required": {
     "selected": 2,
