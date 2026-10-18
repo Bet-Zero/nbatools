@@ -52,12 +52,19 @@ try {
       const overflow = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
       const screenshot = `${viewport}-${item.id}.png`;
       const image = await page.screenshot({ path: `${output}/${screenshot}`, fullPage: true, animations: "disabled" });
+      const headers = await page.getByRole("table", { name: "Game log", exact: true }).locator("thead th").allTextContents();
+      const grainErrors = [];
+      if (item.id === "k03-d1") {
+        if (!headers.some(h => h.trim().toLowerCase() === "player")) grainErrors.push("Missing player column");
+        for (const name of ["Anthony Edwards", "Joel Embiid"]) if (!text.includes(name)) grainErrors.push(`Missing ${name}`);
+        if (headers.some(h => /^(score|margin|opp pts)$/i.test(h.trim()))) grainErrors.push("Team statistic in player-game table");
+      }
       const missing = item.text.filter(value => !text.includes(value));
       const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start,
         payload, text, readinessBefore, readinessAfter, overflow, errors: [...errors], missing,
-        assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
+        headers, grainErrors, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);
-      if (missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
+      if (grainErrors.length || missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
     }
     await context.close();
   }

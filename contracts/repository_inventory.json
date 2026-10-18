@@ -356,7 +356,7 @@
     ]
   },
   "frontend_layout": {
-    "count": 166,
+    "count": 167,
     "files": [
       "frontend/src/AdminFeedbackPage.module.css",
       "frontend/src/AdminFeedbackPage.tsx",
@@ -506,6 +506,7 @@
       "frontend/src/test/resultRenderer/gameLogs.test.tsx",
       "frontend/src/test/resultRenderer/helpers.ts",
       "frontend/src/test/resultRenderer/leaderboards.test.tsx",
+      "frontend/src/test/resultRenderer/playerGameGrain.test.tsx",
       "frontend/src/test/resultRenderer/playoffs.test.tsx",
       "frontend/src/test/resultRenderer/records.test.tsx",
       "frontend/src/test/resultRenderer/rollingStretches.test.tsx",
