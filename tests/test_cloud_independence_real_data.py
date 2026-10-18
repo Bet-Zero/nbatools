@@ -13,6 +13,7 @@ import io
 import json
 import os
 import shutil
+import subprocess
 import zipfile
 from dataclasses import asdict
 from pathlib import Path
@@ -24,6 +25,7 @@ from nbatools.commands.pipeline.generation_publication import (
     _build_staged_generation,
     _read_r2_pointer,
     _resolve_r2_target,
+    _validate_r2_rollback_target,
     validate_staged_generation,
 )
 from nbatools.commands.pipeline.generation_refresh import download_active_generation
@@ -177,3 +179,73 @@ def test_cloud_source_access_inventory(capfd):
             # No request URLs, headers, response bodies or credential values.
             report[name] = {"status": "blocked-or-error", "error_type": type(exc).__name__}
     _emit({"source_inventory": report, "classification": "diagnostic-not-source-acceptance"}, capfd)
+
+
+def test_durable_stage_recovery_in_separate_runner(tmp_path, capfd, monkeypatch):
+    """Recover exact committed public staging bytes without acquisition/artifacts."""
+    clone = tmp_path / "cloud-clone"
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "--single-branch",
+            "--branch",
+            "data-staging/cloud-acceptance-20261018",
+            "https://github.com/Bet-Zero/nbatools.git",
+            str(clone),
+        ],
+        check=True,
+    )
+    # Bind below to the independently reviewed durable staging commit.
+    expected_sha = "e4900f515bc2536859293599efdd7ba7889a7969"
+    actual = subprocess.check_output(
+        ["git", "-C", str(clone), "rev-parse", "HEAD"], text=True
+    ).strip()
+    assert actual == expected_sha
+    raw = (
+        clone / "working/nba-tools-completion-program/cloud-staged/recovery-bundle.zip"
+    ).read_bytes()
+    assert (
+        hashlib.sha256(raw).hexdigest()
+        == "1a482b76f7455dc6cefef89620e9e2d935f144b2c2765ce624080bf6e33ac9ea"
+    )
+    destination = tmp_path / "recovered"
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        assert sum(item.file_size for item in archive.infolist()) < 5_000_000
+        for item in archive.infolist():
+            path = Path(item.filename)
+            assert not path.is_absolute() and ".." not in path.parts
+            assert item.external_attr >> 16 & 0o170000 != 0o120000
+        archive.extractall(destination)
+    validate_publication(destination / "data")
+    from nbatools.data_source import data_read_csv, reset_data_source_cache
+
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(destination))
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    reset_data_source_cache()
+    frame = data_read_csv("data/raw/player_game_availability/2025-26_regular_season.csv")
+    assert len(frame) == 33 and set(pd.to_numeric(frame.game_id)) == {22500003}
+    reset_data_source_cache()
+
+    # Provider-representative read-only rollback-target verification, not a live
+    # rollback or an independent backup proof. Never move the production pointer.
+    client, bucket = _resolve_r2_target(client=None, bucket_name=None, env=None, env_file=None)
+    before = _read_r2_pointer(client, bucket)
+    assert before.previous_generation_id == "queue-d-production-0574735-20260716"
+    previous, digest = _validate_r2_rollback_target(client, bucket, before.previous_generation_id)
+    assert previous and _read_r2_pointer(client, bucket) == before
+    _emit(
+        {
+            "recovered_staging_commit": actual,
+            "recovered_rows": len(frame),
+            "source": "durable-github-git-objects-not-actions-artifacts",
+            "rollback_target": before.previous_generation_id,
+            "rollback_target_manifest_sha256": digest,
+            "rollback_target_objects": len(previous["files"]),
+            "r2_writes": 0,
+            "live_rollback": "not-executed",
+            "independent_backup": "not-proven",
+        },
+        capfd,
+    )

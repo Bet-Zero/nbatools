@@ -1,0 +1,50 @@
+{
+  "main_revision": "429abfab1c991d50cf32d2d8adb69a58db32cbc6",
+  "method": "git clone from github.com into empty directory; new venv and npm ci; no prior .env/data/node_modules copied",
+  "python": "3.12.14",
+  "node": "24.19.0",
+  "npm": "11.9.0",
+  "pip_check": "passed",
+  "frontend": {
+    "build": "passed",
+    "lint": "passed",
+    "tests_passed": 462,
+    "test_files_passed": 39
+  },
+  "backend": {
+    "focused_tests_passed": 150,
+    "fixture_data": "explicitly synthetic"
+  },
+  "browser": {
+    "executable": "/usr/bin/chromium",
+    "fresh_built_ui": true,
+    "query": "Jokic last 3 games",
+    "http_status": 200,
+    "page_errors": 0,
+    "data": "committed synthetic fixture; not NBA evidence"
+  },
+  "interactive_access": {
+    "github_git": "works",
+    "github_connector_read": "works",
+    "direct_api_github": "proxy403",
+    "NBA_PDF_CDN_ESPN": "proxy403",
+    "R2_credential_binding": "absent",
+    "vercel_project_read": "403 wrong-or-unavailable team scope",
+    "vercel_cli": "not installed; no VERCEL_TOKEN"
+  },
+  "work_preservation": {
+    "advertised_remote_branches": 142,
+    "c10936b": "not found in accessible repos or fetched branch history; GitHub commit API422",
+    "old_462_integration_worktree": "not present in current mounted workspace",
+    "cleanup_performed": false,
+    "accessible_existing_branches": "retained on GitHub; original working trees untouched"
+  },
+  "automatic_refresh": "not installed/enabled; only CI and monitor schedules found",
+  "recovery": "temporary local/in-memory simulator passed; live R2 restore and independent backup unverified; August scope decision had parked dependable-production drills",
+  "development_tool_check": "make doctor passed: Python/pytest/Node/npm/docs tooling; Chromium+Playwright executed browser flow",
+  "independent_review": {
+    "reviewer": "/root/cloud_acceptance_checker",
+    "sha": "63d6e0ce72bd17b4fc91f8b1ddf4ec21165f9d83",
+    "result": "accepted read-only request; no source coverage or full acceptance inferred"
+  }
+}
