@@ -18,14 +18,19 @@ def _cases():
         for c in json.loads((BINDING / "k07-heldout-wording.json").read_text())["cases"]
     }
     cases = []
-    teams = data_read_csv("raw/teams/teams_reference.csv")
+    teams = data_read_csv("raw/teams/team_history_reference.csv")
     for frozen in CASES:
         sample = _qualified_buckets(frozen)
         name = sample["player_name" if frozen["kind"] == "player" else "team_name"].iloc[0]
         text = ([name] if frozen["kind"] == "player" else []) + frozen["seasons"]
         identity = None
         if frozen["kind"] == "team":
-            reference = teams.loc[teams.team_abbr.eq(frozen["team"])]
+            years = [int(season[:4]) for season in frozen["seasons"]]
+            reference = teams.loc[
+                teams.team_abbr.eq(frozen["team"])
+                & teams.season_start.le(min(years))
+                & teams.season_end.ge(max(years))
+            ]
             assert len(reference) == 1
             row = reference.iloc[0]
             assert set(sample.team_id.astype(int)) == {int(row.team_id)}
