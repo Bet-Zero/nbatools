@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"b82d8cf374c117a7b0fa742fd347d606075b23b8","generation":"availability-opening-s4-v1-20261017","tests":["tests/cloud_cdn_routes_real_data.py::test_cdn_archive_collection","tests/cloud_cdn_routes_real_data.py::test_durable_cdn_recovery"],"raw_qa_cases":[]}
