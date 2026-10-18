@@ -50,8 +50,14 @@ def test_copula_was_in_a_count(query, name, keep):
     [
         ("how many games was lebron over 30 points", True),
         ("how often was jokic held under 20 points", True),
+        ("against miami, what was new york's away record", True),
+        ("versus boston, how was lebron's record", True),
+        ("who was lebron playing against", True),
+        ("which was boston's best stretch", True),
         ("was over 120 points", False),
         ("was record this season", False),
+        ("what was record against miami", False),
+        ("how was scored over 120", False),
         # The Wizards after a count word keep the team.
         ("how many times was scored 120 points", False),
         ("games when was won by 20", False),
@@ -60,6 +66,45 @@ def test_copula_was_in_a_count(query, name, keep):
 )
 def test_copula_mask(text, masked):
     assert ("was" not in mask_copula_team_lookalikes(text).split()) is masked
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Against Boston, what was the Lakers away record in 2025-26?",
+        "Versus Boston, how was the Lakers road record in 2025-26?",
+        "In 2025-26 against Boston, what was the Lakers' away record?",
+    ],
+)
+def test_opponent_prefix_question_retains_subject_and_away_sample(query, monkeypatch):
+    from nbatools.commands import team_record
+
+    rows = pd.read_csv(RAW.parent / "team_game_stats/2025-26_regular_season.csv")
+    expected = rows.loc[
+        rows.team_abbr.eq("LAL") & rows.opponent_team_abbr.eq("BOS") & rows.is_away.eq(1)
+    ]
+    assert not expected.empty
+    captured = []
+    compute = team_record._compute_record
+
+    def capture(frame):
+        captured.append(frame.copy())
+        return compute(frame)
+
+    monkeypatch.setattr(team_record, "_compute_record", capture)
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    assert result.route == "team_record"
+    assert result.metadata["team"] == "LAL"
+    assert result.metadata["opponent"] == "BOS"
+    assert len(captured) == 1
+    assert sorted(captured[0].game_id.astype(int)) == sorted(expected.game_id.astype(int))
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert summary["games"] == len(expected)
+    assert summary["wins"] == int(expected.wl.eq("W").sum())
+    assert summary["losses"] == int(expected.wl.eq("L").sum())
+    for stat in ("pts", "reb", "ast"):
+        assert summary[stat + "_avg"] == pytest.approx(expected[stat].mean(), abs=0.001)
 
 
 @pytest.mark.parametrize(

@@ -1398,7 +1398,8 @@ _COPULA_WAS = re.compile(
     # under 20": the copula after a count or a question word. "how many times
     # WAS scored 120" keeps the team (a team verb or noun follows).
     r"|(?:(?<=\bgames\s)|(?<=\btimes\s)|(?<=\bnights\s)|(?<=\boften\s)|(?<=\bwhen\s)"
-    r"|(?<=\bwhere\s)|(?<=\bever\s))was\b"
+    r"|(?<=\bwhere\s)|(?<=\bever\s)|(?<=\bwhat\s)|(?<=\bhow\s)"
+    r"|(?<=\bwho\s)|(?<=\bwhich\s))was\b"
     r"(?!\s+(?:scored|scores|scoring|score|won|wins?|winning|lost|loses?|losses|losing|beat|"
     r"games?|home|road|away|record|allowed|team|vs\.?|versus|against|at|in|on|over|under|"
     r"above|below|by|had|has|have|played|plays?|roster|offense|defense)\b)"
