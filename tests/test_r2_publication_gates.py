@@ -182,7 +182,9 @@ def test_reusable_publication_only_receives_named_readonly_r2_secrets():
         assert jobs[name]["secrets"] == expected
         assert jobs[name]["uses"] == "./.github/workflows/r2-real-data-validation.yml"
     # No broad repository-secret inheritance or write-credential propagation.
-    assert "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
+    assert (
+        "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
+    )
     assert "secrets" not in jobs["publish"]
     call = reusable.get("on", reusable.get(True))["workflow_call"]
     assert call["secrets"] == {name: {"required": True} for name in expected}
