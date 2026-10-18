@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "1c49653a7eb3a81d37e9f4d4c7f4d6be2789cb34",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k04_ranking_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k04_a1",
+    "k04_a1_heldout",
+    "k04_a2",
+    "k04_a2_heldout",
+    "k04_b1",
+    "k04_b1_heldout",
+    "k04_b2",
+    "k04_b2_heldout",
+    "k04_c1",
+    "k04_c1_heldout",
+    "k04_c2",
+    "k04_c2_heldout",
+    "k04_c3",
+    "k04_c3_heldout",
+    "k04_c4",
+    "k04_c4_heldout",
+    "k04_d1",
+    "k04_d1_heldout",
+    "k04_d2",
+    "k04_d2_heldout"
+  ]
+}
