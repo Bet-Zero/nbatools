@@ -58,6 +58,9 @@ def test_copula_was_in_a_count(query, name, keep):
         ("was record this season", False),
         ("what was record against miami", False),
         ("how was scored over 120", False),
+        ("which was player had the highest ppg", False),
+        ("what was ppg in 2023-24", False),
+        ("which was season had the most wins", False),
         # The Wizards after a count word keep the team.
         ("how many times was scored 120 points", False),
         ("games when was won by 20", False),
@@ -66,6 +69,23 @@ def test_copula_was_in_a_count(query, name, keep):
 )
 def test_copula_mask(text, masked):
     assert ("was" not in mask_copula_team_lookalikes(text).split()) is masked
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Which WAS player had the highest PPG in 2023-24?",
+        "Which WAS players averaged the most assists in 2023-24?",
+        "What WAS player scored the most points in 2023-24?",
+    ],
+)
+def test_question_word_preserves_explicit_washington_population(query):
+    from nbatools.commands.natural_query import parse_query
+
+    parsed = parse_query(query)
+    assert parsed["route"] == "season_leaders"
+    assert parsed["team"] == "WAS"
+    assert parsed["route_kwargs"]["team"] == "WAS"
 
 
 @pytest.mark.parametrize(

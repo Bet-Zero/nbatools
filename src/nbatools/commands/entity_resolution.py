@@ -1398,8 +1398,7 @@ _COPULA_WAS = re.compile(
     # under 20": the copula after a count or a question word. "how many times
     # WAS scored 120" keeps the team (a team verb or noun follows).
     r"|(?:(?<=\bgames\s)|(?<=\btimes\s)|(?<=\bnights\s)|(?<=\boften\s)|(?<=\bwhen\s)"
-    r"|(?<=\bwhere\s)|(?<=\bever\s)|(?<=\bwhat\s)|(?<=\bhow\s)"
-    r"|(?<=\bwho\s)|(?<=\bwhich\s))was\b"
+    r"|(?<=\bwhere\s)|(?<=\bever\s))was\b"
     r"(?!\s+(?:scored|scores|scoring|score|won|wins?|winning|lost|loses?|losses|losing|beat|"
     r"games?|home|road|away|record|allowed|team|vs\.?|versus|against|at|in|on|over|under|"
     r"above|below|by|had|has|have|played|plays?|roster|offense|defense)\b)"
@@ -1413,6 +1412,29 @@ _COPULA_WAS = re.compile(
     r"(?=(?:\s+[a-z.'-]+){1,3}\s+(?:over|under|above|below|held|at\s+least)\b)"
 )
 
+# After a question word, an explicit named subject establishes the verb
+# reading: "against Miami, what was New York's record". Require an existing
+# entity alias here rather than guessing from a growing list of non-name
+# words: "which WAS player/season" must retain Washington's population.
+_QUESTION_COPULA_WAS = re.compile(
+    r"\b(?:what|how|who|which)\s+(?P<verb>was)(?=\s+(?:the\s+)?(?:"
+    + "|".join(
+        re.escape(alias)
+        for alias in sorted(
+            {
+                *TEAM_ALIASES_EXPANDED,
+                *_NORMALIZED_FULL_NAME_ALIASES,
+                *_NORMALIZED_CURATED_ALIASES,
+                *_NORMALIZED_NICKNAME_ALIASES,
+                *_CURATED_PLAYER_NAMES,
+            },
+            key=lambda alias: (-len(alias), alias),
+        )
+    )
+    + r")(?!\w))",
+    re.I,
+)
+
 
 def mask_copula_team_lookalikes(text: str) -> str:
     """Blank team aliases that are plainly ordinary verbs in this sentence.
@@ -1421,6 +1443,9 @@ def mask_copula_team_lookalikes(text: str) -> str:
     that is also a high-frequency English copula. A team word the writer meant
     as a team ("was record this season") keeps resolving.
     """
+    text = _QUESTION_COPULA_WAS.sub(
+        lambda match: match.group()[: match.start("verb") - match.start()] + "   ", text
+    )
     return _COPULA_WAS.sub("   ", text)
 
 

@@ -783,6 +783,12 @@ def _refuse_unread_samples(route: str | None, route_kwargs: dict, text: str) -> 
     if not route:
         return
     from nbatools.commands._matchup_utils import detect_team_in_text
+    from nbatools.commands.entity_resolution import mask_copula_team_lookalikes
+
+    # Resolve verb/team lookalikes in full context before chopping a clause
+    # into short opponent fragments such as "what was". Masking preserves
+    # offsets used by the clause readers below.
+    text = mask_copula_team_lookalikes(text)
 
     if _UNREAD_GROUP.search(text):
         _refuse(route_kwargs, "opponent_group")
