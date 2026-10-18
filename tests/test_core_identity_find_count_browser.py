@@ -109,10 +109,15 @@ def _cases():
 
 
 def test_deployed_core_identity_find_count_desktop_and_mobile(tmp_path):
+    cases = _cases()
+    receipt = _capture_browser(cases, tmp_path, "core-browser")
+    _validate_answers(receipt, cases)
+
+
+def _capture_browser(cases, tmp_path, folder):
     generation = os.environ["NBATOOLS_DATA_GENERATION"]
     assert generation == "queue-d-production-0574735-20260716"
-    cases = _cases()
-    output = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path))) / "core-browser"
+    output = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path))) / folder
     output.mkdir(parents=True, exist_ok=True)
     inputs = tmp_path / "browser-cases.json"
     inputs.write_text(json.dumps(cases))
@@ -149,12 +154,12 @@ def test_deployed_core_identity_find_count_desktop_and_mobile(tmp_path):
     )
     receipt = json.loads((output / "browser-receipt.json").read_text())
     assert not receipt["failures"]
-    assert len(receipt["receipts"]) == 52
+    assert len(receipt["receipts"]) == 2 * len(cases)
     for item in receipt["receipts"]:
         for ready in [item["readinessBefore"], item["readinessAfter"]]:
             assert ready["ready"] is True and ready["immutable_generation"] is True
             assert ready["active_generation"] == generation
-    _validate_answers(receipt, cases)
+    return receipt
 
 
 def _validate_answers(receipt, cases):

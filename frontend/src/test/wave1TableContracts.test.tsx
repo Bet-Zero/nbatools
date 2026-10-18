@@ -483,7 +483,7 @@ describe("Wave 1 table pattern contracts", () => {
 
     rerender(<ResultRenderer data={thresholdData} displayMode="review" />);
     table = screen.getByRole("table", { name: "Leaderboard" });
-    expectHeaders(table, ["Games PTS 40+", "Team", "GP"]);
+    expectHeaders(table, ["Games with 40+ PTS", "Team", "GP"]);
     expect(within(table).getByText("12")).toBeInTheDocument();
   });
 
@@ -510,7 +510,7 @@ describe("Wave 1 table pattern contracts", () => {
     expectHeaders(table, [
       "#",
       "Team",
-      "Games PTS 120+",
+      "Games with 120+ PTS",
       "GP",
       "Season",
       "Season Type",

@@ -668,7 +668,7 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.getByRole("table", { name: "Leaderboard" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Games PTS 120+" }),
+      screen.getByRole("columnheader", { name: "Games with 120+ PTS" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("DEN").length).toBeGreaterThan(0);
     expect(
