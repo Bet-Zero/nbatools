@@ -63,6 +63,7 @@ def test_complete_player_game_population(population, predicate, keys):
     assert len(rows) == len(keys)
     assert set(zip(rows.game_id, rows.player_id)) == {(g, population[p]) for g, p in keys}
     assert "games" in response.metadata["count_phrase"]
+    assert response.metadata["count_phrase"].startswith("There ")
 
 
 def test_distinct_count_is_not_games_or_truncated_leaders(population):
@@ -79,6 +80,7 @@ def test_qualified_zero(population):
     response = execute_natural_query("How many player games with at least 80 points in 2025-26?")
     assert response.result_status == "ok"
     assert response.result.count == 0
+    assert response.metadata["count_phrase"].startswith("There were 0 player-games ")
 
 
 @pytest.mark.parametrize(

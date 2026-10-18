@@ -10408,6 +10408,8 @@ cases:
       equals: 2023-24
     - path: result.sections.count.0.count
       equals: 20
+    - path: result.metadata.count_phrase
+      equals: There were 20 player-games with 50+ points in the 2023-24 regular season.
     review_notes: Frozen K03 independent raw-row binding; exact row keys also required
       by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
       separate.

@@ -77,6 +77,8 @@ def test_k03_actual_keys_and_count(case, monkeypatch):
         assert sections["count"] == [{"count": count}]
         assert response.metadata["primary_count"] == count
         assert ("players" if ident == "K03-D2" else "games") in response.metadata["count_phrase"]
+        if ident == "K03-D1":
+            assert response.metadata["count_phrase"].startswith("There were 20 player-games ")
     actual = (
         captured if response.route == "player_occurrence_leaders" else sections.get("finder", [])
     )
