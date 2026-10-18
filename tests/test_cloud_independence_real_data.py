@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import importlib.util
 import io
 import json
 import os
 import shutil
 import subprocess
+import sys
 import zipfile
 from dataclasses import asdict
 from pathlib import Path
@@ -255,11 +255,6 @@ def test_durable_stage_recovery_in_separate_runner(tmp_path, capfd, monkeypatch)
 def test_new_slice_registered_readonly_preparation(tmp_path, capfd, monkeypatch):
     """Exercise existing registry/source gates and exact-base preparation only."""
     root = Path(__file__).resolve().parents[1]
-    spec = importlib.util.spec_from_file_location(
-        "cloud_publication_gate", root / "tools/r2_publication.py"
-    )
-    gate = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(gate)
     package_name = "cloud-acceptance-cle-nyk-v1"
     package = json.loads((root / ".github/data-publication-packages.json").read_text())["packages"][
         package_name
@@ -281,7 +276,23 @@ def test_new_slice_registered_readonly_preparation(tmp_path, capfd, monkeypatch)
         ["git", "-C", str(publisher), "checkout", "--detach", package["publisher_sha"]], check=True
     )
     work = tmp_path / "prepared"
-    receipt, _, _, _ = gate.prepare(package_name, publisher, work)
+    # The normal CLI starts a fresh interpreter, preserving the existing
+    # publisher checkout/import identity guard even when pytest imported modules.
+    subprocess.run(
+        [
+            sys.executable,
+            str(root / "tools/r2_publication.py"),
+            "prepare",
+            "--package",
+            package_name,
+            "--publisher",
+            str(publisher),
+            "--work",
+            str(work),
+        ],
+        check=True,
+    )
+    receipt = json.loads((work / "prepared.json").read_text())
     assert receipt["publication_state"] == "prepared_no_writes"
     assert receipt["base_generation"] == os.environ["NBATOOLS_DATA_GENERATION"]
     assert receipt["file_count"] == 705
