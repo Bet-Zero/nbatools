@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -246,6 +247,79 @@ def test_durable_stage_recovery_in_separate_runner(tmp_path, capfd, monkeypatch)
             "r2_writes": 0,
             "live_rollback": "not-executed",
             "independent_backup": "not-proven",
+        },
+        capfd,
+    )
+
+
+def test_new_slice_registered_readonly_preparation(tmp_path, capfd, monkeypatch):
+    """Exercise existing registry/source gates and exact-base preparation only."""
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location(
+        "cloud_publication_gate", root / "tools/r2_publication.py"
+    )
+    gate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gate)
+    package_name = "cloud-acceptance-cle-nyk-v1"
+    package = json.loads((root / ".github/data-publication-packages.json").read_text())["packages"][
+        package_name
+    ]
+    publisher = tmp_path / "publisher"
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "--single-branch",
+            "--branch",
+            "setup/cloud-independence-acceptance-20261018",
+            "https://github.com/Bet-Zero/nbatools.git",
+            str(publisher),
+        ],
+        check=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(publisher), "checkout", "--detach", package["publisher_sha"]], check=True
+    )
+    work = tmp_path / "prepared"
+    receipt, _, _, _ = gate.prepare(package_name, publisher, work)
+    assert receipt["publication_state"] == "prepared_no_writes"
+    assert receipt["base_generation"] == os.environ["NBATOOLS_DATA_GENERATION"]
+    assert receipt["file_count"] == 705
+    assert receipt["generation_id"] == "cloud-acceptance-cle-nyk-20261018"
+    assert not (work / "publication.json").exists()
+    assert receipt["budget"]["conservative_projected_bytes"] <= receipt["budget"]["limit_bytes"]
+    destination = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+    destination.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(work / "prepared.json", destination / "new-slice-prepared.json")
+    shutil.copy2(
+        work / "staging/local-validation.json", destination / "new-slice-local-validation.json"
+    )
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from nbatools.data_source import reset_data_source_cache
+
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(work / "staging"))
+    monkeypatch.delenv("NBATOOLS_DATA_GENERATION", raising=False)
+    reset_data_source_cache()
+    answers = []
+    for case in package["deployed_checks"]:
+        response = TestClient(app).post("/query", json={"query": case["query"]})
+        assert response.status_code == 200
+        answer = response.json()
+        rows = answer.get("result", {}).get("sections", {}).get("summary", [])
+        assert answer.get("result_status") == "ok" and len(rows) == 1
+        assert all(rows[0].get(k) == v for k, v in case["summary"].items())
+        answers.append({"query": case["query"], "summary": rows[0]})
+    reset_data_source_cache()
+    _emit(
+        {
+            "new_slice_registered_preparation": receipt,
+            "protected_environment_publication": "not-requested",
+            "r2_writes": 0,
+            "new_generation_uploaded": False,
+            "staged_real_data_api_answers": answers,
         },
         capfd,
     )

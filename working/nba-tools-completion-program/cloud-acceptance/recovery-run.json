@@ -1,0 +1,26 @@
+{
+  "run_id": 39114950243,
+  "request_sha": "4c7bdd88dc54baa12ef69382fc9322a487344635",
+  "reviewed_sha": "f2dc7ec0e9640ac2d3021e689d42e931f58dc5d1",
+  "counts": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "reports": [
+    {
+      "independent_backup": "not-proven",
+      "live_rollback": "not-executed",
+      "r2_writes": 0,
+      "recovered_rows": 33,
+      "recovered_staging_commit": "e4900f515bc2536859293599efdd7ba7889a7969",
+      "rollback_target": "queue-d-production-0574735-20260716",
+      "rollback_target_manifest_sha256": "4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e",
+      "rollback_target_objects": 684,
+      "source": "durable-github-git-objects-not-actions-artifacts"
+    }
+  ]
+}

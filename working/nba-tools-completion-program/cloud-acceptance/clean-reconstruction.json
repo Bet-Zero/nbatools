@@ -37,7 +37,8 @@
     "c10936b": "not found in accessible repos or fetched branch history; GitHub commit API422",
     "old_462_integration_worktree": "not present in current mounted workspace",
     "cleanup_performed": false,
-    "accessible_existing_branches": "retained on GitHub; original working trees untouched"
+    "accessible_existing_branches": "retained on GitHub; original working trees untouched",
+    "accessible_existing_request_commit": "92af9091f31983c683a4baca136e80948fa88341 remotely verified via ls-remote"
   },
   "automatic_refresh": "not installed/enabled; only CI and monitor schedules found",
   "recovery": "temporary local/in-memory simulator passed; live R2 restore and independent backup unverified; August scope decision had parked dependable-production drills",
@@ -46,5 +47,6 @@
     "reviewer": "/root/cloud_acceptance_checker",
     "sha": "63d6e0ce72bd17b4fc91f8b1ddf4ec21165f9d83",
     "result": "accepted read-only request; no source coverage or full acceptance inferred"
-  }
+  },
+  "additional_source_safeguard_tests_passed": 48
 }
