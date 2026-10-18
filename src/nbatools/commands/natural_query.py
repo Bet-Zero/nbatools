@@ -1780,6 +1780,10 @@ def _was_team_alias_is_auxiliary(raw_query: str, normalized_query: str) -> bool:
 
 
 def _ambiguous_fragment_note(q: str) -> str | None:
+    from nbatools.commands._parse_helpers import ambiguous_recent_sample
+
+    if note := ambiguous_recent_sample(q):
+        return note
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
             return f"ambiguous: {reason}"

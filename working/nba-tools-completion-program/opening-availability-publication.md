@@ -22,5 +22,5 @@ scorer report establishes membership and participation.
 
 The owner superseded the terminal handoff on 2026-10-17. Use the permanent
 [protected Actions publication procedure](../../docs/operations/data_publication.md).
-PR472 remains under qualification; neither its setup nor this inventory authorizes
-a production write. The script and inventory remain pinned inputs to that workflow.
+PR472 is merged; its no-write preparation and full-manifest checks passed independent
+acceptance. Neither its setup nor this inventory authorizes a production write. The script and inventory remain pinned inputs to that workflow.
