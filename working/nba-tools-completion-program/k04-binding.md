@@ -110,5 +110,16 @@ Finalruntime09e4f3c narrows newly added inclusive event-floor grammar to scoring
 grabbing/dishing verbs, preserving the prior generic games-with route boundary.
 The checker approved this regression repair;68focused tests passed. The first
 correct-source preflight had8076passed1527skipped and one refusal-reason drift;
-finalpreflight is pending. Earlier invocation imported the oldrootcheckout and
+finalpreflight passed8077tests1527skipped5warnings135.91seconds. Earlier invocation imported the oldrootcheckout and
 is discarded as wrong-code validation, not candidate acceptance.
+
+Actual run39094724930 on reviewed1c49653a7eb3a81d37e9f4d4c7f4d6be2789cb34,
+request123222e8e30489e6951f6d049d19ec5e0fcd080a:20selected/executed/passed,
+zero skips/failures/errors;20RawQA693checks passed. Numericartifact12123759109
+ZIPc1b6b3f52837783d6aa9474add235ec32f1898763888980a6cbbfda1ff3fd8fe;
+QA12123958282 ZIP7bda7aeee9d48fa2b9a3854d62059a34b7c5769030f33cb10cd4d819d84643d0.
+Candidate CI39094488520 passed. Finaldocs/receipt-only CI andmerge pending;
+productionranking verification remains separate andopen.
+
+Independent checker /root/availability_checker accepted both actual receipts and
+frozen values/routes. Human-review fields remain pending/unreviewed, not_declared.
