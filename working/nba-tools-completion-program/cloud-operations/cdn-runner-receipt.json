@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "run_id": 39124321117,
+  "job_id": 117666279390,
+  "reviewed_sha": "b82d8cf374c117a7b0fa742fd347d606075b23b8",
+  "request_sha": "413b3d6",
+  "generation": "availability-opening-s4-v1-20261017",
+  "required": {
+    "selected": 2,
+    "executed": 2,
+    "passed": 2,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "collection": {
+    "schema_version": 1,
+    "state": "qualified archival CDN one-game development slice",
+    "collected_at": "2026-10-18T11:43:46.329609+00:00",
+    "mirror": "shufinskiy/nba_data",
+    "mirror_revision": "e829d4678be1e075f99e5d41a1c5f97089be446b",
+    "archive_url": "https://raw.githubusercontent.com/shufinskiy/nba_data/e829d4678be1e075f99e5d41a1c5f97089be446b/datasets/cdnnba_2025.tar.xz",
+    "archive_sha256": "a5d1bed30778430816b755676649cb2e3690ea62df5d96f4d9d6e9a8b8839339",
+    "core_context_sha256": "76aad9d054c5edc6d699e26a72f89073b55908a247ee9c72dee414e2f70c99f1",
+    "attribution": "shufinskiy/nba_data, Apache-2.0; original NBA CDN liveData playbyplay",
+    "source_representation": "exact original header and 605 CSV records selected from authenticated pinned archive; not original HTTP JSON bytes",
+    "game_id": "0022500003",
+    "rows": 605,
+    "final_home_points": 119,
+    "final_away_points": 111,
+    "final_period": 4,
+    "canonical_source": "cdn.nba.com.liveData.playbyplay",
+    "schema": "cdn_live_pbp.v1",
+    "event_identity": "original actionNumber preserved",
+    "timeline": "original orderNumber preserved as source_order_number; no renumbering",
+    "r2_writes": 0,
+    "production_publication": "not requested or performed",
+    "limitations": [
+      "one archived game, not fresh/live source acceptance",
+      "no NBA Stats PBP equivalence claim",
+      "no period/on-off data or clutch-feature acceptance"
+    ],
+    "immutable_candidate": {
+      "generation": "cloud-cdn-archival-development-v1",
+      "files": 9,
+      "kind": "isolated development subset, not a full R2 publication package",
+      "validation_scope": [
+        "games",
+        "play_by_play_events",
+        "player_game_stats",
+        "team_game_stats"
+      ],
+      "manifest_sha256": "c7a9ff27c4999ead56824408b1944a6e095370ce1fb403d1eae07a99a32244e3"
+    },
+    "files": {
+      "candidate/metadata/dataset_manifests/2025-26_regular_season.json": {
+        "bytes": 6041,
+        "sha256": "474852c19162a435376054928defccb4e6b8da7de14a3ac13178f13d140598af"
+      },
+      "candidate/metadata/generation_manifest.json": {
+        "bytes": 1763,
+        "sha256": "c7a9ff27c4999ead56824408b1944a6e095370ce1fb403d1eae07a99a32244e3"
+      },
+      "candidate/metadata/player_names.csv": {
+        "bytes": 752,
+        "sha256": "f36a0b0e517ba16ad298cc4c14935a990d57798cd1ae4026f3067be8079109c4"
+      },
+      "candidate/raw/games/2025-26_regular_season.csv": {
+        "bytes": 619,
+        "sha256": "5930158ac193ed8c586413e0d590683d5c09708103e957ca15e2d1bb0a59572e"
+      },
+      "candidate/raw/play_by_play_events/2025-26_regular_season.csv": {
+        "bytes": 125369,
+        "sha256": "e560df85d2493d600cb312f314d567f7b048d5bbefd3bd296cb7cb61f9739c11"
+      },
+      "candidate/raw/play_by_play_events_sources/LICENSE": {
+        "bytes": 11357,
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      },
+      "candidate/raw/play_by_play_events_sources/cdn-game-original.csv": {
+        "bytes": 175153,
+        "sha256": "1f52949f833fe85929ff0a0654158a41a17d711f1cd92b8f78f1666bce3978d0"
+      },
+      "candidate/raw/play_by_play_events_sources/source-receipt.json": {
+        "bytes": 1606,
+        "sha256": "bdeab07eac43e91bd433710f4e931f5fe4f410b410eff7d057ce456a47ad3ff6"
+      },
+      "candidate/raw/player_game_stats/2025-26_regular_season.csv": {
+        "bytes": 4363,
+        "sha256": "4bd3a1a5c5643a3818fa5dc909b994637b228c700d14433cd15ab997f1c8c091"
+      },
+      "candidate/raw/team_game_stats/2025-26_regular_season.csv": {
+        "bytes": 639,
+        "sha256": "18f0239fc51c0cb6e9e5be0a8b174948334efb6d2e62f50ca8c8cf4eb5afeb8c"
+      },
+      "data/metadata/dataset_manifests/2025-26_regular_season.json": {
+        "bytes": 6041,
+        "sha256": "474852c19162a435376054928defccb4e6b8da7de14a3ac13178f13d140598af"
+      },
+      "data/raw/games/2025-26_regular_season.csv": {
+        "bytes": 619,
+        "sha256": "5930158ac193ed8c586413e0d590683d5c09708103e957ca15e2d1bb0a59572e"
+      },
+      "data/raw/play_by_play_events/2025-26_regular_season.csv": {
+        "bytes": 125369,
+        "sha256": "e560df85d2493d600cb312f314d567f7b048d5bbefd3bd296cb7cb61f9739c11"
+      },
+      "data/raw/play_by_play_events_sources/LICENSE": {
+        "bytes": 11357,
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      },
+      "data/raw/play_by_play_events_sources/cdn-game-original.csv": {
+        "bytes": 175153,
+        "sha256": "1f52949f833fe85929ff0a0654158a41a17d711f1cd92b8f78f1666bce3978d0"
+      },
+      "data/raw/play_by_play_events_sources/source-receipt.json": {
+        "bytes": 1606,
+        "sha256": "bdeab07eac43e91bd433710f4e931f5fe4f410b410eff7d057ce456a47ad3ff6"
+      },
+      "data/raw/player_game_stats/2025-26_regular_season.csv": {
+        "bytes": 4363,
+        "sha256": "4bd3a1a5c5643a3818fa5dc909b994637b228c700d14433cd15ab997f1c8c091"
+      },
+      "data/raw/team_game_stats/2025-26_regular_season.csv": {
+        "bytes": 639,
+        "sha256": "18f0239fc51c0cb6e9e5be0a8b174948334efb6d2e62f50ca8c8cf4eb5afeb8c"
+      }
+    }
+  },
+  "recovery": {
+    "state": "verified",
+    "rows": 605,
+    "points": 230,
+    "bundle_sha256": "4db567dbb3c83e28d699c9228e5c1b2c88ebb1f4c7c3019a3a942fade16df387",
+    "candidate_files": 9,
+    "r2_writes": 0
+  },
+  "earlier_failed_run": {
+    "run_id": 39123885715,
+    "passed": 1,
+    "failed": 1,
+    "reason": "Offline fixture inherited production generation pin; repaired by clearing credentials/generation and resetting local data-source cache."
+  },
+  "preflight": {
+    "passed": 8172,
+    "skipped": 1554,
+    "subtests": 3,
+    "seconds": 143.14,
+    "environment": "managed cloud, authorized network-enabled command required for FastAPI TestClient; initial network-disabled attempts interrupted, no passing claim"
+  }
+}
