@@ -234,3 +234,15 @@ def test_pair_does_not_drop_boolean_or_medical_qualifiers(qualified_pair, suffix
     )
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "extra", ["while Gabe Vincent plays", "when Gabe Vincent plays", ", and Gabe Vincent playing"]
+)
+def test_team_pair_never_drops_an_additional_named_predicate(qualified_pair, extra):
+    result = execute_natural_query(
+        f"Lakers record vs Celtics with LeBron James and Anthony Davis both out {extra} in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert not result.to_dict()["sections"]

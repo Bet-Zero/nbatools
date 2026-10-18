@@ -6617,12 +6617,13 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and names_other_player_availability(
-            applied_pair.mask_clause(q) if applied_pair else q,
-            route_kwargs["player"],
-            (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
-            also=(route_kwargs.get("opponent_player"),),
-        )
+        or route == "team_record"
+        and applied_pair
+    ) and names_other_player_availability(
+        applied_pair.mask_clause(q) if applied_pair else q,
+        route_kwargs.get("player"),
+        (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
+        also=(route_kwargs.get("opponent_player"),),
     ):
         # "in games LeBron plays 35 minutes and Luka sits": the player route
         # reads only its own player, so the second clause would be dropped.

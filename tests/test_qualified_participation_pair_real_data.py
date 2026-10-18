@@ -134,3 +134,17 @@ def test_qualified_pair_wording_and_subject_bound(query, player):
     assert result.metadata["with_player"] is None
     assert result.metadata["opponent"] == "BOS"
     assert result.metadata["season"] == "2023-24"
+
+
+def test_pair_never_drops_a_third_player_who_did_not_play():
+    _qualified_source()
+    ledger = data_read_csv("raw/player_game_availability/2023-24_regular_season.csv")
+    gabe = ledger.loc[ledger.game_id.eq(22300684) & ledger.player_name.eq("Gabe Vincent")]
+    assert len(gabe) == 1 and gabe.iloc[0].team_id == ORACLE["team_id"]
+    assert gabe.iloc[0].participation_state == "did_not_play"
+    result = execute_natural_query(
+        "Lakers record vs Celtics with LeBron James and Anthony Davis both out while Gabe Vincent plays in 2023-24"
+    )
+    assert result.result_status == "no_result"
+    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert not result.to_dict()["sections"]
