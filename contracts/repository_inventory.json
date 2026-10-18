@@ -356,7 +356,7 @@
     ]
   },
   "frontend_layout": {
-    "count": 167,
+    "count": 168,
     "files": [
       "frontend/src/AdminFeedbackPage.module.css",
       "frontend/src/AdminFeedbackPage.tsx",
@@ -513,6 +513,7 @@
       "frontend/src/test/resultRenderer/splitsAndStreaks.test.tsx",
       "frontend/src/test/resultRenderer/substrate.test.tsx",
       "frontend/src/test/resultRenderer/summaries.test.tsx",
+      "frontend/src/test/resultRenderer/summaryRankingMeaning.test.tsx",
       "frontend/src/test/resultShapes.test.ts",
       "frontend/src/test/reviewScreenshots.test.ts",
       "frontend/src/test/routeToPattern.test.ts",

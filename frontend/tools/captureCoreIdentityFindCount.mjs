@@ -9,7 +9,9 @@ if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base)) {
   throw new Error("Only production alias or local verification server allowed");
 }
 const cases = JSON.parse(await readFile(input, "utf8"));
-if (cases.length !== 26) throw new Error("Expected all 14 K01 and 12 K03 cases");
+const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
+const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
+if (!core && !summaryRanking) throw new Error("Expected complete identity/find-count or summary/ranking bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -59,12 +61,19 @@ try {
         for (const name of ["Anthony Edwards", "Joel Embiid"]) if (!text.includes(name)) grainErrors.push(`Missing ${name}`);
         if (headers.some(h => /^(score|margin|opp pts)$/i.test(h.trim()))) grainErrors.push("Team statistic in player-game table");
       }
+      const tables = await page.locator('[data-state-surface="result"] table').evaluateAll(nodes => nodes.map(table => ({
+        label: table.getAttribute("aria-label"),
+        headers: [...table.querySelectorAll("thead th")].map(cell => cell.textContent.trim()),
+        rows: [...table.querySelectorAll("tbody tr")].map(row => [...row.querySelectorAll("td")].map(cell => cell.textContent.trim())),
+        footers: [...table.querySelectorAll("tfoot tr")].map(row => [...row.querySelectorAll("th,td")].map(cell => cell.textContent.trim())),
+      })));
+      const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
       const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start,
         payload, text, readinessBefore, readinessAfter, overflow, errors: [...errors], missing,
-        headers, grainErrors, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
+        headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);
-      if (grainErrors.length || missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
+      if (forbidden.length || grainErrors.length || missing.length || errors.length || overflow.document > width || response.status() !== 200) failures.push(`${viewport}/${item.id}`);
     }
     await context.close();
   }

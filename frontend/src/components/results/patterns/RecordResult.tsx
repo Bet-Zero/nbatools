@@ -874,7 +874,7 @@ function opponentDisplay(
   return {
     id: context.team_id,
     abbr: context.team_abbr,
-    name: context.team_name,
+    name: context.team_name ?? context.team_abbr ?? "opponent",
   };
 }
 
@@ -891,7 +891,7 @@ function teamRecordOpponentPhrase(
     }
     return ` against ${opponentGroup.toLowerCase()}`;
   }
-  return opponent ? ` against the ${opponent.name}` : "";
+  return opponent ? ` against ${opponent.name === opponent.abbr ? "" : "the "}${opponent.name}` : "";
 }
 
 function opponentGroupLabel(metadata: ResultMetadata | undefined): string | null {

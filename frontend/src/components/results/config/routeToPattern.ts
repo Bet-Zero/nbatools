@@ -108,6 +108,7 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           type: "game_log",
           sectionKey: "finder",
           mode: "player",
+          ...(data.result?.metadata?.sort_by === "stat" ? { preserveOrder: true } : {}),
           rawDetailTitle: "Player Game Detail",
         },
       ];
@@ -117,6 +118,7 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           type: "game_log",
           sectionKey: "finder",
           mode: "team",
+          ...(data.result?.metadata?.sort_by === "stat" ? { preserveOrder: true } : {}),
           rawDetailTitle: "Game Detail",
         },
       ];

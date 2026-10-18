@@ -60,7 +60,7 @@ export function formatAverageValue(val: unknown, col: string): string {
   if (val === null || val === undefined) return "—";
   if (typeof val === "number") {
     const lc = col.toLowerCase();
-    if (isPercentageColumn(lc)) return formatPercent(val);
+    if (isPercentageColumn(lc)) return formatPercent(val, lc);
     return ONE_DECIMAL_FORMATTER.format(val);
   }
   if (typeof val === "string" && isCompactDateColumn(col)) {
@@ -113,7 +113,7 @@ export function formatLongDateRange(
 
 function formatNumericValue(value: number, col: string): string {
   const lc = col.toLowerCase();
-  if (isPercentageColumn(lc)) return formatPercent(value);
+  if (isPercentageColumn(lc)) return formatPercent(value, lc);
   if (shouldForceOneDecimal(lc)) return ONE_DECIMAL_FORMATTER.format(value);
   if (Number.isInteger(value)) return INTEGER_FORMATTER.format(value);
   return ONE_DECIMAL_FORMATTER.format(value);
@@ -121,18 +121,18 @@ function formatNumericValue(value: number, col: string): string {
 
 function formatProseNumericValue(value: number, col: string): string {
   const lc = col.toLowerCase();
-  if (isPercentageColumn(lc)) return formatProsePercent(value);
+  if (isPercentageColumn(lc)) return formatProsePercent(value, lc);
   if (Number.isInteger(value)) return INTEGER_FORMATTER.format(value);
   return PROSE_NUMBER_FORMATTER.format(value);
 }
 
-function formatPercent(value: number): string {
-  const percent = value >= 0 && value <= 1 ? value * 100 : value;
+function formatPercent(value: number, column: string): string {
+  const percent = isDerivedEfficiency(column) || (value >= 0 && value <= 1) ? value * 100 : value;
   return `${ONE_DECIMAL_FORMATTER.format(percent)}%`;
 }
 
-function formatProsePercent(value: number): string {
-  const percent = value >= 0 && value <= 1 ? value * 100 : value;
+function formatProsePercent(value: number, column: string): string {
+  const percent = isDerivedEfficiency(column) || (value >= 0 && value <= 1) ? value * 100 : value;
   const formatted = Number.isInteger(percent)
     ? INTEGER_FORMATTER.format(percent)
     : PROSE_NUMBER_FORMATTER.format(percent);
@@ -162,4 +162,10 @@ function parseDate(value: string): Date | null {
 
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+// TS/eFG are stored ratios and can legitimately exceed 1 (100%). Other
+// percentage families retain their existing ratio/percentage-point contract.
+function isDerivedEfficiency(column: string): boolean {
+  return /^(?:ts|efg)_pct(?:_avg|_sum)?$/.test(column);
 }

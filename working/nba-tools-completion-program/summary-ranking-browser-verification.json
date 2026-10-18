@@ -1,0 +1,128 @@
+{
+  "scope": "Local qualified raw-data browser verification; not production readiness or human acceptance",
+  "runtime_base": "f3a9c6a plus accepted player-grain frontend",
+  "source_root": "/workspace/work/k01-local-replay",
+  "generation_label": "legacy",
+  "before_receipt": {
+    "path": "/workspace/work/summary-ranking-local-evidence/browser-receipt.json",
+    "sha256": "274e090d693c64370ccf15d3c71a2f29e6d203916ed2303191cba474f0694106"
+  },
+  "after_receipt": {
+    "path": "/workspace/work/summary-ranking-final-evidence/browser-receipt.json",
+    "sha256": "62499326b520636fa1ac5aee0bbd79a98de3974786411d9d5f37ea1bae98b486"
+  },
+  "browser": "154.0.8037.57",
+  "cases": 33,
+  "viewport_executions": 66,
+  "payload_and_render_checks": "66 pass, zero failures; frozen K02/K04 source oracles",
+  "frontend_tests": "462 pass across 39 files; eight focused checks also reexecuted after adding tie-date assertions",
+  "asset": [
+    "http://127.0.0.1:8765/assets/index-z6ldw1no.js"
+  ],
+  "corrected_defects": [
+    "Opponent context containing only NYK produced undefined in team-record hero",
+    "Stat-ranked named-player games were reordered by date instead of retaining payload rank/ties",
+    "TS/eFG ratio values above1 were interpreted as percentage points; total footer added percentages",
+    "Occurrence columns and hero exposed encoded metric identifiers"
+  ],
+  "required_deployed_selector": "tests/test_summary_ranking_browser.py::test_deployed_summary_ranking_desktop_and_mobile",
+  "deployment_status": "Required after independent review, CI and merge; not yet verified",
+  "screenshots": [
+    {
+      "id": "k02-b1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k02-b1.png",
+      "screenshotSha256": "8c1d0e75fc28f432adee581af3bb7d3b7ac0191f9e50bc6a7c375ce7b61cd9ad"
+    },
+    {
+      "id": "k02-c1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k02-c1.png",
+      "screenshotSha256": "b9e470d41c4a6a72f31a78b1396d6ef77b6924ecc0dfcf1069c2fb6363f71d8a"
+    },
+    {
+      "id": "k02-c2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k02-c2.png",
+      "screenshotSha256": "d102358007c54ae897a029b2a48601e8b575f560dd18aee4b567fb3fb627b2f5"
+    },
+    {
+      "id": "k04-c1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k04-c1.png",
+      "screenshotSha256": "9869018c38c1cf94bb66b39dcce81597ed981bea952d6b81dee2b390ab1c02bb"
+    },
+    {
+      "id": "k04-c2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k04-c2.png",
+      "screenshotSha256": "9c6546da1e09f5f97b4175d9efe22d6404625073994949f9b4786506652a099c"
+    },
+    {
+      "id": "k04-c3",
+      "viewport": "desktop",
+      "screenshot": "desktop-k04-c3.png",
+      "screenshotSha256": "86c94cd12c432fa5af6cd776eafea0dfe443e98ee593e3a7a823bb343b9bd9ea"
+    },
+    {
+      "id": "k04-d1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k04-d1.png",
+      "screenshotSha256": "7c02e6753afcd6a13653f4657c828fea517cbc0665111fb09c949f2045ae7e5f"
+    },
+    {
+      "id": "k04-d2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k04-d2.png",
+      "screenshotSha256": "5079df7858ae7b9ce8decd84a1a4f6b4808e57fae9dd9fb08026ba7ad26b9225"
+    },
+    {
+      "id": "k02-b1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k02-b1.png",
+      "screenshotSha256": "9070014de2baf77a3f78d7aba5f68bc4c5a6fcd5080c945a2bc519cb209c39e0"
+    },
+    {
+      "id": "k02-c1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k02-c1.png",
+      "screenshotSha256": "77cab3d8a70158ddcea7ae3251a55cc894c4fb4b6796cfce036dfb35931c844d"
+    },
+    {
+      "id": "k02-c2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k02-c2.png",
+      "screenshotSha256": "fd73872d01cdd469af2cf29a882f2826ce1f5cf41ec56ff4307cbaa019e8f6b6"
+    },
+    {
+      "id": "k04-c1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k04-c1.png",
+      "screenshotSha256": "dad0d41575ae7110e3a6235b3518cab81e50e10491446cdd99c4a4d8b79b1ad9"
+    },
+    {
+      "id": "k04-c2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k04-c2.png",
+      "screenshotSha256": "069f4fc9c38979664ac1e79c228f85c9f01e5b42fa272d5b69ac532a0a6a7736"
+    },
+    {
+      "id": "k04-c3",
+      "viewport": "mobile",
+      "screenshot": "mobile-k04-c3.png",
+      "screenshotSha256": "46ef7280a7d1dfdc9056b0dcb40b0b3cd3c27a657948d451c7a1427d5347be67"
+    },
+    {
+      "id": "k04-d1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k04-d1.png",
+      "screenshotSha256": "58b0f8e248a50425719f89b21448a75764316f6230b4dacffee5944462e1b0fd"
+    },
+    {
+      "id": "k04-d2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k04-d2.png",
+      "screenshotSha256": "ae92f3387a8d73a0581700b70bdec954cc01d63cd52b5d211f1eaa118d6cad2f"
+    }
+  ]
+}

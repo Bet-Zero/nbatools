@@ -276,6 +276,10 @@ function finderCountHeadline(
   const condition = thresholdPhraseFromQuery(data.query);
   const timeframe = finderTimeframe(data.query, rows[0], data.result?.metadata);
   const gameNoun = rows.length === 1 ? "game" : "games";
+  if (data.result?.metadata?.sort_by === "stat" && data.result?.metadata?.stat === "pts") {
+    const direction = data.result.metadata.ascending === true ? "lowest" : "highest";
+    return `${player}'s ${rows.length} ${direction}-scoring ${gameNoun}${timeframe}.`;
+  }
   const conditionPhrase = condition ? ` with ${condition}` : " matching";
   return `${player} had ${rows.length} ${gameNoun}${conditionPhrase}${timeframe}.`;
 }
@@ -502,6 +506,8 @@ function footerValue(
   rows: SectionRow[],
   summary: SectionRow | undefined,
 ): ReactNode {
+  // Rates are not additive; retain the aggregate average supplied by the engine.
+  if (kind === "sum" && key.endsWith("_pct")) return null;
   if (COMPOSITE_STATS[key]) {
     return compositeFooterValue(kind, key, rows, summary);
   }

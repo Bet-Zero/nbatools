@@ -1253,11 +1253,11 @@ function rowKey(row: SectionRow, index: number): string {
 }
 
 function tableLabel(key: string): string {
-  return TABLE_LABELS[key] ?? metricLabel(key);
+  return TABLE_LABELS[key] ?? occurrenceLabel(key, false) ?? metricLabel(key);
 }
 
 function sentenceMetricLabel(key: string): string {
-  return SENTENCE_LABELS[key] ?? metricLabel(key).toLowerCase();
+  return SENTENCE_LABELS[key] ?? occurrenceLabel(key, true) ?? metricLabel(key).toLowerCase();
 }
 
 function metricLabel(key: string): string {
@@ -1297,4 +1297,14 @@ function identityId(value: unknown): number | string | null {
 
 function hasValue(value: unknown): boolean {
   return value !== null && value !== undefined && value !== "";
+}
+
+function occurrenceLabel(key: string, prose: boolean): string | null {
+  const legacyPoints = /^games_(\d+)p$/.exec(key);
+  const expression = legacyPoints ? `pts_${legacyPoints[1]}+` : key.startsWith("games_") ? key.slice(6) : "";
+  if (!/^(?:(?:pts|reb|ast|stl|blk|tov)_\d+(?:\.\d+)?\+?)(?:_(?:pts|reb|ast|stl|blk|tov)_\d+(?:\.\d+)?\+?)*$/.test(expression)) return null;
+  const names: Record<string, string> = { pts: "points", reb: "rebounds", ast: "assists", stl: "steals", blk: "blocks", tov: "turnovers" };
+  const conditions = [...expression.matchAll(/(pts|reb|ast|stl|blk|tov)_(\d+(?:\.\d+)?\+?)/g)]
+    .map(([, stat, value]) => `${value} ${prose ? names[stat] : stat.toUpperCase()}`);
+  return `${prose ? "games" : "Games"} with ${conditions.join(" and ")}`;
 }
