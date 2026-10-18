@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9895ee04ec9b0144e314dac3e9981e3737b6aacc",
+  "request_sha": "9c844e3d7a96c0be9fd040764264102b2fc97c0f",
+  "base_generation": "queue-d-production-0574735-20260716",
+  "run_id": 39007679992,
+  "artifact_id": 12091388833,
+  "artifact_zip_sha256": "8f459cbbb90d7652ccb84e77cb625c416e63376cc2b1b454c5d8fb5e452573d2",
+  "files": [
+    {
+      "path": "canonical_selected/games/2023-24_regular_season.csv",
+      "size_bytes": 496,
+      "sha256": "6c3f393c51c4c60e3df57153eb8993cb88720c7c39146f99fcba0d05a78c68b2"
+    },
+    {
+      "path": "canonical_selected/games/2025-26_regular_season.csv",
+      "size_bytes": 850,
+      "sha256": "915ef448fd684796e9b77ca21ef0e8df260ca2fc5ca2b72e874517f3113c7337"
+    },
+    {
+      "path": "canonical_selected/player_game_stats/2023-24_regular_season.csv",
+      "size_bytes": 7899,
+      "sha256": "8d7169b99a115d09fe1f0418724df4f9f7a786e1d46cfe3983f6916b382646dd"
+    },
+    {
+      "path": "canonical_selected/player_game_stats/2025-26_regular_season.csv",
+      "size_bytes": 9463,
+      "sha256": "c8793033954d5641a1dad011659bed6f4d30e8e3e6d98cddcfadbbc59f83fa49"
+    },
+    {
+      "path": "canonical_selected/team_game_stats/2023-24_regular_season.csv",
+      "size_bytes": 972,
+      "sha256": "f5e850a4ad581288108c694d8f6827357fc65a9231d6e8c57776d56c905e6816"
+    },
+    {
+      "path": "canonical_selected/team_game_stats/2025-26_regular_season.csv",
+      "size_bytes": 962,
+      "sha256": "75ce4d0ef6af333461556fc67a46ff85b2bf4bf510759cdaaf24b86346709e03"
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.csv",
+      "size_bytes": 16721,
+      "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c"
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.imports.json",
+      "size_bytes": 225,
+      "sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085"
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "size_bytes": 16471,
+      "sha256": "007105cfd9f12ae12334d3ba3cfa5253c914c2cb9f21d876249590f02cda441d"
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+      "size_bytes": 225,
+      "sha256": "2d8e3be94970ec5177896ad52628d4e625c888e3850be7d78f755f0c9b1439c3"
+    },
+    {
+      "path": "raw/player_game_availability_sources/17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec.pdf",
+      "size_bytes": 27392,
+      "sha256": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20231225_BOSLAL.json",
+      "size_bytes": 312,
+      "sha256": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20240201_LALBOS.json",
+      "size_bytes": 312,
+      "sha256": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20251205_LALBOS.json",
+      "size_bytes": 312,
+      "sha256": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1"
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260222_BOSLAL.json",
+      "size_bytes": 312,
+      "sha256": "eff3ce4c22e39bb2b6873657653885b5168f48eb84ffdc807c2f60145516f6ee"
+    },
+    {
+      "path": "raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf",
+      "size_bytes": 27308,
+      "sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153"
+    },
+    {
+      "path": "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf",
+      "size_bytes": 26828,
+      "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+    },
+    {
+      "path": "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf",
+      "size_bytes": 26371,
+      "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+    }
+  ]
+}
