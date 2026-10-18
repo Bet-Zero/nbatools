@@ -26,3 +26,21 @@ Actual R2 accepted by independent checker /root/availability_checker: reviewed92
 ## Ownership/comparison browser checks (2026-10-18)
 
 The existing browser harness now binds all eight K05 and twelve K06 questions on desktop/mobile. The final 40 local executions pass frozen-source arithmetic, summary/comparison values, exact player game keys, distinct ordered comparison columns and their displayed values, plus opponent/date/venue and head-to-head meaning. Initial screenshots exposed omitted season context in head-to-head heroes and contradictory strict-threshold prose; bounded frontend repairs address both. Equivalent canonical team abbreviations and readable strict/date labels were independently reviewed without weakening identity or predicate ownership. All 468 frontend tests pass; before/after receipt hashes and selected screenshot hashes are retained in [ownership-comparison-browser-verification.json](ownership-comparison-browser-verification.json). This is qualified local `legacy` evidence only. Independent checker /root/availability_checker accepted all40 receipt/screenshot hashes and final visuals at2150e9c. CI, merge and the deployed selector remain required; no human review or production acceptance is inferred.
+
+October18 normal-development resumption: integrated current main3feb303 into reviewed
+`db75d9a880d80511b5384387375bff728aa9f361`; comparison runtime, frozen source oracle
+and required cases unchanged from9252c42. Independent checker `/root/comparison_checker`
+verified fresh identities/date/opponent/meeting probes, exact raw key sets, W/L and
+PTS/REB/AST arithmetic. Current generation `availability-opening-s4-v1-20261017`,
+manifest5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52,
+has source hashes identical to the frozen oracle. Historical plus/minus quality findings
+remain outside this PTS/REB/AST acceptance; full participation completeness is unknown.
+Actual run39160471581/requestf373eaf4d21e6f26e0c1905fe814ba527833760e
+passed12selected/executed numerical0skips/errors and12RawQA340checks. Numerical
+artifact12148476916 ZIP43ed3d48535cf76d7b249e3670d2baeaafbf4b5e03924e15dd494981ca35794f;
+QA12148562663 ZIPb8eed298bcfdc1fcd630257b7ea7518e545ed3d2b10c70aaa3df51bdf764b6ff.
+Checker physically verified both ZIP hashes and accepted actual results. CI39160306760
+and broad localpreflight8228passed1566skipped passed. Skips are not NBA acceptance.
+PR492 separately owns40production UI responses; no production data publication.
+
+PR492 resumption local acceptance: runtime-equivalent `f8a2235cf06b4cabb605639336dddc21ffd86dd1`, authenticated current generation, locked install/lint/build and468frontend tests passed. Independent checker `/root/comparison_checker` accepted40fresh local API/rendered answers, all40screenshot hashes,80readiness brackets and representative desktop/mobile visuals; controlled corruption probes reject wrong identity/value/scope/readiness. Fresh40production-response acceptance remains after actual deployment; no production data write.

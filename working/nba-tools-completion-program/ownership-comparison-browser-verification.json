@@ -120,5 +120,378 @@
       "screenshot": "mobile-k06-c2.png",
       "screenshotSha256": "769df6d79f19c5e57bd17aeba17175f260cebdd3b057767d7b4c38722b9947e3"
     }
-  ]
+  ],
+  "resumption_local_verification": {
+    "candidate_sha": "f8a2235cf06b4cabb605639336dddc21ffd86dd1",
+    "data_generation": "availability-opening-s4-v1-20261017",
+    "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+    "receipt_sha256": "2000fe2589389b91b88776b656c82603e6e185525feeedcc85015b2c78f70eca",
+    "checker": "/root/comparison_checker",
+    "classification": "local authenticated snapshot; production browser acceptance pending",
+    "responses": 40,
+    "failures": [],
+    "frontend_tests_passed": 468,
+    "receipts": [
+      {
+        "id": "k05-a1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "50257d973a284fd11f718b7df62844071f30a515e77e2a04a2f56154fa9af8c5",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "34e5821605ce43a10eebdf409edc7fadbe723b425d316ebfe00e51bdb4dc991e",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "8bbf0dacb6d7e83f169764a4ea9726c5747a449935d02a40b554172395daefa8",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "6798b021f426679a5a93a225664fe14e85df40b573e5d7b0bb5fcc242aeecb67",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "8201f6ea9033ca35dd7c0cc0b6b965c8aeeba6e61fd440c5eab40e7b92cca368",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "9ed9cbb783cd8e663e50ae9b683e698e45924d66273588e6a377e8d21d88c896",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "326699267a2a4cbe654fa8ff1e966184781d1481c9e8ff0312787ffd8c783a64",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "8087e79925b805c5e50f497faa4b9a3350b24bbba098b700d2efd5a153884430",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "fa46aeeae25676df4e7508564ce9dc16f2ee4f5e0cd0798e0f21cf7fe14dc972",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "10ff3adc4325ece5f9427eec03dac310109e9d3c9233f9f6bf7e3c2469207995",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "c34061f5c38eb847c4e6c26101579567bcd2e69093ce3d21927995a44a2aaf2f",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "b2acc5a46549c2d29aa06c81023c5fec8a4c1493c074eb060e24a1fab00db3dc",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "c5274e4104e296b8eaa020f953680630e67a448b90e72bd20d71bfb9bba1482f",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "d8f258eb29266e02bdbbd0578312347772493607d41775ff2ca75e7f15d4fb7c",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "fb1a23625bf36e3a0efcbea8132afb78449bafc979e5a6b0855a2be85351202a",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "a2aa084093fe5fe94e1ff472061edcb63dc72828fc9aadda3829d9cfd738ab60",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "e43cac6bdba363ce8951b53fa6d997cb536857c4ea922ab9e96535072b77f393",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "6dd1a37bb05312a7b8462ce6ef88bbd4febffe9da792d4a596a3225f9932f33f",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "690b6f5a6e30f6ae3fe0900d2f0e658144cd813fca4f2cde7b166df50d8ba809",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "9bf0ee16dfbceefe090561a2d8aae6b73b4ac2562dd493e33fa7c2e6ba8ebab9",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "faf43b35adbd822202b163fd9d6567f0992fcacfc5f78bf271f4f30b5d7e8444",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "cc883b4771db59a1fe7a72cadd264959b6cc4a317b3c10a6dd48e86169dba5a4",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "0d7775641039181958a0f29939f647230c061d5568c3c23ed5006cd47f63e106",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-a2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "a1e89e6841bb4e8399a2dcd48ad7c516ed572041cb1427afb0c43699efe576aa",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "f58b00652569c1dae283c9bcd00bad4abbf0d0997ff4ed00bbe57f4149446110",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "017b471530d701848e67dc4af1f732572db29c1c743335759c140add0e8937ea",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "ba9c047ea6dfbfb5b725bb8fd6ac9b681a676dc2b9f3145027feff4eb313b060",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k05-b2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "9356f165fa8edf6a4dc27964f2d14c8a073bdeeadcfbba7366ee77ab4301a4f3",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "5cc0784e9bd056ca06c3f999f4dcafe69f00232df500ac9a7f7430eb2009cb22",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "1d1508485eebf9f9826232f044f2358bb74aa56405dea74aeaac0a375a808cae",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "7dce3117c0c31660169d820692768b053552b76a9a7c7639b47a014d8b081569",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-a2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "198aca60065f4658c824184d37feaa893984fa0a94f6634901caf35510f8f673",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "3a3fa9f4cefbedfe2863f02465f75a60ef2892406593796bbb2fa343225e6186",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "5508b03b04effe0444fec187abf88057bb74cdece5ae59ea8e493822cb274ca3",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "a2bbb7c1c866aa954bdef7b40b1a6fbc46c004b9135af0390dfcc475092bdb49",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-b2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "67693ab40393f4321338b2e06650be67fbaca9bc40f958673a75fea14a198b23",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "188e06120c10b5d0e068edd4a920e22ed23bff4b55ac6298d68e0cb97b15f630",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "93f2878dd1ae0618e1361a41b34f0491259d4d59645a9c80859fcacece0646ea",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "2957a5bb017d247b7b1fe0873782a1bd35581f1129de887880d5419aa2195553",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      },
+      {
+        "id": "k06-c2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "436ada442942b41b84114ce864748a73a6803f37a32f97ee5282164bddcb036f",
+        "assets": [
+          "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+        ]
+      }
+    ]
+  }
 }
