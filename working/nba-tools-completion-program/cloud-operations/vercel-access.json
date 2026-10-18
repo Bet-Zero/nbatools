@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-10-18T10:33:16Z",
+  "owner_reconnected": true,
+  "team": {
+    "id": "team_1GXBdYTEHdvEtagohh8rPTb2",
+    "slug": "brents-projects-686e97fc",
+    "name": "Zero's projects",
+    "read": "success"
+  },
+  "project_listing": {
+    "scope": "explicit existing team; unfiltered and nbatools search",
+    "count": 0
+  },
+  "project_read": {
+    "name": "nbatools",
+    "http_status": 404,
+    "explicit_team_and_slug_tested": true
+  },
+  "deployment_listing": {
+    "app": "nbatools",
+    "count": 0
+  },
+  "known_deployment_read_http_status": 404,
+  "github_deployment_status": {
+    "main_sha": "38f4c9c5f65ec13d62d8a0e5a1ca51b203c04240",
+    "state": "success",
+    "target_url": "https://vercel.com/brents-projects-686e97fc/nbatools/4EScByrmkkY1Fw6fFaVzvhNG9n1J"
+  },
+  "conclusion": "Team visibility was restored before the latest retry. Initial project/deployment404 remains historical evidence; latest retry is blocked by unavailable connector tools, not a new permission verdict. No live administration/rollback acceptance.",
+  "mutations": 0,
+  "protection_bypass": false,
+  "new_credentials": false,
+  "latest_retry": {
+    "checked_at": "2026-10-18T10:37:39Z",
+    "owner_instruction": "try again now",
+    "get_project": "MCP -32001 Unknown tool(vercel.get_project)",
+    "list_projects": "MCP -32001 Unknown tool(vercel.list_projects)",
+    "bounded_recheck": "get_project still Unknown tool after20seconds",
+    "plugin_inventory": {
+      "installed": true,
+      "status": "ENABLED"
+    },
+    "conclusion": "Connector routing now fails before a Vercel permission response. Latest project authorization outcome cannot be verified. Do not infer another denied grant or request broader credentials from this error."
+  }
+}
