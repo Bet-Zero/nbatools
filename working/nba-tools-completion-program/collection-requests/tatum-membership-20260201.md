@@ -1,7 +1,11 @@
 # Bounded participation collection proposal
 
-This is a proposed collection requirement, not collected coverage, an accepted
-feature, or publication approval. No source fetch or production write occurred.
+The exact PDF was acquired through the existing GitHub runner under the owner's
+specific October 18 instruction. Original bytes and independent qualification are
+retained in [source-evidence/tatum-20260201](../source-evidence/tatum-20260201/independent-validation.json).
+No laptop PDF download is needed. The original request ZIP is retained unchanged
+as historical/fallback evidence; it does not mean the PDF remains missing.
+This is staging, not production coverage, accepted membership semantics or publication approval.
 
 ## Smallest useful new acquisition
 
@@ -65,7 +69,7 @@ is not repaired by acquiring a real report or by deleting fixture player rows.
 The fixture still needs explicitly stipulated, meaningful membership evidence;
 real-data acceptance then uses the qualified immutable production/candidate slice.
 
-## Backup laptop steps
+## Original fallback laptop steps (PDF already retrieved)
 
 Use the existing acquisition collector to save the exact original bytes under:
 
@@ -103,17 +107,19 @@ The existing source-report importer understands this exact game and derives the
 same report URL when called in the cloud with the pinned complete catalog:
 
 ```
-nbatools-cli pipeline backfill-game-availability --season 2025-26 --season-type 'Regular Season' --source report --game-id 22500702 --limit 1
+nbatools-cli pipeline backfill-game-availability --season 2025-26 --season-type 'Regular Season' --source report --cached-reports <retained-source-directory> --game-id 22500702 --limit 1
 ```
 
-That is a parameter reference, not a laptop command or an instruction to refetch
-upstream in the cloud: the current report importer always fetches its PDF and has
-no `--cached-report` option (`--cached-boxscores` supports Stats JSON only).
-Cloud processing therefore needs a bounded, independently checked retained-report
-input seam before replaying the laptop bytes offline. Preserve existing report
-parsing, game/date/team/score validation, exact played-identity and minute checks,
-DNP/inactive parsing, import receipts and source hashes. Do not evade source
-qualification by populating a membership row from a roster snapshot.
+The retained-report option replays the original PDF and capture receipt offline,
+validates URL/hash/size/time and the same PDF/game/date/team/score/identity rules,
+and refuses unresolved identities without fetching CDN/profile sources. The
+original capture time is preserved. This is a cloud development command, not a
+laptop development task. It currently fails closed on the two ambiguous Milwaukee
+inactive Antetokounmpo rows; it does not silently import only the easy rows.
+Tatum's explicit Boston listing is independently qualified as a one-game fact.
+A full 34-row availability import and same-date other-game applicability remain
+unaccepted. Do not evade qualification with a roster snapshot or assign inactive
+reasons based on assumed injury/G League status.
 
 Merge any proposed result into a full isolated copy of the existing generation;
 never replace its season CSV with this one game's rows. Qualify every listed

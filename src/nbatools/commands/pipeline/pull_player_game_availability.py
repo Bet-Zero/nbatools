@@ -381,6 +381,7 @@ def backfill(
     *,
     root: Path = Path("data"),
     cached_boxscores: Path | None = None,
+    cached_reports: Path | None = None,
     game_ids: list[int] | None = None,
     limit: int | None = None,
     source: str = "stats",
@@ -394,6 +395,8 @@ def backfill(
         raise ValueError("Source must be stats or espn")
     if cached_boxscores is not None and source != "stats":
         raise ValueError("Cached NBA Stats JSON is incompatible with ESPN source")
+    if cached_reports is not None and source != "report":
+        raise ValueError("Cached reports only support the report source")
     if limit is not None and limit < 1:
         raise ValueError("limit must be positive")
     safe = season_type.lower().replace(" ", "_")
@@ -484,6 +487,7 @@ def backfill(
                 home_team_id=int(row.home_team_id),
                 away_team_id=int(row.away_team_id),
                 data_root=root,
+                cached_reports=cached_reports,
             )
             source_name = f"{REPORT_SOURCE}:{report_ref}"
         elif source == "espn":
@@ -545,6 +549,7 @@ def run(
     season_type: str = "Regular Season",
     *,
     cached_boxscores: Path | None = None,
+    cached_reports: Path | None = None,
     game_ids: list[int] | None = None,
     limit: int | None = None,
     source: str = "stats",
@@ -553,6 +558,7 @@ def run(
         season,
         season_type,
         cached_boxscores=cached_boxscores,
+        cached_reports=cached_reports,
         game_ids=game_ids,
         limit=limit,
         source=source,

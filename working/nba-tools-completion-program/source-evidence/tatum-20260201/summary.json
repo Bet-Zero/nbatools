@@ -1,0 +1,23 @@
+{
+  "candidate_sha": "f379e7b571d42231c1606a7d36d2c635687a2694",
+  "generation": "availability-opening-s4-v1-20261017",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/test_pipeline_player_game_availability_real_data.py::test_official_tatum_report_retains_exact_source"
+  ],
+  "required_test_limit": 100,
+  "selected": 1,
+  "executed": 1,
+  "passed": 0,
+  "skipped": 0,
+  "failed": 1,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 1,
+  "conclusion": "failure",
+  "problems": [
+    "pytest did not succeed (exit=1)",
+    "Every selected required test must execute and pass",
+    "Required tests contain skips, failures, errors, or expected failures"
+  ]
+}

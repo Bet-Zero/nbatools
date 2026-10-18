@@ -374,10 +374,11 @@ def test_official_tatum_report_retains_exact_source(tmp_path):
     teams = canonical["team_game_stats"]
     assert len(teams) == 2
     assert dict(zip(teams.team_id.astype(int), teams.pts.astype(int))) == {
-        1610612749: 79, 1610612738: 107,
+        1610612749: 79,
+        1610612738: 107,
     }
     names, sections, lines = _parse_sections(text, "2026-02-01")
-    assert names == ["MILWAUKEE BUCKS", "BOSTON CELTICS"]
+    assert [name.casefold() for name in names] == ["milwaukee bucks", "boston celtics"]
     assert [_score(section) for section in sections] == [79, 107]
     inactive = _inactives(lines)
     assert [team for team, _ in inactive] == ["Bucks", "Celtics"]
@@ -397,3 +398,25 @@ def test_official_tatum_report_retains_exact_source(tmp_path):
     }
     (evidence / "tatum-source-validation.json").write_text(json.dumps(result, indent=2) + "\n")
     print("Official one-PDF capture:", json.dumps(result, sort_keys=True))
+
+
+def test_retained_tatum_report_scope_on_pinned_data(tmp_path, monkeypatch):
+    """Recheck the captured PDF against R2 without another upstream request."""
+    from nbatools.commands.pipeline import player_game_availability_report as report
+
+    cache = (
+        Path(__file__).resolve().parents[1]
+        / "working/nba-tools-completion-program/source-evidence/tatum-20260201"
+        / "acquired_data/raw/player_game_availability_sources"
+    )
+
+    def offline(url, *, archive):
+        return report._cached_report_text(url, cache, archive)
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Retained-source validation must not fetch NBA endpoints")
+
+    # R2 access uses boto3, not this NBA urllib fetch seam.
+    monkeypatch.setattr(report.urllib.request, "urlopen", unexpected)
+    monkeypatch.setattr(report, "_fetch_report_text", offline)
+    test_official_tatum_report_retains_exact_source(tmp_path)

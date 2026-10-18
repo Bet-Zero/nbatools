@@ -297,6 +297,14 @@ Contract rules:
   byte count and raw filename. Report rows carry `source_sha256` to bind them
   to those exact bytes even if a provider later revises a report. Other adapters
   currently leave that field empty and remain pending original-source retention.
+  Offline replay uses `pipeline backfill-game-availability --source report
+  --cached-reports <directory>`. The directory contains the report-reference
+  receipt and its hash-named original PDF. Replay verifies exact URL, SHA256,
+  size, timezone-qualified capture time and the same one-page NBA Final Box
+  markers; it preserves original bytes and receipt time. Missing, altered or
+  invalid inputs fail without network fallback. Unresolved identities also fail
+  offline, rather than fetching CDN/profile sources or omitting listed rows.
+  Cached reports cannot be combined with another source adapter.
   These files must accompany publication inputs. Identity lookup may use the
   immediately preceding season's canonical player/team IDs; that lookup never
   establishes current membership or absence without an explicit report row.

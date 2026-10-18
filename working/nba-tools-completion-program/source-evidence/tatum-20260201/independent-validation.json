@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/comparison_checker",
+  "source_review": "original PDF independently rendered and pdftotext parsed; separate population/name/ID/minute-second/point oracle",
+  "acquisition_reviewed_sha": "9679e2b4df3e81b17fee4ece3bc0b1058ef824a2",
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "source_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+  "size_bytes": 27521,
+  "game_id": "0022500702",
+  "game_date": "2026-02-01",
+  "visitor": {
+    "team_id": 1610612749,
+    "abbr": "MIL",
+    "score": 79,
+    "played": 12,
+    "inactive": 5,
+    "source_minute_seconds": 14400
+  },
+  "home": {
+    "team_id": 1610612738,
+    "abbr": "BOS",
+    "score": 107,
+    "played": 12,
+    "dnp": 2,
+    "inactive": 3,
+    "source_minute_seconds": 14400
+  },
+  "total_source_listed": 34,
+  "played_comparison": "24 unique player/team IDs and points match authenticated canonical rows; exact PDF minute seconds sum 240:00 per team, each canonical rounded minute within 30 seconds",
+  "tatum": {
+    "player_id": 1628369,
+    "team_id": 1610612738,
+    "source_name": "Tatum",
+    "comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+    "meaning": "explicit one-game source-reported Boston inactive listing, not current medical status or season tenure"
+  },
+  "unresolved": [
+    "Two MIL inactive surname-only Antetokounmpo listings cannot uniquely map reasons to Alex 1630828 and Giannis 203507; Thanasis 203648 explicitly played. Full import remains blocked rather than guessing or dropping either row.",
+    "Dated other-game applicability, conflicts, possible same-day transfer/time ambiguity and all 46 original #462 positives remain open."
+  ],
+  "production_writes": 0
+}
