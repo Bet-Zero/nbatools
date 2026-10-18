@@ -1,0 +1,89 @@
+{
+  "classification": "qualified bounded source oracle, not seasonwide coverage or publication approval",
+  "reviewer": "/root/participation_request",
+  "base_revision": "1159d3c7659b7040d0a0aa3d180391eccebbba05",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c"
+  },
+  "participant_ids": {
+    "LeBron James": 2544,
+    "Anthony Davis": 203076
+  },
+  "team_id": 1610612747,
+  "opponent_team_id": 1610612738,
+  "season": "2023-24",
+  "season_type": "Regular Season",
+  "candidate_game_ids": [
+    22300403,
+    22300684
+  ],
+  "both_played_game_ids": [
+    22300403
+  ],
+  "both_did_not_play_game_ids": [
+    22300684
+  ],
+  "selected_team": {
+    "game_id": 22300684,
+    "games": 1,
+    "wins": 1,
+    "losses": 0,
+    "pts": 114,
+    "reb": 52,
+    "ast": 30
+  },
+  "selected_player": {
+    "game_id": 22300684,
+    "player_id": 1630559,
+    "player_name": "Austin Reaves",
+    "pts": 32,
+    "reb": 2,
+    "ast": 3
+  },
+  "retained_reports": {
+    "22300403": {
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+    },
+    "22300684": {
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+    }
+  },
+  "scope": "Two observed LAL/BOS games; each pair member explicitly qualified in both. No inference from missing rows, injury, tenure, same-date other-game membership or staged February 2026 report. All46 original PR462 positive obligations remain open.",
+  "retained_source_rows": {
+    "path": "k08_qualified_pair_source_rows.csv",
+    "sha256": "fbbc39badc02b861c2c3c20dd2098ae7f3a70d6d1793d3b2f3507469717dfce9",
+    "rows": 8,
+    "meaning": "Exact bounded excerpts from hash-qualified production CSVs; not fabricated fixtures or a publishable generation."
+  },
+  "baseline": {
+    "revision": "1159d3c7659b7040d0a0aa3d180391eccebbba05",
+    "fixture_tests": {
+      "passed": 10,
+      "failed_positive_obligations": 8,
+      "skipped": 0
+    },
+    "real_data_tests": {
+      "passed": 3,
+      "failed_positive_obligations": 3,
+      "skipped": 0
+    },
+    "failure_meaning": "Suffix/subject-bound natural requests refuse; unsuffixed team pair computes correctly but final metadata loses the pair. Failures are required positives, never xfail/skip/refusal acceptance.",
+    "original_pr462_positive_obligations_remain_open": 46
+  },
+  "implementation_handoff": {
+    "owner": "root alone owns shared semantic implementation after PR512 acceptance",
+    "paths": [
+      "src/nbatools/commands/_teammate_resolution.py",
+      "src/nbatools/commands/natural_query.py",
+      "existing request/result metadata propagation"
+    ],
+    "preserve": "Explicit original-sample conjunction coverage, unknown/conflict rejection, subject-owned bound, status/on-court safety. No new dataset or same-date tenure inference required."
+  }
+}

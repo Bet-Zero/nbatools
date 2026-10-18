@@ -282,9 +282,15 @@ instead of inferring winners from stat leaderboards.
 - `How many games did the Lakers win with Reaves available?`
 
 Single-player whole-game presence and absence filters return the team record
-for games where that player did or did not play for the team. Compound
-multi-player availability remains unsupported and returns a clean no-result
-instead of a broad fallback.
+for games where that player did or did not play for the team. Two named
+teammates can share a participation condition: `Lakers record vs Celtics with
+LeBron James and Anthony Davis both out in 2023-24` requires explicit evidence
+that both did not play. `not playing` and `DNP` express the same whole-game
+condition; `both playing` requires positive minutes for both. A primary-subject
+stat bound can accompany the pair, such as Reaves games with at least20 points
+without LeBron and Davis. Missing observations do not prove absence, and
+participation does not establish injury, health, availability status or on-court
+presence. Mixed with/without conditions and OR conditions remain unfinished.
 
 ## Team records
 
