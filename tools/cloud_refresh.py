@@ -53,12 +53,10 @@ def prepare(archive, receipt, work, *, season=None, timeout=150):
     if work.exists():
         raise ValueError("Refresh work directory must not exist")
     work.mkdir(parents=True)
-    backup_receipt = json.loads(Path(receipt).read_text())
-    restore_backup(archive, backup_receipt, work / "data")
     outcome = {
         **configuration,
-        "base_generation": backup_receipt["generation_id"],
-        "base_manifest_sha256": backup_receipt["manifest_sha256"],
+        "base_generation": None,
+        "base_manifest_sha256": None,
         "production_writes": 0,
         "state": "failed",
         "candidate": None,
@@ -79,6 +77,12 @@ result = refresh_season(sys.argv[1], 'Regular Season', allow_no_data_skip=False)
 Path('pipeline-result.json').write_text(json.dumps(asdict(result), default=str))
 """
     try:
+        backup_receipt = json.loads(Path(receipt).read_text())
+        outcome.update(
+            base_generation=backup_receipt["generation_id"],
+            base_manifest_sha256=backup_receipt["manifest_sha256"],
+        )
+        restore_backup(archive, backup_receipt, work / "data")
         result = subprocess.run(
             [sys.executable, "-c", script, configuration["season"]],
             cwd=work,
@@ -111,8 +115,9 @@ Path('pipeline-result.json').write_text(json.dumps(asdict(result), default=str))
                 )
             else:
                 candidate = "manual-refresh-" + datetime.now(UTC).strftime("%Y%m%d%H%M%S")
-                _build_staged_generation(work / "data", work / "candidate", candidate)
-                manifest = validate_staged_generation(work / "candidate", candidate)
+                _build_staged_generation(work / "data", work / "candidate-unvalidated", candidate)
+                manifest = validate_staged_generation(work / "candidate-unvalidated", candidate)
+                (work / "candidate-unvalidated").rename(work / "candidate")
                 outcome.update(
                     state="prepared_no_writes",
                     candidate=candidate,
@@ -123,6 +128,11 @@ Path('pipeline-result.json').write_text(json.dumps(asdict(result), default=str))
         outcome["failure"] = (
             "Manual acquisition exceeded its bounded timeout; no candidate prepared"
         )
+    except Exception as exc:
+        # Preserve a public, credential-free failure classification even when
+        # input restore or final validation fails before acquisition can finish.
+        outcome["failure"] = "Restore or preparation failed; no validated candidate prepared"
+        outcome["error_type"] = type(exc).__name__
     finally:
         (work / "refresh-attempt.json").write_text(json.dumps(outcome, indent=2) + "\n")
     return outcome

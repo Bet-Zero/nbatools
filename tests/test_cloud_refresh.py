@@ -53,3 +53,16 @@ def test_failed_refresh_preserves_backup_and_never_prepares_candidate(
     assert archive.read_bytes() == original
     assert not (work / "candidate").exists()
     assert json.loads((work / "refresh-attempt.json").read_text())["production_writes"] == 0
+
+
+def test_corrupt_backup_writes_failure_receipt_before_any_acquisition(tmp_path):
+    from tests.test_cloud_backup import make_backup
+
+    output, _, _ = make_backup(tmp_path)
+    archive = output / "generation.zip"
+    archive.write_bytes(archive.read_bytes() + b"bad")
+    result = prepare(archive, output / "backup-receipt.json", tmp_path / "attempt")
+    assert result["state"] == "failed" and result["candidate"] is None
+    assert result["error_type"] == "ValueError"
+    assert (tmp_path / "attempt/refresh-attempt.json").exists()
+    assert not (tmp_path / "attempt/pipeline-result.json").exists()

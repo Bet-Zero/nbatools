@@ -33,25 +33,32 @@ def test_core_cloud_routes(tmp_path, capfd):
     # Actual existing core pipeline, with its normal 3 x 30-second request/retry
     # policy. Never weaken it to an eight-second diagnostic or mock NBA values.
     started = __import__("time").monotonic()
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            "from nbatools.commands.pipeline.pull_games import run; run('2025-26', 'Regular Season')",
-        ],
-        cwd=tmp_path,
-        capture_output=True,
-        timeout=120,
-    )
+    result = None
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "from nbatools.commands.pipeline.pull_games import run; run('2025-26', 'Regular Season')",
+            ],
+            cwd=tmp_path,
+            capture_output=True,
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        pass  # Retain an explicit timeout diagnosis and continue bounded alternatives.
     report = {
         "core_games": {
-            "returned_canonical_csv": result.returncode == 0,
+            "returned_canonical_csv": result is not None and result.returncode == 0,
             "elapsed_seconds": round(__import__("time").monotonic() - started, 2),
             "normal_timeout_seconds": 30,
             "normal_attempts": 3,
         }
     }
-    if result.returncode:
+    if result is None:
+        report["core_games"]["error_category"] = "bounded-process-timeout"
+        report["core_games"]["failure"] = "normal core pipeline exceeded 120-second test ceiling"
+    elif result.returncode:
         report["core_games"]["error_category"] = (
             "read-timeout" if b"Read timed out" in result.stderr else "pipeline-acquisition-error"
         )
