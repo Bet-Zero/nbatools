@@ -20,9 +20,9 @@ explicit `raw_frame` inputs use their unchanged conversion paths. Legacy
 is not trusted starter evidence. Separate starter-role rows use actual full-game
 V3 positions, exact played identities and five-starter validation.
 
-Durable development staging and receipts are in
-`working/nba-tools-completion-program/cloud-operations/core-archive-staging.zip`
-and `core-archive-receipt.json`. This is permanent Git storage, not an expiring
+Durable development staging and receipts are `core-archive-staging.zip` and
+`core-archive-receipt.json` in [PR502](https://github.com/Bet-Zero/nbatools/pull/502).
+This is permanent Git storage, not an expiring
 Actions artifact or a registered production publication package. It retains
 the original season payloads as well as the qualified one-game slice. PBP raw
 retrieval is recorded separately from canonical acceptance: sparse scores and
