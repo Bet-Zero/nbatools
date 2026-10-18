@@ -12635,3 +12635,552 @@ cases:
     review_notes: Independent frozen Booker language probe and raw arithmetic in k02-language-baseline.json.
       Required exact game keys are enforced by the numerical selector; this repaired wording is a regression,
       not new unseen evidence.
+
+
+  - id: k05_a1
+    query: Lakers record at home in 2023-24 when scoring at least 110 points and allowing fewer than 110
+      points
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 8
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 124.75
+    - path: result.sections.summary.0.reb_avg
+      equals: 51.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 31.625
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.team_name
+      equals: Los Angeles Lakers
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_a1_heldout
+    query: In the 2023-24 regular season, what was Los Angeles Lakers' home record in games where the Lakers
+      reached 110 points but their opponents stayed below 110?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 8
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 124.75
+    - path: result.sections.summary.0.reb_avg
+      equals: 51.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 31.625
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.team_name
+      equals: Los Angeles Lakers
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_a2
+    query: LeBron James averages at home in 2023-24 with at least 25 points and opponent points below 110
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 8
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 28.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 7.25
+    - path: result.sections.summary.0.ast_avg
+      equals: 8.25
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: LeBron James
+    - path: result.sections.summary.0.pts_sum
+      equals: 228
+    - path: result.sections.summary.0.reb_sum
+      equals: 58
+    - path: result.sections.summary.0.ast_sum
+      equals: 66
+    - path: result.sections.game_log.0.game_id
+      equals: 22300216
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.0.player_id
+      equals: 2544
+    - path: result.sections.game_log.1.game_id
+      equals: 22300238
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.1.player_id
+      equals: 2544
+    - path: result.sections.game_log.2.game_id
+      equals: 22301203
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.2.player_id
+      equals: 2544
+    - path: result.sections.game_log.3.game_id
+      equals: 22301230
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.3.player_id
+      equals: 2544
+    - path: result.sections.game_log.4.game_id
+      equals: 22300505
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.4.player_id
+      equals: 2544
+    - path: result.sections.game_log.5.game_id
+      equals: 22300565
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.5.player_id
+      equals: 2544
+    - path: result.sections.game_log.6.game_id
+      equals: 22300932
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.6.player_id
+      equals: 2544
+    - path: result.sections.game_log.7.game_id
+      equals: 22300990
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.7.player_id
+      equals: 2544
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_a2_heldout
+    query: For 2023-24, average LeBron James' home appearances where he scored 25 or more points and the
+      opposing team scored under 110.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 8
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 28.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 7.25
+    - path: result.sections.summary.0.ast_avg
+      equals: 8.25
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: LeBron James
+    - path: result.sections.summary.0.pts_sum
+      equals: 228
+    - path: result.sections.summary.0.reb_sum
+      equals: 58
+    - path: result.sections.summary.0.ast_sum
+      equals: 66
+    - path: result.sections.game_log.0.game_id
+      equals: 22300216
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.0.player_id
+      equals: 2544
+    - path: result.sections.game_log.1.game_id
+      equals: 22300238
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.1.player_id
+      equals: 2544
+    - path: result.sections.game_log.2.game_id
+      equals: 22301203
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.2.player_id
+      equals: 2544
+    - path: result.sections.game_log.3.game_id
+      equals: 22301230
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.3.player_id
+      equals: 2544
+    - path: result.sections.game_log.4.game_id
+      equals: 22300505
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.4.player_id
+      equals: 2544
+    - path: result.sections.game_log.5.game_id
+      equals: 22300565
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.5.player_id
+      equals: 2544
+    - path: result.sections.game_log.6.game_id
+      equals: 22300932
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.6.player_id
+      equals: 2544
+    - path: result.sections.game_log.7.game_id
+      equals: 22300990
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612747
+    - path: result.sections.game_log.7.player_id
+      equals: 2544
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_b1
+    query: Bucks record on the road in 2023-24 when scoring at least 115 points and allowing fewer than
+      115 points
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 7
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 124.286
+    - path: result.sections.summary.0.reb_avg
+      equals: 46.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 27.571
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.team_name
+      equals: Milwaukee Bucks
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_b1_heldout
+    query: What was Milwaukee's record away from home in 2023-24 when its opponents scored fewer than 115
+      and the Bucks scored at least 115?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 7
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 124.286
+    - path: result.sections.summary.0.reb_avg
+      equals: 46.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 27.571
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.team_name
+      equals: Milwaukee Bucks
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_b2
+    query: Giannis Antetokounmpo averages on the road in 2023-24 with at least 30 points and opponent points
+      below 115
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 11
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 11
+    - path: result.sections.summary.0.wins
+      equals: 6
+    - path: result.sections.summary.0.losses
+      equals: 5
+    - path: result.sections.summary.0.pts_avg
+      equals: 36.091
+    - path: result.sections.summary.0.reb_avg
+      equals: 13.182
+    - path: result.sections.summary.0.ast_avg
+      equals: 6.727
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.summary.0.pts_sum
+      equals: 397
+    - path: result.sections.summary.0.reb_sum
+      equals: 145
+    - path: result.sections.summary.0.ast_sum
+      equals: 74
+    - path: result.sections.game_log.0.game_id
+      equals: 22300173
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.0.player_id
+      equals: 203507
+    - path: result.sections.game_log.1.game_id
+      equals: 22300433
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.1.player_id
+      equals: 203507
+    - path: result.sections.game_log.2.game_id
+      equals: 22300496
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.2.player_id
+      equals: 203507
+    - path: result.sections.game_log.3.game_id
+      equals: 22300606
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.3.player_id
+      equals: 203507
+    - path: result.sections.game_log.4.game_id
+      equals: 22300725
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.4.player_id
+      equals: 203507
+    - path: result.sections.game_log.5.game_id
+      equals: 22300790
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.5.player_id
+      equals: 203507
+    - path: result.sections.game_log.6.game_id
+      equals: 22300808
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.6.player_id
+      equals: 203507
+    - path: result.sections.game_log.7.game_id
+      equals: 22300817
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.7.player_id
+      equals: 203507
+    - path: result.sections.game_log.8.game_id
+      equals: 22300864
+    - path: result.sections.game_log.8.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.8.player_id
+      equals: 203507
+    - path: result.sections.game_log.9.game_id
+      equals: 22301061
+    - path: result.sections.game_log.9.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.9.player_id
+      equals: 203507
+    - path: result.sections.game_log.10.game_id
+      equals: 22301076
+    - path: result.sections.game_log.10.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.10.player_id
+      equals: 203507
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k05_b2_heldout
+    query: In road games during 2023-24 where the opposing team finished below 115 points, give Giannis
+      Antetokounmpo's averages when Giannis had at least 30 points.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 11
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 11
+    - path: result.sections.summary.0.wins
+      equals: 6
+    - path: result.sections.summary.0.losses
+      equals: 5
+    - path: result.sections.summary.0.pts_avg
+      equals: 36.091
+    - path: result.sections.summary.0.reb_avg
+      equals: 13.182
+    - path: result.sections.summary.0.ast_avg
+      equals: 6.727
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: Giannis Antetokounmpo
+    - path: result.sections.summary.0.pts_sum
+      equals: 397
+    - path: result.sections.summary.0.reb_sum
+      equals: 145
+    - path: result.sections.summary.0.ast_sum
+      equals: 74
+    - path: result.sections.game_log.0.game_id
+      equals: 22300173
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.0.player_id
+      equals: 203507
+    - path: result.sections.game_log.1.game_id
+      equals: 22300433
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.1.player_id
+      equals: 203507
+    - path: result.sections.game_log.2.game_id
+      equals: 22300496
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.2.player_id
+      equals: 203507
+    - path: result.sections.game_log.3.game_id
+      equals: 22300606
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.3.player_id
+      equals: 203507
+    - path: result.sections.game_log.4.game_id
+      equals: 22300725
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.4.player_id
+      equals: 203507
+    - path: result.sections.game_log.5.game_id
+      equals: 22300790
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.5.player_id
+      equals: 203507
+    - path: result.sections.game_log.6.game_id
+      equals: 22300808
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.6.player_id
+      equals: 203507
+    - path: result.sections.game_log.7.game_id
+      equals: 22300817
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.7.player_id
+      equals: 203507
+    - path: result.sections.game_log.8.game_id
+      equals: 22300864
+    - path: result.sections.game_log.8.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.8.player_id
+      equals: 203507
+    - path: result.sections.game_log.9.game_id
+      equals: 22301061
+    - path: result.sections.game_log.9.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.9.player_id
+      equals: 203507
+    - path: result.sections.game_log.10.game_id
+      equals: 22301076
+    - path: result.sections.game_log.10.team_id
+      equals: 1610612749
+    - path: result.sections.game_log.10.player_id
+      equals: 203507
+    review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
+      keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
+      Original primary/held-out baselines preserved; no human or deployment acceptance implied.'

@@ -28,7 +28,7 @@ _PLAYER_ROUTES = ("player_game_finder", "player_game_summary")
 _SCORE_VERB = r"scor(?:e|es|ed)|puts?\s+up|put\s+up"
 _TEAM_STAT_VERB = re.compile(
     rf"\s({_SCORE_VERB}|ha(?:d|s|ve)|ma(?:de|kes?)|hits?|grab(?:s|bed)?"
-    r"|record(?:s|ed)?|dish(?:es|ed)?|commit(?:s|ted)?)\s+"
+    r"|record(?:s|ed)?|reach(?:es|ed)?|(?:did|does|do)\s+not\s+reach|dish(?:es|ed)?|commit(?:s|ted)?)\s+"
 )
 _BOUND = re.compile(
     r"(?P<pre>at\s+least\s+|a\s+min(?:imum)?\s+of\s+|over\s+|more\s+than\s+|under\s+"
@@ -111,6 +111,8 @@ def team_subject_stat_conditions(text: str) -> list[dict[str, Any]]:
         value = float(bound.group("num"))
         pre = re.sub(r"\s+", " ", (bound.group("pre") or "").strip())
         mode, epsilon = _PRE.get(pre, ("min", 0.0))
+        if re.fullmatch(r"(?:did|does|do)\s+not\s+reach", verb.group(1)):
+            mode, epsilon = "max", 0.0001
         tail = bound.group("mid") or bound.group("post")
         if tail in ("fewer", "less"):
             mode, epsilon = "max", 0.0

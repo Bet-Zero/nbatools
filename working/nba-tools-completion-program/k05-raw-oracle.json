@@ -1,0 +1,307 @@
+{
+  "scope": "K05 finite clause ownership and venue; frozen raw-only before interpreter execution",
+  "generation": "queue-d-production-0574735-20260716",
+  "sources": {
+    "team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "cases": [
+    {
+      "id": "K05-A1",
+      "kind": "team",
+      "query": "Lakers record at home in 2023-24 when scoring at least 110 points and allowing fewer than 110 points",
+      "season": "2023-24",
+      "team": "LAL",
+      "player_id": null,
+      "venue": "home",
+      "own_pts_min_inclusive": 110,
+      "opponent_pts_max_exclusive": 110,
+      "key_columns": [
+        "game_id",
+        "team_id"
+      ],
+      "keys": [
+        [
+          22300026,
+          1610612747
+        ],
+        [
+          22300042,
+          1610612747
+        ],
+        [
+          22300565,
+          1610612747
+        ],
+        [
+          22300884,
+          1610612747
+        ],
+        [
+          22300932,
+          1610612747
+        ],
+        [
+          22300990,
+          1610612747
+        ],
+        [
+          22301127,
+          1610612747
+        ],
+        [
+          22301230,
+          1610612747
+        ]
+      ],
+      "games": 8,
+      "wins": 8,
+      "losses": 0,
+      "sums": {
+        "pts": 998,
+        "reb": 408,
+        "ast": 253
+      },
+      "means": {
+        "pts": 124.75,
+        "reb": 51.0,
+        "ast": 31.625
+      },
+      "predicate_discrimination": {
+        "wrong_venue_otherwise_qualifying": 5,
+        "own_threshold_failed_otherwise_qualifying": 8,
+        "opponent_threshold_failed_otherwise_qualifying": 22
+      }
+    },
+    {
+      "id": "K05-A2",
+      "kind": "player",
+      "query": "LeBron James averages at home in 2023-24 with at least 25 points and opponent points below 110",
+      "season": "2023-24",
+      "team": "LAL",
+      "player_id": 2544,
+      "venue": "home",
+      "own_pts_min_inclusive": 25,
+      "opponent_pts_max_exclusive": 110,
+      "key_columns": [
+        "game_id",
+        "team_id",
+        "player_id"
+      ],
+      "keys": [
+        [
+          22300216,
+          1610612747,
+          2544
+        ],
+        [
+          22300238,
+          1610612747,
+          2544
+        ],
+        [
+          22300505,
+          1610612747,
+          2544
+        ],
+        [
+          22300565,
+          1610612747,
+          2544
+        ],
+        [
+          22300932,
+          1610612747,
+          2544
+        ],
+        [
+          22300990,
+          1610612747,
+          2544
+        ],
+        [
+          22301203,
+          1610612747,
+          2544
+        ],
+        [
+          22301230,
+          1610612747,
+          2544
+        ]
+      ],
+      "games": 8,
+      "wins": 7,
+      "losses": 1,
+      "sums": {
+        "pts": 228,
+        "reb": 58,
+        "ast": 66
+      },
+      "means": {
+        "pts": 28.5,
+        "reb": 7.25,
+        "ast": 8.25
+      },
+      "predicate_discrimination": {
+        "wrong_venue_otherwise_qualifying": 6,
+        "own_threshold_failed_otherwise_qualifying": 8,
+        "opponent_threshold_failed_otherwise_qualifying": 16
+      }
+    },
+    {
+      "id": "K05-B1",
+      "kind": "team",
+      "query": "Bucks record on the road in 2023-24 when scoring at least 115 points and allowing fewer than 115 points",
+      "season": "2023-24",
+      "team": "MIL",
+      "player_id": null,
+      "venue": "away",
+      "own_pts_min_inclusive": 115,
+      "opponent_pts_max_exclusive": 115,
+      "key_columns": [
+        "game_id",
+        "team_id"
+      ],
+      "keys": [
+        [
+          22300027,
+          1610612749
+        ],
+        [
+          22300195,
+          1610612749
+        ],
+        [
+          22300388,
+          1610612749
+        ],
+        [
+          22300433,
+          1610612749
+        ],
+        [
+          22300606,
+          1610612749
+        ],
+        [
+          22300817,
+          1610612749
+        ],
+        [
+          22301076,
+          1610612749
+        ]
+      ],
+      "games": 7,
+      "wins": 7,
+      "losses": 0,
+      "sums": {
+        "pts": 870,
+        "reb": 322,
+        "ast": 193
+      },
+      "means": {
+        "pts": 124.28571428571429,
+        "reb": 46.0,
+        "ast": 27.571428571428573
+      },
+      "predicate_discrimination": {
+        "wrong_venue_otherwise_qualifying": 10,
+        "own_threshold_failed_otherwise_qualifying": 10,
+        "opponent_threshold_failed_otherwise_qualifying": 15
+      }
+    },
+    {
+      "id": "K05-B2",
+      "kind": "player",
+      "query": "Giannis Antetokounmpo averages on the road in 2023-24 with at least 30 points and opponent points below 115",
+      "season": "2023-24",
+      "team": "MIL",
+      "player_id": 203507,
+      "venue": "away",
+      "own_pts_min_inclusive": 30,
+      "opponent_pts_max_exclusive": 115,
+      "key_columns": [
+        "game_id",
+        "team_id",
+        "player_id"
+      ],
+      "keys": [
+        [
+          22300173,
+          1610612749,
+          203507
+        ],
+        [
+          22300433,
+          1610612749,
+          203507
+        ],
+        [
+          22300496,
+          1610612749,
+          203507
+        ],
+        [
+          22300606,
+          1610612749,
+          203507
+        ],
+        [
+          22300725,
+          1610612749,
+          203507
+        ],
+        [
+          22300790,
+          1610612749,
+          203507
+        ],
+        [
+          22300808,
+          1610612749,
+          203507
+        ],
+        [
+          22300817,
+          1610612749,
+          203507
+        ],
+        [
+          22300864,
+          1610612749,
+          203507
+        ],
+        [
+          22301061,
+          1610612749,
+          203507
+        ],
+        [
+          22301076,
+          1610612749,
+          203507
+        ]
+      ],
+      "games": 11,
+      "wins": 6,
+      "losses": 5,
+      "sums": {
+        "pts": 397,
+        "reb": 145,
+        "ast": 74
+      },
+      "means": {
+        "pts": 36.09090909090909,
+        "reb": 13.181818181818182,
+        "ast": 6.7272727272727275
+      },
+      "predicate_discrimination": {
+        "wrong_venue_otherwise_qualifying": 7,
+        "own_threshold_failed_otherwise_qualifying": 4,
+        "opponent_threshold_failed_otherwise_qualifying": 14
+      }
+    }
+  ]
+}
