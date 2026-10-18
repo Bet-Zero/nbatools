@@ -13949,3 +13949,703 @@ cases:
     review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
       checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
       baselines preserved; no human/deployment acceptance implied.
+  - id: k07_a1
+    query: Celtics record at home against Knicks in 2023-24 and 2025-26 by season
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: NYK
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: &id001
+      - 2023-24
+      - 2025-26
+    - path: result.sections.summary.0.games_total
+      equals: 5
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 3
+    - path: result.sections.split_comparison.0.wins
+      equals: 2
+    - path: result.sections.split_comparison.0.losses
+      equals: 1
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 118.667
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 35.667
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 25.333
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 2
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 1
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 106.0
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 41.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 20.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_a2
+    query: Stephen Curry averages with at least 25 points against Portland in 2023-24 and 2025-26 by season
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: POR
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: &id002
+      - 2023-24
+      - 2025-26
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 25
+    - path: result.sections.summary.0.games_total
+      equals: 5
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 2
+    - path: result.sections.split_comparison.0.wins
+      equals: 2
+    - path: result.sections.split_comparison.0.losses
+      equals: 0
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 29.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 4.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 1.5
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 3
+    - path: result.sections.split_comparison.1.wins
+      equals: 0
+    - path: result.sections.split_comparison.1.losses
+      equals: 3
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 40.333
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 3.667
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 3.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_b1
+    query: Bucks record with at least 45 rebounds in 2023-24 and 2025-26 by season
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: &id003
+      - 2023-24
+      - 2025-26
+    - path: result.metadata.stat
+      equals: reb
+    - path: result.metadata.min_value
+      equals: 45
+    - path: result.sections.summary.0.games_total
+      equals: 59
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 36
+    - path: result.sections.split_comparison.0.wins
+      equals: 28
+    - path: result.sections.split_comparison.0.losses
+      equals: 8
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 122.222
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 49.667
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 27.139
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 23
+    - path: result.sections.split_comparison.1.wins
+      equals: 14
+    - path: result.sections.split_comparison.1.losses
+      equals: 9
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 112.478
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 48.435
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 25.174
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_b2
+    query: Devin Booker averages with at least 6 assists in 2023-24 and 2025-26 by season
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: &id004
+      - 2023-24
+      - 2025-26
+    - path: result.metadata.stat
+      equals: ast
+    - path: result.metadata.min_value
+      equals: 6
+    - path: result.sections.summary.0.games_total
+      equals: 82
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 46
+    - path: result.sections.split_comparison.0.wins
+      equals: 31
+    - path: result.sections.split_comparison.0.losses
+      equals: 15
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 25.957
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 4.826
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 8.348
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 36
+    - path: result.sections.split_comparison.1.wins
+      equals: 21
+    - path: result.sections.split_comparison.1.losses
+      equals: 15
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 25.111
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 4.25
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 7.889
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_c1
+    query: Nuggets home vs away splits against Timberwolves with at least 110 points in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: MIN
+    - path: result.metadata.split_type
+      equals: home_away
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 110
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: home
+    - path: result.sections.split_comparison.0.games
+      equals: 1
+    - path: result.sections.split_comparison.0.wins
+      equals: 1
+    - path: result.sections.split_comparison.0.losses
+      equals: 0
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 116.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 44.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 31.0
+    - path: result.sections.split_comparison.1.bucket
+      equals: away
+    - path: result.sections.split_comparison.1.games
+      equals: 1
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 0
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 115.0
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 49.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 26.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_c2
+    query: Jalen Brunson home vs away averages against Celtics with at least 20 points in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.split_type
+      equals: home_away
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 20
+    - path: result.sections.summary.0.games_total
+      equals: 4
+    - path: result.sections.split_comparison.1.bucket
+      equals: away
+    - path: result.sections.split_comparison.1.games
+      equals: 3
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 2
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 29.333
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 2.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 4.0
+    - path: result.sections.split_comparison.0.bucket
+      equals: home
+    - path: result.sections.split_comparison.0.games
+      equals: 1
+    - path: result.sections.split_comparison.0.wins
+      equals: 0
+    - path: result.sections.split_comparison.0.losses
+      equals: 1
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 34.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 3.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 9.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_a1_heldout
+    query: For 2023-24 and 2025-26 separately, what was Boston's home record versus New York Knicks?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: NYK
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: *id001
+    - path: result.sections.summary.0.games_total
+      equals: 5
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 3
+    - path: result.sections.split_comparison.0.wins
+      equals: 2
+    - path: result.sections.split_comparison.0.losses
+      equals: 1
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 118.667
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 35.667
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 25.333
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 2
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 1
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 106.0
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 41.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 20.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_a2_heldout
+    query: Break Stephen Curry's averages against the Trail Blazers into 2023-24 and 2025-26, using only
+      appearances with 25 or more points.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: POR
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: *id002
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 25
+    - path: result.sections.summary.0.games_total
+      equals: 5
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 2
+    - path: result.sections.split_comparison.0.wins
+      equals: 2
+    - path: result.sections.split_comparison.0.losses
+      equals: 0
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 29.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 4.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 1.5
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 3
+    - path: result.sections.split_comparison.1.wins
+      equals: 0
+    - path: result.sections.split_comparison.1.losses
+      equals: 3
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 40.333
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 3.667
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 3.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_b1_heldout
+    query: Show Milwaukee's record for each of 2023-24 and 2025-26 in games where the Bucks grabbed at least
+      45 rebounds.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: *id003
+    - path: result.metadata.stat
+      equals: reb
+    - path: result.metadata.min_value
+      equals: 45
+    - path: result.sections.summary.0.games_total
+      equals: 59
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 36
+    - path: result.sections.split_comparison.0.wins
+      equals: 28
+    - path: result.sections.split_comparison.0.losses
+      equals: 8
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 122.222
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 49.667
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 27.139
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 23
+    - path: result.sections.split_comparison.1.wins
+      equals: 14
+    - path: result.sections.split_comparison.1.losses
+      equals: 9
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 112.478
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 48.435
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 25.174
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_b2_heldout
+    query: Compare Devin Booker's 2023-24 and 2025-26 season averages only in games with 6 or more assists.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.split_type
+      equals: season
+    - path: result.metadata.season_list
+      equals: *id004
+    - path: result.metadata.stat
+      equals: ast
+    - path: result.metadata.min_value
+      equals: 6
+    - path: result.sections.summary.0.games_total
+      equals: 82
+    - path: result.sections.split_comparison.0.bucket
+      equals: 2023-24
+    - path: result.sections.split_comparison.0.games
+      equals: 46
+    - path: result.sections.split_comparison.0.wins
+      equals: 31
+    - path: result.sections.split_comparison.0.losses
+      equals: 15
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 25.957
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 4.826
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 8.348
+    - path: result.sections.split_comparison.1.bucket
+      equals: 2025-26
+    - path: result.sections.split_comparison.1.games
+      equals: 36
+    - path: result.sections.split_comparison.1.wins
+      equals: 21
+    - path: result.sections.split_comparison.1.losses
+      equals: 15
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 25.111
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 4.25
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 7.889
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_c1_heldout
+    query: Split Denver's 2023-24 games against Minnesota into home and road records, including only games
+      where Denver scored 110 or more.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: MIN
+    - path: result.metadata.split_type
+      equals: home_away
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 110
+    - path: result.sections.summary.0.games_total
+      equals: 2
+    - path: result.sections.split_comparison.0.bucket
+      equals: home
+    - path: result.sections.split_comparison.0.games
+      equals: 1
+    - path: result.sections.split_comparison.0.wins
+      equals: 1
+    - path: result.sections.split_comparison.0.losses
+      equals: 0
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 116.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 44.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 31.0
+    - path: result.sections.split_comparison.1.bucket
+      equals: away
+    - path: result.sections.split_comparison.1.games
+      equals: 1
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 0
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 115.0
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 49.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 26.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.
+  - id: k07_c2_heldout
+    query: Against Boston in 2023-24, split Jalen Brunson's averages by home versus away after keeping only
+      his games with at least 20 points.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_shape: entity_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.split_type
+      equals: home_away
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.stat
+      equals: pts
+    - path: result.metadata.min_value
+      equals: 20
+    - path: result.sections.summary.0.games_total
+      equals: 4
+    - path: result.sections.split_comparison.1.bucket
+      equals: away
+    - path: result.sections.split_comparison.1.games
+      equals: 3
+    - path: result.sections.split_comparison.1.wins
+      equals: 1
+    - path: result.sections.split_comparison.1.losses
+      equals: 2
+    - path: result.sections.split_comparison.1.pts_avg
+      equals: 29.333
+    - path: result.sections.split_comparison.1.reb_avg
+      equals: 2.0
+    - path: result.sections.split_comparison.1.ast_avg
+      equals: 4.0
+    - path: result.sections.split_comparison.0.bucket
+      equals: home
+    - path: result.sections.split_comparison.0.games
+      equals: 1
+    - path: result.sections.split_comparison.0.wins
+      equals: 0
+    - path: result.sections.split_comparison.0.losses
+      equals: 1
+    - path: result.sections.split_comparison.0.pts_avg
+      equals: 34.0
+    - path: result.sections.split_comparison.0.reb_avg
+      equals: 3.0
+    - path: result.sections.split_comparison.0.ast_avg
+      equals: 9.0
+    review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
+      arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
+      human or deployed acceptance inferred.

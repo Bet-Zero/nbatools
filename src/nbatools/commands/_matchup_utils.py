@@ -944,7 +944,13 @@ _SEASON = r"(?:(?:19|20)\d{2}(?:-\d{2}(?:\d{2})?)?)"
 # made of these, so nothing after the bound ("in games where Davis sits",
 # "before the all-star break", ", 2 days rest") is silently dropped.
 _READ_SCOPE_UNIT = (
-    r"(?:(?:in|during|for)\s+(?:the\s+)?)?" + _SEASON + r"(?:\s+(?:season|regular\s+season))?"
+    r"(?:(?:in|during|for)\s+(?:the\s+)?)?"
+    + _SEASON
+    + r"(?:\s+(?:and|vs\.?|versus)\s+"
+    + _SEASON
+    + r")*"
+    + r"(?:\s+(?:season|regular\s+season))?"
+    r"|by\s+season"
     r"|(?:this|last)\s+(?:season|year)"
     r"|since\s+(?:" + _SEASON + r"|" + _MONTH + r"(?:\s+" + _SEASON + r")?)"
     r"|(?:in\s+)?" + _MONTH + r"(?:\s+" + _SEASON + r")?"
@@ -1157,7 +1163,7 @@ _ON_OFF_VS_CONTEXT_RE = re.compile(
 # Strip only this anchored grammar; retain the complete remaining name so typo
 # protection cannot fall back to a recognized surname or nickname.
 _SUMMARY_COMMAND_PREFIX_RE = re.compile(
-    r"^(?:please\s+)?(?:(?:show|give|tell)(?:\s+me)?\s+|average\s+)"
+    r"^(?:please\s+)?(?:(?:show|give|tell)(?:\s+me)?\s+|average\s+|break(?:\s+down)?\s+)"
 )
 _SUMMARY_TYPO_PREFIX_RE = re.compile(r"^([a-z][a-z .&'\-]+?)\s+(?:averages?|average|stats?|stat)\b")
 _SUMMARY_TYPO_BLOCKED_NAME_WORDS = frozenset(
