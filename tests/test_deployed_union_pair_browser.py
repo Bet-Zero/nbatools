@@ -53,6 +53,67 @@ def _identity(team, seasons, team_id):
     return dict(team_id=team_id, team_abbr=team, team_name=str(rows.iloc[0].team_name))
 
 
+def _owned_window_cases():
+    oracle = json.loads(
+        (ROOT / "tests/fixtures/list_owned_stats/window-qualifying-source-oracle.json").read_text()
+    )
+    for path, digest in oracle["sources"].items():
+        assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
+    raw = data_read_csv("raw/team_game_stats/2023-24_regular_season.csv")
+    base = raw.loc[raw.team_abbr.eq("LAL") & raw.opponent_team_abbr.isin(["BOS", "WAS"])]
+    base = base.sort_values(["game_date", "game_id"]).copy()
+    assert base.game_id.astype(int).tolist() == [row["game_id"] for row in oracle["base_rows"]]
+    opponent_points = []
+    for expected, (_, row) in zip(oracle["base_rows"], base.iterrows()):
+        for key, value in expected.items():
+            if key == "opponent_pts":
+                opponent = raw.loc[
+                    raw.game_id.eq(row.game_id) & raw.team_id.eq(row.opponent_team_id)
+                ]
+                assert len(opponent) == 1 and int(opponent.iloc[0].pts) == value
+                opponent_points.append(int(opponent.iloc[0].pts))
+            else:
+                assert row[key] == value
+    base["opponent_pts"] = opponent_points
+    cases = []
+    for scope, phrase in (("window", "in their last 3 games"), ("qualifying", "last 3 games")):
+        selected = base.tail(3) if scope == "window" else base
+        selected = selected.loc[
+            selected.opponent_team_abbr.eq("BOS") & selected.opponent_pts.ge(110)
+        ]
+        if scope == "qualifying":
+            selected = selected.tail(3)
+        expected = oracle["cases"][f"last3_{scope}_named_BOS_110"]["expected"]
+        assert selected.game_id.astype(int).tolist() == expected["game_ids"]
+        assert len(selected) == expected["games"]
+        assert int(selected.wl.eq("W").sum()) == expected["wins"]
+        assert int(selected.wl.eq("L").sum()) == expected["losses"]
+        for stat, value in expected["sums"].items():
+            assert int(selected[stat].sum()) == value
+        cases.append(
+            dict(
+                id="owned-" + scope,
+                kind="owned-window",
+                scope=scope,
+                query=f"Lakers record {phrase} against Celtics and Wizards when Celtics score at least 110 in 2023-24",
+                expected=expected,
+                condition=oracle["proposed_named_predicate"],
+                text=["No Matching Results"]
+                if not expected["games"]
+                else [
+                    "Los Angeles Lakers",
+                    "2023-24",
+                    "BOS, WAS",
+                    "110+ BOS OPP PTS",
+                    "Last 3 games",
+                    "Select the last 3 games matching the conditions",
+                ],
+                forbidden=["Unavailable Filter"],
+            )
+        )
+    return cases
+
+
 def _cases():
     unions = {case["id"]: case for case in _load_oracle("primary-oracle.json")}
     comparisons = _load_oracle("comparison-primary-oracle.json")
@@ -173,14 +234,15 @@ def _cases():
             forbidden=["No Matching Results"],
         ),
     ]
+    cases += _owned_window_cases()
     for case in cases:
         case["forbidden"] = case.get("forbidden", []) + ["undefined", "NaN", "Infinity"]
-        if case["kind"] not in ("empty", "guard"):
+        if case["kind"] not in ("empty", "guard", "owned-window"):
             case["text"].append("2023-24")
         if case["kind"] == "season_split":
             case["text"].append(", ".join(case["expected"]["seasons"]))
             case["forbidden"].append("2023-24 to 2025-26")
-    assert len(cases) == len({case["id"] for case in cases}) == 10
+    assert len(cases) == len({case["id"] for case in cases}) == 12
     return cases
 
 
@@ -353,6 +415,44 @@ def _participation(item, case, metadata, sections):
     assert int(cells["Games"]) == 1 and float(cells["PPG"]) == case["expected"]["means"]["pts"]
 
 
+def _owned_window(item, case, metadata, sections):
+    assert item["payload"]["route"] == "team_record"
+    assert metadata["team"] == "LAL" and metadata["team_context"]["team_id"] == 1610612747
+    assert metadata["player"] is None and not metadata.get("player_context")
+    assert metadata["season"] == "2023-24"
+    assert metadata["opponent"] == "BOS, WAS" and metadata["opponents"] == ["BOS", "WAS"]
+    assert not metadata.get("opponent_context")
+    assert metadata["last_n"] == 3 and metadata["last_n_scope"] == case["scope"]
+    assert metadata["conditions"] == metadata["threshold_conditions"] == [case["condition"]]
+    filters = metadata["applied_filters"]
+    assert {"label": "Opponent", "value": "BOS, WAS", "kind": "team"} in filters
+    assert any(f["label"] == "BOS OPP PTS min" and float(f["value"]) == 110 for f in filters)
+    expected = case["expected"]
+    if not expected["games"]:
+        assert item["payload"]["result_status"] == "no_result"
+        assert item["payload"]["result_reason"] == "no_match" and not sections
+        assert not any(table["rows"] for table in item["tables"])
+        return
+    assert item["payload"]["result_status"] == "ok"
+    assert len(sections["summary"]) == 1
+    _summary(sections["summary"][0], expected)
+    rows = sections["game_log"]
+    assert [int(row["game_id"]) for row in rows] == expected["game_ids"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert (row["team_id"], row["opponent_team_id"], row["opponent_pts"]) == (
+        1610612747,
+        1610612738,
+        126,
+    )
+    for stat, value in expected["sums"].items():
+        assert row[stat] == value
+    table = _table(item, "Team record")
+    assert len(table["rows"]) == 1
+    cells = dict(zip(table["headers"], table["rows"][0]))
+    assert cells["W-L"] == "0-1" and int(cells["Games"]) == 1 and float(cells["PPG"]) == 115
+
+
 def _validate_answers(receipt, cases):
     by_id, seen = {case["id"]: case for case in cases}, set()
     assert not receipt["failures"]
@@ -377,10 +477,12 @@ def _validate_answers(receipt, cases):
             item["payload"]["result"]["sections"],
         )
         assert metadata["season_type"] == "Regular Season"
-        if case["kind"] not in ("empty", "guard"):
+        if case["kind"] not in ("empty", "guard", "owned-window"):
             assert item["payload"]["result_status"] == "ok"
         if case["id"].startswith("union-"):
             _union(item, case, metadata, sections)
+        elif case["kind"] == "owned-window":
+            _owned_window(item, case, metadata, sections)
         else:
             _participation(item, case, metadata, sections)
     assert seen == {(viewport, ident) for viewport in ("desktop", "mobile") for ident in by_id}
