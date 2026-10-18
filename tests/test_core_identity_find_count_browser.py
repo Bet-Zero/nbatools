@@ -170,6 +170,12 @@ def _validate_answers(receipt, cases):
         sections = result["sections"]
         if "route" in case:
             assert payload["route"] == case["route"]
+        if item["id"] == "k03-d1":
+            headers = {header.strip().lower() for header in item["headers"]}
+            assert "player" in headers
+            assert not headers & {"score", "margin", "opp pts"}
+            assert not item["grainErrors"]
+            assert "Anthony Edwards" in item["text"] and "Joel Embiid" in item["text"]
         if item["id"] == "k03-e2":
             assert (
                 payload["result_status"] == "no_result" and payload["result_reason"] == "no_match"

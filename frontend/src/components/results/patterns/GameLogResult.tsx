@@ -350,6 +350,7 @@ function tableColumns(
         key: "player",
         sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
         header: "Player",
+        mobilePriority: "primary",
         render: playerCell,
       });
     }
@@ -426,7 +427,7 @@ function tableColumns(
       header: TABLE_LABELS.score,
       align: "center",
       mobilePriority: "primary",
-      render: scoreCell,
+      render: (row) => scoreCell(row, mode),
     });
   }
 
@@ -774,9 +775,9 @@ function hasScoreColumn(
   });
 }
 
-function scoreCell(row: SectionRow): string {
-  const teamScore = teamScoreValue(row);
-  const opponentScore = opponentScoreValue(row);
+function scoreCell(row: SectionRow, mode: Exclude<GameLogMode, "auto">): string {
+  const teamScore = mode === "player" ? numericValue(row, "team_score") : teamScoreValue(row);
+  const opponentScore = mode === "player" ? numericValue(row, "opponent_score") : opponentScoreValue(row);
 
   if (teamScore === null || opponentScore === null) return "—";
   return `${formatValue(teamScore, "team_score")}-${formatValue(
