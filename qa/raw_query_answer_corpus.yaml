@@ -12368,3 +12368,270 @@ cases:
     review_notes: Frozen K04 independent raw-row oracle; primary and held-out wording retain separate
       evidence. Full source keys, qualifiers and arithmetic also required by test_k04_ranking_real_data.py.
       Human review and deployed rendering remain separate.
+
+  - id: k02_a1
+    query: Celtics record in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 82
+    - path: result.sections.summary.0.wins
+      equals: 64
+    - path: result.sections.summary.0.losses
+      equals: 18
+    - path: result.sections.summary.0.pts_avg
+      equals: 120.573
+    - path: result.sections.summary.0.reb_avg
+      equals: 46.329
+    - path: result.sections.summary.0.ast_avg
+      equals: 26.915
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.team_name
+      equals: Boston Celtics
+    review_notes: Bound K02 raw-row oracle; explicit-season anchors and qualifying-sample siblings.
+      Exact sample keys and independently derived arithmetic also required by the named numerical selectors
+      in k02-binding.md. No human review or deployed acceptance claimed.
+  - id: k02_a2
+    query: Stephen Curry averages in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 74
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 74
+    - path: result.sections.summary.0.wins
+      equals: 43
+    - path: result.sections.summary.0.losses
+      equals: 31
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.432
+    - path: result.sections.summary.0.reb_avg
+      equals: 4.459
+    - path: result.sections.summary.0.ast_avg
+      equals: 5.122
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: Stephen Curry
+    review_notes: Bound K02 raw-row oracle; explicit-season anchors and qualifying-sample siblings.
+      Exact sample keys and independently derived arithmetic also required by the named numerical selectors
+      in k02-binding.md. No human review or deployed acceptance claimed.
+  - id: k02_d2
+    query: Denver averages in its final 8 games scoring at least 114 points in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 8
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 8
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 123.875
+    - path: result.sections.summary.0.reb_avg
+      equals: 47.125
+    - path: result.sections.summary.0.ast_avg
+      equals: 32.125
+    - path: result.metadata.last_n
+      equals: 8
+    - path: result.metadata.min_value
+      equals: 114
+    - path: result.metadata.last_n_scope
+      equals: qualifying
+    - path: result.sections.game_log.0.game_id
+      equals: 22300995
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.1.game_id
+      equals: 22301026
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.2.game_id
+      equals: 22301040
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.3.game_id
+      equals: 22301077
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.4.game_id
+      equals: 22301130
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.5.game_id
+      equals: 22301164
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.6.game_id
+      equals: 22301180
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.7.game_id
+      equals: 22301193
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612743
+    review_notes: Bound K02 raw-row oracle; explicit-season anchors and qualifying-sample siblings.
+      Exact sample keys and independently derived arithmetic also required by the named numerical selectors
+      in k02-binding.md. No human review or deployed acceptance claimed.
+  - id: k02_d4
+    query: Nikola Jokic’s averages in his final 9 appearances scoring at least 29 points in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 9
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 9
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 2
+    - path: result.sections.summary.0.pts_avg
+      equals: 34.556
+    - path: result.sections.summary.0.reb_avg
+      equals: 13.222
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.333
+    - path: result.metadata.last_n
+      equals: 9
+    - path: result.metadata.min_value
+      equals: 29
+    - path: result.metadata.last_n_scope
+      equals: qualifying
+    - path: result.sections.game_log.0.game_id
+      equals: 22300937
+    - path: result.sections.game_log.0.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.0.player_id
+      equals: 203999
+    - path: result.sections.game_log.1.game_id
+      equals: 22300965
+    - path: result.sections.game_log.1.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.1.player_id
+      equals: 203999
+    - path: result.sections.game_log.2.game_id
+      equals: 22300995
+    - path: result.sections.game_log.2.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.2.player_id
+      equals: 203999
+    - path: result.sections.game_log.3.game_id
+      equals: 22301009
+    - path: result.sections.game_log.3.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.3.player_id
+      equals: 203999
+    - path: result.sections.game_log.4.game_id
+      equals: 22301040
+    - path: result.sections.game_log.4.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.4.player_id
+      equals: 203999
+    - path: result.sections.game_log.5.game_id
+      equals: 22301071
+    - path: result.sections.game_log.5.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.5.player_id
+      equals: 203999
+    - path: result.sections.game_log.6.game_id
+      equals: 22301099
+    - path: result.sections.game_log.6.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.6.player_id
+      equals: 203999
+    - path: result.sections.game_log.7.game_id
+      equals: 22301114
+    - path: result.sections.game_log.7.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.7.player_id
+      equals: 203999
+    - path: result.sections.game_log.8.game_id
+      equals: 22301164
+    - path: result.sections.game_log.8.team_id
+      equals: 1610612743
+    - path: result.sections.game_log.8.player_id
+      equals: 203999
+    review_notes: Bound K02 raw-row oracle; explicit-season anchors and qualifying-sample siblings.
+      Exact sample keys and independently derived arithmetic also required by the named numerical selectors
+      in k02-binding.md. No human review or deployed acceptance claimed.
+
+  - id: k02_booker_command
+    query: Give Devin Booker's averages for the 2023-24 regular season.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 68
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.player_name
+      equals: Devin Booker
+    - path: result.sections.summary.0.games
+      equals: 68
+    - path: result.sections.summary.0.wins
+      equals: 43
+    - path: result.sections.summary.0.losses
+      equals: 25
+    - path: result.sections.summary.0.pts_avg
+      equals: 27.074
+    - path: result.sections.summary.0.reb_avg
+      equals: 4.529
+    - path: result.sections.summary.0.ast_avg
+      equals: 6.941
+    review_notes: Independent frozen Booker language probe and raw arithmetic in k02-language-baseline.json.
+      Required exact game keys are enforced by the numerical selector; this repaired wording is a regression,
+      not new unseen evidence.
