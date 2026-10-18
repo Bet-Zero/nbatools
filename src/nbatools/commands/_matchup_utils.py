@@ -90,8 +90,25 @@ def detect_head_to_head(text: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
+_OPPONENT_TEAM_PREFIX = re.compile(
+    r"\b(?:vs\.?|versus|against)\s+(?:the\s+)?(?P<team>"
+    + "|".join(re.escape(alias) for alias in sorted(TEAM_ALIASES, key=len, reverse=True))
+    + r")(?![\w'-])"
+)
+
+
 def detect_opponent(text: str) -> tuple[str | None, str]:
     cleaned_text = strip_matchup_noise(text)
+
+    # Consume the resolved entity span, not an open-ended phrase. Punctuation
+    # and following clauses belong to the remaining request: "against Utah by
+    # season:" must retain the grouping, and "against Denver scoring ..." must
+    # retain the scoring predicate. Longest aliases protect multiword names.
+    matched_team = _OPPONENT_TEAM_PREFIX.search(cleaned_text)
+    if matched_team:
+        opponent = TEAM_ALIASES[matched_team.group("team")]
+        cleaned = cleaned_text[: matched_team.start()] + " " + cleaned_text[matched_team.end() :]
+        return opponent, normalize_text(cleaned)
 
     # A count after the team ("vs Celtics 15+ threes") also ends the phrase;
     # "+" is outside the phrase characters, so the match failed and the
@@ -1167,12 +1184,14 @@ def detect_unresolved_player_typo_comparison(text: str) -> str | None:
 
 def detect_unresolved_player_summary_typo(text: str) -> str | None:
     """Return typoed leading player phrase from summary/averages shorthand."""
-    cleaned = strip_matchup_noise(text)
+    cleaned = re.sub(r"^average\s+", "", strip_matchup_noise(text))
     m = _SUMMARY_TYPO_PREFIX_RE.match(cleaned)
     if not m:
         return None
 
-    phrase = m.group(1).strip()
+    # Imperative "average" and possessive grammar are not name tokens. Keep
+    # the remaining full phrase for the existing partial-nickname typo check.
+    phrase = re.sub(r"'s$", "", m.group(1).strip())
     if len(phrase.split()) > 3:
         return None
     if any(word in _SUMMARY_TYPO_BLOCKED_NAME_WORDS for word in phrase.split()):

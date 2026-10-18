@@ -1,0 +1,2078 @@
+{
+  "holdouts_sha256": "d65cf93f47b03bd9263105ecb91bb3e4936e73c9bbfb5a08d2261bbab39c1027",
+  "receipt_sha256": {
+    "p2_s1_1-incumbent.json": "2a89c0312f96d6c6102187d4ac7a5738b8b2a9cd7529919c181e2ce760ad46e1",
+    "p2_s1_2-incumbent.json": "28b2db9586b47f5ab1e51458a26ad34dadb6c644b05f0686f7d2c4f706f4b9dc",
+    "p2_s1_3-incumbent.json": "8bde95ad33785f4ece99b231a6d6bad10f0ec2480ebf94c1019193ac59160090",
+    "p2_s1_4-incumbent.json": "9ae2cd5cbf64de4a25f81c8ec12046c4a09ee95650e031fdd0eebcf3f406caae",
+    "p2_s2_1-incumbent.json": "d8edac05228064128ffcd3dea8a629564da3f65370b018394978e633fa5a7b78",
+    "p2_s2_2-incumbent.json": "fb7f89f942c964d912dd64504c1774121d4d5c5d65ddbd4c38cbd1d4b6840d08",
+    "p2_s2_3-incumbent.json": "cf0c64f00d5febc59c52563dd6e3da6c5d8df509f935cf6b04551680a8aa20fc",
+    "p2_s2_4-incumbent.json": "9df26b011a9df7e5a32839d90109f2a37a7517ad9a591903d1caaf9d18d55f46",
+    "p2_s3_1-incumbent.json": "97a3b0b51d7592b537fed430e7c34d17568ea98c1b029cb55e90571ae8c90cdf",
+    "p2_s3_2-incumbent.json": "8e6ed5ae02667fc8059118cf5b4cf38c5e7e1bda05195918e836c436e4d7dcc1",
+    "p2_s3_3-incumbent.json": "d6c6172f65907d8049dc75b97f925d51aa75a28c660e2652099bf7b6ebb8cd2c",
+    "p2_s3_4-incumbent.json": "79723eec2a0e2bcfee47320d7e5d2ec310ab79def3b228de573bbc2d60e2c0fc",
+    "p2_s4_1-incumbent.json": "a3d0ba28ff56761a7bd7b1ef41ae9ee32cb4b076120ec934881f7bbe26a7d953",
+    "p2_s4_2-incumbent.json": "a2d2f2b710b5c73b003c93b5a9440e624f82aee427686e6dc62e02e143763a9d",
+    "p2_s4_3-incumbent.json": "74e00a9916b70d4ce62c640079e2557f3b878bc3025f92721f79080a756843e6",
+    "p2_s4_4-incumbent.json": "0809eb2f33fd0d46dbb980fa380c87a9ad3af4bca37681b0113ba13b28df3212",
+    "p2_s5_1-incumbent.json": "4a369b97e597efc9a18d5226427b0f171feb35accdc02e6e49435d79c13a777a",
+    "p2_s5_2-incumbent.json": "bfeae43354bbe493a0bd6d28aaeca24941bdda335b4e7c990f1df1b293f036d9",
+    "p2_s5_3-incumbent.json": "969928bd95ff5485c5b4ae454b7fed4ffedb35ee124f663bff887beb9df0f14a",
+    "p2_s5_4-incumbent.json": "94ec81c2d80b3fcb7f2d046eb30d7f2bbd92a07af2d3ee9cdd4db593ea079d50",
+    "p2_control_1-incumbent.json": "c43bd12ede987b2488730f3619e88172ac7fd5f42dbd78a800d2108987c9cea4",
+    "p2_control_2-incumbent.json": "b0d6975d38266b4256f5838aa10146c4ebfe4aa43f5660cf63a787493d5d4e3f",
+    "p2_control_3-incumbent.json": "afefc88031fa9ef272edde21e3944feae6e4020d7369fec141e16b8afa6a411c",
+    "p2_control_4-incumbent.json": "132c1c591d10bb96aa7c9816ae0b81f880d4c4d55a6777c5a650707ae4001a29",
+    "p2_control_5-incumbent.json": "c61ca5a6e94f1fe127ac893414408b91e174df568c266d23ef28610c833c3faa",
+    "p2_control_6-incumbent.json": "0e2806bbc3a4b814e540ac031dabb9f14604f72b308a19d28de298701e949682",
+    "p2_control_7-incumbent.json": "343e5a5b70f2f3c8bf16630298c03f71eb9589ed61ad1f194e072cb65373cb28",
+    "p2_control_8-incumbent.json": "b2e98f219d4cb6339d0fbac60395d7767acf7256cf9e74b7c704c12c1d0a0227",
+    "p2_s1_1-candidate.json": "074d1296eaa04215a7255533935a317e9cf0b70cdac6752e1abc02b046338af8",
+    "p2_s1_2-candidate.json": "4e41ec586f5937f84d310e428b9330c7d658c9d6eef3b19e1bf5fc7bd6c8f21e",
+    "p2_s1_3-candidate.json": "0b338b801aa82cbf1e8f7cd19f5e2fb6107eeec2fc6858bbd6d14b4de09ce539",
+    "p2_s1_4-candidate.json": "52479274efa32e7812a125141572830ca1889d4389efbb307a254c742a7efd34",
+    "p2_s2_1-candidate.json": "1fb2230a65aff790f2d69643a392da9c2b9474e4a9fea62fc8658a257ea52114",
+    "p2_s2_2-candidate.json": "5f7f978d1ae90df051bd8a8c3357e4b7b31e93471b736dd1f56d57cf08bc94d0",
+    "p2_s2_3-candidate.json": "01e3590c0f7bf647dc867d6dfd35d4f7c43faaa54487872d80f9ebc049443c50",
+    "p2_s2_4-candidate.json": "201d76edd7ad6bb5dd6094dfcd55960ca042dd6da78338f051031192a607b7a4",
+    "p2_s3_1-candidate.json": "1f0ee4d9c1bc83ce0b4b9966c9e3dc0b48eec9c82de8a1c6636322a016afca5f",
+    "p2_s3_2-candidate.json": "455d996ea63631a4962335bc19529b784c6fe98348a5af68a951c00982d195ef",
+    "p2_s3_3-candidate.json": "980aa32cdc222d14c7e076bf2a519587b807d19cd42ba0130ab156efab1eff66",
+    "p2_s3_4-candidate.json": "d647a02843f1699465dbb8e2bfb0fd504a97816aa6e3b6d305f1a9f229750c8b",
+    "p2_s4_1-candidate.json": "4089d6fafd455005527748cff19cd56bab10503dcb7fbb8b58a865780e298935",
+    "p2_s4_2-candidate.json": "2d335020a8d0092a5ffd700505da50c24478fba6f6c61e84e49961c40c431cff",
+    "p2_s4_3-candidate.json": "dbb5a35e38f03ac600fc5e2b4acb5441da9ef4ddd4facff9240a622e268e0bb1",
+    "p2_s4_4-candidate.json": "ed3b9e882fa9568e48f73f49078eb2402f236b3edbb7cecab64675900bec3da8",
+    "p2_s5_1-candidate.json": "866fa294e150925112340cc51e344d38777390dc5a73fa39e1522b636b8a72a6",
+    "p2_s5_2-candidate.json": "84665c4a8a253ff5fe7018734211ffdbbb8ca2029d9da8e42a083edaf8fbbd3d",
+    "p2_s5_3-candidate.json": "c06f20162a0efeec6af73479d4ca26ee9c7bffeebad69a09c82030129abd4a56",
+    "p2_s5_4-candidate.json": "9bb4be5b15148db83cd0fc93c4d66535e3652b7166abe092ccda06111512fa5e",
+    "p2_control_1-candidate.json": "b961c73d7938309537a12a137b62ed7604c43a35bc3a749e19c8b6c49a97cc66",
+    "p2_control_2-candidate.json": "e3860b28d5407bbbd8dd20fdcd55e6c22d19739b0868c50d69a69328d6e6e8b0",
+    "p2_control_3-candidate.json": "d6753bed2249995b7617da8229daf2b9dea4b80796f3841462df276134662b30",
+    "p2_control_4-candidate.json": "1bfe1cb6cd035c889a2f7c2593e34971333d2dccf6d3137f4c6115340eeffd2c",
+    "p2_control_5-candidate.json": "a1d11e07f820b706e8be391613175f8ec9603d43e6f19672f8351cb954ca5015",
+    "p2_control_6-candidate.json": "c7d55b3e69f26bc9accd68e382a4bc017eb126a2fde564b75fa86636e945d9e8",
+    "p2_control_7-candidate.json": "cb1acbc7a262d10321786e72d58554487780460fd45a5dd34cfe9c2a5c24a55b",
+    "p2_control_8-candidate.json": "53d3a5d4dd700dec123d728e8676494021fb63256408cae58c08da6aeed02335"
+  },
+  "results": {
+    "incumbent": {
+      "valid_counts": {
+        "wrong_accepted": 3,
+        "correct": 12,
+        "refusal": 5
+      },
+      "control_counts": {
+        "ambiguity": 1,
+        "error": 1,
+        "safe_refusal": 4,
+        "wrong_accepted": 2
+      },
+      "latency": {
+        "cold_max": 0.4995199299992237,
+        "warm_p95": 0.0801330849990336,
+        "warm_median": 0.018949756499750947,
+        "cold_limit_pass": true,
+        "warm_limit_pass": true
+      },
+      "cases": [
+        {
+          "id": "p2_s1_1",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_4",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_4",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_3",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_1",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_1",
+          "control": true,
+          "verdict": "ambiguity",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "ambiguity",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_2",
+          "control": true,
+          "verdict": "error",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "error",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_3",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_4",
+          "control": true,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_5",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_6",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_7",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_8",
+          "control": true,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": []
+            }
+          ]
+        }
+      ]
+    },
+    "candidate": {
+      "valid_counts": {
+        "wrong_accepted": 3,
+        "correct": 12,
+        "refusal": 5
+      },
+      "control_counts": {
+        "ambiguity": 1,
+        "error": 1,
+        "safe_refusal": 4,
+        "wrong_accepted": 2
+      },
+      "latency": {
+        "cold_max": 0.48602984599892807,
+        "warm_p95": 0.07512915300139866,
+        "warm_median": 0.018682289000025776,
+        "cold_limit_pass": true,
+        "warm_limit_pass": true
+      },
+      "cases": [
+        {
+          "id": "p2_s1_1",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s1_4",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "opponent metadata",
+                "2023-24 games",
+                "2023-24 wins",
+                "2023-24 losses",
+                "2023-24 pts_avg",
+                "2023-24 reb_avg",
+                "2023-24 ast_avg",
+                "2023-24 exact sample identities",
+                "2025-26 games",
+                "2025-26 wins",
+                "2025-26 losses",
+                "2025-26 pts_avg",
+                "2025-26 reb_avg",
+                "2025-26 ast_avg",
+                "2025-26 exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s2_4",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_3",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s3_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_1",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "no_match"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s4_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_1",
+          "control": false,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": [
+                "route",
+                "last N order metadata",
+                "sample selection label",
+                "None games",
+                "None wins",
+                "None losses",
+                "None pts_avg",
+                "None pts_sum",
+                "None reb_avg",
+                "None reb_sum",
+                "None ast_avg",
+                "None ast_sum",
+                "None exact sample identities"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_2",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_3",
+          "control": false,
+          "verdict": "refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 1,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 2,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            },
+            {
+              "repetition": 3,
+              "verdict": "refusal",
+              "errors": [
+                "filter_not_supported"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2_s5_4",
+          "control": false,
+          "verdict": "correct",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "correct",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "correct",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_1",
+          "control": true,
+          "verdict": "ambiguity",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "ambiguity",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "ambiguity",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_2",
+          "control": true,
+          "verdict": "error",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "error",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "error",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_3",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_4",
+          "control": true,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_5",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_6",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_7",
+          "control": true,
+          "verdict": "safe_refusal",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "safe_refusal",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "safe_refusal",
+              "errors": []
+            }
+          ]
+        },
+        {
+          "id": "p2_control_8",
+          "control": true,
+          "verdict": "wrong_accepted",
+          "repetitions": [
+            {
+              "repetition": 0,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 1,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 2,
+              "verdict": "wrong_accepted",
+              "errors": []
+            },
+            {
+              "repetition": 3,
+              "verdict": "wrong_accepted",
+              "errors": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "candidate_median_overhead_seconds": -0.00026746749972517136,
+  "allowed_median_overhead_seconds": 0.1,
+  "overhead_limit_pass": true,
+  "decision": "Do not adopt candidate: wrong accepted answers fail the frozen selection rule.",
+  "limitations": [
+    "Finite local staged-source experiment, not deployed or published-data acceptance.",
+    "Controls count safe containment only, never positive capability completion; refusal does not certify a helpful explanation. Control 7 refuses for unsupported win_pct after a subject rewrite, not demonstrated understanding of exhaustion.",
+    "Cold-process timings are retained runner measurements; filesystem cache may already be warm.",
+    "Team and split exact IDs rely on captured sample hooks; player summaries use returned game logs.",
+    "Metadata checks require semantic identities/qualifiers; no permissive route-only success."
+  ]
+}

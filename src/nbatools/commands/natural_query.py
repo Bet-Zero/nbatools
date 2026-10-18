@@ -1780,6 +1780,10 @@ def _was_team_alias_is_auxiliary(raw_query: str, normalized_query: str) -> bool:
 
 
 def _ambiguous_fragment_note(q: str) -> str | None:
+    from nbatools.commands._parse_helpers import ambiguous_recent_sample
+
+    if note := ambiguous_recent_sample(q):
+        return note
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
             return f"ambiguous: {reason}"
@@ -8345,11 +8349,17 @@ def _named_team_game_list_frame(parsed: dict) -> dict | None:
         ]
         return refused
     owner_after_opponent = False
-    if team is None and isinstance(parsed.get("opponent"), str):
+    if isinstance(parsed.get("opponent"), str) and _LEAGUE_GAME_LIST_FRAME.match(q):
         # "best scoring games vs the Celtics by Lakers players": the opponent
-        # read first and the owner was dropped.
-        team = _game_list_owner_after_opponent(q)
-        owner_after_opponent = team is not None
+        # read first and the owner was dropped. Entity-span extraction now
+        # preserves the owner too; qualification must not depend on whether
+        # the initial alias scan happened to find it.
+        qualified_owner = _game_list_owner_after_opponent(q)
+        if qualified_owner is not None:
+            team = qualified_owner
+            owner_after_opponent = True
+        elif team is not None:
+            return _team_group_refusal(parsed)
     elif (
         team is None
         and parsed.get("team_a")
