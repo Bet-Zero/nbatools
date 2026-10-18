@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"56241f6f300d85fdb30a892d0f188a1ed4d4f5a3","generation":"availability-opening-s4-v1-20261017","tests":["tests/cloud_source_routes_real_data.py::test_archived_core_collection","tests/cloud_source_routes_real_data.py::test_durable_archive_recovery"],"raw_qa_cases":[]}
