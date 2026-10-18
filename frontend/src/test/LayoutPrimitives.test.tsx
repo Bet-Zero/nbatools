@@ -715,3 +715,12 @@ describe("migrated result envelope", () => {
     ).toBeInTheDocument();
   });
 });
+
+it("does not label explicit nonadjacent seasons as a continuous range", () => {
+  const data = makeResponse();
+  data.result.metadata = {start_season: "2023-24", end_season: "2025-26", season_list: ["2023-24", "2025-26"], applied_filters: [{label: "Seasons", kind: "season", value: "2023-24, 2025-26"}]};
+  render(<ResultContextSummary data={data} />);
+  expect(screen.getByText("2023-24, 2025-26")).toBeInTheDocument();
+  expect(screen.queryByText("Season range")).not.toBeInTheDocument();
+  expect(screen.queryByText("2023-24 to 2025-26")).not.toBeInTheDocument();
+});

@@ -1,0 +1,161 @@
+{
+  "scope": "12 frozen K07 questions, desktop and mobile; qualified cached local legacy data, not production acceptance",
+  "backend_revision": "d5b894d",
+  "initial_receipt_sha256": "d93e52919eb31b8a39bddee55718718c8b003f93ba2c7fcfe42b7dd198373c3d",
+  "final_receipt_sha256": "c6a21533b3db77317da83017cdb6d6ebffaf611404d67b4ccef40f4837b660fc",
+  "final_receipt_path": "/workspace/work/split-rebuilt-evidence/browser-receipt.json",
+  "executions": 24,
+  "frontend_tests_passed": 470,
+  "required_deployed_selector": "tests/test_split_browser.py::test_deployed_split_desktop_and_mobile",
+  "findings": [
+    "Explicit nonadjacent seasons were labeled as a continuous range in hero and context; corrected to exact named list and removed contradictory range chip.",
+    "Canonical team abbreviations are accepted identity labels; complete source-qualified bucket keys and values unchanged.",
+    "Empty-bucket controlled fixture preserves zero counts, null metric dashes, and no invented metric edge; real twelve cases have nonempty buckets."
+  ],
+  "screenshots": [
+    {
+      "id": "k07-a1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-a1.png",
+      "screenshotSha256": "657d02fe17b89840e6f4eef3beb19deeeddac43a40bd356a76eaa4e81e927334"
+    },
+    {
+      "id": "k07-a1-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-a1-heldout.png",
+      "screenshotSha256": "eb0f90e559e4c7106849cac52ac19d8bcae6737a1b2464bbdf24d30c2c52db1d"
+    },
+    {
+      "id": "k07-a2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-a2.png",
+      "screenshotSha256": "179d40edb9bac6f9d6e9b3d14b65c213a176983befdaae2a27a3ed05fe8ccaaf"
+    },
+    {
+      "id": "k07-a2-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-a2-heldout.png",
+      "screenshotSha256": "e40522157e8e6b23d0ad1dd244c7c8d9f2dbd33699769011dc1263e71540f1c7"
+    },
+    {
+      "id": "k07-b1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-b1.png",
+      "screenshotSha256": "c4c87f819d94e4b366f534486b6c5ec525a538c137f615d01c7f4eb7ffc983ad"
+    },
+    {
+      "id": "k07-b1-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-b1-heldout.png",
+      "screenshotSha256": "3736f9d7d5761b85f52afff6b60314974a79fee78e1915bd7a2b71e7af2455de"
+    },
+    {
+      "id": "k07-b2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-b2.png",
+      "screenshotSha256": "5eceb8153b008d166de648a5f97e6ad4fd66314290f6a333c79d029fc1ac0df5"
+    },
+    {
+      "id": "k07-b2-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-b2-heldout.png",
+      "screenshotSha256": "6ee38c93cb25eb84bc9597d21176308c2f5bd7e6cc90b45d0d53352ce3ff8603"
+    },
+    {
+      "id": "k07-c1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-c1.png",
+      "screenshotSha256": "a0c3767e6992e0a0302aacb1cebd58d0c185a22a0162a24a9852f4d1e05850eb"
+    },
+    {
+      "id": "k07-c1-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-c1-heldout.png",
+      "screenshotSha256": "33981581a30eecd8e3276ef4ec5e604f1775e18eca783a5598bb9868942913a0"
+    },
+    {
+      "id": "k07-c2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-c2.png",
+      "screenshotSha256": "2ae183fbee1f56f18b7ff3a9d0b574635087c896ad7c15f5bf972e2c50ff5a77"
+    },
+    {
+      "id": "k07-c2-heldout",
+      "viewport": "desktop",
+      "screenshot": "desktop-k07-c2-heldout.png",
+      "screenshotSha256": "fcbdfeae3bfcf0591c1e0dafa0f7a3aef95940fc58aab2249a6f1f2ba7151494"
+    },
+    {
+      "id": "k07-a1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-a1.png",
+      "screenshotSha256": "43c1b51a536a3dae8a41938a72660556947e70cfe2d47e9b2c52fbb7b8b3f763"
+    },
+    {
+      "id": "k07-a1-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-a1-heldout.png",
+      "screenshotSha256": "6afc81d704fe69406e7398ebcc2733f2742b06b7c836be742cb1149004c4ba32"
+    },
+    {
+      "id": "k07-a2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-a2.png",
+      "screenshotSha256": "99f135f58b1b8b0bc64db18144d18e24921d312c3f26b419855d9362dd1dd3d6"
+    },
+    {
+      "id": "k07-a2-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-a2-heldout.png",
+      "screenshotSha256": "038dff2c8a14510f616b1cc14f1aae5b1cbbd440a160fc81760d2f3bd9ac73d0"
+    },
+    {
+      "id": "k07-b1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-b1.png",
+      "screenshotSha256": "d3cb0551e910e0192e14314b1b06444b932dcf87ef74989f6a035866bc0e4212"
+    },
+    {
+      "id": "k07-b1-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-b1-heldout.png",
+      "screenshotSha256": "7e77cec580b5bba0e72bbcc107d36d25ba12d371221125c5b7d77e32f3a8351d"
+    },
+    {
+      "id": "k07-b2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-b2.png",
+      "screenshotSha256": "bfe9ad76c6309945e7e25d7652442e165fdc7d5227f5a8a8ab0e61186cc66883"
+    },
+    {
+      "id": "k07-b2-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-b2-heldout.png",
+      "screenshotSha256": "772b9b5f0e777611639a69ab2b5c66357234394aee20cbcd57900b6f22aa0c29"
+    },
+    {
+      "id": "k07-c1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-c1.png",
+      "screenshotSha256": "ad6a58d404bc0030543d3775d56f3bbd7e9b9d147b190a7102a623f5cf7f3a61"
+    },
+    {
+      "id": "k07-c1-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-c1-heldout.png",
+      "screenshotSha256": "2f3ca0a25bad1fb2cb545348ba9768ab5093478c549aa99042a3278c11cc079f"
+    },
+    {
+      "id": "k07-c2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-c2.png",
+      "screenshotSha256": "381ff28071100541e97617252aded60add050b0d62ab14bd20eba4d16065dd11"
+    },
+    {
+      "id": "k07-c2-heldout",
+      "viewport": "mobile",
+      "screenshot": "mobile-k07-c2-heldout.png",
+      "screenshotSha256": "b9aa9c4ce41bac41e73e3d1abc7471ec58a62021828d1c7bef10d8f605d06a45"
+    }
+  ]
+}
