@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "8ad6c234bd388408a383b988dc8bc2f160ffb83f",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k07_split_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k07_a1",
+    "k07_a1_heldout",
+    "k07_a2",
+    "k07_a2_heldout",
+    "k07_b1",
+    "k07_b1_heldout",
+    "k07_b2",
+    "k07_b2_heldout",
+    "k07_c1",
+    "k07_c1_heldout",
+    "k07_c2",
+    "k07_c2_heldout"
+  ]
+}
