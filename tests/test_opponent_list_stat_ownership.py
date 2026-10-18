@@ -34,3 +34,18 @@ def test_independent_player_bound_is_not_replaced_by_the_team_bound():
     conditions = {c["stat"]: c for c in kwargs["conditions"]}
     assert conditions["pts"]["min_value"] == 30
     assert conditions["team_pts"]["min_value"] == 120
+
+
+@pytest.mark.parametrize(
+    "subject", ["Lakers record", "LeBron James game summary", "Lakers LeBron James game summary"]
+)
+def test_named_opponent_condition_narrows_the_union(subject):
+    query = f"{subject} against Celtics and Wizards when Celtics score at least 120 in 2023-24"
+    parsed = parse_query(query)
+    kwargs = parsed["route_kwargs"]
+    assert kwargs["opponent"] == ["BOS"]
+    assert kwargs["stat"] == "opponent_pts"
+    assert not kwargs.get("unsupported_filters")
+    meta = execute_natural_query(query).metadata
+    assert meta["opponents"] == ["BOS"]
+    assert meta["threshold_conditions"] == meta["conditions"]

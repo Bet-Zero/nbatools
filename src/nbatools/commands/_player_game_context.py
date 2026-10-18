@@ -487,7 +487,9 @@ def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
     return found
 
 
-def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
+def _opponent_bounds(
+    text: str, opponent: str | list[str] | None = None
+) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
     found.extend(_opponent_shooting_bounds(text))
     for m in _OPP_STAT_BOUND.finditer(text):
@@ -515,6 +517,19 @@ def _opponent_bounds(text: str) -> list[tuple[re.Match | _Span, dict]]:
                 },
             )
         )
+    if isinstance(opponent, list):
+        for item in team_subject_stat_conditions(text):
+            if item["team"] in opponent:
+                found.append(
+                    (
+                        _Span(item["start"], item["end"]),
+                        {
+                            "stat": "opponent_" + item["stat"],
+                            "min_value": item["min_value"],
+                            "max_value": item["max_value"],
+                        },
+                    )
+                )
     return found
 
 
@@ -577,7 +592,7 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
             if "opponent_shooting" not in blocked:
                 route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    found = _opponent_bounds(text)
+    found = _opponent_bounds(text, route_kwargs.get("opponent"))
     if not found:
         return
     for m, _ in found:
@@ -638,7 +653,7 @@ def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: st
         return
     # "most opponent turnovers with 120 points": the team's own bounds stay
     # conditions (they were dropped), and opponent bounds stay too.
-    found = _opponent_bounds(text)
+    found = _opponent_bounds(text, route_kwargs.get("opponent"))
     conditions = _own_bounds(text, [m.span()] + [b.span() for b, _ in found])
     conditions += [bound for _, bound in found]
     if conditions:
@@ -658,6 +673,7 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     # Ownership checks must see the complete opponent set and actual subject,
     # not a scalar detection that mistook the last opponent for the team.
     _apply_opponent_list(route, route_kwargs, text)
+    _apply_named_opponent_scope(route_kwargs, text)
     _apply_allowed_ranking(route, route_kwargs, text)
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
@@ -716,8 +732,14 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     # contains a verb, while an explicit "WAS record" still names Washington.
     masked = mask_copula_team_lookalikes(text)
     outside = masked[:start] + " " * (end - start) + masked[end:]
+    # A team's name inside a condition is the condition's owner, not the
+    # query's subject. The bound reader resolves its side after list scope.
+    for item in team_subject_stat_conditions(text):
+        outside = (
+            outside[: item["start"]] + " " * (item["end"] - item["start"]) + outside[item["end"] :]
+        )
     owners = [team for _, _, team in _teams_in_order(outside)]
-    before = [team for _, _, team in _teams_in_order(masked[:start])]
+    before = [team for _, _, team in _teams_in_order(outside[:start])]
     if route != "team_compare" and (len(owners) == 1 or len(before) == 1):
         # A later condition may name another team. Keep the sole prefix
         # subject so the ownership guard can reject that condition honestly.
@@ -727,6 +749,20 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:
         return
     route_kwargs["opponent"] = list(dict.fromkeys(teams))
+
+
+def _apply_named_opponent_scope(route_kwargs: dict, text: str) -> None:
+    """A named opponent's condition only applies when that team is faced."""
+    opponents = route_kwargs.get("opponent")
+    if not isinstance(opponents, list):
+        return
+    named = {
+        item["team"] for item in team_subject_stat_conditions(text) if item["team"] in opponents
+    }
+    if len(named) > 1:
+        _refuse(route_kwargs, "other_team_stat")
+    elif named:
+        route_kwargs["opponent"] = [team for team in opponents if team in named]
 
 
 # "vs Celtics and Knicks": a second opponent the routes do not combine (only

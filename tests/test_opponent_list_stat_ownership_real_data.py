@@ -55,3 +55,47 @@ def test_opponent_union_preserves_team_owned_bound():
             _answer(single, expected)
     opposing = execute_natural_query(query.replace("Lakers score", "opponents score"))
     _answer(opposing, ORACLE["opponent_owned_same_floor_control"])
+
+
+def test_named_opponent_bound_never_selects_other_list_members(monkeypatch):
+    from nbatools.commands import team_record
+
+    captured = []
+    compute = team_record._compute_record
+
+    def capture(frame):
+        captured.append(frame.copy())
+        return compute(frame)
+
+    monkeypatch.setattr(team_record, "_compute_record", capture)
+    queries = [
+        "Lakers record against Celtics and Wizards when Celtics score at least 120 in 2023-24",
+        "Lakers record against Celtics and Wizards when Lakers score at least 110 and Celtics score at least 120 in 2023-24",
+    ]
+    for query in queries:
+        captured.clear()
+        result = execute_natural_query(query)
+        assert result.result_status == "ok", result.metadata
+        sections = result.result.to_dict()["sections"]
+        assert captured
+        assert captured[0][["game_id", "team_id", "opponent_team_id"]].astype(
+            int
+        ).values.tolist() == [[22300403, 1610612747, 1610612738]]
+        summary = sections["summary"][0]
+        assert (summary["games"], summary["wins"], summary["losses"]) == (1, 0, 1)
+        assert (summary["pts_avg"], summary["reb_avg"], summary["ast_avg"]) == (115, 43, 24)
+        assert result.metadata["opponents"] == ["BOS"]
+        assert result.metadata["threshold_conditions"] == result.metadata["conditions"]
+    result = execute_natural_query(ORACLE["query"].replace("Lakers score", "Celtics score"))
+    _answer(
+        result,
+        {
+            "keys": [[22300403, 1610612747, 2544]],
+            "games": 1,
+            "wins": 0,
+            "losses": 1,
+            "sums": {"pts": 16, "reb": 9, "ast": 8},
+            "means": {"pts": 16, "reb": 9, "ast": 8},
+        },
+    )
+    assert result.metadata["opponents"] == ["BOS"]

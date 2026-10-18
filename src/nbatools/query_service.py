@@ -682,7 +682,9 @@ def _build_query_metadata(
             or parsed.get("season_high_intent")
             or parsed.get("top_n")
         ),
-        "threshold_conditions": normalize_stat_conditions(parsed.get("threshold_conditions")),
+        "threshold_conditions": normalize_stat_conditions(
+            route_kwargs.get("conditions") or parsed.get("threshold_conditions")
+        ),
         "extra_conditions": parsed.get("extra_conditions"),
         "conditions": route_kwargs.get("conditions") or parsed.get("conditions"),
         "occurrence_event": parsed.get("occurrence_event"),
