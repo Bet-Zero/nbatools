@@ -420,3 +420,58 @@ def test_retained_tatum_report_scope_on_pinned_data(tmp_path, monkeypatch):
     monkeypatch.setattr(report.urllib.request, "urlopen", unexpected)
     monkeypatch.setattr(report, "_fetch_report_text", offline)
     test_official_tatum_report_retains_exact_source(tmp_path)
+
+
+def test_retained_qualified_game_imports_offline(tmp_path, monkeypatch):
+    """Replay an already qualified full game, not just the new Tatum finding."""
+    from nbatools.commands.pipeline import player_game_availability_report as report
+    from nbatools.data_source import data_path
+
+    root = tmp_path / "data"
+    suffix = "2025-26_regular_season.csv"
+    for kind in ("games", "team_game_stats", "player_game_stats"):
+        destination = root / "raw" / kind / suffix
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        data_read_csv(f"data/raw/{kind}/{suffix}").to_csv(destination, index=False)
+    data_read_csv("data/raw/player_game_stats/2024-25_regular_season.csv").to_csv(
+        root / "raw/player_game_stats/2024-25_regular_season.csv", index=False
+    )
+    cache = tmp_path / "retained"
+    cache.mkdir()
+    path = "data/raw/player_game_availability_sources/"
+    receipt_name = "20260222_BOSLAL.json"
+    original_receipt = data_path(path + receipt_name).read_bytes()
+    receipt = json.loads(original_receipt)
+    assert receipt["sha256"] == "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec"
+    (cache / receipt_name).write_bytes(original_receipt)
+    (cache / receipt["raw_file"]).write_bytes(data_path(path + receipt["raw_file"]).read_bytes())
+    expected = data_read_csv(f"data/raw/player_game_availability/{suffix}")
+    expected = expected.loc[pd.to_numeric(expected.game_id).eq(22500823)].copy()
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Offline import must not fetch NBA or identity endpoints")
+
+    monkeypatch.setattr(report.urllib.request, "urlopen", unexpected)
+    rows = backfill(
+        "2025-26", root=root, source="report", cached_reports=cache, game_ids=[22500823]
+    )
+    validate_publication(root)
+    assert len(rows) == len(expected) == 34
+    # Every listed identity/state/comment/minute and source hash must reproduce
+    # the previously qualified immutable-generation observation, not just totals.
+    rows["game_id"] = rows.game_id.astype(int)
+    expected["game_id"] = expected.game_id.astype(int)
+    for column in ("source_comment", "identity_source_sha256"):
+        rows[column] = rows[column].fillna("")
+        expected[column] = expected[column].fillna("")
+    keys = ["game_id", "team_id", "player_id"]
+    pd.testing.assert_frame_equal(
+        rows.sort_values(keys).reset_index(drop=True),
+        expected.sort_values(keys).reset_index(drop=True),
+        check_dtype=False,
+    )
+    archived = root / "raw/player_game_availability_sources" / receipt_name
+    assert archived.read_bytes() == original_receipt
+    print(
+        "Offline retained full-game import: 34 exact qualified rows; no NBA fetches or production writes"
+    )
