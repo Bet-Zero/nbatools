@@ -37,7 +37,11 @@ def verify_overlay(root: Path, inventory: dict) -> list[dict]:
     return [item for item in inventory["files"] if item["path"].startswith("raw/")]
 
 
-def main() -> None:
+def main(
+    *,
+    inventory_path: Path | None = None,
+    default_generation: str = "availability-opening-631b259a-20261017",
+) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--artifact-dir", required=True, type=Path, help="Extracted acquired_data directory"
@@ -50,7 +54,7 @@ def main() -> None:
     parser.add_argument(
         "--work-dir", type=Path, help="New empty operator workspace for full snapshot"
     )
-    parser.add_argument("--generation-id", default="availability-opening-631b259a-20261017")
+    parser.add_argument("--generation-id", default=default_generation)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
         "--prepare", action="store_true", help="Download and validate locally; no remote writes"
@@ -62,7 +66,9 @@ def main() -> None:
     )
     args = parser.parse_args()
     inventory = json.loads(
-        Path(__file__).with_name("opening-availability-inventory.json").read_text()
+        (
+            inventory_path or Path(__file__).with_name("opening-availability-inventory.json")
+        ).read_text()
     )
     items = verify_overlay(args.artifact_dir, inventory)
     print(

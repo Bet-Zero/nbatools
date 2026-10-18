@@ -59,7 +59,8 @@ def verify_combined_rows(root):
                 "played": 20,
                 "did_not_play": 14,
             }
-            for player in (2544, 1630541):  # LeBron James / Moses Moody
+            for player, name in ((2544, "LeBron James"), (1630541, "Moses Moody")):
+                assert opening.loc[opening.player_id.eq(player), "player_name"].tolist() == [name]
                 assert opening.loc[
                     opening.player_id.eq(player), "participation_state"
                 ].tolist() == ["did_not_play"]
