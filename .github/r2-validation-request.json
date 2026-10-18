@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "7e6cf3ef1f889021b89582c184fbe2b0af7674f7",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_union_pair_browser.py::test_deployed_union_pair_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
