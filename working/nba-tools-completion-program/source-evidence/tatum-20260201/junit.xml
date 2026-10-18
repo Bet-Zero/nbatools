@@ -3,14 +3,14 @@
     def test_official_tatum_report_retains_exact_source(tmp_path):
         """Owner-requested one-PDF capture, not an availability import or publication."""
         import hashlib
-    
+
         from nbatools.commands.pipeline.player_game_availability_report import (
             _fetch_report_text,
             _inactives,
             _parse_sections,
             _score,
         )
-    
+
         game_id = 22500702
         url = "https://statsdmz.nba.com/pdfs/20260201/20260201_MILBOS.pdf"
         evidence = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path / "evidence")))
@@ -24,7 +24,7 @@
         assert receipt["source_url"] == url
         assert hashlib.sha256(raw.read_bytes()).hexdigest() == receipt["sha256"]
         assert raw.stat().st_size == receipt["size_bytes"]
-    
+
         canonical = {}
         for kind in ("games", "team_game_stats", "player_game_stats"):
             frame = data_read_csv(f"data/raw/{kind}/2025-26_regular_season.csv")
@@ -48,9 +48,9 @@
         names, sections, lines = _parse_sections(text, "2026-02-01")
 &gt;       assert names == ["MILWAUKEE BUCKS", "BOSTON CELTICS"]
 E       AssertionError: assert ['Milwaukee B...STON CELTICS'] == ['MILWAUKEE B...STON CELTICS']
-E         
+E
 E         At index 0 diff: 'Milwaukee Bucks' != 'MILWAUKEE BUCKS'
-E         
+E
 E         Full diff:
 E           [
 E         -     'MILWAUKEE BUCKS',
