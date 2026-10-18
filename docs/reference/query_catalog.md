@@ -307,6 +307,11 @@ Examples:
 - `count LeBron triple doubles since 2020`
 - `how many playoff games did Tatum have over 35 points`
 
+A league-wide count of `player games` counts player-game rows, while `distinct players`
+counts identities. Strict `above` and `exceeded` exclude equality, as `over` does.
+A leading season scope is also accepted for grouped OR lists; the display limit
+is applied after evaluating the complete condition, rather than cutting the base sample.
+
 ### Team count
 
 Examples:

@@ -933,6 +933,9 @@ def _build_count_phrase(
             last_n=parsed.get("last_n"),
             last_n_scope=parsed.get("last_n_scope"),
         )
+        if not player and not team and metadata.get("route") == "player_game_finder":
+            unit = "player-game" if count == 1 else "player-games"
+            return f"There {'was' if count == 1 else 'were'} {count} matching {unit} {context}."
         return f"{entity} {verb} {count} {game_word} {context}."
 
     if parsed.get("streak_count"):
@@ -1135,6 +1138,12 @@ def _build_count_phrase(
         verb = "have recorded" if team_subject else "has recorded"
     if team_players_window:
         context = f"{team_players_window} {context}"
+    if not player and not team and metadata.get("route") == "player_game_finder":
+        # A league population has no single player subject, and two players in
+        # the same NBA fixture are two player-game occurrences.
+        unit = "player-game" if count == 1 else "player-games"
+        condition = re.sub(r"^games?\s+", "", count_noun)
+        return f"There {'was' if count == 1 else 'were'} {count} {unit} {condition} {context}."
     return f"{entity} {verb} {count} {count_noun} {context}."
 
 
