@@ -1,0 +1,261 @@
+{
+  "reviewer": "/root/participation_request",
+  "reviewed_code": "109cda6b0975bd9b3eac9c6f0a378a00014132d6",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "source": {
+    "raw_file": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9.pdf",
+    "retrieved_at": "2026-10-18T21:28:17.144564+00:00",
+    "sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+    "size_bytes": 27521,
+    "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_MILBOS.pdf"
+  },
+  "game_id": "0022500702",
+  "date": "2026-02-01",
+  "teams": {
+    "away": {
+      "team_id": 1610612749,
+      "abbr": "MIL",
+      "pts": 79
+    },
+    "home": {
+      "team_id": 1610612738,
+      "abbr": "BOS",
+      "pts": 107,
+      "reb": 52,
+      "ast": 24
+    }
+  },
+  "scope": "BOS listed rows only, qualification oracle; NOT an import receipt or publication",
+  "counts": {
+    "listed": 17,
+    "played": 12,
+    "explicit_dnp": 2,
+    "inactive": 3,
+    "did_not_play": 5
+  },
+  "source_seconds": 14400,
+  "canonical_minutes_caveat": "Source exact played clocks sum240:00; canonical rounded team-game minutes field is239 for each team. Use source clocks, do not modify canonical field or require equality to240.",
+  "identity_files_sha256": {
+    "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+    "raw/rosters/2025-26.csv": "31e9a1e1660e5177df7c9f8daca12d85989149930ac83485456d19e220c54930",
+    "raw/player_game_stats/2024-25_regular_season.csv": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+    "raw/rosters/2024-25.csv": "545834d18a20a1035d70a46a47c68a90ef9b3da1ea7d50c7340d9e727d9c8358"
+  },
+  "rows": [
+    {
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "source_name": "Jaylen Brown",
+      "state": "played",
+      "source_minutes": "29:29",
+      "source_seconds": 1769,
+      "pts": 30,
+      "reb": 13,
+      "ast": 2,
+      "comment": ""
+    },
+    {
+      "player_id": 1630573,
+      "player_name": "Sam Hauser",
+      "source_name": "Sam Hauser",
+      "state": "played",
+      "source_minutes": "27:18",
+      "source_seconds": 1638,
+      "pts": 3,
+      "reb": 1,
+      "ast": 1,
+      "comment": ""
+    },
+    {
+      "player_id": 1629674,
+      "player_name": "Neemias Queta",
+      "source_name": "Neemias Queta",
+      "state": "played",
+      "source_minutes": "30:45",
+      "source_seconds": 1845,
+      "pts": 14,
+      "reb": 8,
+      "ast": 4,
+      "comment": ""
+    },
+    {
+      "player_id": 1630202,
+      "player_name": "Payton Pritchard",
+      "source_name": "Payton Pritchard",
+      "state": "played",
+      "source_minutes": "26:39",
+      "source_seconds": 1599,
+      "pts": 7,
+      "reb": 3,
+      "ast": 5,
+      "comment": ""
+    },
+    {
+      "player_id": 1628401,
+      "player_name": "Derrick White",
+      "source_name": "Derrick White",
+      "state": "played",
+      "source_minutes": "32:13",
+      "source_seconds": 1933,
+      "pts": 17,
+      "reb": 7,
+      "ast": 8,
+      "comment": ""
+    },
+    {
+      "player_id": 1629014,
+      "player_name": "Anfernee Simons",
+      "source_name": "Anfernee Simons",
+      "state": "played",
+      "source_minutes": "24:46",
+      "source_seconds": 1486,
+      "pts": 27,
+      "reb": 3,
+      "ast": 1,
+      "comment": ""
+    },
+    {
+      "player_id": 1642864,
+      "player_name": "Hugo Gonz\u00e1lez",
+      "source_name": "Hugo Gonzalez",
+      "state": "played",
+      "source_minutes": "17:19",
+      "source_seconds": 1039,
+      "pts": 0,
+      "reb": 5,
+      "ast": 0,
+      "comment": ""
+    },
+    {
+      "player_id": 1630568,
+      "player_name": "Luka Garza",
+      "source_name": "Luka Garza",
+      "state": "played",
+      "source_minutes": "13:02",
+      "source_seconds": 782,
+      "pts": 3,
+      "reb": 2,
+      "ast": 0,
+      "comment": ""
+    },
+    {
+      "player_id": 1631248,
+      "player_name": "Baylor Scheierman",
+      "source_name": "Baylor Scheierman",
+      "state": "played",
+      "source_minutes": "13:15",
+      "source_seconds": 795,
+      "pts": 0,
+      "reb": 4,
+      "ast": 0,
+      "comment": ""
+    },
+    {
+      "player_id": 1641775,
+      "player_name": "Jordan Walsh",
+      "source_name": "Jordan Walsh",
+      "state": "played",
+      "source_minutes": "19:49",
+      "source_seconds": 1189,
+      "pts": 6,
+      "reb": 5,
+      "ast": 3,
+      "comment": ""
+    },
+    {
+      "player_id": 1642873,
+      "player_name": "Amari Williams",
+      "source_name": "Amari Williams",
+      "state": "played",
+      "source_minutes": "04:05",
+      "source_seconds": 245,
+      "pts": 0,
+      "reb": 1,
+      "ast": 0,
+      "comment": ""
+    },
+    {
+      "player_id": 1631169,
+      "player_name": "Josh Minott",
+      "source_name": "Josh Minott",
+      "state": "played",
+      "source_minutes": "01:20",
+      "source_seconds": 80,
+      "pts": 0,
+      "reb": 0,
+      "ast": 0,
+      "comment": ""
+    },
+    {
+      "player_id": 1628449,
+      "player_name": "Chris Boucher",
+      "source_name": "Chris Boucher",
+      "state": "did_not_play",
+      "source_minutes": null,
+      "comment": "DNP - Coach's Decision",
+      "identity_files": [
+        "raw/player_game_stats/2025-26_regular_season.csv"
+      ]
+    },
+    {
+      "player_id": 1630214,
+      "player_name": "Xavier Tillman",
+      "source_name": "Xavier Tillman",
+      "state": "did_not_play",
+      "source_minutes": null,
+      "comment": "DNP - Coach's Decision",
+      "identity_files": [
+        "raw/player_game_stats/2024-25_regular_season.csv",
+        "raw/player_game_stats/2025-26_regular_season.csv",
+        "raw/rosters/2024-25.csv"
+      ]
+    },
+    {
+      "player_id": 1631199,
+      "player_name": "Ron Harper Jr.",
+      "source_name": "Harper Jr.",
+      "state": "did_not_play",
+      "source_minutes": null,
+      "comment": "INACTIVE - G League - Two-Way",
+      "identity_files": [
+        "raw/player_game_stats/2025-26_regular_season.csv",
+        "raw/rosters/2025-26.csv"
+      ]
+    },
+    {
+      "player_id": 1642917,
+      "player_name": "Max Shulga",
+      "source_name": "Shulga",
+      "state": "did_not_play",
+      "source_minutes": null,
+      "comment": "INACTIVE - G League - Two-Way",
+      "identity_files": [
+        "raw/player_game_stats/2025-26_regular_season.csv",
+        "raw/rosters/2025-26.csv"
+      ]
+    },
+    {
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "source_name": "Tatum",
+      "state": "did_not_play",
+      "source_minutes": null,
+      "comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+      "identity_files": [
+        "raw/player_game_stats/2024-25_regular_season.csv",
+        "raw/player_game_stats/2025-26_regular_season.csv",
+        "raw/rosters/2024-25.csv",
+        "raw/rosters/2025-26.csv"
+      ]
+    }
+  ],
+  "current_unscoped_offline_result": "Official scorer identity unresolved: 'Antetokounmpo' team=1610612749, candidate IDs=2",
+  "remaining": "MIL inactive identity mapping; other-game membership/nonmembership/conflicts/time; all46original PR462 positive obligations remain open",
+  "canonical_files_sha256": {
+    "raw/games/2025-26_regular_season.csv": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+    "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+    "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b"
+  },
+  "independent_pdf_text": "Fresh pdftotext -layout matches retained independent-pdftotext.txt byte-for-byte; selected capture CSV rows match generation rows after numeric-ID serialization normalization only."
+}

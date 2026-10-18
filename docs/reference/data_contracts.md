@@ -308,6 +308,20 @@ Contract rules:
   These files must accompany publication inputs. Identity lookup may use the
   immediately preceding season's canonical player/team IDs; that lookup never
   establishes current membership or absence without an explicit report row.
+  Retained reports may explicitly select `--import-team-id <NBA team ID>`
+  (repeatable). This validates both teams' headings, scores and inactive-list
+  labels, then resolves every listed player of the selected teams. The import
+  receipt binds `imported_team_ids` to the exact saved game rows and digest;
+  absent scope retains the legacy both-team requirement. Publication validation
+  accepts only a nonempty canonical subset matching that explicit receipt,
+  with all existing original-source and identity checks. This changes no
+  publication authorization. A scoped refresh rejects existing outside-scope
+  rows without deleting them; complementary partial imports are not merged.
+  A later full-game request must qualify both teams independently and cannot
+  resume from one team's receipt. The default remains all-or-error. This permits
+  Boston's unambiguous listed observations in the retained February 1, 2026
+  report without assigning Milwaukee's ambiguous surname-only inactive entries.
+  It establishes no tenure, other-game nonmembership or season-wide coverage.
   If no candidate exists, the official CDN game box score supplies identity only:
   exact game/date/finality, home/away teams and final scores must match first.
   Ambiguous IDs/names and canonical identity conflicts reject the import. CDN
