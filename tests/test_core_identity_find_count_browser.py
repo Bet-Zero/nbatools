@@ -116,7 +116,7 @@ def test_deployed_core_identity_find_count_desktop_and_mobile(tmp_path):
 
 def _capture_browser(cases, tmp_path, folder):
     generation = os.environ["NBATOOLS_DATA_GENERATION"]
-    assert generation == "queue-d-production-0574735-20260716"
+    assert generation == "availability-opening-s4-v1-20261017"
     output = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", str(tmp_path))) / folder
     output.mkdir(parents=True, exist_ok=True)
     inputs = tmp_path / "browser-cases.json"

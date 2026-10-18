@@ -1,7 +1,8 @@
 """Governance for the workflow that validates against the real R2 generation.
 
 `.github/workflows/r2-real-data-validation.yml` is the only GitHub Actions path
-that receives the bucket-scoped read-only NBA data credential, and the only
+that runs jobs consuming the bucket-scoped read-only NBA data credential (the
+protected publication workflow only forwards three named secrets), and the only
 automated place the Raw QA corpus and the filter execution sweep run at all.
 Before it existed they were local-only, on one machine, undated and unretained.
 
@@ -21,12 +22,11 @@ Four properties keep it working, and none is visible in a diff:
    order to test them for emptiness, so "it reports names only" is asserted
    against a canary rather than assumed.
 
-A fifth is about this repository's own history: there must be exactly one of
-these workflows. A second was once added that duplicated this job against
-*repository* secrets, which do not exist; it failed repeatedly and the failures
-were read as a credential problem rather than as a duplicate reading the wrong
-place. `test_exactly_one_workflow_reads_the_r2_credential` exists so that cannot
-recur.
+A fifth is about this repository's own history: there must be one workflow
+that *executes R2 reads*. A previous duplicate reader looked for nonexistent
+repository secrets. The publication workflow is an allowed caller only when it
+forwards exactly the existing three read-only secret names to that single
+reader. `test_exactly_one_workflow_reads_the_r2_credential` guards both rules.
 """
 
 from __future__ import annotations
@@ -62,6 +62,13 @@ SECRET_SOURCES = {
     "R2_SECRET_ACCESS_KEY": "R2_VALIDATION_SECRET_ACCESS_KEY",
 }
 SECRET_ENV_VARS = tuple(SECRET_SOURCES)
+SECRET_FREE_JOBS = {
+    "request",
+    "retain-backup",
+    "restore-backup",
+    "retain-restore-receipt",
+    "retain-data-inventory",
+}
 
 # The job that verifies the credential and pins the generation every other job
 # reads, so that all gates judge the same immutable data.
@@ -164,8 +171,9 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
     from a real data failure.
     """
     for name, job in _jobs().items():
-        if name == "request":
+        if name in SECRET_FREE_JOBS:
             assert "environment" not in job
+            assert not any(secret in str(job) for secret in SECRET_SOURCES.values())
             continue
         assert job.get("environment") == ENVIRONMENT, (
             f"job {name!r} must declare `environment: {ENVIRONMENT}`; it has "
@@ -175,27 +183,34 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
 
 
 def test_exactly_one_workflow_reads_the_r2_credential() -> None:
-    """Two workflows reading this credential is how it got misdiagnosed.
+    """The data workflow alone consumes credentials; its caller may only forward.
 
-    A second workflow was added that duplicated this job against *repository*
-    secrets of the same purpose, which were never created. It failed on every
-    run, and the failures were read as a broken credential rather than as a
-    duplicate looking in the wrong place -- costing several rounds before the two
-    files were compared.
-
-    One workflow owns this credential. A second copy is a defect even when it
-    works, because the two drift and the failure blames the credential.
+    An earlier duplicate data workflow accidentally expected *repository* secrets
+    instead of the environment secrets. The production-publication caller now
+    passes three named read-only secrets across workflow_call, but it must never
+    become a second job executing R2 data reads or pass those secrets elsewhere.
     """
     readers = sorted(
         path.name
         for path in WORKFLOWS.glob("*.yml")
         if any(secret in path.read_text(encoding="utf-8") for secret in SECRET_SOURCES.values())
     )
-    assert readers == [WORKFLOW.name], (
-        f"these workflows all read the R2 validation credential: {readers}. "
-        f"Exactly one may. Consolidate into {WORKFLOW.name} rather than keeping "
-        f"a second copy in step with it by hand."
+    caller_name = "r2-data-publication.yml"
+    assert readers == sorted([WORKFLOW.name, caller_name]), (
+        "only the single data workflow and its narrow caller may refer to R2 "
+        f"read-only secret names, found {readers}"
     )
+
+    caller = yaml.load((WORKFLOWS / caller_name).read_text(), Loader=yaml.BaseLoader)
+    expected = {name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()}
+    for name, job in caller["jobs"].items():
+        if name in {"prepare", "verify", "backup"}:
+            assert job["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+            assert job["secrets"] == expected
+        else:
+            assert not any(secret in str(job) for secret in SECRET_SOURCES.values()), (
+                f"unexpected R2 read-secret reference in publication job {name}"
+            )
 
 
 # ── The credential check cannot leak ──────────────────────────────────
@@ -308,7 +323,7 @@ def test_every_job_maps_exactly_the_secrets_the_engine_requires() -> None:
     )
 
     for name, job in _jobs().items():
-        if name == "request":
+        if name in SECRET_FREE_JOBS:
             continue
         env = job.get("env", {})
         for variable, secret in SECRET_SOURCES.items():
@@ -344,7 +359,7 @@ def test_every_gate_judges_the_one_pinned_generation() -> None:
 
     expected = f"${{{{ needs.{PREFLIGHT_JOB}.outputs.generation }}}}"
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
+        if name in SECRET_FREE_JOBS | {PREFLIGHT_JOB, "publication-readonly"}:
             continue
         pinned = job.get("env", {}).get(GENERATION_ENV)
         assert pinned == expected, (
@@ -410,7 +425,7 @@ def test_every_data_job_waits_for_the_credential_check() -> None:
     wait for it reports the symptom in parallel with the diagnosis.
     """
     for name, job in _jobs().items():
-        if name in {PREFLIGHT_JOB, "request", "publication-readonly"}:
+        if name in SECRET_FREE_JOBS | {PREFLIGHT_JOB, "publication-readonly"}:
             continue
         assert PREFLIGHT_JOB in _needs(job), (
             f"job {name!r} does not wait for {PREFLIGHT_JOB!r}, so a missing "
@@ -569,8 +584,9 @@ def test_request_resolver_has_no_credentials_or_project_install() -> None:
     resolver = next(s for s in _steps("request") if s.get("with", {}).get("path") == "workflow")
     assert resolver["with"]["ref"] == "${{ github.workflow_sha }}"
     assert checkout["with"]["ref"] == (
-        "${{ github.event_name == 'push' && github.sha || inputs.target_ref }}"
+        "${{ inputs.backup_generation != '' && github.sha || github.event_name == 'push' && github.sha || inputs.target_ref }}"
     )
+    assert "backup_generation" not in _workflow()["on"]["workflow_dispatch"]["inputs"]
     assert checkout["with"]["fetch-depth"] == "2"
     for name in _jobs():
         for step in _steps(name):
@@ -602,3 +618,31 @@ def test_publication_reuse_has_separate_fixed_package_validation():
     assert 'verify_pointer_manifest(client, bucket, inventory["base_generation"])' in helper
     assert "prepared_manifest_sha256" in helper
     assert "Active base changed during snapshot preparation" in helper
+
+
+def test_backup_is_explicit_bounded_and_credential_separated():
+    retain = _job("retain-backup")
+    assert _needs(retain) == ["preflight", "data-backed-tests"]
+    assert "github.event_name == 'push'" in retain["if"]
+    assert "refs/heads/r2-validation/cloud-backup-" in retain["if"]
+    assert (
+        "needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup'"
+        in retain["if"]
+    )
+    assert "needs.data-backed-tests.result == 'success'" in retain["if"]
+    assert retain["permissions"] == {"contents": "write", "actions": "read"}
+    restore = _job("restore-backup")
+    assert _needs(restore) == ["preflight", "retain-backup"]
+    assert restore["permissions"] == {"contents": "read"}
+    assert _needs(_job("retain-restore-receipt")) == ["restore-backup"]
+    for name in SECRET_FREE_JOBS - {"request"}:
+        body = str(_job(name))
+        assert "secrets." not in body and "environment" not in _job(name)
+        assert "--clobber" not in body and "continue-on-error" not in body
+
+
+def test_cloud_operations_require_explicit_selection():
+    operations = ROOT / "tests/cloud_operations_real_data.py"
+    assert operations.is_file()
+    assert not operations.name.startswith("test_")
+    assert not operations.name.endswith("_test.py")

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "classification": "qualified archived five-player lineups with source MinutesMin=10; not all lineups or live freshness",
+  "source_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguelineupviz/2026/regular-season_base_totals.json",
+  "mirror_revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "attribution": "SportsDataverse NBA Stats raw captures CC BY4.0; original stats.nba.com",
+  "original_capture_time": "not provided",
+  "downloaded_at": "2026-10-18T11:19:08.777515+00:00",
+  "parameters": {
+    "MeasureType": "Base",
+    "PerMode": "Totals",
+    "PlusMinus": "N",
+    "PaceAdjust": "N",
+    "Rank": "N",
+    "LeagueID": "00",
+    "Season": "2025-26",
+    "SeasonType": "Regular Season",
+    "PORound": null,
+    "Outcome": null,
+    "Location": null,
+    "Month": 0,
+    "SeasonSegment": null,
+    "DateFrom": "",
+    "DateTo": "",
+    "OpponentTeamID": 0,
+    "VsConference": null,
+    "VsDivision": null,
+    "TeamID": 0,
+    "Conference": null,
+    "Division": null,
+    "GameSegment": null,
+    "Period": 0,
+    "ShotClockRange": null,
+    "LastNGames": 0,
+    "GroupQuantity": 5,
+    "MinutesMin": 10
+  },
+  "canonical_rows": 2594,
+  "team_count": 30,
+  "membership_trusted_rows": 2594,
+  "minutes_minimum_observed": 10.0,
+  "minutes_maximum_observed": 709.7,
+  "files": {
+    "source.json": {
+      "bytes": 714915,
+      "sha256": "b8f73b0c28875d205ac3fbcbe5b5e27849a02a01f4ef383be9ffabd095a11169"
+    },
+    "raw/league_lineup_viz/2025-26_regular_season.csv": {
+      "bytes": 841380,
+      "sha256": "cf101c79f8c1484b67d7516d87b1db7f07a6ec6e256fd5b176c774595305c859"
+    }
+  },
+  "r2_writes": 0,
+  "production_publication": "not requested or performed",
+  "normalizers": [
+    "pull_league_lineup_viz.normalize_league_lineup_viz",
+    "validate_raw.validate_league_lineup_viz_df"
+  ],
+  "durable_bundle": {
+    "path": "working/nba-tools-completion-program/cloud-operations/lineup-archive-staging.zip",
+    "bytes": 286605,
+    "sha256": "9d37915e5f58cc600a02a84f8d5a2f5c9a2bd8582764adef0cc076afaf52d16f"
+  }
+}

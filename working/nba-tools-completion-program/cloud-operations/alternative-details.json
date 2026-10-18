@@ -1,0 +1,82 @@
+{
+  "espn_adapter": {
+    "reason": "Unresolved ESPN-to-NBA player ID: 'Thomas Bryant' on CLE (2025-26), candidates=0",
+    "status": "rejected"
+  },
+  "espn_columns": [
+    {
+      "labels": [
+        "MIN",
+        "PTS",
+        "FG",
+        "3PT",
+        "FT",
+        "REB",
+        "AST",
+        "TO",
+        "STL",
+        "BLK",
+        "OREB",
+        "DREB",
+        "PF",
+        "+/-"
+      ],
+      "names": [
+        "MIN",
+        "PTS",
+        "FG",
+        "3PT",
+        "FT",
+        "REB",
+        "AST",
+        "TO",
+        "STL",
+        "BLK",
+        "OREB",
+        "DREB",
+        "PF",
+        "+/-"
+      ]
+    },
+    {
+      "labels": [
+        "MIN",
+        "PTS",
+        "FG",
+        "3PT",
+        "FT",
+        "REB",
+        "AST",
+        "TO",
+        "STL",
+        "BLK",
+        "OREB",
+        "DREB",
+        "PF",
+        "+/-"
+      ],
+      "names": [
+        "MIN",
+        "PTS",
+        "FG",
+        "3PT",
+        "FT",
+        "REB",
+        "AST",
+        "TO",
+        "STL",
+        "BLK",
+        "OREB",
+        "DREB",
+        "PF",
+        "+/-"
+      ]
+    }
+  ],
+  "espn_event_id": "401809234",
+  "official_cdn": {
+    "body_sha256": "baa7691e831dc4150a1304d9e27dd56541ef377051d040d534d8952418ccf2cb",
+    "bytes": 443,
+    "http_status": 403
+  }
+}

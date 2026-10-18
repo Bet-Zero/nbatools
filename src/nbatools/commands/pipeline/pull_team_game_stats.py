@@ -135,14 +135,18 @@ def fetch_team_game_logs(season: str, season_type: str) -> pd.DataFrame:
     raise RuntimeError(f"Failed to fetch team game logs: {last_err}")
 
 
-def run(season: str, season_type: str) -> None:
+def run(season: str, season_type: str, *, raw_frame: pd.DataFrame | None = None) -> None:
     out_dir = Path("data/raw/team_game_stats")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     safe = season_type.lower().replace(" ", "_")
     out_path = out_dir / f"{season}_{safe}.csv"
 
-    raw = fetch_team_game_logs(season=season, season_type=season_type)
+    raw = (
+        fetch_team_game_logs(season=season, season_type=season_type)
+        if raw_frame is None
+        else raw_frame.copy()
+    )
     df = normalize_columns(raw)
     df = add_opponent_info(df)
     # LeagueGameFinder has emitted fractional team PLUS_MINUS anomalies. Final
