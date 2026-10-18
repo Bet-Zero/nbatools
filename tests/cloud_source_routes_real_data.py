@@ -77,3 +77,25 @@ def test_official_cloud_alternatives(capfd):
     (output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n")
     with capfd.disabled():
         print("OFFICIAL_ALTERNATIVES_JSON " + json.dumps(report), flush=True)
+
+
+def test_archived_core_collection(tmp_path, capfd):
+    from tools.cloud_nba_archive import prepare
+
+    receipt = prepare(tmp_path / "collected")
+    assert receipt["canonical_rows"] == {
+        "games": 1,
+        "team_game_stats": 2,
+        "player_game_stats": 21,
+        "player_game_starter_roles": 21,
+        "play_by_play_events": 0,
+    }
+    assert receipt["team_scores"] == {"CLE": 111, "NYK": 119}
+    # Retained PBP is not usable canonical PBP. Keep its actual incompatibility.
+    assert receipt["play_by_play"]["status"] == "canonical-rejected"
+    assert receipt["play_by_play"]["raw_actions"] == 521
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "archive-collection.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    with capfd.disabled():
+        print("ARCHIVE_COLLECTION_JSON " + json.dumps(receipt), flush=True)
