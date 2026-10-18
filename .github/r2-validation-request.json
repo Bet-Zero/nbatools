@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "542eff77d5c767d682e8b7e40e972ca405d9fecb",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_deployed_sample_order_contract.py"
+  ],
+  "raw_qa_cases": []
+}
