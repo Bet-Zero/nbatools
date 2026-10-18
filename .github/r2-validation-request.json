@@ -1,0 +1,1 @@
+{"schema_version":1,"reviewed_sha":"702f767853e976e081e6bda6f82ce7d8dbeb6336","generation":"availability-opening-s4-v1-20261017","tests":["tests/cloud_source_routes_real_data.py::test_official_cloud_alternatives"],"raw_qa_cases":[]}
