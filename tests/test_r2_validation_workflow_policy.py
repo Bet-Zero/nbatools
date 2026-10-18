@@ -194,9 +194,7 @@ def test_exactly_one_workflow_reads_the_r2_credential() -> None:
     )
 
     caller = yaml.load((WORKFLOWS / caller_name).read_text(), Loader=yaml.BaseLoader)
-    expected = {
-        name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()
-    }
+    expected = {name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()}
     for name, job in caller["jobs"].items():
         if name in {"prepare", "verify"}:
             assert job["uses"] == "./.github/workflows/r2-real-data-validation.yml"
