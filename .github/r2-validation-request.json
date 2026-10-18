@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "ee87478da1104fe2421283560592ca11c26eab3a",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_core_identity_find_count_browser.py::test_deployed_core_identity_find_count_desktop_and_mobile",
+    "tests/test_summary_ranking_browser.py::test_deployed_summary_ranking_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
