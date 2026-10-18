@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "61fa5d0077a89ad965b8590f1672a4f86be627d0",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_multi_opponent_real_data.py::test_multi_opponent_subject_rows_and_labels",
+    "tests/test_multi_opponent_real_data.py::test_comparison_opponent_union",
+    "tests/test_multi_opponent_real_data.py::test_head_to_head_opponent_intersection"
+  ],
+  "raw_qa_cases": []
+}
