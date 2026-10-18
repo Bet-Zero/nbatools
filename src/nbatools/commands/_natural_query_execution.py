@@ -1597,10 +1597,16 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     base_kwargs["min_value"] = None
     base_kwargs["max_value"] = None
     base_kwargs["conditions"] = None
+    # A display limit applies after evaluating the complete boolean expression.
+    # Limiting the unfiltered base silently discards older qualifying games.
+    result_limit = base_kwargs.get("limit")
+    base_kwargs["limit"] = None
     base_kwargs["sort_by"] = "game_date"
     base_kwargs["ascending"] = False
 
     base_result = _execute_build_result(route, base_kwargs)
+    if isinstance(base_result, NoResult):
+        return base_result
 
     df = _get_result_primary_df(base_result)
     if df is None or df.empty:
@@ -1623,6 +1629,9 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
             df = df.drop(columns="_game_date_sort")
         except Exception:
             pass  # sorting is best-effort; failure here is cosmetic only
+
+    if result_limit is not None:
+        df = df.head(result_limit)
 
     if "rank" in df.columns:
         df = df.drop(columns="rank")
@@ -1655,17 +1664,20 @@ def _extract_grouped_condition_text(
     for name in _SORTED_TEAM_ALIAS_NAMES:
         condition_text = re.sub(rf"\b{re.escape(name)}\b", "", condition_text)
 
-    condition_text = re.sub(r"\b(?:19|20)\d{2}-\d{2}\b", "", condition_text)
+    # Consume the resolved season phrase before removing standalone season tokens.
+    # Leading "In 2023-24, ... with (...)" must leave the same condition tree
+    # as the equivalent trailing-season form; unknown clauses remain unparsed.
     condition_text = re.sub(
         r"\bfrom\s+(?:19|20)\d{2}-\d{2}\s+to\s+(?:19|20)\d{2}-\d{2}\b", "", condition_text
     )
+    condition_text = re.sub(r"\b(?:(?:in|during)\s+)?(?:19|20)\d{2}-\d{2}\b,?", "", condition_text)
     condition_text = re.sub(r"\b(last|past|recent)\s+\d+\s+games?\b", "", condition_text)
     condition_text = re.sub(r"\b(last|past|recent)\s+\d+\b", "", condition_text)
     condition_text = re.sub(r"\b(playoff|playoffs|postseason)\b", "", condition_text)
     condition_text = re.sub(r"\bhome\s+vs\.?\s+away\b", "", condition_text)
     condition_text = re.sub(r"\bwins?\s+vs\.?\s+loss(?:es)?\b", "", condition_text)
     condition_text = re.sub(
-        r"\b(summary|summarize|average|averages|avg|record|split|form|where|games|game"
+        r"\b(summary|summarize|average|averages|avg|record|split|form|where|(?:player\s+)?games|game"
         r"|show\s+me|list|find|give\s+me|how\s+many|count|number\s+of"
         r"|did|have|has|had)\b",
         "",
@@ -1675,6 +1687,7 @@ def _extract_grouped_condition_text(
     condition_text = re.sub(r"\b(vs\.?|versus|against)\s+[a-z0-9 .&'\-]+\b", "", condition_text)
     condition_text = re.sub(r"^(vs\.?|versus)\s+", "", condition_text)
     condition_text = re.sub(r"\b(?:in|during)\s*[?!.]*\s*$", "", condition_text)
+    condition_text = re.sub(r"^\s*with\s+(?=\()", "", condition_text)
     condition_text = condition_text.strip(" ?!.")
 
     return normalize_text(condition_text)
