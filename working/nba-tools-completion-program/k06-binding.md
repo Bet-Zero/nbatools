@@ -22,3 +22,20 @@ Adjacent limitations retained: malformed name prefixes in comparisons (for examp
 Final cached RawQA:12cases340checks pass. Initial broadpreflight8137passed/1550skipped with one stale-inventory failure after combining K05/K06 corpus; inventory regenerated and docsgovernance passed. Final preflight8,138passed/1,550data-dependent skips; CI39096571461 passed. No runtime edits after independent review.
 
 Actual R2 accepted by independent checker /root/availability_checker: reviewed9252c42f20a06f1b89988976611e64ecc0695ff1, requeste71d1b9ac300f54a75a4ddc418ee807232814842, run39096800744 on queue-d-production-0574735-20260716.12selected/executed/passed, zero skips/errors;12RawQA340checks pass. Numericalartifact12125455448 ZIPd32d7f88fc200aa7d8d9ea96245a05e758265bb9a34c47c724f7feab2113e4c2; QAartifact12123939984 ZIPc77aab88fea000dffd76d6d0749e0ee793bfc36c321dc94d42ca6460cd6edcdb. Reversed order, complete/filtered/H2H/January samples independently accepted. All12manual review fields remain unreviewed; production browser acceptance pending.
+
+
+October18 normal-development resumption: integrated current main3feb303 into reviewed
+`db75d9a880d80511b5384387375bff728aa9f361`; comparison runtime, frozen source oracle
+and required cases unchanged from9252c42. Independent checker `/root/comparison_checker`
+verified fresh identities/date/opponent/meeting probes, exact raw key sets, W/L and
+PTS/REB/AST arithmetic. Current generation `availability-opening-s4-v1-20261017`,
+manifest5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52,
+has source hashes identical to the frozen oracle. Historical plus/minus quality findings
+remain outside this PTS/REB/AST acceptance; full participation completeness is unknown.
+Actual run39160471581/requestf373eaf4d21e6f26e0c1905fe814ba527833760e
+passed12selected/executed numerical0skips/errors and12RawQA340checks. Numerical
+artifact12148476916 ZIP43ed3d48535cf76d7b249e3670d2baeaafbf4b5e03924e15dd494981ca35794f;
+QA12148562663 ZIPb8eed298bcfdc1fcd630257b7ea7518e545ed3d2b10c70aaa3df51bdf764b6ff.
+Checker physically verified both ZIP hashes and accepted actual results. CI39160306760
+and broad localpreflight8228passed1566skipped passed. Skips are not NBA acceptance.
+PR492 separately owns40production UI responses; no production data publication.
