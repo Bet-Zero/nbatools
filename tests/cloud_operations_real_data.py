@@ -285,7 +285,9 @@ def test_espn_with_cloud_identity_catalog(tmp_path, capfd, monkeypatch):
     )
     assert rows.coverage_scope.eq("listed_player_rows_only").all()
     assert rows.source.eq("espn_game_summary:401809234").all()
-    with pytest.raises(ValueError, match="requires retained official source"):
+    with pytest.raises(
+        ValueError, match="Availability import is incomplete or lacks source provenance"
+    ):
         validate_publication(root)  # Existing protected source gate stays intact.
     after, _, after_hash = verify_pointer_manifest(client, bucket, generation)
     assert before == after and manifest_hash == after_hash
