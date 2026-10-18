@@ -3086,6 +3086,18 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
+            # Not reaching a named value is strictly below it.
+            rf"\b(?:did|does|do)\s+not\s+reach\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "max",
+            0.0001,
+        ),
+        (
+            # Reaching a named statistical value is an inclusive floor.
+            rf"(?<!\bnot )(?<!\bnever )\breach(?:es|ed)?\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "min",
+            0.0,
+        ),
+        (
             rf"\b{_NUM}\s+or\s+more\s+(?:made\s+)?{STAT_PATTERN}\b",
             "min",
             0.0,
@@ -3414,6 +3426,13 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         r"for|with|without|while|but|after|before|home|away|road|games?)\b))"
     )
     patterns = [
+        r"\b(?:opponents?|(?:the\s+)?(?:other|opposing)\s+team)\s+"
+        rf"(?:did|does|do)\s+not\s+reach\s+{_NUM}\s+(?:points?|pts)\b",
+        # The explicit opponent owns this score, including an omitted "points"
+        # at the clause end. The suffix excludes percentages and other stats.
+        rf"\b(?:opponents?|(?:the\s+)?(?:other|opposing)\s+team)\s+"
+        rf"(?:stay(?:s|ed)?|finish(?:es|ed)?)\s+"
+        rf"(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\bh(?:e|o)ld(?:s|ing)?\s+(?:opponents?|teams?|them|the\s+other\s+team)\s+(?:to\s+)?"
         rf"(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\blimit(?:s|ed|ing)?\s+opponents?\s+to\s+(?:under|below|fewer\s+than|less\s+than)\s+"
@@ -3480,6 +3499,11 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     )
     _OR_MORE = r"(?:\s+(?:points?|pts))?\s+or\s+more\b(?:\s+(?:points?|pts)\b)?" + _NOT_OTHER_STAT
     min_patterns = [
+        (
+            r"\b(?:opponents?|(?:the\s+)?(?:other|opposing)\s+team)\s+reach(?:es|ed)?\s+"
+            rf"{_NUM}\s+(?:points?|pts)\b",
+            0.0,
+        ),
         (rf"{_MIN_SUBJECTS}(?:at\s+least|a\s+min(?:imum)?\s+of)\s+{_NUM}{_POINT_SUFFIX}", 0.0),
         (rf"{_MIN_SUBJECTS}(?:over|more\s+than)\s+{_NUM}{_POINT_SUFFIX}", 0.0001),
         (rf"{_MIN_SUBJECTS}{_NUM}{_OR_MORE}", 0.0),
@@ -3569,7 +3593,7 @@ _OPP_STAT_SUBJECT = (
     r"|\blimit(?:s|ed|ing)?\s+opponents?(?:\s+to)?"
     r"|\b(?:the\s+)?(?:opponents?|(?:other|opposing)\s+teams?|opposition|another\s+team)\s+"
     r"(?:had|has|have|made|makes?"
-    r"|hit|hits|shot|shoots|scor(?:e|es|ed)|commit"
+    r"|hit|hits|shot|shoots|scor(?:e|es|ed)|reach(?:es|ed)?|commit"
     r"|grabbed|grabs|got|gets|committed|commits|record(?:ed|s)?|turned\s+it\s+over)"
     r"|\b(?:teams?|opponents?)\s+(?:that|who)\s+(?:had|made|hit|shot|grabbed|committed))\s+"
 )
@@ -3937,8 +3961,10 @@ _STAT_ACTIVITY = re.compile(
 
 
 def detect_home_away(text: str) -> tuple[bool, bool]:
-    home_only = bool(re.search(r"\bhome\b", text))
-    away_only = bool(re.search(r"\baway\b|\broad\b", text))
+    # "Away from home" names one venue; its final word is not a home filter.
+    venue_text = re.sub(r"\baway\s+from\s+home\b", "away", text)
+    home_only = bool(re.search(r"\bhome\b", venue_text))
+    away_only = bool(re.search(r"\baway\b|\broad\b", venue_text))
     return home_only, away_only
 
 
