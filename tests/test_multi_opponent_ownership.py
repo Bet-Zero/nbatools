@@ -96,3 +96,33 @@ def test_player_comparison_keeps_both_players_and_no_invented_team_filter():
     assert kwargs["team"] is None
     assert kwargs["opponent"] == ["BOS", "WAS"]
     assert not kwargs.get("unsupported_filters")
+
+
+@pytest.mark.parametrize("opponent", ["BOS", ["BOS", "WAS"], ["NYK", "WAS"]])
+def test_head_to_head_intersects_explicit_opponents_before_pairing(opponent):
+    result = execute_structured_query(
+        "team_compare",
+        team_a="LAL",
+        team_b="NYK",
+        head_to_head=True,
+        opponent=opponent,
+        season="2025-26",
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "no_match"
+
+
+def test_redundant_union_keeps_a_coherent_head_to_head_sample():
+    kwargs = dict(team_a="LAL", team_b="NYK", head_to_head=True, season="2025-26")
+    plain = execute_structured_query("team_compare", **kwargs)
+    scoped = execute_structured_query("team_compare", opponent=["LAL", "NYK"], **kwargs)
+    assert plain.result_status == scoped.result_status == "ok"
+    assert plain.result.to_dict()["sections"] == scoped.result.to_dict()["sections"]
+
+
+def test_contradictory_natural_head_to_head_scope_never_claims_success():
+    result = execute_natural_query(
+        "Compare Lakers and Knicks head-to-head against Celtics and Wizards in 2023-24"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "no_match"

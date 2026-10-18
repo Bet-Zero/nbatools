@@ -141,3 +141,50 @@ def test_comparison_opponent_union(monkeypatch):
                     assert row[stat + "_avg"] == pytest.approx(
                         expected["sums"][stat] / expected["games"], abs=0.001
                     )
+
+
+def test_head_to_head_opponent_intersection(monkeypatch):
+    oracle = json.loads(
+        (Path(__file__).parent / "fixtures/multi_opponent/head-to-head-oracle.json").read_text()
+    )
+    captured = []
+    summarize = team_compare.summarize_team
+
+    def capture(frame, *args, **kwargs):
+        captured.append(frame.copy())
+        return summarize(frame, *args, **kwargs)
+
+    monkeypatch.setattr(team_compare, "summarize_team", capture)
+    for case in oracle["cases"]:
+        captured.clear()
+        result = execute_structured_query(
+            "team_compare",
+            team_a="LAL",
+            team_b="NYK",
+            head_to_head=True,
+            season="2023-24",
+            opponent=case["opponent"],
+        )
+        if not case["paired_keys"]:
+            assert result.result_status == "no_result" and result.result_reason == "no_match"
+            assert captured == []
+            continue
+        assert result.result_status == "ok"
+        assert len(captured) == 2
+        actual = [
+            key
+            for frame in captured
+            for key in frame[["game_id", "team_id", "opponent_team_id"]].astype(int).values.tolist()
+        ]
+        assert sorted(actual) == case["paired_keys"]
+        rows = result.result.to_dict()["sections"]["summary"]
+        assert len(rows) == 2
+        for row, frame, expected in zip(rows, captured, case["summaries"]):
+            assert row["team_name"] == expected["team"]
+            assert (row["games"], row["wins"], row["losses"]) == (
+                expected["games"],
+                expected["wins"],
+                expected["games"] - expected["wins"],
+            )
+            for stat in ("pts", "reb", "ast"):
+                assert int(frame[stat].sum()) == row[stat + "_sum"] == expected["sums"][stat]
