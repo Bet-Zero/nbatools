@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "de825b1962af5040237138a53486dbe965528994",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_scoped_report_real_data.py",
+    "tests/test_pipeline_player_game_availability_real_data.py::test_retained_tatum_report_scope_on_pinned_data",
+    "tests/test_pipeline_player_game_availability_real_data.py::test_retained_qualified_game_imports_offline"
+  ],
+  "raw_qa_cases": []
+}
