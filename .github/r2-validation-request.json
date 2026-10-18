@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "1959979c2f9c3f53e4dd9b60d7593d7e98080168",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_cloud_operations_real_data.py::test_core_cloud_routes"
+  ],
+  "raw_qa_cases": []
+}
