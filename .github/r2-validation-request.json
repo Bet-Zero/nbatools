@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "db75d9a880d80511b5384387375bff728aa9f361",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k06_comparison_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k06_a1",
+    "k06_a1_heldout",
+    "k06_a2",
+    "k06_a2_heldout",
+    "k06_b1",
+    "k06_b1_heldout",
+    "k06_b2",
+    "k06_b2_heldout",
+    "k06_c1",
+    "k06_c1_heldout",
+    "k06_c2",
+    "k06_c2_heldout"
+  ]
+}
