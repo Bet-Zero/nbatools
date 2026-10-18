@@ -136,3 +136,74 @@ def test_core_cloud_routes(tmp_path, capfd):
     output.write_text(json.dumps(report, indent=2) + "\n")
     with capfd.disabled():
         print("CLOUD_ROUTES_JSON " + json.dumps(report, sort_keys=True), flush=True)
+
+
+def test_alternative_cloud_details(tmp_path, capfd):
+    """One follow-up to distinguish access restrictions from adapter defects."""
+    import zipfile
+
+    import requests
+
+    from nbatools.commands.pipeline.player_game_availability_espn import (
+        _get_json,
+        _scoreboard,
+        espn_boxscore_as_v3,
+    )
+
+    report = {}
+    response = requests.get(
+        "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022500003.json", timeout=20
+    )
+    report["official_cdn"] = {
+        "http_status": response.status_code,
+        "bytes": len(response.content),
+        "body_sha256": hashlib.sha256(response.content).hexdigest(),
+    }
+    events = _scoreboard("2025-10-22")["events"]
+    matching = [
+        event
+        for event in events
+        if {c["team"]["abbreviation"] for c in event["competitions"][0]["competitors"]}
+        == {"CLE", "NY"}
+    ]
+    assert len(matching) == 1
+    summary = _get_json("summary?event=" + matching[0]["id"])
+    report["espn_event_id"] = matching[0]["id"]
+    report["espn_columns"] = [
+        {"names": table.get("names"), "labels": table.get("labels")}
+        for team in summary["boxscore"]["players"]
+        for table in team["statistics"]
+    ]
+    response = requests.get(
+        "https://raw.githubusercontent.com/Bet-Zero/nbatools/e4900f515bc2536859293599efdd7ba7889a7969/working/nba-tools-completion-program/cloud-staged/recovery-bundle.zip",
+        timeout=30,
+    )
+    response.raise_for_status()
+    assert (
+        hashlib.sha256(response.content).hexdigest()
+        == "1a482b76f7455dc6cefef89620e9e2d935f144b2c2765ce624080bf6e33ac9ea"
+    )
+    bundle = tmp_path / "identity.zip"
+    bundle.write_bytes(response.content)
+    with zipfile.ZipFile(bundle) as archive:
+        archive.extractall(tmp_path / "identity")  # exact reviewed fixed hash above
+    try:
+        rows, event = espn_boxscore_as_v3(
+            game_id=22500003,
+            game_date="2025-10-22",
+            season="2025-26",
+            season_type="Regular Season",
+            home_team_id=1610612752,
+            away_team_id=1610612739,
+            data_root=tmp_path / "identity/data",
+        )
+        report["espn_adapter"] = {"status": "qualified", "rows": len(rows), "event_id": event}
+    except ValueError as exc:
+        # Fixed public source, no credentials; adapter errors contain validation
+        # reasons and NBA identities, not request headers or secret values.
+        report["espn_adapter"] = {"status": "rejected", "reason": str(exc)[:500]}
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "alternative-details.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2) + "\n")
+    with capfd.disabled():
+        print("CLOUD_ALTERNATIVES_JSON " + json.dumps(report, sort_keys=True), flush=True)
