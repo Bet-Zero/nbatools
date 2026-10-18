@@ -18,3 +18,24 @@ Remaining genuine gaps:
 - Historicalc10936b/old unpublished ports remain unavailable without their original stopped volume. No repeated unbounded search or cleanup. Current recoverable work/data/checkpoints are remote; no reset/force-push/prune.
 
 Cloud development/recovery and qualified missing-data routes work without a laptop. The complete requirement covering every required source and successful automatic freshness is NOT met. No new owner sign-in, credential or spending action is needed for completed work. Existing production approval remains required for a future legitimate publication; no test publication is requested. The sole completion checkpoint and PR504 contain exact final integration/next-action status. See remaining-readiness.json for the source-by-source scope.
+
+PR505 focused source follow-up (owner accepted previous setup, not repeated):
+- Cloud run39149759138: 2actual collection/recovery tests passed, plus1bounded
+  website diagnostic passed as a diagnostic; all3selected/executed,0skip/fail.
+- Existing normalizers produced582player advanced,30team advanced,30standings
+  rows for2025-26; all30W/Lrecords reconciled against accepted originalgames.
+  OriginalJSON/license/outputs persist in season-inputs-staging.zip and were
+  recovered independently from Git. Snapshot capture time remainsunknown.
+- Roster source ispartial29teams/512rows, NYK1610612752missing404. No incomplete
+  canonical roster is emitted. Current roster coverage remains unqualified.
+-2026-27officialschedule is planning1206regularIDs/6TBD/0final; advanced empty.
+  The2027Finder hasSeason=null/30000oldmulti-seasonrows and is rejected.
+- New ordinaryNBAwebsite route:3URLs allHTTP403. Existing Stats/CDN failures
+  reused; no endless retries. Exactperiod/onoff remain unavailable; lossy
+  Detailsdashboard exports do not satisfy Summarycontract.
+- Manual qualification and season-boundary guards are prepared/verified; full
+  fresh refresh/seasonrollover is NOT accepted or scheduled. Last-good and
+  protectedproductionpublication/backup remain intact. Features remainpaused.
+- Best next step: request exactmissing captures/fixes from existing upstream
+  before considering any paidfeed. Unsent issue draft is reviewable; only
+  outside-contact permission is pending. No credential/spending request.

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "run_id": 39149759138,
+  "job_id": 117740963560,
+  "reviewed_sha": "a227e9a7923472cf4dcfbbf1fab1769b63014186",
+  "request_sha": "44ece0a7a084796b0445adb704a7daca8f6337e2",
+  "selected": 3,
+  "executed": 3,
+  "passed": 3,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "classification": "two actual collection/recovery acceptances plus one diagnostic; diagnostic HTTP403 is not data acceptance",
+  "collection": {
+    "canonical_rows": {
+      "player_season_advanced": 582,
+      "team_season_advanced": 30,
+      "standings_snapshots": 30
+    },
+    "roster_snapshot": {
+      "state": "partial; not canonical whole-league output",
+      "teams": 29,
+      "rows": 512,
+      "missing_team_ids": [
+        1610612752
+      ]
+    },
+    "rollover": {
+      "season": "2026-27",
+      "regular_games": 1206,
+      "unresolved_matchups": 6,
+      "final_regular_games": 0,
+      "first_regular_date": "2026-10-20",
+      "scope": "planning only; not the canonical completed-game schedule",
+      "advanced_player_rows": 0,
+      "standings_rows": 30,
+      "promotion": "blocked: new season inputs/period/on-off not qualified",
+      "previous_season_preserved": true
+    },
+    "retrieved_at": "2026-10-18T17:30:01.665746+00:00",
+    "original_capture_time": "unknown"
+  },
+  "recovery": {
+    "state": "verified",
+    "player_rows": 582,
+    "team_rows": 30,
+    "standings_rows": 30,
+    "production_writes": 0
+  },
+  "public_web": {
+    "classification": "diagnostic only, not source acceptance",
+    "results": [
+      {
+        "url": "https://www.nba.com/game/cle-vs-nyk-0022500003/box-score",
+        "attempts": 1,
+        "timeout_seconds": 12,
+        "http_status": 403,
+        "bytes": 425,
+        "sha256": "d46d50b3f1946c878bac60c0b46c821ecd3867651d249e4b88ec09136905ac98",
+        "embedded_next_data": false,
+        "classification": "unavailable"
+      },
+      {
+        "url": "https://www.nba.com/stats/players/traditional",
+        "attempts": 1,
+        "timeout_seconds": 12,
+        "http_status": 403,
+        "bytes": 398,
+        "sha256": "b62de93b851d68dd3181282efb4b1956353d4f09e5807f8e5c3643b1c631ba27",
+        "embedded_next_data": false,
+        "classification": "unavailable"
+      },
+      {
+        "url": "https://www.nba.com/stats/teams/traditional",
+        "attempts": 1,
+        "timeout_seconds": 12,
+        "http_status": 403,
+        "bytes": 396,
+        "sha256": "3acf22a7dae5b19883b603fa95225105966275c52bdafe198b6b5c6cd4f0337b",
+        "embedded_next_data": false,
+        "classification": "unavailable"
+      }
+    ]
+  },
+  "production_writes": 0
+}

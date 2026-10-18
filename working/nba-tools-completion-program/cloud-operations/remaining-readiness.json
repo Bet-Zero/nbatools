@@ -79,15 +79,25 @@
     ]
   },
   "other_required_season_inputs": {
-    "state": "existing cloud snapshot usable; new collection not individually qualified",
-    "datasets": [
-      "rosters",
-      "schedule",
-      "standings",
-      "player_season_advanced",
-      "team_season_advanced"
-    ],
-    "not_claimed": "all direct Stats datasets accessible because core archive succeeded"
+    "state": "PR505 adds qualified2025-26advanced/standings and current2026-27schedule planning; fullfresh collection remains unqualified",
+    "player_season_advanced": {
+      "rows": 582,
+      "season": "2025-26",
+      "state": "canonical normalization and independent cloud recovery verified"
+    },
+    "team_season_advanced": {
+      "rows": 30,
+      "season": "2025-26",
+      "state": "canonical normalization; allW/L independentlyreconciled"
+    },
+    "standings": {
+      "rows": 30,
+      "season": "2025-26",
+      "state": "canonical normalization; allW/L independentlyreconciled"
+    },
+    "schedule": "2026-27officialplanning1206regularIDs/6TBD/0final,notcompletedcanonicaloutput",
+    "rosters": "29teams/512rows2025-26partial;NYK404;nocanonicalwholeleagueoutput",
+    "run_id": 39149759138
   },
   "narrow_alternatives": {
     "official_pdf": "accepted report-backed participation only",
@@ -106,7 +116,7 @@
     "automatic_refresh": false,
     "full_season_acquisition_verified": false,
     "production_publication_unattended": false,
-    "blocker": "missing qualified period/on-off/live source routes; archived slices are not current freshness"
+    "blocker": "Noqualifiedfreshcore/period/onoff/completecurrentroster;2027FinderSeason=null30000oldrowsrejected;publicNBAwebsite403. Archived/currentplanninginputsarenotfreshstats."
   },
   "vercel": {
     "project_preserved": "prj_luTVKSLCFRQP3BYwk93XETz9WwCy",
@@ -121,5 +131,5 @@
     "current_recoverable_work": "pushed to GitHub; no cleanup/reset/force-push"
   },
   "acceptance": "Cloud development/recovery and bounded missing-data acquisition work. Full laptop independence for every required data lifecycle is NOT accepted.",
-  "owner_action_now": "none; do not request or perform a production publication merely to test backup automation"
+  "owner_action_now": "Only permission tosendprepared upstreamsourceissue pending;nonewcredentials/spending/productionapproval."
 }

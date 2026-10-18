@@ -2,6 +2,35 @@
 
 This document explains how the NBA Tools pipeline is operated.
 
+## Additional season inputs and rollover qualification
+
+`python -m tools.cloud_season_sources --output <new-directory>` manually retrieves
+bounded immutable official NBA captures through the accepted SportsDataverse
+mirror. It uses the existing advanced, standings and roster normalizers, preserves
+original JSON/license/hash receipts, and reconciles all30team W/L records against
+the previously accepted season game capture. Ordinary CI never fetches sources.
+The fixed2025-26 qualification covers582player advanced,30team advanced and
+30standings rows. The team source MIN column is not used as per-game minutes.
+The available29roster snapshots remain in `partial/rosters.csv`; missing NYK is
+recorded, and no incomplete canonical whole-league roster file is emitted.
+
+The original2026-27 schedule and empty pre-opening advanced table are retained
+separately for planning. Its1206regular game identities include6unresolved
+matchups, not an82-game-per-team completeness claim. These future rows never
+enter the existing completed-game schedule or become `Final`. An archive's
+filename, commit date or retrieval time cannot establish endpoint freshness:
+the mirror's2027Finder response actually has Season=null and30000older-season
+rows and must be rejected for the new season.
+
+Use explicit reviewed selectors in `tests/cloud_season_inputs_real_data.py` for
+new collection and durable Git recovery. `season-inputs-staging.zip` permanently
+retains canonical/raw outputs, partial roster evidence, source JSON and license.
+The manual command refuses an existing output directory, so it cannot overwrite
+a last-good season. This prepares additional inputs and rollover checks, not a
+whole-season refresh, successful live season rollover or unattended update.
+The full pipeline remains gated by qualified current core, exact period/on-off,
+and complete required inputs. Protected R2 publication and backup stay unchanged.
+
 ## Cloud archival collection during the setup pause
 
 `python -m tools.cloud_nba_archive --output <new-staging-directory>` retrieves
