@@ -2,6 +2,41 @@
 
 This document explains how the NBA Tools pipeline is operated.
 
+## Cloud archival collection during the setup pause
+
+`python -m tools.cloud_nba_archive --output <new-staging-directory>` retrieves
+fixed-revision public NBA Stats captures from SportsDataverse and runs the existing
+games, team-game and player-game producers plus their three processed builders in
+an isolated cloud working directory. It does not need a laptop, source API key or
+R2 write credential. Default scope is deliberately one accepted CLE–NYK game
+(`0022500003`, 2025-10-22), not a completed season refresh. `--mirror-revision`
+requires an immutable full SHA; wider/new captures need independent qualification.
+
+The source NBA endpoint payload, mirror revision, CC BY 4.0 attribution, download
+time and every file hash are retained. Archive download time is **not** the NBA
+capture time. Canonical producer defaults still fetch the original source;
+explicit `raw_frame` inputs use their unchanged conversion paths. Legacy
+`player_game_stats.starter_flag` remains the old missing-position fallback and
+is not trusted starter evidence. Separate starter-role rows use actual full-game
+V3 positions, exact played identities and five-starter validation.
+
+Durable development staging and receipts are `core-archive-staging.zip` and
+`core-archive-receipt.json` in [PR502](https://github.com/Bet-Zero/nbatools/pull/502).
+This is permanent Git storage, not an expiring
+Actions artifact or a registered production publication package. It retains
+the original season payloads as well as the qualified one-game slice. PBP raw
+retrieval is recorded separately from canonical acceptance: sparse scores and
+duplicate action numbers currently fail the existing contract; no events are
+dropped or renumbered. Examined period archives contain zero totals and are
+unqualified. No exact on/off archive route has been identified.
+
+The existing read-only R2 runner can explicitly select
+`tests/cloud_source_routes_real_data.py::test_archived_core_collection` and
+`::test_durable_archive_recovery`, after review of the exact candidate. Neither
+test authorizes R2 uploads, pointer changes or unattended publication. The stock
+whole-season refresh still needs its remaining qualified sources; partial core
+archive success must not enable or be labeled successful unattended freshness.
+
 It covers:
 - core commands
 - workflow order

@@ -1,3 +1,15 @@
+Additional qualified archive route: existing LeagueLineupViz normalizer/validator accepted2594five-player lineups across30teams with source MinutesMin=10. Independent checker matched every ID/numeric field and source/CSV hashes; held-outBOS199.6MIN,122.6OFF,104.7DEF,17.9NET. Permanent lineup-archive-staging.zip SHA9d37915e5f58cc600a02a84f8d5a2f5c9a2bd8582764adef0cc076afaf52d16f. Shape-trusted membership is not independent roster-completeness proof; no sub10minute or fresh/live coverage claim.
+
+Separate cloud runner acceptance:39122547977 reviewed56241f6/request555127b,2selected/executed/passed,zero skips/failures/errors. Actual core collection and permanent Git ZIP recovery succeeded;21NBAplayers/230PTS, all15file inventories/hashes verified. Final normal CI and integration are recorded inPR502.
+
+PR502 follow-up: Vercel existing-project/deployment reads work when teamId and slug are omitted. Explicit scope still404; no new owner sign-in/token is needed. Production dpl_4EScByrmkkY1Fw6fFaVzvhNG9n1J is READY; rollback candidates are readable but no live rollback was executed. This supersedes the historical connector/access diagnosis below.
+
+Core archival collection now works in a managed cloud environment through existing canonical games/team/player producers and three processed builders. Permanent core-archive-staging.zip (SHA76aad9d054c5edc6d699e26a72f89073b55908a247ee9c72dee414e2f70c99f1) retains original NBA Stats captures, attribution, receipt and qualified1game/2team/21player/21trusted-role outputs. Full-season archive inventory is not full-season acceptance or direct freshness. PBP raw521actions is retained but rejected by existing sparse-score/duplicate-key rules. Examined period captures are zero; no exact on/off archive route found. Direct sibling/CDN diagnostic39121953133:3Stats timeouts and5CDN403, not source acceptance. No source bypass or protected production writes.
+
+Full backup/restore accepted by owner: reused without repeating export. Existing manual backup/recovery and fail-closed refresh tools remain usable. Recurring backup, successful unattended full refresh and live rollback remain unverified; no schedule enabled while required acquisition remains incomplete. No owner decision is needed for the completed technical work. Full laptop-independent acquisition/freshness is still incomplete; do not resume features from this evidence.
+
+Historical accepted setup evidence follows (Vercel diagnosis is superseded above):
+
 NBA Tools setup follow-up — 2026-10-18
 
 Cloud-only development and testing on the accepted NBA snapshot work. Full cloud independence remains incomplete: the core NBA Stats acquisition route does not respond from the current cloud runner, and Vercel administration remains unverified after connection changes: the correct team became visible, initial project reads returned404, and the latest retry fails at connector routing before an API permission result. No laptop was used.
