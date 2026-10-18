@@ -928,6 +928,12 @@ function seasonRangeLabel(
   metadata: QueryResponse["result"]["metadata"],
 ): string | null {
   if (metadata.season) return null;
+  const seasons = metadata.season_list;
+  if (
+    Array.isArray(seasons) &&
+    seasons.length > 0 &&
+    seasons.every(value => typeof value === "string" && /^\d{4}-\d{2}$/.test(value))
+  ) return null;
   const start = metadataText(metadata, "start_season");
   const end = metadataText(metadata, "end_season");
   if (!start && !end) return null;

@@ -12,7 +12,8 @@ const cases = JSON.parse(await readFile(input, "utf8"));
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
-if (!core && !summaryRanking && !ownershipComparison) throw new Error("Expected complete identity/find-count or summary/ranking bundle");
+const splits = cases.length === 12 && cases.every(item => /^k07[_-]/.test(item.id));
+if (!core && !summaryRanking && !ownershipComparison && !splits) throw new Error("Expected complete identity/find-count or summary/ranking bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {

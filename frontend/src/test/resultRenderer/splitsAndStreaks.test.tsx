@@ -674,3 +674,27 @@ describe("ResultRenderer split and streak patterns", () => {
     expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
   });
 });
+
+it("keeps explicitly named split seasons distinct and empty buckets nonnumeric", () => {
+  const data = makeResponse({
+    route: "player_split_summary",
+    result: {
+      query_class: "split_summary", result_status: "ok", notes: [], caveats: [],
+      metadata: { player: "Stephen Curry", start_season: "2023-24", end_season: "2025-26", season_list: ["2023-24", "2025-26"], split_type: "season", season_type: "Regular Season" },
+      sections: {
+        summary: [{player_name: "Stephen Curry", split: "season", games_total: 2}],
+        split_comparison: [
+          {bucket: "2023-24", games: 2, wins: 2, losses: 0, pts_avg: 29, reb_avg: 4, ast_avg: 1.5},
+          {bucket: "2025-26", games: 0, wins: 0, losses: 0, pts_avg: null, reb_avg: null, ast_avg: null},
+        ],
+      },
+    },
+  });
+  render(<ResultRenderer data={data} />);
+  expect(screen.getByText("Stephen Curry's season split for 2023-24, 2025-26 Regular Season.")).toBeInTheDocument();
+  expect(screen.queryByText(/2023-24 to 2025-26/)).not.toBeInTheDocument();
+  const rows = within(screen.getByRole("table", {name: "Split buckets"})).getAllByRole("row");
+  const cells = within(rows[2]).getAllByRole("cell").map(cell => cell.textContent);
+  expect(cells).toEqual(["2025-26", "0", "0-0", "—", "—", "—"]);
+  expect(screen.queryByLabelText("Split edges")).not.toBeInTheDocument();
+});
