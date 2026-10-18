@@ -13184,3 +13184,768 @@ cases:
     review_notes: 'Frozen K05 raw oracle: own/opponent scoring and venue must all retain ownership. Complete
       keys, source hashes and predicate discrimination required by test_k05_subject_ownership_real_data.py.
       Original primary/held-out baselines preserved; no human or deployment acceptance implied.'
+  - id: k06_a1
+    query: Compare Stephen Curry and Jalen Brunson averages in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.player_name
+      equals: Stephen Curry
+    - path: result.sections.summary.0.games
+      equals: 74
+    - path: result.sections.summary.0.wins
+      equals: 43
+    - path: result.sections.summary.0.losses
+      equals: 31
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.432
+    - path: result.sections.summary.0.reb_avg
+      equals: 4.459
+    - path: result.sections.summary.0.ast_avg
+      equals: 5.122
+    - path: result.sections.summary.0.pts_sum
+      equals: 1956
+    - path: result.sections.summary.0.reb_sum
+      equals: 330
+    - path: result.sections.summary.0.ast_sum
+      equals: 379
+    - path: result.sections.summary.1.player_name
+      equals: Jalen Brunson
+    - path: result.sections.summary.1.games
+      equals: 77
+    - path: result.sections.summary.1.wins
+      equals: 49
+    - path: result.sections.summary.1.losses
+      equals: 28
+    - path: result.sections.summary.1.pts_avg
+      equals: 28.727
+    - path: result.sections.summary.1.reb_avg
+      equals: 3.61
+    - path: result.sections.summary.1.ast_avg
+      equals: 6.74
+    - path: result.sections.summary.1.pts_sum
+      equals: 2212
+    - path: result.sections.summary.1.reb_sum
+      equals: 278
+    - path: result.sections.summary.1.ast_sum
+      equals: 519
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_a1_heldout
+    query: Put Stephen Curry's and Jalen Brunson's 2023-24 averages side by side.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.player_name
+      equals: Stephen Curry
+    - path: result.sections.summary.0.games
+      equals: 74
+    - path: result.sections.summary.0.wins
+      equals: 43
+    - path: result.sections.summary.0.losses
+      equals: 31
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.432
+    - path: result.sections.summary.0.reb_avg
+      equals: 4.459
+    - path: result.sections.summary.0.ast_avg
+      equals: 5.122
+    - path: result.sections.summary.0.pts_sum
+      equals: 1956
+    - path: result.sections.summary.0.reb_sum
+      equals: 330
+    - path: result.sections.summary.0.ast_sum
+      equals: 379
+    - path: result.sections.summary.1.player_name
+      equals: Jalen Brunson
+    - path: result.sections.summary.1.games
+      equals: 77
+    - path: result.sections.summary.1.wins
+      equals: 49
+    - path: result.sections.summary.1.losses
+      equals: 28
+    - path: result.sections.summary.1.pts_avg
+      equals: 28.727
+    - path: result.sections.summary.1.reb_avg
+      equals: 3.61
+    - path: result.sections.summary.1.ast_avg
+      equals: 6.74
+    - path: result.sections.summary.1.pts_sum
+      equals: 2212
+    - path: result.sections.summary.1.reb_sum
+      equals: 278
+    - path: result.sections.summary.1.ast_sum
+      equals: 519
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_a2
+    query: Compare Stephen Curry and Jalen Brunson averages against the Lakers in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.sections.summary.0.player_name
+      equals: Stephen Curry
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.wins
+      equals: 3
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 33.0
+    - path: result.sections.summary.0.reb_avg
+      equals: 4.25
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    - path: result.sections.summary.0.pts_sum
+      equals: 132
+    - path: result.sections.summary.0.reb_sum
+      equals: 17
+    - path: result.sections.summary.0.ast_sum
+      equals: 28
+    - path: result.sections.summary.1.player_name
+      equals: Jalen Brunson
+    - path: result.sections.summary.1.games
+      equals: 2
+    - path: result.sections.summary.1.wins
+      equals: 1
+    - path: result.sections.summary.1.losses
+      equals: 1
+    - path: result.sections.summary.1.pts_avg
+      equals: 32.5
+    - path: result.sections.summary.1.reb_avg
+      equals: 5.0
+    - path: result.sections.summary.1.ast_avg
+      equals: 6.5
+    - path: result.sections.summary.1.pts_sum
+      equals: 65
+    - path: result.sections.summary.1.reb_sum
+      equals: 10
+    - path: result.sections.summary.1.ast_sum
+      equals: 13
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_a2_heldout
+    query: Against Los Angeles Lakers in 2023-24, compare the averages of Jalen Brunson and Stephen Curry.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.sections.summary.0.player_name
+      equals: Jalen Brunson
+    - path: result.sections.summary.0.games
+      equals: 2
+    - path: result.sections.summary.0.wins
+      equals: 1
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 32.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 5.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 6.5
+    - path: result.sections.summary.0.pts_sum
+      equals: 65
+    - path: result.sections.summary.0.reb_sum
+      equals: 10
+    - path: result.sections.summary.0.ast_sum
+      equals: 13
+    - path: result.sections.summary.1.player_name
+      equals: Stephen Curry
+    - path: result.sections.summary.1.games
+      equals: 4
+    - path: result.sections.summary.1.wins
+      equals: 3
+    - path: result.sections.summary.1.losses
+      equals: 1
+    - path: result.sections.summary.1.pts_avg
+      equals: 33.0
+    - path: result.sections.summary.1.reb_avg
+      equals: 4.25
+    - path: result.sections.summary.1.ast_avg
+      equals: 7.0
+    - path: result.sections.summary.1.pts_sum
+      equals: 132
+    - path: result.sections.summary.1.reb_sum
+      equals: 17
+    - path: result.sections.summary.1.ast_sum
+      equals: 28
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_b1
+    query: Compare Celtics and Bucks in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: BOS
+    - path: result.sections.summary.0.games
+      equals: 82
+    - path: result.sections.summary.0.wins
+      equals: 64
+    - path: result.sections.summary.0.losses
+      equals: 18
+    - path: result.sections.summary.0.pts_avg
+      equals: 120.573
+    - path: result.sections.summary.0.reb_avg
+      equals: 46.329
+    - path: result.sections.summary.0.ast_avg
+      equals: 26.915
+    - path: result.sections.summary.0.pts_sum
+      equals: 9887
+    - path: result.sections.summary.0.reb_sum
+      equals: 3799
+    - path: result.sections.summary.0.ast_sum
+      equals: 2207
+    - path: result.sections.summary.1.team_name
+      equals: MIL
+    - path: result.sections.summary.1.games
+      equals: 82
+    - path: result.sections.summary.1.wins
+      equals: 49
+    - path: result.sections.summary.1.losses
+      equals: 33
+    - path: result.sections.summary.1.pts_avg
+      equals: 118.976
+    - path: result.sections.summary.1.reb_avg
+      equals: 44.171
+    - path: result.sections.summary.1.ast_avg
+      equals: 26.537
+    - path: result.sections.summary.1.pts_sum
+      equals: 9756
+    - path: result.sections.summary.1.reb_sum
+      equals: 3622
+    - path: result.sections.summary.1.ast_sum
+      equals: 2176
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_b1_heldout
+    query: How do Milwaukee and Boston compare over the 2023-24 regular season?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: MIL
+    - path: result.sections.summary.0.games
+      equals: 82
+    - path: result.sections.summary.0.wins
+      equals: 49
+    - path: result.sections.summary.0.losses
+      equals: 33
+    - path: result.sections.summary.0.pts_avg
+      equals: 118.976
+    - path: result.sections.summary.0.reb_avg
+      equals: 44.171
+    - path: result.sections.summary.0.ast_avg
+      equals: 26.537
+    - path: result.sections.summary.0.pts_sum
+      equals: 9756
+    - path: result.sections.summary.0.reb_sum
+      equals: 3622
+    - path: result.sections.summary.0.ast_sum
+      equals: 2176
+    - path: result.sections.summary.1.team_name
+      equals: BOS
+    - path: result.sections.summary.1.games
+      equals: 82
+    - path: result.sections.summary.1.wins
+      equals: 64
+    - path: result.sections.summary.1.losses
+      equals: 18
+    - path: result.sections.summary.1.pts_avg
+      equals: 120.573
+    - path: result.sections.summary.1.reb_avg
+      equals: 46.329
+    - path: result.sections.summary.1.ast_avg
+      equals: 26.915
+    - path: result.sections.summary.1.pts_sum
+      equals: 9887
+    - path: result.sections.summary.1.reb_sum
+      equals: 3799
+    - path: result.sections.summary.1.ast_sum
+      equals: 2207
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_b2
+    query: Compare Celtics and Bucks head to head in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: true
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: BOS
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 2
+    - path: result.sections.summary.0.pts_avg
+      equals: 108.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 37.25
+    - path: result.sections.summary.0.ast_avg
+      equals: 25.25
+    - path: result.sections.summary.0.pts_sum
+      equals: 434
+    - path: result.sections.summary.0.reb_sum
+      equals: 149
+    - path: result.sections.summary.0.ast_sum
+      equals: 101
+    - path: result.sections.summary.1.team_name
+      equals: MIL
+    - path: result.sections.summary.1.games
+      equals: 4
+    - path: result.sections.summary.1.wins
+      equals: 2
+    - path: result.sections.summary.1.losses
+      equals: 2
+    - path: result.sections.summary.1.pts_avg
+      equals: 118.5
+    - path: result.sections.summary.1.reb_avg
+      equals: 47.75
+    - path: result.sections.summary.1.ast_avg
+      equals: 26.5
+    - path: result.sections.summary.1.pts_sum
+      equals: 474
+    - path: result.sections.summary.1.reb_sum
+      equals: 191
+    - path: result.sections.summary.1.ast_sum
+      equals: 106
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_b2_heldout
+    query: Compare Boston and Milwaukee only in their games against each other during 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: true
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: BOS
+    - path: result.sections.summary.0.games
+      equals: 4
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 2
+    - path: result.sections.summary.0.pts_avg
+      equals: 108.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 37.25
+    - path: result.sections.summary.0.ast_avg
+      equals: 25.25
+    - path: result.sections.summary.0.pts_sum
+      equals: 434
+    - path: result.sections.summary.0.reb_sum
+      equals: 149
+    - path: result.sections.summary.0.ast_sum
+      equals: 101
+    - path: result.sections.summary.1.team_name
+      equals: MIL
+    - path: result.sections.summary.1.games
+      equals: 4
+    - path: result.sections.summary.1.wins
+      equals: 2
+    - path: result.sections.summary.1.losses
+      equals: 2
+    - path: result.sections.summary.1.pts_avg
+      equals: 118.5
+    - path: result.sections.summary.1.reb_avg
+      equals: 47.75
+    - path: result.sections.summary.1.ast_avg
+      equals: 26.5
+    - path: result.sections.summary.1.pts_sum
+      equals: 474
+    - path: result.sections.summary.1.reb_sum
+      equals: 191
+    - path: result.sections.summary.1.ast_sum
+      equals: 106
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_c1
+    query: Compare Nikola Jokic and Joel Embiid averages from 2024-01-01 to 2024-01-31.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.start_date
+      equals: '2024-01-01'
+    - path: result.metadata.end_date
+      equals: '2024-01-31'
+    - path: result.sections.summary.0.player_name
+      equals: "Nikola Joki\u0107"
+    - path: result.sections.summary.0.games
+      equals: 14
+    - path: result.sections.summary.0.wins
+      equals: 10
+    - path: result.sections.summary.0.losses
+      equals: 4
+    - path: result.sections.summary.0.pts_avg
+      equals: 26.643
+    - path: result.sections.summary.0.reb_avg
+      equals: 11.643
+    - path: result.sections.summary.0.ast_avg
+      equals: 8.643
+    - path: result.sections.summary.0.pts_sum
+      equals: 373
+    - path: result.sections.summary.0.reb_sum
+      equals: 163
+    - path: result.sections.summary.0.ast_sum
+      equals: 121
+    - path: result.sections.summary.1.player_name
+      equals: Joel Embiid
+    - path: result.sections.summary.1.games
+      equals: 9
+    - path: result.sections.summary.1.wins
+      equals: 6
+    - path: result.sections.summary.1.losses
+      equals: 3
+    - path: result.sections.summary.1.pts_avg
+      equals: 36.333
+    - path: result.sections.summary.1.reb_avg
+      equals: 10.111
+    - path: result.sections.summary.1.ast_avg
+      equals: 4.778
+    - path: result.sections.summary.1.pts_sum
+      equals: 327
+    - path: result.sections.summary.1.reb_sum
+      equals: 91
+    - path: result.sections.summary.1.ast_sum
+      equals: 43
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_c1_heldout
+    query: For January 1 through January 31, 2024, show Joel Embiid versus Nikola Jokic in average points,
+      rebounds and assists.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.metadata.start_date
+      equals: '2024-01-01'
+    - path: result.metadata.end_date
+      equals: '2024-01-31'
+    - path: result.sections.summary.0.player_name
+      equals: Joel Embiid
+    - path: result.sections.summary.0.games
+      equals: 9
+    - path: result.sections.summary.0.wins
+      equals: 6
+    - path: result.sections.summary.0.losses
+      equals: 3
+    - path: result.sections.summary.0.pts_avg
+      equals: 36.333
+    - path: result.sections.summary.0.reb_avg
+      equals: 10.111
+    - path: result.sections.summary.0.ast_avg
+      equals: 4.778
+    - path: result.sections.summary.0.pts_sum
+      equals: 327
+    - path: result.sections.summary.0.reb_sum
+      equals: 91
+    - path: result.sections.summary.0.ast_sum
+      equals: 43
+    - path: result.sections.summary.1.player_name
+      equals: "Nikola Joki\u0107"
+    - path: result.sections.summary.1.games
+      equals: 14
+    - path: result.sections.summary.1.wins
+      equals: 10
+    - path: result.sections.summary.1.losses
+      equals: 4
+    - path: result.sections.summary.1.pts_avg
+      equals: 26.643
+    - path: result.sections.summary.1.reb_avg
+      equals: 11.643
+    - path: result.sections.summary.1.ast_avg
+      equals: 8.643
+    - path: result.sections.summary.1.pts_sum
+      equals: 373
+    - path: result.sections.summary.1.reb_sum
+      equals: 163
+    - path: result.sections.summary.1.ast_sum
+      equals: 121
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_c2
+    query: Compare Nuggets and Suns head to head in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: true
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: DEN
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.wins
+      equals: 1
+    - path: result.sections.summary.0.losses
+      equals: 2
+    - path: result.sections.summary.0.pts_avg
+      equals: 107.667
+    - path: result.sections.summary.0.reb_avg
+      equals: 40.333
+    - path: result.sections.summary.0.ast_avg
+      equals: 29.0
+    - path: result.sections.summary.0.pts_sum
+      equals: 323
+    - path: result.sections.summary.0.reb_sum
+      equals: 121
+    - path: result.sections.summary.0.ast_sum
+      equals: 87
+    - path: result.sections.summary.1.team_name
+      equals: PHX
+    - path: result.sections.summary.1.games
+      equals: 3
+    - path: result.sections.summary.1.wins
+      equals: 2
+    - path: result.sections.summary.1.losses
+      equals: 1
+    - path: result.sections.summary.1.pts_avg
+      equals: 110.667
+    - path: result.sections.summary.1.reb_avg
+      equals: 48.667
+    - path: result.sections.summary.1.ast_avg
+      equals: 27.667
+    - path: result.sections.summary.1.pts_sum
+      equals: 332
+    - path: result.sections.summary.1.reb_sum
+      equals: 146
+    - path: result.sections.summary.1.ast_sum
+      equals: 83
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.
+  - id: k06_c2_heldout
+    query: In their 2023-24 head-to-head meetings, compare Phoenix with Denver.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.head_to_head_used
+      equals: true
+    - path: result.metadata.opponent
+      equals: null
+    - path: result.sections.summary.0.team_name
+      equals: PHX
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 110.667
+    - path: result.sections.summary.0.reb_avg
+      equals: 48.667
+    - path: result.sections.summary.0.ast_avg
+      equals: 27.667
+    - path: result.sections.summary.0.pts_sum
+      equals: 332
+    - path: result.sections.summary.0.reb_sum
+      equals: 146
+    - path: result.sections.summary.0.ast_sum
+      equals: 83
+    - path: result.sections.summary.1.team_name
+      equals: DEN
+    - path: result.sections.summary.1.games
+      equals: 3
+    - path: result.sections.summary.1.wins
+      equals: 1
+    - path: result.sections.summary.1.losses
+      equals: 2
+    - path: result.sections.summary.1.pts_avg
+      equals: 107.667
+    - path: result.sections.summary.1.reb_avg
+      equals: 40.333
+    - path: result.sections.summary.1.ast_avg
+      equals: 29.0
+    - path: result.sections.summary.1.pts_sum
+      equals: 323
+    - path: result.sections.summary.1.reb_sum
+      equals: 121
+    - path: result.sections.summary.1.ast_sum
+      equals: 87
+    review_notes: Frozen K06 source oracle, exact per-entity sample keys and full comparison-table numeric
+      checks in test_k06_comparison_real_data.py. Reversed wording maps the same truth by identity. Original
+      baselines preserved; no human/deployment acceptance implied.

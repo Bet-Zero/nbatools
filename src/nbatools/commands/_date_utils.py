@@ -193,7 +193,7 @@ def _extract_explicit_date_range(
     """
     token = _date_token_pattern()
     m = re.search(
-        rf"\b(?:from\s+({token})\s+(?:to|through|thru|until|till)"
+        rf"\b(?:(?:from\s+)?({token})\s+(?:to|through|thru|until|till)"
         rf"|between\s+({token})\s+and)\s+({token})(?!\d)",
         text,
     )

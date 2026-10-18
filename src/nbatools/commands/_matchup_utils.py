@@ -82,7 +82,9 @@ def strip_matchup_noise(text: str) -> str:
 
 
 def detect_head_to_head(text: str) -> bool:
-    return bool(re.search(MATCHUP_NOISE_PATTERN, text))
+    return bool(re.search(MATCHUP_NOISE_PATTERN, text)) or bool(
+        re.search(r"\bgames?\s+against\s+(?:each\s+other|one\s+another)\b", text)
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -244,6 +246,16 @@ def detect_bare_player_vs_player_query(text: str) -> tuple[str | None, str | Non
 
 
 def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | None]:
+    side_by_side = re.search(
+        r"\b(?:put|show)\s+(.+?)\s+and\s+(.+?)\s+side[ -]by[ -]side\b",
+        cleaned_text,
+    )
+    if side_by_side:
+        player_a = _resolve_comparison_player_phrase(re.sub(r"'s$", "", side_by_side.group(1)))
+        player_b = _resolve_comparison_player_phrase(side_by_side.group(2))
+        if player_a and player_b and player_a != player_b:
+            return player_a, player_b
+
     compare_and = re.search(
         # The second phrase runs to the end and may carry filters such as
         # "with 8+ rebounds"; the player resolver reads the name off its front.
@@ -298,6 +310,15 @@ def _extract_question_form_player_comparison(
 
 def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     cleaned_text = strip_matchup_noise(text)
+    question = re.search(
+        r"\bhow\s+(?:do|did)\s+(?:the\s+)?(.+?)\s+and\s+(?:the\s+)?(.+?)\s+compare\b",
+        cleaned_text,
+    )
+    if question:
+        team_a = TEAM_ALIASES.get(question.group(1))
+        team_b = TEAM_ALIASES.get(question.group(2))
+        if team_a and team_b and team_a != team_b:
+            return team_a, team_b
     # "compare the Lakers and Warriors vs the Celtics": the joined pair is
     # the subject and the "vs" team their opponent.
     team_a, team_b = _extract_compare_and_teams(cleaned_text)

@@ -3,8 +3,7 @@
 Owner direction (October 18, 2026): the backup laptop collects NBA source data
 when needed. R2 remains central storage. Codex develops, validates, processes and
 analyzes in the cloud. Commercial provider evaluation and cloud NBA access
-investigations are stopped. No provider key is needed. Feature work remains
-paused until the owner resumes it. Missing specialized data does not prevent
+investigations are stopped. No provider key is needed. The owner resumed normal development on October 18 after accepting minimum setup. Missing specialized data does not prevent
 work on supported core datasets.
 
 ## Before implementing a data-dependent change
@@ -181,6 +180,5 @@ or result exists.
 
 This completes minimum data-availability setup for cloud development under the
 owner's acquisition-laptop architecture. No commercial key, new service, or cloud
-NBA API route is required. Development remains paused until explicit owner
-resumption. A future missing-data request still requires acquisition; its new
+NBA API route is required. Normal development was explicitly resumed by the owner on October 18. A future missing-data request still requires acquisition; its new
 production generation still requires the existing separate approval.

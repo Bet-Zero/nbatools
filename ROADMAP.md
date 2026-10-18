@@ -97,7 +97,7 @@ must inspect the generated active-generation inventory before data-dependent
 work and issue precise collection requirements for missing raw inputs. Cloud
 validation and existing separate owner-approved immutable publication transfer
 qualified collections into R2. Preserve last-good data and actual coverage dates.
-The feature pause remains until the owner explicitly resumes development.
+The owner explicitly resumed normal development on October 18 after accepting minimum cloud/data setup; continue the existing completion program.
 Automatic NBA refresh or unattended production publication is not enabled.
 
 Independently inspect existing-snapshot derivations and publication, including

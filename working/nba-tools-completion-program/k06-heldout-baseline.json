@@ -1,0 +1,3107 @@
+{
+  "runtime": "4b52a7c",
+  "oracle_sha256": "bc4738f886e8215597ac6d3f061bb264a7ed65e79952f02d1685189e60554ade",
+  "scope": "Qualified local data; first held-out results before repair; reverse wording mapped by entity identity",
+  "results": [
+    {
+      "id": "K06-A1",
+      "query": "Put Stephen Curry's and Jalen Brunson's 2023-24 averages side by side.",
+      "passed": false,
+      "actual_keys": [],
+      "payload": {
+        "query_class": "summary",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "metadata": {
+          "query_text": "Put Stephen Curry's and Jalen Brunson's 2023-24 averages side by side.",
+          "route": "player_game_summary",
+          "query_class": "summary",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Stephen Curry",
+          "team": null,
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": [
+            "two_players"
+          ],
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample",
+            "two_players filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: two_players)"
+          ],
+          "scope_kind": "single_season",
+          "confidence": 0.9,
+          "intent": "summary"
+        },
+        "notes": [
+          "two_players filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: two_players)"
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    },
+    {
+      "id": "K06-A2",
+      "query": "Against Los Angeles Lakers in 2023-24, compare the averages of Jalen Brunson and Stephen Curry.",
+      "passed": true,
+      "actual_keys": [
+        [
+          [
+            22300359,
+            1610612752,
+            1628973
+          ],
+          [
+            22300701,
+            1610612752,
+            1628973
+          ]
+        ],
+        [
+          [
+            22300650,
+            1610612744,
+            201939
+          ],
+          [
+            22300802,
+            1610612744,
+            201939
+          ],
+          [
+            22300973,
+            1610612744,
+            201939
+          ],
+          [
+            22301155,
+            1610612744,
+            201939
+          ]
+        ]
+      ],
+      "payload": {
+        "query_class": "comparison",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Against Los Angeles Lakers in 2023-24, compare the averages of Jalen Brunson and Stephen Curry.",
+          "route": "player_compare",
+          "query_class": "comparison",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Jalen Brunson, Stephen Curry",
+          "team": null,
+          "opponent": "LAL",
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+          ],
+          "scope_kind": "single_season",
+          "applied_filters": [
+            {
+              "label": "Opponent",
+              "value": "LAL",
+              "kind": "team"
+            }
+          ],
+          "opponent_context": {
+            "team_abbr": "LAL"
+          },
+          "confidence": 0.9,
+          "intent": "comparison"
+        },
+        "notes": [],
+        "caveats": [
+          "filtered to games vs LAL"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "player_name": "Jalen Brunson",
+              "games": 2,
+              "wins": 1,
+              "losses": 1,
+              "win_pct": 0.5,
+              "minutes_avg": 41.0,
+              "pts_avg": 32.5,
+              "reb_avg": 5.0,
+              "ast_avg": 6.5,
+              "stl_avg": 0.5,
+              "blk_avg": 0.5,
+              "fg3m_avg": 2.0,
+              "tov_avg": 3.5,
+              "plus_minus_avg": -2.0,
+              "pts_sum": 65,
+              "reb_sum": 10,
+              "ast_sum": 13,
+              "efg_pct_avg": 0.519,
+              "ts_pct_avg": 0.567,
+              "usg_pct_avg": 33.124,
+              "ast_pct_avg": 28.234,
+              "reb_pct_avg": 6.419,
+              "tov_pct_avg": 10.89
+            },
+            {
+              "player_name": "Stephen Curry",
+              "games": 4,
+              "wins": 3,
+              "losses": 1,
+              "win_pct": 0.75,
+              "minutes_avg": 35.25,
+              "pts_avg": 33.0,
+              "reb_avg": 4.25,
+              "ast_avg": 7.0,
+              "stl_avg": 1.75,
+              "blk_avg": 0.5,
+              "fg3m_avg": 6.0,
+              "tov_avg": 1.75,
+              "plus_minus_avg": 10.0,
+              "pts_sum": 132,
+              "reb_sum": 17,
+              "ast_sum": 28,
+              "efg_pct_avg": 0.652,
+              "ts_pct_avg": 0.672,
+              "usg_pct_avg": 31.446,
+              "ast_pct_avg": 29.973,
+              "reb_pct_avg": 6.779,
+              "tov_pct_avg": 6.657
+            }
+          ],
+          "comparison": [
+            {
+              "metric": "games",
+              "Jalen Brunson": 2.0,
+              "Stephen Curry": 4.0
+            },
+            {
+              "metric": "wins",
+              "Jalen Brunson": 1.0,
+              "Stephen Curry": 3.0
+            },
+            {
+              "metric": "losses",
+              "Jalen Brunson": 1.0,
+              "Stephen Curry": 1.0
+            },
+            {
+              "metric": "win_pct",
+              "Jalen Brunson": 0.5,
+              "Stephen Curry": 0.75
+            },
+            {
+              "metric": "minutes_avg",
+              "Jalen Brunson": 41.0,
+              "Stephen Curry": 35.25
+            },
+            {
+              "metric": "pts_avg",
+              "Jalen Brunson": 32.5,
+              "Stephen Curry": 33.0
+            },
+            {
+              "metric": "reb_avg",
+              "Jalen Brunson": 5.0,
+              "Stephen Curry": 4.25
+            },
+            {
+              "metric": "ast_avg",
+              "Jalen Brunson": 6.5,
+              "Stephen Curry": 7.0
+            },
+            {
+              "metric": "stl_avg",
+              "Jalen Brunson": 0.5,
+              "Stephen Curry": 1.75
+            },
+            {
+              "metric": "blk_avg",
+              "Jalen Brunson": 0.5,
+              "Stephen Curry": 0.5
+            },
+            {
+              "metric": "fg3m_avg",
+              "Jalen Brunson": 2.0,
+              "Stephen Curry": 6.0
+            },
+            {
+              "metric": "plus_minus_avg",
+              "Jalen Brunson": -2.0,
+              "Stephen Curry": 10.0
+            },
+            {
+              "metric": "efg_pct_avg",
+              "Jalen Brunson": 0.519,
+              "Stephen Curry": 0.652
+            },
+            {
+              "metric": "ts_pct_avg",
+              "Jalen Brunson": 0.567,
+              "Stephen Curry": 0.672
+            },
+            {
+              "metric": "usg_pct_avg",
+              "Jalen Brunson": 33.124,
+              "Stephen Curry": 31.446
+            },
+            {
+              "metric": "ast_pct_avg",
+              "Jalen Brunson": 28.234,
+              "Stephen Curry": 29.973
+            },
+            {
+              "metric": "reb_pct_avg",
+              "Jalen Brunson": 6.419,
+              "Stephen Curry": 6.779
+            },
+            {
+              "metric": "pts_sum",
+              "Jalen Brunson": 65.0,
+              "Stephen Curry": 132.0
+            },
+            {
+              "metric": "reb_sum",
+              "Jalen Brunson": 10.0,
+              "Stephen Curry": 17.0
+            },
+            {
+              "metric": "ast_sum",
+              "Jalen Brunson": 13.0,
+              "Stephen Curry": 28.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "K06-B1",
+      "query": "How do Milwaukee and Boston compare over the 2023-24 regular season?",
+      "passed": false,
+      "actual_keys": [],
+      "payload": {
+        "query_class": "finder",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "How do Milwaukee and Boston compare over the 2023-24 regular season?",
+          "route": "game_finder",
+          "query_class": "finder",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "MIL",
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": "game_date",
+          "ascending": false,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "scope_kind": "single_season",
+          "team_context": {
+            "team_abbr": "MIL"
+          },
+          "confidence": 0.8,
+          "intent": "finder"
+        },
+        "notes": [],
+        "caveats": [],
+        "sections": {
+          "finder": [
+            {
+              "rank": 1,
+              "game_date": "2024-04-14 00:00:00",
+              "game_id": 22301191,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Orlando Magic",
+              "opponent_team_abbr": "ORL",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 88,
+              "reb": 34,
+              "ast": 16,
+              "fgm": 30,
+              "fga": 75,
+              "fg3m": 7,
+              "fg3a": 27,
+              "ftm": 21,
+              "fta": 23,
+              "oreb": 7,
+              "dreb": 27,
+              "stl": 10,
+              "blk": 4,
+              "tov": 17,
+              "plus_minus": -25,
+              "fg_pct": 0.4,
+              "fg3_pct": 0.259,
+              "ft_pct": 0.913,
+              "efg_pct": 0.44666666666666666,
+              "ts_pct": 0.5169172932330827
+            },
+            {
+              "rank": 2,
+              "game_date": "2024-04-12 00:00:00",
+              "game_id": 22301179,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Oklahoma City Thunder",
+              "opponent_team_abbr": "OKC",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 107,
+              "reb": 42,
+              "ast": 27,
+              "fgm": 42,
+              "fga": 85,
+              "fg3m": 11,
+              "fg3a": 30,
+              "ftm": 12,
+              "fta": 13,
+              "oreb": 8,
+              "dreb": 34,
+              "stl": 7,
+              "blk": 3,
+              "tov": 17,
+              "plus_minus": -18,
+              "fg_pct": 0.494,
+              "fg3_pct": 0.367,
+              "ft_pct": 0.923,
+              "efg_pct": 0.5588235294117647,
+              "ts_pct": 0.5897266313932981
+            },
+            {
+              "rank": 3,
+              "game_date": "2024-04-10 00:00:00",
+              "game_id": 22301162,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Orlando Magic",
+              "opponent_team_abbr": "ORL",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 117,
+              "reb": 43,
+              "ast": 27,
+              "fgm": 43,
+              "fga": 84,
+              "fg3m": 15,
+              "fg3a": 40,
+              "ftm": 16,
+              "fta": 20,
+              "oreb": 10,
+              "dreb": 33,
+              "stl": 9,
+              "blk": 4,
+              "tov": 12,
+              "plus_minus": 18,
+              "fg_pct": 0.512,
+              "fg3_pct": 0.375,
+              "ft_pct": 0.8,
+              "efg_pct": 0.6011904761904762,
+              "ts_pct": 0.6303879310344828
+            },
+            {
+              "rank": 4,
+              "game_date": "2024-04-09 00:00:00",
+              "game_id": 22301148,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Boston Celtics",
+              "opponent_team_abbr": "BOS",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 104,
+              "reb": 49,
+              "ast": 29,
+              "fgm": 43,
+              "fga": 81,
+              "fg3m": 17,
+              "fg3a": 36,
+              "ftm": 1,
+              "fta": 2,
+              "oreb": 10,
+              "dreb": 39,
+              "stl": 6,
+              "blk": 5,
+              "tov": 16,
+              "plus_minus": 13,
+              "fg_pct": 0.531,
+              "fg3_pct": 0.472,
+              "ft_pct": 0.5,
+              "efg_pct": 0.6358024691358025,
+              "ts_pct": 0.6350757205666829
+            },
+            {
+              "rank": 5,
+              "game_date": "2024-04-07 00:00:00",
+              "game_id": 22301139,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "New York Knicks",
+              "opponent_team_abbr": "NYK",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "L",
+              "pts": 109,
+              "reb": 38,
+              "ast": 27,
+              "fgm": 35,
+              "fga": 75,
+              "fg3m": 12,
+              "fg3a": 34,
+              "ftm": 27,
+              "fta": 32,
+              "oreb": 9,
+              "dreb": 29,
+              "stl": 3,
+              "blk": 7,
+              "tov": 14,
+              "plus_minus": -13,
+              "fg_pct": 0.467,
+              "fg3_pct": 0.353,
+              "ft_pct": 0.844,
+              "efg_pct": 0.5466666666666666,
+              "ts_pct": 0.6118096093399192
+            },
+            {
+              "rank": 6,
+              "game_date": "2024-04-05 00:00:00",
+              "game_id": 22301122,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Toronto Raptors",
+              "opponent_team_abbr": "TOR",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "L",
+              "pts": 111,
+              "reb": 45,
+              "ast": 21,
+              "fgm": 41,
+              "fga": 94,
+              "fg3m": 12,
+              "fg3a": 42,
+              "ftm": 17,
+              "fta": 21,
+              "oreb": 12,
+              "dreb": 33,
+              "stl": 8,
+              "blk": 6,
+              "tov": 13,
+              "plus_minus": -6,
+              "fg_pct": 0.436,
+              "fg3_pct": 0.286,
+              "ft_pct": 0.81,
+              "efg_pct": 0.5,
+              "ts_pct": 0.537582332429291
+            },
+            {
+              "rank": 7,
+              "game_date": "2024-04-03 00:00:00",
+              "game_id": 22301107,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Memphis Grizzlies",
+              "opponent_team_abbr": "MEM",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "L",
+              "pts": 101,
+              "reb": 44,
+              "ast": 26,
+              "fgm": 38,
+              "fga": 95,
+              "fg3m": 18,
+              "fg3a": 44,
+              "ftm": 7,
+              "fta": 12,
+              "oreb": 13,
+              "dreb": 31,
+              "stl": 5,
+              "blk": 10,
+              "tov": 11,
+              "plus_minus": -10,
+              "fg_pct": 0.4,
+              "fg3_pct": 0.409,
+              "ft_pct": 0.583,
+              "efg_pct": 0.49473684210526314,
+              "ts_pct": 0.5035899481451934
+            },
+            {
+              "rank": 8,
+              "game_date": "2024-04-02 00:00:00",
+              "game_id": 22301095,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Washington Wizards",
+              "opponent_team_abbr": "WAS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 113,
+              "reb": 57,
+              "ast": 31,
+              "fgm": 45,
+              "fga": 103,
+              "fg3m": 11,
+              "fg3a": 48,
+              "ftm": 12,
+              "fta": 18,
+              "oreb": 18,
+              "dreb": 39,
+              "stl": 8,
+              "blk": 6,
+              "tov": 12,
+              "plus_minus": -4,
+              "fg_pct": 0.437,
+              "fg3_pct": 0.229,
+              "ft_pct": 0.667,
+              "efg_pct": 0.49029126213592233,
+              "ts_pct": 0.5093761269383339
+            },
+            {
+              "rank": 9,
+              "game_date": "2024-03-30 00:00:00",
+              "game_id": 22301076,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Atlanta Hawks",
+              "opponent_team_abbr": "ATL",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 122,
+              "reb": 40,
+              "ast": 27,
+              "fgm": 43,
+              "fga": 78,
+              "fg3m": 8,
+              "fg3a": 28,
+              "ftm": 28,
+              "fta": 35,
+              "oreb": 6,
+              "dreb": 34,
+              "stl": 7,
+              "blk": 5,
+              "tov": 10,
+              "plus_minus": 9,
+              "fg_pct": 0.551,
+              "fg3_pct": 0.286,
+              "ft_pct": 0.8,
+              "efg_pct": 0.6025641025641025,
+              "ts_pct": 0.6531049250535331
+            },
+            {
+              "rank": 10,
+              "game_date": "2024-03-28 00:00:00",
+              "game_id": 22301061,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "New Orleans Pelicans",
+              "opponent_team_abbr": "NOP",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 100,
+              "reb": 46,
+              "ast": 21,
+              "fgm": 38,
+              "fga": 82,
+              "fg3m": 14,
+              "fg3a": 39,
+              "ftm": 10,
+              "fta": 19,
+              "oreb": 5,
+              "dreb": 41,
+              "stl": 1,
+              "blk": 4,
+              "tov": 14,
+              "plus_minus": -7,
+              "fg_pct": 0.463,
+              "fg3_pct": 0.359,
+              "ft_pct": 0.526,
+              "efg_pct": 0.5487804878048781,
+              "ts_pct": 0.5533421868083223
+            },
+            {
+              "rank": 11,
+              "game_date": "2024-03-26 00:00:00",
+              "game_id": 22301045,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Los Angeles Lakers",
+              "opponent_team_abbr": "LAL",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "L",
+              "pts": 124,
+              "reb": 61,
+              "ast": 37,
+              "fgm": 49,
+              "fga": 119,
+              "fg3m": 15,
+              "fg3a": 51,
+              "ftm": 11,
+              "fta": 17,
+              "oreb": 15,
+              "dreb": 46,
+              "stl": 9,
+              "blk": 5,
+              "tov": 14,
+              "plus_minus": -4,
+              "fg_pct": 0.412,
+              "fg3_pct": 0.294,
+              "ft_pct": 0.647,
+              "efg_pct": 0.47478991596638653,
+              "ts_pct": 0.49019607843137253
+            },
+            {
+              "rank": 12,
+              "game_date": "2024-03-24 00:00:00",
+              "game_id": 22301030,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Oklahoma City Thunder",
+              "opponent_team_abbr": "OKC",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 118,
+              "reb": 57,
+              "ast": 33,
+              "fgm": 49,
+              "fga": 92,
+              "fg3m": 11,
+              "fg3a": 34,
+              "ftm": 9,
+              "fta": 14,
+              "oreb": 15,
+              "dreb": 42,
+              "stl": 7,
+              "blk": 5,
+              "tov": 16,
+              "plus_minus": 25,
+              "fg_pct": 0.533,
+              "fg3_pct": 0.324,
+              "ft_pct": 0.643,
+              "efg_pct": 0.592391304347826,
+              "ts_pct": 0.6010594947025265
+            },
+            {
+              "rank": 13,
+              "game_date": "2024-03-21 00:00:00",
+              "game_id": 22301007,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Brooklyn Nets",
+              "opponent_team_abbr": "BKN",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 115,
+              "reb": 40,
+              "ast": 27,
+              "fgm": 43,
+              "fga": 91,
+              "fg3m": 16,
+              "fg3a": 41,
+              "ftm": 13,
+              "fta": 15,
+              "oreb": 11,
+              "dreb": 29,
+              "stl": 5,
+              "blk": 4,
+              "tov": 10,
+              "plus_minus": 7,
+              "fg_pct": 0.473,
+              "fg3_pct": 0.39,
+              "ft_pct": 0.867,
+              "efg_pct": 0.5604395604395604,
+              "ts_pct": 0.5891393442622951
+            },
+            {
+              "rank": 14,
+              "game_date": "2024-03-20 00:00:00",
+              "game_id": 22300998,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Boston Celtics",
+              "opponent_team_abbr": "BOS",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 119,
+              "reb": 41,
+              "ast": 20,
+              "fgm": 45,
+              "fga": 84,
+              "fg3m": 17,
+              "fg3a": 35,
+              "ftm": 12,
+              "fta": 14,
+              "oreb": 9,
+              "dreb": 32,
+              "stl": 3,
+              "blk": 6,
+              "tov": 14,
+              "plus_minus": -3,
+              "fg_pct": 0.536,
+              "fg3_pct": 0.486,
+              "ft_pct": 0.857,
+              "efg_pct": 0.6369047619047619,
+              "ts_pct": 0.6599378881987578
+            },
+            {
+              "rank": 15,
+              "game_date": "2024-03-17 00:00:00",
+              "game_id": 22300976,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Phoenix Suns",
+              "opponent_team_abbr": "PHX",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 140,
+              "reb": 35,
+              "ast": 35,
+              "fgm": 51,
+              "fga": 94,
+              "fg3m": 24,
+              "fg3a": 41,
+              "ftm": 14,
+              "fta": 14,
+              "oreb": 10,
+              "dreb": 25,
+              "stl": 11,
+              "blk": 2,
+              "tov": 10,
+              "plus_minus": 11,
+              "fg_pct": 0.543,
+              "fg3_pct": 0.585,
+              "ft_pct": 1.0,
+              "efg_pct": 0.6702127659574468,
+              "ts_pct": 0.6988817891373802
+            },
+            {
+              "rank": 16,
+              "game_date": "2024-03-14 00:00:00",
+              "game_id": 22300958,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Philadelphia 76ers",
+              "opponent_team_abbr": "PHI",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 114,
+              "reb": 37,
+              "ast": 29,
+              "fgm": 39,
+              "fga": 72,
+              "fg3m": 16,
+              "fg3a": 36,
+              "ftm": 20,
+              "fta": 24,
+              "oreb": 6,
+              "dreb": 31,
+              "stl": 6,
+              "blk": 4,
+              "tov": 14,
+              "plus_minus": 9,
+              "fg_pct": 0.542,
+              "fg3_pct": 0.444,
+              "ft_pct": 0.833,
+              "efg_pct": 0.6527777777777778,
+              "ts_pct": 0.690406976744186
+            },
+            {
+              "rank": 17,
+              "game_date": "2024-03-12 00:00:00",
+              "game_id": 22300945,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Sacramento Kings",
+              "opponent_team_abbr": "SAC",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 94,
+              "reb": 44,
+              "ast": 23,
+              "fgm": 30,
+              "fga": 82,
+              "fg3m": 7,
+              "fg3a": 39,
+              "ftm": 27,
+              "fta": 35,
+              "oreb": 10,
+              "dreb": 34,
+              "stl": 3,
+              "blk": 2,
+              "tov": 13,
+              "plus_minus": -35,
+              "fg_pct": 0.366,
+              "fg3_pct": 0.179,
+              "ft_pct": 0.771,
+              "efg_pct": 0.40853658536585363,
+              "ts_pct": 0.48254620123203285
+            },
+            {
+              "rank": 18,
+              "game_date": "2024-03-10 00:00:00",
+              "game_id": 22300924,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "LA Clippers",
+              "opponent_team_abbr": "LAC",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 124,
+              "reb": 41,
+              "ast": 28,
+              "fgm": 43,
+              "fga": 87,
+              "fg3m": 17,
+              "fg3a": 38,
+              "ftm": 21,
+              "fta": 27,
+              "oreb": 7,
+              "dreb": 34,
+              "stl": 5,
+              "blk": 6,
+              "tov": 7,
+              "plus_minus": 7,
+              "fg_pct": 0.494,
+              "fg3_pct": 0.447,
+              "ft_pct": 0.778,
+              "efg_pct": 0.5919540229885057,
+              "ts_pct": 0.6270226537216829
+            },
+            {
+              "rank": 19,
+              "game_date": "2024-03-08 00:00:00",
+              "game_id": 22300915,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Los Angeles Lakers",
+              "opponent_team_abbr": "LAL",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 122,
+              "reb": 43,
+              "ast": 28,
+              "fgm": 46,
+              "fga": 93,
+              "fg3m": 16,
+              "fg3a": 41,
+              "ftm": 14,
+              "fta": 17,
+              "oreb": 6,
+              "dreb": 37,
+              "stl": 3,
+              "blk": 2,
+              "tov": 6,
+              "plus_minus": -1,
+              "fg_pct": 0.495,
+              "fg3_pct": 0.39,
+              "ft_pct": 0.824,
+              "efg_pct": 0.5806451612903226,
+              "ts_pct": 0.6070859872611465
+            },
+            {
+              "rank": 20,
+              "game_date": "2024-03-06 00:00:00",
+              "game_id": 22300899,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Golden State Warriors",
+              "opponent_team_abbr": "GSW",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "L",
+              "pts": 90,
+              "reb": 36,
+              "ast": 19,
+              "fgm": 34,
+              "fga": 89,
+              "fg3m": 11,
+              "fg3a": 39,
+              "ftm": 11,
+              "fta": 15,
+              "oreb": 6,
+              "dreb": 30,
+              "stl": 8,
+              "blk": 5,
+              "tov": 15,
+              "plus_minus": -35,
+              "fg_pct": 0.382,
+              "fg3_pct": 0.282,
+              "ft_pct": 0.733,
+              "efg_pct": 0.4438202247191011,
+              "ts_pct": 0.47071129707112974
+            },
+            {
+              "rank": 21,
+              "game_date": "2024-03-04 00:00:00",
+              "game_id": 22300880,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "LA Clippers",
+              "opponent_team_abbr": "LAC",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 113,
+              "reb": 46,
+              "ast": 20,
+              "fgm": 37,
+              "fga": 78,
+              "fg3m": 15,
+              "fg3a": 38,
+              "ftm": 24,
+              "fta": 28,
+              "oreb": 7,
+              "dreb": 39,
+              "stl": 8,
+              "blk": 3,
+              "tov": 11,
+              "plus_minus": 7,
+              "fg_pct": 0.474,
+              "fg3_pct": 0.395,
+              "ft_pct": 0.857,
+              "efg_pct": 0.5705128205128205,
+              "ts_pct": 0.6255535872453499
+            },
+            {
+              "rank": 22,
+              "game_date": "2024-03-01 00:00:00",
+              "game_id": 22300864,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Chicago Bulls",
+              "opponent_team_abbr": "CHI",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 113,
+              "reb": 49,
+              "ast": 22,
+              "fgm": 37,
+              "fga": 86,
+              "fg3m": 15,
+              "fg3a": 46,
+              "ftm": 24,
+              "fta": 32,
+              "oreb": 11,
+              "dreb": 38,
+              "stl": 7,
+              "blk": 4,
+              "tov": 7,
+              "plus_minus": 16,
+              "fg_pct": 0.43,
+              "fg3_pct": 0.326,
+              "ft_pct": 0.75,
+              "efg_pct": 0.5174418604651163,
+              "ts_pct": 0.5645483613109512
+            },
+            {
+              "rank": 23,
+              "game_date": "2024-02-29 00:00:00",
+              "game_id": 22300849,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Charlotte Hornets",
+              "opponent_team_abbr": "CHA",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 111,
+              "reb": 44,
+              "ast": 21,
+              "fgm": 39,
+              "fga": 86,
+              "fg3m": 16,
+              "fg3a": 39,
+              "ftm": 17,
+              "fta": 20,
+              "oreb": 8,
+              "dreb": 36,
+              "stl": 9,
+              "blk": 3,
+              "tov": 7,
+              "plus_minus": 12,
+              "fg_pct": 0.453,
+              "fg3_pct": 0.41,
+              "ft_pct": 0.85,
+              "efg_pct": 0.5465116279069767,
+              "ts_pct": 0.5854430379746836
+            },
+            {
+              "rank": 24,
+              "game_date": "2024-02-27 00:00:00",
+              "game_id": 22300840,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Charlotte Hornets",
+              "opponent_team_abbr": "CHA",
+              "is_home": 1,
+              "is_away": 0,
+              "wl": "W",
+              "pts": 123,
+              "reb": 51,
+              "ast": 29,
+              "fgm": 46,
+              "fga": 89,
+              "fg3m": 16,
+              "fg3a": 40,
+              "ftm": 15,
+              "fta": 18,
+              "oreb": 11,
+              "dreb": 40,
+              "stl": 7,
+              "blk": 3,
+              "tov": 9,
+              "plus_minus": 38,
+              "fg_pct": 0.517,
+              "fg3_pct": 0.4,
+              "ft_pct": 0.833,
+              "efg_pct": 0.6067415730337079,
+              "ts_pct": 0.6345439537763103
+            },
+            {
+              "rank": 25,
+              "game_date": "2024-02-25 00:00:00",
+              "game_id": 22300817,
+              "season": "2023-24",
+              "season_type": "Regular Season",
+              "team_name": "Milwaukee Bucks",
+              "team_abbr": "MIL",
+              "opponent_team_name": "Philadelphia 76ers",
+              "opponent_team_abbr": "PHI",
+              "is_home": 0,
+              "is_away": 1,
+              "wl": "W",
+              "pts": 119,
+              "reb": 47,
+              "ast": 32,
+              "fgm": 43,
+              "fga": 79,
+              "fg3m": 18,
+              "fg3a": 37,
+              "ftm": 15,
+              "fta": 18,
+              "oreb": 7,
+              "dreb": 40,
+              "stl": 6,
+              "blk": 10,
+              "tov": 18,
+              "plus_minus": 21,
+              "fg_pct": 0.544,
+              "fg3_pct": 0.486,
+              "ft_pct": 0.833,
+              "efg_pct": 0.6582278481012658,
+              "ts_pct": 0.684537505752416
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "K06-B2",
+      "query": "Compare Boston and Milwaukee only in their games against each other during 2023-24.",
+      "passed": false,
+      "actual_keys": [
+        [
+          [
+            22300010,
+            1610612738
+          ],
+          [
+            22300031,
+            1610612738
+          ],
+          [
+            22300043,
+            1610612738
+          ],
+          [
+            22300053,
+            1610612738
+          ],
+          [
+            22300065,
+            1610612738
+          ],
+          [
+            22300080,
+            1610612738
+          ],
+          [
+            22300103,
+            1610612738
+          ],
+          [
+            22300118,
+            1610612738
+          ],
+          [
+            22300136,
+            1610612738
+          ],
+          [
+            22300154,
+            1610612738
+          ],
+          [
+            22300159,
+            1610612738
+          ],
+          [
+            22300174,
+            1610612738
+          ],
+          [
+            22300188,
+            1610612738
+          ],
+          [
+            22300194,
+            1610612738
+          ],
+          [
+            22300213,
+            1610612738
+          ],
+          [
+            22300217,
+            1610612738
+          ],
+          [
+            22300228,
+            1610612738
+          ],
+          [
+            22300246,
+            1610612738
+          ],
+          [
+            22300275,
+            1610612738
+          ],
+          [
+            22300305,
+            1610612738
+          ],
+          [
+            22300319,
+            1610612738
+          ],
+          [
+            22300329,
+            1610612738
+          ],
+          [
+            22300344,
+            1610612738
+          ],
+          [
+            22300362,
+            1610612738
+          ],
+          [
+            22300373,
+            1610612738
+          ],
+          [
+            22300389,
+            1610612738
+          ],
+          [
+            22300403,
+            1610612738
+          ],
+          [
+            22300421,
+            1610612738
+          ],
+          [
+            22300432,
+            1610612738
+          ],
+          [
+            22300448,
+            1610612738
+          ],
+          [
+            22300462,
+            1610612738
+          ],
+          [
+            22300479,
+            1610612738
+          ],
+          [
+            22300493,
+            1610612738
+          ],
+          [
+            22300507,
+            1610612738
+          ],
+          [
+            22300517,
+            1610612738
+          ],
+          [
+            22300528,
+            1610612738
+          ],
+          [
+            22300542,
+            1610612738
+          ],
+          [
+            22300563,
+            1610612738
+          ],
+          [
+            22300571,
+            1610612738
+          ],
+          [
+            22300586,
+            1610612738
+          ],
+          [
+            22300603,
+            1610612738
+          ],
+          [
+            22300611,
+            1610612738
+          ],
+          [
+            22300630,
+            1610612738
+          ],
+          [
+            22300646,
+            1610612738
+          ],
+          [
+            22300659,
+            1610612738
+          ],
+          [
+            22300670,
+            1610612738
+          ],
+          [
+            22300684,
+            1610612738
+          ],
+          [
+            22300706,
+            1610612738
+          ],
+          [
+            22300729,
+            1610612738
+          ],
+          [
+            22300743,
+            1610612738
+          ],
+          [
+            22300759,
+            1610612738
+          ],
+          [
+            22300771,
+            1610612738
+          ],
+          [
+            22300780,
+            1610612738
+          ],
+          [
+            22300797,
+            1610612738
+          ],
+          [
+            22300816,
+            1610612738
+          ],
+          [
+            22300836,
+            1610612738
+          ],
+          [
+            22300859,
+            1610612738
+          ],
+          [
+            22300872,
+            1610612738
+          ],
+          [
+            22300886,
+            1610612738
+          ],
+          [
+            22300906,
+            1610612738
+          ],
+          [
+            22300920,
+            1610612738
+          ],
+          [
+            22300938,
+            1610612738
+          ],
+          [
+            22300943,
+            1610612738
+          ],
+          [
+            22300955,
+            1610612738
+          ],
+          [
+            22300980,
+            1610612738
+          ],
+          [
+            22300984,
+            1610612738
+          ],
+          [
+            22300998,
+            1610612738
+          ],
+          [
+            22301011,
+            1610612738
+          ],
+          [
+            22301023,
+            1610612738
+          ],
+          [
+            22301034,
+            1610612738
+          ],
+          [
+            22301060,
+            1610612738
+          ],
+          [
+            22301074,
+            1610612738
+          ],
+          [
+            22301087,
+            1610612738
+          ],
+          [
+            22301105,
+            1610612738
+          ],
+          [
+            22301118,
+            1610612738
+          ],
+          [
+            22301134,
+            1610612738
+          ],
+          [
+            22301148,
+            1610612738
+          ],
+          [
+            22301167,
+            1610612738
+          ],
+          [
+            22301173,
+            1610612738
+          ],
+          [
+            22301186,
+            1610612738
+          ],
+          [
+            22301202,
+            1610612738
+          ],
+          [
+            22301227,
+            1610612738
+          ]
+        ],
+        [
+          [
+            22300002,
+            1610612749
+          ],
+          [
+            22300027,
+            1610612749
+          ],
+          [
+            22300049,
+            1610612749
+          ],
+          [
+            22300056,
+            1610612749
+          ],
+          [
+            22300075,
+            1610612749
+          ],
+          [
+            22300097,
+            1610612749
+          ],
+          [
+            22300107,
+            1610612749
+          ],
+          [
+            22300116,
+            1610612749
+          ],
+          [
+            22300149,
+            1610612749
+          ],
+          [
+            22300165,
+            1610612749
+          ],
+          [
+            22300171,
+            1610612749
+          ],
+          [
+            22300173,
+            1610612749
+          ],
+          [
+            22300190,
+            1610612749
+          ],
+          [
+            22300195,
+            1610612749
+          ],
+          [
+            22300205,
+            1610612749
+          ],
+          [
+            22300219,
+            1610612749
+          ],
+          [
+            22300228,
+            1610612749
+          ],
+          [
+            22300245,
+            1610612749
+          ],
+          [
+            22300269,
+            1610612749
+          ],
+          [
+            22300286,
+            1610612749
+          ],
+          [
+            22300300,
+            1610612749
+          ],
+          [
+            22300315,
+            1610612749
+          ],
+          [
+            22300334,
+            1610612749
+          ],
+          [
+            22300346,
+            1610612749
+          ],
+          [
+            22300361,
+            1610612749
+          ],
+          [
+            22300378,
+            1610612749
+          ],
+          [
+            22300388,
+            1610612749
+          ],
+          [
+            22300401,
+            1610612749
+          ],
+          [
+            22300417,
+            1610612749
+          ],
+          [
+            22300433,
+            1610612749
+          ],
+          [
+            22300454,
+            1610612749
+          ],
+          [
+            22300466,
+            1610612749
+          ],
+          [
+            22300477,
+            1610612749
+          ],
+          [
+            22300496,
+            1610612749
+          ],
+          [
+            22300510,
+            1610612749
+          ],
+          [
+            22300528,
+            1610612749
+          ],
+          [
+            22300545,
+            1610612749
+          ],
+          [
+            22300552,
+            1610612749
+          ],
+          [
+            22300572,
+            1610612749
+          ],
+          [
+            22300592,
+            1610612749
+          ],
+          [
+            22300606,
+            1610612749
+          ],
+          [
+            22300624,
+            1610612749
+          ],
+          [
+            22300639,
+            1610612749
+          ],
+          [
+            22300648,
+            1610612749
+          ],
+          [
+            22300667,
+            1610612749
+          ],
+          [
+            22300683,
+            1610612749
+          ],
+          [
+            22300702,
+            1610612749
+          ],
+          [
+            22300711,
+            1610612749
+          ],
+          [
+            22300725,
+            1610612749
+          ],
+          [
+            22300738,
+            1610612749
+          ],
+          [
+            22300745,
+            1610612749
+          ],
+          [
+            22300767,
+            1610612749
+          ],
+          [
+            22300773,
+            1610612749
+          ],
+          [
+            22300790,
+            1610612749
+          ],
+          [
+            22300808,
+            1610612749
+          ],
+          [
+            22300817,
+            1610612749
+          ],
+          [
+            22300840,
+            1610612749
+          ],
+          [
+            22300849,
+            1610612749
+          ],
+          [
+            22300864,
+            1610612749
+          ],
+          [
+            22300880,
+            1610612749
+          ],
+          [
+            22300899,
+            1610612749
+          ],
+          [
+            22300915,
+            1610612749
+          ],
+          [
+            22300924,
+            1610612749
+          ],
+          [
+            22300945,
+            1610612749
+          ],
+          [
+            22300958,
+            1610612749
+          ],
+          [
+            22300976,
+            1610612749
+          ],
+          [
+            22300998,
+            1610612749
+          ],
+          [
+            22301007,
+            1610612749
+          ],
+          [
+            22301030,
+            1610612749
+          ],
+          [
+            22301045,
+            1610612749
+          ],
+          [
+            22301061,
+            1610612749
+          ],
+          [
+            22301076,
+            1610612749
+          ],
+          [
+            22301095,
+            1610612749
+          ],
+          [
+            22301107,
+            1610612749
+          ],
+          [
+            22301122,
+            1610612749
+          ],
+          [
+            22301139,
+            1610612749
+          ],
+          [
+            22301148,
+            1610612749
+          ],
+          [
+            22301162,
+            1610612749
+          ],
+          [
+            22301179,
+            1610612749
+          ],
+          [
+            22301191,
+            1610612749
+          ],
+          [
+            22301201,
+            1610612749
+          ],
+          [
+            22301229,
+            1610612749
+          ]
+        ]
+      ],
+      "payload": {
+        "query_class": "comparison",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "Compare Boston and Milwaukee only in their games against each other during 2023-24.",
+          "route": "team_compare",
+          "query_class": "comparison",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "BOS, MIL",
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "scope_kind": "single_season",
+          "team_context": {
+            "team_abbr": "BOS"
+          },
+          "confidence": 0.8,
+          "intent": "comparison"
+        },
+        "notes": [],
+        "caveats": [],
+        "sections": {
+          "summary": [
+            {
+              "team_name": "BOS",
+              "games": 82,
+              "wins": 64,
+              "losses": 18,
+              "win_pct": 0.78,
+              "pts_avg": 120.573,
+              "reb_avg": 46.329,
+              "ast_avg": 26.915,
+              "stl_avg": 6.793,
+              "blk_avg": 6.561,
+              "fg3m_avg": 16.476,
+              "tov_avg": 11.268,
+              "plus_minus_avg": 11.341,
+              "pts_sum": 9887,
+              "reb_sum": 3799,
+              "ast_sum": 2207,
+              "efg_pct_avg": 0.578,
+              "ts_pct_avg": 0.609
+            },
+            {
+              "team_name": "MIL",
+              "games": 82,
+              "wins": 49,
+              "losses": 33,
+              "win_pct": 0.598,
+              "pts_avg": 118.976,
+              "reb_avg": 44.171,
+              "ast_avg": 26.537,
+              "stl_avg": 6.805,
+              "blk_avg": 5.037,
+              "fg3m_avg": 14.183,
+              "tov_avg": 12.378,
+              "plus_minus_avg": 2.622,
+              "pts_sum": 9756,
+              "reb_sum": 3622,
+              "ast_sum": 2176,
+              "efg_pct_avg": 0.568,
+              "ts_pct_avg": 0.601
+            }
+          ],
+          "comparison": [
+            {
+              "metric": "games",
+              "BOS": 82.0,
+              "MIL": 82.0
+            },
+            {
+              "metric": "wins",
+              "BOS": 64.0,
+              "MIL": 49.0
+            },
+            {
+              "metric": "losses",
+              "BOS": 18.0,
+              "MIL": 33.0
+            },
+            {
+              "metric": "win_pct",
+              "BOS": 0.78,
+              "MIL": 0.598
+            },
+            {
+              "metric": "pts_avg",
+              "BOS": 120.573,
+              "MIL": 118.976
+            },
+            {
+              "metric": "reb_avg",
+              "BOS": 46.329,
+              "MIL": 44.171
+            },
+            {
+              "metric": "ast_avg",
+              "BOS": 26.915,
+              "MIL": 26.537
+            },
+            {
+              "metric": "stl_avg",
+              "BOS": 6.793,
+              "MIL": 6.805
+            },
+            {
+              "metric": "blk_avg",
+              "BOS": 6.561,
+              "MIL": 5.037
+            },
+            {
+              "metric": "fg3m_avg",
+              "BOS": 16.476,
+              "MIL": 14.183
+            },
+            {
+              "metric": "tov_avg",
+              "BOS": 11.268,
+              "MIL": 12.378
+            },
+            {
+              "metric": "plus_minus_avg",
+              "BOS": 11.341,
+              "MIL": 2.622
+            },
+            {
+              "metric": "efg_pct_avg",
+              "BOS": 0.578,
+              "MIL": 0.568
+            },
+            {
+              "metric": "ts_pct_avg",
+              "BOS": 0.609,
+              "MIL": 0.601
+            },
+            {
+              "metric": "pts_sum",
+              "BOS": 9887.0,
+              "MIL": 9756.0
+            },
+            {
+              "metric": "reb_sum",
+              "BOS": 3799.0,
+              "MIL": 3622.0
+            },
+            {
+              "metric": "ast_sum",
+              "BOS": 2207.0,
+              "MIL": 2176.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "K06-C1",
+      "query": "For January 1 through January 31, 2024, show Joel Embiid versus Nikola Jokic in average points, rebounds and assists.",
+      "passed": false,
+      "actual_keys": [
+        [
+          [
+            22300008,
+            1610612755,
+            203954
+          ],
+          [
+            22300019,
+            1610612755,
+            203954
+          ],
+          [
+            22300029,
+            1610612755,
+            203954
+          ],
+          [
+            22300040,
+            1610612755,
+            203954
+          ],
+          [
+            22300075,
+            1610612755,
+            203954
+          ],
+          [
+            22300092,
+            1610612755,
+            203954
+          ],
+          [
+            22300098,
+            1610612755,
+            203954
+          ],
+          [
+            22300128,
+            1610612755,
+            203954
+          ],
+          [
+            22300132,
+            1610612755,
+            203954
+          ],
+          [
+            22300148,
+            1610612755,
+            203954
+          ],
+          [
+            22300159,
+            1610612755,
+            203954
+          ],
+          [
+            22300180,
+            1610612755,
+            203954
+          ],
+          [
+            22300194,
+            1610612755,
+            203954
+          ],
+          [
+            22300208,
+            1610612755,
+            203954
+          ],
+          [
+            22300239,
+            1610612755,
+            203954
+          ],
+          [
+            22300255,
+            1610612755,
+            203954
+          ],
+          [
+            22300295,
+            1610612755,
+            203954
+          ],
+          [
+            22300310,
+            1610612755,
+            203954
+          ],
+          [
+            22300327,
+            1610612755,
+            203954
+          ],
+          [
+            22300335,
+            1610612755,
+            203954
+          ],
+          [
+            22300351,
+            1610612755,
+            203954
+          ],
+          [
+            22300367,
+            1610612755,
+            203954
+          ],
+          [
+            22300382,
+            1610612755,
+            203954
+          ],
+          [
+            22300459,
+            1610612755,
+            203954
+          ],
+          [
+            22300483,
+            1610612755,
+            203954
+          ],
+          [
+            22300555,
+            1610612755,
+            203954
+          ],
+          [
+            22300566,
+            1610612755,
+            203954
+          ],
+          [
+            22300585,
+            1610612755,
+            203954
+          ],
+          [
+            22300593,
+            1610612755,
+            203954
+          ],
+          [
+            22300608,
+            1610612755,
+            203954
+          ],
+          [
+            22300627,
+            1610612755,
+            203954
+          ],
+          [
+            22300673,
+            1610612755,
+            203954
+          ],
+          [
+            22301208,
+            1610612755,
+            203954
+          ],
+          [
+            22301218,
+            1610612755,
+            203954
+          ]
+        ],
+        [
+          [
+            22300006,
+            1610612743,
+            203999
+          ],
+          [
+            22300024,
+            1610612743,
+            203999
+          ],
+          [
+            22300034,
+            1610612743,
+            203999
+          ],
+          [
+            22300048,
+            1610612743,
+            203999
+          ],
+          [
+            22300061,
+            1610612743,
+            203999
+          ],
+          [
+            22300078,
+            1610612743,
+            203999
+          ],
+          [
+            22300095,
+            1610612743,
+            203999
+          ],
+          [
+            22300110,
+            1610612743,
+            203999
+          ],
+          [
+            22300123,
+            1610612743,
+            203999
+          ],
+          [
+            22300139,
+            1610612743,
+            203999
+          ],
+          [
+            22300156,
+            1610612743,
+            203999
+          ],
+          [
+            22300169,
+            1610612743,
+            203999
+          ],
+          [
+            22300182,
+            1610612743,
+            203999
+          ],
+          [
+            22300210,
+            1610612743,
+            203999
+          ],
+          [
+            22300218,
+            1610612743,
+            203999
+          ],
+          [
+            22300226,
+            1610612743,
+            203999
+          ],
+          [
+            22300252,
+            1610612743,
+            203999
+          ],
+          [
+            22300263,
+            1610612743,
+            203999
+          ],
+          [
+            22300279,
+            1610612743,
+            203999
+          ],
+          [
+            22300290,
+            1610612743,
+            203999
+          ],
+          [
+            22300296,
+            1610612743,
+            203999
+          ],
+          [
+            22300307,
+            1610612743,
+            203999
+          ],
+          [
+            22300322,
+            1610612743,
+            203999
+          ],
+          [
+            22300340,
+            1610612743,
+            203999
+          ],
+          [
+            22300356,
+            1610612743,
+            203999
+          ],
+          [
+            22300369,
+            1610612743,
+            203999
+          ],
+          [
+            22300383,
+            1610612743,
+            203999
+          ],
+          [
+            22300390,
+            1610612743,
+            203999
+          ],
+          [
+            22300402,
+            1610612743,
+            203999
+          ],
+          [
+            22300425,
+            1610612743,
+            203999
+          ],
+          [
+            22300435,
+            1610612743,
+            203999
+          ],
+          [
+            22300455,
+            1610612743,
+            203999
+          ],
+          [
+            22300478,
+            1610612743,
+            203999
+          ],
+          [
+            22300488,
+            1610612743,
+            203999
+          ],
+          [
+            22300502,
+            1610612743,
+            203999
+          ],
+          [
+            22300524,
+            1610612743,
+            203999
+          ],
+          [
+            22300539,
+            1610612743,
+            203999
+          ],
+          [
+            22300550,
+            1610612743,
+            203999
+          ],
+          [
+            22300566,
+            1610612743,
+            203999
+          ],
+          [
+            22300586,
+            1610612743,
+            203999
+          ],
+          [
+            22300602,
+            1610612743,
+            203999
+          ],
+          [
+            22300614,
+            1610612743,
+            203999
+          ],
+          [
+            22300631,
+            1610612743,
+            203999
+          ],
+          [
+            22300644,
+            1610612743,
+            203999
+          ],
+          [
+            22300667,
+            1610612743,
+            203999
+          ],
+          [
+            22301215,
+            1610612743,
+            203999
+          ],
+          [
+            22301224,
+            1610612743,
+            203999
+          ]
+        ]
+      ],
+      "payload": {
+        "query_class": "comparison",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "For January 1 through January 31, 2024, show Joel Embiid versus Nikola Jokic in average points, rebounds and assists.",
+          "route": "player_compare",
+          "query_class": "comparison",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": "2024-01-31",
+          "last_n": null,
+          "last_n_scope": null,
+          "player": "Joel Embiid, Nikola Joki\u0107",
+          "team": null,
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": "reb",
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": false,
+          "notes": [
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+          ],
+          "scope_kind": "single_season",
+          "applied_filters": [
+            {
+              "label": "Date range",
+              "value": "2024-01-31",
+              "kind": "date"
+            }
+          ],
+          "confidence": 0.98,
+          "intent": "comparison"
+        },
+        "notes": [],
+        "caveats": [],
+        "sections": {
+          "summary": [
+            {
+              "player_name": "Joel Embiid",
+              "games": 34,
+              "wins": 26,
+              "losses": 8,
+              "win_pct": 0.765,
+              "minutes_avg": 34.029,
+              "pts_avg": 35.324,
+              "reb_avg": 11.294,
+              "ast_avg": 5.676,
+              "stl_avg": 1.147,
+              "blk_avg": 1.765,
+              "fg3m_avg": 1.206,
+              "tov_avg": 3.706,
+              "plus_minus_avg": 6.853,
+              "pts_sum": 1201,
+              "reb_sum": 384,
+              "ast_sum": 193,
+              "efg_pct_avg": 0.56,
+              "ts_pct_avg": 0.645,
+              "usg_pct_avg": 39.227,
+              "ast_pct_avg": 30.948,
+              "reb_pct_avg": 18.366,
+              "tov_pct_avg": 11.917
+            },
+            {
+              "player_name": "Nikola Joki\u0107",
+              "games": 47,
+              "wins": 32,
+              "losses": 15,
+              "win_pct": 0.681,
+              "minutes_avg": 33.66,
+              "pts_avg": 26.277,
+              "reb_avg": 12.106,
+              "ast_avg": 9.0,
+              "stl_avg": 1.17,
+              "blk_avg": 0.915,
+              "fg3m_avg": 1.043,
+              "tov_avg": 2.936,
+              "plus_minus_avg": 7.404,
+              "pts_sum": 1235,
+              "reb_sum": 569,
+              "ast_sum": 423,
+              "efg_pct_avg": 0.615,
+              "ts_pct_avg": 0.655,
+              "usg_pct_avg": 29.987,
+              "ast_pct_avg": 43.827,
+              "reb_pct_avg": 20.247,
+              "tov_pct_avg": 12.766
+            }
+          ],
+          "comparison": [
+            {
+              "metric": "games",
+              "Joel Embiid": 34.0,
+              "Nikola Joki\u0107": 47.0
+            },
+            {
+              "metric": "wins",
+              "Joel Embiid": 26.0,
+              "Nikola Joki\u0107": 32.0
+            },
+            {
+              "metric": "losses",
+              "Joel Embiid": 8.0,
+              "Nikola Joki\u0107": 15.0
+            },
+            {
+              "metric": "win_pct",
+              "Joel Embiid": 0.765,
+              "Nikola Joki\u0107": 0.681
+            },
+            {
+              "metric": "minutes_avg",
+              "Joel Embiid": 34.029,
+              "Nikola Joki\u0107": 33.66
+            },
+            {
+              "metric": "pts_avg",
+              "Joel Embiid": 35.324,
+              "Nikola Joki\u0107": 26.277
+            },
+            {
+              "metric": "reb_avg",
+              "Joel Embiid": 11.294,
+              "Nikola Joki\u0107": 12.106
+            },
+            {
+              "metric": "ast_avg",
+              "Joel Embiid": 5.676,
+              "Nikola Joki\u0107": 9.0
+            },
+            {
+              "metric": "stl_avg",
+              "Joel Embiid": 1.147,
+              "Nikola Joki\u0107": 1.17
+            },
+            {
+              "metric": "blk_avg",
+              "Joel Embiid": 1.765,
+              "Nikola Joki\u0107": 0.915
+            },
+            {
+              "metric": "fg3m_avg",
+              "Joel Embiid": 1.206,
+              "Nikola Joki\u0107": 1.043
+            },
+            {
+              "metric": "plus_minus_avg",
+              "Joel Embiid": 6.853,
+              "Nikola Joki\u0107": 7.404
+            },
+            {
+              "metric": "efg_pct_avg",
+              "Joel Embiid": 0.56,
+              "Nikola Joki\u0107": 0.615
+            },
+            {
+              "metric": "ts_pct_avg",
+              "Joel Embiid": 0.645,
+              "Nikola Joki\u0107": 0.655
+            },
+            {
+              "metric": "usg_pct_avg",
+              "Joel Embiid": 39.227,
+              "Nikola Joki\u0107": 29.987
+            },
+            {
+              "metric": "ast_pct_avg",
+              "Joel Embiid": 30.948,
+              "Nikola Joki\u0107": 43.827
+            },
+            {
+              "metric": "reb_pct_avg",
+              "Joel Embiid": 18.366,
+              "Nikola Joki\u0107": 20.247
+            },
+            {
+              "metric": "pts_sum",
+              "Joel Embiid": 1201.0,
+              "Nikola Joki\u0107": 1235.0
+            },
+            {
+              "metric": "reb_sum",
+              "Joel Embiid": 384.0,
+              "Nikola Joki\u0107": 569.0
+            },
+            {
+              "metric": "ast_sum",
+              "Joel Embiid": 193.0,
+              "Nikola Joki\u0107": 423.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "K06-C2",
+      "query": "In their 2023-24 head-to-head meetings, compare Phoenix with Denver.",
+      "passed": true,
+      "actual_keys": [
+        [
+          [
+            22300279,
+            1610612756
+          ],
+          [
+            22300893,
+            1610612756
+          ],
+          [
+            22301059,
+            1610612756
+          ]
+        ],
+        [
+          [
+            22300279,
+            1610612743
+          ],
+          [
+            22300893,
+            1610612743
+          ],
+          [
+            22301059,
+            1610612743
+          ]
+        ]
+      ],
+      "payload": {
+        "query_class": "comparison",
+        "result_status": "ok",
+        "result_reason": null,
+        "metadata": {
+          "query_text": "In their 2023-24 head-to-head meetings, compare Phoenix with Denver.",
+          "route": "team_compare",
+          "query_class": "comparison",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "explicit_relative_season": false,
+          "season_type": "Regular Season",
+          "start_date": null,
+          "end_date": null,
+          "last_n": null,
+          "last_n_scope": null,
+          "player": null,
+          "team": "PHX, DEN",
+          "opponent": null,
+          "opponent_conference": null,
+          "opponent_division": null,
+          "opponent_team_abbrs": null,
+          "with_player": null,
+          "without_player": null,
+          "unresolved_availability_player": null,
+          "unsupported_filters": null,
+          "opponent_quality": null,
+          "lineup_members": [],
+          "presence_state": null,
+          "unit_size": null,
+          "minute_minimum": null,
+          "window_size": null,
+          "stretch_metric": null,
+          "stretch_display_mode": null,
+          "min_streak_length": null,
+          "stat": null,
+          "ranking_key": null,
+          "requested_stat": null,
+          "requested_metrics": null,
+          "requested_event_conditions": null,
+          "unsupported_availability": null,
+          "unsupported_scope": null,
+          "requested_aggregation": null,
+          "available_aggregation": null,
+          "min_value": null,
+          "max_value": null,
+          "sort_by": null,
+          "ascending": null,
+          "ranked_intent": false,
+          "threshold_conditions": [],
+          "extra_conditions": [],
+          "conditions": null,
+          "occurrence_event": null,
+          "split_type": null,
+          "season_list": null,
+          "clutch": false,
+          "back_to_back": false,
+          "series_situation": null,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "role": null,
+          "quarter": null,
+          "half": null,
+          "position_filter": null,
+          "grouped_boolean_used": false,
+          "boolean_filter_mode": null,
+          "head_to_head_used": true,
+          "scope_kind": "single_season",
+          "team_context": {
+            "team_abbr": "PHX"
+          },
+          "confidence": 0.9,
+          "intent": "comparison"
+        },
+        "notes": [],
+        "caveats": [
+          "head-to-head: only games where both teams faced each other"
+        ],
+        "sections": {
+          "summary": [
+            {
+              "team_name": "PHX",
+              "games": 3,
+              "wins": 2,
+              "losses": 1,
+              "win_pct": 0.667,
+              "pts_avg": 110.667,
+              "reb_avg": 48.667,
+              "ast_avg": 27.667,
+              "stl_avg": 5.333,
+              "blk_avg": 7.667,
+              "fg3m_avg": 13.333,
+              "tov_avg": 12.333,
+              "plus_minus_avg": 3.0,
+              "pts_sum": 332,
+              "reb_sum": 146,
+              "ast_sum": 83,
+              "efg_pct_avg": 0.532,
+              "ts_pct_avg": 0.574
+            },
+            {
+              "team_name": "DEN",
+              "games": 3,
+              "wins": 1,
+              "losses": 2,
+              "win_pct": 0.333,
+              "pts_avg": 107.667,
+              "reb_avg": 40.333,
+              "ast_avg": 29.0,
+              "stl_avg": 7.667,
+              "blk_avg": 4.667,
+              "fg3m_avg": 12.333,
+              "tov_avg": 10.333,
+              "plus_minus_avg": -3.0,
+              "pts_sum": 323,
+              "reb_sum": 121,
+              "ast_sum": 87,
+              "efg_pct_avg": 0.542,
+              "ts_pct_avg": 0.559
+            }
+          ],
+          "comparison": [
+            {
+              "metric": "games",
+              "PHX": 3.0,
+              "DEN": 3.0
+            },
+            {
+              "metric": "wins",
+              "PHX": 2.0,
+              "DEN": 1.0
+            },
+            {
+              "metric": "losses",
+              "PHX": 1.0,
+              "DEN": 2.0
+            },
+            {
+              "metric": "win_pct",
+              "PHX": 0.667,
+              "DEN": 0.333
+            },
+            {
+              "metric": "pts_avg",
+              "PHX": 110.667,
+              "DEN": 107.667
+            },
+            {
+              "metric": "reb_avg",
+              "PHX": 48.667,
+              "DEN": 40.333
+            },
+            {
+              "metric": "ast_avg",
+              "PHX": 27.667,
+              "DEN": 29.0
+            },
+            {
+              "metric": "stl_avg",
+              "PHX": 5.333,
+              "DEN": 7.667
+            },
+            {
+              "metric": "blk_avg",
+              "PHX": 7.667,
+              "DEN": 4.667
+            },
+            {
+              "metric": "fg3m_avg",
+              "PHX": 13.333,
+              "DEN": 12.333
+            },
+            {
+              "metric": "tov_avg",
+              "PHX": 12.333,
+              "DEN": 10.333
+            },
+            {
+              "metric": "plus_minus_avg",
+              "PHX": 3.0,
+              "DEN": -3.0
+            },
+            {
+              "metric": "efg_pct_avg",
+              "PHX": 0.532,
+              "DEN": 0.542
+            },
+            {
+              "metric": "ts_pct_avg",
+              "PHX": 0.574,
+              "DEN": 0.559
+            },
+            {
+              "metric": "pts_sum",
+              "PHX": 332.0,
+              "DEN": 323.0
+            },
+            {
+              "metric": "reb_sum",
+              "PHX": 146.0,
+              "DEN": 121.0
+            },
+            {
+              "metric": "ast_sum",
+              "PHX": 83.0,
+              "DEN": 87.0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

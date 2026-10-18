@@ -61,7 +61,7 @@ for the active generation, and distinguish production coverage from staging and
 unknown completeness. Produce a bounded collection requirement for missing raw
 data; do not invent values or investigate providers repeatedly. The laptop does
 not run application development. Existing protected publication remains required.
-Feature development is still paused until explicit owner resumption.
+The owner explicitly resumed normal development on 2026-10-18 after accepting minimum cloud/data setup. Continue the saved completion program under the existing gates.
 
 ## Execution and session continuity
 
