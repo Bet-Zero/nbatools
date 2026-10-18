@@ -24,6 +24,14 @@ file hash and existing dataset/source contracts, then exercises the real loader.
 Its restore receipt is added to the release without overwriting assets.
 Actions artifacts are transport only (the full export expires after one day),
 not the backup. A failed restore leaves the release intact and is not success.
+Verified execution: [run 39117892814](https://github.com/Bet-Zero/nbatools/actions/runs/39117892814)
+exported and restored all 703 files / 402,749,125 bytes of
+`availability-opening-s4-v1-20261017`; the separate runner loaded 26,651 player-game
+rows without R2 credentials. Permanent [backup and receipts](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-39117892814)
+include the exact archive and original manifest hashes. The same run's manual
+freshness attempt **failed** at `pull_games` after 96.2 seconds and prepared no
+candidate. Restore success is not successful acquisition/freshness.
+
 A release on the same GitHub account protects against R2 loss, not loss of the
 GitHub account; no separate-account disaster-recovery claim is made.
 
@@ -145,7 +153,7 @@ generation, local manifest, isolated prefix, object and byte counts, and
 operation ceilings. The plain account ID is not written to the plan. Any field
 change invalidates the plan hash and therefore any later authorization.
 
-The approved-source boundary currently contains 684 manifested files and
+That July approved-source boundary contains 684 manifested files and
 401,730,141 source bytes. The prepared drill hard-stops above 689 live isolated
 objects, 401,900,000 uploaded bytes, 695 Class A operations, 3,448 Class B
 operations, or 690 deletes. It also caps downloaded byte verification at
