@@ -288,6 +288,13 @@ instead of a broad fallback.
 
 ## Team records
 
+An opponent clause can precede the question: `Against Miami, what was New
+York's away record in each of 2023-24 and 2025-26?` keeps New York as the
+subject, Miami as the opponent and only the two named seasons. The verb
+`was` does not add Washington to that sample. Explicit Washington population
+questions such as `Which WAS player had the highest PPG in 2023-24?` retain
+their team filter.
+
 - `Lakers road record last season` (`last season` resolves to `2024-25` when the latest regular season is `2025-26`)
 - `How did the Lakers do on the road last season?`
 - `Lakers 2024-25 road record`
