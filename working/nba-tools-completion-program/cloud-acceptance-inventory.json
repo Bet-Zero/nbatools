@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "63d6e0ce72bd17b4fc91f8b1ddf4ec21165f9d83",
+  "request_sha": "a8d4b6abe45a608939b4a202a37ce94dbbd76c8a",
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "run_id": 39114478299,
+  "artifact_id": 12131404535,
+  "artifact_zip_sha256": "aede010e6164b764e5a36513c8a55578e00576a7a12c668a9a12a177bbc3a9e9",
+  "generation_id": "cloud-acceptance-cle-nyk-20261018",
+  "new_game_id": 22500003,
+  "new_rows": 33,
+  "files": [
+    {
+      "path": "cloud-recovery-bundle.zip",
+      "size_bytes": 66061,
+      "sha256": "1a482b76f7455dc6cefef89620e9e2d935f144b2c2765ce624080bf6e33ac9ea"
+    }
+  ],
+  "code_files": [
+    {
+      "path": "src/nbatools/commands/pipeline/generation_publication.py",
+      "sha256": "c555573acca4d29bbad74dd3029fbf6b77f5bf8163046123d925eb6846254da7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/generation_refresh.py",
+      "sha256": "678e515898e9318789f88d2f621fb7fa34944df94260e6c25072cee047d79ca5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_espn.py",
+      "sha256": "7c1b8618cc228fac780d331865b8e7c5db0255499d03a0fcea36c65aee7c18f5"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_profiles.py",
+      "sha256": "509271a504e105343a0fe87ffd0ac561afc1d29647151b0cf48087d07b65a334"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/player_game_availability_report.py",
+      "sha256": "6d627a11f8c0639c961473ab5d6ab4c9c801f6c792764c14e86a8f9b915b49a7"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_availability.py",
+      "sha256": "9aea0f04ed8e8592f8b68ed3a46826d86b5d60575f740862b264b14d394e18bf"
+    },
+    {
+      "path": "src/nbatools/commands/pipeline/pull_player_game_starter_roles.py",
+      "sha256": "2403c697d4c5121826ae3ff5074084244857d19f96773925e7135c9281935d7e"
+    },
+    {
+      "path": "src/nbatools/data_source.py",
+      "sha256": "aa82d638e37b44ad3ec4d37c897d7590d67cd02a2844089c2565b918fc0898fd"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-cloud-acceptance.py",
+      "sha256": "9c055dcc6b7048c3cb0916bd7c961e13b6048b7eb48f70373c3d338df471800c"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-combined-availability.py",
+      "sha256": "849bc2c93fd33f1706ed825b1f7eb1dc9ecff1ac8bc7cfd81a5491573bbd3484"
+    },
+    {
+      "path": "working/nba-tools-completion-program/publish-opening-availability.py",
+      "sha256": "f33e1339ffd0937639d876d405dab23b2c467d5fec4d3049e9f9953a624bf1d3"
+    }
+  ],
+  "durable_source_commit": "e4900f515bc2536859293599efdd7ba7889a7969",
+  "durable_source_note": "Git-stored source bytes persist after source-run artifacts expire; this registry input transport still requires current source artifact and would need reviewed replacement after expiry."
+}
