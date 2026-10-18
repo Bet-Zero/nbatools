@@ -17,3 +17,17 @@ Raw QA IDs: `k07_a1`, `k07_a2`, `k07_b1`, `k07_b2`, `k07_c1`, `k07_c2` and their
 Final baseline QA executes all twelve cases: ten pass and the same two genuine refusals fail; retained output is `/workspace/work/k07-qa-baseline/correct-display-order`. The player home/away reducer captures away before home, while the published comparison table displays home before away; QA assertions use displayed order, and numerical tests map buckets by name. Fifty-two existing season-list/opponent-list controls pass. Ruff, inventory, docs governance and diff checks pass. This is qualified cached evidence only, not a production generation receipt.
 
 Runtime555ae3b preserves named-season scope after statistical bounds and separates Break/Break down commands from player names. Both original refusals now answer correctly; frozen first outcomes remain unchanged. Independent checker /root/availability_checker verified12 exact source-qualified natural/structured cases and12RawQA308checks.41focused controls passed; final preflight8,149passed1,562data-dependent skips in140.90s. Required12numerical/12QA actual validation, CI and deployed acceptance remain open.
+
+
+October18 resumption: reviewed8ad6c234bd388408a383b988dc8bc2f160ffb83f
+on current generationavailability-opening-s4-v1-20261017; all four raw hashes match
+frozen oracle/verified production inventory. Independent checker /root/comparison_checker
+recomputed all frozen buckets with CSV/reciprocal joins, checked fresh CLE/MIA/Davis/Mitchell
+wording and exact8subject-season samples. Local12numerical0skip,62maker/73checker
+focused controls and final broadpreflight8239passed1578data skips passed.
+Actual run39161041268/request3defdecb3a5a75b9b28e9f040a299761d1b470b5
+passed12selected/executed numerical0skip/errors plus12RawQA308checks. Checker
+verified numerical12149385206 ZIP59157c01180ef7ae3b71813d95c33543409044e3d1433f8780f84166ffb11f73
+and QA12148946943 ZIPba4c491e52ec04382883db59eea2660f0e29f1801243a8afd5c2c94ed445cd70.
+No runtime/oracle/test changes in later parent-receipt integration. PR494 owns24
+rendered/deployed cases separately; current production acceptance remains open.
