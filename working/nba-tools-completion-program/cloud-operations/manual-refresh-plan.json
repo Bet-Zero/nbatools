@@ -1,0 +1,28 @@
+{
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "stages": [
+    "pull_games",
+    "pull_schedule",
+    "pull_rosters",
+    "pull_team_game_stats",
+    "pull_player_game_stats",
+    "pull_player_game_starter_roles",
+    "pull_game_period_stats",
+    "pull_standings_snapshots",
+    "pull_team_season_advanced",
+    "pull_player_season_advanced",
+    "validate_raw",
+    "build_team_game_features",
+    "build_game_features",
+    "build_schedule_context_features",
+    "build_player_game_features",
+    "build_league_season_stats",
+    "build_team_conference_membership",
+    "update_manifest"
+  ],
+  "automatic_refresh": false,
+  "production_publication": false,
+  "required_route": "NBA Stats core pipelines; participation alternatives are narrower",
+  "readiness": "plan-only; acquisition and validation required before candidate preparation"
+}

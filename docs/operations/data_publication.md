@@ -43,22 +43,36 @@ A receipt saying `publication_started_outcome_unknown` or
 and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
-## One-time account setup
+## First successful production publication — 2026-10-18
 
-The latest read-only audit in run39091103560 found `copilot`, `Preview`,
-`Production` and `r2-validation`; `r2-publication` was absent and its API request
-returned 404. Publication readiness is **false**. The API exposes
-`can_admins_bypass`; the existing environments have no required-reviewer
-protection and are unsuitable for publisher credentials. Only the missing
-dedicated protected environment/account setup is needed. Reuse the accepted
-workflow and existing bucket; do not create duplicate publication infrastructure
-or repurpose an application or read-only validation environment.
-The audit cannot retrieve existing secret values or establish whether the account
-custodian already has a suitable publisher token. Reuse that token when available.
+**SETUP PROVEN END-TO-END.** The owner explicitly authorized the reviewed package `opening-s4-availability-v1` and separately approved the protected `r2-publication` deployment. [Production run 39102232398](https://github.com/Bet-Zero/nbatools/actions/runs/39102232398) completed **SUCCESS** across preparation, write, read-only verification and durable receipt. The canonical [GitHub Release](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-39102232398) holds `receipt.json` with `publication_state=published_and_verified`.
+
+- **Active R2 generation:** `availability-opening-s4-v1-20261017`, activated `2026-10-18T06:15:50Z`, manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`.
+- **Verified scope:** 703 immutable objects, 402,749,125 bytes, source-qualified player participation data from five NBA games; old generation `queue-d-production-0574735-20260716` retained. The package is **not** season-wide absence coverage.
+- **Live checks:** the deployed readiness response returned `ready`, the new active generation, no blockers; all six registered production-answer checks matched (LAL/GSW 2025 opener and Celtics/Tatum/Brown with/without qualified teammate across reviewed games).
+- **Protected authority:** environment `r2-publication` ID `24614443886`, exactly one `main` branch rule, required reviewer `Bet-Zero`, disabled administrator bypass. The owner-approved write job and separate read-only verifier passed. Earlier missing-environment API HTTP404 is **resolved**.
+- **Operational boundary:** the existing GitHub workflow can **manually** validate and publish future reviewed generations without a local laptop. This first success does **not** set up unattended scheduled data collection or automatically approve any future production update. Codex and unrelated feature development remain owner-paused.
+
+The earlier read-only and environment-404 notes below are historical, from before this successful publication; they are not current blockers.
+
+## Historical read-only execution (2026-10-18)
+
+The owner-triggered first attempt [39095431450](https://github.com/Bet-Zero/nbatools/actions/runs/39095431450) failed because a reusable workflow call did not pass its three existing read-only `R2_VALIDATION_*` secret names. [PR #489](https://github.com/Bet-Zero/nbatools/pull/489) fixed only that mapping, retaining the environment's credential isolation, deployment review, and no-write `validate` mode. The new [run 39099028557](https://github.com/Bet-Zero/nbatools/actions/runs/39099028557) **succeeded on merged main**, with the full proposed `opening-s4-availability-v1` snapshot: 703 objects, 402,749,125 bytes, manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`. Receipt artifact `12126046663` has ZIP SHA256 `3587b20ea0675ee8f92c4864e9fbd0c5761fa05169d53f7bad804434af3a6957`. State `prepared_no_writes`; **no R2 write, active pointer switch, or production publish was performed**.
+
+At the time of this **earlier read-only** run, the dedicated production environment had not yet been correctly configured and GitHub's audit returned HTTP 404. The owner subsequently created/configured the separate environment. The protections were verified in [audit 39101964895](https://github.com/Bet-Zero/nbatools/actions/runs/39101964895), and the first production publication then succeeded in [39102232398](https://github.com/Bet-Zero/nbatools/actions/runs/39102232398). This older 404 is no longer an action item.
+
+## Existing production environment — keep configured
+
+The dedicated `r2-publication` environment was created and verified successfully
+with branch `main` only, required `Bet-Zero` reviewer, and disabled administrator
+bypass. Its three publication environment secrets worked in the approved production
+run. **Do not re-create the environment, re-enter the secrets, create another bucket,
+or repeat the initial account setup for future publications.** The original read-only
+`r2-validation` environment remains separate; preserve both.
 
 In [repository environments](https://github.com/Bet-Zero/nbatools/settings/environments),
-create **r2-publication** unless a later audit identifies an existing dedicated
-publisher environment. Restrict deployment
+first verify **r2-publication** and the existing protections on the *exact* `Bet-Zero/nbatools`
+repository; do not create a duplicate environment or token based on the current 404 alone. Restrict deployment
 branches to **main** (branch, not tag), require **Bet-Zero** as reviewer, and disable
 administrator bypass. Preserve stricter existing protections. If self-review is
 prevented, an authorized different initiator must start the run; never weaken that

@@ -1,0 +1,41 @@
+Setup-only result. Features491–494/#462 remain paused. Full laptop-independence acceptance is still open.
+
+Working and preserved in GitHub:
+- Accepted cloud reconstruction, application/tests, protected R2 publication and full independent backup/restore from PRs498/500/501 are reused. No duplicate full export or historical recovery audit.
+- The existing Vercel project and READY production deployment are readable without teamId/slug. Explicit team scope404 is a routing difference. No new sign-in/token/team/project/paid plan is needed. Live rollback was not performed. Latest setup previews hit the free build-rate limit.
+- PR502 merged703ded88b4f8b0ff86ffa5de2b3a6648b3cb8389; postmergeCI39123174265passed. Actual NBA Stats archive collection through existing games/team/player producers and three processed builders qualified1game/2teams/21players/21trustedroles. Runner39122547977 passed2required0skip/fail, including separate cloud recovery. Original captures, attribution, hashes and canonical outputs are permanent in core-archive-staging.zip.
+- Archived lineup normalization qualified2594five-player units/30teams at exact source MinutesMin=10. Independent checking matched every ID/numeric field. Original JSON and canonical CSV are permanent in lineup-archive-staging.zip. No sub10minute/current freshness or independent roster-completeness acceptance.
+- PR503 mergedaf12d999f360ddcfdc4c66c4303e7ac01b3512fb afterCI39124595735passed. A distinct official-CDN public archive supplies605PBPevents. Original action IDs and separate source_order_number chronology are preserved, including delayedblock547before545. Ingestion/trust/loader/existing score-state consumers use the right timeline. Runner39124321117 passed2required0skip/fail: collection and credential-free recovery605events/230PTS/nine-file immutable development subset. That explicitly scoped candidate is not a full R2 publication package. Exact original selected CSV, license, receipts and canonical data are permanent in cdn-archive-staging.zip. Initial39123885715 remainsfailed1/2; clearing the inherited production pin/credentials repaired offline fixture isolation.
+- Independent checker /root/cloud_acceptance_checker verified original rows/arithmetic/hashes and actual runner receipts. Broad cloud preflight8172passed1554skipped3subtests143.14s. Initial network-disabled TestClient attempts were interrupted; authorized network-enabled preflight passed. No check disabled.
+- PR504 prepares automatic independent backup after future owner-approved, published and live-verified generations, using the accepted single read-only R2 export, permanent non-latest GitHub release and separate credential-free restore.119focused caller/selection/credential/approval-policy tests passed; separate reviewer accepted9867c40. No new credential/service/paid plan/timer/source acquisition/R2write. First actual production-triggered hook remains UNVERIFIED; check it on the next legitimate approved publication, not an unauthorized test publication.
+
+Remaining genuine gaps:
+- Tested direct NBA Stats requests time out; tested CDN schedule/scoreboard/game URLs return403. This is evidence about the tested cloud route, not a permanent/global outage or proof that credentials would help.
+- Three examined period archives contain zero totals in all quarters. They and the missing official advanced period rates are unqualified. No exact on/off archive was identified. Partial ESPN/PDF participation and whole-game/derived stats are not substitutes.
+- New roster/schedule/standings/season-advanced acquisition has not been individually qualified. Existing authenticated cloud snapshots remain usable. Core archive success does not prove every workflow.
+- Full unattended freshness/rollover remains off and unfinished. Retrieving archived captures is not live freshness or a successful complete current-season refresh. Unattended production publication remains unapproved and disabled.
+- Backup-hook live execution, daily backup cadence/24-hour RPO, measured incident RTO, live Vercel rollback and separate-account recovery remain unverified. The accepted permanent full backup protects against R2 loss, not loss of the same GitHub account.
+- Historicalc10936b/old unpublished ports remain unavailable without their original stopped volume. No repeated unbounded search or cleanup. Current recoverable work/data/checkpoints are remote; no reset/force-push/prune.
+
+Cloud development/recovery and qualified missing-data routes work without a laptop. The complete requirement covering every required source and successful automatic freshness is NOT met. No new owner sign-in, credential or spending action is needed for completed work. Existing production approval remains required for a future legitimate publication; no test publication is requested. The sole completion checkpoint and PR504 contain exact final integration/next-action status. See remaining-readiness.json for the source-by-source scope.
+
+PR505 focused source follow-up (owner accepted previous setup, not repeated):
+- Cloud run39149759138: 2actual collection/recovery tests passed, plus1bounded
+  website diagnostic passed as a diagnostic; all3selected/executed,0skip/fail.
+- Existing normalizers produced582player advanced,30team advanced,30standings
+  rows for2025-26; all30W/Lrecords reconciled against accepted originalgames.
+  OriginalJSON/license/outputs persist in season-inputs-staging.zip and were
+  recovered independently from Git. Snapshot capture time remainsunknown.
+- Roster source ispartial29teams/512rows, NYK1610612752missing404. No incomplete
+  canonical roster is emitted. Current roster coverage remains unqualified.
+-2026-27officialschedule is planning1206regularIDs/6TBD/0final; advanced empty.
+  The2027Finder hasSeason=null/30000oldmulti-seasonrows and is rejected.
+- New ordinaryNBAwebsite route:3URLs allHTTP403. Existing Stats/CDN failures
+  reused; no endless retries. Exactperiod/onoff remain unavailable; lossy
+  Detailsdashboard exports do not satisfy Summarycontract.
+- Manual qualification and season-boundary guards are prepared/verified; full
+  fresh refresh/seasonrollover is NOT accepted or scheduled. Last-good and
+  protectedproductionpublication/backup remain intact. Features remainpaused.
+- Best next step: request exactmissing captures/fixes from existing upstream
+  before considering any paidfeed. Unsent issue draft is reviewable; only
+  outside-contact permission is pending. No credential/spending request.

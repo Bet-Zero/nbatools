@@ -1,0 +1,65 @@
+{
+  "run_id": 39114478299,
+  "request_sha": "a8d4b6abe45a608939b4a202a37ce94dbbd76c8a",
+  "reviewed_sha": "63d6e0ce72bd17b4fc91f8b1ddf4ec21165f9d83",
+  "reports": [
+    {
+      "base_generation": "availability-opening-s4-v1-20261017",
+      "bundle_sha256": "1a482b76f7455dc6cefef89620e9e2d935f144b2c2765ce624080bf6e33ac9ea",
+      "candidate_files": 705,
+      "candidate_generation": "cloud-acceptance-a8d4b6abe45a",
+      "candidate_manifest_sha256": "59299e79e9697fbbf1988f0286e24f7065c9cd60111c406f7534c6f150e3d9d5",
+      "download": {
+        "file_count": 702,
+        "generation_id": "availability-opening-s4-v1-20261017",
+        "manifest": "verified-by-existing-downloader",
+        "total_bytes": 402248143
+      },
+      "game_date": "2025-10-22",
+      "new_game_id": 22500003,
+      "processed_applicability": "availability is raw-only; base processed files retained",
+      "production_pointer_unchanged": true,
+      "protected_registry_preparation": "not-run-for-this-unregistered-package",
+      "r2_writes": 0,
+      "rows": 33,
+      "schema_version": 1,
+      "source_revision": "a8d4b6abe45a608939b4a202a37ce94dbbd76c8a",
+      "states": {
+        "did_not_play": 12,
+        "played": 21
+      }
+    },
+    {
+      "classification": "diagnostic-not-source-acceptance",
+      "source_inventory": {
+        "boxscore_and_period_source": {
+          "error_type": "ReadTimeout",
+          "status": "blocked-or-error"
+        },
+        "core_game_logs": {
+          "error_type": "ReadTimeout",
+          "status": "blocked-or-error"
+        },
+        "espn_scoreboard": {
+          "rows": [
+            12
+          ],
+          "status": "returned-data"
+        },
+        "lineup_source": {
+          "error_type": "ReadTimeout",
+          "status": "blocked-or-error"
+        },
+        "on_off_source": {
+          "error_type": "ReadTimeout",
+          "status": "blocked-or-error"
+        },
+        "play_by_play_source": {
+          "error_type": "ReadTimeout",
+          "status": "blocked-or-error"
+        }
+      }
+    }
+  ],
+  "durable_staging_commit": "e4900f515bc2536859293599efdd7ba7889a7969"
+}

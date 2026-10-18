@@ -1,0 +1,32 @@
+{
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "bundle_sha256": "e3d2f07ebadfbea3fde3c4f273dae0b4d7457d0e98c054383aea18e3ae883e51",
+  "coverage": "listed_player_rows_only",
+  "explicit_dnp": 5,
+  "game_id": 22500003,
+  "identity_catalog": "raw/player_game_stats/2025-26_regular_season.csv",
+  "identity_catalog_bytes": 4993942,
+  "identity_catalog_sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+  "maximum_minute_difference_from_pdf": 0.5,
+  "played": 21,
+  "played_ids_match_official_pdf": true,
+  "publication": "rejected-by-existing-official-source-gate",
+  "r2_writes": 0,
+  "retrieved_at": "2026-10-18T10:22:09.213880+00:00",
+  "rows": 26,
+  "source": "espn_game_summary:401809234",
+  "source_payload_encoding": "serialized parsed JSON returned by existing adapter; no historical injury interpretation",
+  "source_payloads": [
+    {
+      "path": "sources/scoreboard.json",
+      "sha256": "40d6aa3db7beff77915e1e149f3aa39406dba48b7adc139a4178becbde180e48",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20251022"
+    },
+    {
+      "path": "sources/summary.json",
+      "sha256": "57ca1520b6bf08309bfc8a85861d82c4d74374f8224a0d8ee13f3ee852891e15",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401809234"
+    }
+  ]
+}
