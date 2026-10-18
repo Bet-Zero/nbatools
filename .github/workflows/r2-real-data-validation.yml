@@ -36,6 +36,18 @@ on:
       publication_publisher_sha:
         type: string
         required: true
+      backup_generation:
+        description: "Internal read-only backup after approved publication and live verification"
+        type: string
+        required: false
+        default: ""
+    secrets:
+      R2_VALIDATION_ACCOUNT_ID:
+        required: true
+      R2_VALIDATION_ACCESS_KEY_ID:
+        required: true
+      R2_VALIDATION_SECRET_ACCESS_KEY:
+        required: true
   push:
     branches: ["r2-validation/**"]
     paths: [".github/r2-validation-request.json"]
@@ -104,7 +116,7 @@ jobs:
       - name: Check out the exact push or requested manual revision
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'push' && github.sha || inputs.target_ref }}
+          ref: ${{ inputs.backup_generation != '' && github.sha || github.event_name == 'push' && github.sha || inputs.target_ref }}
           fetch-depth: 2
           path: candidate
           persist-credentials: false
@@ -117,6 +129,7 @@ jobs:
           SCOPE: ${{ inputs.scope }}
           TESTS: ${{ inputs.tests }}
           RAW_QA_CASES: ${{ inputs.raw_qa_cases }}
+          BACKUP_GENERATION: ${{ inputs.backup_generation }}
         working-directory: candidate
         run: python ../workflow/tools/resolve_r2_validation_request.py
 
@@ -365,7 +378,7 @@ jobs:
           name: required-numerical-${{ github.run_id }}
           path: outputs/required_data_validation/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: ${{ startsWith(github.ref, 'refs/heads/r2-validation/cloud-backup-') && 1 || 7 }}
 
   publication-readonly:
     name: Read-only publication preparation or verification
@@ -441,3 +454,168 @@ jobs:
           path: work/verified/receipt.json
           retention-days: 30
           if-no-files-found: error
+
+  retain-data-inventory:
+    name: Preserve read-only data inventory for cloud agents
+    needs: [preflight, data-backed-tests]
+    if: >-
+      startsWith(github.ref, 'refs/heads/r2-validation/data-inventory-') &&
+      needs.preflight.outputs.tests == 'tests/cloud_data_inventory_real_data.py::test_generate_production_inventory' &&
+      needs.data-backed-tests.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: required-numerical-${{ github.run_id }}
+          path: evidence
+      - name: Bind inventory to the validated generation
+        env:
+          EXPECTED_GENERATION: ${{ needs.preflight.outputs.generation }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path('evidence/acquired_data/data-inventory/inventory.json').read_text())
+          assert report['generation_id'] == os.environ['EXPECTED_GENERATION']
+          assert report['origin'] == 'active_production_r2'
+          assert report['production_writes'] == 0
+          assert report['evidence']['active_pointer']['manifest_sha256'] == report['evidence']['manifest_sha256']
+          assert report['file_count'] == len(report['files'])
+          assert all(f['integrity'] == 'verified' for f in report['files'])
+          PY
+      - name: Retain permanent inventory without R2 credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Bet-Zero/nbatools
+        run: >-
+          gh release create "data-inventory-$GITHUB_RUN_ID"
+          evidence/acquired_data/data-inventory/inventory.json
+          evidence/acquired_data/data-inventory/inventory.md
+          evidence/acquired_data/data-inventory/example-collection-request.json
+          --target "${{ needs.preflight.outputs.candidate_sha }}"
+          --title "Read-only data inventory $GITHUB_RUN_ID"
+          --notes "Authenticated production-generation inventory; no R2 writes. Check generation and timestamp before use."
+          --latest=false
+
+  retain-backup:
+    name: Preserve manual cloud backup independently of R2
+    needs: [preflight, data-backed-tests]
+    if: >-
+      ((github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/heads/r2-validation/cloud-backup-')) ||
+      (inputs.backup_generation != '' && github.ref == 'refs/heads/main')) &&
+      needs.preflight.outputs.tests == 'tests/cloud_operations_real_data.py::test_full_generation_backup' &&
+      needs.data-backed-tests.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # No R2 environment or secrets. Existing repository token only, for this
+    # backup release. No cron, production deployment or R2 publication.
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: required-numerical-${{ github.run_id }}
+          path: evidence
+      - name: Check same-run exact backup and preserve a non-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Bet-Zero/nbatools
+          EXPECTED_GENERATION: ${{ needs.preflight.outputs.generation }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('evidence/acquired_data/cloud-backup')
+          receipt = json.loads((root / 'backup-receipt.json').read_text())
+          if receipt['workflow_run_id'] != os.environ['GITHUB_RUN_ID'] or receipt['workflow_sha'] != os.environ['GITHUB_SHA'] or receipt['generation_id'] != os.environ['EXPECTED_GENERATION']:
+              raise ValueError('Backup identity differs from this reviewed request')
+          archive = root / 'generation.zip'
+          if receipt['r2_writes'] != 0 or receipt['production_pointer_unchanged'] is not True or not 0 < archive.stat().st_size <= 200_000_000 or archive.stat().st_size != receipt['archive_bytes'] or hashlib.sha256(archive.read_bytes()).hexdigest() != receipt['archive_sha256']:
+              raise ValueError('Backup failed the retention gate')
+          PY
+          gh release create "cloud-backup-$GITHUB_RUN_ID" evidence/acquired_data/cloud-backup/generation.zip evidence/acquired_data/cloud-backup/backup-receipt.json --target "$GITHUB_SHA" --title "NBA cloud backup $GITHUB_RUN_ID" --notes "Validated byte-exact read-only R2 export. Independent restore result is attached after the separate runner finishes. No production publication or scheduled refresh." --latest=false
+
+  restore-backup:
+    name: Restore durable release on a separate secret-free runner
+    needs: [preflight, retain-backup]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.preflight.outputs.candidate_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev,api]"
+      - name: Download permanent backup and verify offline restore without R2 credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Bet-Zero/nbatools
+          DATA_SOURCE: local
+        run: |
+          gh release download "cloud-backup-$GITHUB_RUN_ID" --pattern generation.zip --pattern backup-receipt.json --dir recovered
+          python -m tools.cloud_backup recovered/generation.zip recovered/backup-receipt.json recovered/data
+          python -m tools.data_availability from-backup recovered/data --receipt recovered/backup-receipt.json --output data-inventory
+          python -m tools.cloud_refresh plan --output refresh-plan.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          result = {'state': 'not_requested', 'candidate': None, 'production_writes': 0, 'reason': 'Owner direction: laptop acquisition only; no cloud API investigation or refresh'}
+          Path('freshness-receipt.json').write_text(json.dumps(result, indent=2) + '\n')
+          print('CLOUD_FRESHNESS_JSON', json.dumps(result, sort_keys=True))
+          # This is an explicit setup diagnostic. Failed acquisition is retained
+          # as failed and cannot be treated as fresh data or a candidate.
+          assert result['production_writes'] == 0
+          assert result['state'] in {'failed', 'prepared_no_writes', 'not_requested'}
+          if result['state'] == 'failed':
+              assert result['candidate'] is None
+          PY
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          assert not any(os.environ.get(k) for k in ('R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY'))
+          os.environ['NBATOOLS_DATA_ROOT'] = str(Path('recovered').resolve())
+          os.environ.pop('NBATOOLS_DATA_GENERATION', None)
+          from nbatools.data_source import data_read_csv
+          rows = data_read_csv('data/raw/player_game_stats/2025-26_regular_season.csv')
+          assert len(rows) > 1000 and {'player_id', 'game_id', 'pts'}.issubset(rows.columns)
+          print('CLOUD_RESTORE_LOADER_ROWS', len(rows))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cloud-restore-receipt-${{ github.run_id }}
+          path: |
+            restore-receipt.json
+            data-inventory/
+            refresh-plan.json
+            freshness-receipt.json
+          if-no-files-found: error
+          retention-days: 7
+
+  retain-restore-receipt:
+    name: Preserve separate-runner restore result with the permanent backup
+    needs: restore-backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: cloud-restore-receipt-${{ github.run_id }}
+          path: restored
+      - name: Append receipts without replacing the backup assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Bet-Zero/nbatools
+        run: gh release upload "cloud-backup-$GITHUB_RUN_ID" restored/restore-receipt.json restored/refresh-plan.json restored/freshness-receipt.json restored/data-inventory/inventory.json restored/data-inventory/inventory.md

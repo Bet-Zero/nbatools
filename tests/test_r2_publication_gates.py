@@ -165,6 +165,52 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     )
 
 
+def test_reusable_publication_only_receives_named_readonly_r2_secrets():
+    """Required environment secrets must be explicitly passed across workflow_call."""
+    caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
+    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-real-data-validation.yml").read_text())
+    expected = {
+        name: "${{ secrets." + name + " }}"
+        for name in (
+            "R2_VALIDATION_ACCOUNT_ID",
+            "R2_VALIDATION_ACCESS_KEY_ID",
+            "R2_VALIDATION_SECRET_ACCESS_KEY",
+        )
+    }
+    jobs = caller["jobs"]
+    for name in ("prepare", "verify", "backup"):
+        assert jobs[name]["secrets"] == expected
+        assert jobs[name]["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+    # No broad repository-secret inheritance or write-credential propagation.
+    assert (
+        "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
+    )
+    assert "secrets" not in jobs["publish"]
+    call = reusable.get("on", reusable.get(True))["workflow_call"]
+    assert call["secrets"] == {name: {"required": True} for name in expected}
+    assert reusable["jobs"]["publication-readonly"]["environment"] == "r2-validation"
+
+
+def test_backup_only_follows_approved_published_and_verified_generation():
+    caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
+    backup = caller["jobs"]["backup"]
+    assert backup["needs"] == ["resolve", "verify"]
+    assert backup["if"] == "inputs.mode == 'publish' && needs.verify.result == 'success'"
+    assert backup["with"]["backup_generation"] == "${{ needs.resolve.outputs.generation_id }}"
+    assert backup["with"]["publication_package"] == ""
+    assert backup["permissions"] == {"contents": "write", "actions": "read"}
+    assert "R2_PUBLICATION" not in json.dumps(backup)
+    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-real-data-validation.yml").read_text())
+    request = reusable["jobs"]["request"]
+    assert "backup_generation" in json.dumps(request)
+    restore = reusable["jobs"]["restore-backup"]
+    # Owner now uses an acquisition laptop; no backup path may start NBA API calls.
+    assert "from tools.cloud_refresh import prepare" not in json.dumps(restore)
+    assert "result = prepare(" not in json.dumps(restore)
+    assert "tools.data_availability from-backup" in json.dumps(restore)
+    assert "'state': 'not_requested'" in json.dumps(restore)
+
+
 def test_source_archive_validation_rejects_substitution_and_traversal(tmp_path, monkeypatch):
     import zipfile
 

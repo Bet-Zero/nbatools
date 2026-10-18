@@ -1,0 +1,70 @@
+{
+  "phase": "setup-only; features paused",
+  "source_revision": "9e81bacbd75f882c5194eb70b6900bbdf30bd0fc",
+  "fresh_core": {
+    "state": "not qualified",
+    "direct_stats": "Existing accepted evidence: normal retries and bounded siblings time out. Not repeated.",
+    "public_nba_web_route": "Actual cloud diagnostic39149759138: game boxscore and player/team traditional pages allHTTP403; noembeddedNextData. Three ordinary requests, no retry/bypass; stop.",
+    "current_season": "2026-27 regular season starts2026-10-20 in actual official schedule; current empty advanced table is not fresh game data or proof of future acquisition"
+  },
+  "rejected_finder_2027": {
+    "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguegamefinder/2027/regular-season.json",
+    "sha256": "6e4ee9ea175c11838d31833679356a1e41c34d6edd3dea2844d796523f531259",
+    "bytes": 5587015,
+    "parameters_season": null,
+    "rows": 30000,
+    "actual_seasons": [
+      "22013",
+      "22014",
+      "22015",
+      "22016",
+      "22017",
+      "22018",
+      "22019",
+      "22020",
+      "22021",
+      "22022",
+      "22023",
+      "22024",
+      "22025"
+    ],
+    "decision": "reject for2026-27: missing season filter and old multi-season rows; filename and mirror commit do not establish freshness"
+  },
+  "newly_qualified_inputs": {
+    "player_advanced": "582 official2025-26 Advanced/PerGame rows via unchanged normalizer",
+    "team_advanced": "30 official2025-26 teams, W/L independently match2460 accepted team-game records; source teamMIN not used as per-game minutes",
+    "standings": "30 official2025-26 teams, W/L independently match accepted games",
+    "schedule": "Official2026-27 planning payload:1206 regular identities including6TBD matchups,0final; preserve source, never label future rowsFinal or insert into existing completed-game schedule",
+    "rosters": "29official2025-26 team snapshots/512rows; missingNYK1610612752HTTP404. PartialCSV outsidecanonical raw/rosters; not complete/current/historical membership"
+  },
+  "period_and_on_off": {
+    "state": "unqualified; exact official dataset required",
+    "period": "Prior3zero-filled period captures rejected; no new exact period advanced captures identified. No retries/relabeling.",
+    "on_off_alternative": {
+      "repository": "devinross/nba-stats",
+      "revision": "ece59734425b5d7dd25aa74b30072a4cacaec2e8",
+      "decision": "Reject: dashboard uses TeamPlayerOnOffDetails, not Summary; truncates on minutes and discards off minutes, GP, PLUS_MINUS and split provenance. Cannot satisfy current contract."
+    }
+  },
+  "freshness_rollover": {
+    "state": "manual staged input qualification only; no full-season acceptance",
+    "last_good": "new destination only; existing snapshots never overwritten",
+    "empty_upcoming": "retained as planning evidence, cannot replace known-good season or mark full refresh ready",
+    "source_capture_time": "unknown; mirror commit and retrieval are not endpoint capture time",
+    "automatic_refresh": false,
+    "production_writes": 0,
+    "backup": "AcceptedPR504 protections unchanged; not retested"
+  },
+  "recommendation": "Use pinned exact-source captures for qualified development inputs and retain last-good generations. Full freshness needs a cloud-reachable authorized exact NBA Stats feed/collector for period, on-off, complete roster and current core. A public upstream mirror could add missing exact raw captures; otherwise qualify an authorized data-provider route before any credentials or spending request. Do not buy a generic scores/boxscore API expecting NBA Stats period/on-off equivalence.",
+  "owner_action_now": "Only external-contact permission pending: authorize the prepared SportsDataverse issue or keep it unsent. No credential, spending or production approval requested.",
+  "acceptance": "Full laptop independence for every required data lifecycle remains unproven.",
+  "actual_verification": {
+    "run_id": 39149759138,
+    "job_id": 117740963560,
+    "selected": 3,
+    "executed": 3,
+    "passed": 3,
+    "skipped": 0,
+    "classification": "twoactualcollection/recoverytests plusoneboundeddiagnostic;403notdataacceptance"
+  }
+}

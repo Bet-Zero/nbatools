@@ -126,6 +126,36 @@
           }
         }
       ]
+    },
+    "cloud-acceptance-cle-nyk-v1": {
+      "publisher_sha": "e676bd4787f9ece2c404b770dd8041daa5d8c241",
+      "script": "working/nba-tools-completion-program/publish-cloud-acceptance.py",
+      "script_sha256": "9c055dcc6b7048c3cb0916bd7c961e13b6048b7eb48f70373c3d338df471800c",
+      "inventory": "working/nba-tools-completion-program/cloud-acceptance-inventory.json",
+      "inventory_sha256": "4f56374108a99d98c03b774eb05509b5d92b693a0437b8121fe4f9085f621ac1",
+      "generation_id": "cloud-acceptance-cle-nyk-20261018",
+      "deployed_checks": [
+        {
+          "query": "Cavaliers record without Darius Garland on October 22 2025",
+          "summary": {
+            "team_name": "Cleveland Cavaliers",
+            "games": 1,
+            "wins": 0,
+            "losses": 1,
+            "pts_avg": 111.0
+          }
+        },
+        {
+          "query": "Knicks record without Josh Hart on October 22 2025",
+          "summary": {
+            "team_name": "New York Knicks",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 119.0
+          }
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "mirror": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "9e81bacbd75f882c5194eb70b6900bbdf30bd0fc",
+  "retrieved_at": "2026-10-18T17:24:50.058360+00:00",
+  "original_capture_time": "unknown",
+  "scope": "completed-season input snapshots and separate upcoming-season planning",
+  "season": "2025-26",
+  "as_of_completed_game": "2026-04-12",
+  "roster_snapshot": {
+    "state": "partial; not canonical whole-league output",
+    "teams": 29,
+    "rows": 512,
+    "missing_team_ids": [
+      1610612752
+    ]
+  },
+  "canonical_rows": {
+    "player_season_advanced": 582,
+    "team_season_advanced": 30,
+    "standings_snapshots": 30
+  },
+  "sources": {
+    "players.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguedashplayerstats/2026/regular-season_advanced_pergame.json",
+      "bytes": 271545,
+      "sha256": "2e76293f227e47eb77dbe431f993fa4ada5f7ff3d2273f2b8724a26b32c49407"
+    },
+    "teams.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguedashteamstats/2026/regular-season_advanced_pergame.json",
+      "bytes": 9243,
+      "sha256": "a7648bbc9016a7201a21ff5968624c4b9d792f97231e6e764481784628779498"
+    },
+    "standings.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguestandings/2026/regular-season.json",
+      "bytes": 18393,
+      "sha256": "896df4b77b33ab389d4f51fdfe17b845f2ca21b0c697d77db370e88f61d5ac3e"
+    },
+    "upcoming-schedule.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/scheduleleaguev2/2027.json",
+      "bytes": 4384346,
+      "sha256": "a82546f1c2ef58ef36eedf598de7caffb6d5594c2a84caea27ffb7628f32d7b7"
+    },
+    "upcoming-players.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguedashplayerstats/2027/regular-season_advanced_pergame.json",
+      "bytes": 1994,
+      "sha256": "87b49c92157e4d3be8d4df1a01b817fb1aa3c0c02ff0eb833c9d15fd6f722c4c"
+    },
+    "upcoming-standings.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/leaguestandingsv3/2027/regular-season.json",
+      "bytes": 18207,
+      "sha256": "c59ee952275ff055033d8f7fff54b46472f4af23504d333ff3beb1aad90cecb6"
+    },
+    "roster-1610612737.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612737.json",
+      "bytes": 5049,
+      "sha256": "a0d8aec0f97a72472ecf367fcff121d3a69397e67a70076e012ab92811e17318"
+    },
+    "roster-1610612738.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612738.json",
+      "bytes": 4012,
+      "sha256": "56f16f4e232b816dea8a1f0a4654ece7e923d4a9758e36317a23c55fda2f1d86"
+    },
+    "roster-1610612739.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612739.json",
+      "bytes": 4586,
+      "sha256": "766652680dd2c6a49c62f2a1cf280dda3fe5528e51659a7c4563bbdb42dad0bf"
+    },
+    "roster-1610612740.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612740.json",
+      "bytes": 3948,
+      "sha256": "e4d8e968bb9a527134dcce83c733d9f2dd4f686e295753da5074a2bfbfc7f7bc"
+    },
+    "roster-1610612741.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612741.json",
+      "bytes": 4394,
+      "sha256": "472d547a4cba0e1ef5e638214dbf761941fe6ec3e482f097587cd259fb0cbca3"
+    },
+    "roster-1610612742.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612742.json",
+      "bytes": 4753,
+      "sha256": "647d8b16b3d1969aa256cdf07ccc94116f0c2f4d62b0e178b5054b1f9d76115f"
+    },
+    "roster-1610612743.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612743.json",
+      "bytes": 4394,
+      "sha256": "b70bf6aefc694cce9e7e893be018a8f14ac634a03a98d4d6413c04ac7c48e7f5"
+    },
+    "roster-1610612744.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612744.json",
+      "bytes": 4910,
+      "sha256": "97ee59dd02817fc3f7c26fba3ac730bc56ffb859157b30c1895a386883c76ce0"
+    },
+    "roster-1610612745.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612745.json",
+      "bytes": 4293,
+      "sha256": "113c1cabc8102f052ff969a6c2906d5e7c0659a0b4b7c27393d8cc0bda306a91"
+    },
+    "roster-1610612746.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612746.json",
+      "bytes": 4843,
+      "sha256": "f039897f028ebf102e024fdf3d0112021433d34a88f08bd77c494639efaa5555"
+    },
+    "roster-1610612747.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612747.json",
+      "bytes": 4238,
+      "sha256": "b8a9c56a0a3ca84bbbe9b98aa8dab3fc0cb43ad69006f562bf1d6952642ad462"
+    },
+    "roster-1610612748.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612748.json",
+      "bytes": 4287,
+      "sha256": "c9fe974656c2132f11655c597e53711d9ad81ece0a30af8868f1fa124410b2f9"
+    },
+    "roster-1610612749.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612749.json",
+      "bytes": 4544,
+      "sha256": "fdb1ea5c9a6287c1f6c90fd2431b81e7173cc9a3186c1f4c75e46fc713754cf7"
+    },
+    "roster-1610612750.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612750.json",
+      "bytes": 4573,
+      "sha256": "b83b6e7ccd1eb39d02245583608af720665629926eef30fd545030270ee407bf"
+    },
+    "roster-1610612751.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612751.json",
+      "bytes": 4726,
+      "sha256": "d4b548376dd4bf1a2a5f6e7f9ed42935525537f196a946e6400a2d10f58e0fd8"
+    },
+    "roster-1610612752.json": {
+      "status": "missing",
+      "http_status": 404,
+      "path": "commonteamroster/2026/1610612752.json"
+    },
+    "roster-1610612753.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612753.json",
+      "bytes": 4184,
+      "sha256": "51434e80df043e27f12852e0a2311ca415d3f9ee6b357218323653907d0a68c5"
+    },
+    "roster-1610612754.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612754.json",
+      "bytes": 4678,
+      "sha256": "23b42800dd9e7bc8940a31bc38e995ba33d94873dc5c15e121e1a7d4f0b96ef2"
+    },
+    "roster-1610612755.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612755.json",
+      "bytes": 4144,
+      "sha256": "1090df1054c6c49571f8462608ebe5e29d35e2bc070faef5fff1379a54a7fae0"
+    },
+    "roster-1610612756.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612756.json",
+      "bytes": 4589,
+      "sha256": "174d19fd471578fe26394586b48806667e2a1b5fc9d7bacd5f7acd75129508fe"
+    },
+    "roster-1610612757.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612757.json",
+      "bytes": 4656,
+      "sha256": "c8356d5c761f85ad497c1bd1fd03eba2d1e204035fcad5c2945108052ef6692c"
+    },
+    "roster-1610612758.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612758.json",
+      "bytes": 4929,
+      "sha256": "19bccce0c73055d7fb3539666e40875ba191bbb42520e29017d52a3545e2fa45"
+    },
+    "roster-1610612759.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612759.json",
+      "bytes": 4353,
+      "sha256": "a146ccdac64d49fe7679dd76b02cf05b8d4658411804f5903873e7deea00c6cf"
+    },
+    "roster-1610612760.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612760.json",
+      "bytes": 4695,
+      "sha256": "eef7a931f4f692d2dae7fd1ac997af687615628ba83ef57d06c142498442b74e"
+    },
+    "roster-1610612761.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612761.json",
+      "bytes": 4473,
+      "sha256": "89667f30bda565080a16647f1a772d0ae167fa9138e5cde45013412cb3724eef"
+    },
+    "roster-1610612762.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612762.json",
+      "bytes": 4606,
+      "sha256": "f2b4d694ed85e32810769c7f612124bdf402397afa9778c2523015e41c6dd581"
+    },
+    "roster-1610612763.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612763.json",
+      "bytes": 4471,
+      "sha256": "0248ee7daf1bee9d416dc4fd57b53ae3c053cea220e71753dce873e72b3bfff4"
+    },
+    "roster-1610612764.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612764.json",
+      "bytes": 4511,
+      "sha256": "b00799c0241195f14209c6f0bbda567a1a0e2e760cfe4b39d635ea910350f5da"
+    },
+    "roster-1610612765.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612765.json",
+      "bytes": 4792,
+      "sha256": "d5d08d934f3081c05aae5f651c61d1e55a4951ec8b2356c39954070c82d1e1a5"
+    },
+    "roster-1610612766.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/nba_stats/json/commonteamroster/2026/1610612766.json",
+      "bytes": 4788,
+      "sha256": "30b4a95fe4cd7d57751f5e213e7e5ac87a841e693145e54a7f70927241f17c04"
+    },
+    "LICENSE.md": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/9e81bacbd75f882c5194eb70b6900bbdf30bd0fc/LICENSE.md",
+      "bytes": 1071,
+      "sha256": "39f4e4d76b413282fadec978d2cb7996fd8ea952a6cc462235080d61b5fc0932"
+    }
+  },
+  "accepted_finder_bundle_sha256": "76aad9d054c5edc6d699e26a72f89073b55908a247ee9c72dee414e2f70c99f1",
+  "rollover": {
+    "season": "2026-27",
+    "regular_games": 1206,
+    "unresolved_matchups": 6,
+    "final_regular_games": 0,
+    "first_regular_date": "2026-10-20",
+    "scope": "planning only; not the canonical completed-game schedule",
+    "advanced_player_rows": 0,
+    "standings_rows": 30,
+    "promotion": "blocked: new season inputs/period/on-off not qualified",
+    "previous_season_preserved": true
+  },
+  "automatic_refresh": false,
+  "production_writes": 0,
+  "limitations": [
+    "No live NBA Stats access or full refresh acceptance",
+    "Roster snapshot is not historical membership intervals",
+    "Upcoming official schedule retained as planning source, never mislabeled Final",
+    "No period/on-off substitution",
+    "Mirror commit/retrieval time is not original capture time"
+  ],
+  "files": {
+    "data/raw/player_season_advanced/2025-26_regular_season.csv": {
+      "bytes": 77370,
+      "sha256": "f7fb4f6b08fa39c340f9ffdabaaab139963f4c5a3f010f773dea2fbb6789d372"
+    },
+    "data/raw/standings_snapshots/2025-26_regular_season.csv": {
+      "bytes": 2790,
+      "sha256": "6f7117371073d409186b341a00120cd37b9f97c37906c55cb492820953f141c8"
+    },
+    "data/raw/team_season_advanced/2025-26_regular_season.csv": {
+      "bytes": 2727,
+      "sha256": "d11413c85311a106a6e3b2b02b4adebb5736b79c01ecb89ef40cbf6d44df16c7"
+    },
+    "partial/rosters.csv": {
+      "bytes": 44122,
+      "sha256": "871555206a1f8c324bbbb4fdeecee8c157e1188b0a4df1bfc34a04c01b8a25bf"
+    },
+    "sources/LICENSE.md": {
+      "bytes": 1071,
+      "sha256": "39f4e4d76b413282fadec978d2cb7996fd8ea952a6cc462235080d61b5fc0932"
+    },
+    "sources/accepted-games.json": {
+      "bytes": 461430,
+      "sha256": "4958a89f58571814b15031389a517b0db724589f108cd3581a83e526bf0dd728"
+    },
+    "sources/players.json": {
+      "bytes": 271545,
+      "sha256": "2e76293f227e47eb77dbe431f993fa4ada5f7ff3d2273f2b8724a26b32c49407"
+    },
+    "sources/roster-1610612737.json": {
+      "bytes": 5049,
+      "sha256": "a0d8aec0f97a72472ecf367fcff121d3a69397e67a70076e012ab92811e17318"
+    },
+    "sources/roster-1610612738.json": {
+      "bytes": 4012,
+      "sha256": "56f16f4e232b816dea8a1f0a4654ece7e923d4a9758e36317a23c55fda2f1d86"
+    },
+    "sources/roster-1610612739.json": {
+      "bytes": 4586,
+      "sha256": "766652680dd2c6a49c62f2a1cf280dda3fe5528e51659a7c4563bbdb42dad0bf"
+    },
+    "sources/roster-1610612740.json": {
+      "bytes": 3948,
+      "sha256": "e4d8e968bb9a527134dcce83c733d9f2dd4f686e295753da5074a2bfbfc7f7bc"
+    },
+    "sources/roster-1610612741.json": {
+      "bytes": 4394,
+      "sha256": "472d547a4cba0e1ef5e638214dbf761941fe6ec3e482f097587cd259fb0cbca3"
+    },
+    "sources/roster-1610612742.json": {
+      "bytes": 4753,
+      "sha256": "647d8b16b3d1969aa256cdf07ccc94116f0c2f4d62b0e178b5054b1f9d76115f"
+    },
+    "sources/roster-1610612743.json": {
+      "bytes": 4394,
+      "sha256": "b70bf6aefc694cce9e7e893be018a8f14ac634a03a98d4d6413c04ac7c48e7f5"
+    },
+    "sources/roster-1610612744.json": {
+      "bytes": 4910,
+      "sha256": "97ee59dd02817fc3f7c26fba3ac730bc56ffb859157b30c1895a386883c76ce0"
+    },
+    "sources/roster-1610612745.json": {
+      "bytes": 4293,
+      "sha256": "113c1cabc8102f052ff969a6c2906d5e7c0659a0b4b7c27393d8cc0bda306a91"
+    },
+    "sources/roster-1610612746.json": {
+      "bytes": 4843,
+      "sha256": "f039897f028ebf102e024fdf3d0112021433d34a88f08bd77c494639efaa5555"
+    },
+    "sources/roster-1610612747.json": {
+      "bytes": 4238,
+      "sha256": "b8a9c56a0a3ca84bbbe9b98aa8dab3fc0cb43ad69006f562bf1d6952642ad462"
+    },
+    "sources/roster-1610612748.json": {
+      "bytes": 4287,
+      "sha256": "c9fe974656c2132f11655c597e53711d9ad81ece0a30af8868f1fa124410b2f9"
+    },
+    "sources/roster-1610612749.json": {
+      "bytes": 4544,
+      "sha256": "fdb1ea5c9a6287c1f6c90fd2431b81e7173cc9a3186c1f4c75e46fc713754cf7"
+    },
+    "sources/roster-1610612750.json": {
+      "bytes": 4573,
+      "sha256": "b83b6e7ccd1eb39d02245583608af720665629926eef30fd545030270ee407bf"
+    },
+    "sources/roster-1610612751.json": {
+      "bytes": 4726,
+      "sha256": "d4b548376dd4bf1a2a5f6e7f9ed42935525537f196a946e6400a2d10f58e0fd8"
+    },
+    "sources/roster-1610612753.json": {
+      "bytes": 4184,
+      "sha256": "51434e80df043e27f12852e0a2311ca415d3f9ee6b357218323653907d0a68c5"
+    },
+    "sources/roster-1610612754.json": {
+      "bytes": 4678,
+      "sha256": "23b42800dd9e7bc8940a31bc38e995ba33d94873dc5c15e121e1a7d4f0b96ef2"
+    },
+    "sources/roster-1610612755.json": {
+      "bytes": 4144,
+      "sha256": "1090df1054c6c49571f8462608ebe5e29d35e2bc070faef5fff1379a54a7fae0"
+    },
+    "sources/roster-1610612756.json": {
+      "bytes": 4589,
+      "sha256": "174d19fd471578fe26394586b48806667e2a1b5fc9d7bacd5f7acd75129508fe"
+    },
+    "sources/roster-1610612757.json": {
+      "bytes": 4656,
+      "sha256": "c8356d5c761f85ad497c1bd1fd03eba2d1e204035fcad5c2945108052ef6692c"
+    },
+    "sources/roster-1610612758.json": {
+      "bytes": 4929,
+      "sha256": "19bccce0c73055d7fb3539666e40875ba191bbb42520e29017d52a3545e2fa45"
+    },
+    "sources/roster-1610612759.json": {
+      "bytes": 4353,
+      "sha256": "a146ccdac64d49fe7679dd76b02cf05b8d4658411804f5903873e7deea00c6cf"
+    },
+    "sources/roster-1610612760.json": {
+      "bytes": 4695,
+      "sha256": "eef7a931f4f692d2dae7fd1ac997af687615628ba83ef57d06c142498442b74e"
+    },
+    "sources/roster-1610612761.json": {
+      "bytes": 4473,
+      "sha256": "89667f30bda565080a16647f1a772d0ae167fa9138e5cde45013412cb3724eef"
+    },
+    "sources/roster-1610612762.json": {
+      "bytes": 4606,
+      "sha256": "f2b4d694ed85e32810769c7f612124bdf402397afa9778c2523015e41c6dd581"
+    },
+    "sources/roster-1610612763.json": {
+      "bytes": 4471,
+      "sha256": "0248ee7daf1bee9d416dc4fd57b53ae3c053cea220e71753dce873e72b3bfff4"
+    },
+    "sources/roster-1610612764.json": {
+      "bytes": 4511,
+      "sha256": "b00799c0241195f14209c6f0bbda567a1a0e2e760cfe4b39d635ea910350f5da"
+    },
+    "sources/roster-1610612765.json": {
+      "bytes": 4792,
+      "sha256": "d5d08d934f3081c05aae5f651c61d1e55a4951ec8b2356c39954070c82d1e1a5"
+    },
+    "sources/roster-1610612766.json": {
+      "bytes": 4788,
+      "sha256": "30b4a95fe4cd7d57751f5e213e7e5ac87a841e693145e54a7f70927241f17c04"
+    },
+    "sources/standings.json": {
+      "bytes": 18393,
+      "sha256": "896df4b77b33ab389d4f51fdfe17b845f2ca21b0c697d77db370e88f61d5ac3e"
+    },
+    "sources/teams.json": {
+      "bytes": 9243,
+      "sha256": "a7648bbc9016a7201a21ff5968624c4b9d792f97231e6e764481784628779498"
+    },
+    "sources/upcoming-players.json": {
+      "bytes": 1994,
+      "sha256": "87b49c92157e4d3be8d4df1a01b817fb1aa3c0c02ff0eb833c9d15fd6f722c4c"
+    },
+    "sources/upcoming-schedule.json": {
+      "bytes": 4384346,
+      "sha256": "a82546f1c2ef58ef36eedf598de7caffb6d5594c2a84caea27ffb7628f32d7b7"
+    },
+    "sources/upcoming-standings.json": {
+      "bytes": 18207,
+      "sha256": "c59ee952275ff055033d8f7fff54b46472f4af23504d333ff3beb1aad90cecb6"
+    }
+  },
+  "durable_bundle": {
+    "path": "season-inputs-staging.zip",
+    "bytes": 609764,
+    "sha256": "6100b35bdef4ea0ea2f6791d9fdaa39d82004e6507f840329934218826d36f72"
+  }
+}
