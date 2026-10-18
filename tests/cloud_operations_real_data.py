@@ -207,3 +207,141 @@ def test_alternative_cloud_details(tmp_path, capfd):
     output.write_text(json.dumps(report, indent=2) + "\n")
     with capfd.disabled():
         print("CLOUD_ALTERNATIVES_JSON " + json.dumps(report, sort_keys=True), flush=True)
+
+
+def test_espn_with_cloud_identity_catalog(tmp_path, capfd, monkeypatch):
+    """Qualify the existing alternative using full, authenticated cloud identity support."""
+    import base64
+    import io
+    import zipfile
+    from datetime import UTC, datetime
+
+    import pandas as pd
+    import requests
+
+    from nbatools.commands.pipeline import player_game_availability_espn as adapter
+    from nbatools.commands.pipeline.generation_publication import _resolve_r2_target
+    from nbatools.commands.pipeline.pull_player_game_availability import (
+        backfill,
+        validate_availability,
+        validate_publication,
+    )
+    from tools.r2_publication import verify_pointer_manifest
+
+    response = requests.get(
+        "https://raw.githubusercontent.com/Bet-Zero/nbatools/e4900f515bc2536859293599efdd7ba7889a7969/working/nba-tools-completion-program/cloud-staged/recovery-bundle.zip",
+        timeout=30,
+    )
+    response.raise_for_status()
+    assert (
+        hashlib.sha256(response.content).hexdigest()
+        == "1a482b76f7455dc6cefef89620e9e2d935f144b2c2765ce624080bf6e33ac9ea"
+    )
+    with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+        archive.extractall(tmp_path / "identity")  # authenticated fixed inventory
+    root = tmp_path / "identity/data"
+    suffix = "2025-26_regular_season.csv"
+    oracle = pd.read_csv(root / "raw/player_game_availability" / suffix)
+    client, bucket = _resolve_r2_target(client=None, bucket_name=None, env=None, env_file=None)
+    generation = os.environ["NBATOOLS_DATA_GENERATION"]
+    before, manifest, manifest_hash = verify_pointer_manifest(client, bucket, generation)
+    key = "raw/player_game_stats/" + suffix
+    item = next(item for item in manifest["files"] if item["path"] == key)
+    assert item["size_bytes"] < 20_000_000
+    body = client.get_object(Bucket=bucket, Key=f"generations/{generation}/{key}")["Body"]
+    try:
+        raw = body.read(item["size_bytes"] + 1)
+    finally:
+        body.close()
+    assert len(raw) == item["size_bytes"] and hashlib.sha256(raw).hexdigest() == item["sha256"]
+    (root / key).write_bytes(raw)
+
+    # Observe actual existing-source responses without changing any returned fact.
+    responses = {}
+    original = adapter._get_json
+
+    def record(endpoint):
+        payload = original(endpoint)
+        responses[endpoint] = payload
+        return payload
+
+    monkeypatch.setattr(adapter, "_get_json", record)
+    adapter._scoreboard.cache_clear()
+    rows = backfill(
+        "2025-26", "Regular Season", root=root, game_ids=[22500003], limit=1, source="espn"
+    )
+    validate_availability(rows)
+    played = rows[rows.participation_state.eq("played")]
+    expected = oracle[oracle.participation_state.eq("played")]
+    assert len(played) == 21 and set(played.player_id) == set(expected.player_id)
+    compare = played.merge(
+        expected, on=["player_id", "team_id"], suffixes=("_espn", "_pdf"), validate="one_to_one"
+    )
+    delta = (compare.source_minutes_espn - compare.source_minutes_pdf).abs()
+    assert len(compare) == 21 and delta.le(1).all()  # ESPN reports rounded whole minutes.
+    dnp = rows[rows.participation_state.eq("did_not_play")]
+    assert set(dnp.player_id) <= set(
+        oracle[oracle.participation_state.eq("did_not_play")].player_id
+    )
+    assert rows.coverage_scope.eq("listed_player_rows_only").all()
+    assert rows.source.eq("espn_game_summary:401809234").all()
+    with pytest.raises(ValueError, match="requires retained official source"):
+        validate_publication(root)  # Existing protected source gate stays intact.
+    after, _, after_hash = verify_pointer_manifest(client, bucket, generation)
+    assert before == after and manifest_hash == after_hash
+
+    evidence = {
+        "base_generation": generation,
+        "base_manifest_sha256": manifest_hash,
+        "identity_catalog": key,
+        "identity_catalog_sha256": item["sha256"],
+        "identity_catalog_bytes": len(raw),
+        "game_id": 22500003,
+        "source": "espn_game_summary:401809234",
+        "rows": len(rows),
+        "played": len(played),
+        "explicit_dnp": len(dnp),
+        "played_ids_match_official_pdf": True,
+        "maximum_minute_difference_from_pdf": float(delta.max()),
+        "coverage": "listed_player_rows_only",
+        "r2_writes": 0,
+        "publication": "rejected-by-existing-official-source-gate",
+        "retrieved_at": datetime.now(UTC).isoformat(),
+        "source_payload_encoding": "serialized parsed JSON returned by existing adapter; no historical injury interpretation",
+    }
+    bundle = tmp_path / "espn-staging"
+    (bundle / "sources").mkdir(parents=True)
+    source_receipts = []
+    for endpoint, payload in responses.items():
+        name = "scoreboard.json" if endpoint.startswith("scoreboard?") else "summary.json"
+        path = bundle / "sources" / name
+        path.write_text(json.dumps(payload, sort_keys=True) + "\n")
+        source_receipts.append(
+            {
+                "path": "sources/" + name,
+                "url": adapter.BASE_URL + endpoint,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+        )
+    evidence["source_payloads"] = source_receipts
+    rows.to_csv(bundle / "canonical-availability.csv", index=False)
+    oracle.to_csv(bundle / "official-pdf-comparison.csv", index=False)
+    identities = adapter._nba_players(root, "2025-26", "regular_season")
+    identities[identities.player_id.isin(rows.player_id)][
+        ["team_id", "player_id", "player_name"]
+    ].drop_duplicates().to_csv(bundle / "derived-identity-support.csv", index=False)
+    (bundle / "receipt.json").write_text(json.dumps(evidence, indent=2) + "\n")
+    payload = io.BytesIO()
+    with zipfile.ZipFile(payload, "w", zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(bundle.rglob("*")):
+            if path.is_file():
+                archive.write(path, path.relative_to(bundle).as_posix())
+    raw = payload.getvalue()
+    assert len(raw) < 512_000
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"])
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "espn-development-staging.zip").write_bytes(raw)
+    evidence["bundle_sha256"] = hashlib.sha256(raw).hexdigest()
+    with capfd.disabled():
+        print("CLOUD_ESPN_JSON " + json.dumps(evidence, sort_keys=True), flush=True)
+        print("CLOUD_ESPN_BUNDLE_BASE64 " + base64.b64encode(raw).decode(), flush=True)
