@@ -353,14 +353,14 @@ def _build_applied_filters(
     if opponent:
         value = ", ".join(opponent) if isinstance(opponent, list) else opponent
         applied_filters.append({"label": "Opponent", "value": value, "kind": "team"})
-    if source.get("without_player"):
+    without_player = route_kwargs.get("without_player", source.get("without_player"))
+    with_player = route_kwargs.get("with_player", source.get("with_player"))
+    if without_player:
         applied_filters.append(
-            {"label": "Without player", "value": source["without_player"], "kind": "player"}
+            {"label": "Without player", "value": without_player, "kind": "player"}
         )
-    if source.get("with_player"):
-        applied_filters.append(
-            {"label": "With player", "value": source["with_player"], "kind": "player"}
-        )
+    if with_player:
+        applied_filters.append({"label": "With player", "value": with_player, "kind": "player"})
     if source.get("home_only"):
         applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
     if source.get("away_only"):
@@ -586,6 +586,9 @@ def _build_query_metadata(
     route_kwargs = parsed.get("route_kwargs")
     if not isinstance(route_kwargs, dict):
         route_kwargs = {}
+    if route == "team_record":
+        # Names in the participation condition are not the record's subject.
+        player = None
     if "team" in route_kwargs:
         team = route_kwargs["team"]
     if isinstance(team, list):
@@ -637,8 +640,8 @@ def _build_query_metadata(
         "opponent_division": parsed.get("opponent_division")
         or route_kwargs.get("opponent_division"),
         "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
-        "with_player": parsed.get("with_player") or route_kwargs.get("with_player"),
-        "without_player": parsed.get("without_player"),
+        "with_player": route_kwargs.get("with_player", parsed.get("with_player")),
+        "without_player": route_kwargs.get("without_player", parsed.get("without_player")),
         "unresolved_availability_player": route_kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": parsed.get("opponent_quality"),

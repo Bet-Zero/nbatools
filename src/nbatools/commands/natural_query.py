@@ -4021,6 +4021,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     notes: list[str] = []
     route = None
     route_kwargs = None
+    applied_pair = None
 
     # "<team> when <player> <condition>" ("knicks when brunson scores 30")
     # is a record-shaped ask even without the word "record" — answer with
@@ -4096,6 +4097,18 @@ def _route_parsed_query(parsed: dict) -> dict:
     dedicated_availability_boundary = bool(
         "both play" in q and team and team_record_availability_intent
     )
+    if generic_boundary_note and "both play" in q and player:
+        dedicated_availability_boundary = dedicated_availability_boundary or bool(
+            availability_pair(
+                q,
+                team=None,
+                player=player,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+            )
+        )
     if generic_boundary_note and not dedicated_availability_boundary:
         out = dict(parsed)
         out["route"] = None
@@ -6123,7 +6136,8 @@ def _route_parsed_query(parsed: dict) -> dict:
         if pair:
             # "Lakers record with LeBron and Davis": the games both played.
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
-            route_kwargs[f"{pair[0]}_player"] = pair[1]
+            route_kwargs[f"{pair.mode}_player"] = pair.players
+            applied_pair = pair
             notes.pop()
     elif (
         team
@@ -6559,7 +6573,8 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
         if pair:
             route_kwargs.update(with_player=None, without_player=None)
-            route_kwargs[f"{pair[0]}_player"] = pair[1]
+            route_kwargs[f"{pair.mode}_player"] = pair.players
+            applied_pair = pair
         else:
             route_kwargs["unsupported_filters"] = ["multi_player_availability"]
     elif (
@@ -6603,7 +6618,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
         and names_other_player_availability(
-            q,
+            applied_pair.mask_clause(q) if applied_pair else q,
             route_kwargs["player"],
             (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
             also=(route_kwargs.get("opponent_player"),),
@@ -6837,7 +6852,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
     if not route_kwargs.get("unsupported_filters") and (
         boundary_note := _unsupported_boundary_note(
-            q,
+            applied_pair.mask_clause(q) if applied_pair else q,
             route,
             route_kwargs,
             requested_stat=stat,

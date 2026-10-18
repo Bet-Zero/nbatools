@@ -108,6 +108,9 @@ def _assert_answer(result, expected, *, player=False, mode="without"):
     assert result.metadata.get(("with" if mode == "without" else "without") + "_player") is None
     assert result.metadata["opponent"] == "BOS"
     assert result.metadata["season"] == SEASON
+    assert result.metadata["player"] == ("Austin Reaves" if player else None)
+    label = "Without player" if mode == "without" else "With player"
+    assert {"label": label, "value": PAIR, "kind": "player"} in result.metadata["applied_filters"]
 
 
 def test_pair_is_conjunction_not_union_or_last_named_player(qualified_pair):
@@ -209,6 +212,25 @@ def test_structured_pair_and_subject_bound_are_already_execution_backed(qualifie
 def test_pair_participation_never_substitutes_for_status(qualified_pair, status):
     result = execute_natural_query(
         f"Lakers record vs Celtics with LeBron James and Anthony Davis {status} in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "not both playing",
+        "either out",
+        "out and playing",
+        "both out with injuries",
+        "both out and injured",
+        "both out but healthy",
+    ],
+)
+def test_pair_does_not_drop_boolean_or_medical_qualifiers(qualified_pair, suffix):
+    result = execute_natural_query(
+        f"Lakers record vs Celtics with LeBron James and Anthony Davis {suffix} in {SEASON}"
     )
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]

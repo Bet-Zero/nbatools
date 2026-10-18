@@ -117,6 +117,10 @@ def test_qualified_pair_structured_execution(player):
         ("Lakers record vs Celtics with LeBron James and Anthony Davis both out in 2023-24", False),
         ("Lakers record vs Celtics with LeBron James and Anthony Davis DNP in 2023-24", False),
         (
+            "Lakers record with at least 110 points vs Celtics without LeBron James and Anthony Davis in 2023-24",
+            False,
+        ),
+        (
             "Austin Reaves games with at least 20 points vs Celtics without LeBron James and Anthony Davis in 2023-24",
             True,
         ),
