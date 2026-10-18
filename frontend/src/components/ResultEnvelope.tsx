@@ -138,9 +138,18 @@ export function ResultContextSummary({
   // and split type. Drop those scope chips here so the public context
   // strip carries only non-obvious trust/scope information (applied
   // filters, date ranges, included opponents, "without X", etc.).
-  const contextChips = allContextChips.filter(
-    (chip) => !BASE_SCOPE_CHIP_KEYS.has(chip.key),
-  );
+  const careerScope = metadata?.scope_kind === "career";
+  const contextChips = allContextChips
+    .filter(
+      (chip) =>
+        !BASE_SCOPE_CHIP_KEYS.has(chip.key) &&
+        !(careerScope && chip.label === "Aggregation" && chip.value.startsWith("Game logs across ")),
+    )
+    .map((chip) =>
+      careerScope && chip.label === "Season range"
+        ? { ...chip, label: "Searched seasons" }
+        : chip,
+    );
   const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
 
   if (contextChips.length === 0 && caveatItems.length === 0) return null;

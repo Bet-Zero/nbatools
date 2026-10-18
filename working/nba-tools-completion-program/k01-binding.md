@@ -108,3 +108,20 @@ Required request: tests/test_k01_identity_real_data.py14cases and14RawQA IDs
 k01_a1_plain, k01_a1_accent, k01_a1_alias, k01_a2, k01_b1, k01_b1_collision,
 k01_c1_old, k01_c1_new, k01_c1_union, k01_d1, k01_d1_era, k01_d1_wording,
 k01_e1, k01_e1_season. Final preflight8060passed1507skipped141.20s;172focusedidentitytests1skip and11controlledalias/grammar tests passed. Independent checker accepted14cached exact-key cases, source arithmetic, freshidentity wordings and narrowpreposition safeguards. Actualrunner/CI/deployed acceptance remains pending.
+
+Actual required run39091879839 accepted by independentchecker:14selected/executed/passed,
+zero skips/errors;14RawQA137checks. Reviewedc35fb4e936b70f7a466bc61046ac8ab73e8faaaf,
+requestb3cfb61c48d062b15f1e9a280237caf4e0be707c. Numericartifact12123306587
+ZIPf94e85828d42c8fb6e33418c2a751a78b63ec6f0cbb6c6b7083acdf3da749b0c;
+QA12122918605 ZIP42c182e5234ff480785995c7d394e91b4d43fd2becd933f817d41133da726795.
+CandidateCI39091852784passed. Literalhumanreviewfields remainpending/unreviewed.
+
+Localactualbrowser20responses across1280desktop/390mobile hadnoJSerrors/pageoverflow;
+visualinspection foundpartialcareer scope hiddenunderDetails. Frontendnow displays
+source-derivedcoveredgame years andcoverage boundary besidehero; searchedseasons
+are labeledseparately. Twofinalbrowserresponses verifythisfix. Fullfrontend443tests
+passed afterlockedinstall, pluslint/build. [Compactbrowserreceipt](k01-browser-verification.json)
+retainsqueries,scope,hashes andlimits. ActualThunder two-seasonhero alreadycorrect;
+shorterRawQA hero is snapshot-only. Productionbrowser access isblocked bycloudproxy403;
+useexistingGitHubActions forproductionverification, not anowneraccessrequest.
+Finalfrontend-only changes awaitnormalCI; no backendnumericbehavior changed.

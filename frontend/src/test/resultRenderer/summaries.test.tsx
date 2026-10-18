@@ -1,9 +1,39 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ResultRenderer from "../../components/results/ResultRenderer";
+import { ResultContextSummary } from "../../components/ResultEnvelope";
 import { makeResponse } from "./helpers";
 
 describe("ResultRenderer summary patterns", () => {
+  it("shows partial-career coverage beside the answer before opening details", () => {
+    const data = makeResponse({
+      query: "Patrick Ewing career stats",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          scope_kind: "career",
+          start_season: "1996-97",
+          end_season: "2025-26",
+          notes: ["career_span: covers 1996-97 onward; earlier seasons are not in the data"],
+        },
+        notes: [],
+        caveats: ["multi-season summary aggregated from game logs across 1996-97 to 2025-26"],
+        sections: { summary: [{
+          player_name: "Patrick Ewing", games: 348, season_start: "1996-97",
+          season_end: "2001-02", pts_avg: 14.445, reb_avg: 8.414, ast_avg: 1.184,
+        }] },
+      },
+    });
+    render(<><ResultRenderer data={data} /><ResultContextSummary data={data} /></>);
+    const summary = screen.getByRole("region", {name: "Player summary result"});
+    expect(within(summary).getByText(/over his covered career games \(1996-97–2001-02\)/)).toBeVisible();
+    expect(within(summary).getByText("Coverage: covers 1996-97 onward; earlier seasons are not in the data")).toBeVisible();
+    expect(within(summary).queryByText(/in his career\./)).not.toBeInTheDocument();
+    expect(screen.getByText("Searched seasons")).toBeVisible();
+    expect(screen.queryByText("Game logs across 1996-97 to 2025-26")).not.toBeInTheDocument();
+  });
 
   it("composes player last-N summaries with a game-log answer table", () => {
     const data = makeResponse({

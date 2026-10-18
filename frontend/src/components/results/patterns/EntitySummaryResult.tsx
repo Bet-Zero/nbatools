@@ -51,7 +51,11 @@ export default function EntitySummaryResult({
         subjectIllustration={
           recordWhenSummary?.subjectIllustration ?? heroIdentity(row, metadata)
         }
-        disambiguationNote={disambiguationNote(metadata)}
+        disambiguationNote={
+          [disambiguationNote(metadata), careerCoverageNote(metadata)]
+            .filter(Boolean)
+            .join(" ") || null
+        }
         tone={recordWhenSummary ? "team" : "accent"}
         teamAccentAbbr={recordWhenSummary?.teamAbbr ?? null}
       />
@@ -585,7 +589,15 @@ function timeframePhrase(
   if (dateRange) return dateRange;
 
   if (/\bthis\s+(?:season|year)\b/i.test(query)) return "this season";
-  if (/\bcareer\b/i.test(query)) return "in his career";
+  if (/\bcareer\b/i.test(query)) {
+    if (careerCoverageNote(metadata)) {
+      const start = textValue(row, "season_start");
+      const end = textValue(row, "season_end");
+      const span = start && end ? ` (${start}${start === end ? "" : `–${end}`})` : "";
+      return `over his covered career games${span}`;
+    }
+    return "in his career";
+  }
 
   const seasonStart =
     textValue(row, "season_start") ?? metadataText(metadata, "season");
@@ -794,6 +806,11 @@ function playerName(
     textValue(row, "player") ??
     "Player"
   );
+}
+
+function careerCoverageNote(metadata: ResultMetadata | undefined): string | null {
+  const note = metadata?.notes?.find((value) => value.startsWith("career_span:"));
+  return note ? `Coverage: ${note.slice("career_span:".length).trim()}` : null;
 }
 
 function disambiguationNote(
