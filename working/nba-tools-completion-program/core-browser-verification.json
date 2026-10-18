@@ -1,0 +1,947 @@
+{
+  "base": "http://127.0.0.1:8765",
+  "browser": "154.0.8037.57",
+  "receipts": [
+    {
+      "id": "k01_a1_plain",
+      "viewport": "desktop",
+      "query": "Nikola Jokic stats in 2023-24",
+      "http": 200,
+      "elapsedMs": 293,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_a1_plain.png",
+      "screenshotSha256": "f54a3b50ac851c3841c179bcf13ae1d1cdb81dd851e033bb0d374eedb327f77a"
+    },
+    {
+      "id": "k01_a1_accent",
+      "viewport": "desktop",
+      "query": "Nikola Joki\u0107 stats in 2023-24",
+      "http": 200,
+      "elapsedMs": 195,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_a1_accent.png",
+      "screenshotSha256": "0f5d5ce3c35c2d6bd5ff3115da3c51d1acd6e24d674354d7616679fd8e22dc9e"
+    },
+    {
+      "id": "k01_a1_alias",
+      "viewport": "desktop",
+      "query": "Joker's 2023-24 averages",
+      "http": 200,
+      "elapsedMs": 223,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_a1_alias.png",
+      "screenshotSha256": "f1e77f053708b1fe6ce7a16094a03d351b63cc956d28b36ca25c4f011dc732ce"
+    },
+    {
+      "id": "k01_a2",
+      "viewport": "desktop",
+      "query": "Nikola Jovic stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 202,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_a2.png",
+      "screenshotSha256": "f06c2e843a8a33dbfde603478b55af9d316939b167467d7b884f5fbe0970e02e"
+    },
+    {
+      "id": "k01_b1",
+      "viewport": "desktop",
+      "query": "Marcus Williams Spurs stats in 2007-08",
+      "http": 200,
+      "elapsedMs": 207,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_b1.png",
+      "screenshotSha256": "785f810ff639277305e42a705c3603c8c89a4ebdcbc5c239f3b2d92afc85ee48"
+    },
+    {
+      "id": "k01_b1_collision",
+      "viewport": "desktop",
+      "query": "Marcus Williams stats in 2007-08",
+      "http": 200,
+      "elapsedMs": 222,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_b1_collision.png",
+      "screenshotSha256": "d4b73d7c056ddb0ff826b8ff033f2ad0978b4c200a0251286a206aa423d54cc1"
+    },
+    {
+      "id": "k01_c1_old",
+      "viewport": "desktop",
+      "query": "Bobby Portis stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 196,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_c1_old.png",
+      "screenshotSha256": "eb195e4b1b7324504c875afde657cfe5ded9f4c4be4c9abee36e38aeeb5a66d6"
+    },
+    {
+      "id": "k01_c1_new",
+      "viewport": "desktop",
+      "query": "Bobby Portis Jr. stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 248,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_c1_new.png",
+      "screenshotSha256": "967852d804ad49ce26bce963d9e74478255853f252bd92a8db2220c3f42a58df"
+    },
+    {
+      "id": "k01_c1_union",
+      "viewport": "desktop",
+      "query": "Bobby Portis stats from 2023-24 through 2024-25",
+      "http": 200,
+      "elapsedMs": 410,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_c1_union.png",
+      "screenshotSha256": "7f30a344a1b65c2204fe085e2086c501829d9de086adbf931181e7feec95da2f"
+    },
+    {
+      "id": "k01_d1",
+      "viewport": "desktop",
+      "query": "Thunder record from 2007-08 through 2008-09",
+      "http": 200,
+      "elapsedMs": 242,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_d1.png",
+      "screenshotSha256": "5840f8888556654d1e49ea01015ff47c4061f4786f654d2045e49f1e6cf21f15"
+    },
+    {
+      "id": "k01_d1_era",
+      "viewport": "desktop",
+      "query": "Seattle SuperSonics record in 2007-08",
+      "http": 200,
+      "elapsedMs": 178,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_d1_era.png",
+      "screenshotSha256": "4f72fd10b8e5ee89b007a5348da94d71fa2bc41c43f39434df840d780bdfc1b6"
+    },
+    {
+      "id": "k01_d1_wording",
+      "viewport": "desktop",
+      "query": "What record did the Sonics finish with in 2007-08?",
+      "http": 200,
+      "elapsedMs": 220,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_d1_wording.png",
+      "screenshotSha256": "98412a09419a73ef689e798cb03cfbcd13027a89d08dfa61b53f8437ecb5567e"
+    },
+    {
+      "id": "k01_e1",
+      "viewport": "desktop",
+      "query": "Patrick Ewing career stats",
+      "http": 200,
+      "elapsedMs": 906,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_e1.png",
+      "screenshotSha256": "e696348f3de92c392fb7079a31455c77425b7ca67e10285217203da5943ad605"
+    },
+    {
+      "id": "k01_e1_season",
+      "viewport": "desktop",
+      "query": "Patrick Ewing stats in 1996-97",
+      "http": 200,
+      "elapsedMs": 259,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k01_e1_season.png",
+      "screenshotSha256": "ce4c4c4b574585b783ac3dbe0836d020b97410ecad3f3d8dd8d9d66551cda224"
+    },
+    {
+      "id": "k03-a1",
+      "viewport": "desktop",
+      "query": "List Nikola Jokic games with at least 10 assists and exactly zero turnovers in 2023-24.",
+      "http": 200,
+      "elapsedMs": 240,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-a1.png",
+      "screenshotSha256": "412a936532c09f2a268023c616aa122c016b4112bc8c86506a00a46ba79bd3da"
+    },
+    {
+      "id": "k03-a2",
+      "viewport": "desktop",
+      "query": "In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers?",
+      "http": 200,
+      "elapsedMs": 222,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-a2.png",
+      "screenshotSha256": "e55433657f1e60ad6ff204757e7475e62b813554768459d27cf1c71ade901a24"
+    },
+    {
+      "id": "k03-b1",
+      "viewport": "desktop",
+      "query": "How many Nikola Jokic games exceeded 30 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 266,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-b1.png",
+      "screenshotSha256": "ab7eb2813cc4b708f3bb53e6ff17481e8f0cb42c68729611d1953d853a96868c"
+    },
+    {
+      "id": "k03-b2",
+      "viewport": "desktop",
+      "query": "How many Nikola Jokic games reached at least 30 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 237,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-b2.png",
+      "screenshotSha256": "fc473b9310631bbd30aa295061a0255aeb21277dd142389d6e476f01db3251ca"
+    },
+    {
+      "id": "k03-b3",
+      "viewport": "desktop",
+      "query": "Anthony Edwards games above 35 points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 255,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-b3.png",
+      "screenshotSha256": "0b24f4b9c859659fe6e08c5dba1e5f99b3677cde7b65ce258a91eb9c40bc729e"
+    },
+    {
+      "id": "k03-b4",
+      "viewport": "desktop",
+      "query": "Anthony Edwards games with 35 or more points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 261,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-b4.png",
+      "screenshotSha256": "5c72aa351e320a08a720a6af7919925358ce2cc43911848fd6fa13d0a993d2f4"
+    },
+    {
+      "id": "k03-c1",
+      "viewport": "desktop",
+      "query": "How many Jalen Brunson games had (over 40 points or over 12 assists) in 2023-24?",
+      "http": 200,
+      "elapsedMs": 287,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-c1.png",
+      "screenshotSha256": "596733429ee575849932c76a88fa9e44936ca5c2f11aa3ce173c3bc766dcdb61"
+    },
+    {
+      "id": "k03-c2",
+      "viewport": "desktop",
+      "query": "In 2023-24, list Anthony Edwards games with (over 40 points or over 12 rebounds).",
+      "http": 200,
+      "elapsedMs": 271,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-c2.png",
+      "screenshotSha256": "8b6fd6958dd630df4b019b09d56b82a745086edcb1b15ea58567a6c309a3b234"
+    },
+    {
+      "id": "k03-d1",
+      "viewport": "desktop",
+      "query": "How many player games had at least 50 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 262,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-d1.png",
+      "screenshotSha256": "1c5d9beb50d780d893a2c5c9d2760eb7f19b1598fbd945dc8705e4e03fe599c6"
+    },
+    {
+      "id": "k03-d2",
+      "viewport": "desktop",
+      "query": "How many distinct players scored at least 50 points in a game in 2023-24?",
+      "http": 200,
+      "elapsedMs": 239,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-d2.png",
+      "screenshotSha256": "78d50ecb81280d00f9e14acd30534ba647297676d74595dbf159ffed1e381ae4"
+    },
+    {
+      "id": "k03-e1",
+      "viewport": "desktop",
+      "query": "How many Nikola Jokic games reached at least 80 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 248,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-e1.png",
+      "screenshotSha256": "634995279322f86f4b0979dcc595527e7471da7a9bcdf774ce325f9dd7aaa6cc"
+    },
+    {
+      "id": "k03-e2",
+      "viewport": "desktop",
+      "query": "List Jalen Brunson games with 80 or more points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 222,
+      "overflow": {
+        "viewport": 1280,
+        "document": 1280
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "desktop-k03-e2.png",
+      "screenshotSha256": "36f687093a62da173c77695822be1f0e92abfdaae9400723d202583fb987e5b5"
+    },
+    {
+      "id": "k01_a1_plain",
+      "viewport": "mobile",
+      "query": "Nikola Jokic stats in 2023-24",
+      "http": 200,
+      "elapsedMs": 207,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_a1_plain.png",
+      "screenshotSha256": "0c24facbcd388f766a28384fb7714c69448e4e9acb0967be1f0e513864bdfa34"
+    },
+    {
+      "id": "k01_a1_accent",
+      "viewport": "mobile",
+      "query": "Nikola Joki\u0107 stats in 2023-24",
+      "http": 200,
+      "elapsedMs": 161,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_a1_accent.png",
+      "screenshotSha256": "72239d5c89f1a1703ab08de61b54f1883511edce50911a8a206d2ffc2f3f42ad"
+    },
+    {
+      "id": "k01_a1_alias",
+      "viewport": "mobile",
+      "query": "Joker's 2023-24 averages",
+      "http": 200,
+      "elapsedMs": 155,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_a1_alias.png",
+      "screenshotSha256": "d9a1f653b0bb4efb8342f1d445aca981c62c538c4eef83b72bad8cc384fd1f4c"
+    },
+    {
+      "id": "k01_a2",
+      "viewport": "mobile",
+      "query": "Nikola Jovic stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 155,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_a2.png",
+      "screenshotSha256": "b038dad249c37c8932f2a890bb69f437e25f94f1bfe43bf90b353fc92c16cc4c"
+    },
+    {
+      "id": "k01_b1",
+      "viewport": "mobile",
+      "query": "Marcus Williams Spurs stats in 2007-08",
+      "http": 200,
+      "elapsedMs": 157,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_b1.png",
+      "screenshotSha256": "05272f84e6dc50b72cedeffd6fb68ee96b9ca9861293c5585e28014da379312a"
+    },
+    {
+      "id": "k01_b1_collision",
+      "viewport": "mobile",
+      "query": "Marcus Williams stats in 2007-08",
+      "http": 200,
+      "elapsedMs": 172,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_b1_collision.png",
+      "screenshotSha256": "dd2c7f6037cc42a4db4b7e3695668c10766a5239ee2aec1b3fc40bb8a2ce7bea"
+    },
+    {
+      "id": "k01_c1_old",
+      "viewport": "mobile",
+      "query": "Bobby Portis stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 166,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_c1_old.png",
+      "screenshotSha256": "c7ca8ff7fbd9f642b02c9dc0f7c1fddb6afd17d8bd35896c4225475be66b2f2d"
+    },
+    {
+      "id": "k01_c1_new",
+      "viewport": "mobile",
+      "query": "Bobby Portis Jr. stats in 2024-25",
+      "http": 200,
+      "elapsedMs": 155,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_c1_new.png",
+      "screenshotSha256": "1005383b26e2199a97ff3e5215ef233c0a9b34552c91c3eb3930ed04fd66cec2"
+    },
+    {
+      "id": "k01_c1_union",
+      "viewport": "mobile",
+      "query": "Bobby Portis stats from 2023-24 through 2024-25",
+      "http": 200,
+      "elapsedMs": 218,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_c1_union.png",
+      "screenshotSha256": "5820434c5024c08d24c74300f7360266eb0218a492e7bb061eb432d253eb8812"
+    },
+    {
+      "id": "k01_d1",
+      "viewport": "mobile",
+      "query": "Thunder record from 2007-08 through 2008-09",
+      "http": 200,
+      "elapsedMs": 180,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_d1.png",
+      "screenshotSha256": "814296a5085ce97438c8480d547180db70a9e6ea4575703896b1c3ba9edee740"
+    },
+    {
+      "id": "k01_d1_era",
+      "viewport": "mobile",
+      "query": "Seattle SuperSonics record in 2007-08",
+      "http": 200,
+      "elapsedMs": 146,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_d1_era.png",
+      "screenshotSha256": "1452bb3fcfd038ecbe9120c86d09319b364c4f81b2eda7c8f46efaf6275f1bfb"
+    },
+    {
+      "id": "k01_d1_wording",
+      "viewport": "mobile",
+      "query": "What record did the Sonics finish with in 2007-08?",
+      "http": 200,
+      "elapsedMs": 156,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_d1_wording.png",
+      "screenshotSha256": "113d6ff8404194b691e122d70d13d57cddaca3c112f88a586116b0a59e54dff9"
+    },
+    {
+      "id": "k01_e1",
+      "viewport": "mobile",
+      "query": "Patrick Ewing career stats",
+      "http": 200,
+      "elapsedMs": 966,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_e1.png",
+      "screenshotSha256": "9f8cefef5f37a494c297c208e15c68cf9f0b568c273718c070809c9076259856"
+    },
+    {
+      "id": "k01_e1_season",
+      "viewport": "mobile",
+      "query": "Patrick Ewing stats in 1996-97",
+      "http": 200,
+      "elapsedMs": 220,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k01_e1_season.png",
+      "screenshotSha256": "25e4e1a096648cd2612556659e602ecc60a3f3ca92ddae49e323c55f854388ca"
+    },
+    {
+      "id": "k03-a1",
+      "viewport": "mobile",
+      "query": "List Nikola Jokic games with at least 10 assists and exactly zero turnovers in 2023-24.",
+      "http": 200,
+      "elapsedMs": 158,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-a1.png",
+      "screenshotSha256": "27ad5580964baee94ee07b4e145d46a9bcade11614ad281543e23b284b4684d5"
+    },
+    {
+      "id": "k03-a2",
+      "viewport": "mobile",
+      "query": "In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers?",
+      "http": 200,
+      "elapsedMs": 150,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-a2.png",
+      "screenshotSha256": "b06fff9bc4354ee85c718ffc41d84dddd9c7d44544931ae7bb712820a705fd79"
+    },
+    {
+      "id": "k03-b1",
+      "viewport": "mobile",
+      "query": "How many Nikola Jokic games exceeded 30 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 159,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-b1.png",
+      "screenshotSha256": "76885ee0559eed621dc8b318f580cf41c308276bffd80b26d7d6fded1a1573d6"
+    },
+    {
+      "id": "k03-b2",
+      "viewport": "mobile",
+      "query": "How many Nikola Jokic games reached at least 30 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 158,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-b2.png",
+      "screenshotSha256": "89e6b861ff58891a9132bf95370e53ba496dfdea93ece90e14beb83fb41bdbf9"
+    },
+    {
+      "id": "k03-b3",
+      "viewport": "mobile",
+      "query": "Anthony Edwards games above 35 points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 171,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-b3.png",
+      "screenshotSha256": "4db15f20b35d1f6a8855344305bea1d785586ae8e5bdf528889c20613b835ac5"
+    },
+    {
+      "id": "k03-b4",
+      "viewport": "mobile",
+      "query": "Anthony Edwards games with 35 or more points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 205,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-b4.png",
+      "screenshotSha256": "0c0a1692cd5872d3dff417615ed03bb3ba0b34b50ded0a77a68c5c4659d793fa"
+    },
+    {
+      "id": "k03-c1",
+      "viewport": "mobile",
+      "query": "How many Jalen Brunson games had (over 40 points or over 12 assists) in 2023-24?",
+      "http": 200,
+      "elapsedMs": 299,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-c1.png",
+      "screenshotSha256": "04b531f00b73016c9d5f0d269c47a48aa852967def44810681bc526780b6c474"
+    },
+    {
+      "id": "k03-c2",
+      "viewport": "mobile",
+      "query": "In 2023-24, list Anthony Edwards games with (over 40 points or over 12 rebounds).",
+      "http": 200,
+      "elapsedMs": 185,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-c2.png",
+      "screenshotSha256": "323734aea61565e65c7c9676c247849bfb8ea5d8d7e85905e782b71b3fa1dc49"
+    },
+    {
+      "id": "k03-d1",
+      "viewport": "mobile",
+      "query": "How many player games had at least 50 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 174,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-d1.png",
+      "screenshotSha256": "393e2a98c20695b08306d8c7d19736c0a17774e41edca1b116a47654be6f9a54"
+    },
+    {
+      "id": "k03-d2",
+      "viewport": "mobile",
+      "query": "How many distinct players scored at least 50 points in a game in 2023-24?",
+      "http": 200,
+      "elapsedMs": 159,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-d2.png",
+      "screenshotSha256": "84336cb7d4c838fc33135710d7439bb14ac178fb6f1b26b94eb65242d2f4eb74"
+    },
+    {
+      "id": "k03-e1",
+      "viewport": "mobile",
+      "query": "How many Nikola Jokic games reached at least 80 points in 2023-24?",
+      "http": 200,
+      "elapsedMs": 158,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-e1.png",
+      "screenshotSha256": "852918eac6eede28e561fe1a73d9c68b4e70b437992222b0daf715b961e8369b"
+    },
+    {
+      "id": "k03-e2",
+      "viewport": "mobile",
+      "query": "List Jalen Brunson games with 80 or more points in 2023-24.",
+      "http": 200,
+      "elapsedMs": 173,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "errors": [],
+      "missing": [],
+      "assets": [
+        "http://127.0.0.1:8765/assets/index-BKKGDLgN.js"
+      ],
+      "screenshot": "mobile-k03-e2.png",
+      "screenshotSha256": "1e92c5d7e1a19cd1b4aa8a2362b4237ed873c8df664f85b9494c4518985ce69b"
+    }
+  ],
+  "failures": [],
+  "latencyScope": "Observed browser requests; not a declared cold/warm performance acceptance sample",
+  "scope": "Local rebuilt app and retained qualified CSV subset; not production readiness, permanent storage or latency acceptance",
+  "screenshots": "Initial local captures may include entrance-animation opacity; production harness disables screenshot animations.",
+  "validation": "52 responses passed exact counts, exposed full game/team/player keys and K01 summary arithmetic; reviewed route adapters preserve count-only limitations."
+}

@@ -356,7 +356,7 @@
     ]
   },
   "frontend_layout": {
-    "count": 165,
+    "count": 166,
     "files": [
       "frontend/src/AdminFeedbackPage.module.css",
       "frontend/src/AdminFeedbackPage.tsx",
@@ -447,6 +447,7 @@
       "frontend/src/components/results/primitives/detailTables.ts",
       "frontend/src/components/results/resultShapes.ts",
       "frontend/src/components/tableFormatting.ts",
+      "frontend/src/components/thresholdFormatting.ts",
       "frontend/src/design-system/Avatar.module.css",
       "frontend/src/design-system/Avatar.tsx",
       "frontend/src/design-system/Badge.module.css",

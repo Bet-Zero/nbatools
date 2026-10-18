@@ -52,7 +52,7 @@ export default function EntitySummaryResult({
           recordWhenSummary?.subjectIllustration ?? heroIdentity(row, metadata)
         }
         disambiguationNote={
-          [disambiguationNote(metadata), careerCoverageNote(metadata)]
+          [disambiguationNote(metadata), identityCollisionNote(data), careerCoverageNote(metadata)]
             .filter(Boolean)
             .join(" ") || null
         }
@@ -806,6 +806,11 @@ function playerName(
     textValue(row, "player") ??
     "Player"
   );
+}
+
+function identityCollisionNote(data: QueryResponse): string | null {
+  const notes = [...data.notes, ...(data.result?.notes ?? [])];
+  return notes.find((note) => note.startsWith("More than one player is named ")) ?? null;
 }
 
 function careerCoverageNote(metadata: ResultMetadata | undefined): string | null {

@@ -5,6 +5,18 @@ import { ResultContextSummary } from "../../components/ResultEnvelope";
 import { makeResponse } from "./helpers";
 
 describe("ResultRenderer summary patterns", () => {
+  it("shows the selected identity and same-name alternative beside the summary", () => {
+    const note = "More than one player is named Marcus Williams. Showing NJN, 2007-08. Another player: SAS, 2007-08.";
+    const data = makeResponse({
+      route: "player_game_summary", notes: [note],
+      result: { query_class: "summary", result_status: "ok", metadata: {}, notes: [note], caveats: [],
+        sections: { summary: [{ player_name: "Marcus Williams", games: 53, pts_avg: 5.9 }] } },
+    });
+    render(<ResultRenderer data={data} />);
+    expect(within(screen.getByRole("region", {name: "Player summary result"})).getByText(note)).toBeVisible();
+    expect(screen.getAllByText(note)).toHaveLength(1);
+  });
+
   it("shows partial-career coverage beside the answer before opening details", () => {
     const data = makeResponse({
       query: "Patrick Ewing career stats",
