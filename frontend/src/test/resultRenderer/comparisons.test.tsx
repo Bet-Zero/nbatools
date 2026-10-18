@@ -351,3 +351,19 @@ describe("ResultRenderer comparison patterns", () => {
     expect(screen.queryByText("Metric Detail")).not.toBeInTheDocument();
   });
 });
+
+describe("head-to-head sample context", () => {
+  it.each([true, false])("retains explicit season when available (season=%s)", withSeason => {
+    render(<ResultRenderer data={makeResponse({ route: "team_compare", result: {
+      query_class: "comparison", result_status: "ok", notes: [], caveats: [],
+      metadata: { head_to_head_used: true, ...(withSeason ? { season: "2023-24", season_type: "Regular Season" } : {}) },
+      sections: { summary: [
+        { team_name: "BOS", games: 4, wins: 2, losses: 2 },
+        { team_name: "MIL", games: 4, wins: 2, losses: 2 },
+      ], comparison: [] },
+    } })} />);
+    const hero = screen.getByText(/are tied 2-2 in this head-to-head sample/);
+    expect(hero.textContent).toContain(withSeason ? "for 2023-24 Regular Season" : "head-to-head sample.");
+    expect(hero.textContent).not.toContain("undefined");
+  });
+});

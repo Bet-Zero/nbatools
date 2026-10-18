@@ -695,7 +695,9 @@ function thresholdPhrase(label: string, value: string): string {
   if (!match) return `${label}: ${value}`;
 
   const [, stat, direction] = match;
-  const numeric = Number(value);
+  const exclusive = /\(exclusive\)/i.test(value);
+  const normalizedValue = value.replace(/\s*\(exclusive\)\s*/gi, "").trim();
+  const numeric = Number(normalizedValue);
   const threshold = Number.isFinite(numeric)
     ? formatValue(
         Math.abs(numeric - Math.round(numeric)) < 0.001 ||
@@ -704,11 +706,11 @@ function thresholdPhrase(label: string, value: string): string {
           : numeric,
         stat,
       )
-    : value;
+    : normalizedValue;
   const statText = stat.replace(/_/g, " ").toUpperCase();
   return direction.toLowerCase() === "min"
-    ? `with at least ${threshold} ${statText}`
-    : `with at most ${threshold} ${statText}`;
+    ? `with ${exclusive ? "more than" : "at least"} ${threshold} ${statText}`
+    : `with ${exclusive ? "fewer than" : "at most"} ${threshold} ${statText}`;
 }
 
 function uniqueStrings(values: string[]): string[] {

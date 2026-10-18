@@ -1,0 +1,124 @@
+{
+  "scope": "Qualified local cached data; no production/readiness/human acceptance claimed",
+  "backend_source_equivalent": "098f820 (root runtime reused verbatim; src diff empty)",
+  "local_backend_commit": "d9a096f",
+  "generation_label": "legacy",
+  "source_root": "/workspace/work/k01-local-replay",
+  "before_receipt": {
+    "path": "/workspace/work/ownership-comparison-local-evidence/browser-receipt.json",
+    "sha256": "43f76519bed927c467d086356929ff4869ce1dc1fcfa4943039acd9b6b088cc6"
+  },
+  "after_receipt": {
+    "path": "/workspace/work/ownership-comparison-final-evidence/browser-receipt.json",
+    "sha256": "6c2f5c8291c1cd3b22a735b08734e4824977fdaa891dba0a4269475f362b8556"
+  },
+  "cases": 20,
+  "viewport_executions": 40,
+  "numerical_and_render_checks": "40 pass; exact source hashes and K05/K06 frozen samples, comparison table values and identity order, opponent/date/venue scope",
+  "frontend_tests": "468 pass across39files;22focused comparison/summary controls independently reviewed",
+  "browser": "154.0.8037.57",
+  "assets": [
+    "http://127.0.0.1:8765/assets/index-iaaR-wnl.js"
+  ],
+  "adapter_equivalences": [
+    "Opp PTS < N retains strict ceiling and owner",
+    "Canonical LAL opponent and BOS/MIL/DEN/PHX subjects retain independently qualified identities",
+    "Jan 1\u201331, 2024 is the complete frozen January date range"
+  ],
+  "corrected_display_gaps": [
+    "Head-to-head hero omitted explicit season context",
+    "Strict summary threshold used contradictory at most N (exclusive) prose"
+  ],
+  "required_deployed_selector": "tests/test_ownership_comparison_browser.py::test_deployed_ownership_comparison_desktop_and_mobile",
+  "pending": [
+    "final independent visual review",
+    "CI and merge",
+    "fresh production40 browser checks"
+  ],
+  "screenshots": [
+    {
+      "id": "k05-a2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k05-a2.png",
+      "screenshotSha256": "ff11816738e99f469db293c36b47622dc3e395754ef3adb1d53d97c285d040ae"
+    },
+    {
+      "id": "k05-b2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k05-b2.png",
+      "screenshotSha256": "9d40894a047aadfcaef4c27794e256df42b5601ace806442ed6025014bc8e697"
+    },
+    {
+      "id": "k06-a2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k06-a2.png",
+      "screenshotSha256": "798fc536eb4a6188e27e347474fa8c02f03db1d3d58e3612c8d27ab2a79cfdd9"
+    },
+    {
+      "id": "k06-b1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k06-b1.png",
+      "screenshotSha256": "e166680102bc8468d0d0004542f207fb572c641c3ba98bf5a6f4a196032c83bc"
+    },
+    {
+      "id": "k06-b2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k06-b2.png",
+      "screenshotSha256": "8ded3407757e439fcdc9e580572af13df638caaa789a0bd077c1072131e0c769"
+    },
+    {
+      "id": "k06-c1",
+      "viewport": "desktop",
+      "screenshot": "desktop-k06-c1.png",
+      "screenshotSha256": "1cfa8efb061611c20bdf72f449158fa1603b961aed3dfe7a539482245607549f"
+    },
+    {
+      "id": "k06-c2",
+      "viewport": "desktop",
+      "screenshot": "desktop-k06-c2.png",
+      "screenshotSha256": "070605dc7dbca61f801184353be013eb44ead298ae9338662c1460a9d9bdf39c"
+    },
+    {
+      "id": "k05-a2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k05-a2.png",
+      "screenshotSha256": "fecab903880073cefd8e14f219b343f5a3f7fcafd80e8303cea581cb2dc9e72b"
+    },
+    {
+      "id": "k05-b2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k05-b2.png",
+      "screenshotSha256": "0fce5410a5eacc2a60145a95d9ebd7a74bc9db99dac65853ece2e28042d0602d"
+    },
+    {
+      "id": "k06-a2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k06-a2.png",
+      "screenshotSha256": "c706c9cdb3fce104a953b39d794040d9e9931914aaa0a67de6ccc1e11d9a4b93"
+    },
+    {
+      "id": "k06-b1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k06-b1.png",
+      "screenshotSha256": "2f90e5b1609181e0f2b3b7d86346fa72a6656ed544b8a848c85cfca8c18b9bdc"
+    },
+    {
+      "id": "k06-b2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k06-b2.png",
+      "screenshotSha256": "ae2701ced341a1c6bfcf3615036ea05f17b944f6f73392dc593a1adfadb0ad48"
+    },
+    {
+      "id": "k06-c1",
+      "viewport": "mobile",
+      "screenshot": "mobile-k06-c1.png",
+      "screenshotSha256": "1399f336119d43e1a961b9917ccf4ef67ed061124ca305751f5c6bf7806cd7bf"
+    },
+    {
+      "id": "k06-c2",
+      "viewport": "mobile",
+      "screenshot": "mobile-k06-c2.png",
+      "screenshotSha256": "769df6d79f19c5e57bd17aeba17175f260cebdd3b057767d7b4c38722b9947e3"
+    }
+  ]
+}
