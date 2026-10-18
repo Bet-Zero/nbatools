@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "e5e08b7da284f1dba784b3034018a6a40a4302fa",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_copula_question_real_data.py::test_opponent_prefix_question_preserves_exact_named_seasons"
+  ],
+  "raw_qa_cases": []
+}
