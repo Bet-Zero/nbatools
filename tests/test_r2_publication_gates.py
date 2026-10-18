@@ -165,6 +165,30 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
     )
 
 
+def test_reusable_publication_only_receives_named_readonly_r2_secrets():
+    """Required environment secrets must be explicitly passed across workflow_call."""
+    caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
+    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-real-data-validation.yml").read_text())
+    expected = {
+        name: "${{ secrets." + name + " }}"
+        for name in (
+            "R2_VALIDATION_ACCOUNT_ID",
+            "R2_VALIDATION_ACCESS_KEY_ID",
+            "R2_VALIDATION_SECRET_ACCESS_KEY",
+        )
+    }
+    jobs = caller["jobs"]
+    for name in ("prepare", "verify"):
+        assert jobs[name]["secrets"] == expected
+        assert jobs[name]["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+    # No broad repository-secret inheritance or write-credential propagation.
+    assert "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
+    assert "secrets" not in jobs["publish"]
+    call = reusable.get("on", reusable.get(True))["workflow_call"]
+    assert call["secrets"] == {name: {"required": True} for name in expected}
+    assert reusable["jobs"]["publication-readonly"]["environment"] == "r2-validation"
+
+
 def test_source_archive_validation_rejects_substitution_and_traversal(tmp_path, monkeypatch):
     import zipfile
 
