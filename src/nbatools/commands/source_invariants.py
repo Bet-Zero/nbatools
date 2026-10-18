@@ -33,6 +33,56 @@ PLAY_BY_PLAY_COMPLETENESS_REQUIRED_COLUMNS = frozenset(
 REGULATION_TEAM_MINUTES = 240.0
 OVERTIME_TEAM_MINUTES = 25.0
 TERMINAL_CLOCK_TOLERANCE = 0.01
+CDN_PBP_SOURCE = "cdn.nba.com.liveData.playbyplay"
+
+
+def play_by_play_timeline_order(events: pd.DataFrame) -> pd.Series:
+    """Keep event identity separate from the CDN's explicit chronology."""
+    order = pd.to_numeric(events["action_number"], errors="raise").copy()
+    if "pbp_source" in events:
+        cdn = events["pbp_source"].eq(CDN_PBP_SOURCE)
+        if cdn.any():
+            if "source_order_number" not in events:
+                raise ValueError("CDN play-by-play requires source_order_number")
+            values = pd.to_numeric(events.loc[cdn, "source_order_number"], errors="raise")
+            if values.isna().any() or not values.gt(0).all() or not values.mod(1).eq(0).all():
+                raise ValueError("CDN source_order_number must be positive finite integers")
+            order.loc[cdn] = values
+    return order
+
+
+def sort_play_by_play_timeline(events: pd.DataFrame) -> pd.DataFrame:
+    return (
+        events.assign(_timeline_order=play_by_play_timeline_order(events))
+        .sort_values(["game_id", "_timeline_order"], kind="stable")
+        .drop(columns="_timeline_order")
+    )
+
+
+def validate_cdn_play_by_play_timeline(events: pd.DataFrame) -> None:
+    """Additional fail-closed checks for the newly supported archival source."""
+    if "pbp_source" not in events or not events.pbp_source.eq(CDN_PBP_SOURCE).any():
+        return
+    for _, group in events.groupby("game_id", sort=False):
+        if not group.pbp_source.eq(CDN_PBP_SOURCE).any():
+            continue
+        if not group.pbp_source.eq(CDN_PBP_SOURCE).all():
+            raise ValueError("Mixed play-by-play sources within a game")
+        if "pbp_source_schema_version" not in group or not group.pbp_source_schema_version.eq(
+            "cdn_live_pbp.v1"
+        ).all():
+            raise ValueError("Unsupported CDN play-by-play schema")
+        order = play_by_play_timeline_order(group)
+        if order.duplicated().any() or not order.is_monotonic_increasing:
+            raise ValueError("CDN source timeline is duplicated or out of order")
+        if not pd.to_numeric(group.period).is_monotonic_increasing:
+            raise ValueError("CDN periods move backward")
+        for _, period in group.groupby("period", sort=False):
+            if pd.to_numeric(period.clock_seconds_remaining).diff().gt(0).any():
+                raise ValueError("CDN clock moves backward in source timeline")
+        for column in ("score_home", "score_away"):
+            if pd.to_numeric(group[column]).diff().lt(0).any():
+                raise ValueError("CDN score decreases in source timeline")
 
 
 @dataclass(frozen=True, slots=True)
@@ -309,7 +359,12 @@ def play_by_play_game_trust_decisions(
             decisions[game_key] = tuple(reasons)
             continue
 
-        group = group.sort_values("action_number")
+        try:
+            group = sort_play_by_play_timeline(group)
+            validate_cdn_play_by_play_timeline(group)
+        except ValueError:
+            decisions[game_key] = ("invalid_source_timeline",)
+            continue
         terminal = group.iloc[-1]
         state = normalized_expected[game_key]
         if int(terminal["period"]) < 4:

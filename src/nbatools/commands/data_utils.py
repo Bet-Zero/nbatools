@@ -19,7 +19,10 @@ from nbatools.commands._player_identity import (
     player_game_ids,
     select_player_rows,
 )
-from nbatools.commands.source_invariants import validate_play_by_play_trust_decisions
+from nbatools.commands.source_invariants import (
+    validate_cdn_play_by_play_timeline,
+    validate_play_by_play_trust_decisions,
+)
 from nbatools.data_source import (
     data_exists,
     data_prefetch,
@@ -1809,6 +1812,7 @@ def _load_play_by_play_events_cached(season: str, season_type: str, data_root: s
         if not df.loc[~trusted, "pbp_validation_reason"].fillna("").ne("").all():
             raise ValueError("Untrusted play-by-play rows must explain pbp_validation_reason")
 
+        validate_cdn_play_by_play_timeline(df)
         team_path = f"data/raw/team_game_stats/{season}_{safe}.csv"
         if not data_exists(team_path):
             raise FileNotFoundError(
