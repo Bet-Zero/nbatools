@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "c35fb4e936b70f7a466bc61046ac8ab73e8faaaf",
+  "generation": "queue-d-production-0574735-20260716",
+  "tests": [
+    "tests/test_k01_identity_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k01_a1_plain",
+    "k01_a1_accent",
+    "k01_a1_alias",
+    "k01_a2",
+    "k01_b1",
+    "k01_b1_collision",
+    "k01_c1_old",
+    "k01_c1_new",
+    "k01_c1_union",
+    "k01_d1",
+    "k01_d1_era",
+    "k01_d1_wording",
+    "k01_e1",
+    "k01_e1_season"
+  ]
+}
