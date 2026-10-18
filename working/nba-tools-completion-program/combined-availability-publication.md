@@ -72,7 +72,22 @@ existing publisher using keyword-only inventory/default-generation arguments;
 the opening entry point retains its original defaults. A missing or changed
 inventory fails closed. The combined inventory pins both wrapper/shared publisher
 code as well as the existing validator/import dependencies. Register the new package
-only after those reviewed pins exist. No placeholder package is currently registered.
+only after those reviewed pins exist. The candidate registry now binds
+`opening-s4-availability-v1` to immutable publisher
+`b7eead87c20dc5abc036ce6fecc6413423b38d1e`; merge is contingent on independent
+review and the actual complete-snapshot gate. This is not production approval.
+
+The complete-snapshot selector is
+`tests/test_combined_availability_publication_real_data.py::test_combined_availability_complete_snapshot_prepare`.
+It checks all684base manifest entries remain byte-identical, all18overlay
+entries match reviewed hashes, the only other object is derived player names,
+and every one of703snapshot objects has its expected size/hash. Six application
+checks cover both original opening queries and team/player S4 behavior in each
+qualified season. The same six checks are registered for eventual deployed
+publication verification. Snapshot preparation runs only the existing `prepare`
+mode and retains manifests, preparation/budget/environment audit and consumer
+receipts. Actual complete-snapshot execution remains pending; no permanent
+storage or deployed verification is claimed.
 
 If the opening package or another generation is published first, the existing
 same-base guard must stop this package. Agents must then requalify against that
