@@ -1,7 +1,8 @@
 """Governance for the workflow that validates against the real R2 generation.
 
 `.github/workflows/r2-real-data-validation.yml` is the only GitHub Actions path
-that receives the bucket-scoped read-only NBA data credential, and the only
+that runs jobs consuming the bucket-scoped read-only NBA data credential (the
+protected publication workflow only forwards three named secrets), and the only
 automated place the Raw QA corpus and the filter execution sweep run at all.
 Before it existed they were local-only, on one machine, undated and unretained.
 
@@ -21,12 +22,11 @@ Four properties keep it working, and none is visible in a diff:
    order to test them for emptiness, so "it reports names only" is asserted
    against a canary rather than assumed.
 
-A fifth is about this repository's own history: there must be exactly one of
-these workflows. A second was once added that duplicated this job against
-*repository* secrets, which do not exist; it failed repeatedly and the failures
-were read as a credential problem rather than as a duplicate reading the wrong
-place. `test_exactly_one_workflow_reads_the_r2_credential` exists so that cannot
-recur.
+A fifth is about this repository's own history: there must be one workflow
+that *executes R2 reads*. A previous duplicate reader looked for nonexistent
+repository secrets. The publication workflow is an allowed caller only when it
+forwards exactly the existing three read-only secret names to that single
+reader. `test_exactly_one_workflow_reads_the_r2_credential` guards both rules.
 """
 
 from __future__ import annotations
@@ -175,27 +175,34 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
 
 
 def test_exactly_one_workflow_reads_the_r2_credential() -> None:
-    """Two workflows reading this credential is how it got misdiagnosed.
+    """The data workflow alone consumes credentials; its caller may only forward.
 
-    A second workflow was added that duplicated this job against *repository*
-    secrets of the same purpose, which were never created. It failed on every
-    run, and the failures were read as a broken credential rather than as a
-    duplicate looking in the wrong place -- costing several rounds before the two
-    files were compared.
-
-    One workflow owns this credential. A second copy is a defect even when it
-    works, because the two drift and the failure blames the credential.
+    An earlier duplicate data workflow accidentally expected *repository* secrets
+    instead of the environment secrets. The production-publication caller now
+    passes three named read-only secrets across workflow_call, but it must never
+    become a second job executing R2 data reads or pass those secrets elsewhere.
     """
     readers = sorted(
         path.name
         for path in WORKFLOWS.glob("*.yml")
         if any(secret in path.read_text(encoding="utf-8") for secret in SECRET_SOURCES.values())
     )
-    assert readers == [WORKFLOW.name], (
-        f"these workflows all read the R2 validation credential: {readers}. "
-        f"Exactly one may. Consolidate into {WORKFLOW.name} rather than keeping "
-        f"a second copy in step with it by hand."
+    caller_name = "r2-data-publication.yml"
+    assert readers == sorted([WORKFLOW.name, caller_name]), (
+        "only the single data workflow and its narrow caller may refer to R2 "
+        f"read-only secret names, found {readers}"
     )
+
+    caller = yaml.load((WORKFLOWS / caller_name).read_text(), Loader=yaml.BaseLoader)
+    expected = {name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()}
+    for name, job in caller["jobs"].items():
+        if name in {"prepare", "verify"}:
+            assert job["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+            assert job["secrets"] == expected
+        else:
+            assert not any(secret in str(job) for secret in SECRET_SOURCES.values()), (
+                f"unexpected R2 read-secret reference in publication job {name}"
+            )
 
 
 # ── The credential check cannot leak ──────────────────────────────────

@@ -36,6 +36,13 @@ on:
       publication_publisher_sha:
         type: string
         required: true
+    secrets:
+      R2_VALIDATION_ACCOUNT_ID:
+        required: true
+      R2_VALIDATION_ACCESS_KEY_ID:
+        required: true
+      R2_VALIDATION_SECRET_ACCESS_KEY:
+        required: true
   push:
     branches: ["r2-validation/**"]
     paths: [".github/r2-validation-request.json"]

@@ -56,6 +56,10 @@ jobs:
       publication_package: ${{ inputs.package }}
       publication_mode: prepare
       publication_publisher_sha: ${{ needs.resolve.outputs.publisher_sha }}
+    secrets:
+      R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_VALIDATION_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_VALIDATION_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
 
   publish:
     name: "Owner approval: ${{ inputs.package }} → ${{ needs.resolve.outputs.generation_id }}"
@@ -114,6 +118,10 @@ jobs:
       publication_package: ${{ inputs.package }}
       publication_mode: verify
       publication_publisher_sha: ${{ needs.resolve.outputs.publisher_sha }}
+    secrets:
+      R2_VALIDATION_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_VALIDATION_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_VALIDATION_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
 
   receipt:
     name: Preserve durable publication receipt
