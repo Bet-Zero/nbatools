@@ -12,7 +12,7 @@ This is a finite binding for the existing completion-program K03 row, not anothe
 | Games vs distinct players | `tests/test_occurrence_queries.py::TestServiceCompatibility::test_distinct_player_count_natural`; `tests/test_c1_occurrence_vs_groups.py::test_distinct_counts_require_every_condition_in_one_game`; corpus `players_40_point_count` | D1/D2 same predicate, different declared grain; no leaderboard truncation. |
 | Qualified zero | `tests/test_query_service.py::TestCountNegativeFinalization::test_explicit_no_match_becomes_trusted_zero`, `test_negative_reasons_never_become_zero`, `test_exact_coverage_failure_survives_shared_cli_envelope` | E1/E2 full covered subject season with max below threshold; separate unavailable-source negative control. |
 
-Existing dynamic “this season” corpus cases are reusable semantic anchors, not numeric proof for this pinned 2023-24 binding. New frozen IDs below need committed selectors and corpus entries before delivery.
+Existing dynamic “this season” corpus cases are reusable semantic anchors, not numeric proof for this pinned 2023-24 binding. The12 frozen IDs below are bound to tests/k03_expected.json, test_k03_find_count_real_data.py, and corpus k03_a1 through k03_e2. Actual runner acceptance remains required.
 
 ## Frozen proposed raw-row expectations
 
@@ -124,8 +124,58 @@ List Jalen Brunson games with 80 or more points in 2023-24.
 
 ## Explicit remaining obligations
 
-- No new numerical selector/corpus case is implemented or run here. Reuse fixture controls, then bind these exact raw populations to natural and structured execution; preserve identity, season, two predicates, operator and grain metadata.
+- All12 selectors and corpus cases are implemented and passed cached raw replay. Independent raw keys are the oracle; natural/structured agreement alone is not proof. Actual runner, integration and deployed checks remain required.
 - Add controlled OR overlap if actual samples do not include it; both branch-only sides are mandatory. Existing grouped-OR fixture proves independent branch evaluation but its shown rows lack overlap.
 - Keep missing/unqualified data separate from E1/E2 qualified zero; a no-data/refusal is not positive completion.
 - Require one unfamiliar wording/entity/value per relevant family. The above second entities provide a frozen prospective check; do not rewrite queries after observing output and call them held-out.
 - Exact candidate CI, required pinned-data runner, Raw QA meaning review, current integrated state and actual desktop/mobile/deployed I/N/L/D evidence are not supplied by this memo. Vercel rate limit remains a deployment dependency. No human review certification is implied.
+
+## Independent controlled fixture proposal (2026-10-18; not implemented)
+
+Use an isolated, explicitly synthetic seven-row player-game population. Player IDs
+A/B/C and game IDs G1–G6 below are symbolic fixture identities, not acquired NBA
+data. Supply consistent team/opponent rows and all normal required columns when
+adapting the existing fixture; do not place these in source archives.
+
+| Game | Player | Team | PTS | AST | TOV | Plus/minus |
+|---|---|---|---:|---:|---:|---:|
+| G1 | A | X | 25 | 12 | 0 | -2 |
+| G2 | A | X | 25 | 5 | 1 | 0 |
+| G3 | B | Y | 18 | 12 | 0 | 2 |
+| G4 | B | Y | 18 | 5 | 0 | -2 |
+| G5 | C | X | 20 | 10 | 0 | 0 |
+| G1 | C | X | 30 | 11 | 2 | 2 |
+| G6 | A | X | 0 | 0 | 0 | 0 |
+
+Proposed immutable fixture expectation IDs:
+
+- `K03-F-AND0`: AST >= 10 AND TOV == 0 selects `(G1,A),(G3,B),(G5,C)`:
+  exactly three rows. The `(G1,C)` high-assist row must fail the zero predicate;
+  `(G4,B)` zero-turnover row must fail the assist predicate. AST >= 10 alone
+  selects four; zero turnovers alone selects five.
+- `K03-F-STRICT`: PTS > 20 selects `(G1,A),(G2,A),(G1,C)` (three).
+  PTS >= 20 additionally selects `(G5,C)` (four). PTS < 20 selects
+  `(G3,B),(G4,B),(G6,A)` (three); PTS <= 20 additionally selects `(G5,C)` (four).
+- `K03-F-OR`: `(PTS > 20 OR AST > 10)` selects
+  `(G1,A),(G2,A),(G3,B),(G1,C)` (four), each once. It has one points-only row,
+  one assists-only row and two overlap rows; both branches must run on the full
+  population. Grouped and ungrouped OR must agree on exact identities.
+- `K03-F-GRAIN`: The same OR population has four player-game rows, three distinct
+  players A/B/C, and only three distinct NBA-style game IDs G1/G2/G3. “How many
+  player games” must return four; “how many distinct players” must return three.
+  Counts may not deduplicate player-game rows by game_id or count the two OR
+  overlap rows twice. Rendering must name its grain.
+- `K03-F-ZERO`: PTS >= 80 selects no rows from this loaded, nonempty covered
+  population. The count is zero and list empty. Removing the entire required
+  source is a separate negative control that must retain unavailable/no-data,
+  never the same qualified-zero answer.
+- `K03-F-SIGNED-ZERO` (reuse existing signed-zero safeguard, not a new K03 feature):
+  plus/minus == 0 selects G2/A,G5/C,G6/A only. This catches encoding “zero” as
+  <= 0, which nonnegative turnovers alone cannot discriminate.
+
+Reuse the existing grouped-OR monkeypatch/fixture setup and count-finalizer tests;
+these expectations require no new framework or shared parser changes. Keep this
+controlled set separate from the 12 frozen real-data questions above. This
+proposal does not certify implementation, execution, or product review.
+
+Reviewer findings retained: nonzero exact equality and distinct-player grouped OR remain unfinished; no K03 acceptance claims these compositions. The new exact-zero league grammar is restricted to zero to prevent silently accepting nonzero equality as an inclusive floor. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.

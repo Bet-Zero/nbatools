@@ -1,21 +1,27 @@
 # Protected data publication
 
-## Protected GitHub Actions process
+## Accepted protected GitHub Actions process
 
-The owner superseded the terminal handoff on 2026-10-17. PR472 implements a reusable
-manual workflow. Independent implementation review and read-only source/snapshot
-qualification passed; merging setup is not permission to publish. The owner does
-not need to run terminal commands. The original reviewed script remains the
-snapshot validator behind the workflow, pinned by commit and checksums.
+The owner superseded the terminal handoff on 2026-10-17. The reusable manual
+workflow was independently reviewed, verified without writes, and merged in
+[PR472](https://github.com/Bet-Zero/nbatools/pull/472). Its acceptance does not
+authorize production publication. The owner does not need terminal commands.
+The reviewed snapshot validator remains pinned by commit and checksums.
 
-After acceptance, select the reviewed `opening-availability-v1` package in
+Select a merged, reviewed package in
 [Protected R2 Data Publication](https://github.com/Bet-Zero/nbatools/actions/workflows/r2-data-publication.yml).
 Use **main** and **validate**. This rebuilds the complete immutable snapshot with
 existing read-only validation credentials, checks every source/code checksum,
 authenticates the existing base manifest, and reports total storage cost bounds.
-The qualified opening snapshot preserves all684existing objects and adds the
-eight source overlay objects plus the publisher-generated player-name index;
-693objects total402606523bytes. The full proposed manifest is retained for review.
+The original `opening-availability-v1` package remains available. The combined
+`opening-s4-availability-v1` package in [PR482](https://github.com/Bet-Zero/nbatools/pull/482)
+adds the opening game and four qualified BOS/LAL reports together; use it only
+after that PR is merged and its post-merge CI passes. Its no-write snapshot
+preserves all 684 existing objects and adds 18 source objects plus the derived
+player-name index: 703 objects, 402,749,125 bytes. The full proposed manifest and
+six consumer checks passed in
+[run39091103560](https://github.com/Bet-Zero/nbatools/actions/runs/39091103560);
+the PR records source bindings, checksums and remaining publication boundaries.
 It never receives write credentials. A changed base requires a newly reviewed
 package; changing an input cannot override it.
 
@@ -29,7 +35,8 @@ arbitrary artifact, commit, shell-command or expected-base input.
 
 A separate read-only job downloads and checks every published object's bytes,
 checks the pointer and previous generation, and verifies deployed readiness and
-the Lakers-without-LeBron/Warriors-without-Moody answers. A separate job without
+the selected package's registered application answers (including opening and
+qualified team/player S4 queries for the combined package). A separate job without
 R2 secrets preserves the receipt in a `data-publication-<run-id>` GitHub release.
 A receipt saying `publication_started_outcome_unknown` or
 `published_verification_failed` is not acceptance. Investigate the actual pointer
@@ -38,10 +45,14 @@ rollback is authorized by this workflow.
 
 ## One-time account setup
 
-The read-only audit in run39006702706 found `copilot`, `Preview`, `Production`
-and `r2-validation`; no publisher environment exists. It confirmed the API exposes
-`can_admins_bypass`. A new dedicated publisher environment is therefore necessary;
-none of the existing application or validation environments should be repurposed.
+The latest read-only audit in run39091103560 found `copilot`, `Preview`,
+`Production` and `r2-validation`; `r2-publication` was absent and its API request
+returned 404. Publication readiness is **false**. The API exposes
+`can_admins_bypass`; the existing environments have no required-reviewer
+protection and are unsuitable for publisher credentials. Only the missing
+dedicated protected environment/account setup is needed. Reuse the accepted
+workflow and existing bucket; do not create duplicate publication infrastructure
+or repurpose an application or read-only validation environment.
 The audit cannot retrieve existing secret values or establish whether the account
 custodian already has a suitable publisher token. Reuse that token when available.
 

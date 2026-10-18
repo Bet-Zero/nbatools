@@ -42,7 +42,7 @@ all ten 240-minute team totals, explicit Tatum/LeBron/Moody participation and
 existing `validate_publication` source/import/identity validation before emitting
 an artifact. The runner is read-only. Artifacts remain temporary evidence.
 
-## Verification and remaining release binding
+## Verified preparation and publication boundary
 
 Actual combined source run [39086974163](https://github.com/Bet-Zero/nbatools/actions/runs/39086974163)
 passed one selected/executed test with zero skips/failures/errors. Reviewed
@@ -60,34 +60,65 @@ add seven checks; with the 19 existing publication-gate tests, 39 passed. Cached
 cell, all source file checksums and all five import digests. These checks do not
 substitute for the actual pinned runner or complete snapshot preparation.
 
-Before registry enablement, bind the independently accepted producer inventory
-to an immutable reviewed publisher revision. Reuse the existing
-publisher and secure workflow, preserving exact reviewed-code hashes, same-base
-checks and refusal to overwrite existing raw files. The combined artifact must
-be prepared against the complete current base with no writes; verify every base
-object is unchanged, only the reviewed overlay and expected derived data differ,
-all manifest hashes/budget checks pass, and opening plus S4 consumers still work.
-The fixed `publish-combined-availability.py` entry point delegates to the
-existing publisher using keyword-only inventory/default-generation arguments;
-the opening entry point retains its original defaults. A missing or changed
-inventory fails closed. The combined inventory pins both wrapper/shared publisher
-code as well as the existing validator/import dependencies. Register the new package
-only after those reviewed pins exist. The candidate registry now binds
-`opening-s4-availability-v1` to immutable publisher
-`b7eead87c20dc5abc036ce6fecc6413423b38d1e`; merge is contingent on independent
-review and the actual complete-snapshot gate. This is not production approval.
+The registry binds `opening-s4-availability-v1` to immutable publisher
+`b7eead87c20dc5abc036ce6fecc6413423b38d1e`. The fixed combined entry point
+reuses the existing publisher; the opening package and its original pinned
+revision remain unchanged. Both wrapper and shared publisher implementation are
+checksum-bound in the combined inventory. No workflow, bucket, credentials or
+publication infrastructure were added.
 
-The complete-snapshot selector is
+Actual complete-snapshot run
+[39091103560](https://github.com/Bet-Zero/nbatools/actions/runs/39091103560)
+passed **one selected/executed test, zero skips/failures/errors**. Reviewed
+candidate `072bd3b78389d9cf27058d6bf0eb137495563bd1`, request
+`e23a27b00ee9e9910e4d441c43c9c586f27fca89`. Artifact `12122218736`, ZIP SHA256
+`290778578b035bdb4df8c1594f238697fa7d40c2dea32d72586df93a67b2f801`.
+Independent checker /root/availability_checker accepted the fresh receipts,
+recomputed the manifest hash and exact base/overlay/derived inventory, checked
+the budget and matched all six consumers to independently frozen source truth.
+Implementation merge still requires applicable CI. Production publication
+remains unauthorized.
+
+The executed selector was
 `tests/test_combined_availability_publication_real_data.py::test_combined_availability_complete_snapshot_prepare`.
-It checks all684base manifest entries remain byte-identical, all18overlay
-entries match reviewed hashes, the only other object is derived player names,
-and every one of703snapshot objects has its expected size/hash. Six application
-checks cover both original opening queries and team/player S4 behavior in each
-qualified season. The same six checks are registered for eventual deployed
-publication verification. Snapshot preparation runs only the existing `prepare`
-mode and retains manifests, preparation/budget/environment audit and consumer
-receipts. Actual complete-snapshot execution remains pending; no permanent
-storage or deployed verification is claimed.
+It verified every size/hash in the proposed **703-object, 402,749,125-byte**
+snapshot: all 684 base objects unchanged, 18 exact reviewed raw overlay objects,
+and only the expected derived player-name index added (500,982 bytes, SHA256
+`f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2`). The active base pointer
+and authenticated manifest stayed unchanged around preparation. Whole-bucket
+conservative projected storage was **1,167,483,320 bytes**, below the unchanged
+10,000,000,000-byte limit. The receipt explicitly says `prepared_no_writes`.
+
+| Retained receipt | SHA256 |
+| --- | --- |
+| Base manifest | `4bfa194ad102f0ab7b257fafdc66e2d9d5af1bfe95318196f5e20a46fdc5b28e` |
+| Proposed manifest | `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52` |
+| Preparation receipt | `38a4d91e93e532c5bed090a476956d4827a73a9ed19611e43b3e0346b1bc37cb` |
+| Consumer checks | `d42941826283e9973bbcd0123ce67d3bf001889f434d514a18c7fea7ab2f1979` |
+
+Six application checks passed against this complete locally staged generation:
+
+| Qualified sample | Games / W–L | PTS average |
+| --- | --- | --- |
+| LAL without LeBron, 2025-10-21 | 1 / 0–1 | 109 |
+| GSW without Moody, 2025-10-21 | 1 / 1–0 | 119 |
+| BOS vs LAL with Tatum, 2023-24 | 2 / 1–1 | 115.5 |
+| BOS vs LAL without Tatum, 2025-26 | 2 / 2–0 | 118.5 |
+| Brown vs LAL with Tatum, 2023-24 | 2 / 1–1 | 13.5 |
+| Brown vs LAL without Tatum, 2025-26 | 2 / 2–0 | 31 |
+
+S4 REB/AST means also passed. Brown's returned game IDs were exactly
+`22300403/22300684` and `22500338/22500823`. These are local staged-generation
+consumer checks; they are not deployed verification or permanent storage.
+The same six queries are registered for eventual post-publication verification.
+
+The fresh environment audit found no `r2-publication` environment (404), so
+publication readiness remains false. Reuse the existing accepted workflow and
+bucket. The only owner account setup is the protected publishing environment and
+separately controlled bucket-scoped writer secrets described in the runbook.
+No owner terminal work, credentials in chat, or duplicate infrastructure is needed.
+Actual publication additionally requires future explicit owner approval; it has
+not occurred.
 
 If the opening package or another generation is published first, the existing
 same-base guard must stop this package. Agents must then requalify against that
