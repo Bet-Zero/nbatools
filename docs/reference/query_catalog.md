@@ -77,6 +77,8 @@ If a feature is not reflected here, it should not be assumed shipped.
   correcting via last-name/nickname aliases; exact aliases like `durant`, `steph`,
   and `curry` still resolve normally
 - team name/alias: `Lakers`, `LAL`, `Celtics`, `Sixers`, `Wolves`
+- Historical `Seattle SuperSonics`, `SuperSonics`, and `Sonics` select the Seattle
+  era. Current `Thunder` retains the franchise's Seattle seasons with a caveat.
 - player comparison wording: `Compare Jokic and Embiid`, `Jokic vs Embiid recent form`
   (bare `PLAYER vs PLAYER` phrasing such as `Jokic vs Embiid` returns an
   ambiguous/no-result boundary until clarification UI exists)

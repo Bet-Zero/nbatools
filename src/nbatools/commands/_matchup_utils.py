@@ -1061,6 +1061,16 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         if not m:
             continue
         phrase = m.group(1).strip()
+        if (
+            mode == "with"
+            and re.search(r"\b(?:what|which)\s+record\b", text[: m.start()])
+            and re.search(r"\b(?:finish(?:ed)?|end(?:ed)?)\s*$", text[: m.start()])
+            and _tail_is_read_scope(text, m.start(1) - 1)
+        ):
+            # In "what record did X finish with in 2007-08", "with"
+            # refers back to the requested record. Only an entirely understood
+            # scope tail may follow; a person or unknown clause still blocks.
+            continue
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
             continue
         stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None

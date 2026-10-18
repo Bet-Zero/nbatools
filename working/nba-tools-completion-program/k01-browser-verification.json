@@ -1,0 +1,415 @@
+{
+  "scope": "Local rebuilt application through actual browser POST /query and retained pinned-generation CSV subset, not production/deployed or latency acceptance",
+  "backend_reviewed_sha": "c35fb4e936b70f7a466bc61046ac8ab73e8faaaf",
+  "local_backend_commit": "9ace194",
+  "data_generation_origin": "queue-d-production-0574735-20260716",
+  "local_generation_mode": "legacy",
+  "freshness_label": "Freshness unknown (correct for subset without snapshot freshness metadata)",
+  "viewports": {
+    "desktop": [
+      1280,
+      900
+    ],
+    "mobile": [
+      390,
+      844
+    ]
+  },
+  "initial": {
+    "sourceCommit": "9ace194",
+    "scope": "local rebuilt app with retained pinned-generation source subset; not production or latency acceptance",
+    "browser": "154.0.8037.57",
+    "receipts": [
+      {
+        "label": "desktop",
+        "id": "count_games",
+        "query": "How many player games had at least 50 points in 2023-24?",
+        "http": 200,
+        "elapsedMs": 1094,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "a605fc7b318c44790a84e691dc0bfeb414974ac0dd877c885f90321480a01919"
+      },
+      {
+        "label": "desktop",
+        "id": "count_players",
+        "query": "How many distinct players scored at least 50 points in a game in 2023-24?",
+        "http": 200,
+        "elapsedMs": 352,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "103a729352b5e27d64eb4c172458cbbef81d65bcaeef5e1d1cf5fae2ea6c6823"
+      },
+      {
+        "label": "desktop",
+        "id": "or_list",
+        "query": "In 2023-24, list Anthony Edwards games with (over 40 points or over 12 rebounds).",
+        "http": 200,
+        "elapsedMs": 334,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "580d204e681c2c552fe5305e1ffa6c1cb4c829cc7a1054245e3df7031bb4ee5e"
+      },
+      {
+        "label": "desktop",
+        "id": "qualified_zero",
+        "query": "How many Nikola Jokic games reached at least 80 points in 2023-24?",
+        "http": 200,
+        "elapsedMs": 319,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "5caed64cc52293821c7b1610639b79ba440d46e91083d13204a8049a448fb1b6"
+      },
+      {
+        "label": "desktop",
+        "id": "no_match",
+        "query": "List Jalen Brunson games with 80 or more points in 2023-24.",
+        "http": 200,
+        "elapsedMs": 344,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "ed7f7e6d7c102067650d1677b129664cba7672108493c8ba5e60d6c054b8de84"
+      },
+      {
+        "label": "desktop",
+        "id": "jovic",
+        "query": "Nikola Jovic stats in 2024-25",
+        "http": 200,
+        "elapsedMs": 455,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "bafcf992b4a296f8a6598ec42acfed3a2b7db6ac0ebd32975a6129ed558e4415"
+      },
+      {
+        "label": "desktop",
+        "id": "marcus",
+        "query": "Marcus Williams Spurs stats in 2007-08",
+        "http": 200,
+        "elapsedMs": 504,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "96d5a82f21489b499cd8ec505fce1c72495c477a2d89ba99a4f0447d28f51524"
+      },
+      {
+        "label": "desktop",
+        "id": "franchise",
+        "query": "Thunder record from 2007-08 through 2008-09",
+        "http": 200,
+        "elapsedMs": 478,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "f560bee035d190607115a8a253e13ee2ad277144aebc3bd01afb5cb86d463db6"
+      },
+      {
+        "label": "desktop",
+        "id": "seattle",
+        "query": "Seattle SuperSonics record in 2007-08",
+        "http": 200,
+        "elapsedMs": 319,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "f3839589a33c4446e4fdfe77c9c6b3a0e64ff90d43d031ac527488188a7a17eb"
+      },
+      {
+        "label": "desktop",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 1114,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "ab66a3a884931cc4c3829d5479302f1b0bcd29a5270e3e3efb4378177fa31ca6"
+      },
+      {
+        "label": "mobile",
+        "id": "count_games",
+        "query": "How many player games had at least 50 points in 2023-24?",
+        "http": 200,
+        "elapsedMs": 322,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "bfed4b0af5166fa4281d410bd0366d452c9f35966c84c91185adb4b7c3308d08"
+      },
+      {
+        "label": "mobile",
+        "id": "count_players",
+        "query": "How many distinct players scored at least 50 points in a game in 2023-24?",
+        "http": 200,
+        "elapsedMs": 285,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "0c7c1b18c414bcfaf3e4852a28086c09758f0685b76eae4e15e50fc37025b11a"
+      },
+      {
+        "label": "mobile",
+        "id": "or_list",
+        "query": "In 2023-24, list Anthony Edwards games with (over 40 points or over 12 rebounds).",
+        "http": 200,
+        "elapsedMs": 318,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "d45c420e98c50ffcea23630acf88b08c97b024e6d849bec43b3b5e1734d29987"
+      },
+      {
+        "label": "mobile",
+        "id": "qualified_zero",
+        "query": "How many Nikola Jokic games reached at least 80 points in 2023-24?",
+        "http": 200,
+        "elapsedMs": 286,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "6bc6dd5c42c8f89b21da69fe7f8dd56ab6b2be1a6fd54c440db8a6dbb50b56f5"
+      },
+      {
+        "label": "mobile",
+        "id": "no_match",
+        "query": "List Jalen Brunson games with 80 or more points in 2023-24.",
+        "http": 200,
+        "elapsedMs": 295,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "0602de32a31e1e7972f7452c3a44639cf1e7b05db46b5cfc9de3e8ed582d3db5"
+      },
+      {
+        "label": "mobile",
+        "id": "jovic",
+        "query": "Nikola Jovic stats in 2024-25",
+        "http": 200,
+        "elapsedMs": 315,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "ac8b6f21cf06eb1685715b6745513b3ff0336198624648a7bce46eecd43c4eb5"
+      },
+      {
+        "label": "mobile",
+        "id": "marcus",
+        "query": "Marcus Williams Spurs stats in 2007-08",
+        "http": 200,
+        "elapsedMs": 291,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "29b62b1107d9990ae074987869b15210f4f3d9fdb96806fe380b096fdd062d7f"
+      },
+      {
+        "label": "mobile",
+        "id": "franchise",
+        "query": "Thunder record from 2007-08 through 2008-09",
+        "http": 200,
+        "elapsedMs": 338,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "00e50a342b8b42c60f674e87a7cb8c4cd755283140161208c95358bb15770d6d"
+      },
+      {
+        "label": "mobile",
+        "id": "seattle",
+        "query": "Seattle SuperSonics record in 2007-08",
+        "http": 200,
+        "elapsedMs": 285,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "97cd338d8e6e47c5648ba2e4552c2b801a20d03065ea5d8ec372f318d11fa809"
+      },
+      {
+        "label": "mobile",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 988,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "da32a5fd4db80be76c31169fcb47d3c004c91abe4cdd84beb85e8ecc300fcb22"
+      }
+    ]
+  },
+  "finding": "Ewing numerical result correct but initial hero claimed in his career with partial-coverage note hidden in Details. Fixed visible source-derived coverage subtitle and covered game-season span; initial checks alone did not establish adequate coverage disclosure.",
+  "corrected": {
+    "sourceCommit": "9ace194",
+    "scope": "local rebuilt app with retained pinned-generation source subset; not production or latency acceptance",
+    "browser": "154.0.8037.57",
+    "receipts": [
+      {
+        "label": "desktop",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 1268,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "5ef2f33119a356669e576ca910fd6da83e4b2fab998c0731805f72987b8a6ebd"
+      },
+      {
+        "label": "mobile",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 1050,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "d9f508179ba65a3ab4d2bd95e49077fbd420c5bf6ee7ea6023e48cb9d0a5fbdc"
+      }
+    ]
+  },
+  "limits": [
+    "Screenshots retained in execution workspace; hashes and conclusions durable here.",
+    "Image requests may fail in restricted cloud network; standard identity fallback rendered.",
+    "No production generation pointer or deployed latency acceptance.",
+    "No complete K01-K12 rendered acceptance claimed."
+  ],
+  "final": {
+    "sourceCommit": "9ace194",
+    "scope": "local rebuilt app with retained pinned-generation source subset; not production or latency acceptance",
+    "browser": "154.0.8037.57",
+    "receipts": [
+      {
+        "label": "desktop",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 1273,
+        "missing": [],
+        "overflow": {
+          "viewport": 1280,
+          "document": 1280,
+          "body": 1280
+        },
+        "errors": [],
+        "screenshot_sha256": "1730fe87fc499cec4826005b4d6429034e84fb738ec455b162d48dfe8e81a8d0"
+      },
+      {
+        "label": "mobile",
+        "id": "ewing",
+        "query": "Patrick Ewing career stats",
+        "http": 200,
+        "elapsedMs": 1116,
+        "missing": [],
+        "overflow": {
+          "viewport": 390,
+          "document": 390,
+          "body": 390
+        },
+        "errors": [],
+        "screenshot_sha256": "1fa9a0e50021f680e278fd5c796d826b913c6ddb251b14c001cf35fa7496a757"
+      }
+    ]
+  },
+  "final_copy": "Career hero states covered1996-97\u20132001-02, visiblecoverage note says earlierseasons absent. Career context labels1996-97\u20132025-26 as Searched seasons and omits redundant aggregation claim.",
+  "franchise_check": "Actual browser desktop-franchise.json and mobile-franchise.json correctly say43\u2013121 from2007-08to2008-09; shorterRawQA snapshot hero is not a frontend defect.",
+  "frontend_validation": {
+    "locked_install": "npm ci --ignore-scripts (278packages)",
+    "tests": 443,
+    "test_files": 37,
+    "lint": "passed",
+    "build": "passed"
+  }
+}
