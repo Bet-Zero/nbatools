@@ -62,7 +62,13 @@ SECRET_SOURCES = {
     "R2_SECRET_ACCESS_KEY": "R2_VALIDATION_SECRET_ACCESS_KEY",
 }
 SECRET_ENV_VARS = tuple(SECRET_SOURCES)
-SECRET_FREE_JOBS = {"request", "retain-backup", "restore-backup", "retain-restore-receipt"}
+SECRET_FREE_JOBS = {
+    "request",
+    "retain-backup",
+    "restore-backup",
+    "retain-restore-receipt",
+    "retain-data-inventory",
+}
 
 # The job that verifies the credential and pins the generation every other job
 # reads, so that all gates judge the same immutable data.

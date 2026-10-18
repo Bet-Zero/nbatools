@@ -64,7 +64,10 @@ IDs, fields, grain, keys, source requirements and applicable standard period
 windows. Games absent from the production game catalog are reported explicitly;
 no game or result is invented. Add explicit team/player IDs when requesting a
 seasonal on/off or lineup scope. `collection_needed` distinguishes missing rows
-or columns from a present dataset needing quality/trust review. Processed data
+or columns, wholly null fields, or unobserved requested identity keys from a
+present dataset needing quality/trust review. Identity absence is not evidence of
+DNP, injury, or expected participation; request qualified coverage. Partial nulls
+are flagged for cloud review, not silently accepted as complete. Processed data
 is built in the cloud; request its raw inputs rather than asking the laptop to
 build the application. If a field's meaning is not in an existing contract,
 Codex must define/qualify it before treating any new source value as that field.

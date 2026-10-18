@@ -121,3 +121,71 @@ def test_inventory_workflow_has_no_publication_or_cloud_acquisition_authority():
     restore = jobs["restore-backup"]
     assert "tools.data_availability from-backup" in str(restore)
     assert "restored/data-inventory/inventory.json" in str(jobs["retain-restore-receipt"])
+
+
+def test_season_grain_does_not_invent_missing_games(tmp_path):
+    manifest = generation(tmp_path)
+    name = "raw/player_season_advanced/2025-26_regular_season.csv"
+    raw = b"player_id,team_id,ts_pct\n42,1,0.6\n"
+    target = tmp_path / name
+    target.parent.mkdir(parents=True)
+    target.write_bytes(raw)
+    manifest["files"].append(
+        {"path": name, "size_bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+    )
+    result = scan_generation(manifest, lambda p: tmp_path / p, origin="test", evidence={})
+    advanced = next(f for f in result["files"] if f.get("dataset") == "raw/player_season_advanced")
+    assert "game_coverage" not in advanced
+
+
+def test_missing_requested_identity_and_null_fields_never_report_ready(tmp_path):
+    result = report(tmp_path)
+    source = next(f for f in result["files"] if f.get("dataset") == "raw/player_game_stats")
+    source["null_counts"]["pts"] = source["rows"]
+    packet = collection_request(
+        result,
+        "raw/player_game_stats",
+        "2025-26",
+        "Regular Season",
+        games=["0022500001"],
+        player_ids=["999"],
+    )
+    assert packet["collection_needed"] and packet["quality_review_required"]
+    assert packet["unusable_fields"] == ["pts"]
+    assert packet["unobserved_requested_keys"] == [
+        {"game_id": "22500001", "team_id": None, "player_id": "999"}
+    ]
+    assert "does not establish DNP" in packet["key_absence_note"]
+
+
+def test_staging_inventory_retains_existing_path_variants_and_separation(tmp_path):
+    import json
+    import zipfile
+
+    from tools.data_availability import staged_inventory
+
+    for name, member, receipt_path in [
+        (
+            "core",
+            "data/raw/player_game_stats/2025-26_regular_season.csv",
+            "working/nba-tools-completion-program/cloud-operations/core.zip",
+        ),
+        ("lineup", "raw/league_lineup_viz/2025-26_regular_season.csv", "lineup.zip"),
+        ("partial", "partial/rosters.csv", "partial.zip"),
+    ]:
+        path = tmp_path / f"{name}.zip"
+        with zipfile.ZipFile(path, "w") as archive:
+            archive.writestr(member, "fixture")
+        (tmp_path / f"{name}-receipt.json").write_text(
+            json.dumps(
+                {
+                    "durable_bundle": {
+                        "path": receipt_path,
+                        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    }
+                }
+            )
+        )
+    result = staged_inventory(tmp_path)
+    assert len(result) == 3 and all(len(b["dataset_paths"]) == 1 for b in result)
+    assert all(b["location"] == "development_staging_in_git" for b in result)

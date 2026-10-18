@@ -13,6 +13,7 @@ import re
 import zipfile
 from collections import Counter
 from datetime import UTC, datetime
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -127,7 +128,20 @@ def profile_frame(frame, dataset):
     windows = []
     if {"period_family", "period_value"}.issubset(frame.columns):
         windows = sorted({f"{a}:{b}" for a, b in zip(frame.period_family, frame.period_value)})
+    identities = {}
+    identity_columns = [c for c in ("game_id", "team_id", "player_id") if c in frame]
+    if identity_columns:
+        for row in (
+            frame[identity_columns].dropna().drop_duplicates().itertuples(index=False, name=None)
+        ):
+            values = dict(zip(identity_columns, map(_id, row)))
+            teams = identities.setdefault(values.get("game_id", "season"), {})
+            players = teams.setdefault(values.get("team_id", "unscoped"), set())
+            if "player_id" in values:
+                players.add(values["player_id"])
+    identities = {g: {t: sorted(p) for t, p in teams.items()} for g, teams in identities.items()}
     return {
+        "identity_membership": identities,
         "rows": len(frame),
         "columns": columns,
         "required_columns": sorted(required),
@@ -163,6 +177,7 @@ def _slice(path):
 def scan_generation(manifest, path_for, *, origin, evidence):
     entries = manifest_inventory(manifest)
     records = []
+    recorded_slices = {}
     catalogs = {}
     team_keys = {}
     player_team_keys = {}
@@ -229,6 +244,10 @@ def scan_generation(manifest, path_for, *, origin, evidence):
                         record["quality_errors"].append(str(exc))
         elif name.startswith("metadata/dataset_manifests/"):
             document = json.loads(raw)
+            recorded_slices[f"{document.get('season')} {document.get('season_type')}"] = {
+                "state": document.get("validation_state"),
+                "path": name,
+            }
             record["recorded_validation"] = {
                 "state": document.get("validation_state"),
                 "errors": document.get("validation_errors", []),
@@ -240,7 +259,7 @@ def scan_generation(manifest, path_for, *, origin, evidence):
             continue
         key = f"{record['season']} {record['season_type']}"
         catalog = catalogs.get(key)
-        if catalog and "game_ids" in record:
+        if catalog and "game_id" in record.get("columns", []):
             expected_games = set(catalog["observed_final_game_ids"])
             observed = set(record["game_ids"])
             record["game_coverage"] = {
@@ -265,6 +284,17 @@ def scan_generation(manifest, path_for, *, origin, evidence):
                     if record["dataset"] == "raw/player_game_stats"
                     else "paired coverage against observed final games; full NBA season unknown"
                 )
+    known_paths = set(entries)
+    absent = {}
+    for label in catalogs:
+        season, kind = label.split(" ", 1)
+        absent[label] = []
+        for dataset, spec in SPECS.items():
+            if not spec.applies(kind):
+                continue
+            suffix = season if spec.season_only else f"{season}_{kind.lower().replace(' ', '_')}"
+            if f"{dataset}/{suffix}.csv" not in known_paths:
+                absent[label].append(dataset)
     return {
         "schema_version": 1,
         "generated_at": datetime.now(UTC).isoformat(),
@@ -275,6 +305,8 @@ def scan_generation(manifest, path_for, *, origin, evidence):
         "total_bytes": sum(f["size_bytes"] for f in entries.values()),
         "files": records,
         "game_catalogs": catalogs,
+        "recorded_pipeline_receipts": recorded_slices,
+        "contracts_absent_by_slice": absent,
         "scope": (
             "manifest-listed objects only; inactive generations and staging "
             "never counted as production"
@@ -297,16 +329,39 @@ def staged_inventory(root=ROOT / "working/nba-tools-completion-program/cloud-ope
         if not bundle:
             continue
         name = bundle.get("path")
-        if not name or Path(name).name != name:
+        if not name:
             continue
-        zipped = root / name
+        relative = Path(name)
+        allowed_prefix = "working/nba-tools-completion-program/cloud-operations"
+        if (
+            relative.is_absolute()
+            or ".." in relative.parts
+            or (len(relative.parts) > 1 and str(relative.parent) != allowed_prefix)
+        ):
+            raise ValueError(f"Unsafe staged receipt path: {name}")
+        zipped = root / relative.name
+        if zipped.is_symlink():
+            raise ValueError(f"Symlink staged bundle: {name}")
         if not zipped.is_file():
             continue
         if hashlib.sha256(zipped.read_bytes()).hexdigest() != bundle["sha256"]:
             raise ValueError(f"Staged bundle checksum mismatch: {name}")
         with zipfile.ZipFile(zipped) as archive:
             members = sorted(
-                n for n in archive.namelist() if n.startswith("data/") and n.endswith(".csv")
+                n
+                for n in archive.namelist()
+                if n.startswith(
+                    (
+                        "data/raw/",
+                        "data/processed/",
+                        "data/derived/",
+                        "raw/",
+                        "processed/",
+                        "derived/",
+                        "partial/",
+                    )
+                )
+                and n.endswith(".csv")
             )
         result.append(
             {
@@ -361,6 +416,12 @@ def format_inventory(report):
             {f["season"] for f in report["files"] if f.get("dataset") == dataset and f["season"]}
         )
         lines.append(f"| {dataset} | {count} | {', '.join(seasons)} |")
+    lines.extend(["", "## Missing contract datasets (not all are core prerequisites)"])
+    missing_counts = Counter(
+        d for values in report.get("contracts_absent_by_slice", {}).values() for d in values
+    )
+    for dataset, count in sorted(missing_counts.items()):
+        lines.append(f"- `{dataset}` absent in {count} observed season/type slices.")
     lines.extend(["", "## Quality findings"])
     for f in issues:
         lines.append(f"- `{f['path']}`: {'; '.join(f['quality_errors'])}")
@@ -417,6 +478,31 @@ def collection_request(
     requested_fields = sorted(set(fields) | set(spec.required_columns) | set(spec.key_columns))
     if dataset in {"raw/player_game_stats", "raw/team_game_stats"}:
         requested_fields = sorted(set(requested_fields) | set(CORE_STATS))
+    unusable = [
+        c
+        for c in requested_fields
+        if source
+        and source[0].get("rows", 0) > 0
+        and source[0].get("null_counts", {}).get(c) == source[0]["rows"]
+    ]
+    teams = sorted({_id(t) for t in team_ids})
+    players = sorted({_id(p) for p in player_ids})
+    membership = source[0].get("identity_membership", {}) if source else {}
+    unobserved_keys = []
+    for game, team, player in product(
+        requested_games or ["season"], teams or [None], players or [None]
+    ):
+        entries = membership.get(game, {})
+        chosen = [entries[t] for t in entries if team is None or t == team]
+        if not chosen or (player is not None and not any(player in ids for ids in chosen)):
+            unobserved_keys.append({"game_id": game, "team_id": team, "player_id": player})
+    needs_review = bool(
+        source
+        and (
+            source[0].get("quality_errors")
+            or any(source[0].get("null_counts", {}).get(c, 0) for c in requested_fields)
+        )
+    )
     return {
         "schema_version": 1,
         "status": "collection_requirement_not_publication_approval",
@@ -430,19 +516,22 @@ def collection_request(
         "game_ids_not_in_production_catalog": sorted(
             set(requested_games) - set(catalog.get("observed_final_game_ids", []))
         ),
-        "team_ids": sorted(set(team_ids)),
-        "player_ids": sorted(set(player_ids)),
+        "team_ids": teams,
+        "player_ids": players,
+        "unobserved_requested_keys": unobserved_keys,
+        "key_absence_note": (
+            "Not observed in stored rows; absence does not establish DNP, injury "
+            "or expected participation"
+        ),
         "required_columns": requested_fields,
         "missing_columns": sorted(set(requested_fields) - available),
-        "collection_needed": not source or bool(missing) or bool(set(requested_fields) - available),
-        "quality_review_required": bool(source and source[0].get("quality_errors")),
-        "unusable_fields": [
-            c
-            for c in requested_fields
-            if source
-            and source[0].get("rows", 0) > 0
-            and source[0].get("null_counts", {}).get(c) == source[0]["rows"]
-        ],
+        "collection_needed": not source
+        or bool(missing)
+        or bool(set(requested_fields) - available)
+        or bool(unusable)
+        or bool(unobserved_keys),
+        "quality_review_required": needs_review,
+        "unusable_fields": unusable,
         "availability_note": "Present rows need trust review; player completeness is unknown",
         "grain": spec.grain,
         "key_columns": list(spec.key_columns),
