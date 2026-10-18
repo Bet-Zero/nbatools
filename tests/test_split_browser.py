@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from nbatools.data_source import data_read_csv
 from tests.test_core_identity_find_count_browser import ROOT, _capture_browser
 from tests.test_k07_split_real_data import CASES, _qualified_buckets
 
@@ -17,10 +18,23 @@ def _cases():
         for c in json.loads((BINDING / "k07-heldout-wording.json").read_text())["cases"]
     }
     cases = []
+    teams = data_read_csv("raw/teams/teams_reference.csv")
     for frozen in CASES:
         sample = _qualified_buckets(frozen)
         name = sample["player_name" if frozen["kind"] == "player" else "team_name"].iloc[0]
-        text = [name if frozen["kind"] == "player" else frozen["team"], *frozen["seasons"]]
+        text = ([name] if frozen["kind"] == "player" else []) + frozen["seasons"]
+        identity = None
+        if frozen["kind"] == "team":
+            reference = teams.loc[teams.team_abbr.eq(frozen["team"])]
+            assert len(reference) == 1
+            row = reference.iloc[0]
+            assert set(sample.team_id.astype(int)) == {int(row.team_id)}
+            identity = {
+                "team_abbr": frozen["team"],
+                "team_id": int(row.team_id),
+                "team_name": str(row.team_name),
+                "visible_names": [frozen["team"], str(row.team_name), name],
+            }
         if frozen["opponent"]:
             text += [frozen["opponent"]]
         if frozen["venue"]:
@@ -37,6 +51,7 @@ def _cases():
                     "text": text,
                     "forbidden": ["undefined", "NaN", "Infinity", "2023-24 to 2025-26"],
                     "split": frozen,
+                    "team_identity": identity,
                 }
             )
     assert len(cases) == 12
@@ -50,12 +65,20 @@ def _validate_answers(receipt, cases):
         pair = item["viewport"], item["id"]
         assert pair not in seen
         seen.add(pair)
-        frozen = by_id[item["id"]]["split"]
+        case = by_id[item["id"]]
+        frozen = case["split"]
         response = item["payload"]
         assert response["result_status"] == "ok"
         assert response["route"] == frozen["kind"] + "_split_summary"
         assert not item["missing"] and not item["forbidden"]
         metadata, sections = response["result"]["metadata"], response["result"]["sections"]
+        if identity := case["team_identity"]:
+            assert metadata["team"] == identity["team_abbr"]
+            for field in ("team_id", "team_abbr", "team_name"):
+                assert metadata["team_context"][field] == identity[field]
+            # The visible subject can use the source-backed abbreviation or
+            # canonical name; an opponent mention cannot satisfy this check.
+            assert item["text"].splitlines()[0] in identity["visible_names"]
         assert metadata["opponent"] == frozen["opponent"]
         assert metadata["split_type"] == frozen["split"]
         if frozen["split"] == "season":
