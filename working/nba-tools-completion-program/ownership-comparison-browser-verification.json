@@ -493,5 +493,273 @@
         ]
       }
     ]
+  },
+  "resumption_production_verification": {
+    "workflow_run": 39163942659,
+    "request_sha": "52078dfab719b481910c31a636318fa70ba68bea",
+    "reviewed_parent": "da414ca3f77e2f7e520541c0cfcab7b0282add1a",
+    "served_sha": "b2eacd1a87b9696f6da4134ea5a031f24d5fb7a3",
+    "deployment_id": "dpl_DmdxutQyyDSpQJDn2MjrgrcuAiLP",
+    "generation": "availability-opening-s4-v1-20261017",
+    "required_tests": {
+      "selected": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0
+    },
+    "responses": 40,
+    "readiness_checks": 80,
+    "artifact_id": 12149667788,
+    "artifact_zip_sha256": "1df4ab6a29fe90656998f105064752cc2227147a34dfdf9f9efaee9be39c1d9c",
+    "assets": [
+      "https://nbatools.vercel.app/assets/index-iaaR-wnl.js"
+    ],
+    "lead_verification": "/root verified all40screenshot hashes/80current-generation readiness checks and inspected mobile strict threshold/head-to-head season and desktop January sample visuals",
+    "independent_review": "Prior /root/comparison_checker source/oracle/local40-response review applies; no new independent review of production artifact claimed after checker usage limit",
+    "receipt_sha256": "51d1871fa11b392eb18d776887deb98df95245bee3cbf44c2e9aedef16353f02",
+    "receipts": [
+      {
+        "id": "k05-a1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "914c2b807b771013e159f23f2bc12abc48c6b9a08d5825f907ebd836a9b8af77"
+      },
+      {
+        "id": "k05-a1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "4754ef584fcb95be3e70ad3cc31cbea6d4bfeb0c924b885c1a46d0ae3d6097c8"
+      },
+      {
+        "id": "k05-a2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "5f356c768af5750026e80209d528c59a2ecc9b5c82be48148cd03ca2f8f55fb7"
+      },
+      {
+        "id": "k05-a2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "ad2fb7bc93f7551cde0ddd5ded1d96fbdd373c08e6424ff9c87bd0d9a6d6f2e8"
+      },
+      {
+        "id": "k05-b1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "357cb599dbd031e29cf4251deb906cfa1610bf52b1bfb96f898b9fc792b66a0f"
+      },
+      {
+        "id": "k05-b1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "72c873d189908e328b28439cec7ef2dfbfe8d9e4208c5a323a483e3585ecfe4a"
+      },
+      {
+        "id": "k05-b2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "884fc44c97207a116cbb53254a112d72d1a5e98ffbfa89827ccb9925c7ac2f2b"
+      },
+      {
+        "id": "k05-b2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "29bc2d1d7b308cd9f7759adba0d7c013c9dff3effbf78a0b2efc5149b9403235"
+      },
+      {
+        "id": "k06-a1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "7bae4320ca951714347bda9022b5f80fedcd6045cab693d36db4130aae29cccb"
+      },
+      {
+        "id": "k06-a1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "52812c058bfeca9840d765ff9e57b947ff57f5847889773d08254db95522798e"
+      },
+      {
+        "id": "k06-a2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "983a03ed1d4686d7e9b06df27799286fb5164130d98543679c2b93c8f3e76fd0"
+      },
+      {
+        "id": "k06-a2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "8ec7b0f8bc8563a015d217845806b94e5b51688b4d3c70d996236d20e57d1d2f"
+      },
+      {
+        "id": "k06-b1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "0bd06e07fa346090eb97e70061ec04a6d4210fa9f1e8897e27e90ee9607b786b"
+      },
+      {
+        "id": "k06-b1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "85eac286af4cc339394e2ee97563b3c7bc02049353c557abd5e1025c5f6e9de0"
+      },
+      {
+        "id": "k06-b2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "79e0972bd7f04f848a42490d02e2597979161fbcb760925f0c66b857bccd370c"
+      },
+      {
+        "id": "k06-b2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "4d32f9d4dfbca01f2271e2c3de1b70693bee8489740c39350515383f5c79e3f0"
+      },
+      {
+        "id": "k06-c1",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "daf436bf6c59e7f8fb362783b43b76c5556931c3bff2713eb6a18c70c9d2dae2"
+      },
+      {
+        "id": "k06-c1-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "23343853c8e4cdd3e66c61eb58fb0e4cf737d8a589f959d94ca2e15ae4a825dc"
+      },
+      {
+        "id": "k06-c2",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "31c0e2b0864d1643cb54c5496c799e099f7b7f624cb6fcbc83ba31eb5b77b773"
+      },
+      {
+        "id": "k06-c2-heldout",
+        "viewport": "desktop",
+        "http": 200,
+        "screenshotSha256": "fbc07293b82b45251a1e2a8be290316cafc2201ec3cff219348cb0b00fdb0548"
+      },
+      {
+        "id": "k05-a1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "940937242b1683cf40d410a665643fbb001f32a717890f8932e48af0937f18f0"
+      },
+      {
+        "id": "k05-a1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "19c1c76ec02c3b68c5875d3625ca422896719d2f08877f4e5bcfda9bf1eeaebb"
+      },
+      {
+        "id": "k05-a2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "1da2cd63cf83999944535f848a0ffd9ad78ce0718a50c9fe74509bd2b97f5f13"
+      },
+      {
+        "id": "k05-a2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "45f5ab17ea2aa164a3a64277b604cb22c78a2b9ea78a4700b7a3f8878c05cffd"
+      },
+      {
+        "id": "k05-b1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "0fdcf22da67f7917c29156ed47e3a41a001fd81a27dcdd73d33d8557bd8efd3f"
+      },
+      {
+        "id": "k05-b1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "de9be287d966bbab806412232c2affa16315b5ed2da88759c24c6bcb0d6d2f80"
+      },
+      {
+        "id": "k05-b2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "b5e442ebadfb8fad28d8508305955680444d16bb1ae92de3462b956aa74bafe6"
+      },
+      {
+        "id": "k05-b2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "c57f6b5db4df710077eee8d63c9da3d1ec92fc15f6b11630af2625defdabd449"
+      },
+      {
+        "id": "k06-a1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "9064c4121bcf4a76eb8140a5d932312258a03e0b61395051f5c35c73b0421020"
+      },
+      {
+        "id": "k06-a1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "db81f2a52fc9bc0c3ffcde438a6d1c3205c9a25aaa9e4601f123524d6a25f7db"
+      },
+      {
+        "id": "k06-a2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "648debd9b1d394ae454bdeb97e4db1a2674bb03e46fa59ed284a1db338f8f1ca"
+      },
+      {
+        "id": "k06-a2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "fec41c2eb46fa2afb9293aa7e5a4decc8a7c53b4259558cce3eca292680ad8b0"
+      },
+      {
+        "id": "k06-b1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "5decff94560bd9b7ca207db5b4b2ab5e21138c582f98f6c30352d12ceea5c081"
+      },
+      {
+        "id": "k06-b1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "f728efe81f4fef34ab45e640c37579483d82d50341493eb37275806c879bc142"
+      },
+      {
+        "id": "k06-b2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "5e005eff1ba44276e6047ba3914a3c1f6fdf335f6456fc0d5efc3f0142b4282f"
+      },
+      {
+        "id": "k06-b2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "62a12041d68094e5ebde4414d579e4c73825f069cc9a675f37f4fd3c3ceee293"
+      },
+      {
+        "id": "k06-c1",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "9595ad017977c724c5e9ce345f4a1bded016643930a3b1dbdc6287517bc61539"
+      },
+      {
+        "id": "k06-c1-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "c687f1b9f6396c0734b1fe98ba4976b703caade77f9076277c390656d6228b50"
+      },
+      {
+        "id": "k06-c2",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "ef971c7b8fcfd79cf1208d7e2bdcbcd729d68f1b3e79ecb7756449fbf3ea8bd2"
+      },
+      {
+        "id": "k06-c2-heldout",
+        "viewport": "mobile",
+        "http": 200,
+        "screenshotSha256": "e82ffa75f34346d9f2cf49e6ecea2e75a23bc3064d2f7744bfe07d467d370bb2"
+      }
+    ]
   }
 }
