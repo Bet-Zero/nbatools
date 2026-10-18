@@ -8,6 +8,17 @@ from nbatools.commands._constants import STAT_ALIASES
 
 # Player leaderboard aliases: extends STAT_ALIASES with leaderboard-only entries.
 _LEADERBOARD_ONLY: dict[str, str] = {
+    # Named shooting rates, independent of attempt-count eligibility.
+    "three point shooting percentage": "fg3_pct",
+    "three-point shooting percentage": "fg3_pct",
+    "three-point accuracy": "fg3_pct",
+    "three point accuracy": "fg3_pct",
+    "free throw accuracy": "ft_pct",
+    "free-throw accuracy": "ft_pct",
+    "free throw percentages": "ft_pct",
+    "free-throw percentages": "ft_pct",
+    "three point percentages": "fg3_pct",
+    "three-point percentages": "fg3_pct",
     # Per-game forms
     "assists per game": "ast",
     "rebounds per game": "reb",
@@ -264,10 +275,16 @@ def _detect_leaderboard_stat(text: str, aliases: dict[str, str]) -> str | None:
 
 # A games-played minimum ("minimum 50 games played") qualifies the ranking;
 # it must not read as a request to rank by games played.
-_MIN_GAMES_QUALIFIER = re.compile(
-    r"\b(?:at\s+least|min(?:imum)?\.?(?:\s+of)?|with)\s+\d+\+?\s+games?(?:\s+played)?\b"
-    r"|\b\d+\+?\s+(?:or\s+more\s+)?games?\s+played\b"
+MIN_GAMES_PATTERNS = (
+    r"\b(?:at\s+least|min(?:imum)?\.?(?:\s+of)?|requiring|with)\s+(\d+)\+?\s+(?:games?(?:\s+played)?|appearances?)\b",
+    r"\b(\d+)(?:\s+or\s+more|\+)\s*(?:games?(?:\s+played)?|appearances?)\b",
 )
+_MIN_GAMES_QUALIFIER = re.compile("|".join(MIN_GAMES_PATTERNS))
+
+
+def text_without_min_games(text: str) -> str:
+    """Exclude eligibility spans from metric detection, preserving offsets."""
+    return _MIN_GAMES_QUALIFIER.sub(lambda match: " " * len(match.group()), text)
 
 
 def detect_player_leaderboard_stat(text: str) -> str | None:

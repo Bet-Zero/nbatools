@@ -9,6 +9,7 @@ from nbatools.commands._constants import (
 )
 from nbatools.commands._glossary import FUZZY_LAST_N_TERMS, OPPONENT_QUALITY_TERMS
 from nbatools.commands._leaderboard_utils import (
+    MIN_GAMES_PATTERNS,
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
 )
@@ -30,19 +31,30 @@ def extract_top_n(text: str) -> int | None:
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
+    # Explicit population count: "which 5 players ...".
+    m = re.search(r"\b(?:show(?:\s+the)?|list(?:\s+the)?)\s+(\d+)\s+players?\b", text)
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
+    m = re.search(rf"\bwhich\s+(\d+)\b{_NOT_A_COUNT}", text)
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
     # "bottom N" pattern
     m = re.search(rf"\bbottom\s+(\d+)\b{_NOT_A_COUNT}", text)
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
     # "rank N" / "best N" / "worst N" pattern (e.g. "best 10 scorers")
-    m = re.search(rf"\b(?:best|worst|highest|lowest)\s+(\d{{1,3}})\b{_NOT_A_COUNT}", text)
+    m = re.search(
+        rf"\b(?:best|worst|highest|lowest|leading|first|rank)\s+(\d{{1,3}})\b{_NOT_A_COUNT}", text
+    )
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
     # "5 highest scoring games", "3 best games": the count comes first.
     m = re.search(
-        r"(?<![\d.+-])\b(\d{1,2})\s+(?:highest|best|biggest|greatest|lowest|worst)\b", text
+        r"(?<![\d.+-])\b(\d{1,2})\s+(?:highest|best|biggest|greatest|largest|lowest|worst)\b", text
     )
     if m:
         value = int(m.group(1))
@@ -445,6 +457,9 @@ def detect_opponent_division_boundary(text: str) -> bool:
 
 
 def wants_team_leaderboard(text: str) -> bool:
+    # Explicit player population outranks a generic team-flavored metric alias.
+    if re.search(r"\bplayers?\b", text) and not re.search(r"\bteams?\b", text):
+        return False
     if detect_team_leaderboard_stat(text) is not None:
         return True
 
@@ -3786,13 +3801,7 @@ def extract_min_games(text: str) -> int | None:
     stat threshold. It is matched only when the number is directly followed by
     "games", so "at least 30 point games" stays a stat threshold.
     """
-    patterns = (
-        r"\bat least\s+(\d+)\s+games?\b",
-        r"\bmin(?:imum)?\s+(\d+)\s+games?\b",
-        r"\b(\d+)\s+or\s+more\s+games?\b",
-        r"\b(\d+)\+\s*games?\b",
-    )
-    for pattern in patterns:
+    for pattern in MIN_GAMES_PATTERNS:
         m = re.search(pattern, text)
         if m:
             value = int(m.group(1))
@@ -3816,7 +3825,7 @@ _ATTEMPT_NOUNS = (
 _ATTEMPT_NOUN = "|".join(f"(?:{pattern})" for pattern, _ in _ATTEMPT_NOUNS)
 _PER_GAME_TAIL = r"(?P<per_game>\s+(?:per|a|each)\s+game)?"
 _MIN_ATTEMPT_PATTERNS = (
-    rf"\b(?:min(?:imum)?\.?(?:\s+of)?|at\s+least|with(?:\s+at\s+least)?)\s+"
+    rf"\b(?:min(?:imum)?\.?(?:\s+of)?|(?:a\s+)?floor\s+of|at\s+least|with(?:\s+at\s+least)?)\s+"
     rf"(?P<value>\d+(?:\.\d+)?)\+?\s+(?:or\s+more\s+)?(?P<noun>{_ATTEMPT_NOUN})\b{_PER_GAME_TAIL}",
     rf"\b(?P<value>\d+(?:\.\d+)?)\+?\s+(?:or\s+more\s+)?(?P<noun>{_ATTEMPT_NOUN})\b{_PER_GAME_TAIL}"
     r"\s+(?:min(?:imum)?|minimum\s+required|to\s+qualify)\b",
@@ -4769,6 +4778,14 @@ def wants_count(text: str) -> bool:
     Triggers on phrases like 'how many', 'how often', 'count', 'number of',
     'total number', 'total count', 'total games'.
     """
+    # In "rank players by how often ...", frequency is the ranking metric,
+    # not a request to collapse the resulting board to one count.
+    rank_frequency = re.search(
+        r"\b(?:rank|ranking|order|sort)\b[^?;.]*\bby\s+(?:how\s+often|(?:the\s+)?(?:number|count)\s+of)\b",
+        text,
+    )
+    if rank_frequency and not re.search(r"\bhow\s+many\b", text[: rank_frequency.start()]):
+        return False
     # "how many points does X average" asks for a per-game rate, not a
     # count of games — that is summary intent, handled by wants_summary.
     if re.search(r"\bhow\s+many\b[\w\s'\-]*\b(?:do|does|did)\b[\w\s'\-]*\baverages?\b", text):

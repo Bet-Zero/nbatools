@@ -67,8 +67,10 @@ import re
 from dataclasses import dataclass
 
 from nbatools.commands._leaderboard_utils import (
+    MIN_GAMES_PATTERNS,
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
+    text_without_min_games,
 )
 from nbatools.commands._parse_helpers import SERIES_SITUATION_PATTERNS, TRAILING_YEAR
 from nbatools.commands.entity_resolution import TEAM_ALIASES
@@ -198,7 +200,7 @@ def anchored_leaderboard_metric(parsed: dict) -> str | None:
     from nbatools.commands._parse_helpers import text_without_min_attempts
 
     # A shot-attempt qualifier names an attempt stat that is not the metric.
-    q = text_without_min_attempts(parsed.get("normalized_query") or "")
+    q = text_without_min_games(text_without_min_attempts(parsed.get("normalized_query") or ""))
     stat = parsed.get("stat")
     if parsed.get("team_leaderboard_intent"):
         return detect_team_leaderboard_stat(q) or stat
@@ -250,9 +252,9 @@ SINGLE_GAME_RANKING = "single_game_ranking"
 _EXPLICIT_SINGLE_GAME = re.compile(
     r"\bin\s+(?:a|one|any|a\s+single)\s+game\b|\bsingle[-\s]game\b|\bgame[-\s]high\b"
 )
-_EXPLICIT_TOTAL = re.compile(r"\b(?:total|totals|combined|cumulative|aggregate)\b")
+_EXPLICIT_TOTAL = re.compile(r"\b(?:total|totals|combined|cumulative|aggregate|accumulated)\b")
 _EXPLICIT_PER_GAME = re.compile(r"\bper[-\s]game\b|\ba\s+game\b|\beach\s+game\b")
-_EXPLICIT_RATE = re.compile(r"\b(?:percentage|percent|pct|rate)\b|%")
+_EXPLICIT_RATE = re.compile(r"\b(?:percentages?|percent|pct|rate|accuracy)\b|%")
 #: "average" says an average is wanted without saying of what kind. Forcing it
 #: to mean per-game refused `average pace leaders`, which is already a rate.
 _SOFT_AVERAGE = re.compile(r"\b(?:average|averages|averaged|averaging|avg|mean)\b")
@@ -505,7 +507,7 @@ def requested_leaderboard_metrics(parsed: dict) -> tuple[str, ...]:
     from nbatools.commands._parse_helpers import text_without_min_attempts
 
     # The attempt stat inside a qualifier is not a requested ranking metric.
-    text = text_without_min_attempts(parsed.get("normalized_query") or "")
+    text = text_without_min_games(text_without_min_attempts(parsed.get("normalized_query") or ""))
     aliases = _alias_table(parsed)
     lookalikes = [m.span() for pattern in _METRIC_LOOKALIKE for m in re.finditer(pattern, text)]
     claimed: list[tuple[int, int]] = []
@@ -612,7 +614,7 @@ _SEASON = (
     r"\b(?:over|in|during|across|for)?\s*(?:the\s+)?(?:last|past|previous)\s+"
     r"(?:\d+|two|three|four|five|six|seven|eight|nine|ten)\s+"
     r"(?:seasons?|years?|playoffs|postseasons?)\b",
-    r"\b\d{4}\s*-\s*\d{2,4}\b",
+    r"\b(?:across\s+)?\d{4}\s*-\s*\d{2,4}\b",
     r"\b(?:in|for|during|from)\s+\d{4}\b",
     r"\bsince\s+\d{4}\b",
     # "from 2010 to 2019", "between 2010 and 2019", "in the 2010s".
@@ -678,10 +680,7 @@ _ROLE = (r"\b(?:starters?|starting\s+lineup|bench|reserves?|off\s+the\s+bench)\b
 # where the route can act on it - and still says nothing about which metric.
 _ROOKIE_POPULATION = (r"\b(?:rookies?|first[-\s]year\s+players?)\b",)
 _SOPHOMORE_POPULATION = (r"\b(?:sophomores?|second[-\s]year\s+players?)\b",)
-_MIN_GAMES = (
-    r"\b(?:at\s+least|minimum(?:\s+of)?|min\.?)\s+\d+\s+games?\b",
-    r"\bwith\s+\d+\+?\s+games?\b",
-)
+_MIN_GAMES = MIN_GAMES_PATTERNS
 
 
 def _min_attempt_patterns() -> tuple[str, ...]:
@@ -692,9 +691,10 @@ def _min_attempt_patterns() -> tuple[str, ...]:
 
 _MIN_ATTEMPTS = _min_attempt_patterns()
 _TOP_N = (
-    r"\btop\s+\d+\b",
+    r"\b(?:top|leading|rank|which)\s+\d+\b",
+    r"\b(?:which|show(?:\s+the)?|list(?:\s+the)?)\s+\d+\s+players?\b",
     r"\bbottom\s+\d+\b",
-    r"\b\d{1,3}\s+(?:best|highest|biggest|greatest)\b",
+    r"\b\d{1,3}\s+(?:best|highest|biggest|greatest|largest)\b",
     r"\b(?:best|highest)\s+\d{1,3}\b",
     # "lowest 5 turnovers" ranks players; "lowest 5 scoring games" is no list here.
     # Only "games" right after the stat words is the single-game list shape;
@@ -739,7 +739,7 @@ _SLOT_CLAIMS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("role", "role_leaderboard_boundary"), _ROLE),
     (("rookie_leaderboard_boundary",), _ROOKIE_POPULATION),
     (("sophomore_leaderboard_boundary",), _SOPHOMORE_POPULATION),
-    (("min_games",), _MIN_GAMES),
+    (("min_games",), _MIN_GAMES + (r"\brequiring\b", r"\bappeared\s+in\b")),
     (("min_attempts",), _MIN_ATTEMPTS),
     (("top_n",), _TOP_N),
     (("min_value", "max_value"), _THRESHOLD),
