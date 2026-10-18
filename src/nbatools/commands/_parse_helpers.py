@@ -3052,7 +3052,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
-            rf"(?<!\bno )(?<!\bnot )\bover\s+{_NUM}\s+{STAT_PATTERN}\b",
+            rf"(?<!\bno )(?<!\bnot )\b(?:over|above|exceed(?:s|ed)?)\s+{_NUM}\s+{STAT_PATTERN}\b",
             "min",
             0.0001,
         ),
@@ -4846,9 +4846,8 @@ def detect_distinct_player_count(text: str) -> bool:
     """
     return bool(
         re.search(
-            r"\bhow\s+many\s+players?\b"
-            r"|\bnumber\s+of\s+players?\b"
-            r"|\bcount\s+(?:of\s+)?(?:distinct\s+)?players?\b",
+            r"\b(?:how\s+many|number\s+of|count(?:\s+of)?)\s+"
+            r"(?:distinct\s+)?players?\b(?!\s+games?\b)",
             text,
         )
     )

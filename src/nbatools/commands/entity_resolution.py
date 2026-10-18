@@ -352,6 +352,11 @@ CURATED_TEAM_ALIASES: dict[str, str] = {
 }
 
 TEAM_ALIASES_EXPANDED: dict[str, str] = {
+    # Historical names identify their own era, not the current OKC franchise.
+    # Do not add bare "Seattle": that would also consume "Seattle Storm".
+    "seattle supersonics": "SEA",
+    "supersonics": "SEA",
+    "sonics": "SEA",
     # Standard city / nickname mappings (existing)
     "atlanta": "ATL",
     "hawks": "ATL",

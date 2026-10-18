@@ -793,9 +793,10 @@ _GAME_LIST_WORDING = re.compile(
 # Wording a league game list or count is allowed to contain besides its
 # conditions and the scope the parser resolved.
 _GAME_LIST_GRAMMAR = (
+    r"\bexactly\s+(?=(?:zero|0)\b)",
     r"\b\d+(?:\.\d+)?\+?",
     rf"\b(?:{_COMPOUND_STAT_WORDS})\b",
-    r"\b(?:zero|no|under|over|at\s+least|or\s+more|more\s+than|fewer\s+than|less\s+than)\b",
+    r"\b(?:zero|no|under|over|above|exceed(?:s|ed)?|at\s+least|or\s+more|more\s+than|fewer\s+than|less\s+than)\b",
     r"\btriple[- ]?doubles?\b|\bdouble[- ]?doubles?\b",
     r"\b(?:games?|performances?|nights?|outings?|times?|stat\s*lines?|occasions?)\b",
     r"\b(?:how\s+many|how\s+often|count|number\s+of|total)\b",
@@ -845,6 +846,8 @@ def try_league_game_finder_route(parsed: dict) -> tuple[str, dict] | None:
             min_value=event.get("min_value"),
             max_value=event.get("max_value"),
         )
+    elif count_intent and parsed.get("threshold_conditions"):
+        kwargs["conditions"] = [dict(c) for c in parsed["threshold_conditions"]]
     else:
         return None
 

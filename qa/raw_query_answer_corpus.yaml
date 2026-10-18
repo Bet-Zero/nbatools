@@ -10256,3 +10256,584 @@ cases:
       equals: 7.0
     review_notes: Post-P2 repair regression, not a rerun or changed frozen comparison.
       Player summary preserves the requested identity, window and averages.
+
+  - id: k03_a1
+    query: List Nikola Jokic games with at least 10 assists and exactly zero turnovers
+      in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+    expected_row_counts:
+      finder: 3
+  - id: k03_a2
+    query: In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 4
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_b1
+    query: How many Nikola Jokic games exceeded 30 points in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 26
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_b2
+    query: How many Nikola Jokic games reached at least 30 points in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 28
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_b3
+    query: Anthony Edwards games above 35 points in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+    expected_row_counts:
+      finder: 10
+  - id: k03_b4
+    query: Anthony Edwards games with 35 or more points in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+    expected_row_counts:
+      finder: 13
+  - id: k03_c1
+    query: How many Jalen Brunson games had (over 40 points or over 12 assists) in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 11
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_c2
+    query: In 2023-24, list Anthony Edwards games with (over 40 points or over 12 rebounds).
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+    expected_row_counts:
+      finder: 6
+  - id: k03_d1
+    query: How many player games had at least 50 points in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 20
+    - path: result.metadata.count_phrase
+      equals: There were 20 player-games with 50+ points in the 2023-24 regular season.
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_d2
+    query: How many distinct players scored at least 50 points in a game in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 11
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_e1
+    query: How many Nikola Jokic games reached at least 80 points in 2023-24?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.count.0.count
+      equals: 0
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+  - id: k03_e2
+    query: List Jalen Brunson games with 80 or more points in 2023-24.
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_sections: []
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.result_reason
+      equals: no_match
+    review_notes: Frozen K03 independent raw-row binding; exact row keys also required
+      by test_k03_find_count_real_data.py. Deployment and rendering acceptance remain
+      separate.
+
+  - id: k01_a1_plain
+    query: Nikola Jokic stats in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 79
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 2085
+    - path: result.sections.summary.0.reb_sum
+      equals: 976
+    - path: result.sections.summary.0.ast_sum
+      equals: 708
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_a1_accent
+    query: Nikola Jokić stats in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 79
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 2085
+    - path: result.sections.summary.0.reb_sum
+      equals: 976
+    - path: result.sections.summary.0.ast_sum
+      equals: 708
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_a1_alias
+    query: Joker's 2023-24 averages
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 79
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2023-24
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 2085
+    - path: result.sections.summary.0.reb_sum
+      equals: 976
+    - path: result.sections.summary.0.ast_sum
+      equals: 708
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_a2
+    query: Nikola Jovic stats in 2024-25
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 46
+    - path: result.sections.summary.0.season_start
+      equals: 2024-25
+    - path: result.sections.summary.0.season_end
+      equals: 2024-25
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 494
+    - path: result.sections.summary.0.reb_sum
+      equals: 180
+    - path: result.sections.summary.0.ast_sum
+      equals: 131
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_b1
+    query: Marcus Williams Spurs stats in 2007-08
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 1
+    - path: result.sections.summary.0.season_start
+      equals: 2007-08
+    - path: result.sections.summary.0.season_end
+      equals: 2007-08
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 0
+    - path: result.sections.summary.0.reb_sum
+      equals: 0
+    - path: result.sections.summary.0.ast_sum
+      equals: 0
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_b1_collision
+    query: Marcus Williams stats in 2007-08
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 53
+    - path: result.sections.summary.0.season_start
+      equals: 2007-08
+    - path: result.sections.summary.0.season_end
+      equals: 2007-08
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 313
+    - path: result.sections.summary.0.reb_sum
+      equals: 101
+    - path: result.sections.summary.0.ast_sum
+      equals: 140
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_c1_old
+    query: Bobby Portis stats in 2024-25
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 49
+    - path: result.sections.summary.0.season_start
+      equals: 2024-25
+    - path: result.sections.summary.0.season_end
+      equals: 2024-25
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 680
+    - path: result.sections.summary.0.reb_sum
+      equals: 411
+    - path: result.sections.summary.0.ast_sum
+      equals: 104
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_c1_new
+    query: Bobby Portis Jr. stats in 2024-25
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 49
+    - path: result.sections.summary.0.season_start
+      equals: 2024-25
+    - path: result.sections.summary.0.season_end
+      equals: 2024-25
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 680
+    - path: result.sections.summary.0.reb_sum
+      equals: 411
+    - path: result.sections.summary.0.ast_sum
+      equals: 104
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_c1_union
+    query: Bobby Portis stats from 2023-24 through 2024-25
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 131
+    - path: result.sections.summary.0.season_start
+      equals: 2023-24
+    - path: result.sections.summary.0.season_end
+      equals: 2024-25
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 1810
+    - path: result.sections.summary.0.reb_sum
+      equals: 1018
+    - path: result.sections.summary.0.ast_sum
+      equals: 208
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_d1
+    query: Thunder record from 2007-08 through 2008-09
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 164
+    - path: result.sections.summary.0.season_start
+      equals: 2007-08
+    - path: result.sections.summary.0.season_end
+      equals: 2008-09
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.wins
+      equals: 43
+    - path: result.sections.summary.0.losses
+      equals: 121
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_d1_era
+    query: Seattle SuperSonics record in 2007-08
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 82
+    - path: result.sections.summary.0.season_start
+      equals: 2007-08
+    - path: result.sections.summary.0.season_end
+      equals: 2007-08
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.wins
+      equals: 20
+    - path: result.sections.summary.0.losses
+      equals: 62
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_e1
+    query: Patrick Ewing career stats
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 348
+    - path: result.sections.summary.0.season_start
+      equals: 1996-97
+    - path: result.sections.summary.0.season_end
+      equals: 2001-02
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 5027
+    - path: result.sections.summary.0.reb_sum
+      equals: 2928
+    - path: result.sections.summary.0.ast_sum
+      equals: 412
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+  - id: k01_e1_season
+    query: Patrick Ewing stats in 1996-97
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 78
+    - path: result.sections.summary.0.season_start
+      equals: 1996-97
+    - path: result.sections.summary.0.season_end
+      equals: 1996-97
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.pts_sum
+      equals: 1751
+    - path: result.sections.summary.0.reb_sum
+      equals: 834
+    - path: result.sections.summary.0.ast_sum
+      equals: 156
+    review_notes: Frozen K01 identity and covered-scope binding; independent raw exact
+      keys and labels checked by test_k01_identity_real_data.py. No complete pre-1996
+      career or deployed acceptance claimed.
+
+  - id: k01_d1_wording
+    query: What record did the Sonics finish with in 2007-08?
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 82
+    - path: result.sections.summary.0.season_start
+      equals: 2007-08
+    - path: result.sections.summary.0.season_end
+      equals: 2007-08
+    - path: result.sections.summary.0.season_type
+      equals: Regular Season
+    - path: result.sections.summary.0.wins
+      equals: 20
+    - path: result.sections.summary.0.losses
+      equals: 62
+    review_notes: Independent unfamiliar wording exposed an unresolved-player error
+      on the record preposition; now a regression, not unseen language evidence. Exact
+      SEA era keys/WL checked by K01 test.

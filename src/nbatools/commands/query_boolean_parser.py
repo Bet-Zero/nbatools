@@ -88,7 +88,7 @@ def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, in
             0.0,
         ),
         (
-            rf"^over\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"^(?:over|above|exceed(?:s|ed)?)\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
             "min",
             0.0001,
         ),

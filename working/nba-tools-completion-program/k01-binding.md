@@ -1,7 +1,7 @@
-# Proposed K01 binding — preparation only
+# K01 identity and covered-scope binding
 
-This binds the existing Core-1 K01 obligations, not a second queue. No interpreter
-was run, no runtime changed, and no I/N/L/D acceptance is asserted. Raw expectations
+This binds the existing Core-1 K01 obligations, not a second queue. The original
+pre-tuning preparation below is retained; current execution evidence follows. Raw expectations
 below were selected independently by player_id from retained pinned-generation
 `queue-d-production-0574735-20260716` CSVs. All queries request Regular Season.
 
@@ -67,3 +67,44 @@ numeric oracles; current candidate tests/CI; language evaluation without tuning 
 questions; independent meaning review; actual deployed/desktop/mobile coverage and
 partial-career label rendering. No historical or human acceptance is implied by
 this preparation memo.
+
+## Current execution and qualification
+
+The original13selectors were frozen in local172101c before runtime alias changes.
+Historical oracle was independently frozen by /root/availability_checker before
+interpreter execution: originalSHAe10364a31c47656b5af1ce659d46b726c71658b6b02eeb01ef03b7d6efca0fef.
+Source run39086850054 retained10CSV; expanded run39091056182 retained16CSV,
+including six historical team files needed to verify displayed Ewing W/L.
+Expanded reviewedb00441dde694e29e0676b32422b9c30087c9749b,
+requestd5323bc75bbec5aeeb1965d1158f0f79368a0311,
+artifact12123205436 ZIPa934572314673d4ee094c69a9f914df8f341fa9bcd41c04b24c1d5d7980d9978.
+Both requiredsource runs selected/executed/passed1 withzero skips/errors.
+The pinned generation lacks player_names.csv; no fabricated index was used.
+Tracked tests/k01_historical_expected.json is the independent oracle extended only
+with canonical team-file W/L joins (SHAded324dd5c9462694170bb92883e3343cc53fe4d116de08dc529bfaf420b6152).
+
+Marcus201173/SAS:1game0PTS/REB/AST,1–0; unqualified Marcus200766:53games,
+313PTS101REB140AST,21–32. SEA2007:82games20–62,7999PTS3659REB1748AST;
+OKC2008:82games23–59,7952PTS3496REB1663AST. Franchise union164games43–121,
+15951PTS7155REB3411AST. Ewing121 covered1996–2001:348games205–143,
+5027PTS2928REB412AST. This is explicitly not his complete pre-1996 career.
+
+Baseline13queries: A/B/C and current-franchise cases already correct. Explicit
+Seattle SuperSonics was unresolved; three historical aliases now preserve SEA
+scope instead of widening to OKC. Six missing team files initially prevented
+local Ewing replay; acquisition resolved the local dependency without changing
+statistical runtime. All13cached exact-key/raw arithmetic checks subsequently passed.
+
+Checker supplied fresh accented Jović, renamed Portis on the older spelling,
+reordered Marcus/Spurs and full Thunder wording; these passed. Clear 'What record
+did the Sonics finish with in2007-08?' failed because 'with in2007-08' was treated
+as an unknown teammate. It is now D1_wording regression14, with antecedent-record
+preposition handling requiring the entire following tail to be understood scope.
+Unknown people/extra clauses remain protected. The original underspecified 'how
+did the Sonics finish?' remains an open ambiguity/delivery finding, not a passing
+record or standings answer. Do not relabel repaired wording as unseen evidence.
+
+Required request: tests/test_k01_identity_real_data.py14cases and14RawQA IDs
+k01_a1_plain, k01_a1_accent, k01_a1_alias, k01_a2, k01_b1, k01_b1_collision,
+k01_c1_old, k01_c1_new, k01_c1_union, k01_d1, k01_d1_era, k01_d1_wording,
+k01_e1, k01_e1_season. Final preflight8060passed1507skipped141.20s;172focusedidentitytests1skip and11controlledalias/grammar tests passed. Independent checker accepted14cached exact-key cases, source arithmetic, freshidentity wordings and narrowpreposition safeguards. Actualrunner/CI/deployed acceptance remains pending.

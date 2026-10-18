@@ -77,6 +77,8 @@ If a feature is not reflected here, it should not be assumed shipped.
   correcting via last-name/nickname aliases; exact aliases like `durant`, `steph`,
   and `curry` still resolve normally
 - team name/alias: `Lakers`, `LAL`, `Celtics`, `Sixers`, `Wolves`
+- Historical `Seattle SuperSonics`, `SuperSonics`, and `Sonics` select the Seattle
+  era. Current `Thunder` retains the franchise's Seattle seasons with a caveat.
 - player comparison wording: `Compare Jokic and Embiid`, `Jokic vs Embiid recent form`
   (bare `PLAYER vs PLAYER` phrasing such as `Jokic vs Embiid` returns an
   ambiguous/no-result boundary until clarification UI exists)
@@ -306,6 +308,11 @@ Examples:
 - `how many Jokic games with 30+ points and 10+ rebounds since 2021`
 - `count LeBron triple doubles since 2020`
 - `how many playoff games did Tatum have over 35 points`
+
+A league-wide count of `player games` counts player-game rows, while `distinct players`
+counts identities. Strict `above` and `exceeded` exclude equality, as `over` does.
+A leading season scope is also accepted for grouped OR lists; the display limit
+is applied after evaluating the complete condition, rather than cutting the base sample.
 
 ### Team count
 
