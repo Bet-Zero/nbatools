@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "63d6e0ce72bd17b4fc91f8b1ddf4ec21165f9d83",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_cloud_independence_real_data.py::test_new_game_cloud_acquisition_and_candidate",
+    "tests/test_cloud_independence_real_data.py::test_cloud_source_access_inventory"
+  ],
+  "raw_qa_cases": []
+}
