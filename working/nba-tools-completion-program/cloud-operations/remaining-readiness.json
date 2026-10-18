@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "phase": "setup-only; feature development paused",
+  "core_archive": {
+    "state": "qualified bounded development collection",
+    "datasets": [
+      "games",
+      "team_game_stats",
+      "player_game_stats",
+      "player_game_starter_roles",
+      "processed game/team/player features"
+    ],
+    "qualified_scope": "2025-26 Regular Season game0022500003 only",
+    "run_id": 39122547977,
+    "passed": 2,
+    "skipped": 0,
+    "mirror": "sportsdataverse/hoopR-nba-stats-raw",
+    "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e"
+  },
+  "lineup_archive": {
+    "state": "qualified source normalization",
+    "rows": 2594,
+    "teams": 30,
+    "unit_size": 5,
+    "source_minutes_minimum": 10,
+    "scope": "2025-26 Regular Season, no sub10minute/current freshness claim",
+    "live_source_verified": false
+  },
+  "cdn_archive": {
+    "state": "qualified development acquisition and offline recovery",
+    "events": 605,
+    "source": "official NBA CDN via shufinskiy/nba_data pinned public archive",
+    "run_id": 39124321117,
+    "passed": 2,
+    "skipped": 0,
+    "preserves": "original event IDs and separate source_order_number chronology",
+    "immutable_candidate": "nine-file isolated development subset, not full R2 publication package"
+  },
+  "direct_stats": {
+    "state": "unusable on tested cloud route",
+    "observed": "LeagueGameFinder exhausted normal3x30s; BoxScoreTraditionalV3,PlayByPlayV3,TeamPlayerOnOffSummary,LeagueLineupViz and three sibling logs timed out",
+    "runs": [
+      39117965598,
+      39121953133
+    ],
+    "not_claimed": "permanent/global NBA outage or a credential defect"
+  },
+  "direct_cdn": {
+    "state": "HTTP403 on tested URLs",
+    "scope": [
+      "scheduleLeagueV2",
+      "scheduleLeagueV2_2",
+      "today scoreboard",
+      "historical boxscore/PBP"
+    ],
+    "run_id": 39121953133
+  },
+  "period_stats": {
+    "state": "no qualified new cloud route",
+    "observed": "three examined traditionalV3 quarter archives all-zero; no matching official advanced period-rate captures qualified",
+    "not_substituted": [
+      "whole-game totals",
+      "PDF quarter scores",
+      "ESPN stats",
+      "invented advanced rates"
+    ],
+    "examined_archives": [
+      "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3_period/2026/0022500003.json",
+      "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3_period/2026/0022500002.json",
+      "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3_period/2025/0022400001.json"
+    ]
+  },
+  "on_off": {
+    "state": "direct endpoint timed out; no exact-source archive identified",
+    "not_substituted": [
+      "participation",
+      "lineups",
+      "partial-game derived on/off"
+    ]
+  },
+  "other_required_season_inputs": {
+    "state": "existing cloud snapshot usable; new collection not individually qualified",
+    "datasets": [
+      "rosters",
+      "schedule",
+      "standings",
+      "player_season_advanced",
+      "team_season_advanced"
+    ],
+    "not_claimed": "all direct Stats datasets accessible because core archive succeeded"
+  },
+  "narrow_alternatives": {
+    "official_pdf": "accepted report-backed participation only",
+    "espn": "qualified21played+5listedDNP; not full NBA Stats or complete availability"
+  },
+  "backup": {
+    "manual_full_export_and_restore": "owner accepted39117892814; not repeated",
+    "permanent_release": "cloud-backup-39117892814",
+    "automation": "PR504 prepared event-driven backup after each owner-approved and live-verified publication; no daily timer",
+    "first_live_hook_execution": "not exercised; verify at next legitimate approved publication",
+    "daily_schedule": false,
+    "separate_account_DR": false,
+    "validation": "119focused checks passed, independentcheckeraccepted9867c40; actual export/restore evidence reused"
+  },
+  "freshness": {
+    "automatic_refresh": false,
+    "full_season_acquisition_verified": false,
+    "production_publication_unattended": false,
+    "blocker": "missing qualified period/on-off/live source routes; archived slices are not current freshness"
+  },
+  "vercel": {
+    "project_preserved": "prj_luTVKSLCFRQP3BYwk93XETz9WwCy",
+    "working_route": "omit teamId and slug",
+    "scoped_project_read": "404",
+    "production_observed": "READY",
+    "latest_setup_deployment": "free-plan build-rate-limit; no upgrade or bypass",
+    "owner_sign_in_needed": false
+  },
+  "historical_work": {
+    "c10936b": "unavailable original stopped volume; no new unbounded recovery attempt",
+    "current_recoverable_work": "pushed to GitHub; no cleanup/reset/force-push"
+  },
+  "acceptance": "Cloud development/recovery and bounded missing-data acquisition work. Full laptop independence for every required data lifecycle is NOT accepted.",
+  "owner_action_now": "none; do not request or perform a production publication merely to test backup automation"
+}
