@@ -1,0 +1,120 @@
+{
+  "run_id": 39115546578,
+  "request_sha": "cfb6818baa01f6ba67e97dc492c3a18943bcee15",
+  "reviewed_sha": "3d3fa7ccd746795e4189708cc0e2a5f4a3fc8380",
+  "counts": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "reports": [
+    {
+      "new_generation_uploaded": false,
+      "new_slice_registered_preparation": {
+        "artifact_id": 12131404535,
+        "artifact_zip_sha256": "aede010e6164b764e5a36513c8a55578e00576a7a12c668a9a12a177bbc3a9e9",
+        "base_generation": "availability-opening-s4-v1-20261017",
+        "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+        "base_pointer": {
+          "generation_id": "availability-opening-s4-v1-20261017",
+          "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+          "previous_generation_id": "queue-d-production-0574735-20260716",
+          "published_at": "2026-10-18T06:15:50+00:00",
+          "schema_version": 1
+        },
+        "budget": {
+          "conservative_projected_bytes": 1570399636,
+          "current_bytes": 1157615210,
+          "limit_bytes": 10000000000
+        },
+        "file_count": 705,
+        "generation_id": "cloud-acceptance-cle-nyk-20261018",
+        "inventory_sha256": "4f56374108a99d98c03b774eb05509b5d92b693a0437b8121fe4f9085f621ac1",
+        "package": "cloud-acceptance-cle-nyk-v1",
+        "prepared_manifest_sha256": "3c092eb9a43dee9321899169637230b89eb34ec445668f1c9946836edc31b7db",
+        "publication_state": "prepared_no_writes",
+        "publisher_sha": "e676bd4787f9ece2c404b770dd8041daa5d8c241",
+        "registry_sha256": "0460a8a1d9720d2f689121d9b75cc39a9c5ec53cd4c8cbde32f57045a47a8ea3",
+        "required_source_gate": {
+          "candidate_sha": "a8d4b6abe45a608939b4a202a37ce94dbbd76c8a",
+          "conclusion": "success",
+          "errors": 0,
+          "executed": 2,
+          "failed": 0,
+          "generation": "availability-opening-s4-v1-20261017",
+          "passed": 2,
+          "problems": [],
+          "pytest_exit": 0,
+          "required_selection": [
+            "tests/test_cloud_independence_real_data.py::test_new_game_cloud_acquisition_and_candidate",
+            "tests/test_cloud_independence_real_data.py::test_cloud_source_access_inventory"
+          ],
+          "required_test_limit": 100,
+          "scope": "targeted",
+          "selected": 2,
+          "skipped": 0,
+          "xfailed": 0
+        },
+        "schema_version": 1,
+        "script_sha256": "9c055dcc6b7048c3cb0916bd7c961e13b6048b7eb48f70373c3d338df471800c",
+        "source_run_id": 39114478299,
+        "total_bytes": 402784426,
+        "workflow_run_id": "39115546578",
+        "workflow_sha": "cfb6818baa01f6ba67e97dc492c3a18943bcee15"
+      },
+      "protected_environment_publication": "not-requested",
+      "r2_writes": 0,
+      "staged_real_data_api_answers": [
+        {
+          "query": "Cavaliers record without Darius Garland on October 22 2025",
+          "summary": {
+            "ast_avg": 21,
+            "blk_avg": 4,
+            "efg_pct_avg": 0.576,
+            "fg3m_avg": 19,
+            "games": 1,
+            "losses": 1,
+            "plus_minus_avg": -8,
+            "pts_avg": 111,
+            "reb_avg": 32,
+            "season_end": "2025-26",
+            "season_start": "2025-26",
+            "season_type": "Regular Season",
+            "stl_avg": 8,
+            "team_name": "Cleveland Cavaliers",
+            "tov_avg": 15,
+            "ts_pct_avg": 0.591,
+            "win_pct": 0,
+            "wins": 0
+          }
+        },
+        {
+          "query": "Knicks record without Josh Hart on October 22 2025",
+          "summary": {
+            "ast_avg": 22,
+            "blk_avg": 4,
+            "efg_pct_avg": 0.512,
+            "fg3m_avg": 14,
+            "games": 1,
+            "losses": 0,
+            "plus_minus_avg": 8,
+            "pts_avg": 119,
+            "reb_avg": 48,
+            "season_end": "2025-26",
+            "season_start": "2025-26",
+            "season_type": "Regular Season",
+            "stl_avg": 8,
+            "team_name": "New York Knicks",
+            "tov_avg": 13,
+            "ts_pct_avg": 0.584,
+            "win_pct": 1,
+            "wins": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "run_id": 39115383079,
+  "request_sha": "762fd8062b94c7b2ad3d58d262952439fb6f59ba",
+  "reviewed_sha": "4f6ce5a38a381bd1ffdde5dbb1f689d1f2afa6a1",
+  "selected": 1,
+  "executed": 1,
+  "passed": 0,
+  "failed": 1,
+  "error": "Existing checkout-identity guard refused pytest's previously imported publisher module",
+  "fix_commit": "3d3fa7ccd746795e4189708cc0e2a5f4a3fc8380",
+  "repair": "Use existing prepare CLI in a fresh subprocess; do not weaken import identity guard",
+  "r2_writes": 0
+}
