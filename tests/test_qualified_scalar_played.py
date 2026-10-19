@@ -85,12 +85,14 @@ def test_unqualified_selected_game_cannot_be_no_or_old_appearance(pair_sample, d
     else:
         ledger.loc[mask, "team_id"] = 1610612752
     result = execute_natural_query(query())
-    assert_unavailable(result)
+    assert_unavailable(result, reason="filter_not_supported")
     assert result.metadata["player"] == "Jayson Tatum"
 
 
-def assert_unavailable(result):
+def assert_unavailable(result, reason=None):
     assert result.result_status == "no_result"
+    if reason is not None:
+        assert result.result_reason == reason
     assert not result.metadata.get("answer_phrase")
     assert not result.result.to_dict()["sections"]
     assert not any(
@@ -100,7 +102,7 @@ def assert_unavailable(result):
 
 def test_known_name_without_game_day_membership_is_unknown_not_no(pair_sample):
     result = execute_natural_query(query("Stephen Curry"))
-    assert_unavailable(result)
+    assert_unavailable(result, reason="filter_not_supported")
     assert result.metadata["player"] == "Stephen Curry"
 
 
@@ -180,7 +182,7 @@ def test_selected_positive_report_conflict_cannot_be_a_scalar_answer(pair_sample
     positive = players.loc[players.player_id.eq(TATUM)].iloc[[0]].copy()
     positive["game_id"], positive["game_date"] = latest, day
     pd.concat([players, positive], ignore_index=True).to_csv(path, index=False)
-    assert_unavailable(execute_natural_query(query()))
+    assert_unavailable(execute_natural_query(query()), reason="filter_not_supported")
 
 
 def test_no_original_game_has_no_boolean(pair_sample, monkeypatch):
@@ -189,7 +191,7 @@ def test_no_original_game_has_no_boolean(pair_sample, monkeypatch):
     monkeypatch.setattr(
         game_summary, "select_team_summary_sample", lambda **kw: pair_sample["candidates"].iloc[:0]
     )
-    assert_unavailable(execute_natural_query(query()))
+    assert_unavailable(execute_natural_query(query()), reason="no_match")
 
 
 def test_old_appearance_team_is_not_membership_on_the_selected_game(pair_sample):
@@ -213,7 +215,7 @@ def test_old_appearance_team_is_not_membership_on_the_selected_game(pair_sample)
         1610612747
     )
     result = execute_natural_query("Did Tatum play last game in 2023-24?")
-    assert_unavailable(result)
+    assert_unavailable(result, reason="filter_not_supported")
     assert result.metadata["team"] is None and not result.metadata.get("team_context")
     assert result.metadata["player_context"]["player_id"] == TATUM
 
@@ -300,3 +302,18 @@ def test_statistical_note_cannot_hide_unqualified_presence_or_unread_tail(predic
     result = execute_natural_query(f"Did LeBron play {predicate} last game?")
     assert_unavailable(result)
     assert not result.metadata.get("player_context")
+
+
+def test_no_candidate_appearance_is_data_unavailable_without_inferred_team(pair_sample):
+    path = (
+        Path(os.environ["NBATOOLS_DATA_ROOT"])
+        / "data/raw/player_game_stats/2023-24_regular_season.csv"
+    )
+    appearances = pd.read_csv(path)
+    appearances.loc[~appearances.player_id.eq(TATUM)].to_csv(path, index=False)
+    result = execute_natural_query("Did Tatum play last game in 2023-24?")
+    assert_unavailable(result, reason="filter_not_supported")
+    assert result.metadata["player"] == "Jayson Tatum"
+    assert result.metadata["player_context"]["player_id"] == TATUM
+    assert result.metadata["team"] is None and not result.metadata.get("team_context")
+    assert "No qualified candidate team" in " ".join(result.metadata["notes"])

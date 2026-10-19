@@ -15222,7 +15222,7 @@ cases:
       no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
-    expected_reason: unsupported
+    expected_reason: filter_not_supported
     expected_route: game_finder
     expected_shape: no_result
     expected_sections: []

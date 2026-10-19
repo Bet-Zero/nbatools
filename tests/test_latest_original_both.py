@@ -125,7 +125,7 @@ def test_first_false_never_hides_unqualified_second(pair_sample, damage):
         pd.concat([appearances, positive], ignore_index=True).to_csv(path, index=False)
     result = execute_natural_query(_query("Reaves and Tatum"))
     assert result.result_status == "no_result"
-    assert result.result_reason != "no_match"
+    assert result.result_reason == "filter_not_supported"
     assert not result.result.to_dict()["sections"]
     assert not result.metadata.get("answer_phrase") and not result.metadata.get(
         "participation_check"

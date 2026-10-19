@@ -385,6 +385,9 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
     from nbatools.commands.freshness import compute_current_through_for_seasons
     from nbatools.commands.game_summary import select_team_summary_sample
 
+    def unavailable(note: str) -> NoResult:
+        return NoResult(query_class="finder", reason="filter_not_supported", notes=[note])
+
     season, season_type = kwargs["season"], kwargs["season_type"]
     players = request["players"]
     scalar = len(players) == 1
@@ -394,10 +397,13 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         # A historical appearance supplies a candidate team, not membership
         # proof. Qualification below must establish the player's subject side.
         appearances = load_player_games_for_seasons([season], season_type)
-        own = select_player_rows(appearances, players[0])
+        try:
+            own = select_player_rows(appearances, players[0])
+        except ValueError as exc:
+            return unavailable(str(exc))
         own = own.loc[pd.to_numeric(own.minutes, errors="coerce").gt(0)]
         if own.empty:
-            raise ValueError("No qualified candidate team for the participation check")
+            return unavailable("No qualified candidate team for the participation check")
         team = str(own.sort_values(["game_date", "game_id"]).iloc[-1].team_abbr)
     original = select_team_summary_sample(
         season=season,
@@ -420,16 +426,22 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         )
     if len(original) != 1:
         raise ValueError("The original participation check requires exactly one matchup game")
-    qualified = filter_played(
-        original, " and ".join(players), [season], season_type, opponent_context=True
-    )
-    passed = not qualified.empty
-    if inferred:
-        from nbatools.commands._participation_observations import filter_absent
+    try:
+        qualified = filter_played(
+            original, " and ".join(players), [season], season_type, opponent_context=True
+        )
+        passed = not qualified.empty
+        if inferred:
+            from nbatools.commands._participation_observations import filter_absent
 
-        own_check = filter_played if passed else filter_absent
-        if own_check(original, players[0], [season], season_type).empty:
-            raise ValueError("The inferred candidate lacks qualified subject-side membership")
+            own_check = filter_played if passed else filter_absent
+            if own_check(original, players[0], [season], season_type).empty:
+                return unavailable("The inferred candidate lacks qualified subject-side membership")
+    except ValueError as exc:
+        # This request is admitted; these operations validate game-day evidence.
+        # Missing/ambiguous/conflicting coverage is a data qualification gap,
+        # not an unimplemented query. Other service ValueErrors keep their meaning.
+        return unavailable(str(exc))
     row = original.iloc[0]
     day = str(pd.Timestamp(row["game_date"]).date())
     if scalar:

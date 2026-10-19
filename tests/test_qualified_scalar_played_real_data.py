@@ -99,10 +99,8 @@ def test_scalar_participation_from_original_game_and_qualified_sources(index):
         assert not result.metadata["with_player"] and not result.metadata["without_player"]
         filters = result.metadata.get("applied_filters") or []
         if truth is None:
-            assert result.result_status == "no_result" and result.result_reason not in (
-                "no_match",
-                "error",
-            )
+            assert result.result_status == "no_result"
+            assert result.result_reason == "filter_not_supported"
             assert not result.metadata.get("answer_phrase")
             assert not result.result.to_dict()["sections"]
             assert not any(f["label"] == "Played check" for f in filters)
