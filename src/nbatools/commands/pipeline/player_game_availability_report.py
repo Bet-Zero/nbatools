@@ -343,6 +343,7 @@ def official_report_as_v3(
     away_team_id: int,
     data_root: Path,
     cached_reports: Path | None = None,
+    imported_team_ids: list[int] | None = None,
 ) -> tuple[pd.DataFrame, str]:
     """Build source-listed played/DNP/inactive rows for one verified NBA report."""
     safe = season_type.lower().replace(" ", "_")
@@ -350,6 +351,16 @@ def official_report_as_v3(
     by_id = {team_id: (abbr, pts) for abbr, (team_id, pts) in teams.items()}
     if set(by_id) != {home_team_id, away_team_id}:
         raise ValueError("Game roster/source team IDs disagree")
+    selected = set(by_id) if imported_team_ids is None else set(imported_team_ids)
+    if (
+        not selected
+        or not selected.issubset(by_id)
+        or any(type(team) is not int for team in selected)
+        or (imported_team_ids is not None and len(selected) != len(imported_team_ids))
+    ):
+        raise ValueError("Report team scope must be a nonempty subset of the canonical teams")
+    if imported_team_ids is not None and cached_reports is None:
+        raise ValueError("Explicit report team scope requires a retained source")
     away, home = by_id[away_team_id][0], by_id[home_team_id][0]
     ref = f"{game_date.replace('-', '')}_{away}{home}"
     url = f"{SOURCE_ROOT}/{game_date.replace('-', '')}/{ref}.pdf"
@@ -368,6 +379,9 @@ def official_report_as_v3(
         if _score(section) != by_id[ident][1]:
             raise ValueError("Final Box score differs from canonical NBA game points")
     inactives = _inactives(all_lines)
+    for ident, (label, _) in zip(team_ids, inactives):
+        if not _name(expected_names[ident]).endswith(_name(label)):
+            raise ValueError("Final Box inactive list assigned to wrong team")
     people = _nba_players(data_root, season, safe)
     source = data_root / "raw/player_game_stats" / f"{season}_{safe}.csv"
     played = pd.read_csv(source, dtype={"game_id": str})
@@ -422,6 +436,8 @@ def official_report_as_v3(
     used: set[int] = set()
     rows = []
     for ident, section in zip(team_ids, sections):
+        if ident not in selected:
+            continue
         abbr = by_id[ident][0]
         report_ids = set()
         for line in section:
@@ -437,6 +453,8 @@ def official_report_as_v3(
         if expected.duplicated().any() or not report_ids or report_ids != set(expected):
             raise ValueError("Final Box played identities differ from canonical NBA game rows")
     for ident, section in zip(team_ids, sections):
+        if ident not in selected:
+            continue
         for line in section:
             match = STATUS.match(line)
             if match is None:
@@ -456,14 +474,14 @@ def official_report_as_v3(
                 )
             )
     for ident, (label, absent) in zip(team_ids, inactives):
-        if not _name(expected_names[ident]).endswith(_name(label)):
-            raise ValueError("Final Box inactive list assigned to wrong team")
+        if ident not in selected:
+            continue
         for name, reason in absent:
             nba_id, full_name = identify(ident, name, used, surname=True)
             used.add(nba_id)
             rows.append(_record(game_id, ident, by_id[ident][0], nba_id, full_name, None, reason))
-    if not rows or {row["teamId"] for row in rows} != set(team_ids):
-        raise ValueError("No trustworthy game-day NBA report rows for both teams")
+    if not rows or {row["teamId"] for row in rows} != selected:
+        raise ValueError("No trustworthy game-day NBA report rows for requested teams")
     frame = pd.DataFrame(rows)
     if profile_records:
         from nbatools.commands.pipeline.player_game_availability_profiles import (
