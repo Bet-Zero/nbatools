@@ -23,7 +23,9 @@ const ownedOrIds = ["owned-or-positive", "owned-or-unread-prefix"];
 const ownedOr = cases.length === ownedOrIds.length && ownedOrIds.every(id => cases.some(item => item.id === id));
 const selfUnionIds = ["self-union-record", "self-union-own-finder", "self-union-player-team"];
 const selfUnion = cases.length === selfUnionIds.length && selfUnionIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion) throw new Error("Expected a complete reviewed browser bundle");
+const leadingListIds = ["leading-list-third-owner", "leading-list-baseline"];
+const leadingList = cases.length === leadingListIds.length && leadingListIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
