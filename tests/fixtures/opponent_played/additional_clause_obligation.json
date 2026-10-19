@@ -1,0 +1,26 @@
+{
+  "candidate": "a73f749688be8c916b039ba92b218ac41c028f6e",
+  "query": "Lakers record against Celtics with Jayson Tatum playing while Gabe Vincent plays in 2023-24",
+  "independent_source_rows": [
+    {
+      "game_id": 22300403,
+      "game_date": "2023-12-25",
+      "team_id": 1610612747,
+      "player_id": 1629216,
+      "player_name": "Gabe Vincent",
+      "participation_state": "did_not_play",
+      "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+    },
+    {
+      "game_id": 22300684,
+      "game_date": "2024-02-01",
+      "team_id": 1610612747,
+      "player_id": 1629216,
+      "player_name": "Gabe Vincent",
+      "participation_state": "did_not_play",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+    }
+  ],
+  "desired_game_ids": [],
+  "natural_composition": "unfinished; guard only, not a delivered natural-language zero"
+}

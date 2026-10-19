@@ -386,6 +386,15 @@ Contract rules:
   subject; that combined capability remains unfinished.
   Conflicting report/positive observations reject. Same-team predicates bind team IDs; an explicit opponent clause permits
   opposing-team observations, with mixed side ownership rejected as ambiguous.
+  Team records with an explicit opponent also qualify `with_player` against
+  that same game's subject/opponent team IDs and date, using the shared
+  observation checks. This permits an opposing player's verified `played`
+  predicate without treating that player as a teammate. Every candidate game
+  must have qualified participation; explicit did-not-play observations can
+  establish a genuine empty played sample. Missing, unknown, contradictory or
+  ambiguous evidence remains unavailable. Without explicit matchup context,
+  the existing played filter retains its same-team meaning. Neither path
+  transfers membership to another game or establishes tenure or medical status.
   Readers cache by immutable data generation and do not infer injury or on-court
   absence. Publication lineage is validated before activation. This consumer
   does not certify complete rosters, unlisted players, full-season coverage or

@@ -1,0 +1,132 @@
+{
+  "reviewer": "/root/comparison_checker",
+  "main_sha": "efc28c9f05dea2ef0e98c2c9263c212a82c23cb8",
+  "runtime_probe_worktree_head": "60da356c802556ef4f5a9f2d282b455955d96501",
+  "runtime_diff_to_main": "empty",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+    "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+    "raw/player_game_availability/2025-26_regular_season.csv": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902"
+  },
+  "production_writes": 0,
+  "source_acquisitions": 0,
+  "recommendation": "Support one explicit opposing player played predicate for team_record using exact candidate game_id, game_date and opponent_team_id, preserving same-team default without explicit opposing context.",
+  "primary_cases": [
+    {
+      "query": "Lakers record against Celtics with Jayson Tatum playing in 2023-24",
+      "player_id": 1628369,
+      "subject_id": 1610612747,
+      "predicate_side_id": 1610612738,
+      "baseline": {
+        "status": "no_result",
+        "reason": "no_match"
+      },
+      "candidate_game_ids": [
+        22300403,
+        22300684
+      ],
+      "observations": [
+        {
+          "game_id": 22300403,
+          "game_date": "2023-12-25",
+          "team_id": 1610612738,
+          "player_id": 1628369,
+          "participation_state": "played",
+          "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334"
+        },
+        {
+          "game_id": 22300684,
+          "game_date": "2024-02-01",
+          "team_id": 1610612738,
+          "player_id": 1628369,
+          "participation_state": "played",
+          "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+        }
+      ],
+      "expected": {
+        "game_ids": [
+          22300403,
+          22300684
+        ],
+        "games": 2,
+        "wins": 1,
+        "losses": 1,
+        "sums": {
+          "pts": 229,
+          "reb": 95,
+          "ast": 54
+        },
+        "means": {
+          "pts": 114.5,
+          "reb": 47.5,
+          "ast": 27.0
+        }
+      }
+    },
+    {
+      "query": "Lakers record against Celtics with Jayson Tatum playing in 2025-26",
+      "player_id": 1628369,
+      "subject_id": 1610612747,
+      "predicate_side_id": 1610612738,
+      "baseline": {
+        "status": "no_result",
+        "reason": "no_match"
+      },
+      "candidate_game_ids": [
+        22500338,
+        22500823
+      ],
+      "observations": [
+        {
+          "game_id": 22500338,
+          "game_date": "2025-12-05",
+          "team_id": 1610612738,
+          "player_id": 1628369,
+          "participation_state": "did_not_play",
+          "source_sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153"
+        },
+        {
+          "game_id": 22500823,
+          "game_date": "2026-02-22",
+          "team_id": 1610612738,
+          "player_id": 1628369,
+          "participation_state": "did_not_play",
+          "source_sha256": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec"
+        }
+      ],
+      "expected": {
+        "game_ids": [],
+        "games": 0,
+        "wins": 0,
+        "losses": 0,
+        "sums": {
+          "pts": 0,
+          "reb": 0,
+          "ast": 0
+        },
+        "means": {
+          "pts": null,
+          "reb": null,
+          "ast": null
+        }
+      }
+    }
+  ],
+  "limits": [
+    "No same-date cross-game membership transfer, tenure interval or nonmembership inference.",
+    "Staged Boston17 is not required and remains outside production.",
+    "Do not promote the original46 fixture positives to accepted or alter them.",
+    "No medical or on-court equivalence.",
+    "Unknown/missing/contradictory/ambiguous predicate identity must not be called a qualified zero."
+  ],
+  "code_location": [
+    "commands/data_utils.py::filter_with_player",
+    "commands/team_record.py existing with_player call sites"
+  ],
+  "next": "After current root semantic slice, implement existing-context propagation plus exact-side player identity matching; independent review, bounded source gate, CI and deployed checks."
+}
