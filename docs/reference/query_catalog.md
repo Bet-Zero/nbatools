@@ -110,9 +110,10 @@ required real-data and deployed acceptance remain pending.
 - last N seasons: `last 3 seasons`
 - career / all-time: `career`, `all-time`
 - last N games: `last 10 games`, `last ten games`, `previous 8 games`, `his 5 most recent games`, `final 8 games`, `final 9 appearances`
+  - explicit original participation window: the bounded two-player team-record slice below uses `last_n_scope=original_window` to select the original matchup window before testing both played predicates. Existing `window`, `outcome_window`, defaults and qualifying samples retain their cohort-first participation ordering.
   - window vs qualifying: `how many 30 point games in his last 10 games` counts inside his 10 most recent games;
     `last 5 games where he scored 30` and `last 10 wins` return the most recent qualifying games. Opponent,
-    home/away, teammate availability, role and schedule context always choose the games in play first
+    home/away, role and schedule context choose the games in play first; legacy scopes also apply teammate availability before their last-N selection
   - Summary responses retain a `Sample selection` badge distinguishing conditions
     checked within the last N games from the last N games matching conditions.
     Outcome windows name wins/losses only when that outcome was requested.
@@ -407,7 +408,7 @@ Common combinations:
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - explicit-matchup two-player played conjunctions for team records: `Lakers record against Celtics with Jayson Tatum playing while Austin Reaves plays in 2023-24`; AND/shared-playing and comma forms preserve both predicates. Each player may be on the subject or opponent team, independently qualified by the same game's team/date identity. Every original candidate game needs qualified evidence for both players, including a genuine empty answer. A missing observation is unavailable, not proof of DNP or nonmembership. Player-owned stat/status clauses, mixed polarity and broader boolean compositions remain separate unfinished requirements.
-- new two-clause played conjunctions with last-N remain unfinished; they are not promoted into the existing participation-cohort-before-last-N execution. Latest-original-game and latest-qualifying-meeting requirements are retained separately, and existing native cooperative pair behavior is preserved.
+- explicit last-N played-pair team records distinguish original and qualifying samples: `Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony Davis plays in 2023-24` selects the original meeting first, then qualifies both players; `among` and `of` window forms are equivalent; singular `within their last game` / `among their last meeting` means one original meeting, as does the explicit `in their last 1 original game`. `in their last 1 qualifying game` qualifies both players before selecting the most recent matching meeting. This bounded slice requires one explicit season, a whole-game matchup and exactly two resolved played predicates. Opponent/venue/date context chooses the candidate games before either selection. Other consumers/compositions and the boolean question `did BOTH play?` remain unfinished. Bare new separate-predicate last-N requests retain their containment; default native cooperative and legacy structured window behavior remain cohort-first.
 - home / away
 - wins / losses
 - season ranges

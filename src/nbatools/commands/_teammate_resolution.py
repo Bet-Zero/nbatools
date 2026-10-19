@@ -170,7 +170,7 @@ def played_matchup_pair(text: str) -> AvailabilityPair | None:
         rf"({name})\s+{played}\b",
         # Shared predicate, including the established bare "with A and B".
         rf"\bwith\s+({name})\s*(?:\s+and\s+|,\s*(?:and\s+)?)({name})"
-        rf"(?:\s+(?:both\s+)?{played})?(?=\s+(?:in|during|for|vs\.?|versus|against|at|on|this|last|since)\b|[?.!]|$)",
+        rf"(?:\s+(?:both\s+)?{played})?(?=\s+(?:in|within|among|of|during|for|vs\.?|versus|against|at|on|this|last|since)\b|[?.!]|$)",
         rf"\b(?:when|while)\s+({name})\s+and\s+({name})\s+(?:both\s+)?{played}\b",
     ]
     matches = [match for pattern in patterns for match in re.finditer(pattern, text)]

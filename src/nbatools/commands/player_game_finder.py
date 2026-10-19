@@ -339,6 +339,9 @@ def build_result(
     rookies_only: bool = False,
     per_season_limit: int | None = None,
 ) -> FinderResult | NoResult:
+    from nbatools.commands.data_utils import validate_last_n_scope
+
+    validate_last_n_scope(last_n_scope)
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
 

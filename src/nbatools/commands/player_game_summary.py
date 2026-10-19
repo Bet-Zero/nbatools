@@ -271,6 +271,9 @@ def select_player_summary_sample(
     view ("home vs away splits in wins since January") splits the same
     sample the summary would describe.
     """
+    from nbatools.commands.data_utils import validate_last_n_scope
+
+    validate_last_n_scope(last_n_scope)
     seasons = resolve_seasons(season, start_season, end_season, selected_seasons=sample_seasons)
     if sample_seasons is not None and df is not None:
         df = df[df["season"].isin(seasons)].copy()

@@ -4095,18 +4095,26 @@ def _route_parsed_query(parsed: dict) -> dict:
         max_value=max_value,
         occurrence_event=occurrence_event,
     )
+    from nbatools.commands._parse_helpers import explicit_qualifying_participation_window
+
+    explicit_qualifying_pair_window = explicit_qualifying_participation_window(q)
+    explicit_original_pair_marker = bool(
+        re.search(r"\blast\b", q) and re.search(r"\boriginal\b", q)
+    )
     played_pair = (
         played_matchup_pair(q)
         if team
         and opponent
         and team_record_availability_intent
         and not without_player
-        and last_n is None
+        and (
+            last_n is None
+            or (parsed.get("last_n_scope") == "original_window" or explicit_qualifying_pair_window)
+        )
         else None
     )
-    # Existing availability chooses a cohort before last-N selection. Do not
-    # promote new two-clause temporal combinations until their window/cohort
-    # meaning is preserved; native cooperative pair handling remains below.
+    # Bare/default last-N retains its prior boundary for new separate played
+    # clauses. Explicit original/qualifying windows now have backed ordering.
 
     # Generic semantic/product boundaries must fail before route inference can
     # turn them into plausible player, finder, or leaderboard answers. Keep the
@@ -6164,6 +6172,47 @@ def _route_parsed_query(parsed: dict) -> dict:
                 # The named players are predicates of the explicit team record.
                 parsed.update(player=None, with_player=pair.players, without_player=None)
             notes.pop()
+            if (
+                played_pair
+                and (
+                    last_n is not None
+                    or explicit_qualifying_pair_window
+                    or explicit_original_pair_marker
+                )
+                and (
+                    last_n is None
+                    or len(
+                        re.findall(
+                            r"\blast\s+(?:\d+|original|qualifying|game|meeting|matchup)\b", q
+                        )
+                    )
+                    > 1
+                    or (
+                        explicit_original_pair_marker
+                        and parsed.get("last_n_scope") != "original_window"
+                    )
+                    or parsed.get("season_defaulted")
+                    or not season
+                    or start_season
+                    or end_season
+                    or not isinstance(opponent, str)
+                    or quarter is not None
+                    or half is not None
+                    or wins_only
+                    or losses_only
+                    or clutch
+                    or parsed.get("series_situation")
+                    or back_to_back
+                    or rest_days is not None
+                    or one_possession
+                    or nationally_televised
+                )
+            ):
+                # Temporal played-pair promotion is bounded to an explicit
+                # single-season, whole-game matchup. Do not drop another
+                # requested context while opening this positive slice.
+                route_kwargs["unsupported_filters"] = ["multi_player_availability"]
+                notes.append("Temporal participation composition is not yet supported")
     elif (
         team
         and team_record_availability_intent
@@ -6681,6 +6730,21 @@ def _route_parsed_query(parsed: dict) -> dict:
         # Every team_record branch selects the same game log, so the last-N
         # window applies to all of them rather than to each kwargs literal.
         route_kwargs["last_n"] = last_n
+
+    if parsed.get("last_n_scope") == "original_window":
+        from nbatools.commands._parse_helpers import original_participation_window_owner
+        from nbatools.commands.entity_resolution import TEAM_ALIASES
+
+        route_kwargs["last_n_scope"] = "original_window"
+        owner = original_participation_window_owner(q)
+        if owner and TEAM_ALIASES.get(owner) != route_kwargs.get("team"):
+            # An opponent's or unresolved owner's original games are a
+            # different sample. Do not quietly substitute the record subject.
+            route_kwargs["unsupported_filters"] = list(
+                dict.fromkeys(
+                    [*(route_kwargs.get("unsupported_filters") or []), "multi_player_availability"]
+                )
+            )
 
     if route_kwargs.get("last_n") is not None and route in _LAST_N_WINDOW_ROUTES:
         # "30 point games in his last 10" measures conditions inside the time
