@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "76dc0a83c054a55e6f97e707ec7624a06561ac6f",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_opponent_played_real_data.py"
+  ],
+  "raw_qa_cases": []
+}
