@@ -157,9 +157,7 @@ def _player(item, metadata, sections):
     rows = sections["game_log"]
     assert len(rows) == 1
     assert (
-        datetime.fromisoformat(str(rows[0]["game_date"]).replace("Z", "+00:00"))
-        .date()
-        .isoformat()
+        datetime.fromisoformat(str(rows[0]["game_date"]).replace("Z", "+00:00")).date().isoformat()
         == "2023-12-25"
     )
     for key, value in PLAYER.items():
