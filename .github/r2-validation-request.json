@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "476be31e957a0b0dbab3efa9d0f09e4ef625b19d",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_self_union_browser.py::test_deployed_self_union_desktop_and_mobile",
+    "tests/test_deployed_original_pair_browser.py::test_deployed_original_pair_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
