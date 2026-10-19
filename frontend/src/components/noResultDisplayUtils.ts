@@ -113,7 +113,7 @@ export function productFacingNotice(text: string): string | null {
   }
 
   if (/^multi-player availability filters are not supported/i.test(trimmed)) {
-    return "Combining with-player and without-player filters is not supported yet.";
+    return "These player participation conditions cannot be combined yet.";
   }
 
   if (/^bare player-vs-player queries are ambiguous/i.test(trimmed)) {
@@ -221,7 +221,7 @@ export function readableNoResultMessage(
   if (unsupportedBoundary) return unsupportedBoundary;
 
   if (isMultiPlayerAvailabilityUnsupported(metadata, detailTexts)) {
-    return "This version does not support combining with-player and without-player filters yet. Try one availability filter at a time.";
+    return "These player participation conditions are not supported together yet. Try one condition at a time.";
   }
 
   if (isBarePlayerVsPlayerAmbiguity(reason, metadata)) {

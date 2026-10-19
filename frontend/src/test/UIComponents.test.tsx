@@ -952,11 +952,16 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText("ambiguous_query")).not.toBeInTheDocument();
   });
 
-  it("uses specific copy for combined player availability filters", () => {
+  it.each([false, true])("describes unsupported participation combinations without inventing a with/without pair (mixed=%s)", (mixed) => {
     render(
       <NoResultDisplay
         reason="filter_not_supported"
         status="no_result"
+        metadata={{
+          with_player: "Jayson Tatum",
+          without_player: mixed ? "Gabe Vincent" : null,
+          unsupported_filters: ["multi_player_availability"],
+        }}
         notes={[
           "multi-player availability filters are not supported with current data; try a single-player absence query such as 'Lakers record without LeBron' (blocked: multi_player_availability)",
         ]}
@@ -965,7 +970,7 @@ describe("NoResultDisplay", () => {
 
     expect(
       screen.getByText(
-        "This version does not support combining with-player and without-player filters yet. Try one availability filter at a time.",
+        "These player participation conditions are not supported together yet. Try one condition at a time.",
       ),
     ).toBeInTheDocument();
   });
