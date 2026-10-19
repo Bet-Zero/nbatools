@@ -35,7 +35,9 @@ const originalMinutesIds = ["minutes-exact-yes", "minutes-exact-no", "minutes-dn
 const originalMinutes = cases.length === originalMinutesIds.length && originalMinutesIds.every(id => cases.some(item => item.id === id));
 const originalStatPairIds = ["stat-pair-exact-yes", "stat-pair-count-no-reversed", "stat-pair-real-zero", "stat-pair-dnp-no", "stat-pair-time-unavailable"];
 const originalStatPair = cases.length === originalStatPairIds.length && originalStatPairIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair) throw new Error("Expected a complete reviewed browser bundle");
+const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canonical-alias", "comparison-omitted-suffix", "comparison-exact-partial-empty", "comparison-count-empty", "comparison-unread-split", "comparison-suffix-exact-count", "comparison-hauser-precision"];
+const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
