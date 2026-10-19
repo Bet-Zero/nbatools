@@ -48,7 +48,7 @@ def _read_scope(scope: str, *, require_matchup=True, require_season=True) -> dic
     scope = scope.strip(" ,")
     seasons = list(
         re.finditer(
-            r"\b(?:in|during|of)\s+(?:the\s+)?(?P<season>(?:19|20)\d{2}-\d{2})(?:\s+season)?\b",
+            r"\b(?:in|during|of)\s+(?:the\s+)?(?P<season>(?:19|20)\d{2}-\d{2})(?:\s+(?:regular\s+)?season)?\b",
             scope,
         )
     )

@@ -115,3 +115,39 @@ def test_report_second_near_decimal_bound_uses_operator_inclusivity(bound, truth
     rows = result.result.to_dict()["sections"]["finder"]
     assert len(rows) == 1 and int(rows[0]["game_id"]) == 22300684
     assert rows[0]["team_id"] == 1610612738 and rows[0]["opponent_team_id"] == 1610612747
+
+
+@pytest.mark.parametrize(
+    "query,minutes",
+    [
+        (
+            "Did Jayson Tatum play at least 30 minutes in the Celtics last game against Lakers during the 2023-24 regular season?",
+            True,
+        ),
+        (
+            "For the Celtics latest meeting against Lakers during the 2023-24 regular season, did Tatum play at least 30 minutes?",
+            True,
+        ),
+        (
+            "Did Tatum play in the Celtics last game against Lakers during the 2023-24 regular season?",
+            False,
+        ),
+        (
+            "For the Celtics latest meeting against Lakers during the 2023-24 regular season, did both Tatum and Reaves play?",
+            False,
+        ),
+    ],
+)
+def test_explicit_regular_season_original_scope_and_adjacent_played_source(query, minutes):
+    result = execute_natural_query(query)
+    assert result.result_status == "ok" and result.route == "game_finder"
+    assert result.metadata["answer_phrase"].startswith("Yes:")
+    assert "2024-02-01" in result.metadata["answer_phrase"]
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert len(rows) == 1 and int(rows[0]["game_id"]) == 22300684
+    assert rows[0]["team_id"] == 1610612738 and rows[0]["opponent_team_id"] == 1610612747
+    if minutes:
+        assert "played 36:37" in result.metadata["answer_phrase"]
+        assert result.metadata["player_context"]["player_id"] == 1628369
+    label = "Minutes check" if minutes else "Played check"
+    assert any(f["label"] == label for f in result.metadata["applied_filters"])

@@ -241,3 +241,47 @@ def test_checked_decimal_label_retains_full_normalized_threshold_precision(exact
         f["value"] == "Jayson Tatum played > 24.999999 minutes"
         for f in result.metadata["applied_filters"]
     )
+
+
+@pytest.mark.parametrize("scope_first", [False, True])
+def test_explicit_regular_season_is_consumed_in_complete_original_scope(exact_sample, scope_first):
+    _, scope, gid = exact_sample
+    game_scope = (
+        f"the Lakers latest meeting against Boston {scope} during the 2023-24 regular season"
+    )
+    query = (
+        f"For {game_scope}, did Tatum play at least 20 minutes?"
+        if scope_first
+        else f"Did Tatum play at least 20 minutes in {game_scope}?"
+    )
+    assert "played 25:00" in success(execute_natural_query(query), gid, True)
+
+
+@pytest.mark.parametrize("pair", [False, True])
+def test_shared_regular_season_reader_preserves_plain_scalar_and_both(pair_sample, pair):
+    subject = "both Tatum and Reaves" if pair else "Tatum"
+    result = execute_natural_query(
+        f"Did {subject} play in the Lakers latest game against Boston during the 2023-24 regular season?"
+    )
+    assert result.result_status == "ok" and result.route == "game_finder"
+    assert result.metadata["answer_phrase"].startswith("No:")
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert len(rows) == 1 and int(rows[0]["game_id"]) == pair_sample["ids"][-1]
+    assert not any(f["label"] == "Minutes check" for f in result.metadata["applied_filters"])
+    assert any(f["label"] == "Played check" for f in result.metadata["applied_filters"])
+
+
+@pytest.mark.parametrize(
+    "season",
+    ["2023-24 postseason", "2023-24 playoff season", "2023-24 and 2024-25 regular seasons"],
+)
+def test_regular_season_wording_does_not_consume_other_season_types_or_multiple_seasons(
+    exact_sample, season
+):
+    _, scope, _ = exact_sample
+    query = f"Did Tatum play at least 20 minutes in the Lakers last game against Celtics {scope} during the {season}?"
+    result = execute_natural_query(query)
+    assert not result.metadata.get("answer_phrase")
+    assert not any(
+        f["label"] == "Minutes check" for f in result.metadata.get("applied_filters") or []
+    )
