@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "8d4340125f10563c26da0019d658cf8d484dbcd4",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_opponent_played_browser.py::test_deployed_opponent_played_desktop_and_mobile",
+    "tests/test_deployed_owned_or_browser.py::test_deployed_owned_or_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
