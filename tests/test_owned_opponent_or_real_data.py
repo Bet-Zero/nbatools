@@ -125,6 +125,7 @@ def test_previously_unfamiliar_owned_or_source_controls(case, aliases, reverse, 
             assert (other.iloc[0].pts if key == "opponent_pts" else own[key]) == value
     branches = case["branches"][::-1] if reverse else case["branches"]
     opponents = case["opponents"][::-1] if reverse else case["opponents"]
+
     def name(team):
         return NAMES[team] if aliases else team
 
