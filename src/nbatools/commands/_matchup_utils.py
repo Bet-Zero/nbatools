@@ -674,7 +674,7 @@ _MINUTES_BOUND_TAIL = (
 
 # "and Luka sits", "while Davis is out": another player's availability clause.
 _AVAILABILITY_CLAUSE = re.compile(
-    r"(?:\b(?:and|while|when|but)\b|[,;])\s*"
+    r"(?:\b(?:with|and|while|when|but)\b|[,;])\s*"
     r"((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)"
     r"\s+(?:plays?|played|playing|sits?|sat|rests?|rested|(?:is|was)\s+resting"
     r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"

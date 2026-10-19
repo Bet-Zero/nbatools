@@ -148,6 +148,59 @@ class AvailabilityPair(NamedTuple):
         return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
 
 
+def played_matchup_pair(text: str) -> AvailabilityPair | None:
+    """Read exactly two whole-game played predicates, preserving their full span.
+
+    An explicit matchup consumer qualifies each player's own/opposing side and
+    complete game-day coverage at execution. Name recognition alone proves none
+    of those facts. Other availability modes keep their existing reader.
+    """
+    from nbatools.commands._matchup_utils import (
+        _is_exact_player_reference_phrase,
+        _tail_is_read_scope,
+        detect_player,
+    )
+
+    name = r"[\w .'’\-]+?"
+    played = r"(?:plays?|played|playing)"
+    patterns = [
+        # Separate predicates: "with Tatum playing while Reaves plays".
+        rf"\b(?:with|when|while)\s+({name})\s+{played}"
+        rf"\s*(?:,\s*(?:and\s+)?|\s+(?:and|while)\s+)(?:with\s+)?"
+        rf"({name})\s+{played}\b",
+        # Shared predicate, including the established bare "with A and B".
+        rf"\bwith\s+({name})\s*(?:\s+and\s+|,\s*(?:and\s+)?)({name})"
+        rf"(?:\s+(?:both\s+)?{played})?(?=\s+(?:in|during|for|vs\.?|versus|against|at|on|this|last|since)\b|[?.!]|$)",
+        rf"\b(?:when|while)\s+({name})\s+and\s+({name})\s+(?:both\s+)?{played}\b",
+    ]
+    matches = [match for pattern in patterns for match in re.finditer(pattern, text)]
+    qualified = []
+    for match in matches:
+        if re.search(r"\b(?:not|unless)\s*$", text[: match.start()]):
+            continue
+        if re.search(r"\b(?:with|without|w/o|when|while)\b", text[: match.start()]):
+            # A second with/when fragment is a separate condition, not noise
+            # before this pair. Never promote a suffix of a longer request.
+            continue
+        if not _tail_is_read_scope(text, match.end()):
+            continue
+        names = []
+        for part in match.groups():
+            part = part.strip(" .")
+            resolved = detect_player(part)
+            if not resolved or not (
+                _is_exact_player_reference_phrase(part, resolved) or _only_the_name(part, resolved)
+            ):
+                break
+            names.append(resolved)
+        if len(names) == 2 and names[0] != names[1]:
+            qualified.append(
+                AvailabilityPair("with", " and ".join(names), match.start(), match.end())
+            )
+    # Overlapping readings must agree on the complete consumed predicate.
+    return qualified[0] if len(set(qualified)) == 1 else None
+
+
 def _words(text: str) -> list[str]:
     plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
     return re.findall(r"[a-z0-9']+", plain.lower().replace("-", " ").replace(".", ""))
@@ -181,6 +234,8 @@ def availability_pair(
     if len(pairs) != 1:
         return None
     m = pairs[0]
+    if re.search(r"\b(?:not|unless)\s*$", text[: m.start()]):
+        return None
     fragment = m.group(2)
     mode = "with" if m.group(1) == "with" else "without"
     suffix = _PAIR_PARTICIPATION.search(fragment)
