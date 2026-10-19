@@ -1,0 +1,81 @@
+{
+  "reviewed_gate": "c2f099fe53e1719032a3a8c257b82cf7bc850a78",
+  "request": "0ff2ddfee41d8026d3b3225fe3bbbe19ab76ddc2",
+  "run": 39205398873,
+  "artifact": 12165547925,
+  "zip_sha256": "98e9905b42f871aad79ab39c666aa76053214c64f14ad4c343fbfb20c8264b75",
+  "answers": 50,
+  "readiness_checks": 100,
+  "PNGs": 50,
+  "gates": [
+    {
+      "gate": "opponent_played",
+      "answers": 10,
+      "receipt_sha256": "347844a7ca36896c0711954d90143cb5b5aafd6987627313e08aa812fd297c6a"
+    },
+    {
+      "gate": "owned_or",
+      "answers": 4,
+      "receipt_sha256": "23e85d0a00ab96479a734e32650fd12186fd0c17964f965363e2f6f24ca2adf8"
+    },
+    {
+      "gate": "self_union",
+      "answers": 6,
+      "receipt_sha256": "efab329421a80f5d19ef25a9456478d89d3f01734606b8a8b0dfb2735e3219aa"
+    },
+    {
+      "gate": "leading_list",
+      "answers": 4,
+      "receipt_sha256": "ebfc47a2b83b1d7feab9758713aa534c60757d5ef10b4442036572c01cc73acb"
+    },
+    {
+      "gate": "original_pair",
+      "answers": 6,
+      "receipt_sha256": "115a47436cf290dc855bd8140f2768f09a1a8c8fcbeea212e60616840eccf168"
+    },
+    {
+      "gate": "latest_both",
+      "answers": 6,
+      "receipt_sha256": "bb84935f3b00c62f2334e38ed7b198b5834a3d4cb5e08a7212d9eeeed45a9ca8"
+    },
+    {
+      "gate": "scalar_played",
+      "answers": 6,
+      "receipt_sha256": "18f2e8cea105c1388cdd1cf4804d2f7f90fac9a9febf14d303047098c028e880"
+    },
+    {
+      "gate": "original_minutes",
+      "answers": 8,
+      "receipt_sha256": "8cc56ad401a2fd2d02a11728976a62b902674658b427660ab5d94ac4605b7dde"
+    }
+  ],
+  "deployment_before": {
+    "id": "dpl_S47a87AZ9qGAeCq2J1pzy4Mgp6QU",
+    "state": "READY",
+    "sha": "4f7d6f050a5435768475d592c32ace1d83f06338",
+    "time": "2026-10-19 05:35:02 UTC",
+    "reviewed_gate_head": "c2f099fe53e1719032a3a8c257b82cf7bc850a78",
+    "generation": "availability-opening-s4-v1-20261017",
+    "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52"
+  },
+  "deployment_after": {
+    "id": "dpl_S47a87AZ9qGAeCq2J1pzy4Mgp6QU",
+    "state": "READY",
+    "sha": "4f7d6f050a5435768475d592c32ace1d83f06338",
+    "time": "2026-10-19 05:45:39 UTC"
+  },
+  "independent_reviewer": "root; separate from comparison_checker gate author",
+  "independent_replay": "All eight retained source/API/DOM/table/numeric/screenshot validators passed; all50 PNG hashes rechecked; selected mobile screenshots inspected.",
+  "selected": 8,
+  "executed": 8,
+  "passed": 8,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "xfails": 0,
+  "pytest_exit_code": 0,
+  "frontend_asset": "index-ClijrUhz.js",
+  "frontend_asset_sha256": "22b53c0649bc56dd6bc332876f6150623575929ff3f9b03f9de6441508c9bccb",
+  "deployment_watch": "Paused after successful deployment and verification; no production data write.",
+  "original_replay_sha256": "5543d0a6809cda08672dd53367cdce86adb98d919419dd9804ce9ade73ab1e95"
+}
