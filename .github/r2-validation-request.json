@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "41a0591624aabbe4170fcdfb9456120cd710d1c9",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_self_opponent_union_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "self_member_union_record",
+    "self_member_union_games"
+  ]
+}
