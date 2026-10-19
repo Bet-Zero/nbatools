@@ -208,16 +208,10 @@ def _filter_observed(
     return candidates.loc[keep].copy()
 
 
-def qualified_report_seconds(
-    candidate: pd.Series, player: str, seasons: list[str], season_type: str, *, played: bool
-) -> int | None:
-    """Exact report time AFTER protected participation qualification on this game.
-
-    Positive appearance minutes can qualify play, but cannot substitute for
-    precise report time. Resolve the actual side from this game's observation.
-    """
-    import math
-
+def qualified_report_observation(
+    candidate: pd.Series, player: str, seasons: list[str], season_type: str
+) -> pd.Series:
+    """One retained report identity on the selected original game and actual side."""
     rows = load_observations(seasons, season_type)
     matching = rows.loc[player_name_mask(rows, player)]
     ids = set(matching.player_id) | {
@@ -233,7 +227,20 @@ def qualified_report_seconds(
     ]
     if len(rows) != 1:
         raise ValueError(f"No qualified precise report time for {player} on the original game")
-    row = rows.iloc[0]
+    return rows.iloc[0]
+
+
+def qualified_report_seconds(
+    candidate: pd.Series, player: str, seasons: list[str], season_type: str, *, played: bool
+) -> int | None:
+    """Exact report time AFTER protected participation qualification on this game.
+
+    Positive appearance minutes can qualify play, but cannot substitute for
+    precise report time. Resolve the actual side from this game's observation.
+    """
+    import math
+
+    row = qualified_report_observation(candidate, player, seasons, season_type)
     if row.participation_state != ("played" if played else "did_not_play"):
         raise ValueError(f"Conflicting report participation state for {player}")
     raw_minutes = row.get("source_minutes")

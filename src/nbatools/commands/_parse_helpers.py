@@ -3121,15 +3121,19 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
     return None
 
 
-def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) -> list[dict]:
+def extract_threshold_conditions(
+    text: str, *, exact_stat: str | frozenset[str] | None = None
+) -> list[dict]:
     """Read threshold spans; an exact statistic retains operator inclusivity.
 
     Legacy consumers keep their epsilon-shifted bounds and dictionary shape.
     Exact-time consumers use unshifted bounds plus internal inclusive flags.
     """
 
+    exact_stats = {exact_stat} if isinstance(exact_stat, str) else set(exact_stat or ())
+
     def exact_flags(stat, mode=None, epsilon=0.0):
-        if stat != exact_stat:
+        if stat not in exact_stats:
             return {}
         return {
             "min_inclusive": not (mode == "min" and epsilon),
@@ -3316,7 +3320,7 @@ def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) ->
                     m.group(1),
                     m.group(2),
                     mode,
-                    0.0 if detect_stat(m.group(2)) == exact_stat else epsilon,
+                    0.0 if detect_stat(m.group(2)) in exact_stats else epsilon,
                 )
                 matches.append(
                     {
@@ -3359,7 +3363,7 @@ def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) ->
                 )
             else:
                 min_value, max_value = _threshold_bounds(
-                    m.group(2), stat, mode, 0.0 if stat == exact_stat else epsilon
+                    m.group(2), stat, mode, 0.0 if stat in exact_stats else epsilon
                 )
                 matches.append(
                     {
@@ -3480,7 +3484,7 @@ def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) ->
 
     deduped = []
     for item in matches:
-        if item["stat"] == exact_stat:
+        if item["stat"] in exact_stats:
             item.setdefault("min_inclusive", True)
             item.setdefault("max_inclusive", True)
         # "scores 25+ points" also matches "25+ points" on its own; keep one
@@ -3499,6 +3503,35 @@ def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) ->
         deduped.append(item)
 
     return deduped
+
+
+def extract_stat_predicate_spans(
+    text: str, *, exact_stat: str | frozenset[str] | None = None
+) -> list[dict]:
+    """Complete numerical predicate spans, including their directly governing verb.
+
+    Owner/connector/static-scope validation belongs to the consuming reader.
+    Unknown words or identities remain outside these spans; they are never
+    erased merely because a number was recognized elsewhere in the clause.
+    """
+    verbs = r"play(?:ed|s)?|ha(?:d|s|ve)|record(?:ed|s)?|scor(?:e|es|ed)|put(?:s)?\s+up"
+    found = []
+    for condition in extract_threshold_conditions(text, exact_stat=exact_stat):
+        start, end = condition["start"], condition["end"]
+        verb = re.search(rf"\b(?:(?:have|has|had)\s+)?(?P<verb>{verbs})\s*$", text[:start])
+        if verb:
+            start = verb.start()
+            governing = verb["verb"]
+        else:
+            leading = re.match(rf"(?P<verb>{verbs})\b", text[start:end])
+            governing = leading["verb"] if leading else None
+        unit = re.match(rf"\s+({STAT_PATTERN})\b", text[end:])
+        if unit and detect_stat(unit[1]) == condition["stat"]:
+            end += unit.end()
+        found.append(
+            {**condition, "start": start, "end": end, "text": text[start:end], "verb": governing}
+        )
+    return found
 
 
 def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
