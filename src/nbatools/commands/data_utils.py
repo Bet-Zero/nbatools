@@ -2607,8 +2607,13 @@ def filter_with_player(
     season_type: str,
     team: str | None = None,
     strict_team_match: bool = False,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
 ) -> pd.DataFrame:
-    """Filter df to games where with_player DID play for the same team."""
+    """Select played games, qualifying side ownership for an explicit matchup."""
+    if opponent:
+        from nbatools.commands._participation_observations import filter_played
+
+        return filter_played(df, with_player, seasons, season_type, opponent_context=True)
     if " and " in with_player:
         # "with LeBron James and Anthony Davis": the games both played.
         for name in with_player.split(" and "):
