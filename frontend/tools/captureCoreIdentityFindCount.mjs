@@ -27,7 +27,9 @@ const leadingListIds = ["leading-list-third-owner", "leading-list-baseline"];
 const leadingList = cases.length === leadingListIds.length && leadingListIds.every(id => cases.some(item => item.id === id));
 const originalPairIds = ["original-pair-empty", "qualifying-pair-positive", "original-pair-positive"];
 const originalPair = cases.length === originalPairIds.length && originalPairIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair) throw new Error("Expected a complete reviewed browser bundle");
+const latestBothIds = ["latest-both-yes", "latest-both-no", "latest-both-unknown-first"];
+const latestBoth = cases.length === latestBothIds.length && latestBothIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
