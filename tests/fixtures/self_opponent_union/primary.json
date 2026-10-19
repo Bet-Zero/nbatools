@@ -1,0 +1,140 @@
+{
+  "base": "eb2a744a8a9d091b11b832e7ff36dc9a04f1b60e",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346"
+  },
+  "scope": "observed final 2023-24 regular-season same-game reciprocal rows; no self-game in stored canonical catalog",
+  "cases": [
+    {
+      "case": "primary",
+      "subject": "LAL",
+      "opponents": [
+        "LAL",
+        "BOS"
+      ],
+      "rows": [
+        {
+          "game_id": 22300403,
+          "game_date": "2023-12-25",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612738,
+          "opponent_team_abbr": "BOS",
+          "wl": "L",
+          "pts": 115,
+          "reb": 43,
+          "ast": 24,
+          "opponent_pts": 126
+        },
+        {
+          "game_id": 22300684,
+          "game_date": "2024-02-01",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612738,
+          "opponent_team_abbr": "BOS",
+          "wl": "W",
+          "pts": 114,
+          "reb": 52,
+          "ast": 30,
+          "opponent_pts": 105
+        }
+      ],
+      "expected": {
+        "games": 2,
+        "wins": 1,
+        "losses": 1,
+        "sums": {
+          "pts": 229,
+          "reb": 95,
+          "ast": 54
+        },
+        "means": {
+          "pts": 114.5,
+          "reb": 47.5,
+          "ast": 27.0
+        }
+      }
+    },
+    {
+      "case": "unfamiliar",
+      "subject": "DEN",
+      "opponents": [
+        "MIN",
+        "DEN"
+      ],
+      "rows": [
+        {
+          "game_id": 22300123,
+          "game_date": "2023-11-01",
+          "team_id": 1610612743,
+          "team_abbr": "DEN",
+          "opponent_team_id": 1610612750,
+          "opponent_team_abbr": "MIN",
+          "wl": "L",
+          "pts": 89,
+          "reb": 43,
+          "ast": 23,
+          "opponent_pts": 110
+        },
+        {
+          "game_id": 22300995,
+          "game_date": "2024-03-19",
+          "team_id": 1610612743,
+          "team_abbr": "DEN",
+          "opponent_team_id": 1610612750,
+          "opponent_team_abbr": "MIN",
+          "wl": "W",
+          "pts": 115,
+          "reb": 49,
+          "ast": 26,
+          "opponent_pts": 112
+        },
+        {
+          "game_id": 22301071,
+          "game_date": "2024-03-29",
+          "team_id": 1610612743,
+          "team_abbr": "DEN",
+          "opponent_team_id": 1610612750,
+          "opponent_team_abbr": "MIN",
+          "wl": "L",
+          "pts": 98,
+          "reb": 46,
+          "ast": 29,
+          "opponent_pts": 111
+        },
+        {
+          "game_id": 22301164,
+          "game_date": "2024-04-10",
+          "team_id": 1610612743,
+          "team_abbr": "DEN",
+          "opponent_team_id": 1610612750,
+          "opponent_team_abbr": "MIN",
+          "wl": "W",
+          "pts": 116,
+          "reb": 44,
+          "ast": 31,
+          "opponent_pts": 107
+        }
+      ],
+      "expected": {
+        "games": 4,
+        "wins": 2,
+        "losses": 2,
+        "sums": {
+          "pts": 418,
+          "reb": 182,
+          "ast": 109
+        },
+        "means": {
+          "pts": 104.5,
+          "reb": 45.5,
+          "ast": 27.25
+        }
+      }
+    }
+  ]
+}
