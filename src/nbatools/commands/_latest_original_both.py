@@ -153,6 +153,102 @@ def _read_scalar_request(text: str, out: dict) -> dict | None:
     return {**scope, "event": "played_scalar", "players": [player]}
 
 
+def _admitted_minutes_check(text: str, out: dict) -> bool:
+    """Keep statistical ``play <minutes bound>`` distinct from presence.
+
+    A legacy note alone is insufficient: "play and win" can still mean an
+    unqualified presence check. Require a direct minutes predicate and consume
+    every remaining predicate and the original-game scope before deferring.
+    """
+    from nbatools.commands._constants import STAT_PATTERN
+    from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
+    from nbatools.commands._parse_helpers import detect_stat, extract_threshold_conditions
+    from nbatools.commands._teammate_resolution import _only_the_name
+
+    kwargs = out.get("route_kwargs") or {}
+    if out.get("route") != "player_game_finder" or kwargs.get("unsupported_filters"):
+        return False
+    note = next((n for n in out.get("notes") or [] if n.startswith(_PREFIX)), None)
+    if note is None:
+        return False
+    check = json.loads(note[len(_PREFIX) :])
+    checks = check.get("checks") or []
+    if check.get("event") or not any(c.get("stat") == "minutes" for c in checks):
+        return False
+    match = re.fullmatch(
+        r"(?:did|does|do|was|were|is|has|have|had)\s+(?P<name>.+?)"
+        r"\s+play(?:ed|s)?\s+(?P<tail>.+)",
+        text.strip(" ?.!"),
+    )
+    if not match:
+        return False
+    name = detect_player(match["name"])
+    if (
+        not name
+        or name != kwargs.get("player")
+        or not (
+            _is_exact_player_reference_phrase(match["name"], name)
+            or _only_the_name(match["name"], name)
+        )
+    ):
+        return False
+    tail = match["tail"]
+    # The static scope must be a complete suffix; unknown words cannot be
+    # hidden by a previously admitted numerical/outcome note.
+    for boundary in re.finditer(r"\s+", tail):
+        if _read_scope(tail[boundary.end() :], require_matchup=False, require_season=False) is None:
+            continue
+        predicates = tail[: boundary.start()]
+        bounds = extract_threshold_conditions(predicates)
+        if not bounds or bounds[0]["start"] != 0 or bounds[0]["stat"] != "minutes":
+            continue
+
+        def signature(c):
+            return c.get("stat"), c.get("min_value"), c.get("max_value")
+
+        if set(map(signature, bounds)) != set(map(signature, checks)):
+            continue
+        spans = []
+        for bound in bounds:
+            end = bound["end"]
+            # Verb thresholds can stop before their optional unit (score 20
+            # points). Consume it only when it names the very same statistic.
+            unit = re.match(rf"\s+({STAT_PATTERN})\b", predicates[end:])
+            if unit and detect_stat(unit[1]) == bound["stat"]:
+                end += unit.end()
+            spans.append((bound["start"], end))
+        outcomes = list(re.finditer(r"\b(?:win|won|lose|lost)\b", predicates))
+        if len(outcomes) > 1:
+            continue
+        if outcomes:
+            expected = "W" if outcomes[0][0] in ("win", "won") else "L"
+            # The existing OR consumer converts the outcome branch into a
+            # check and sets any=True AFTER prepare. Non-OR outcome checks
+            # already name their outcome in this note.
+            if check.get("outcome") != expected and not re.search(r"\bor\b", predicates):
+                continue
+            spans.append(outcomes[0].span())
+        elif check.get("outcome"):
+            continue
+        cursor, pieces = 0, []
+        for start, end in sorted(set(spans)):
+            if start < cursor:
+                break
+            pieces.extend((predicates[cursor:start], " CHECK "))
+            cursor = end
+        else:
+            pieces.append(predicates[cursor:])
+            structure = "".join(pieces).strip()
+            # Homogeneous AND/OR is the legacy admitted contract. Do not
+            # silently reinterpret a mixed tree, extra identity or unread tail.
+            if any(
+                re.fullmatch(rf"CHECK(?:\s*{operator}\s*CHECK)*", structure)
+                for operator in (r"(?:,?\s*and|,)", "or")
+            ):
+                return True
+    return False
+
+
 def prepare(out: dict) -> dict:
     """Use the existing yes/no note boundary without introducing a request field."""
     text = out.get("normalized_query") or ""
@@ -180,6 +276,8 @@ def prepare(out: dict) -> dict:
                 or _read_scope(prefix, require_matchup=False, require_season=False) is not None
             )
         if not attempt and not scalar_attempt:
+            return out
+        if not attempt and _admitted_minutes_check(text, out):
             return out
         result = dict(out)
         kwargs = dict(out.get("route_kwargs") or {})

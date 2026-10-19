@@ -237,3 +237,66 @@ def test_basic_qualified_positive_legacy_forms_keep_the_actual_same_game(q):
     rows = result.result.to_dict()["sections"]["finder"]
     assert len(rows) == 1 and str(rows[0]["game_date"])[:10] in result.metadata["answer_phrase"]
     assert not any(k in rows[0] for k in ("player_id", "player_name"))
+
+
+@pytest.mark.parametrize(
+    "predicate,check",
+    [
+        ("at least 30 minutes", lambda row: row.minutes >= 30),
+        ("fewer than 30 minutes", lambda row: row.minutes < 30),
+        (
+            "at least 40 minutes or score at least 20 points",
+            lambda row: row.minutes >= 40 or row.pts >= 20,
+        ),
+        (
+            "at least 40 minutes or score at least 30 points",
+            lambda row: row.minutes >= 40 or row.pts >= 30,
+        ),
+        ("at least 40 minutes or win", lambda row: row.minutes >= 40 or row.wl == "W"),
+        ("at least 40 minutes or lose", lambda row: row.minutes >= 40 or row.wl == "L"),
+        (
+            "at least 30 minutes and score at least 20 points",
+            lambda row: row.minutes >= 30 and row.pts >= 20,
+        ),
+        (
+            "at least 30 minutes and score at least 30 points",
+            lambda row: row.minutes >= 30 and row.pts >= 30,
+        ),
+        ("at least 30 minutes and win", lambda row: row.minutes >= 30 and row.wl == "W"),
+        ("at least 30 minutes and lose", lambda row: row.minutes >= 30 and row.wl == "L"),
+    ],
+)
+def test_existing_minutes_checks_keep_player_statistical_consumer(predicate, check):
+    games = pd.read_csv(
+        "qa/fixtures/query_engine_sample/data/raw/player_game_stats/2025-26_regular_season.csv"
+    )
+    original = games.loc[games.player_id.eq(2544)].sort_values(["game_date", "game_id"]).iloc[-1]
+    result = execute_natural_query(f"Did LeBron play {predicate} last game?")
+    assert result.result_status == "ok" and result.route == "player_game_finder"
+    assert result.metadata["answer_phrase"].startswith("Yes:" if check(original) else "No:")
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert len(rows) == 1 and int(rows[0]["game_id"]) == int(original.game_id)
+    assert rows[0]["player_id"] == 2544
+    assert rows[0]["minutes"] == original.minutes
+    assert not any(f["label"] == "Played check" for f in result.metadata["applied_filters"])
+
+
+@pytest.mark.parametrize(
+    "predicate",
+    [
+        "and win",
+        "and score at least 20 points",
+        "at least 30 minutes while healthy",
+        "at least 30 minutes and play the whole game",
+        "at least 30 minutes while Reaves plays",
+        "at least 30 minutes and do a backflip",
+        "at least 30 minutes or win while healthy",
+        "at least 30 minutes or play the whole game",
+        "at least 30 minutes or Reaves plays",
+        "at least 30 minutes or score at least 20 points and win",
+    ],
+)
+def test_statistical_note_cannot_hide_unqualified_presence_or_unread_tail(predicate):
+    result = execute_natural_query(f"Did LeBron play {predicate} last game?")
+    assert_unavailable(result)
+    assert not result.metadata.get("player_context")

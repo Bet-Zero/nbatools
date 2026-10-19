@@ -140,3 +140,69 @@ def test_scalar_participation_from_original_game_and_qualified_sources(index):
                 assert f"{float(positive[0][stat]):g} {word}" in phrase
         else:
             assert ": 0 points" not in phrase and "his last game was" not in phrase
+
+
+@pytest.mark.parametrize(
+    "predicate,truth",
+    [
+        ("at least 30 minutes", True),
+        ("fewer than 30 minutes", False),
+        ("at least 40 minutes or score at least 20 points", True),
+        ("at least 40 minutes or score at least 30 points", False),
+        ("at least 40 minutes or win", True),
+        ("at least 40 minutes or lose", False),
+        ("at least 30 minutes and score at least 20 points", True),
+        ("at least 30 minutes and score at least 30 points", False),
+        ("at least 30 minutes and win", True),
+        ("at least 30 minutes and lose", False),
+    ],
+)
+def test_source_qualified_legacy_minutes_checks_keep_statistical_contract(predicate, truth):
+    path = "raw/player_game_stats/2023-24_regular_season.csv"
+    assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == ORACLE["source_hashes"][path]
+    with data_path(path).open() as stream:
+        raw = list(csv.DictReader(stream))
+    rows = sorted(
+        [r for r in raw if int(r["player_id"]) == 2544],
+        key=lambda r: (r["game_date"], int(r["game_id"])),
+    )
+    source = rows[-1]
+    assert source == ORACLE["cases"][6]["positive_appearance_rows"][0]
+    assert int(source["game_id"]) == 22301195 and source["game_date"] == "2024-04-14"
+    assert int(source["team_id"]) == 1610612747
+    assert [float(source[k]) for k in ("minutes", "pts", "reb", "ast")] == [38, 28, 11, 17]
+    team_path = "raw/team_game_stats/2023-24_regular_season.csv"
+    assert (
+        hashlib.sha256(data_path(team_path).read_bytes()).hexdigest()
+        == ORACLE["source_hashes"][team_path]
+    )
+    with data_path(team_path).open() as stream:
+        teams = list(csv.DictReader(stream))
+    own = next(
+        r for r in teams if r["game_id"] == source["game_id"] and r["team_id"] == source["team_id"]
+    )
+    other = next(
+        r
+        for r in teams
+        if r["game_id"] == source["game_id"] and r["team_id"] == source["opponent_team_id"]
+    )
+    assert own == ORACLE["cases"][6]["selected_original_team_row"]
+    assert own["game_date"] == other["game_date"] == source["game_date"]
+    assert (
+        own["opponent_team_id"] == other["team_id"] and other["opponent_team_id"] == own["team_id"]
+    )
+    assert own["wl"] == "W" and float(own["pts"]) > float(other["pts"])
+    result = execute_natural_query(f"Did LeBron play {predicate} last game in 2023-24?")
+    assert result.result_status == "ok" and result.route == "player_game_finder"
+    phrase = result.metadata["answer_phrase"]
+    assert phrase.startswith("Yes:" if truth else "No:")
+    assert "38 minutes" in phrase and source["game_date"] in phrase
+    actual = result.result.to_dict()["sections"]["finder"]
+    assert len(actual) == 1 and int(actual[0]["game_id"]) == 22301195
+    assert int(actual[0]["player_id"]) == 2544
+    assert actual[0]["team_abbr"] == own["team_abbr"] == "LAL"
+    assert actual[0]["opponent_team_abbr"] == other["team_abbr"] == "NOP"
+    assert actual[0]["wl"] == own["wl"]
+    assert str(actual[0]["game_date"])[:10] == source["game_date"]
+    assert [actual[0][k] for k in ("minutes", "pts", "reb", "ast")] == [38, 28, 11, 17]
+    assert not any(f["label"] == "Played check" for f in result.metadata["applied_filters"])
