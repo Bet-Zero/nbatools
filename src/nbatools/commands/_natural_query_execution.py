@@ -1375,10 +1375,9 @@ def _execute_or_query_build_result(query: str) -> tuple:
             canonical = parse_query(clauses[0]).get("route_kwargs") or {}
         except ValueError:
             canonical = {}
-    if isinstance(canonical.get("opponent"), list):
-        for key in ("player", "team", "opponent"):
-            if key in canonical:
-                base[key] = canonical[key]
+    for key in ("player", "team", "opponent"):
+        if key in canonical:
+            base[key] = canonical[key]
     conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
     full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))

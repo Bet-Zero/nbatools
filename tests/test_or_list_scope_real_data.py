@@ -11,27 +11,42 @@ from nbatools.query_service import execute_natural_query
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query]
 ORACLE = json.loads((Path(__file__).parent / "fixtures/or_list_scope/primary.json").read_text())
+CONTROLS = json.loads(
+    (Path(__file__).parent / "fixtures/or_list_scope/revealed_controls.json").read_text()
+)
 
 
-def test_or_preserves_the_complete_opponent_sample_and_subject():
+@pytest.mark.parametrize("expected", [ORACLE["case"], *CONTROLS["cases"]])
+def test_or_preserves_the_complete_opponent_sample_and_subject(expected):
     for path, digest in ORACLE["sources"].items():
         assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
-    expected = ORACLE["case"]
     result = execute_natural_query(expected["query"])
     assert result.result_status == "ok", result.metadata
     assert result.route == "player_game_finder"
     meta = result.metadata
     assert meta["player_context"]["player_id"] == expected["player_id"]
     assert meta["team"] is None
-    assert meta["opponents"] == expected["base_opponents"]
     assert meta["boolean_filter_mode"] == "any"
+    bounds = [
+        {"stat": branch["stat"], "min_value": branch["minimum_inclusive"], "max_value": None}
+        for branch in expected["branches"]
+    ]
+    if expected["branches"][0]["opponents"] == expected["branches"][1]["opponents"]:
+        assert meta["opponents"] == expected["base_opponents"]
+        actual_bounds = meta["conditions"]
+    else:
+        assert meta["opponent"] is None and not meta.get("opponents")
+        assert not meta["conditions"] and not meta["threshold_conditions"]
+        branches = meta["boolean_filter_branches"]
+        assert [branch["scope"]["opponent"] for branch in branches] == ["DEN", "GSW"]
+        assert all(not branch["scope"].get("team") for branch in branches)
+        actual_bounds = [branch["conditions"][0] for branch in branches]
+        paired = next(f["value"] for f in meta["applied_filters"] if f["kind"] == "boolean")
+        assert paired == "(Opponent: DEN; 25+ PTS) OR (Opponent: GSW; 14+ REB)"
     assert [
         {key: condition.get(key) for key in ("stat", "min_value", "max_value")}
-        for condition in meta["conditions"]
-    ] == [
-        {"stat": "pts", "min_value": 30, "max_value": None},
-        {"stat": "ast", "min_value": 9, "max_value": None},
-    ]
+        for condition in actual_bounds
+    ] == bounds
     rows = result.result.to_dict()["sections"]["finder"]
     assert sorted(int(row["game_id"]) for row in rows) == expected["selected_ids"]
     assert len(rows) == expected["count"] == len({row["game_id"] for row in rows})

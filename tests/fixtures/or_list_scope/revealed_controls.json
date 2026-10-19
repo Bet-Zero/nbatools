@@ -1,0 +1,505 @@
+{
+  "reviewer": "/root/participation_request",
+  "frozen_before_candidate": true,
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "sources": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "method": "Independent stdlib CSV joins by game_id/team_id; final catalog identity and reciprocal opponents verified before evaluating disjunction; bounded observed appearances, no tenure/missing participation inference.",
+  "cases": [
+    {
+      "query": "Devin Booker games against Warriors and Lakers with at least 30 points or at least 8 assists in 2023-24",
+      "player_id": 1626164,
+      "team_id": 1610612756,
+      "base_opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "branches": [
+        {
+          "opponents": [
+            "GSW",
+            "LAL"
+          ],
+          "stat": "pts",
+          "minimum_inclusive": 30
+        },
+        {
+          "opponents": [
+            "GSW",
+            "LAL"
+          ],
+          "stat": "ast",
+          "minimum_inclusive": 8
+        }
+      ],
+      "candidate_rows": [
+        {
+          "game_id": 22300062,
+          "game_date": "2023-10-24",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 6,
+          "ast": 8,
+          "team_pts": 108,
+          "opponent_pts": 104,
+          "wl": "W",
+          "matching_branches": [
+            0,
+            1
+          ]
+        },
+        {
+          "game_id": 22300236,
+          "game_date": "2023-11-22",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 25,
+          "reb": 8,
+          "ast": 10,
+          "team_pts": 123,
+          "opponent_pts": 115,
+          "wl": "W",
+          "matching_branches": [
+            1
+          ]
+        },
+        {
+          "game_id": 22300308,
+          "game_date": "2023-12-12",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 4,
+          "ast": 7,
+          "team_pts": 119,
+          "opponent_pts": 116,
+          "wl": "W",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300531,
+          "game_date": "2024-01-11",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612747,
+          "opponent_team_abbr": "LAL",
+          "pts": 31,
+          "reb": 5,
+          "ast": 5,
+          "team_pts": 127,
+          "opponent_pts": 109,
+          "wl": "W",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300757,
+          "game_date": "2024-02-10",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 4,
+          "ast": 6,
+          "team_pts": 112,
+          "opponent_pts": 113,
+          "wl": "L",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300818,
+          "game_date": "2024-02-25",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612747,
+          "opponent_team_abbr": "LAL",
+          "pts": 21,
+          "reb": 3,
+          "ast": 9,
+          "team_pts": 123,
+          "opponent_pts": 113,
+          "wl": "W",
+          "matching_branches": [
+            1
+          ]
+        },
+        {
+          "game_id": 22301203,
+          "game_date": "2023-12-05",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612747,
+          "opponent_team_abbr": "LAL",
+          "pts": 21,
+          "reb": 11,
+          "ast": 6,
+          "team_pts": 103,
+          "opponent_pts": 106,
+          "wl": "L",
+          "matching_branches": []
+        }
+      ],
+      "selected_rows": [
+        {
+          "game_id": 22300062,
+          "game_date": "2023-10-24",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 6,
+          "ast": 8,
+          "team_pts": 108,
+          "opponent_pts": 104,
+          "wl": "W",
+          "matching_branches": [
+            0,
+            1
+          ]
+        },
+        {
+          "game_id": 22300236,
+          "game_date": "2023-11-22",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 25,
+          "reb": 8,
+          "ast": 10,
+          "team_pts": 123,
+          "opponent_pts": 115,
+          "wl": "W",
+          "matching_branches": [
+            1
+          ]
+        },
+        {
+          "game_id": 22300308,
+          "game_date": "2023-12-12",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 4,
+          "ast": 7,
+          "team_pts": 119,
+          "opponent_pts": 116,
+          "wl": "W",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300531,
+          "game_date": "2024-01-11",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612747,
+          "opponent_team_abbr": "LAL",
+          "pts": 31,
+          "reb": 5,
+          "ast": 5,
+          "team_pts": 127,
+          "opponent_pts": 109,
+          "wl": "W",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300757,
+          "game_date": "2024-02-10",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 32,
+          "reb": 4,
+          "ast": 6,
+          "team_pts": 112,
+          "opponent_pts": 113,
+          "wl": "L",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300818,
+          "game_date": "2024-02-25",
+          "player_id": 1626164,
+          "player_name": "Devin Booker",
+          "team_id": 1610612756,
+          "team_abbr": "PHX",
+          "opponent_team_id": 1610612747,
+          "opponent_team_abbr": "LAL",
+          "pts": 21,
+          "reb": 3,
+          "ast": 9,
+          "team_pts": 123,
+          "opponent_pts": 113,
+          "wl": "W",
+          "matching_branches": [
+            1
+          ]
+        }
+      ],
+      "selected_ids": [
+        22300062,
+        22300236,
+        22300308,
+        22300531,
+        22300757,
+        22300818
+      ],
+      "count": 6,
+      "wins": 5,
+      "losses": 1,
+      "totals": {
+        "pts": 173,
+        "reb": 30,
+        "ast": 45
+      },
+      "means": {
+        "pts": 28.833333333333332,
+        "reb": 5.0,
+        "ast": 7.5
+      },
+      "dedupe": "game_id,team_id,player_id; a row satisfying both branches is included once"
+    },
+    {
+      "query": "Anthony Davis games against Nuggets with at least 25 points or games against Warriors with at least 14 rebounds in 2023-24",
+      "player_id": 203076,
+      "team_id": 1610612747,
+      "base_opponents": [
+        "DEN",
+        "GSW"
+      ],
+      "branches": [
+        {
+          "opponents": [
+            "DEN"
+          ],
+          "stat": "pts",
+          "minimum_inclusive": 25
+        },
+        {
+          "opponents": [
+            "GSW"
+          ],
+          "stat": "reb",
+          "minimum_inclusive": 14
+        }
+      ],
+      "candidate_rows": [
+        {
+          "game_id": 22300061,
+          "game_date": "2023-10-24",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612743,
+          "opponent_team_abbr": "DEN",
+          "pts": 17,
+          "reb": 8,
+          "ast": 4,
+          "team_pts": 107,
+          "opponent_pts": 119,
+          "wl": "L",
+          "matching_branches": []
+        },
+        {
+          "game_id": 22300650,
+          "game_date": "2024-01-27",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 29,
+          "reb": 13,
+          "ast": 3,
+          "team_pts": 145,
+          "opponent_pts": 144,
+          "wl": "W",
+          "matching_branches": []
+        },
+        {
+          "game_id": 22300740,
+          "game_date": "2024-02-08",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612743,
+          "opponent_team_abbr": "DEN",
+          "pts": 32,
+          "reb": 9,
+          "ast": 3,
+          "team_pts": 106,
+          "opponent_pts": 114,
+          "wl": "L",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300802,
+          "game_date": "2024-02-22",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 27,
+          "reb": 15,
+          "ast": 1,
+          "team_pts": 110,
+          "opponent_pts": 128,
+          "wl": "L",
+          "matching_branches": [
+            1
+          ]
+        },
+        {
+          "game_id": 22300869,
+          "game_date": "2024-03-02",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612743,
+          "opponent_team_abbr": "DEN",
+          "pts": 17,
+          "reb": 11,
+          "ast": 2,
+          "team_pts": 114,
+          "opponent_pts": 124,
+          "wl": "L",
+          "matching_branches": []
+        },
+        {
+          "game_id": 22300973,
+          "game_date": "2024-03-16",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 8,
+          "reb": 4,
+          "ast": 2,
+          "team_pts": 121,
+          "opponent_pts": 128,
+          "wl": "L",
+          "matching_branches": []
+        }
+      ],
+      "selected_rows": [
+        {
+          "game_id": 22300740,
+          "game_date": "2024-02-08",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612743,
+          "opponent_team_abbr": "DEN",
+          "pts": 32,
+          "reb": 9,
+          "ast": 3,
+          "team_pts": 106,
+          "opponent_pts": 114,
+          "wl": "L",
+          "matching_branches": [
+            0
+          ]
+        },
+        {
+          "game_id": 22300802,
+          "game_date": "2024-02-22",
+          "player_id": 203076,
+          "player_name": "Anthony Davis",
+          "team_id": 1610612747,
+          "team_abbr": "LAL",
+          "opponent_team_id": 1610612744,
+          "opponent_team_abbr": "GSW",
+          "pts": 27,
+          "reb": 15,
+          "ast": 1,
+          "team_pts": 110,
+          "opponent_pts": 128,
+          "wl": "L",
+          "matching_branches": [
+            1
+          ]
+        }
+      ],
+      "selected_ids": [
+        22300740,
+        22300802
+      ],
+      "count": 2,
+      "wins": 0,
+      "losses": 2,
+      "totals": {
+        "pts": 59,
+        "reb": 24,
+        "ast": 4
+      },
+      "means": {
+        "pts": 29.5,
+        "reb": 12.0,
+        "ast": 2.0
+      },
+      "dedupe": "game_id,team_id,player_id; a row satisfying both branches is included once"
+    }
+  ]
+}
