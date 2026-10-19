@@ -3,7 +3,7 @@
 import hashlib
 import json
 import os
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pytest
@@ -172,7 +172,8 @@ def _validate_answers(receipt, cases, output):
                 # Finder rows expose team abbreviations; source qualification
                 # above binds these to exact canonical team/opponent IDs.
                 if key == "game_date":
-                    assert str(row[key]).split("T")[0] == value
+                    when = datetime.fromisoformat(str(row[key]).replace("Z", "+00:00"))
+                    assert when.date().isoformat() == value
                 elif key not in {"team_id", "opponent_team_id"}:
                     assert str(row[key]) == str(value)
         for stat, total in case["sums"].items():
