@@ -16,7 +16,7 @@ from tests.test_opponent_played_real_data import ORACLE
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
 FIXTURES = ROOT / "tests/fixtures/opponent_played"
 OBLIGATION = json.loads((FIXTURES / "additional_clause_obligation.json").read_text())
-ASSET = "index-CE3ZKqeM.js"
+ASSET = "index-CA4gtUQi.js"
 LAL, BOS, TATUM = 1610612747, 1610612738, 1628369
 
 

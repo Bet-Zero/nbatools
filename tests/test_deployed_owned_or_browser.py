@@ -142,7 +142,7 @@ def _validate_answers(receipt, cases, output):
             assert payload["result_status"] == "ok" and payload["result_reason"] is None
             _positive(item, metadata, sections)
         else:
-            # This legitimate extra-player composition is unfinished; never call it a zero.
+            # An unresolved extra-player clause must never be answered as a zero.
             assert (
                 payload["result_status"] == "no_result"
                 and payload["result_reason"] == "unsupported"
