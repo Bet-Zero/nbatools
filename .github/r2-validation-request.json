@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "7a8715b57c8ba64095292b9d29469ebfb5b9b932",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": ["tests/test_owned_opponent_or_real_data.py"],
+  "raw_qa_cases": ["owned_opponent_or_games", "owned_opponent_or_aliases"]
+}
