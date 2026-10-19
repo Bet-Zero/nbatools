@@ -19,7 +19,9 @@ const orScopeIds = ["or-shared", "or-different-opponents", "or-different-seasons
 const orScopes = cases.length === orScopeIds.length && orScopeIds.every(id => cases.some(item => item.id === id));
 const opponentPlayedIds = ["opponent-played-positive", "opponent-played-empty", "opponent-played-extra-clause"];
 const opponentPlayed = cases.length === opponentPlayedIds.length && opponentPlayedIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed) throw new Error("Expected a complete reviewed browser bundle");
+const ownedOrIds = ["owned-or-positive", "owned-or-unread-prefix"];
+const ownedOr = cases.length === ownedOrIds.length && ownedOrIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
