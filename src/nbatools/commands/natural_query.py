@@ -2531,6 +2531,12 @@ def _other_team_clause(q: str) -> str:
         return q
     other = detect_team_in_text(m.group("name")) or m.group("name")
     prefix = q[: m.start()]
+    from nbatools.commands._parse_helpers import opponent_lists
+
+    if any(other in teams for _, _, teams in opponent_lists(prefix)):
+        # With several opponents, "the opponent" loses WHICH team's bound
+        # this was. The existing scoped condition reader retains that owner.
+        return q
     if not other or detect_player(prefix):
         return q
     ordered = _teams_in_order(prefix)

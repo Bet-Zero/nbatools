@@ -69,7 +69,7 @@ _CLAUSE_OPENER = re.compile(
 _OPPONENT_WORDS = re.compile(r"\b(?:other|opposing)\s+team$")
 
 
-def _subject_team(prefix: str) -> tuple[str, int] | None:
+def _subject_team(prefix: str, known_teams: tuple[str, ...] = ()) -> tuple[str, int] | None:
     """The team named by the last one to three words of *prefix*, and where
     that subject starts.
 
@@ -90,17 +90,19 @@ def _subject_team(prefix: str) -> tuple[str, int] | None:
         if bare == "la":
             # Lakers or Clippers: whichever side of the game is from LA.
             return "LA", m.start(1)
-        if bare in TEAM_ALIASES and len(bare) > 3:
+        if bare in TEAM_ALIASES and (len(bare) > 3 or TEAM_ALIASES[bare] in known_teams):
             return TEAM_ALIASES[bare], m.start(1)
     return None
 
 
-def team_subject_stat_conditions(text: str) -> list[dict[str, Any]]:
+def team_subject_stat_conditions(
+    text: str, known_teams: tuple[str, ...] = ()
+) -> list[dict[str, Any]]:
     """Bounds whose subject is a team: "the Lakers score 120", "they had 30
     assists", "the team makes 15 threes"."""
     found = []
     for verb in _TEAM_STAT_VERB.finditer(text):
-        subject = _subject_team(text[: verb.start()])
+        subject = _subject_team(text[: verb.start()], known_teams)
         if subject is None:
             continue
         team, start = subject
@@ -526,7 +528,7 @@ def _opponent_bounds(
             )
         )
     if isinstance(opponent, list):
-        for item in team_subject_stat_conditions(text):
+        for item in team_subject_stat_conditions(text, tuple(opponent)):
             if item["team"] in opponent:
                 found.append(
                     (
@@ -751,7 +753,11 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
     outside = masked[:start] + " " * (end - start) + masked[end:]
     # A team's name inside a condition is the condition's owner, not the
     # query's subject. The bound reader resolves its side after list scope.
-    for item in team_subject_stat_conditions(text):
+    # Ownership masking must recognize a third team's abbreviation too. It
+    # does not make that team's condition executable; the side guard below
+    # still refuses it. Keep full-context copula masking and original offsets.
+    named_teams = tuple(sorted(set(TEAM_ALIASES.values())))
+    for item in team_subject_stat_conditions(masked, known_teams=named_teams):
         outside = (
             outside[: item["start"]] + " " * (item["end"] - item["start"]) + outside[item["end"] :]
         )

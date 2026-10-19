@@ -71,6 +71,54 @@ def test_third_team_condition_retains_the_subject_on_refusal():
     assert result.metadata["team"] == "LAL"
 
 
+@pytest.mark.parametrize(
+    "query,team,opponents",
+    [
+        (
+            "Against Celtics and Wizards, what was Lakers record when NYK score at least 110 in 2023-24?",
+            "LAL",
+            ["BOS", "WAS"],
+        ),
+        (
+            "Against Celtics and Wizards, what was Lakers record when Knicks score at least 110 in 2023-24?",
+            "LAL",
+            ["BOS", "WAS"],
+        ),
+        (
+            "Against BOS and WAS, what was LAL record when NYK score at least 110 in 2023-24?",
+            "LAL",
+            ["BOS", "WAS"],
+        ),
+        (
+            "Against Celtics and Wizards, what was Knicks record when LAL score at least 110 in 2023-24?",
+            "NYK",
+            ["BOS", "WAS"],
+        ),
+        (
+            "Against Miami and Boston, what was WAS record when NYK score at least 110 in 2023-24?",
+            "WAS",
+            ["MIA", "BOS"],
+        ),
+    ],
+)
+def test_leading_list_third_team_condition_preserves_refused_request_identity(
+    query, team, opponents
+):
+    kwargs = parse_query(query)["route_kwargs"]
+    assert kwargs["team"] == team and kwargs["opponent"] == opponents
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result" and result.result_reason == "filter_not_supported"
+    assert "other_team_stat" in result.metadata["unsupported_filters"]
+    assert result.metadata["team"] == team
+    assert result.metadata["team_context"]["team_abbr"] == team
+    assert result.metadata["opponent"] == ", ".join(opponents)
+    assert result.metadata["opponents"] == opponents
+    assert not result.metadata.get("opponent_context")
+    assert result.metadata["season"] == "2023-24"
+    assert result.metadata["season_type"] == "Regular Season"
+    assert not result.result.to_dict()["sections"]
+
+
 def test_comparison_keeps_both_subjects_and_the_opponent_union():
     query = "Lakers and Knicks record against Celtics and Wizards in 2023-24"
     parsed = parse_query(query)

@@ -1,0 +1,266 @@
+{
+  "reviewer": "/root/comparison_checker",
+  "frozen_before_candidate": true,
+  "generation": "availability-opening-s4-v1-20261017",
+  "team_source_sha256": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+  "cases": [
+    {
+      "subject": "NYK",
+      "opponents": [
+        "MIA",
+        "WAS"
+      ],
+      "branches": [
+        {
+          "stat": "opponent_pts",
+          "min_value": 110,
+          "max_value": null,
+          "opponent_team": "MIA"
+        },
+        {
+          "stat": "opponent_pts",
+          "min_value": 115,
+          "max_value": null,
+          "opponent_team": "WAS"
+        }
+      ],
+      "candidate_rows": [
+        {
+          "game_date": "2023-11-17",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "WAS",
+          "wl": "W",
+          "game_id": 22300028,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612764,
+          "pts": 120,
+          "reb": 48,
+          "ast": 26,
+          "opponent_pts": 99
+        },
+        {
+          "game_date": "2023-11-24",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "MIA",
+          "wl": "W",
+          "game_id": 22300045,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612748,
+          "pts": 100,
+          "reb": 46,
+          "ast": 21,
+          "opponent_pts": 98
+        },
+        {
+          "game_date": "2024-01-06",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "WAS",
+          "wl": "W",
+          "game_id": 22300494,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612764,
+          "pts": 121,
+          "reb": 45,
+          "ast": 27,
+          "opponent_pts": 105
+        },
+        {
+          "game_date": "2024-01-18",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "WAS",
+          "wl": "W",
+          "game_id": 22300579,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612764,
+          "pts": 113,
+          "reb": 47,
+          "ast": 22,
+          "opponent_pts": 109
+        },
+        {
+          "game_date": "2024-01-27",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "MIA",
+          "wl": "W",
+          "game_id": 22300643,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612748,
+          "pts": 125,
+          "reb": 46,
+          "ast": 25,
+          "opponent_pts": 109
+        },
+        {
+          "game_date": "2024-04-02",
+          "team_abbr": "NYK",
+          "opponent_team_abbr": "MIA",
+          "wl": "L",
+          "game_id": 22301096,
+          "team_id": 1610612752,
+          "opponent_team_id": 1610612748,
+          "pts": 99,
+          "reb": 30,
+          "ast": 25,
+          "opponent_pts": 109
+        }
+      ],
+      "expected": {
+        "keys": [],
+        "games": 0,
+        "wins": 0,
+        "losses": 0,
+        "sums": {
+          "pts": 0,
+          "reb": 0,
+          "ast": 0
+        }
+      }
+    },
+    {
+      "subject": "DEN",
+      "opponents": [
+        "MIN",
+        "PHX"
+      ],
+      "branches": [
+        {
+          "stat": "opponent_pts",
+          "min_value": 110,
+          "max_value": null,
+          "opponent_team": "MIN"
+        },
+        {
+          "stat": "opponent_pts",
+          "min_value": 115,
+          "max_value": null,
+          "opponent_team": "PHX"
+        }
+      ],
+      "candidate_rows": [
+        {
+          "game_date": "2023-11-01",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "MIN",
+          "wl": "L",
+          "game_id": 22300123,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612750,
+          "pts": 89,
+          "reb": 43,
+          "ast": 23,
+          "opponent_pts": 110
+        },
+        {
+          "game_date": "2023-12-01",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "PHX",
+          "wl": "W",
+          "game_id": 22300279,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612756,
+          "pts": 119,
+          "reb": 32,
+          "ast": 38,
+          "opponent_pts": 111
+        },
+        {
+          "game_date": "2024-03-05",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "PHX",
+          "wl": "L",
+          "game_id": 22300893,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612756,
+          "pts": 107,
+          "reb": 51,
+          "ast": 25,
+          "opponent_pts": 117
+        },
+        {
+          "game_date": "2024-03-19",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "MIN",
+          "wl": "W",
+          "game_id": 22300995,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612750,
+          "pts": 115,
+          "reb": 49,
+          "ast": 26,
+          "opponent_pts": 112
+        },
+        {
+          "game_date": "2024-03-27",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "PHX",
+          "wl": "L",
+          "game_id": 22301059,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612756,
+          "pts": 97,
+          "reb": 38,
+          "ast": 24,
+          "opponent_pts": 104
+        },
+        {
+          "game_date": "2024-03-29",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "MIN",
+          "wl": "L",
+          "game_id": 22301071,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612750,
+          "pts": 98,
+          "reb": 46,
+          "ast": 29,
+          "opponent_pts": 111
+        },
+        {
+          "game_date": "2024-04-10",
+          "team_abbr": "DEN",
+          "opponent_team_abbr": "MIN",
+          "wl": "W",
+          "game_id": 22301164,
+          "team_id": 1610612743,
+          "opponent_team_id": 1610612750,
+          "pts": 116,
+          "reb": 44,
+          "ast": 31,
+          "opponent_pts": 107
+        }
+      ],
+      "expected": {
+        "keys": [
+          [
+            22300123,
+            1610612743,
+            1610612750
+          ],
+          [
+            22300893,
+            1610612743,
+            1610612756
+          ],
+          [
+            22300995,
+            1610612743,
+            1610612750
+          ],
+          [
+            22301071,
+            1610612743,
+            1610612750
+          ]
+        ],
+        "games": 4,
+        "wins": 1,
+        "losses": 3,
+        "sums": {
+          "pts": 409,
+          "reb": 189,
+          "ast": 103
+        }
+      }
+    }
+  ]
+}
