@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "c2f099fe53e1719032a3a8c257b82cf7bc850a78",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_opponent_played_browser.py::test_deployed_opponent_played_desktop_and_mobile",
+    "tests/test_deployed_owned_or_browser.py::test_deployed_owned_or_desktop_and_mobile",
+    "tests/test_deployed_self_union_browser.py::test_deployed_self_union_desktop_and_mobile",
+    "tests/test_deployed_leading_list_browser.py::test_deployed_leading_list_desktop_and_mobile",
+    "tests/test_deployed_original_pair_browser.py::test_deployed_original_pair_desktop_and_mobile",
+    "tests/test_deployed_latest_both_browser.py::test_deployed_latest_both_desktop_and_mobile",
+    "tests/test_deployed_scalar_played_browser.py::test_deployed_scalar_played_desktop_and_mobile",
+    "tests/test_deployed_original_minutes_browser.py::test_deployed_original_minutes_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
