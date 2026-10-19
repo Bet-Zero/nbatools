@@ -146,3 +146,42 @@ def test_native_bare_stat_pair_source_restores_complete_implicit_actor_verb():
     assert not any(
         f["label"] in ("Minutes check", "Count check") for f in result.metadata["applied_filters"]
     )
+
+
+@pytest.mark.parametrize(
+    "bound,truth",
+    [
+        ("under 22.6500000000000001 minutes", True),
+        ("over 22.6499999999999999 minutes", True),
+        ("at least 22.6500000000000001 minutes", False),
+        ("at most 22.6499999999999999 minutes", False),
+    ],
+)
+@pytest.mark.parametrize("pair", [False, True])
+def test_post_start_decimal_precision_source_audit_hauser(bound, truth, pair):
+    # This precision audit was discovered after comparison implementation;
+    # source rows/PDF MM:SS were already independently frozen for PR531.
+    path = FIXTURE.parent / "checker_revealed_controls.json"
+    oracle = json.loads(path.read_text())
+    facts = oracle["source"]["Sam Hauser"]
+    for kind, field in [("player_game_availability", "report"), ("player_game_stats", "positive")]:
+        rows = list(csv.DictReader(data_path(f"raw/{kind}/2023-24_regular_season.csv").open()))
+        assert facts[field] in rows
+    assert facts["time"] == "22:39" and facts["seconds"] == 22 * 60 + 39 == 1359
+    assert facts["report"]["player_id"] == facts["positive"]["player_id"] == "1630573"
+    assert (
+        facts["report"]["source_sha256"]
+        == "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+    )
+    assert facts["positive"]["ast"] == "0"
+    suffix = " and have at most 0 assists" if pair else ""
+    result = execute_natural_query(
+        f"Did Sam Hauser play {bound}{suffix} in the Celtics last game against Lakers in 2023-24?"
+    )
+    assert result.result_status == "ok" and result.route == "game_finder", result.metadata
+    assert result.metadata["answer_phrase"].startswith("Yes:" if truth else "No:")
+    assert "played 22:39" in result.metadata["answer_phrase"]
+    assert bound.split()[-2] in result.metadata["answer_phrase"]
+    assert bound.split()[-2] in str(result.metadata["applied_filters"])
+    (row,) = result.result.to_dict()["sections"]["finder"]
+    assert int(row["game_id"]) == 22300684 and row["team_id"] == 1610612738

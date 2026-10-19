@@ -285,3 +285,25 @@ def test_regular_season_wording_does_not_consume_other_season_types_or_multiple_
     assert not any(
         f["label"] == "Minutes check" for f in result.metadata.get("applied_filters") or []
     )
+
+
+@pytest.mark.parametrize(
+    "bound,truth",
+    [
+        ("under 25.0000000000000001 minutes", True),
+        ("under 25.000000000000000000000000000000001 minutes", True),
+        ("over 24.999999999999999999999999999999999 minutes", True),
+        ("over 24.9999999999999999 minutes", True),
+        ("at most 24.9999999999999999 minutes", False),
+        ("at least 25.0000000000000001 minutes", False),
+    ],
+)
+def test_exact_time_internal_note_preserves_decimal_text_beyond_binary_float(
+    exact_sample, bound, truth
+):
+    _, scope, gid = exact_sample
+    result = execute_natural_query(question(bound, scope))
+    assert "played 25:00" in success(result, gid, truth)
+    number = bound.split()[-2]
+    assert number in result.metadata["answer_phrase"]
+    assert number in str(result.metadata["applied_filters"])

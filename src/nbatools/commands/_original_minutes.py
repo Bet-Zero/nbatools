@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 
 def read_request(text: str, out: dict) -> dict | None:
@@ -11,7 +11,9 @@ def read_request(text: str, out: dict) -> dict | None:
     from nbatools.commands._parse_helpers import extract_stat_predicate_spans
     from nbatools.commands.natural_query import _YES_NO_STATS
 
-    bounds = extract_stat_predicate_spans(text, exact_stat=_YES_NO_STATS)
+    bounds = extract_stat_predicate_spans(
+        text, exact_stat=_YES_NO_STATS, preserve_numeric_text=True
+    )
     if len(bounds) not in (1, 2) or len({b["stat"] for b in bounds}) != len(bounds):
         return None
     minutes = [b for b in bounds if b["stat"] == "minutes"]
@@ -57,7 +59,8 @@ def check_description(check: dict) -> str:
     ):
         if check.get(edge) is not None:
             sign = symbol + ("=" if check[inclusive] else "")
-            number = int(check[edge]) if float(check[edge]).is_integer() else check[edge]
+            value = Decimal(str(check[edge]))
+            number = int(value) if value == value.to_integral_value() else check[edge]
             parts.append(f"{sign} {number}")
     unit = "minutes" if check["stat"] == "minutes" else check["stat"].upper()
     return " and ".join(parts) + " " + unit
@@ -66,13 +69,24 @@ def check_description(check: dict) -> str:
 def passes(seconds: int, check: dict) -> bool:
     value = Decimal(seconds)
     low, high = check.get("min_value"), check.get("max_value")
+
+    def cutoff(bound):
+        number = Decimal(str(bound))
+        if check["stat"] != "minutes":
+            return number
+        # Multiplication must not round a long original decimal literal back
+        # across the exact report-second boundary under Decimal's default28.
+        with localcontext() as context:
+            context.prec = max(context.prec, len(number.as_tuple().digits) + 2)
+            return number * 60
+
     if low is not None:
-        cutoff = Decimal(str(low)) * (60 if check["stat"] == "minutes" else 1)
-        if value < cutoff or (value == cutoff and not check["min_inclusive"]):
+        bound = cutoff(low)
+        if value < bound or (value == bound and not check["min_inclusive"]):
             return False
     if high is not None:
-        cutoff = Decimal(str(high)) * (60 if check["stat"] == "minutes" else 1)
-        if value > cutoff or (value == cutoff and not check["max_inclusive"]):
+        bound = cutoff(high)
+        if value > bound or (value == bound and not check["max_inclusive"]):
             return False
     return True
 

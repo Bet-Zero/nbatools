@@ -328,6 +328,12 @@ def _build_applied_filters(
 ) -> list[dict[str, str]]:
     route_kwargs = route_kwargs or {}
     applied_filters: list[dict[str, str]] = []
+    if source.get("player_a") and source.get("player_b") and not source.get("head_to_head"):
+        playing_for = route_kwargs.get("team", source.get("team"))
+        if playing_for:
+            applied_filters.append(
+                {"label": "Playing for", "value": str(playing_for), "kind": "team"}
+            )
     if branches := source.get("boolean_filter_branches"):
         descriptions = []
         for branch in branches:
@@ -474,7 +480,15 @@ def _build_applied_filters(
     conditions = normalize_stat_conditions(
         route_kwargs.get("conditions") or source.get("conditions")
     )
-    if conditions:
+    comparison_scope = source.get("player_comparison_scope") or {}
+    if comparison_scope.get("count_checks"):
+        from nbatools.commands._player_comparison_scope import count_filter_descriptions
+
+        applied_filters.extend(
+            {"label": "Count filter", "value": value, "kind": "threshold"}
+            for value in count_filter_descriptions(comparison_scope)
+        )
+    elif conditions:
         for cond in conditions:
             stat = cond["stat"]
             owner = f"{cond['opponent_team']} " if cond.get("opponent_team") else ""

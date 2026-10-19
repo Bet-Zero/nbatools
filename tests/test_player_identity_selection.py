@@ -413,3 +413,64 @@ def test_name_list_without_game_order_falls_back_to_the_full_scan(monkeypatch, r
 
     assert entity_resolution.canonical_player_names_by_id()["1629651"] == "Nic Claxton"
     assert globbed == [True]
+
+
+def test_omitted_suffix_is_bound_only_to_a_unique_data_identity(roster_index, monkeypatch):
+    normalize = entity_resolution._normalize_for_matching
+    monkeypatch.setattr(
+        entity_resolution,
+        "_player_ids_by_name_cache",
+        {
+            normalize("Controlled Player III"): frozenset({"1001"}),
+            normalize("Another Player Jr."): frozenset({"1002"}),
+            normalize("Another Player Sr."): frozenset({"1003"}),
+            normalize("Exact Player"): frozenset({"1004"}),
+            normalize("Exact Player II"): frozenset({"1005"}),
+        },
+    )
+    assert entity_resolution.player_ids_for_name("Controlled Player") == {"1001"}
+    assert entity_resolution.player_ids_for_name("Another Player") == {"1002", "1003"}
+    assert entity_resolution.player_ids_for_name("Exact Player") == {"1004"}
+    assert entity_resolution.player_ids_for_name("Exact Player II") == {"1005"}
+    assert not entity_resolution.player_ids_for_name("Controlled Player Jr.")
+    rows = _frame(_rows(1001, "Controlled Player III", "GSW", {"2024-25": 1}))
+    assert select_player_rows(rows, "Controlled Player").player_id.tolist() == [1001]
+
+
+def test_fullphrase_lookup_and_exact_operand_share_unique_id_suffix_binding(
+    roster_index, monkeypatch
+):
+    from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
+
+    names = {
+        "1001": "Controlled Alpha Jr.",
+        "1002": "Controlled Beta Jr.",
+        "1003": "Controlled Beta Sr.",
+        "1004": "Controlled Gamma",
+        "1005": "Controlled Gamma II",
+    }
+    monkeypatch.setattr(entity_resolution, "_player_names_cache", set(names.values()))
+    monkeypatch.setattr(entity_resolution, "_player_name_by_id_cache", names)
+    monkeypatch.setattr(
+        entity_resolution,
+        "_player_ids_by_name_cache",
+        {
+            entity_resolution._normalize_for_matching(name): frozenset({pid})
+            for pid, name in names.items()
+        },
+    )
+    for phrase, expected, pid in [
+        ("Controlled Alpha", "Controlled Alpha Jr.", "1001"),
+        ("Controlled Gamma", "Controlled Gamma", "1004"),
+        ("Controlled Gamma II", "Controlled Gamma II", "1005"),
+    ]:
+        assert entity_resolution.resolve_player(phrase).resolved == expected
+        assert detect_player(phrase) == expected
+        assert entity_resolution.player_ids_for_name(phrase) == {pid}
+        assert _is_exact_player_reference_phrase(phrase, expected)
+    assert not detect_player("Controlled Beta")
+    assert not _is_exact_player_reference_phrase("Controlled Beta", "Controlled Beta Jr.")
+    assert not _is_exact_player_reference_phrase(
+        "Controlled Alpha and unread", "Controlled Alpha Jr."
+    )
+    assert not _is_exact_player_reference_phrase("Controlled Gamma", "Controlled Gamma II")

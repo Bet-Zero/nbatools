@@ -1276,6 +1276,10 @@ def _player_team_comparison(parsed: dict) -> bool:
     read as games against them it guesses. Either way the answer would not
     be the comparison asked for, so it refuses with both readings to pick.
     """
+    from nbatools.commands._player_comparison_scope import has_mixed_comparison_operands
+
+    if has_mixed_comparison_operands(parsed.get("normalized_query") or ""):
+        return True
     if parsed.get("player_a") or parsed.get("team_a") or parsed.get("opponent"):
         return False
     if not (parsed.get("player") and parsed.get("team")):
@@ -3251,7 +3255,21 @@ def _build_parse_state(query: str) -> dict:
             season = default_season_for_context(season_type)
             season_defaulted = True
 
+    from nbatools.commands._player_comparison_scope import read_shared_comparison
+
+    comparison_scope = read_shared_comparison(q)
     player_a, player_b = extract_player_comparison(q)
+    if comparison_scope:
+        player_a, player_b = comparison_scope["players"] or [None, None]
+        if not comparison_scope["unsupported"] and comparison_scope["conditions"]:
+            threshold_conditions = comparison_scope["conditions"]
+            primary = threshold_conditions[0]
+            stat, min_value, max_value = (
+                primary["stat"],
+                primary["min_value"],
+                primary["max_value"],
+            )
+            extra_conditions = threshold_conditions[1:]
     bare_player_vs_player = False
     if player_a and player_b:
         bare_a, bare_b = detect_bare_player_vs_player_query(q)
@@ -3265,7 +3283,7 @@ def _build_parse_state(query: str) -> dict:
 
     player = None
     entity_ambiguity: dict | None = None
-    if not (player_a and player_b):
+    if not (player_a and player_b) and comparison_scope is None:
         player_result = detect_player_resolved(
             _mask_opponent_group_phrase(q, opponent_conference, opponent_division)
         )
@@ -3326,15 +3344,27 @@ def _build_parse_state(query: str) -> dict:
             else:
                 team_resolution_confidence = team_result.confidence
 
+    if comparison_scope and comparison_scope["team"]:
+        team = comparison_scope["team"]
+        team_resolution_confidence = "confident"
+
     # Detect game-absence only when the query is not an on/off-court request.
     if on_off_request is None:
-        with_player, q_without_presence = detect_with_player(q)
-        without_player, q_without_absence = detect_without_player(q)
+        presence_q = q
+        if comparison_scope and not comparison_scope["unsupported"]:
+            start, end = comparison_scope["subject_span"]
+            # The WITH joining two comparison operands is not an availability
+            # predicate. Only this fully consumed subject span is masked.
+            presence_q = q[:start] + " " * (end - start) + q[end:]
+        with_player, q_without_presence = detect_with_player(presence_q)
+        without_player, q_without_absence = detect_without_player(presence_q)
         unresolved_with_player = (
-            detect_unresolved_availability_player(q, mode="with") if with_player is None else None
+            detect_unresolved_availability_player(presence_q, mode="with")
+            if with_player is None
+            else None
         )
         unresolved_without_player = (
-            detect_unresolved_availability_player(q, mode="without")
+            detect_unresolved_availability_player(presence_q, mode="without")
             if without_player is None
             else None
         )
@@ -3491,6 +3521,11 @@ def _build_parse_state(query: str) -> dict:
                 anchor_date = ct_ts
 
     start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
+    if comparison_scope and not comparison_scope["unsupported"]:
+        sample_start, sample_end = extract_date_range(
+            comparison_scope["sample_text"], season, anchor_date=anchor_date
+        )
+        comparison_scope["sample"].update(start_date=sample_start, end_date=sample_end)
     fuzzy_date_window = bool((start_date or end_date) and uses_fuzzy_date_term(q))
     stretch_display_mode = _stretch_display_mode(q, player)
 
@@ -3615,6 +3650,7 @@ def _build_parse_state(query: str) -> dict:
         "player_a": player_a,
         "player_b": player_b,
         "bare_player_vs_player": bare_player_vs_player,
+        "player_comparison_scope": comparison_scope,
         "team": team,
         "team_a": team_a,
         "team_b": team_b,
@@ -3797,6 +3833,9 @@ def _same_bounds(a: dict, b: dict) -> bool:
 
 def _conditions_for_route(parsed: dict, route: str, route_kwargs: dict) -> list[dict]:
     """Return canonical condition-list filters consumed by the selected route."""
+    comparison_scope = parsed.get("player_comparison_scope")
+    if route == "player_compare" and comparison_scope and not comparison_scope["unsupported"]:
+        return normalize_stat_conditions(comparison_scope["conditions"])
     route_conditions = normalize_stat_conditions(route_kwargs.get("conditions"))
     if route_conditions:
         return route_conditions
@@ -4708,6 +4747,23 @@ def _route_parsed_query(parsed: dict) -> dict:
             limit=top_n or 10,
         )
         route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
+    elif (comparison_scope := parsed.get("player_comparison_scope")) and comparison_scope[
+        "unsupported"
+    ]:
+        route = "player_compare"
+        notes.append(
+            "unsupported_boundary: the comparison subjects and shared team sample "
+            "could not be fully consumed; no single-player answer was substituted"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            comparison_scope["unsupported"],
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
     elif unresolved_compare_operand := _unresolved_player_comparison_boundary(parsed):
         route = "player_compare"
         notes.append(
@@ -6865,6 +6921,28 @@ def _route_parsed_query(parsed: dict) -> dict:
         ]
         _apply_compound_refusal_kwargs(route_kwargs, compound_authorization)
         notes.append(_compound_refusal_note(compound_authorization))
+
+    # A fully read common-team player comparison retains its two subjects,
+    # grain and whole sample through the final executable route boundary.
+    comparison_scope = parsed.get("player_comparison_scope")
+    if comparison_scope and not comparison_scope["unsupported"]:
+        from nbatools.commands._player_comparison_scope import comparison_contract_matches
+
+        if not comparison_contract_matches(comparison_scope, route, route_kwargs):
+            route = "player_compare"
+            route_kwargs = _unsupported_route_kwargs(
+                "player_comparison_scope",
+                season=season,
+                season_type=season_type,
+                start_season=start_season,
+                end_season=end_season,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            notes.append(
+                "unsupported_boundary: the complete player comparison sample "
+                "has no matching executable consumer; no partial answer was substituted"
+            )
 
     out = dict(parsed)
     out["route"] = route

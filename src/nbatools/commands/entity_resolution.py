@@ -713,9 +713,29 @@ def player_ids_for_name(name: str) -> frozenset[str]:
     ``_player_identity.select_player_rows``. IDs are strings, as read.
     """
     _read_player_names()
+    return _indexed_player_ids(_normalize_for_matching(name))
+
+
+def _indexed_player_ids(key: str) -> frozenset[str]:
+    """Resolve a complete normalized name against the already-loaded ID index."""
     if _player_ids_by_name_cache is None:
         return frozenset()
-    return _player_ids_by_name_cache.get(_normalize_for_matching(name), frozenset())
+    exact = _player_ids_by_name_cache.get(key)
+    if exact:
+        return exact
+    # An omitted generational suffix is an alias only when the data has one
+    # possible identity. Exact unsuffixed identities always retain precedence;
+    # a father/son or other collision must never be resolved using a team.
+    suffixes = {"jr", "sr", "ii", "iii", "iv", "v"}
+    if key.split() and key.split()[-1] in suffixes:
+        return frozenset()
+    candidates = {
+        player_id
+        for stored, ids in _player_ids_by_name_cache.items()
+        if stored.rsplit(" ", 1)[-1] in suffixes and stored.rsplit(" ", 1)[0] == key
+        for player_id in ids
+    }
+    return frozenset(candidates)
 
 
 def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
@@ -783,7 +803,17 @@ def _get_player_index() -> dict[str, list[str]]:
 
 def _build_player_full_name_index(data_dir: Path | None = None) -> dict[str, str]:
     """Build a normalized full-name → canonical full-name index from game stats."""
-    return {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
+    index = {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
+    for key in _player_ids_by_name_cache or {}:
+        stem, _, suffix = key.rpartition(" ")
+        if suffix not in {"jr", "sr", "ii", "iii", "iv", "v"} or stem in index:
+            continue
+        ids = _indexed_player_ids(stem)
+        if len(ids) == 1:
+            canonical = (_player_name_by_id_cache or {}).get(next(iter(ids)))
+            if canonical:
+                index[stem] = canonical
+    return index
 
 
 def _get_player_full_name_index() -> dict[str, str]:
