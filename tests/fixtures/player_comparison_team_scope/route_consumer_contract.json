@@ -1,0 +1,55 @@
+{
+  "status": "Proposed bounded consumer contract; source freeze for root/checker review BEFORE runtime. No new framework, public schema or tracker.",
+  "maker": "/root/participation_request",
+  "base": "e7c6d9cab6bfff233d9a431a9e672017e7593fc3",
+  "meaning": "Compare two canonical players independent observed positive appearance samples, applying ONE explicitly shared own-team filter to each player, separately from one named opponent filter. Luka and Davis need not co-appear or be teammates simultaneously; this is not head-to-head or a WITH-player cohort.",
+  "scope": "Explicit side-by-side comparison intent, exactly two resolved canonical player subjects, one shared canonical team, one explicit regular season. Primary also has one opponent. Retain native common date/venue/stat-filter semantics when completely understood; unresolved/contradictory ownership or unread clauses cannot fall back to one player or an unfiltered comparison.",
+  "existing_route_kwargs": {
+    "route": "player_compare",
+    "player_a": "Luka Dončić",
+    "player_b": "Anthony Davis",
+    "season": "2024-25",
+    "season_type": "Regular Season",
+    "team": "LAL",
+    "opponent": "GSW",
+    "head_to_head": false
+  },
+  "selection_order": "Existing filter_player_games: explicit static date range, canonical subject/team identity, opponent and venue/outcome context, shared numeric conditions, chronological ordering and lastN under its current documented semantics. The natural reader must preserve these kwargs or refuse a composition honestly; no new window meaning.",
+  "result_contract": "Existing ComparisonResult summary has one row per checked subject and ordinary comparison metrics. Do not return FinderResult/singleplayer or merge samples by same game. Source counts and PTS/REB/AST totals/per-game denominators must use each own-team sample independently. No fabricated DNP/absence zeros.",
+  "labels_and_identity": "Metadata players_context must contain canonical1629029 and203076 in requested order; player display retains both names, team/team_context=LAL1610612747 and opponent/opponent_context=GSW1610612744. Show shared Team or Playing for filter as sample scope alongside Opponent, explicitseason, any executeddate/venue/numeric filters, and per-game units. Team is a historical row filter, not a claim of current membership. No invented with_player/opponent_player/head_to_head flags. Metadata/notes/hero cannot contradict executed scope.",
+  "reusable_fix_proposal": "Separate complete comparison subject spans from common sample modifier spans before resolving operands. Resolve both exact names, resolve the explicitly shared team modifier outside their names, then pass existing team/opponent/date/stat kwargs to player_compare. Reuse canonical team/name resolution and existing comparison consumer. Read ordinary governing comparison grammar, not querystring cases; preserve full residual text/ownership. Update final metadata from actual executable team/opponent context. Keep genuine player-versus-team ambiguity and unresolved-second-player checks ahead of any singleplayer fallback.",
+  "positive_controls": [
+    {
+      "query": "Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in 2024-25",
+      "desired": "Luka1game22401117/19PTS8REB7AST; AD2games22400408+22400644/36PTS15REB3AST, averages18/7.5/1.5"
+    },
+    {
+      "query": "How did Luka Doncic and Anthony Davis compare for the Lakers against the Warriors in 2024-25?",
+      "desired": "Same samples; currently silently includes2DAL games forLuka."
+    },
+    {
+      "query": "Compare Anthony Davis and Luka Doncic for the Lakers against Warriors in 2024-25",
+      "desired": "Same samples in reversed subject order, never AD-only finder."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis for Lakers in 2024-25",
+      "desired": "Luka28LAL appearances789/226/211; AD42LAL appearances1081/499/141. No roster/absence claim."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis while playing for the Lakers against Golden State in 2024-25",
+      "desired": "Same independent shared-team sample, no co-appearance intersection."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis only in their games for the Lakers against the Warriors in 2024-25",
+      "desired": "Same positive shared-team question; current safelyrefused, remains validunfinished until supported."
+    }
+  ],
+  "mandatory_guards": "Unknown/ambiguous second identity must never become a singleplayer answer; compareLeBronandtheLakers remains genuine mixed-grain ambiguity; changed-owner/new-team clauses, status/availability, unconsumedextra predicates and unclear team-operand ownership must not be ignored. Explicit head-to-head stays distinct; do not turn impossible mutualLAL vsGSW into independent samples or revive swapped subjects/opponents.",
+  "adjacent_preservation": "Existing no-team player comparison; opponent-only scalar and union comparisons; subject order; two independent team comparison vs explicit head-to-head; existing date/venue/common numeric condition and ratio-of-totals/per-game basis. Preserve prior512comparison/list ownership and519production OR gates. Any legitimately unsupported composition remains a positive obligation, not invalidinput or completion by refusal.",
+  "separate_unfinished_positive": {
+    "query": "Compare Luka Doncic's Dallas averages with Anthony Davis's Lakers averages in 2024-25",
+    "desired": "Independent per-subject DIFFERENT team ownership: LukaDAL22games619PTS183REB172AST; ADLAL42games1081PTS499REB141AST. Existing single team kwarg does not represent two owners. Preserve desired query/previous refusal; do not claim this shared-team delivery closes it."
+  },
+  "dependencies": "Existing canonical2024-25 player/game/team sources are sufficient; no availability PDF, new collection, source hunt, credentials, data write or publication. Five participation games/170listed rows and Boston17staging remain unchanged, all46 absence positives open.",
+  "acceptance": "Root/checker independent source/contract/private controls before runtime; focused controlled positives/source IDs+totals+means/labels and adjacent regressions after authorization; root owns stable broad/R2/browser/CI/merge. No actual implementation or runtime acceptance is claimed by this source freeze."
+}
