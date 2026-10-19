@@ -1420,6 +1420,13 @@ def _execute_or_query_build_result(query: str) -> tuple:
                 raise ValueError("This named-opponent OR branch has an unread condition.")
             remaining = clause[: owner["start"]] + " " + clause[owner["end"] :]
             if not _team_mentions(remaining):
+                from nbatools.commands._player_game_context import _CLAUSE_OPENER
+
+                prefix = clause[: owner["start"]]
+                opener = _CLAUSE_OPENER.search(prefix)
+                prefix = prefix[: opener.start()] if opener else prefix
+                if not _tail_is_read_scope(" " + prefix.strip(), 0):
+                    raise ValueError("This named-opponent OR branch has an unread condition.")
                 clause_state.update(team=canonical["team"], opponent=canonical["opponent"])
             owned_condition = {
                 "stat": "opponent_" + owner["stat"],
