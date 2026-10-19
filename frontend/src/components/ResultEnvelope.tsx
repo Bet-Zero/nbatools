@@ -14,6 +14,7 @@ import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import CopyButton from "./CopyButton";
 import {
   formatReadableDateRange,
+  hasQualifiedEmptyContext,
   productFacingNotice,
 } from "./noResultDisplayUtils";
 import RawJsonToggle from "./RawJsonToggle";
@@ -114,6 +115,8 @@ export function ResultContextSummary({
   className,
 }: ResultContextSummaryProps) {
   const metadata = data.result?.metadata;
+  const qualifiedEmpty = hasQualifiedEmptyContext(data.result_reason, data.result_status, metadata);
+  if (data.result_status !== "ok" && !qualifiedEmpty) return null;
   const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
   const rawNotes = uniqueStrings([
     ...data.notes,
@@ -128,7 +131,10 @@ export function ResultContextSummary({
     ...buildContextItems(metadata, appliedFilters),
     ...classifiedNotes.context,
     ...classifiedCaveats.context,
-  ]);
+  ]).filter((item) => !qualifiedEmpty || !appliedFilters.some((filter) =>
+    normalizeChipValue(item.value) === normalizeChipValue(filter.value)
+      || normalizeChipValue(item.value) === normalizeChipValue(`${filter.label}: ${filter.value}`),
+  ));
   const allContextChips = buildContextChips(
     metadata,
     appliedFilters,
@@ -138,12 +144,14 @@ export function ResultContextSummary({
   // The public answer hero already names player, team, season, opponent,
   // and split type. Drop those scope chips here so the public context
   // strip carries only non-obvious trust/scope information (applied
-  // filters, date ranges, included opponents, "without X", etc.).
+  // filters, date ranges, included opponents, "without X", etc.). A qualified
+  // empty answer has no subject hero, so retain its base scope here as well.
   const careerScope = metadata?.scope_kind === "career";
   const contextChips = allContextChips
     .filter(
       (chip) =>
-        !BASE_SCOPE_CHIP_KEYS.has(chip.key) &&
+        (qualifiedEmpty || !BASE_SCOPE_CHIP_KEYS.has(chip.key)) &&
+        !(qualifiedEmpty && chip.key === "opponent" && appliedFilters.some((filter) => filter.label === "Opponent")) &&
         !(careerScope && chip.label === "Aggregation" && chip.value.startsWith("Game logs across ")),
     )
     .map((chip) =>

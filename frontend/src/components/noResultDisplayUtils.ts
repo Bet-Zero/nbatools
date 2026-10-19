@@ -1,6 +1,21 @@
 import type { ResultMetadata } from "../api/types";
 import { formatColHeader } from "./tableFormatting";
 
+/** Executed empty samples can show applied scope; refusals cannot. */
+export function hasQualifiedEmptyContext(
+  reason: string | null | undefined,
+  status: string,
+  metadata: ResultMetadata | null | undefined,
+): boolean {
+  if (status !== "no_result" || reason !== "no_match") return false;
+  const blocked = metadata?.unsupported_filters;
+  if (Array.isArray(blocked) ? blocked.length > 0 : Boolean(blocked)) return false;
+  return Array.isArray(metadata?.applied_filters) && metadata.applied_filters.some(
+    (filter) => typeof filter?.label === "string" && filter.label.trim().length > 0
+      && typeof filter?.value === "string" && filter.value.trim().length > 0,
+  );
+}
+
 export interface NoResultDetail {
   kind: "Note" | "Caveat";
   text: string;

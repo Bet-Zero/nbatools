@@ -676,11 +676,7 @@ export default function App() {
                   <ResultRenderer
                     data={result}
                     displayMode={displayMode}
-                    resultContext={
-                      result.result_status === "ok" ? (
-                        <ResultContextSummary data={result} />
-                      ) : null
-                    }
+                    resultContext={<ResultContextSummary data={result} />}
                   />
                 </div>
 

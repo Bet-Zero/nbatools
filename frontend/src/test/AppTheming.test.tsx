@@ -107,9 +107,7 @@ describe("App scoped team theming", () => {
     // not render that eyebrow. The data attribute is applied on the
     // result section regardless of display mode.
     await waitFor(() =>
-      expect(
-        container.querySelector('[data-team-theme="BOS"]'),
-      ).not.toBeNull(),
+      expect(container.querySelector('[data-team-theme="BOS"]')).not.toBeNull(),
     );
 
     const surface = container.querySelector('[data-team-theme="BOS"]');
@@ -153,4 +151,111 @@ describe("App scoped team theming", () => {
 
     expect(container.querySelector("[data-team-theme]")).toBeNull();
   });
+});
+
+const qualifiedEmptyMetadata: ResultMetadata = {
+  team: "LAL",
+  season: "2023-24",
+  opponent: "BOS",
+  player: null,
+  with_player: "Jayson Tatum and Anthony Davis",
+  last_n: 1,
+  last_n_scope: "original_window",
+  unsupported_filters: [],
+  applied_filters: [
+    { label: "Opponent", value: "BOS", kind: "team" },
+    {
+      label: "With player",
+      value: "Jayson Tatum and Anthony Davis",
+      kind: "player",
+    },
+    { label: "Last N games", value: "1", kind: "window" },
+    {
+      label: "Sample selection",
+      value:
+        "Select the last 1 original matchup game before checking both played predicates",
+      kind: "window",
+    },
+  ],
+};
+
+function emptyResponse(
+  reason: string,
+  metadata = qualifiedEmptyMetadata,
+): QueryResponse {
+  const response = makeResponse(metadata);
+  return {
+    ...response,
+    ok: false,
+    route: "team_record",
+    result_status: "no_result",
+    result_reason: reason,
+    result: {
+      ...response.result,
+      result_status: "no_result",
+      result_reason: reason,
+      sections: {},
+    },
+  };
+}
+
+describe("App qualified empty answer context", () => {
+  it("shows the executed subject, both predicates and original sample without inventing a zero", async () => {
+    vi.mocked(postQuery).mockResolvedValueOnce(emptyResponse("no_match"));
+    render(<App />);
+    submitQuery(
+      "Lakers record against Celtics within their last game with Tatum playing while Davis plays in 2023-24",
+    );
+    const context = await screen.findByLabelText("Result context");
+    expect(context).toHaveTextContent("LAL");
+    expect(context).toHaveTextContent("BOS");
+    expect(context).toHaveTextContent("2023-24");
+    expect(context).toHaveTextContent("Jayson Tatum and Anthony Davis");
+    expect((context.textContent?.match(/Jayson Tatum and Anthony Davis/g) ?? [])).toHaveLength(1);
+    expect((context.textContent?.match(/before checking both played predicates/g) ?? [])).toHaveLength(1);
+    expect(context).toHaveTextContent(
+      "Select the last 1 original matchup game before checking both played predicates",
+    );
+    expect(screen.getByText("No Matching Results")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByText(/^0(?:[–-]0)?$/)).not.toBeInTheDocument();
+  });
+
+  it.each(["filter_not_supported", "no_data", "unrouted", "error"])(
+    "does not present requested filters as executed for %s",
+    async (reason) => {
+      const response = emptyResponse(reason);
+      if (reason === "error") {
+        response.result_status = "error";
+        response.result.result_status = "error";
+      }
+      vi.mocked(postQuery).mockResolvedValueOnce(response);
+      render(<App />);
+      submitQuery("test unavailable query");
+      await waitFor(() =>
+        expect(
+          document.querySelector('[data-state-surface="result"]'),
+        ).not.toBeNull(),
+      );
+      expect(screen.queryByLabelText("Result context")).not.toBeInTheDocument();
+      expect(screen.queryByText(/^0(?:[–-]0)?$/)).not.toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    { applied_filters: [] },
+    { applied_filters: [{ label: " ", value: " ", kind: "window" }] },
+    { unsupported_filters: ["unresolved_player_availability"] },
+  ])(
+    "requires usable applied filters and no blocked predicates: %j",
+    async (damage) => {
+      vi.mocked(postQuery).mockResolvedValueOnce(
+        emptyResponse("no_match", { ...qualifiedEmptyMetadata, ...damage }),
+      );
+      render(<App />);
+      submitQuery("unqualified empty response");
+      await screen.findByText("No Matching Results");
+      expect(screen.queryByLabelText("Result context")).not.toBeInTheDocument();
+    },
+  );
 });
