@@ -41,7 +41,11 @@ describe("ResultRenderer game-log patterns", () => {
       },
     })} />);
     expect(screen.getByText("LeBron James had 2 games matching at least one condition in 2023-24.")).toBeVisible();
-    expect(screen.getAllByText(value).length).toBeGreaterThan(0);
+    if (different) {
+      expect(within(screen.getByLabelText("Game-log averages")).queryByText(value)).not.toBeInTheDocument();
+    } else {
+      expect(screen.getByText(value)).toBeVisible();
+    }
     expect(screen.queryByText(/highest-scoring|had 2 games with 30/)).not.toBeInTheDocument();
   });
 

@@ -969,7 +969,7 @@ function contextItems(data: QueryResponse, rows: SectionRow[]): SummaryItem[] {
   ];
 
   const condition = conditionText(metadata);
-  if (condition) {
+  if (condition && !metadata?.boolean_filter_branches?.length) {
     items.push({ key: "condition", label: "Filter", value: condition });
   }
 
