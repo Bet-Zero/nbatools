@@ -365,3 +365,24 @@ def test_scope_validation_distinguishes_unset_unknown_and_unsupported_mode():
         validate_last_n_scope("original_typo")
     with pytest.raises(ValueError, match="Original participation"):
         validate_last_n_scope("original_window")
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("jokic last ten games", "jokic last 10 games"),
+        ("lebron last 3 meetings with warriors", "lebron last 3 matchups vs warriors"),
+        ("lakers record with tatum and reaves", "lakers record with tatum and reaves"),
+    ],
+)
+def test_unrelated_sample_canonicalization_stays_data_independent(monkeypatch, text, expected):
+    from nbatools.commands import _teammate_resolution
+    from nbatools.commands._parse_helpers import canonicalize_sample_phrases
+
+    def unexpected_resolution(*args):
+        raise AssertionError(
+            "An unrelated text normalization must not resolve participation players"
+        )
+
+    monkeypatch.setattr(_teammate_resolution, "played_matchup_pair", unexpected_resolution)
+    assert canonicalize_sample_phrases(text) == expected

@@ -1116,11 +1116,10 @@ def canonicalize_sample_phrases(text: str) -> str:
     # unit before the legacy meeting-with-opponent rewrite can steal that role.
     from nbatools.commands._teammate_resolution import played_matchup_pair
 
-    if played_matchup_pair(text):
-        window = _original_participation_window(text) or _QUALIFYING_PLAYED_WINDOW.search(text)
-        if window:
-            unit = "games" if window.group("unit").endswith("s") else "game"
-            text = text[: window.start("unit")] + unit + text[window.end("unit") :]
+    window = _original_participation_window(text) or _QUALIFYING_PLAYED_WINDOW.search(text)
+    if window and played_matchup_pair(text):
+        unit = "games" if window.group("unit").endswith("s") else "game"
+        text = text[: window.start("unit")] + unit + text[window.end("unit") :]
     # A single latest meeting is a one-game window against that opponent.
     text = re.sub(
         r"\b(?:last|latest|most\s+recent|previous)\s+(?:meeting|matchup)\s+"
