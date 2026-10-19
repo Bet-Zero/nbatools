@@ -1,4 +1,4 @@
-"""Two qualified played checks on one original matchup, never an appearance cohort."""
+"""Qualified played checks on one original team game, never an appearance cohort."""
 
 from __future__ import annotations
 
@@ -14,7 +14,6 @@ def read_request(text: str) -> dict | None:
     """Consume the entire bounded question, including both complete identities."""
     from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
     from nbatools.commands._teammate_resolution import _only_the_name
-    from nbatools.commands.entity_resolution import TEAM_ALIASES
 
     text = text.lower().replace("’", "'").strip(" ?.!")
     if not re.search(r"\bboth\b", text):
@@ -38,21 +37,30 @@ def read_request(text: str) -> dict | None:
     if players[0] == players[1]:
         return None
 
-    scope = match["scope"].strip(" ,")
+    scope = _read_scope(match["scope"])
+    return {**scope, "event": "played_pair", "players": players} if scope else None
+
+
+def _read_scope(scope: str, *, require_matchup=True, require_season=True) -> dict | None:
+    """Static original-game scope shared by one- and two-player checks."""
+    from nbatools.commands.entity_resolution import TEAM_ALIASES
+
+    scope = scope.strip(" ,")
     seasons = list(
         re.finditer(
             r"\b(?:in|during|of)\s+(?:the\s+)?(?P<season>(?:19|20)\d{2}-\d{2})(?:\s+season)?\b",
             scope,
         )
     )
-    if len(seasons) != 1:
+    if len(seasons) > 1 or (require_season and not seasons):
         return None
-    season_match = seasons[0]
-    season = season_match["season"]
+    season_match = seasons[0] if seasons else None
+    season = season_match["season"] if season_match else None
     # Reject malformed years instead of letting a resolver silently repair them.
-    if int(season[-2:]) != (int(season[:4]) + 1) % 100:
+    if season and int(season[-2:]) != (int(season[:4]) + 1) % 100:
         return None
-    scope = (scope[: season_match.start()] + " " + scope[season_match.end() :]).strip()
+    if season_match:
+        scope = (scope[: season_match.start()] + " " + scope[season_match.end() :]).strip()
     dates = list(re.finditer(r"\b(?:before|after|since|through|on)\s+\d{4}-\d{2}-\d{2}\b", scope))
     if len(dates) > 1:
         return None
@@ -72,21 +80,36 @@ def read_request(text: str) -> dict | None:
             return None
         scope = scope[: date_match.start()] + " " + scope[date_match.end() :]
     aliases = "|".join(re.escape(a) for a in sorted(TEAM_ALIASES, key=len, reverse=True))
-    scope_pattern = (
-        rf"(?:(?:of|in|during|from|for)\s+)?(?:the\s+)?(?P<team>{aliases})(?:'s|')?\s+"
+    last_game = (
         r"(?:last|latest|most\s+recent)\s+(?:original\s+)?(?:(?:1|one)\s+)?"
-        r"(?:(?P<venue>home|road|away)\s+)?(?:game|meeting|matchup)\s+"
-        rf"(?:against|versus|vs\.?)\s+(?:the\s+)?(?P<opponent>{aliases})"
+        r"(?:(?P<venue>home|road|away)\s+)?(?:game|meeting|matchup)"
     )
-    scope_match = re.fullmatch(scope_pattern, re.sub(r"\s+", " ", scope).strip())
-    if not scope_match:
+    matchup = rf"\s+(?:against|versus|vs\.?)\s+(?:the\s+)?(?P<opponent>{aliases})"
+    if not require_matchup:
+        matchup = rf"(?:{matchup})?"
+    pattern = (
+        rf"(?:(?:of|in|during|from|for)\s+)?(?:the\s+)?(?P<team>{aliases})(?:'s|')?\s+"
+        + last_game
+        + matchup
+    )
+    clean = re.sub(r"\s+", " ", scope).strip()
+    scope_match = re.fullmatch(pattern, clean)
+    if scope_match:
+        team = TEAM_ALIASES[scope_match["team"]]
+        opponent = TEAM_ALIASES[scope_match["opponent"]] if scope_match["opponent"] else None
+    elif not require_matchup:
+        scope_match = re.fullmatch(
+            r"(?:(?:in|of)\s+)?(?:(?:(?:his|her|their)(?:\s+team's)?|the|team's)\s+)?" + last_game,
+            clean,
+        )
+        if not scope_match:
+            return None
+        team = opponent = None
+    else:
         return None
-    team, opponent = (TEAM_ALIASES[scope_match[k]] for k in ("team", "opponent"))
-    if team == opponent:
+    if team and team == opponent:
         return None
     return {
-        "event": "played_pair",
-        "players": players,
         "team": team,
         "opponent": opponent,
         "season": season,
@@ -97,10 +120,139 @@ def read_request(text: str) -> dict | None:
     }
 
 
+def _read_scalar_request(text: str, out: dict) -> dict | None:
+    from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
+    from nbatools.commands._teammate_resolution import _only_the_name
+
+    # Preserve the existing scalar yes/no auxiliaries, not just Did. Every
+    # reading still consumes the complete single identity and original scope.
+    verb = r"(?:did|does|do|was|were|is|has|have|had)"
+    played = r"play(?:ed|s)?"
+    match = re.fullmatch(rf"(?P<scope>.+?)\s*,?\s*{verb}\s+(?P<name>.+?)\s+{played}", text)
+    if match is None:
+        match = re.fullmatch(rf"{verb}\s+(?P<name>.+?)\s+{played}\s+(?P<scope>.+)", text)
+        # Playing FOR a team has separate ownership meaning, not merely the
+        # game selected by the leading scope "For the Lakers' last game ...".
+        if match and match["scope"].startswith("for "):
+            return None
+    if match is None:
+        return None
+    fragment = match["name"].strip()
+    player = detect_player(fragment)
+    if not player or not (
+        _is_exact_player_reference_phrase(fragment, player) or _only_the_name(fragment, player)
+    ):
+        return None
+    scope = _read_scope(match["scope"], require_matchup=False, require_season=False)
+    if scope is None or (out.get("season_type") or "Regular Season") != "Regular Season":
+        return None
+    # Keep the existing implicit-season choice, not a new calendar/freshness rule.
+    scope["season"] = scope["season"] or out.get("season")
+    if not scope["season"]:
+        return None
+    return {**scope, "event": "played_scalar", "players": [player]}
+
+
+def _admitted_minutes_check(text: str, out: dict) -> bool:
+    """Keep statistical ``play <minutes bound>`` distinct from presence.
+
+    A legacy note alone is insufficient: "play and win" can still mean an
+    unqualified presence check. Require a direct minutes predicate and consume
+    every remaining predicate and the original-game scope before deferring.
+    """
+    from nbatools.commands._constants import STAT_PATTERN
+    from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
+    from nbatools.commands._parse_helpers import detect_stat, extract_threshold_conditions
+    from nbatools.commands._teammate_resolution import _only_the_name
+
+    kwargs = out.get("route_kwargs") or {}
+    if out.get("route") != "player_game_finder" or kwargs.get("unsupported_filters"):
+        return False
+    note = next((n for n in out.get("notes") or [] if n.startswith(_PREFIX)), None)
+    if note is None:
+        return False
+    check = json.loads(note[len(_PREFIX) :])
+    checks = check.get("checks") or []
+    if check.get("event") or not any(c.get("stat") == "minutes" for c in checks):
+        return False
+    match = re.fullmatch(
+        r"(?:did|does|do|was|were|is|has|have|had)\s+(?P<name>.+?)"
+        r"\s+play(?:ed|s)?\s+(?P<tail>.+)",
+        text.strip(" ?.!"),
+    )
+    if not match:
+        return False
+    name = detect_player(match["name"])
+    if (
+        not name
+        or name != kwargs.get("player")
+        or not (
+            _is_exact_player_reference_phrase(match["name"], name)
+            or _only_the_name(match["name"], name)
+        )
+    ):
+        return False
+    tail = match["tail"]
+    # The static scope must be a complete suffix; unknown words cannot be
+    # hidden by a previously admitted numerical/outcome note.
+    for boundary in re.finditer(r"\s+", tail):
+        if _read_scope(tail[boundary.end() :], require_matchup=False, require_season=False) is None:
+            continue
+        predicates = tail[: boundary.start()]
+        bounds = extract_threshold_conditions(predicates)
+        if not bounds or bounds[0]["start"] != 0 or bounds[0]["stat"] != "minutes":
+            continue
+
+        def signature(c):
+            return c.get("stat"), c.get("min_value"), c.get("max_value")
+
+        if set(map(signature, bounds)) != set(map(signature, checks)):
+            continue
+        spans = []
+        for bound in bounds:
+            end = bound["end"]
+            # Verb thresholds can stop before their optional unit (score 20
+            # points). Consume it only when it names the very same statistic.
+            unit = re.match(rf"\s+({STAT_PATTERN})\b", predicates[end:])
+            if unit and detect_stat(unit[1]) == bound["stat"]:
+                end += unit.end()
+            spans.append((bound["start"], end))
+        outcomes = list(re.finditer(r"\b(?:win|won|lose|lost)\b", predicates))
+        if len(outcomes) > 1:
+            continue
+        if outcomes:
+            expected = "W" if outcomes[0][0] in ("win", "won") else "L"
+            # The existing OR consumer converts the outcome branch into a
+            # check and sets any=True AFTER prepare. Non-OR outcome checks
+            # already name their outcome in this note.
+            if check.get("outcome") != expected and not re.search(r"\bor\b", predicates):
+                continue
+            spans.append(outcomes[0].span())
+        elif check.get("outcome"):
+            continue
+        cursor, pieces = 0, []
+        for start, end in sorted(set(spans)):
+            if start < cursor:
+                break
+            pieces.extend((predicates[cursor:start], " CHECK "))
+            cursor = end
+        else:
+            pieces.append(predicates[cursor:])
+            structure = "".join(pieces).strip()
+            # Homogeneous AND/OR is the legacy admitted contract. Do not
+            # silently reinterpret a mixed tree, extra identity or unread tail.
+            if any(
+                re.fullmatch(rf"CHECK(?:\s*{operator}\s*CHECK)*", structure)
+                for operator in (r"(?:,?\s*and|,)", "or")
+            ):
+                return True
+    return False
+
+
 def prepare(out: dict) -> dict:
     """Use the existing yes/no note boundary without introducing a request field."""
     text = out.get("normalized_query") or ""
-    request = read_request(text)
+    request = read_request(text) or _read_scalar_request(text, out)
     if request is None:
         # A failed full pair reading must not fall back to the one recognized
         # player (notably an unknown first name followed by a known second).
@@ -109,12 +261,33 @@ def prepare(out: dict) -> dict:
             r"\s+(?:not\s+)?play\b",
             text,
         )
-        if not attempt:
+        scalar_match = re.search(
+            r"\b(?:did|does|do|was|were|is|has|have|had)\s+.+?\s+play(?:ed|s)?\b", text
+        )
+        scalar_attempt = False
+        if scalar_match:
+            prefix = text[: scalar_match.start()].strip()
+            # "What was the Lakers record ... Reaves plays" is a record,
+            # not a failed scalar question. A leading scope must itself be
+            # consumed, or delimit the auxiliary with a question comma.
+            scalar_attempt = (
+                not prefix
+                or prefix.endswith(",")
+                or _read_scope(prefix, require_matchup=False, require_season=False) is not None
+            )
+        if not attempt and not scalar_attempt:
+            return out
+        if not attempt and _admitted_minutes_check(text, out):
             return out
         result = dict(out)
         kwargs = dict(out.get("route_kwargs") or {})
         kwargs["unsupported_filters"] = list(
-            dict.fromkeys([*(kwargs.get("unsupported_filters") or []), "multi_player_availability"])
+            dict.fromkeys(
+                [
+                    *(kwargs.get("unsupported_filters") or []),
+                    "multi_player_availability" if attempt else "scalar_participation",
+                ]
+            )
         )
         # None of the recognized names is the primary answer subject, and
         # an unadmitted check did not apply a with/without matching cohort.
@@ -152,7 +325,7 @@ def prepare(out: dict) -> dict:
         route_kwargs=kwargs,
         unsupported_filters=[],
         season_type="Regular Season",
-        player=None,
+        player=request["players"][0] if len(request["players"]) == 1 else None,
         player_a=None,
         player_b=None,
         opponent_player=None,
@@ -183,7 +356,10 @@ def prepare(out: dict) -> dict:
     result["notes"] = [
         note
         for note in out.get("notes") or []
-        if not (isinstance(note, str) and note.startswith("unsupported_boundary:"))
+        if not (
+            isinstance(note, str)
+            and note.startswith(("unsupported_boundary:", "sample_advanced_metrics:", _PREFIX))
+        )
     ] + [_PREFIX + json.dumps(request)]
     result["confidence"] = compute_parse_confidence(result)
     result["alternates"] = generate_alternates(result)
@@ -194,7 +370,7 @@ def request_from_notes(notes: list | None) -> dict | None:
     for note in notes or []:
         if isinstance(note, str) and note.startswith(_PREFIX):
             request = json.loads(note[len(_PREFIX) :])
-            if request.get("event") == "played_pair":
+            if request.get("event") in ("played_pair", "played_scalar"):
                 return request
     return None
 
@@ -204,14 +380,35 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
     import pandas as pd
 
     from nbatools.commands._participation_observations import filter_played
+    from nbatools.commands._player_identity import select_player_rows
+    from nbatools.commands.data_utils import load_player_games_for_seasons
     from nbatools.commands.freshness import compute_current_through_for_seasons
     from nbatools.commands.game_summary import select_team_summary_sample
 
+    def unavailable(note: str) -> NoResult:
+        return NoResult(query_class="finder", reason="filter_not_supported", notes=[note])
+
     season, season_type = kwargs["season"], kwargs["season_type"]
+    players = request["players"]
+    scalar = len(players) == 1
+    team = kwargs["team"]
+    inferred = team is None
+    if inferred:
+        # A historical appearance supplies a candidate team, not membership
+        # proof. Qualification below must establish the player's subject side.
+        appearances = load_player_games_for_seasons([season], season_type)
+        try:
+            own = select_player_rows(appearances, players[0])
+        except ValueError as exc:
+            return unavailable(str(exc))
+        own = own.loc[pd.to_numeric(own.minutes, errors="coerce").gt(0)]
+        if own.empty:
+            return unavailable("No qualified candidate team for the participation check")
+        team = str(own.sort_values(["game_date", "game_id"]).iloc[-1].team_abbr)
     original = select_team_summary_sample(
         season=season,
         season_type=season_type,
-        team=kwargs["team"],
+        team=team,
         opponent=kwargs["opponent"],
         home_only=kwargs["home_only"],
         away_only=kwargs["away_only"],
@@ -225,22 +422,68 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
     if original.empty:
         return NoResult(
             query_class="finder",
-            notes=["No original matchup game is available to check both players"],
+            notes=["No original team game is available for the played check"],
         )
     if len(original) != 1:
         raise ValueError("The original participation check requires exactly one matchup game")
-    players = request["players"]
-    qualified = filter_played(
-        original, " and ".join(players), [season], season_type, opponent_context=True
-    )
-    passed = not qualified.empty
+    try:
+        qualified = filter_played(
+            original, " and ".join(players), [season], season_type, opponent_context=True
+        )
+        passed = not qualified.empty
+        if inferred:
+            from nbatools.commands._participation_observations import filter_absent
+
+            own_check = filter_played if passed else filter_absent
+            if own_check(original, players[0], [season], season_type).empty:
+                return unavailable("The inferred candidate lacks qualified subject-side membership")
+    except ValueError as exc:
+        # This request is admitted; these operations validate game-day evidence.
+        # Missing/ambiguous/conflicting coverage is a data qualification gap,
+        # not an unimplemented query. Other service ValueErrors keep their meaning.
+        return unavailable(str(exc))
     row = original.iloc[0]
     day = str(pd.Timestamp(row["game_date"]).date())
-    verb = "both played" if passed else "did not both play"
-    phrase = (
-        f"{'Yes' if passed else 'No'}: {' and '.join(players)} {verb} in the "
-        f"{row['team_name']}' latest original game against the {row['opponent_team_name']} ({day})."
-    )
+    if scalar:
+        verb = "played" if passed else "did not play"
+        matchup = f" against the {row['opponent_team_name']}" if kwargs["opponent"] else ""
+        where = f"({day})" if matchup else f"({day} vs the {row['opponent_team_name']})"
+        phrase = (
+            f"{'Yes' if passed else 'No'}: {players[0]} {verb} in the "
+            f"{row['team_name']}' last game{matchup} {where}"
+        )
+        if passed:
+            # Keep useful basic Yes details only from this game's positive row.
+            try:
+                appearances = load_player_games_for_seasons([season], season_type)
+            except FileNotFoundError:
+                appearances = pd.DataFrame()
+            if not appearances.empty:
+                own = select_player_rows(appearances, players[0])
+                own = own.loc[
+                    own.game_id.astype(int).eq(int(row.game_id))
+                    & pd.to_datetime(own.game_date).dt.date.eq(pd.Timestamp(row.game_date).date())
+                    & own.team_id.astype(int).isin([int(row.team_id), int(row.opponent_team_id)])
+                    & pd.to_numeric(own.minutes, errors="coerce").gt(0)
+                ]
+                if len(own) == 1:
+                    actual = own.iloc[0]
+                    values = [
+                        f"{float(actual[c]):g} {word}"
+                        for c, word in [("pts", "points"), ("reb", "rebounds"), ("ast", "assists")]
+                        if c in actual and pd.notna(actual[c])
+                    ]
+                    if values:
+                        line = ", ".join(values)
+                        phrase += ": " + (" and".join(line.rsplit(",", 1)) if "," in line else line)
+        phrase += "."
+    else:
+        verb = "both played" if passed else "did not both play"
+        phrase = (
+            f"{'Yes' if passed else 'No'}: {' and '.join(players)} {verb} in the "
+            f"{row['team_name']}' latest original game against the "
+            f"{row['opponent_team_name']} ({day})."
+        )
     games = original.reset_index(drop=True).copy()
     games.insert(0, "rank", [1])
     return FinderResult(
@@ -248,6 +491,11 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         current_through=compute_current_through_for_seasons([season], season_type),
         metadata={"answer_phrase": phrase},
         caveats=[
+            "The played check is qualified on the selected original game. "
+            "Table values are team-game totals, not the checked player's statistics."
+        ]
+        if scalar
+        else [
             "Both played predicates were checked on the selected original game. "
             "A No answer means at least one player did not play; "
             "it does not imply that neither played."

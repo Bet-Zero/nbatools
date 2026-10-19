@@ -140,3 +140,6 @@ case_ids:
   - original_window_played_pair_source_qualifying
   - latest_original_both_source_false
   - latest_original_both_source_true
+  - qualified_scalar_played_source_yes
+  - qualified_scalar_played_source_dnp_no
+  - qualified_scalar_played_source_unknown
