@@ -989,6 +989,12 @@ def _execute_build_result(
     if extra_conditions is None:
         extra_conditions = []
 
+    if kwargs.get("last_n_scope") == "original_window" and route != "team_record":
+        return NoResult(
+            query_class=route_to_query_class(route),
+            reason="filter_not_supported",
+            notes=["Original participation windows are currently supported only for team records"],
+        )
     build_fn = _get_build_result_map()[route]
     ambiguous_intent = kwargs.get("ambiguous_intent")
     if ambiguous_intent:
@@ -1359,6 +1365,8 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return yes_no
 
     full = parse_query(query)
+    if full.get("last_n_scope") == "original_window":
+        raise ValueError("Original participation windows with OR logic are not yet supported")
 
     base = _build_parse_state(query)
     # The raw name detections can mistake a list member for the subject.
@@ -1612,6 +1620,8 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     of raw query string access.
     """
     route = parsed["route"]
+    if parsed.get("last_n_scope") == "original_window":
+        raise ValueError("Original participation windows with grouped logic are not yet supported")
 
     if any(
         "opponent_team" in c for c in (parsed.get("route_kwargs") or {}).get("conditions") or []

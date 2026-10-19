@@ -184,6 +184,9 @@ def build_result(
     series_situation: str | None = None,
     per_season_limit: int | None = None,
 ) -> FinderResult | NoResult:
+    from nbatools.commands.data_utils import validate_last_n_scope
+
+    validate_last_n_scope(last_n_scope)
     seasons = resolve_seasons(season, start_season, end_season)
 
     if home_only and away_only:

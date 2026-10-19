@@ -1083,7 +1083,8 @@ def canonicalize_sample_phrases(text: str) -> str:
     text = re.sub(r"\bstretchs\b", "stretches", text)
     # Number words to digits, only inside a recent-sample phrase.
     text = re.sub(
-        rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+(?={_SAMPLE_UNIT}\b)",
+        rf"\b({_RECENT_WORD})\s+({_NUMBER_WORD_PATTERN})\s+"
+        rf"(?=(?:(?:qualifying|original)\s+)?{_SAMPLE_UNIT}\b)",
         lambda m: f"{m.group(1)} {_NUMBER_WORDS[m.group(2)]} ",
         text,
     )
@@ -1110,6 +1111,16 @@ def canonicalize_sample_phrases(text: str) -> str:
         r"last \1 ",
         text,
     )
+    # In an explicitly scoped played pair, "meeting with A playing" uses
+    # with for participation, not for an opponent. Normalize only the window
+    # unit before the legacy meeting-with-opponent rewrite can steal that role.
+    from nbatools.commands._teammate_resolution import played_matchup_pair
+
+    if played_matchup_pair(text):
+        window = _original_participation_window(text) or _QUALIFYING_PLAYED_WINDOW.search(text)
+        if window:
+            unit = "games" if window.group("unit").endswith("s") else "game"
+            text = text[: window.start("unit")] + unit + text[window.end("unit") :]
     # A single latest meeting is a one-game window against that opponent.
     text = re.sub(
         r"\b(?:last|latest|most\s+recent|previous)\s+(?:meeting|matchup)\s+"
@@ -1905,6 +1916,40 @@ _LAST_SINGLE_GAME = (
 )
 
 
+_ORIGINAL_PLAYED_WINDOW = re.compile(
+    r"\b(?P<preposition>within|among|of|in)\s+"
+    r"(?P<owner>(?:(?!(?:within|among|of|in|against|vs|with)\b)[\w.'’\-]+\s+){0,4}?)last\s+"
+    r"(?:(?P<n>\d+)\s+)?(?P<original>original\s+)?(?P<unit>games?|meetings?|matchups?)\b"
+)
+_QUALIFYING_PLAYED_WINDOW = re.compile(
+    r"\blast\s+(?:(?P<n>\d+)\s+)?qualifying\s+(?P<unit>games?|meetings?|matchups?)\b"
+)
+
+
+def _original_participation_window(text: str) -> re.Match | None:
+    match = _ORIGINAL_PLAYED_WINDOW.search(text)
+    # Ordinary in-window availability remains legacy cohort context unless
+    # the user explicitly says original. within/among/of name that window.
+    if match and (match.group("preposition") != "in" or match.group("original")):
+        return match
+    return None
+
+
+def explicit_qualifying_participation_window(text: str) -> bool:
+    return bool(_QUALIFYING_PLAYED_WINDOW.search(text))
+
+
+def original_participation_window_owner(text: str) -> str | None:
+    """The explicitly named window owner, or None for the record subject."""
+    match = _original_participation_window(text)
+    if not match:
+        return None
+    owner = match.group("owner").strip()
+    owner = re.sub(r"^the\s+", "", owner)
+    owner = re.sub(r"(?:['’]s|['’])$", "", owner)
+    return None if owner in {"", "their", "its"} else owner
+
+
 def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = None) -> str:
     """Say whether a last-N phrase is a time window or a qualifying count.
 
@@ -1914,8 +1959,20 @@ def detect_last_n_scope(text: str, threshold_conditions: list[dict] | None = Non
     wins", "last 5 home games") keeps the games that meet the condition,
     then the 10 most recent of them. Context such as opponent, home/away,
     season and teammate availability always picks the sample first; only
-    game results and stat conditions differ between the two.
+    game results and stat conditions differ between the two. The explicit
+    ``original_window`` played-pair record slice selects the candidate window
+    before participation; it does not alter those legacy scopes.
     """
+    # Availability remains cohort context for every legacy scope. Only an
+    # explicit original-window reading of a complete played pair changes that
+    # ordering; ordinary scalar and bare last-N readings retain their contract.
+    from nbatools.commands._teammate_resolution import played_matchup_pair
+
+    if re.search(r"\blast\b", text) and played_matchup_pair(text):
+        if explicit_qualifying_participation_window(text):
+            return "qualifying"
+        if _original_participation_window(text):
+            return "original_window"
     match = re.search(_LAST_N_GAMES, text)
     if not match:
         if re.match(_YES_NO_LEAD, text) and re.search(_LAST_SINGLE_GAME, text):
@@ -1990,6 +2047,15 @@ def names_current_season(text: str) -> bool:
 
 
 def extract_last_n(text: str) -> int | None:
+    # A singular explicit played-pair window is one meeting. Keep this
+    # extension tied to the same scope reader; legacy implicit forms retain
+    # their existing behavior rather than changing availability ordering.
+    window = _original_participation_window(text) or _QUALIFYING_PLAYED_WINDOW.search(text)
+    if window and not window.group("n") and window.group("unit") in {"game", "meeting", "matchup"}:
+        from nbatools.commands._teammate_resolution import played_matchup_pair
+
+        if played_matchup_pair(text):
+            return 1
     # Fuzzy time words → fixed last-N values (glossary / spec §18.1)
     for term, last_n in FUZZY_LAST_N_TERMS.items():
         if re.search(rf"\b{re.escape(term)}\b", text):

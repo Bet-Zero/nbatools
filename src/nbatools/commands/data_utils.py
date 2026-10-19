@@ -334,8 +334,20 @@ def select_most_recent_games(df: pd.DataFrame, last_n: int | None) -> pd.DataFra
     return df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
 
 
-LAST_N_SCOPES = ("qualifying", "window", "outcome_window")
+LAST_N_SCOPES = ("qualifying", "window", "outcome_window", "original_window")
+# Legacy consumer orderings. original_window must be handled explicitly by a
+# consumer; adding it here would incorrectly reuse cohort-first selection.
 WINDOW_SCOPES = ("window", "outcome_window")
+
+
+def validate_last_n_scope(scope: str, *, allow_original_window: bool = False) -> None:
+    """Never silently lower an unsupported sample ordering to qualifying."""
+    if scope not in LAST_N_SCOPES:
+        raise ValueError(f"Unknown last-N sample selection: {scope}")
+    if scope == "original_window" and not allow_original_window:
+        raise ValueError(
+            "Original participation windows are currently supported only for team records"
+        )
 
 
 def _game_key(series: pd.Series) -> pd.Series:
