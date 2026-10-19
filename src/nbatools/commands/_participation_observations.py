@@ -1,4 +1,4 @@
-"""Whole-game absence from explicit, game-day observations, never missing rows."""
+"""Whole-game participation from qualified game-day observations, never omission."""
 
 from __future__ import annotations
 
@@ -78,14 +78,54 @@ def filter_absent(
     *,
     opponent_context: bool = False,
 ) -> pd.DataFrame:
+    """Select explicit nonparticipation across the complete requested sample."""
+    return _filter_observed(
+        candidates,
+        names,
+        seasons,
+        season_type,
+        opponent_context=opponent_context,
+        state="did_not_play",
+    )
+
+
+def filter_played(
+    candidates: pd.DataFrame,
+    names: str,
+    seasons: list[str],
+    season_type: str,
+    *,
+    opponent_context: bool = False,
+) -> pd.DataFrame:
+    """Select positive participation with qualified same-game side ownership."""
+    return _filter_observed(
+        candidates,
+        names,
+        seasons,
+        season_type,
+        opponent_context=opponent_context,
+        state="played",
+    )
+
+
+def _filter_observed(
+    candidates: pd.DataFrame,
+    names: str,
+    seasons: list[str],
+    season_type: str,
+    *,
+    opponent_context: bool,
+    state: str,
+) -> pd.DataFrame:
     """Require every named predicate to be known across the original sample."""
     if candidates.empty:
         return candidates.copy()
     team_column = "team_id"
     if not {"game_id", team_column, "game_date"}.issubset(candidates.columns):
-        raise ValueError("Absence requires game, date and explicit team identity")
+        raise ValueError("Participation requires game, date and explicit team identity")
     observations = load_observations(seasons, season_type)
-    # Positive played rows can prove the predicate false. They never establish
+    # Positive played rows establish play, and disprove an absence predicate.
+    # They never establish
     # absence, health or membership in a game where that player is omitted.
     from nbatools.commands.data_utils import load_player_games_for_seasons
 
@@ -132,12 +172,12 @@ def filter_absent(
         predicate_teams = teams
         if opponent_context:
             if "opponent_team_id" not in candidates:
-                raise ValueError("Opposing absence requires explicit opponent identity")
+                raise ValueError("Opposing participation requires explicit opponent identity")
             opposing = _ids(candidates.opponent_team_id)
             on_own = any((g, t) in lookup.index for g, t in zip(games, teams))
             on_opponent = any((g, t) in lookup.index for g, t in zip(games, opposing))
             if on_own and on_opponent:
-                raise ValueError(f"Ambiguous team ownership for {name}'s absence")
+                raise ValueError(f"Ambiguous team ownership for {name}'s participation")
             if on_opponent:
                 predicate_teams = opposing
         states = []
@@ -163,6 +203,6 @@ def filter_absent(
             row = lookup.loc[(game, team_id)]
             if pd.Timestamp(row.game_date).date() != date or row.participation_state == "unknown":
                 raise ValueError(f"Unqualified game-day participation for {name}")
-            states.append(row.participation_state == "did_not_play")
+            states.append(row.participation_state == state)
         keep &= pd.Series(states, index=candidates.index)
     return candidates.loc[keep].copy()

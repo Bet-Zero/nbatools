@@ -6618,7 +6618,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
         or route == "team_record"
-        and applied_pair
+        and (applied_pair or route_kwargs.get("with_player") or route_kwargs.get("without_player"))
     ) and names_other_player_availability(
         applied_pair.mask_clause(q) if applied_pair else q,
         route_kwargs.get("player"),

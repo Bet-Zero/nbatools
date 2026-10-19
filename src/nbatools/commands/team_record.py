@@ -351,6 +351,7 @@ def build_team_record_result(
                 season_type,
                 team=team,
                 strict_team_match=True,
+                opponent=opponent,
             )
             coverage_period = filter_with_player(
                 coverage_period,
@@ -359,6 +360,7 @@ def build_team_record_result(
                 season_type,
                 team=team,
                 strict_team_match=True,
+                opponent=opponent,
             )
         if without_player:
             coverage_base = filter_without_player(
@@ -418,7 +420,13 @@ def build_team_record_result(
         )
         if with_player and not sample.empty:
             sample = filter_with_player(
-                sample, with_player, seasons, season_type, team=team, strict_team_match=True
+                sample,
+                with_player,
+                seasons,
+                season_type,
+                team=team,
+                strict_team_match=True,
+                opponent=opponent,
             )
         if without_player and not sample.empty:
             sample = filter_without_player(
@@ -490,6 +498,7 @@ def build_team_record_result(
             season_type,
             team=team,
             strict_team_match=True,
+            opponent=opponent,
         )
 
     if without_player and not df.empty:
