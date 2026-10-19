@@ -119,3 +119,127 @@ def test_latest_original_both_from_qualified_official_facts(which):
             and "before checking" in f["value"]
             for f in filters
         )
+
+
+@pytest.mark.parametrize("which", [0, 1], ids=["opposite-subject-no", "leading-for-yes"])
+def test_revealed_root_preimplementation_boolean_source_controls(which):
+    """Root-frozen Boolean meanings/wording; previously revealed player identities."""
+    import csv
+
+    path = Path(__file__).parent / "fixtures/latest_original_both/revealed_controls.json"
+    assert (
+        hashlib.sha256(path.read_bytes()).hexdigest()
+        == "a56f7febfaff886a2e8951f84e71db54ba905460f9ce9c7087ec96915f15637e"
+    )
+    oracle = json.loads(path.read_text())
+    for source, digest in oracle["source_hashes"].items():
+        assert hashlib.sha256(data_path(source).read_bytes()).hexdigest() == digest
+    case = oracle["cases"][which]
+    season = case["season"]
+
+    def raw(kind):
+        with data_path(f"raw/{kind}/{season}_regular_season.csv").open() as handle:
+            return list(csv.DictReader(handle))
+
+    teams, schedule, appearances, observations = (
+        raw(k)
+        for k in ("team_game_stats", "games", "player_game_stats", "player_game_availability")
+    )
+    expected = case["latest_original_game"]
+    candidates = sorted(
+        [
+            r
+            for r in teams
+            if r["team_abbr"] == case["subject"] and r["opponent_team_abbr"] == case["opponent"]
+        ],
+        key=lambda r: (r["game_date"], int(r["game_id"])),
+        reverse=True,
+    )
+    assert candidates[0] == expected
+    original_id, day = int(expected["game_id"]), expected["game_date"]
+    original_schedule = [r for r in schedule if int(r["game_id"]) == original_id]
+    assert len(original_schedule) == 1 and original_schedule[0]["game_date"] == day
+    reciprocal = [
+        r
+        for r in teams
+        if int(r["game_id"]) == original_id and r["team_id"] == expected["opponent_team_id"]
+    ]
+    assert (
+        len(reciprocal) == 1
+        and reciprocal[0]["opponent_team_id"] == expected["team_id"]
+        and reciprocal[0]["game_date"] == day
+    )
+    states = []
+    for (player_id, name), expected_fact in zip(case["players"], case["facts"], strict=True):
+        facts = [
+            r
+            for r in observations
+            if int(r["game_id"]) == original_id and int(r["player_id"]) == player_id
+        ]
+        assert facts == [expected_fact]  # Complete source state, comment, minutes and provenance.
+        fact = facts[0]
+        assert fact["player_name"] == name and int(fact["player_id"]) == player_id
+        assert fact["game_date"] == day and fact["season"] == season
+        assert (
+            fact["season_type"] == "Regular Season"
+            and fact["coverage_scope"] == "listed_player_rows_only"
+        )
+        assert fact["team_id"] in (expected["team_id"], expected["opponent_team_id"])
+        positive = [
+            r
+            for r in appearances
+            if int(r["game_id"]) == original_id
+            and int(r["player_id"]) == player_id
+            and float(r["minutes"]) > 0
+        ]
+        if fact["participation_state"] == "played":
+            assert len(positive) == 1
+            assert positive[0]["team_id"] == fact["team_id"] and positive[0]["game_date"] == day
+            assert positive[0]["player_name"] == name
+            # Legacy appearance CSVs use rounded minutes; report facts retain
+            # minute-seconds. Pin both facts without equating their precision.
+            assert (
+                float(positive[0]["minutes"]) == {1627759: 27, 1628401: 35, 1629060: 21}[player_id]
+            )
+            assert float(fact["source_minutes"]) > 0
+        else:
+            assert fact["participation_state"] == "did_not_play" and fact["source_comment"]
+            assert not positive
+        states.append(fact["participation_state"] == "played")
+    truth = all(states)
+    assert truth is case["expected_both_played"]
+    result = execute_natural_query(case["query"])
+    assert result.route == "game_finder" and result.result_status == "ok"
+    assert result.metadata["player"] is None
+    assert (
+        result.metadata["team"] == case["subject"]
+        and result.metadata["opponent"] == case["opponent"]
+    )
+    assert result.metadata["season"] == season and result.metadata["last_n"] == 1
+    assert result.metadata["last_n_scope"] == "window"
+    assert not result.metadata["with_player"] and not result.metadata["without_player"]
+    assert not result.metadata["unsupported_filters"]
+    phrase = result.metadata["answer_phrase"]
+    assert phrase.startswith("Yes:" if truth else "No:") and day in phrase
+    assert all(name in phrase for _pid, name in case["players"])
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert len(rows) == 1 and int(rows[0]["game_id"]) == original_id
+    assert str(rows[0]["game_date"])[:10] == day
+    for identity in ("team_id", "opponent_team_id"):
+        assert rows[0][identity] == int(expected[identity])
+    assert rows[0]["wl"] == expected["wl"]
+    assert [rows[0][stat] for stat in ("pts", "reb", "ast")] == [
+        int(expected[stat]) for stat in ("pts", "reb", "ast")
+    ]
+    filters = result.metadata["applied_filters"]
+    assert not any(f["label"] in ("With player", "Without player") for f in filters)
+    assert any(
+        f["label"] == "Played check" and all(name in f["value"] for _pid, name in case["players"])
+        for f in filters
+    )
+    assert any(
+        f["label"] == "Sample selection"
+        and "original" in f["value"]
+        and "before checking" in f["value"]
+        for f in filters
+    )

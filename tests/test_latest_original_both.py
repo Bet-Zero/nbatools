@@ -74,6 +74,7 @@ def test_original_row_survives_either_boolean_value(pair_sample, truth):
         "Did Reaves and Tatum both play in the Lakers most recent meeting versus Boston in 2023-24?",
         "Of the LA Lakers latest original game vs BOS during the 2023-24 season, did Tatum and Reaves both play?",
         _query(scope="last one game"),
+        _query().replace("Of the", "For the"),
     ],
 )
 def test_whole_question_aliases_and_clause_order(pair_sample, query):
@@ -160,6 +161,7 @@ def test_no_original_game_is_not_known_false(pair_sample, monkeypatch):
     "query",
     [
         _query("Blorg and Reaves"),
+        _query().replace("Of the", "For the").replace(" play?", " play and score 30 points?"),
         _query("Tatum and Blorg"),
         _query("Williams and Reaves"),
         _query("Tatum and Tatum"),
@@ -175,6 +177,7 @@ def test_no_original_game_is_not_known_false(pair_sample, monkeypatch):
         _query().replace(" and ", " or "),
         _query().replace("BOTH", "either"),
         _query(scope="last two games"),
+        _query(scope="last playoff game"),
         _query(scope="last qualifying game"),
         _query().replace("2023-24", "2023-24 and 2025-26"),
         _query().replace("2023-24", "2023-25"),

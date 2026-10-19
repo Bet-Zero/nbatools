@@ -419,11 +419,12 @@ Contract rules:
   the full canonical team row without a participation predicate, then qualifies
   both resolved names with the existing same-game identity/date checks inside
   protected execution. Both Yes and No retain that original game ID/date and
-  team statistics; No means not both, never neither. Missing/unknown/contradictory
-  facts or no original game cannot produce No. Metadata labels the predicates
+  team statistics. A No answer means at least one player did not play; it does
+  not imply that neither played. Missing/unknown/contradictory facts or no
+  original game cannot produce No. Metadata labels the predicates
   as played checks, not a matching `with_player` cohort on a false answer.
-  This requires one explicit season, subject/opponent and exactly two PLAYED
-  checks; original selection can include home/road context or one explicit ISO
+  This requires one explicit regular season, subject/opponent and exactly two
+  PLAYED checks; playoff wording remains unfinished. Original selection can include home/road context or one explicit ISO
   date boundary. Latest-qualifying Boolean, N>1, mixed polarity, health/status,
   on-court, extra statistic and unread compositions remain unfinished.
   The legacy scalar appearance/omission yes/no helper is unchanged and does not

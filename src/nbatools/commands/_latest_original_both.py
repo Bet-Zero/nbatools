@@ -73,7 +73,7 @@ def read_request(text: str) -> dict | None:
         scope = scope[: date_match.start()] + " " + scope[date_match.end() :]
     aliases = "|".join(re.escape(a) for a in sorted(TEAM_ALIASES, key=len, reverse=True))
     scope_pattern = (
-        rf"(?:(?:of|in|during|from)\s+)?(?:the\s+)?(?P<team>{aliases})(?:'s|')?\s+"
+        rf"(?:(?:of|in|during|from|for)\s+)?(?:the\s+)?(?P<team>{aliases})(?:'s|')?\s+"
         r"(?:last|latest|most\s+recent)\s+(?:original\s+)?(?:(?:1|one)\s+)?"
         r"(?:(?P<venue>home|road|away)\s+)?(?:game|meeting|matchup)\s+"
         rf"(?:against|versus|vs\.?)\s+(?:the\s+)?(?P<opponent>{aliases})"
@@ -218,7 +218,8 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         current_through=compute_current_through_for_seasons([season], season_type),
         metadata={"answer_phrase": phrase},
         caveats=[
-            "Both played predicates were checked on the selected original game; "
-            "No means not both, not neither."
+            "Both played predicates were checked on the selected original game. "
+            "A No answer means at least one player did not play; "
+            "it does not imply that neither played."
         ],
     )
