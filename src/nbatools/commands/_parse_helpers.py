@@ -3121,7 +3121,21 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
     return None
 
 
-def extract_threshold_conditions(text: str) -> list[dict]:
+def extract_threshold_conditions(text: str, *, exact_stat: str | None = None) -> list[dict]:
+    """Read threshold spans; an exact statistic retains operator inclusivity.
+
+    Legacy consumers keep their epsilon-shifted bounds and dictionary shape.
+    Exact-time consumers use unshifted bounds plus internal inclusive flags.
+    """
+
+    def exact_flags(stat, mode=None, epsilon=0.0):
+        if stat != exact_stat:
+            return {}
+        return {
+            "min_inclusive": not (mode == "min" and epsilon),
+            "max_inclusive": not (mode == "max" and epsilon),
+        }
+
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
     # Standard patterns: operator NUMBER STAT
@@ -3290,6 +3304,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                         "min_value": low,
                         "max_value": high,
                         "text": m.group(0),
+                        **exact_flags(stat),
                     }
                 )
             else:
@@ -3298,7 +3313,10 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 if mode == "max" and _MARGIN_BEFORE.search(text[: m.start()]):
                     continue
                 stat, min_value, max_value = _parse_threshold_match(
-                    m.group(1), m.group(2), mode, epsilon
+                    m.group(1),
+                    m.group(2),
+                    mode,
+                    0.0 if detect_stat(m.group(2)) == exact_stat else epsilon,
                 )
                 matches.append(
                     {
@@ -3308,6 +3326,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                         "min_value": min_value,
                         "max_value": max_value,
                         "text": m.group(0),
+                        **exact_flags(stat, mode, epsilon),
                     }
                 )
 
@@ -3335,10 +3354,13 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                         "min_value": low,
                         "max_value": high,
                         "text": m.group(0),
+                        **exact_flags(stat),
                     }
                 )
             else:
-                min_value, max_value = _threshold_bounds(m.group(2), stat, mode, epsilon)
+                min_value, max_value = _threshold_bounds(
+                    m.group(2), stat, mode, 0.0 if stat == exact_stat else epsilon
+                )
                 matches.append(
                     {
                         "start": m.start(),
@@ -3347,6 +3369,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                         "min_value": min_value,
                         "max_value": max_value,
                         "text": m.group(0),
+                        **exact_flags(stat, mode, epsilon),
                     }
                 )
 
@@ -3457,12 +3480,17 @@ def extract_threshold_conditions(text: str) -> list[dict]:
 
     deduped = []
     for item in matches:
+        if item["stat"] == exact_stat:
+            item.setdefault("min_inclusive", True)
+            item.setdefault("max_inclusive", True)
         # "scores 25+ points" also matches "25+ points" on its own; keep one
         # copy of a condition when two readings of the same words agree.
         if any(
             kept["stat"] == item["stat"]
             and kept["min_value"] == item["min_value"]
             and kept["max_value"] == item["max_value"]
+            and kept.get("min_inclusive", True) == item.get("min_inclusive", True)
+            and kept.get("max_inclusive", True) == item.get("max_inclusive", True)
             and item["start"] < kept["end"]
             and kept["start"] < item["end"]
             for kept in deduped
