@@ -1,0 +1,138 @@
+{
+  "reviewer": "/root/comparison_checker",
+  "baseline_revision": "82096467c21002f78113aece4d43ab540d5ab4dd",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "sources": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346"
+  },
+  "method": "Direct stdlib CSV exact reciprocal team IDs/date joins, complete observed LAL-BOS/WAS population and prior independently frozen window oracle matched; no natural/structured agreement used as numerical oracle.",
+  "query": "Lakers games against Celtics and Wizards when Celtics score at least 110 or Wizards score at least 125 in 2023-24",
+  "baseline": {
+    "status": "no_result",
+    "reason": "unsupported",
+    "notes": [
+      "Named opponent stat conditions with OR are not yet supported."
+    ]
+  },
+  "base_opponents": [
+    "BOS",
+    "WAS"
+  ],
+  "subject": {
+    "team": "LAL",
+    "team_id": 1610612747
+  },
+  "branches": [
+    {
+      "stat": "opponent_pts",
+      "min_value": 110,
+      "max_value": null,
+      "opponent_team": "BOS"
+    },
+    {
+      "stat": "opponent_pts",
+      "min_value": 125,
+      "max_value": null,
+      "opponent_team": "WAS"
+    }
+  ],
+  "candidate_rows": [
+    {
+      "game_date": "2023-12-25",
+      "team_abbr": "LAL",
+      "opponent_team_abbr": "BOS",
+      "wl": "L",
+      "game_id": 22300403,
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612738,
+      "pts": 115,
+      "reb": 43,
+      "ast": 24,
+      "opponent_pts": 126,
+      "matching_branches": [
+        0
+      ]
+    },
+    {
+      "game_date": "2024-02-01",
+      "team_abbr": "LAL",
+      "opponent_team_abbr": "BOS",
+      "wl": "W",
+      "game_id": 22300684,
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612738,
+      "pts": 114,
+      "reb": 52,
+      "ast": 30,
+      "opponent_pts": 105,
+      "matching_branches": []
+    },
+    {
+      "game_date": "2024-02-29",
+      "team_abbr": "LAL",
+      "opponent_team_abbr": "WAS",
+      "wl": "W",
+      "game_id": 22300856,
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612764,
+      "pts": 134,
+      "reb": 45,
+      "ast": 30,
+      "opponent_pts": 131,
+      "matching_branches": [
+        1
+      ]
+    },
+    {
+      "game_date": "2024-04-03",
+      "team_abbr": "LAL",
+      "opponent_team_abbr": "WAS",
+      "wl": "W",
+      "game_id": 22301103,
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612764,
+      "pts": 125,
+      "reb": 49,
+      "ast": 21,
+      "opponent_pts": 120,
+      "matching_branches": []
+    }
+  ],
+  "expected": {
+    "keys": [
+      [
+        22300403,
+        1610612747,
+        1610612738
+      ],
+      [
+        22300856,
+        1610612747,
+        1610612764
+      ]
+    ],
+    "games": 2,
+    "wins": 1,
+    "losses": 1,
+    "sums": {
+      "pts": 249,
+      "reb": 88,
+      "ast": 54
+    },
+    "means": {
+      "pts": 124.5,
+      "reb": 44.0,
+      "ast": 27.0
+    }
+  },
+  "recommendation": "Extend existing finder top-level OR branch execution to carry each named condition owner atomically through existing parsed condition dictionaries and scoped branch metadata. Preserve original list before windows and clause-local ownership; promote this exact valid finder expectation. Leave summary/grouped/window variants separate until verified.",
+  "scope_limits": [
+    "No new universal plan, OR mode kwarg, source, dataset or infrastructure needed.",
+    "Structured game_finder already evaluates each atomic owner-bound branch; there is no boolean_filter_mode route kwarg for team_record.",
+    "Never remove the blanket guard without correct per-branch owner extraction/execution/metadata.",
+    "Preserve all46 original PR462 positives; this is independent of missing participation coverage."
+  ],
+  "production_writes": 0
+}

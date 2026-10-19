@@ -268,7 +268,6 @@ function finderCountHeadline(
   rows: SectionRow[],
   mode: Exclude<GameLogMode, "auto">,
 ): string | null {
-  if (mode !== "player") return null;
   if (data.result?.query_class !== "finder") return null;
   if (rows.length === 0) return null;
 
@@ -280,9 +279,13 @@ function finderCountHeadline(
   const disjunction = data.result.metadata.boolean_filter_mode === "any"
     && metadataConditions(data.result.metadata).length > 1;
   if (branchCount || disjunction) {
-    const subject = data.result.metadata.player_context ? `${player} had` : "There were";
+    const team = data.result.metadata.team_context?.team_name;
+    const subject = mode === "player" && data.result.metadata.player_context
+      ? `${player} had`
+      : mode === "team" && team ? `${team} had` : "There were";
     return `${subject} ${rows.length} ${gameNoun} matching at least one condition${timeframe}.`;
   }
+  if (mode !== "player") return null;
   if (data.result?.metadata?.sort_by === "stat" && data.result?.metadata?.stat === "pts") {
     const direction = data.result.metadata.ascending === true ? "lowest" : "highest";
     return `${player}'s ${rows.length} ${direction}-scoring ${gameNoun}${timeframe}.`;
