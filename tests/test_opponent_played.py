@@ -101,3 +101,22 @@ def test_without_explicit_opponent_context_played_keeps_same_team_meaning(matchu
         candidates, "Jayson Tatum", ["2023-24"], "Regular Season"
     )
     assert result.empty
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "with Jayson Tatum and Blorg playing",
+        "with Jayson Tatum playing and Blorg playing",
+        "when Jayson Tatum and Blorg play",
+        "with Jayson Tatum, and Blorg playing",
+        "with Jayson Tatum and Blorg",
+        "with Blorg and Jayson Tatum playing",
+    ],
+)
+def test_unresolved_extra_person_cannot_be_consumed_as_one_player(clause):
+    from nbatools.query_service import execute_natural_query
+
+    result = execute_natural_query(f"Lakers record against Celtics {clause} in 2023-24")
+    assert result.result_status != "ok"
+    assert not result.result.to_dict()["sections"]

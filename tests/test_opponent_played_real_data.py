@@ -87,3 +87,32 @@ def test_opponent_played_has_qualified_same_game_membership(case, consumer):
     for stat, total in expected["sums"].items():
         assert sum(row[stat] for row in rows) == total
         assert summary[stat + "_avg"] == pytest.approx(expected["means"][stat])
+
+
+def test_additional_qualified_clause_never_returns_tatum_only_answer():
+    """Engine conjunction is empty; natural composition remains explicitly unfinished."""
+    obligation = json.loads(
+        (
+            Path(__file__).parent / "fixtures/opponent_played/additional_clause_obligation.json"
+        ).read_text()
+    )
+    report = pd.read_csv(data_path("raw/player_game_availability/2023-24_regular_season.csv"))
+    for fact in obligation["independent_source_rows"]:
+        row = report.loc[
+            report.game_id.eq(fact["game_id"]) & report.player_id.eq(fact["player_id"])
+        ].iloc[0]
+        for key, value in fact.items():
+            assert row[key] == value
+    structured = execute_structured_query(
+        "team_record",
+        team="LAL",
+        opponent="BOS",
+        with_player="Jayson Tatum and Gabe Vincent",
+        season="2023-24",
+    )
+    assert structured.result_status == "no_result" and structured.result_reason == "no_match"
+    assert not structured.result.to_dict()["sections"]
+    natural = execute_natural_query(obligation["query"])
+    assert natural.result_status == "no_result"
+    assert not natural.result.to_dict()["sections"]
+    assert "multi_player_availability" in natural.metadata["unsupported_filters"]

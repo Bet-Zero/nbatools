@@ -549,11 +549,13 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
         right_player = detect_player(right.strip(" ."))
         if left_player and right_player and left_player != right_player:
             return True
-        if bool(left_player) != bool(right_player) and _bare_surname(
-            right if left_player else left
-        ):
-            # "with LeBron and Davis": the second name is a player too.
-            return True
+        if bool(left_player) != bool(right_player):
+            other = (right if left_player else left).strip()
+            if other and (_bare_surname(other) or not re.search(r"\d", other)):
+                # An unresolved second name still belongs to the request.
+                # Never consume "Tatum and Blorg" as just Tatum. Numeric
+                # stat clauses retain their separate threshold handling.
+                return True
     return False
 
 
@@ -569,7 +571,18 @@ def _joins_second_player(text: str, m: re.Match) -> bool:
     if not nxt:
         return False
     two = " ".join(w for w in nxt.groups() if w)
-    return bool(detect_player(two) or _bare_surname(nxt.group(1)))
+    if detect_player(two) or _bare_surname(nxt.group(1)):
+        return True
+    # A name need not be in the index to remain part of a requested list.
+    # Preserve understood setting/team tails such as "and at home".
+    from nbatools.commands._parse_helpers import detect_stat
+
+    return bool(
+        nxt.group(1) not in _NON_PLAYER_SUBJECTS
+        and not detect_team_in_text(two)
+        and detect_stat(two) is None
+        and not _tail_is_read_scope(" " + two, 0)
+    )
 
 
 def _bare_surname(text: str) -> bool:
@@ -1131,6 +1144,8 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             # "season with the most wins / best record" ranks seasons, it
             # names no player.
             continue
+        if phrase and _joins_second_player(text, m):
+            return text[m.start(1) :].strip()
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase
         if phrase and not detect_player(phrase):

@@ -124,7 +124,8 @@ def _filter_observed(
     if not {"game_id", team_column, "game_date"}.issubset(candidates.columns):
         raise ValueError("Participation requires game, date and explicit team identity")
     observations = load_observations(seasons, season_type)
-    # Positive played rows can prove the predicate false. They never establish
+    # Positive played rows establish play, and disprove an absence predicate.
+    # They never establish
     # absence, health or membership in a game where that player is omitted.
     from nbatools.commands.data_utils import load_player_games_for_seasons
 
