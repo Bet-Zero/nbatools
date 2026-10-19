@@ -498,7 +498,7 @@ def _opponent_shooting_bounds(text: str) -> list[tuple[re.Match, dict]]:
 
 
 def _opponent_bounds(
-    text: str, opponent: str | list[str] | None = None
+    text: str, opponent: str | list[str] | None = None, team: str | None = None
 ) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
     found.extend(_opponent_shooting_bounds(text))
@@ -529,7 +529,7 @@ def _opponent_bounds(
         )
     if isinstance(opponent, list):
         for item in team_subject_stat_conditions(text, tuple(opponent)):
-            if item["team"] in opponent:
+            if item["team"] in opponent and item["team"] != team:
                 found.append(
                     (
                         _Span(item["start"], item["end"]),
@@ -612,7 +612,7 @@ def _apply_opponent_stat_bounds(route: str | None, route_kwargs: dict, text: str
             if "opponent_shooting" not in blocked:
                 route_kwargs["unsupported_filters"] = [*blocked, "opponent_shooting"]
         return
-    found = _opponent_bounds(text, route_kwargs.get("opponent"))
+    found = _opponent_bounds(text, route_kwargs.get("opponent"), route_kwargs.get("team"))
     if not found:
         return
     for m, _ in found:
@@ -673,7 +673,7 @@ def _apply_opponent_stat_ranking(route: str | None, route_kwargs: dict, text: st
         return
     # "most opponent turnovers with 120 points": the team's own bounds stay
     # conditions (they were dropped), and opponent bounds stay too.
-    found = _opponent_bounds(text, route_kwargs.get("opponent"))
+    found = _opponent_bounds(text, route_kwargs.get("opponent"), route_kwargs.get("team"))
     conditions = _own_bounds(text, [m.span()] + [b.span() for b, _ in found])
     conditions += [bound for _, bound in found]
     if conditions:
@@ -763,13 +763,22 @@ def _apply_opponent_list(route: str | None, route_kwargs: dict, text: str) -> No
         )
     owners = [team for _, _, team in _teams_in_order(outside)]
     before = [team for _, _, team in _teams_in_order(outside[:start])]
-    if route != "team_compare" and (len(owners) == 1 or len(before) == 1):
+    explicit_subject = route != "team_compare" and (len(owners) == 1 or len(before) == 1)
+    if explicit_subject:
         # A later condition may name another team. Keep the sole prefix
         # subject so the ownership guard can reject that condition honestly.
         route_kwargs["team"] = owners[0] if len(owners) == 1 else before[0]
     elif not owners and route.startswith("player_"):
         route_kwargs["team"] = None
-    if route_kwargs["opponent"] != teams[0] or route_kwargs.get("team") in teams:
+    if route_kwargs["opponent"] != teams[0]:
+        return
+    if route_kwargs.get("team") in teams and not explicit_subject:
+        # A self member contributes no games to an OR union. Admit it only
+        # with an explicit subject outside the list, never by guessing which
+        # listed team owns the request.
+        _refuse(route_kwargs, "multiple_opponents")
+        route_kwargs["team"] = None
+        route_kwargs["opponent"] = list(dict.fromkeys(teams))
         return
     route_kwargs["opponent"] = list(dict.fromkeys(teams))
 
@@ -1816,10 +1825,10 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
                     route_kwargs["team"] = own_team = team = latest
             if team is None:
                 continue
-        if team in opponents:
-            found.append({**item, "side": "opponent"})
-        elif team in ("TEAM", own_team):
+        if team in ("TEAM", own_team):
             found.append({**item, "side": "team"})
+        elif team in opponents:
+            found.append({**item, "side": "opponent"})
         elif not own_team:
             # "LeBron games vs Boston when the Lakers score 120": the named
             # team is his; keep only his games for it.

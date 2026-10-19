@@ -14778,6 +14778,71 @@ cases:
       equals: 22300403
     review_notes: Same frozen numerical oracle; abbreviations resolve only in an established opponent-list/stat-clause context, preserving ordinary copula wording elsewhere.
 
+  - id: self_member_union_record
+    query: Lakers record against Lakers and Celtics in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponents
+      equals: [LAL, BOS]
+    - path: result.metadata.opponent
+      equals: LAL, BOS
+    - path: result.metadata.applied_filters.0.value
+      equals: LAL, BOS
+    - path: result.sections.summary.0.games
+      equals: 2
+    - path: result.sections.summary.0.wins
+      equals: 1
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 114.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 47.5
+    - path: result.sections.summary.0.ast_avg
+      equals: 27.0
+    review_notes: Author-known reciprocal source oracle164cd6be in tests/fixtures/self_opponent_union/primary.json; games22300403/22300684. Self member is redundant in the explicit opponent union, never a self-game. Independent root controls retained separately unchanged.
+  - id: self_member_union_games
+    query: Lakers games against Lakers and Celtics in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 2
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponents
+      equals: [LAL, BOS]
+    - path: result.metadata.opponent
+      equals: LAL, BOS
+    - path: result.metadata.applied_filters.0.value
+      equals: LAL, BOS
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.1.game_id
+      equals: 22300403
+    - path: result.sections.finder.0.pts
+      equals: 114
+    - path: result.sections.finder.1.pts
+      equals: 115
+    review_notes: Same frozen author-known source oracle; exact newest-first Lakers/Boston rows and full explicit union labels. Root-preimplementation unknown controls independently qualified before being revealed; no scalar self-match support or broader composition completion claimed.
+
   - id: original_window_played_pair_source_empty
     query: Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony
       Davis plays in 2023-24
