@@ -1,0 +1,49 @@
+{
+  "origin": "Root approved bounded contract, frozen before runtime; desired delivery remains pending implementation/independent gates.",
+  "scope": {
+    "player_count": 1,
+    "predicate": "One complete minutes bound (existing scalar min/max threshold representation), explicit team/latest original named matchup/scalar regular season. Static date/venue scope precedes latest selection.",
+    "original_selection": "Use existing full canonical team selector with no participation/stat filters before latest1; preserve game/team/opponent/date/season.",
+    "qualification": "Protected existing filter_played qualifies same-game membership/side/date/state and contradictions. Known name or historical appearance alone is insufficient.",
+    "exact_minutes": "Require qualified same-game official report time for played athletes; source_minutes carries MM:SS precision after existing source import. Do not use rounded canonical minutes to decide exact time thresholds, overwrite them, or claim equal precision.",
+    "dnp": "PLAYED plus bound is conjunctive: explicit did_not_play answers No because did not play, including upper bounds. Never fabricate zero minutes, a DNP player-game row, or an older appearance stat line.",
+    "unavailable": "Missing/unknown/conflicting membership/state or missing qualified precise report time returns filter_not_supported with evidence note; no Boolean, no rows, no accepted minutes check. No original game retains no_match; missing underlying file retains no_data."
+  },
+  "route_and_consumers": {
+    "route": "Existing game_finder/FinderResult, original team-game grain.",
+    "target_identity": "metadata.player and identity-only player_context retain canonical checked athlete; team row team IDs/statistics remain team evidence, not target-player statistics.",
+    "team_identity": "Explicit canonical requested team/opponent retained; no player career/current-team inference.",
+    "success_answer": "Existing answer_phrase explicitly names checked athlete, Yes/No, exact MM:SS when played or explicit did-not-play, and original team/opponent/date.",
+    "success_labels": [
+      "Sample selection: latest original team matchup before checking player minutes",
+      "Minutes check: canonical checked athlete plus actual normalized min/max minutes predicate",
+      "Caveat: table values are team-game totals; checked time comes from qualified official source time; rounded legacy minutes are not exact time."
+    ],
+    "no_false_cohort": "Played/minutes predicates are CHECKS on the retained game, not with_player/minutes cohort filters that removed it.",
+    "generic_stat_metadata": "Clear inherited player-stat hero stat/min/max/threshold metadata as with529; retain executable internal check in existing note/answer/explicit applied check label. Never show240 team minutes as player minutes.",
+    "schema": "No new public request field/result type. Reuse existing last_n/window, threshold spans/checks, internal yes_no note and result consumer fields."
+  },
+  "compatibility": {
+    "preserve": [
+      "Plain qualified scalar529 and BOTH528",
+      "Native bare statistical minutes questions and existing multi-stat AND/OR/outcome consumers outside this deliberate bounded extension",
+      "All46 #462 positive obligations; explicit original/qualifying record semantics already accepted525"
+    ],
+    "unfinished": [
+      "Broader original-game stat AND/OR/outcome combinations and exact-time coverage elsewhere",
+      "Latest qualifying/minutes-cohort samples, N>1, multi-season or postseason in this bounded consumer",
+      "Medical/status/on-court/equivalence/injury/tenure questions",
+      "Missing precise time or player game-day evidence is unavailable, not an implemented zero or bad input"
+    ],
+    "guards": "Consume whole identity/predicate/scope; unknown/ambiguous names, extra unread/status/stat/player clauses cannot receive partial promoted answers."
+  },
+  "meaningful_validation": [
+    "Source-backed AD originalFeb1 explicitDNP lower+upper bounds No without inventedzero/Christmasrow",
+    "Source-backed Tatum36:37 >=30Yes,>=37No,<37Yes; Brown27:24 >27Yes",
+    "Source-backed knownAD name without22500823membership unavailable",
+    "Controlled missing/unknown/wrongside/wrongdate/contradictory qualifications and precise time fail honestly",
+    "Older qualified time/appearance cannot replace selected game; date/venue selects originalgame beforequalification",
+    "Canonical aliases, leading scope/order variations, full tail guards; native bare statistical AND/OR/outcome and529/BOTH regressions",
+    "Actual API/table labels distinguish checked player from team-game evidence; unknown has no false check/Boolean/zero"
+  ]
+}
