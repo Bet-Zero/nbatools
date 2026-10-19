@@ -2,7 +2,7 @@
 
 import hashlib
 import os
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -118,7 +118,12 @@ def _finder(item, metadata, sections):
     table = _table(item, "Game log")
     assert len(table["rows"]) == 2
     for actual, frozen, displayed in zip(rows, expected, table["rows"]):
-        assert str(actual["game_date"])[:10] == frozen["game_date"]
+        assert (
+            datetime.fromisoformat(str(actual["game_date"]).replace("Z", "+00:00"))
+            .date()
+            .isoformat()
+            == frozen["game_date"]
+        )
         for key in ["team_abbr", "opponent_team_abbr", "pts", "reb", "ast", "wl"]:
             assert actual[key] == frozen[key]
         assert actual["plus_minus"] == frozen["pts"] - frozen["opponent_pts"]
@@ -151,7 +156,12 @@ def _player(item, metadata, sections):
     )
     rows = sections["game_log"]
     assert len(rows) == 1
-    assert str(rows[0]["game_date"])[:10] == "2023-12-25"
+    assert (
+        datetime.fromisoformat(str(rows[0]["game_date"]).replace("Z", "+00:00"))
+        .date()
+        .isoformat()
+        == "2023-12-25"
+    )
     for key, value in PLAYER.items():
         assert rows[0][key] == value
     summary = sections["summary"][0]
