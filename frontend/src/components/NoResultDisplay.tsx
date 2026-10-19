@@ -5,6 +5,7 @@ import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import {
   buildNoResultDetails,
   buildNoResultGuidance,
+  hasQualifiedEmptyContext,
   isColumnUnavailableReason,
   isMetricUnavailableNoResult,
   readableNoResultMessage,
@@ -19,6 +20,7 @@ interface Props {
   notes?: string[];
   caveats?: string[];
   feedbackAction?: ReactNode;
+  resultContext?: ReactNode;
   displayMode?: DisplayModeInput;
   route?: string | null;
   queryClass?: string | null;
@@ -165,6 +167,7 @@ export default function NoResultDisplay({
   notes = [],
   caveats = [],
   feedbackAction,
+  resultContext,
   displayMode,
   route,
   queryClass,
@@ -223,6 +226,7 @@ export default function NoResultDisplay({
         )}
       </div>
       <div className={styles.message}>{message}</div>
+      {hasQualifiedEmptyContext(reason, status, metadata) && resultContext}
       {candidateLine && (
         <div
           className={styles.recovery}

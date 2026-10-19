@@ -56,6 +56,7 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          resultContext={resultContext}
           displayMode={normalizedDisplayMode}
           route={data.route}
           queryClass={data.result?.query_class}
@@ -73,6 +74,7 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          resultContext={resultContext}
           displayMode={normalizedDisplayMode}
           route={data.route}
           queryClass={data.result?.query_class}
@@ -98,6 +100,7 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          resultContext={resultContext}
           displayMode={normalizedDisplayMode}
           route={data.route}
           queryClass={data.result?.query_class}
@@ -113,6 +116,7 @@ export default function ResultRenderer({
         metadata={data.result?.metadata}
         notes={noResultNotes}
         caveats={noResultCaveats}
+        resultContext={resultContext}
         displayMode={normalizedDisplayMode}
         route={data.route}
         queryClass={data.result?.query_class}
