@@ -1,0 +1,31 @@
+{
+  "origin": "Root-approved scalar semantic contract; route/consumer compatibility frozen before runtime coding. PR528 merge signal still required. Private root f87c6095 controls remain unopened.",
+  "source_fixture": {
+    "path": "scalar_source_and_baseline.json",
+    "sha256": "1d55567df1bd2cd8ea400b1d24ac0da1e5de22fe7c917c566c4c0984fbb3ddd1",
+    "baseline_revision": "5067daba478a4c8ec203e2b10b262be8f02ab625"
+  },
+  "route_and_result": [
+    "Known scalar PLAYED Yes and explicit-DNP No use existing game_finder/FinderResult with the full selected original TEAM game row. This deliberately replaces the old appearance-selected player_game_finder result for admitted participation questions; ordinary player statistics/outcome yes-no routes are unchanged.",
+    "The finder row preserves canonical team_id/opponent_team_id, original game_id/date and team_name/abbr. It contains team statistics only; no fabricated player_name/player_id row, no zero player box score and no old appearance substituted on No.",
+    "Keep metadata.player as the canonical single target name and metadata.player_context as existing player_id/player_name identity. Current _player_identity_lookup already exposes ONLY those two fields, not team membership, so preserving target identity does not certify a current team.",
+    "Keep metadata.team/team_context and opponent/opponent_context for explicit requested target scope. A team inferred only from the last appearance remains a selection candidate, not known current membership; unavailable bare negative cannot publish it as certified current team or return its older row.",
+    "Keep existing answer_phrase and a Played check naming the single target; do not publish with_player/without_player matching-cohort metadata on No. No new public field/result class.",
+    "Unknown/missing/conflicting identity, membership or state produces typed no_result with no Boolean and no historical player row. Canonical target identity can remain honest requested identity; no played check is presented as successfully applied."
+  ],
+  "presentation_compatibility": [
+    "GameLogResult reads answer_phrase before generic finder headlines. Its auto mode checks the ROW for player_name/player/player_id, rather than metadata.player. Thus a canonical team-game row stays in team mode even while metadata identifies the checked player.",
+    "Table totals must remain explicitly team evidence: retain TM/subject/opponent/date and add an existing caveat/note stating team-game totals support the participation check and are not player statistics. API/browser tests must ensure 114PTS never reads as Davis points.",
+    "Basic qualified Yes may retain the useful player stat line in answer_phrase ONLY from an actual positive appearance whose canonical game/player/side/date matches the original selected game. Never copy a previous appearance stat line into the selected game.",
+    "For No, no player box score is invented. The headline states only the target did not play on the selected game; team evidence is shown separately.",
+    "Keep existing CLI/result/API sections and frontend consumer. No renderer rewrite or new schema is anticipated; actual desktop/mobile output checks remain required before acceptance."
+  ],
+  "execution_dependencies": [
+    "Wait for actual PR528 merged-main signal; branch from that exact accepted commit and retain the primary source fixture unchanged before runtime tuning.",
+    "Reuse the PR528 canonical original selection/qualified observation path at one-name arity inside protected execution. Small bounded scalar scope admission must consume the complete existing explicit team/opponent/season/latest-game question.",
+    "Preserve qualified basic scalar Yes and proved No. Replace omission-only synthetic No proof with an explicit controlled DNP observation; do not demote that desired answer.",
+    "Contain existing omission-No logic even when the bare target team or membership is unknown. Do not broaden last-night calendar/freshness, status/on-court, qualifying, N>1 or extra-clause semantics.",
+    "Keep scalar score/outcome and all PR528 BOTH regressions and 46 original absence obligations intact."
+  ],
+  "write_scope": "Scratch source/contract preparation only. Accepted5067 isolated worktree clean; PR528 runtime/tests untouched; no new PR, runtime/test edit, R2/public call, acquisition or data publication."
+}
