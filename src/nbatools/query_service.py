@@ -1804,7 +1804,10 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
         for item in filters:
             if item.get("label") == "Sample selection":
                 item["value"] = (
-                    "Select the latest original team matchup before checking player minutes"
+                    "Select the latest original team matchup "
+                    "before checking player minutes and count"
+                    if len(request.get("checks") or []) == 2
+                    else "Select the latest original team matchup before checking player minutes"
                     if minutes_check
                     else "Select the latest original team game before checking the played predicate"
                     if scalar
@@ -1828,6 +1831,15 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
                 "kind": "player",
             }
         )
+        for count_check in request.get("checks") or []:
+            if count_check["stat"] != "minutes":
+                filters.append(
+                    {
+                        "label": "Count check",
+                        "value": request["players"][0] + " " + check_description(count_check),
+                        "kind": "player",
+                    }
+                )
         metadata["applied_filters"] = filters
         return
     row = result.games.iloc[0]

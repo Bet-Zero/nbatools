@@ -1,0 +1,177 @@
+{
+  "status": "READ-ONLY proposed bounded post530 contract; root direction reflected, runtime/branch authorization still pending530 merge and independent private freeze.",
+  "maker": "/root/participation_request",
+  "source_and_baseline_sha256": "78e57eddf60d6b227d8f73e0a57487347efaa0fc3d57c343c99d629ffbc6dad0",
+  "existing530_source_sha256": "f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad",
+  "original_scope_sentinel": {
+    "query": "Did Anthony Davis play at least 30 minutes and have at least 1 assist in the Lakers last game against Celtics in 2023-24?",
+    "original_game_id": 22300684,
+    "original_explicit_dnp": {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "player_id": "203076",
+      "player_name": "Anthony Davis",
+      "participation_state": "did_not_play",
+      "source_minutes": "",
+      "source_comment": "INACTIVE - Injury/Illness - Bilateral Achilles; Tendinopathy & Left Hip Spasm",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "identity_source_sha256": "",
+      "coverage_scope": "listed_player_rows_only"
+    },
+    "wrong_older_appearance": {
+      "game_id": "0022300403",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "game_date": "2023-12-25",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "team_name": "Los Angeles Lakers",
+      "opponent_team_id": "1610612738",
+      "opponent_team_abbr": "BOS",
+      "opponent_team_name": "Boston Celtics",
+      "is_home": "1",
+      "is_away": "0",
+      "player_id": "203076",
+      "player_name": "Anthony Davis",
+      "starter_flag": "0",
+      "start_position": "",
+      "minutes": "39",
+      "pts": "40",
+      "fgm": "15",
+      "fga": "26",
+      "fg_pct": "0.577",
+      "fg3m": "2",
+      "fg3a": "4",
+      "fg3_pct": "0.5",
+      "ftm": "8",
+      "fta": "10",
+      "ft_pct": "0.8",
+      "oreb": "5",
+      "dreb": "8",
+      "reb": "13",
+      "ast": "4",
+      "stl": "0",
+      "blk": "1",
+      "tov": "2",
+      "pf": "2",
+      "plus_minus": "-6",
+      "comment": ""
+    },
+    "desired_boolean": false,
+    "desired_explanation": "No because AD did not play in the originalFeb1 matchup; do not assignminutes/assistszero or substitute Christmas. Old366 Yes is not a valid positive obligation."
+  },
+  "bare_native_positive": {
+    "query": "Did LeBron play at least 30 minutes and have at least 10 assists last game in 2023-24?",
+    "positive_row": {
+      "game_id": "0022301195",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "game_date": "2024-04-14",
+      "team_id": "1610612747",
+      "team_abbr": "LAL",
+      "team_name": "Los Angeles Lakers",
+      "opponent_team_id": "1610612740",
+      "opponent_team_abbr": "NOP",
+      "opponent_team_name": "New Orleans Pelicans",
+      "is_home": "0",
+      "is_away": "1",
+      "player_id": "2544",
+      "player_name": "LeBron James",
+      "starter_flag": "0",
+      "start_position": "",
+      "minutes": "38",
+      "pts": "28",
+      "fgm": "11",
+      "fga": "20",
+      "fg_pct": "0.55",
+      "fg3m": "0",
+      "fg3a": "2",
+      "fg3_pct": "0.0",
+      "ftm": "6",
+      "fta": "6",
+      "ft_pct": "1.0",
+      "oreb": "2",
+      "dreb": "9",
+      "reb": "11",
+      "ast": "17",
+      "stl": "5",
+      "blk": "1",
+      "tov": "4",
+      "pf": "0",
+      "plus_minus": "19",
+      "comment": ""
+    },
+    "desired_boolean": true,
+    "scope": "Native documented player-last-appearance statistical consumer; no current-team membership inferred and no precision upgrade claimed."
+  },
+  "bounded_explicit_original_contract": {
+    "scope": "One resolved player, one complete minutes predicate AND one distinct ordinary player-count-stat predicate, explicit canonical team/latest original named matchup/scalar regular season. Flat conjunctive tree only. Static date/venue filters precede original selection.",
+    "positive_obligations": [
+      "Primary Pritchard21:18 AND AST>=1 ->Yes on22300684/BOS; HAVE and RECORD are grammatical alternatives",
+      "Pritchard21:18 AND AST<1 ->No with known actualAST1; no hidden drop of opposing bound",
+      "Reversed same-player predicate order and whole leading/trailing scope should preserve both checks when fully consumed",
+      "AD original explicitDNP conjunction ->No without playerzero/old row; source absence for unknown player neverNo"
+    ],
+    "grammar": "Use shared recognized threshold spans and a directly governing statistical verb at the clause boundary. Consume coherent HAVE/RECORD/PLAY/SCORE forms or existing known same-player stat-verb vocabulary only when governing an actually parsed numeric-stat predicate. Validate the canonical actor once, retain full residual text, and require exactly one AND joining the two complete predicates. Do not globally delete verbs, trust arbitrary legacy notes, recognize full-sentence examples, or erase a new named owner/status clause.",
+    "representation": "Reuse static game_finder route kwargs (team/opponent/season/dates/venue,last_n1/window), existing internal yes_no note played_scalar with canonical single players list and checks list. Exactly one minutes check plus one distinct count check, each retains min/max and explicit min_inclusive/max_inclusive. No stat bounds become TEAM-cohort filters in kwargs; no public field/result/framework added. Existing public structured route kwargs alone do not expose this original participation-check distinction, so do not claim structured endpoint parity by treating player AST as team AST.",
+    "original_execution": "Reuse530 full original team selector and protected game-day qualification. After qualification, read exact reportseconds for minutes. For a played athlete, require exactly one positive canonical appearance matching game/player/actual side/date for the count statistic; finite nonnegative integer value, never inferred0 from null or an absent row.",
+    "dnp_execution": "Explicit qualified DNP makes PLAYED false and conjunctive answerNo for all bounds without evaluating missing count as numericzero. Grammar and ownership of both predicates must still be validated. Unknown membership/state remains unavailable before arithmetic.",
+    "exact_bounds": "Apply the same parsed strict/inclusive representation to BOTH minutes and count bounds. Generalize optional exact-stat selection to the two selected statistics, or reuse the same extractor per statistic with identical spans; default legacy output stays unchanged. Compare integerseconds against unshifted decimal minutes*60, integercount against unshifted decimal count. Never reverse epsilon-adjusted numbers or derive strictness from decimal shape.",
+    "output": "Existing original TEAM FinderResult, checked target metadata.player/identity-only player_context. Explicit answer must explain both actual checks (MM:SS plus actual count when played; did-not-play whenDNP), normalized bounds and Yes/No, originaldate/team/opponent. Applied check labels preserve both player-owned predicates and actual operators. Team totals remain team evidence and generic flat player-stat hero bounds stayclear. No accepted check/Boolean/rows for unavailable data.",
+    "legacy_compatibility": "Preserve admitted530 single original-minutes,529 scalar/BOTH and tested b4 native bare/statistical AND/OR/outcome routes outside the new bounded slice. Restore valid native HAVE/RECORD statistical spelling with full clause/owner preservation. Old366 wrong-owner/older-row acceptances are not compatibility obligations.",
+    "unadmitted_boundaries": [
+      "OR/grouped/mixed Boolean original-stat trees and outcomes are separate unfinished positive compositions; do not silently lower to AND",
+      "Extra player/team owners, health/status/on-court/negation or unread clauses cannot receive partial answers",
+      "Multiple minute/stat predicates beyond exacttwo, multiple seasons, qualifying/N>1/postseason outside chosen contract remain unfinished rather than badinput",
+      "No precise reporttime or missing/conflicting positive samegame count ->filter_not_supported, no older row"
+    ],
+    "count_decimal_operator_controls": [
+      {
+        "actual_count": 1,
+        "bound": "over0.99999",
+        "truth": true
+      },
+      {
+        "actual_count": 1,
+        "bound": "under1.00001",
+        "truth": true
+      },
+      {
+        "actual_count": 1,
+        "bound": "at least1.00001",
+        "truth": false
+      },
+      {
+        "actual_count": 1,
+        "bound": "at most0.99999",
+        "truth": false
+      },
+      {
+        "actual_count": 1,
+        "bound": "over1",
+        "truth": false
+      },
+      {
+        "actual_count": 1,
+        "bound": "at least1",
+        "truth": true
+      },
+      {
+        "actual_count": 1,
+        "bound": "under1",
+        "truth": false
+      },
+      {
+        "actual_count": 1,
+        "bound": "at most1",
+        "truth": true
+      }
+    ]
+  },
+  "source_dependency": "Pritchard/AD/LeBron facts all derive from verified immutable production CSV/PDF sources; no source collection, cloud hunt, paid provider or publication required. Five participation games are not seasonwide absence/tenure evidence. All46 original absence positives remain open."
+}

@@ -1,0 +1,27 @@
+{
+  "status": "Valid positive alias obligation remains UNFINISHED. This is not invalid input or a delivered refusal; using existing3PM vocabulary in count-domain controls does not complete ordinary singular-three grammar.",
+  "first_observed_controlled_query": "Did Tatum play at least 20 minutes and record at least 1 three in the Lakers last game against Celtics on 2023-10-28 in 2023-24?",
+  "controlled_meaning": {
+    "player_id": 1628369,
+    "original_game_id": 3,
+    "report_seconds": 1500,
+    "count_stat": "fg3m",
+    "count": 1,
+    "desired_boolean": true
+  },
+  "source_backed_follow_on_query": "Did Payton Pritchard play at least 21 minutes and record at least 1 three in the Celtics last game against Lakers in 2023-24?",
+  "source_backed_meaning": {
+    "source_ref": "preimplementation_source.json",
+    "source_sha256": "78e57eddf60d6b227d8f73e0a57487347efaa0fc3d57c343c99d629ffbc6dad0",
+    "player_id": 1630202,
+    "team_id": 1610612738,
+    "game_id": 22300684,
+    "game_date": "2024-02-01",
+    "report_seconds": 1278,
+    "count_stat": "fg3m",
+    "count": 2,
+    "desired_boolean": true
+  },
+  "observed_limitation": "The existing shared stat-alias vocabulary recognizes threes/3PM/FG3M, but singular three is also a number word. The current candidate safely refuses the original ordinary alias question. A contextual alias repair must preserve last-three-games number meaning; no broad stat alias rewrite is claimed here.",
+  "next_action": "Implement contextual singular-three statistical-unit interpretation with number-word/window controls, then replace this contained baseline with proved positive support."
+}
