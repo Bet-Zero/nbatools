@@ -95,7 +95,48 @@
     "Original OR/grouped/outcome/extra-owner/period compositions remain unfinished.",
     "All46 original462 absence obligations remain open."
   ],
-  "r2_acceptance": "Pending; local source passes do not establish R2 execution.",
-  "browser_acceptance": "Pending independent checker.",
-  "data_publication": "No data writes; existing five production participation games are not seasonwide evidence."
+  "r2_acceptance": {
+    "reviewed_sha": "07a31792fd813e5a8f33fb84e89b783c834c4922",
+    "request_sha": "358aef3d9687050cc9b8b9eeab5e3e6a8954fe59",
+    "run": 39207166557,
+    "required": {
+      "selected": 69,
+      "executed": 69,
+      "passed": 69,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 0,
+      "seconds": 32.79,
+      "artifact": 12166391731,
+      "zip_sha256": "33944ee83c7004cc1335cb68a9d22adf20000b82a253e901c3dfae78dc0ab7da"
+    },
+    "qa": {
+      "cases": 14,
+      "passed": 14,
+      "checks": 245,
+      "suspicious": 0,
+      "artifact": 12166157681,
+      "zip_sha256": "3ceaf9220a5b452ee1ce28183575a294e9648b7760b68e57112feb1e7b6c0556"
+    },
+    "independent_artifact_review": "root downloaded, hashverified, read summary/JUnit/all14outputs/productreview; historical human_review_pending/missing_variants unchanged"
+  },
+  "browser_acceptance": {
+    "gate_author": "comparison_checker",
+    "gate_commit": "6104efbb8f584382d5ea8d3d0bfd1366c7e69979",
+    "integrated_gate": "3245885f003010b17ae9c6d595042130e7b443ab",
+    "runtime": "751876a973bdf54acca56242bf0cb51ee4aa2de4",
+    "served_code": "07a31792fd813e5a8f33fb84e89b783c834c4922",
+    "served_base": "http://127.0.0.1:8780",
+    "receipt_sha256": "0ddb2cfa6c07ca7d62ca958d5ad46e2847e94bd26455d5e16111ed283e0b5fdc",
+    "answers": 10,
+    "readiness": 20,
+    "pngs": 10,
+    "source_sha256": "c617ed72b97afa56815d22ddb61d3794156c05987075f94482588779c6d9d184",
+    "independent_gate_review": "root full3file review; all8prior bundles and strict targets/spacing retained;3files byte-identical to6104;62corruptions rejected+2validISO replay; PDF/Decimal truth rederived and10PNG hashes verified; mobile Yes/recordedzero/unavailable inspected",
+    "public_acceptance": "Pending actual accepted531 deployment; last public runtime is4f7/Clijr with previous50answer acceptance."
+  },
+  "data_publication": "No data writes; existing five production participation games are not seasonwide evidence.",
+  "integration": "Accepted520/e7 and docs/test-only descendants leave runtime and frontend/src byte-identical to751."
 }
