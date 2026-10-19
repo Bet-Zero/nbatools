@@ -138,3 +138,5 @@ case_ids:
   - original_window_played_pair_source_empty
   - original_window_played_pair_source_positive
   - original_window_played_pair_source_qualifying
+  - latest_original_both_source_false
+  - latest_original_both_source_true

@@ -1,5 +1,5 @@
 {
-  "status": "Explicit original-window and qualifying team-record positives promoted with source tests; boolean BOTH question remains UNFINISHED",
+  "status": "Original-window and qualifying team records accepted in PR525; latest-original BOTH Boolean candidate awaits independent review, R2 and deployed acceptance",
   "generation": "availability-opening-s4-v1-20261017",
   "source_hashes": {
     "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
@@ -71,7 +71,9 @@
         22300684
       ],
       "qualified_pair_played": false,
-      "expected_qualifying_game_ids": []
+      "expected_qualifying_game_ids": [],
+      "implementation_test": "tests/test_latest_original_both_real_data.py::test_latest_original_both_from_qualified_official_facts[known-false]",
+      "status": "Implemented candidate; initial refusal retained in latest_original_both/source_and_baseline.json; independent/R2/deployed acceptance separate"
     },
     {
       "query": "Lakers record against Celtics in their last 1 qualifying game with Jayson Tatum playing while Anthony Davis plays in 2023-24",
@@ -125,5 +127,5 @@
     "implementation_test": "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[qualified-empty-original]"
   },
   "prior_boundary": "Do not promote NEW played_matchup_pair clauses when last_n exists. Preserve preexisting native cooperative pair handling; do not claim the excluded qualifying or window questions are invalid or implemented.",
-  "current_boundary": "Explicit original/qualifying record windows are implemented for the bounded full-game scalar-season matchup with two played predicates. Bare new-pair temporal composition and boolean BOTH questions remain unfinished; existing legacy/native cohort-first behavior is preserved."
+  "current_boundary": "Explicit original/qualifying record windows and latest-original-one-game BOTH played checks support bounded full-game scalar-season matchups with two resolved names. Bare new-pair temporal records, latest-qualifying Boolean questions and other compositions remain unfinished; legacy/native cohort-first behavior is preserved. All46 original absence obligations remain open."
 }
