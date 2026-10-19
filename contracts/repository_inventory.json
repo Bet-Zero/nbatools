@@ -549,7 +549,7 @@
       "typo_partial_entity_behavior",
       "unsupported_subjective_narrative"
     ],
-    "raw_qa_case_count": 528,
+    "raw_qa_case_count": 532,
     "slice_case_counts": {
       "basic_public_availability": 7,
       "defensive_aliases": 8,
@@ -557,7 +557,7 @@
       "player_entity_stat_context": 9,
       "playoff_phrasing": 12,
       "product_boundaries": 20,
-      "public_query_acceptance": 142,
+      "public_query_acceptance": 146,
       "team_date_context": 9
     }
   },

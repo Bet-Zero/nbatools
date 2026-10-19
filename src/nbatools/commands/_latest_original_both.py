@@ -48,7 +48,7 @@ def _read_scope(scope: str, *, require_matchup=True, require_season=True) -> dic
     scope = scope.strip(" ,")
     seasons = list(
         re.finditer(
-            r"\b(?:in|during|of)\s+(?:the\s+)?(?P<season>(?:19|20)\d{2}-\d{2})(?:\s+season)?\b",
+            r"\b(?:in|during|of)\s+(?:the\s+)?(?P<season>(?:19|20)\d{2}-\d{2})(?:\s+(?:regular\s+)?season)?\b",
             scope,
         )
     )
@@ -252,7 +252,11 @@ def _admitted_minutes_check(text: str, out: dict) -> bool:
 def prepare(out: dict) -> dict:
     """Use the existing yes/no note boundary without introducing a request field."""
     text = out.get("normalized_query") or ""
-    request = read_request(text) or _read_scalar_request(text, out)
+    from nbatools.commands._original_minutes import read_request as read_minutes_request
+
+    request = (
+        read_request(text) or _read_scalar_request(text, out) or read_minutes_request(text, out)
+    )
     if request is None:
         # A failed full pair reading must not fall back to the one recognized
         # player (notably an unknown first name followed by a known second).
@@ -444,7 +448,19 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         return unavailable(str(exc))
     row = original.iloc[0]
     day = str(pd.Timestamp(row["game_date"]).date())
-    if scalar:
+    minutes_check = (request.get("checks") or [None])[0]
+    if minutes_check:
+        from nbatools.commands._original_minutes import answer_phrase
+        from nbatools.commands._participation_observations import qualified_report_seconds
+
+        try:
+            seconds = qualified_report_seconds(
+                row, players[0], [season], season_type, played=passed
+            )
+        except ValueError as exc:
+            return unavailable(str(exc))
+        phrase = answer_phrase(row, players[0], minutes_check, seconds)
+    elif scalar:
         verb = "played" if passed else "did not play"
         matchup = f" against the {row['opponent_team_name']}" if kwargs["opponent"] else ""
         where = f"({day})" if matchup else f"({day} vs the {row['opponent_team_name']})"
@@ -491,6 +507,12 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
         current_through=compute_current_through_for_seasons([season], season_type),
         metadata={"answer_phrase": phrase},
         caveats=[
+            "The minutes check uses official report time in MM:SS on the selected original game. "
+            "The table shows team-game totals, not the checked player's statistics. "
+            "An explicit DNP is nonparticipation, not a zero-stat appearance."
+        ]
+        if minutes_check
+        else [
             "The played check is qualified on the selected original game. "
             "Table values are team-game totals, not the checked player's statistics."
         ]
