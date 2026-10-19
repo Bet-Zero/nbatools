@@ -20,6 +20,94 @@ ASSET = "index-CJ1uR2hx.js"
 LAL, BOS, TATUM, GABE = 1610612747, 1610612738, 1628369, 1629216
 
 
+def _positive_pair_case():
+    path = ROOT / "tests/fixtures/qualified_played_pair/source_oracle.json"
+    assert (
+        hashlib.sha256(path.read_bytes()).hexdigest()
+        == "a43973d91df8364ffa86f8c8956ea7dd272ac2bdd72b464b8aa01117a55dbd77"
+    )
+    frozen = json.loads(path.read_text())
+    assert frozen["generation"] == ORACLE["generation"]
+    assert frozen["manifest_sha256"] == ORACLE["manifest_sha256"]
+    for source, digest in frozen["source_hashes"].items():
+        assert hashlib.sha256(data_path(source).read_bytes()).hexdigest() == digest
+    case = next(
+        case for case in frozen["cases"] if case["names"] == ["Jayson Tatum", "Austin Reaves"]
+    )
+    suffix = "2023-24_regular_season.csv"
+    report = data_read_csv("raw/player_game_availability/" + suffix)
+    players = data_read_csv("raw/player_game_stats/" + suffix)
+    teams = data_read_csv("raw/team_game_stats/" + suffix)
+    candidates = teams.loc[teams.team_id.eq(LAL) & teams.opponent_team_id.eq(BOS)]
+    assert sorted(candidates.game_id.astype(int)) == case["candidate_game_ids"]
+    selected = set(case["candidate_game_ids"])
+    for name, pid, side in [("Jayson Tatum", TATUM, BOS), ("Austin Reaves", 1630559, LAL)]:
+        facts = [fact for fact in case["source_observations"] if fact["player_name"] == name]
+        assert sorted(int(fact["game_id"]) for fact in facts) == case["candidate_game_ids"]
+        played = set()
+        for fact in facts:
+            assert int(fact["player_id"]) == pid and int(fact["team_id"]) == side
+            actual = report.loc[report.game_id.eq(int(fact["game_id"])) & report.player_id.eq(pid)]
+            positive = players.loc[
+                players.game_id.eq(int(fact["game_id"]))
+                & players.player_id.eq(pid)
+                & players.minutes.gt(0)
+            ]
+            assert len(actual) == len(positive) == 1
+            row, appearance = actual.iloc[0], positive.iloc[0]
+            for key in [
+                "player_name",
+                "game_date",
+                "participation_state",
+                "source",
+                "source_sha256",
+                "coverage_scope",
+            ]:
+                assert row[key] == fact[key]
+            assert row.participation_state == "played" and row.source_minutes > 0
+            assert row.team_id == appearance.team_id == side
+            assert (
+                row.game_date
+                == appearance.game_date
+                == candidates.loc[candidates.game_id.eq(int(fact["game_id"])), "game_date"].item()
+            )
+            assert (
+                hashlib.sha256(
+                    data_path(
+                        "raw/player_game_availability_sources/" + row.source_sha256 + ".pdf"
+                    ).read_bytes()
+                ).hexdigest()
+                == row.source_sha256
+            )
+            played.add(int(fact["game_id"]))
+        selected &= played
+    expected = case["expected"]
+    assert sorted(selected) == expected["game_ids"]
+    chosen = candidates.loc[candidates.game_id.isin(selected)]
+    assert len(chosen) == expected["games"]
+    assert int(chosen.wl.eq("W").sum()) == expected["wins"]
+    assert int(chosen.wl.eq("L").sum()) == expected["losses"]
+    for stat, total in expected["sums"].items():
+        assert chosen[stat].sum() == total
+    return dict(
+        id="opponent-played-pair-positive",
+        kind="positive",
+        query=case["query"],
+        season="2023-24",
+        with_player="Jayson Tatum and Austin Reaves",
+        expected=expected,
+        rows=chosen.to_dict("records"),
+        text=[
+            "Los Angeles Lakers",
+            "1-1",
+            "Jayson Tatum and Austin Reaves",
+            "50% win rate",
+            "2023-24",
+        ],
+        forbidden=["Unavailable Filter", "Data Not Available", "No Matching Results"],
+    )
+
+
 def _cases():
     for path, digest in ORACLE["sources"].items():
         assert hashlib.sha256(data_path(path).read_bytes()).hexdigest() == digest
@@ -155,7 +243,8 @@ def _cases():
             forbidden=["No Matching Results", "1-1", "114.5", "with-player and without-player"],
         )
     )
-    assert len(cases) == 4
+    cases.append(_positive_pair_case())
+    assert len(cases) == 5
     return cases
 
 
@@ -216,7 +305,7 @@ def _validate_answers(receipt, cases, output):
             _summary(summary, case["expected"])
         rows = sections["game_log"]
         truth = {int(row["game_id"]): row for row in case["rows"]}
-        assert len(rows) == len(truth) == 2
+        assert len(rows) == len(truth) == case["expected"]["games"]
         assert {int(row["game_id"]) for row in rows} == set(truth)
         for row in rows:
             source = truth[int(row["game_id"])]
@@ -241,11 +330,14 @@ def _validate_answers(receipt, cases, output):
         assert len(table["rows"]) == 1
         cells = dict(zip(table["headers"], table["rows"][0]))
         assert "LAL" in cells["Team"] and "Celtics" in cells["Opponent"]
-        assert cells["W-L"] == "1-1" and int(cells["Games"]) == 2
-        assert float(cells["Win %"].rstrip("%")) == 50
-        assert float(cells["PPG"]) == 114.5
+        expected = case["expected"]
+        assert cells["W-L"] == f"{expected['wins']}-{expected['losses']}"
+        assert int(cells["Games"]) == expected["games"]
+        assert float(cells["Win %"].rstrip("%")) == 100 * expected["wins"] / expected["games"]
+        points = expected["sums"]["pts"] / expected["games"]
+        assert float(cells["PPG"]) == points
         if item["viewport"] == "desktop":
-            assert "114.5" in item["text"]
+            assert str(points) in item["text"]
     assert seen == {(viewport, ident) for viewport in ("desktop", "mobile") for ident in by_id}
 
 
