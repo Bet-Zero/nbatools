@@ -1366,6 +1366,18 @@ def _execute_or_query_build_result(query: str) -> tuple:
         raise ValueError("Named opponent stat conditions with OR are not yet supported.")
 
     base = _build_parse_state(query)
+    # The raw name detections can mistake a list member for the subject.
+    # Inherit the executable scope, including a cleared invented team, while
+    # _merge_inherited_context still gives each clause's own scope precedence.
+    canonical = full.get("route_kwargs") or {}
+    if not isinstance(canonical.get("opponent"), list):
+        try:
+            canonical = parse_query(clauses[0]).get("route_kwargs") or {}
+        except ValueError:
+            canonical = {}
+    for key in ("player", "team", "opponent"):
+        if key in canonical:
+            base[key] = canonical[key]
     conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
     full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))
@@ -1466,6 +1478,53 @@ def _execute_or_query_build_result(query: str) -> tuple:
     if top_n and isinstance(combined, FinderResult) and len(combined.games) > top_n:
         # "LeBron's last 10 games with 30 points or 10 assists": the asked cap.
         combined = FinderResult(games=combined.games.head(top_n).reset_index(drop=True))
+
+    # Different branch samples cannot be described by the first branch's
+    # global opponent or by flattening all thresholds into one sample.
+    branches = []
+    execution_options = {
+        "stat",
+        "min_value",
+        "max_value",
+        "conditions",
+        "limit",
+        "sort_by",
+        "ascending",
+    }
+    for item in clause_parsed:
+        kwargs = item["route_kwargs"]
+        scope = {
+            key: value
+            for key, value in kwargs.items()
+            if key not in execution_options
+            and value is not None
+            and value is not False
+            and value != ""
+            and value != []
+            and value != {}
+        }
+        primary = primary_condition_from_kwargs(kwargs)
+        conditions = normalize_stat_conditions(
+            ([primary] if primary else [])
+            + list(kwargs.get("conditions") or [])
+            + list(item.get("extra_conditions") or [])
+        )
+        branches.append({"scope": scope, "conditions": conditions})
+    if branches and any(branch["scope"] != branches[0]["scope"] for branch in branches[1:]):
+        for result in results:
+            if isinstance(result, NoResult) and result.result_reason not in (None, "no_match"):
+                return result, full
+        parsed["boolean_filter_branches"] = branches
+        for key in set().union(*(branch["scope"] for branch in branches)):
+            values = [branch["scope"].get(key) for branch in branches]
+            if any(value != values[0] for value in values[1:]):
+                parsed[key] = parsed["route_kwargs"][key] = None
+        for key in ("conditions", "threshold_conditions", "extra_conditions"):
+            parsed[key] = []
+        parsed["route_kwargs"]["conditions"] = []
+        for key in ("min_value", "max_value"):
+            parsed[key] = parsed["route_kwargs"][key] = None
+        parsed["stat"] = parsed["route_kwargs"]["stat"] = rank_stat
     return combined, parsed
 
 

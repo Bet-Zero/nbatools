@@ -328,6 +328,39 @@ def _build_applied_filters(
 ) -> list[dict[str, str]]:
     route_kwargs = route_kwargs or {}
     applied_filters: list[dict[str, str]] = []
+    if branches := source.get("boolean_filter_branches"):
+        descriptions = []
+        for branch in branches:
+            scope = branch["scope"]
+            filters = _build_applied_filters(
+                scope, route_kwargs={**scope, "conditions": branch["conditions"]}
+            )
+            parts = [f"{f['label']}: {f['value']}" for f in filters if f["kind"] != "threshold"]
+            for key in (
+                "player",
+                "team",
+                "season",
+                "start_season",
+                "end_season",
+                "season_type",
+                "start_date",
+                "end_date",
+            ):
+                if scope.get(key) and scope.get(key) != source.get(key):
+                    parts.insert(0, str(scope[key]))
+            bounds = []
+            for condition in branch["conditions"]:
+                label = _filter_stat_label(condition["stat"]).upper()
+                if condition.get("min_value") is not None:
+                    bounds.append(f"{_minimum_threshold_phrase(condition['min_value'])} {label}")
+                if condition.get("max_value") is not None:
+                    bounds.append(f"{_maximum_threshold_phrase(condition['max_value'])} {label}")
+            descriptions.append(
+                "(" + "; ".join([*parts, *([" AND ".join(bounds)] if bounds else [])]) + ")"
+            )
+        applied_filters.append(
+            {"label": "Any branch (OR)", "value": " OR ".join(descriptions), "kind": "boolean"}
+        )
 
     opponent_conference = source.get("opponent_conference") or route_kwargs.get(
         "opponent_conference"
@@ -706,6 +739,7 @@ def _build_query_metadata(
         "position_filter": parsed.get("position_filter"),
         "grouped_boolean_used": grouped_boolean_used,
         "boolean_filter_mode": parsed.get("boolean_filter_mode"),
+        "boolean_filter_branches": parsed.get("boolean_filter_branches"),
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
 
