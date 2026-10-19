@@ -30,6 +30,8 @@ def _qualify(case):
     selected = teams[
         teams.team_abbr.eq(case["subject"]) & teams.opponent_team_abbr.isin(case["opponents"])
     ]
+    if case.get("away_only"):
+        selected = selected[selected.is_away.eq(1)]
     assert set(selected.game_id) == {r["game_id"] for r in case["rows"]}
     for truth in case["rows"]:
         own = selected[selected.game_id.eq(truth["game_id"])].iloc[0]
@@ -163,3 +165,74 @@ def test_explicit_player_team_scoring_uses_own_team_with_self_member():
     summary = sections["summary"][0]
     assert summary["games"] == 1
     assert [summary[stat + "_sum"] for stat in ["pts", "reb", "ast"]] == [16, 9, 8]
+
+
+# Root froze these reciprocal-source controls before maker edits. They are
+# revealed after independent review; primary.json remains author-known evidence.
+REVEALED = json.loads(
+    (Path(__file__).parent / "fixtures/self_opponent_union/revealed_controls.json").read_text()
+)
+
+
+@pytest.mark.parametrize(
+    "index,query",
+    [
+        (0, "Knicks away record against Knicks and Heat in 2023-24"),
+        (0, "Knicks away record against Heat and Knicks in 2023-24"),
+        (0, "Against NYK and MIA, what was Knicks away record in 2023-24?"),
+        (1, "Against Lakers and Warriors, what was Warriors record in 2023-24?"),
+        (1, "Warriors record against Warriors and Lakers in 2023-24"),
+        (1, "GSW record against LAL and GSW in 2023-24"),
+    ],
+)
+def test_root_preimplementation_frozen_source_controls(index, query, monkeypatch):
+    assert REVEALED["source_hashes"] == ORACLE["sources"]
+    frozen = REVEALED["cases"][index]
+    case = dict(
+        subject=frozen["subject"],
+        opponents=[frozen["subject"], frozen["opponent"]],
+        away_only=" away " in frozen["query"],
+        rows=[
+            {
+                **{
+                    key: int(row[key])
+                    for key in ["game_id", "team_id", "opponent_team_id", "pts", "reb", "ast"]
+                },
+                **{key: row[key] for key in ["game_date", "team_abbr", "opponent_team_abbr", "wl"]},
+            }
+            for row in frozen["rows"]
+        ],
+    )
+    _qualify(case)
+    captured = []
+    original = team_record._compute_record
+
+    def capture(frame):
+        captured.append(frame.copy())
+        return original(frame)
+
+    monkeypatch.setattr(team_record, "_compute_record", capture)
+    result = execute_natural_query(query)
+    opponents = (
+        [frozen["opponent"], frozen["subject"]]
+        if query
+        in [
+            "Knicks away record against Heat and Knicks in 2023-24",
+            "Against Lakers and Warriors, what was Warriors record in 2023-24?",
+            "GSW record against LAL and GSW in 2023-24",
+        ]
+        else case["opponents"]
+    )
+    _metadata(result, case, opponents)
+    assert captured and all(set(frame.game_id) == set(frozen["ids"]) for frame in captured)
+    frame = captured[0]
+    assert all(frame.team_abbr.eq(frozen["subject"]))
+    if case["away_only"]:
+        assert all(frame.is_away.eq(1))
+    row = result.result.to_dict()["sections"]["summary"][0]
+    assert row["games"] == len(frozen["ids"])
+    for key in ["wins", "losses"]:
+        assert row[key] == frozen[key]
+    for stat, total in frozen["sums"].items():
+        assert int(frame[stat].sum()) == total
+        assert row[stat + "_avg"] == pytest.approx(total / len(frozen["ids"]), abs=0.001)
