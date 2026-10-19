@@ -5,6 +5,70 @@ import { makeResponse } from "./helpers";
 
 describe("ResultRenderer game-log patterns", () => {
 
+  it.each([true, false])("keeps OR sample labels paired and the headline neutral (different opponents=%s)", (different) => {
+    const value = different
+      ? "(Opponent: BOS, WAS; 30+ PTS) OR (Opponent: NYK; 9+ AST)"
+      : "30+ PTS OR 9+ AST";
+    const bounds = [
+      { stat: "pts", min_value: 30, max_value: null },
+      { stat: "ast", min_value: 9, max_value: null },
+    ];
+    render(<ResultRenderer data={makeResponse({
+      query: "LeBron James games against Celtics and Wizards with at least 30 points or at least 9 assists in 2023-24",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder", result_status: "ok", notes: [], caveats: [],
+        metadata: {
+          player_context: { player_id: 2544, player_name: "LeBron James" },
+          season: "2023-24", boolean_filter_mode: "any", sort_by: "stat",
+          stat: different ? null : "pts",
+          threshold_conditions: different ? [] : bounds,
+          boolean_filter_branches: different ? [
+            { scope: { opponent: ["BOS", "WAS"] }, conditions: [bounds[0]] },
+            { scope: { opponent: "NYK" }, conditions: [bounds[1]] },
+          ] : null,
+          applied_filters: different
+            ? [{ kind: "boolean", label: "Any branch (OR)", value }]
+            : [
+              { kind: "threshold", label: "pts min", value: "30" },
+              { kind: "threshold", label: "ast min", value: "9" },
+            ],
+        },
+        sections: { finder: [
+          { game_id: 1, player_id: 2544, player_name: "LeBron James", pts: 31, ast: 9 },
+          { game_id: 2, player_id: 2544, player_name: "LeBron James", pts: 25, ast: 9 },
+        ] },
+      },
+    })} />);
+    expect(screen.getByText("LeBron James had 2 games matching at least one condition in 2023-24.")).toBeVisible();
+    expect(screen.getAllByText(value).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/highest-scoring|had 2 games with 30/)).not.toBeInTheDocument();
+  });
+
+  it("does not label a mixed-season OR union with its first row's season", () => {
+    render(<ResultRenderer data={makeResponse({
+      query: "LeBron James games with 30 points in 2023-24 or 9 assists this season",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder", result_status: "ok", notes: [], caveats: [],
+        metadata: {
+          player_context: { player_id: 2544, player_name: "LeBron James" },
+          season: null, boolean_filter_mode: "any",
+          boolean_filter_branches: [
+            { scope: { season: "2023-24" }, conditions: [{ stat: "pts", min_value: 30, max_value: null }] },
+            { scope: { season: "2025-26" }, conditions: [{ stat: "ast", min_value: 9, max_value: null }] },
+          ],
+        },
+        sections: { finder: [
+          { game_id: 2, player_id: 2544, player_name: "LeBron James", season: "2025-26", pts: 25, ast: 9 },
+          { game_id: 1, player_id: 2544, player_name: "LeBron James", season: "2023-24", pts: 31, ast: 9 },
+        ] },
+      },
+    })} />);
+    expect(screen.getByText("LeBron James had 2 games matching at least one condition.")).toBeVisible();
+    expect(screen.queryByText(/matching at least one condition (in|this)/)).not.toBeInTheDocument();
+  });
+
   it("names the opponent that owns the scoring condition", () => {
     const data = makeResponse({
       route: "player_game_finder",
