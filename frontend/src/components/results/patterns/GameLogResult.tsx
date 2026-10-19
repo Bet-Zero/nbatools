@@ -276,6 +276,13 @@ function finderCountHeadline(
   const condition = thresholdPhraseFromQuery(data.query);
   const timeframe = finderTimeframe(data.query, rows[0], data.result?.metadata);
   const gameNoun = rows.length === 1 ? "game" : "games";
+  const branchCount = data.result.metadata.boolean_filter_branches?.length;
+  const disjunction = data.result.metadata.boolean_filter_mode === "any"
+    && metadataConditions(data.result.metadata).length > 1;
+  if (branchCount || disjunction) {
+    const subject = data.result.metadata.player_context ? `${player} had` : "There were";
+    return `${subject} ${rows.length} ${gameNoun} matching at least one condition${timeframe}.`;
+  }
   if (data.result?.metadata?.sort_by === "stat" && data.result?.metadata?.stat === "pts") {
     const direction = data.result.metadata.ascending === true ? "lowest" : "highest";
     return `${player}'s ${rows.length} ${direction}-scoring ${gameNoun}${timeframe}.`;
@@ -319,6 +326,10 @@ function finderTimeframe(
   row: SectionRow | undefined,
   metadata: ResultMetadata | undefined,
 ): string {
+  if (metadata?.boolean_filter_branches?.length) {
+    // A row belongs to one branch; its season cannot describe the union.
+    return metadata.season ? ` in ${metadata.season}` : "";
+  }
   if (/\bthis\s+(?:season|year)\b/i.test(query)) return " this season";
   const season = textValue(row, "season") ?? metadata?.season;
   return typeof season === "string" && season.trim() ? ` in ${season}` : "";
@@ -696,6 +707,9 @@ function metadataConditions(
   metadata: ResultMetadata | undefined,
 ): Array<{ stat: string }> {
   const conditions: Array<{ stat: string }> = [];
+  for (const branch of metadata?.boolean_filter_branches ?? []) {
+    conditions.push(...branch.conditions.map(({ stat }) => ({ stat })));
+  }
   for (const key of ["threshold_conditions", "extra_conditions"]) {
     const raw = metadata?.[key];
     if (!Array.isArray(raw)) continue;
@@ -955,7 +969,7 @@ function contextItems(data: QueryResponse, rows: SectionRow[]): SummaryItem[] {
   ];
 
   const condition = conditionText(metadata);
-  if (condition) {
+  if (condition && !metadata?.boolean_filter_branches?.length) {
     items.push({ key: "condition", label: "Filter", value: condition });
   }
 
@@ -971,6 +985,9 @@ function contextItems(data: QueryResponse, rows: SectionRow[]): SummaryItem[] {
 }
 
 function conditionText(metadata: ResultMetadata | undefined): string | null {
+  if (metadata?.boolean_filter_branches?.length) {
+    return metadata.applied_filters?.find((filter) => filter.kind === "boolean")?.value ?? null;
+  }
   const separator = metadata?.boolean_filter_mode === "any" ? " OR " : " AND ";
   const applied = (metadata?.applied_filters ?? []).filter(
     (filter) => filter.kind === "threshold",

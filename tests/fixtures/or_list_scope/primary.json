@@ -1,0 +1,156 @@
+{
+  "reviewer": "/root/participation_request",
+  "frozen_before_candidate": true,
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "sources": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
+  },
+  "method": "Independent stdlib CSV joins by game_id/team_id; final catalog identity and reciprocal opponents verified before evaluating disjunction; bounded observed appearances, no tenure/missing participation inference.",
+  "case": {
+    "query": "LeBron James games against Celtics and Wizards with at least 30 points or at least 9 assists in 2023-24",
+    "player_id": 2544,
+    "team_id": 1610612747,
+    "base_opponents": [
+      "BOS",
+      "WAS"
+    ],
+    "branches": [
+      {
+        "opponents": [
+          "BOS",
+          "WAS"
+        ],
+        "stat": "pts",
+        "minimum_inclusive": 30
+      },
+      {
+        "opponents": [
+          "BOS",
+          "WAS"
+        ],
+        "stat": "ast",
+        "minimum_inclusive": 9
+      }
+    ],
+    "candidate_rows": [
+      {
+        "game_id": 22300403,
+        "game_date": "2023-12-25",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612738,
+        "opponent_team_abbr": "BOS",
+        "pts": 16,
+        "reb": 9,
+        "ast": 8,
+        "team_pts": 115,
+        "opponent_pts": 126,
+        "wl": "L",
+        "matching_branches": []
+      },
+      {
+        "game_id": 22300856,
+        "game_date": "2024-02-29",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 31,
+        "reb": 4,
+        "ast": 9,
+        "team_pts": 134,
+        "opponent_pts": 131,
+        "wl": "W",
+        "matching_branches": [
+          0,
+          1
+        ]
+      },
+      {
+        "game_id": 22301103,
+        "game_date": "2024-04-03",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 25,
+        "reb": 7,
+        "ast": 9,
+        "team_pts": 125,
+        "opponent_pts": 120,
+        "wl": "W",
+        "matching_branches": [
+          1
+        ]
+      }
+    ],
+    "selected_rows": [
+      {
+        "game_id": 22300856,
+        "game_date": "2024-02-29",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 31,
+        "reb": 4,
+        "ast": 9,
+        "team_pts": 134,
+        "opponent_pts": 131,
+        "wl": "W",
+        "matching_branches": [
+          0,
+          1
+        ]
+      },
+      {
+        "game_id": 22301103,
+        "game_date": "2024-04-03",
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "pts": 25,
+        "reb": 7,
+        "ast": 9,
+        "team_pts": 125,
+        "opponent_pts": 120,
+        "wl": "W",
+        "matching_branches": [
+          1
+        ]
+      }
+    ],
+    "selected_ids": [
+      22300856,
+      22301103
+    ],
+    "count": 2,
+    "wins": 2,
+    "losses": 0,
+    "totals": {
+      "pts": 56,
+      "reb": 11,
+      "ast": 18
+    },
+    "means": {
+      "pts": 28.0,
+      "reb": 5.5,
+      "ast": 9.0
+    },
+    "dedupe": "game_id,team_id,player_id; a row satisfying both branches is included once"
+  }
+}

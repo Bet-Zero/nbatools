@@ -96,6 +96,15 @@ deduplication preserve the owner; missing row identity cannot satisfy it.
 Threshold metadata and display labels name the owner explicitly, such as
 `BOS Opp PTS min`. Conditions without this field retain their existing meaning.
 
+Finder OR requests with different branch samples expose
+`boolean_filter_branches`: each contains the executed `scope` and effective AND
+`conditions`. Only shared scope values remain global. Scalar bounds and flattened
+conditions are cleared so one branch's opponent or bar cannot describe the whole
+union. The `Any branch (OR)` applied filter preserves each scope/bound pairing;
+the game-log display uses that description and a neutral matching-branch headline.
+An executed branch with no matching games remains represented. Shared-scope OR
+requests retain their existing metadata contract.
+
 ### 1.4 No-result and error semantics
 
 `NoResult` is a first-class structured result. Its current canonical reasons

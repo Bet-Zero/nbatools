@@ -91,6 +91,11 @@ export interface AppliedFilter {
   kind: string;
 }
 
+export interface BooleanFilterBranch {
+  scope: Record<string, unknown>;
+  conditions: Array<{ stat: string; min_value: number | null; max_value: number | null }>;
+}
+
 export interface DisambiguationCandidate {
   id?: number | string | null;
   display_name?: string | null;
@@ -122,6 +127,7 @@ export interface ResultMetadata {
   split_type?: string | null;
   grouped_boolean_used?: boolean;
   boolean_filter_mode?: "any" | "all" | "grouped" | null;
+  boolean_filter_branches?: BooleanFilterBranch[] | null;
   head_to_head_used?: boolean;
   current_through?: string | null;
   scope_kind?: string | null;
