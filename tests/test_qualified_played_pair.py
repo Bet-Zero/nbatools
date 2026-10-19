@@ -119,6 +119,20 @@ def test_existing_structured_conjunction_is_same_sample(pair_sample, pair):
 
 
 @pytest.mark.parametrize(
+    "scope", ["within their last 1 game", "in their last 1 qualifying game", "last 1 game"]
+)
+def test_unfinished_new_pair_temporal_composition_never_opens_wrong_sample(pair_sample, scope):
+    """Containment only: the legitimate temporal obligations remain unfinished."""
+    result = execute_natural_query(
+        f"Lakers record against Celtics {scope} with Tatum playing while Reaves plays in 2023-24"
+    )
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
     "clause",
     [
         "with Tatum playing while Blorg plays",

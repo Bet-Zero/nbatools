@@ -1,0 +1,117 @@
+{
+  "status": "UNFINISHED positive temporal compositions; containment is not delivery",
+  "generation": "availability-opening-s4-v1-20261017",
+  "source_hashes": {
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c"
+  },
+  "candidate_game_ids": [
+    22300403,
+    22300684
+  ],
+  "source_facts": [
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": "1610612738",
+      "player_id": "1628369",
+      "player_name": "Jayson Tatum",
+      "participation_state": "played",
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+      "source_minutes": "41.233333333333334",
+      "source_comment": "",
+      "coverage_scope": "listed_player_rows_only"
+    },
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": "1610612747",
+      "player_id": "203076",
+      "player_name": "Anthony Davis",
+      "participation_state": "played",
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+      "source_minutes": "38.833333333333336",
+      "source_comment": "",
+      "coverage_scope": "listed_player_rows_only"
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": "1610612738",
+      "player_id": "1628369",
+      "player_name": "Jayson Tatum",
+      "participation_state": "played",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "source_minutes": "36.61666666666667",
+      "source_comment": "",
+      "coverage_scope": "listed_player_rows_only"
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": "1610612747",
+      "player_id": "203076",
+      "player_name": "Anthony Davis",
+      "participation_state": "did_not_play",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "source_minutes": "",
+      "source_comment": "INACTIVE - Injury/Illness - Bilateral Achilles; Tendinopathy & Left Hip Spasm",
+      "coverage_scope": "listed_player_rows_only"
+    }
+  ],
+  "future_positive_obligations": [
+    {
+      "query": "Of the Lakers last game against Celtics in 2023-24, did BOTH Jayson Tatum and Anthony Davis play?",
+      "meaning": "Select the latest original LAL-BOS game before testing BOTH played predicates.",
+      "expected_window_game_ids": [
+        22300684
+      ],
+      "qualified_pair_played": false,
+      "expected_qualifying_game_ids": []
+    },
+    {
+      "query": "Lakers record against Celtics in their last 1 qualifying game with Jayson Tatum playing while Anthony Davis plays in 2023-24",
+      "meaning": "Qualify both named participation predicates before selecting the latest qualifying meeting.",
+      "expected_game_ids": [
+        22300403
+      ],
+      "expected_record": {
+        "games": 1,
+        "wins": 0,
+        "losses": 1,
+        "pts": 115,
+        "reb": 43,
+        "ast": 24
+      }
+    }
+  ],
+  "interpretation_baseline": {
+    "revision": "53950bab20e7cca9c9db5d38a9d48b205f0e7e22",
+    "query": "Lakers record against Celtics within their last 1 game with Anthony Davis playing in 2023-24",
+    "observed_natural_and_forced_structured_window": [
+      {
+        "status": "ok",
+        "reason": null,
+        "last_n_scope": "qualifying",
+        "game_ids": [
+          22300403
+        ]
+      },
+      {
+        "status": "ok",
+        "reason": null,
+        "last_n_scope": "window",
+        "game_ids": [
+          22300403
+        ]
+      }
+    ],
+    "existing_contract": "Availability chooses the participation cohort before last-N selection, including structured window. The earlier within wording is retained as an interpretation baseline, not claimed as a repaired scalar bug.",
+    "candidate_pair_before_containment": "1c1fd8df69e1d51590576ccc2cf4793b0975e9c8 selected22300403 for the same within wording."
+  },
+  "current_boundary": "Do not promote NEW played_matchup_pair clauses when last_n exists. Preserve preexisting native cooperative pair handling; do not claim the excluded qualifying or window questions are invalid or implemented."
+}

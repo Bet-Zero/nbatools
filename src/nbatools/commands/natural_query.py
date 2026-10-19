@@ -4091,9 +4091,16 @@ def _route_parsed_query(parsed: dict) -> dict:
     )
     played_pair = (
         played_matchup_pair(q)
-        if team and opponent and team_record_availability_intent and not without_player
+        if team
+        and opponent
+        and team_record_availability_intent
+        and not without_player
+        and last_n is None
         else None
     )
+    # Existing availability chooses a cohort before last-N selection. Do not
+    # promote new two-clause temporal combinations until their window/cohort
+    # meaning is preserved; native cooperative pair handling remains below.
 
     # Generic semantic/product boundaries must fail before route inference can
     # turn them into plausible player, finder, or leaderboard answers. Keep the

@@ -403,6 +403,11 @@ Contract rules:
   Missing/unknown evidence for the second player cannot be hidden by an empty
   first predicate. This does not promote mixed played/absent, OR, player-owned
   numeric conditions, medical/status or on-court language.
+  New two-clause played compositions with last-N are not promoted: their
+  temporal meaning remains unfinished. Existing native availability cohorts
+  still select participation before last-N. The separate latest-original-game
+  predicate and latest-qualifying-meeting requirements are retained in
+  `tests/fixtures/qualified_played_pair/temporal_obligations.json`.
   Readers cache by immutable data generation and do not infer injury or on-court
   absence. Publication lineage is validated before activation. This consumer
   does not certify complete rosters, unlisted players, full-season coverage or
