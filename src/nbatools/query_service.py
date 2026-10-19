@@ -328,6 +328,12 @@ def _build_applied_filters(
 ) -> list[dict[str, str]]:
     route_kwargs = route_kwargs or {}
     applied_filters: list[dict[str, str]] = []
+    if source.get("player_a") and source.get("player_b") and not source.get("head_to_head"):
+        playing_for = route_kwargs.get("team", source.get("team"))
+        if playing_for:
+            applied_filters.append(
+                {"label": "Playing for", "value": str(playing_for), "kind": "team"}
+            )
     if branches := source.get("boolean_filter_branches"):
         descriptions = []
         for branch in branches:
