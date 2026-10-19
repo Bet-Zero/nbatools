@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9afbab2083c69acfc35f871ca305db4ba60ee252",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_original_window_played_pair_real_data.py",
+    "tests/test_qualified_played_pair_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "original_window_played_pair_source_empty",
+    "original_window_played_pair_source_positive",
+    "original_window_played_pair_source_qualifying"
+  ]
+}
