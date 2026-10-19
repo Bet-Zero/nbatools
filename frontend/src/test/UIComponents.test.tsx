@@ -209,6 +209,29 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("describes an unsupported named-team condition without claiming missing points", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "team_record",
+          team: "LAL",
+          stat: "pts",
+          unsupported_filters: ["other_team_stat"],
+        }}
+      />,
+    );
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "A condition on another named team's statistics is not supported for this sample yet.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Points is not available for this query.")).not.toBeInTheDocument();
+    expect(screen.queryByText("No Matching Results")).not.toBeInTheDocument();
+  });
+
   it("uses supported recovery copy for legacy personal-foul leaderboard boundaries", () => {
     render(
       <NoResultDisplay
