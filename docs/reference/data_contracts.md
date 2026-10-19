@@ -442,6 +442,28 @@ Contract rules:
   The old date/appearance-omission-to-No formatter has been removed. Scalar
   score/outcome yes-no semantics and legacy calendar/freshness interpretation
   are unchanged; qualifying/N>1, status/on-court and unread compositions stay open.
+  One complete scalar minutes predicate on an explicit team/latest original
+  named matchup in a regular season uses this same original TEAM-game selector
+  and protected participation qualification. The checked player keeps identity-only
+  metadata separately from the team table. Played athletes require a same-game,
+  actual-side/date official report time: finite positive `source_minutes` whose
+  seconds are integral within serialization tolerance. The answer shows MM:SS;
+  rounded legacy player minutes never substitute for exact threshold evidence.
+  The existing threshold-span extractor's optional `exact_stat` mode retains
+  unshifted bounds and internal `min_inclusive`/`max_inclusive` flags in the
+  existing yes/no note. Default legacy bound dictionaries/epsilon behavior are
+  unchanged; no public request/result fields were added. Strict comparisons near
+  a source second therefore keep their true inclusivity without epsilon guesses.
+  Explicit DNP answers No to PLAYED plus any minutes bound (including upper
+  bounds), because the player did not play, with no numericalzero/player row.
+  Unknown/conflicting game-day facts or missing precise report time return
+  `filter_not_supported` without a Boolean or older appearance substitute.
+  Minutes-check labels describe checks on the retained game, not an applied
+  player cohort; table totals remain team evidence. Native bare statistical
+  minutes, multi-stat AND/OR/outcome checks outside this bounded original-matchup
+  extension retain their existing semantics; broader original stat compositions
+  remain unfinished. Frozen source/consumer/precision contracts are under
+  `tests/fixtures/qualified_original_minutes/`.
   All 46 original PR462 absence obligations remain open. Baselines
   and exact original/qualifying source requirements are retained in
   `tests/fixtures/qualified_played_pair/temporal_obligations.json`; root-frozen

@@ -206,3 +206,56 @@ def _filter_observed(
             states.append(row.participation_state == state)
         keep &= pd.Series(states, index=candidates.index)
     return candidates.loc[keep].copy()
+
+
+def qualified_report_seconds(
+    candidate: pd.Series, player: str, seasons: list[str], season_type: str, *, played: bool
+) -> int | None:
+    """Exact report time AFTER protected participation qualification on this game.
+
+    Positive appearance minutes can qualify play, but cannot substitute for
+    precise report time. Resolve the actual side from this game's observation.
+    """
+    import math
+
+    rows = load_observations(seasons, season_type)
+    matching = rows.loc[player_name_mask(rows, player)]
+    ids = set(matching.player_id) | {
+        int(value) for value in player_ids_for_name(player) if str(value).isdigit()
+    }
+    rows = rows.loc[rows.player_id.isin(ids)]
+    if rows.player_id.nunique() != 1:
+        raise ValueError(f"Unavailable or ambiguous precise minutes identity for {player}")
+    rows = rows.loc[
+        rows.game_id.eq(int(candidate.game_id))
+        & rows.team_id.isin([int(candidate.team_id), int(candidate.opponent_team_id)])
+        & pd.to_datetime(rows.game_date).dt.date.eq(pd.Timestamp(candidate.game_date).date())
+    ]
+    if len(rows) != 1:
+        raise ValueError(f"No qualified precise report time for {player} on the original game")
+    row = rows.iloc[0]
+    if row.participation_state != ("played" if played else "did_not_play"):
+        raise ValueError(f"Conflicting report participation state for {player}")
+    raw_minutes = row.get("source_minutes")
+    if not played:
+        if raw_minutes is None or pd.isna(raw_minutes) or str(raw_minutes).strip() == "":
+            return None
+        try:
+            value = float(raw_minutes)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Unqualified DNP report time for {player}") from exc
+        if not math.isfinite(value) or value != 0:
+            raise ValueError(f"DNP conflicts with report time for {player}")
+        return None
+    try:
+        minutes = float(raw_minutes)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"No qualified precise report time for {player} on the original game"
+        ) from exc
+    if row.participation_state != "played" or not math.isfinite(minutes) or minutes <= 0:
+        raise ValueError(f"No qualified positive report time for {player} on the original game")
+    seconds = minutes * 60
+    if round(seconds) <= 0 or not math.isclose(seconds, round(seconds), rel_tol=0.0, abs_tol=1e-8):
+        raise ValueError(f"Report time for {player} does not have qualified whole-second precision")
+    return round(seconds)

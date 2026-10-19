@@ -143,3 +143,7 @@ case_ids:
   - qualified_scalar_played_source_yes
   - qualified_scalar_played_source_dnp_no
   - qualified_scalar_played_source_unknown
+  - qualified_original_minutes_source_dnp_no
+  - qualified_original_minutes_source_exact_no
+  - qualified_original_minutes_source_exact_yes
+  - qualified_original_minutes_source_unknown

@@ -1794,19 +1794,31 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
         metadata.update(result.metadata)
         filters = list(metadata.get("applied_filters") or [])
         scalar = len(request["players"]) == 1
+        minutes_check = (request.get("checks") or [None])[0]
         for item in filters:
             if item.get("label") == "Sample selection":
                 item["value"] = (
-                    "Select the latest original team game before checking the played predicate"
+                    "Select the latest original team matchup before checking player minutes"
+                    if minutes_check
+                    else "Select the latest original team game before checking the played predicate"
                     if scalar
                     else "Select the latest original matchup game "
                     "before checking both played predicates"
                 )
+        if minutes_check:
+            from nbatools.commands._original_minutes import check_description
+
         filters.append(
             {
-                "label": "Played check",
+                "label": "Minutes check" if minutes_check else "Played check",
                 "value": " and ".join(request["players"])
-                + (" played" if scalar else " both played"),
+                + (
+                    " played " + check_description(minutes_check)
+                    if minutes_check
+                    else " played"
+                    if scalar
+                    else " both played"
+                ),
                 "kind": "player",
             }
         )

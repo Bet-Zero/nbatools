@@ -15238,3 +15238,191 @@ cases:
     - path: result.metadata.with_player
       equals: null
     review_notes: Legitimate question remains unavailable because latest DAL game22501193 has no qualified AD game-day identity/state; appearance22500531 is not membership or DNP proof. This contains the false omission-based No while preserving known-source Yes/DNP No positives. Source fixture1d55567 records immutable raw identities and missing observations; no collection or current-team assertion.
+
+  - id: qualified_original_minutes_source_dnp_no
+    query: Did Anthony Davis play at least 30 minutes in the Lakers last game against Celtics in 2023-24?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Minutes check
+      value: Anthony Davis played >= 30 minutes
+    - kind: window
+      label: Sample selection
+      value: Select the latest original team matchup before checking player minutes
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.player_context
+      equals:
+        player_id: 203076
+        player_name: Anthony Davis
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.answer_phrase
+      equals: 'No: Anthony Davis did not play in the Los Angeles Lakers'' latest original game against the Boston Celtics (2024-02-01); the check was played >= 30 minutes.'
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.team_id
+      equals: 1610612747
+    - path: result.sections.finder.0.pts
+      equals: 114
+    - path: result.sections.finder.0.reb
+      equals: 52
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Preimplementation source f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad and consumer0b8d2466 frozen separately; exact-bound inclusivity addendum af50aa4c. Source/PDF MM:SS differs from rounded canonical minutes. Original TEAM row remains distinct from checked-player identity; DNP No has no invented numericalzero/player row. Independent review, R2 and deployed proof remain separate. Five production participation games only; all46 absence positives remain open.
+  - id: qualified_original_minutes_source_exact_no
+    query: Did Jayson Tatum play at least 37 minutes in the Celtics last game against Lakers in 2023-24?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Minutes check
+      value: Jayson Tatum played >= 37 minutes
+    - kind: window
+      label: Sample selection
+      value: Select the latest original team matchup before checking player minutes
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Jayson Tatum
+    - path: result.metadata.player_context
+      equals:
+        player_id: 1628369
+        player_name: Jayson Tatum
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.answer_phrase
+      equals: 'No: Jayson Tatum played 36:37 in the Boston Celtics'' latest original game against the Los Angeles Lakers (2024-02-01); the check was played >= 37 minutes.'
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.team_id
+      equals: 1610612738
+    - path: result.sections.finder.0.pts
+      equals: 105
+    - path: result.sections.finder.0.reb
+      equals: 54
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Preimplementation source f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad and consumer0b8d2466 frozen separately; exact-bound inclusivity addendum af50aa4c. Source/PDF MM:SS differs from rounded canonical minutes. Original TEAM row remains distinct from checked-player identity; DNP No has no invented numericalzero/player row. Independent review, R2 and deployed proof remain separate. Five production participation games only; all46 absence positives remain open.
+  - id: qualified_original_minutes_source_exact_yes
+    query: Did Jaylen Brown play over 27 minutes in the Celtics last game against Lakers in 2023-24?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Minutes check
+      value: Jaylen Brown played > 27 minutes
+    - kind: window
+      label: Sample selection
+      value: Select the latest original team matchup before checking player minutes
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Jaylen Brown
+    - path: result.metadata.player_context
+      equals:
+        player_id: 1627759
+        player_name: Jaylen Brown
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.answer_phrase
+      equals: 'Yes: Jaylen Brown played 27:24 in the Boston Celtics'' latest original game against the Los Angeles Lakers (2024-02-01); the check was played > 27 minutes.'
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.team_id
+      equals: 1610612738
+    - path: result.sections.finder.0.pts
+      equals: 105
+    - path: result.sections.finder.0.reb
+      equals: 54
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Preimplementation source f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad and consumer0b8d2466 frozen separately; exact-bound inclusivity addendum af50aa4c. Source/PDF MM:SS differs from rounded canonical minutes. Original TEAM row remains distinct from checked-player identity; DNP No has no invented numericalzero/player row. Independent review, R2 and deployed proof remain separate. Five production participation games only; all46 absence positives remain open.
+  - id: qualified_original_minutes_source_unknown
+    query: Did Anthony Davis play at least 30 minutes in the Lakers last game against Celtics in 2025-26?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: game_finder
+    expected_shape: no_result
+    expected_sections: []
+    expected_reason: filter_not_supported
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.player_context
+      equals:
+        player_id: 203076
+        player_name: Anthony Davis
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.with_player
+      equals: null
+    review_notes: Preimplementation source f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad and consumer0b8d2466 frozen separately; exact-bound inclusivity addendum af50aa4c. Source/PDF MM:SS differs from rounded canonical minutes. Original TEAM row remains distinct from checked-player identity; DNP No has no invented numericalzero/player row. Independent review, R2 and deployed proof remain separate. Five production participation games only; all46 absence positives remain open.
