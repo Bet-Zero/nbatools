@@ -490,6 +490,15 @@ after an explicitly approved publication.
 
 ## Vercel Frontend Build
 
+`vercel.json` disables automatic Git deployments for `r2-validation/**` and
+`codex/*-production-gate`. These branches carry read-only validation requests or
+browser acceptance tests; ordinary CI and the existing validation workflow still
+run. Main and other feature branches retain the default automatic deployments.
+The [Git deployment control](https://vercel.com/docs/project-configuration/git-configuration)
+prevents matching automatic triggers rather than merely skipping a build. Keep
+these rules when integrating older branches; existing deployments are unchanged,
+and this does not establish a quota balance or reset time.
+
 For the existing ChatGPT Vercel connection, project reads and deployment lists
 for `nbatools` work **without** `teamId` or `slug`. The project ID is
 `prj_luTVKSLCFRQP3BYwk93XETz9WwCy`; adding its returned account ID as explicit
