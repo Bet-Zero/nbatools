@@ -1,0 +1,11 @@
+{
+  "game_id": 22500702,
+  "imported_team_ids": [
+    1610612738
+  ],
+  "listed_rows": 17,
+  "source_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+  "publication_state": "staged_only",
+  "production_writes": 0,
+  "qualification": "One Boston game only; no MIL, tenure or other-game inference"
+}

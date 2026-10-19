@@ -625,3 +625,86 @@ def test_cached_repeat_import_revalidates_supplied_source(nba_rows, tmp_path, mo
         with pytest.raises((ValueError, FileNotFoundError)):
             backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
         assert target.read_bytes() == previous
+
+
+def _controlled_retained_cache(tmp_path, monkeypatch, text=PDF_TEXT):
+    cache = tmp_path / "controlled-cache"
+    report._archive_report(
+        b"%PDF controlled importer fixture",
+        "https://statsdmz.nba.com/pdfs/20251021/20251021_GSWLAL.pdf",
+        cache,
+    )
+    monkeypatch.setattr(report, "_report_text", lambda _: text)
+    monkeypatch.setattr(report.urllib.request, "urlopen", _no_network)
+    return cache
+
+
+@pytest.mark.parametrize("scope", [[], [3], [2, 2], ["2"], [True]])
+def test_explicit_report_scope_rejects_invalid_teams(nba_rows, tmp_path, monkeypatch, scope):
+    cache = _controlled_retained_cache(tmp_path, monkeypatch)
+    with pytest.raises(ValueError):
+        backfill(
+            "2025-26", root=nba_rows, source="report", cached_reports=cache, imported_team_ids=scope
+        )
+    assert not list((nba_rows / "raw/player_game_availability").glob("*.csv"))
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "away_score",
+        "home_score",
+        "away_inactive_team",
+        "selected_identity",
+        "missing_played",
+        "duplicate_dnp",
+    ],
+)
+def test_team_scope_keeps_envelope_and_selected_identity_checks(
+    nba_rows, tmp_path, monkeypatch, damage
+):
+    text = PDF_TEXT
+    if damage == "away_score":
+        text = text.replace("240:00 38 78 17 40 119", "240:00 38 78 17 40 118")
+    elif damage == "home_score":
+        text = text.replace("240:00 42 77 8 32 109", "240:00 42 77 8 32 108")
+    elif damage == "away_inactive_team":
+        text = text.replace("Inactive: Warriors -", "Inactive: Celtics -")
+    elif damage == "selected_identity":
+        text = text.replace("9 Bronny James DNP", "9 Unknown Person DNP")
+    elif damage == "missing_played":
+        text = text.replace("77 Luka Doncic G 40:59 17 27 43\n", "")
+    else:
+        text = text.replace(
+            "9 Bronny James DNP", "9 Bronny James DNP - Coach's Decision\n9 Bronny James DNP"
+        )
+    cache = _controlled_retained_cache(tmp_path, monkeypatch, text)
+    with pytest.raises(ValueError):
+        backfill(
+            "2025-26", root=nba_rows, source="report", cached_reports=cache, imported_team_ids=[2]
+        )
+    assert not list((nba_rows / "raw/player_game_availability").glob("*.csv"))
+
+
+def test_scoped_refresh_cannot_delete_existing_other_team_evidence(nba_rows, tmp_path, monkeypatch):
+    from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
+
+    cache = _controlled_retained_cache(tmp_path, monkeypatch)
+    backfill("2025-26", root=nba_rows, source="report", cached_reports=cache)
+    target = nba_rows / "raw/player_game_availability/2025-26_regular_season.csv"
+    receipts = target.with_suffix(".imports.json")
+    before = target.read_bytes(), receipts.read_bytes()
+    validate_publication(nba_rows)  # Existing full-game receipt remains valid.
+    with pytest.raises(ValueError, match="outside-scope"):
+        backfill(
+            "2025-26", root=nba_rows, source="report", cached_reports=cache, imported_team_ids=[2]
+        )
+    assert (target.read_bytes(), receipts.read_bytes()) == before
+    validate_publication(nba_rows)
+
+
+def test_explicit_team_scope_requires_offline_report(nba_rows):
+    with pytest.raises(ValueError, match="retained official report"):
+        backfill("2025-26", root=nba_rows, source="report", imported_team_ids=[2])
+    with pytest.raises(ValueError, match="retained official report"):
+        backfill("2025-26", root=nba_rows, source="stats", imported_team_ids=[2])

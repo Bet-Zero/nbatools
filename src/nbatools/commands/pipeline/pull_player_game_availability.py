@@ -250,14 +250,25 @@ def validate_publication(root: Path) -> None:
             game = game.iloc[0]
             if str(game.is_final).lower() not in {"true", "1"}:
                 raise ValueError("Availability game is not final")
+            receipt = receipts.get(str(int(game_id)), {})
+            canonical_teams = {int(game.home_team_id), int(game.away_team_id)}
+            scope = receipt.get("imported_team_ids")
+            if scope is not None and (
+                not isinstance(scope, list)
+                or not scope
+                or any(type(team) is not int for team in scope)
+                or len(scope) != len(set(scope))
+                or not set(scope).issubset(canonical_teams)
+            ):
+                raise ValueError("Invalid availability import team scope")
+            expected_teams = canonical_teams if scope is None else set(scope)
             if (
                 game.season != season
                 or game.season_type != kind
                 or not rows.game_date.eq(str(game.game_date)).all()
-                or set(rows.team_id.map(int)) != {int(game.home_team_id), int(game.away_team_id)}
+                or set(rows.team_id.map(int)) != expected_teams
             ):
                 raise ValueError("Availability date/team/season differs from canonical game")
-            receipt = receipts.get(str(int(game_id)), {})
             if receipt.get("source") != "report" or receipt.get("sha256") != _game_digest(rows):
                 raise ValueError("Availability import is incomplete or lacks source provenance")
             if rows.source.nunique() != 1 or rows.source_sha256.nunique() != 1:
@@ -385,6 +396,7 @@ def backfill(
     game_ids: list[int] | None = None,
     limit: int | None = None,
     source: str = "stats",
+    imported_team_ids: list[int] | None = None,
 ) -> pd.DataFrame:
     """Fetch/cache official listed-player evidence with resumable, atomic output.
 
@@ -397,6 +409,14 @@ def backfill(
         raise ValueError("Cached NBA Stats JSON is incompatible with ESPN source")
     if cached_reports is not None and source != "report":
         raise ValueError("Cached reports only support the report source")
+    if imported_team_ids is not None and (
+        source != "report"
+        or cached_reports is None
+        or not imported_team_ids
+        or any(type(team) is not int for team in imported_team_ids)
+        or len(imported_team_ids) != len(set(imported_team_ids))
+    ):
+        raise ValueError("Explicit team scope requires a retained official report and team IDs")
     if limit is not None and limit < 1:
         raise ValueError("limit must be positive")
     safe = season_type.lower().replace(" ", "_")
@@ -463,6 +483,15 @@ def backfill(
         if len(expected) != 2:
             raise ValueError("Game does not identify two distinct teams")
         previous = existing[existing["game_id"].map(int).eq(ident)]
+        if imported_team_ids is not None:
+            selected = set(imported_team_ids)
+            if not selected.issubset(expected):
+                raise ValueError("Requested report team is not in the canonical game")
+            if not set(previous.team_id.map(int)).issubset(selected):
+                raise ValueError(
+                    "Scoped import cannot replace existing outside-scope team evidence"
+                )
+            expected = selected
         receipt = receipts.get(str(ident), {})
         # An explicitly supplied retained source must be verified and replayed,
         # even when existing normalized rows have a valid local import digest.
@@ -473,6 +502,10 @@ def backfill(
                 and previous["season"].eq(season).all()
                 and previous["season_type"].eq(season_type).all()
                 and set(previous["team_id"].map(int)) == expected
+                and set(
+                    receipt.get("imported_team_ids", [int(row.home_team_id), int(row.away_team_id)])
+                )
+                == expected
             ):
                 continue
         source_name = SOURCE
@@ -490,6 +523,7 @@ def backfill(
                 away_team_id=int(row.away_team_id),
                 data_root=root,
                 cached_reports=cached_reports,
+                imported_team_ids=imported_team_ids,
             )
             source_name = f"{REPORT_SOURCE}:{report_ref}"
         elif source == "espn":
@@ -532,6 +566,8 @@ def backfill(
         validate_availability(existing)
         _atomic_csv(existing, checkpoint)
         receipts[str(ident)] = {"source": source, "sha256": _game_digest(new)}
+        if imported_team_ids is not None:
+            receipts[str(ident)]["imported_team_ids"] = sorted(expected)
         receipt_tmp = receipts_path.with_suffix(".tmp.json")
         receipt_tmp.write_text(json.dumps(receipts, sort_keys=True) + "\n")
         receipt_tmp.replace(receipts_path)
@@ -555,6 +591,7 @@ def run(
     game_ids: list[int] | None = None,
     limit: int | None = None,
     source: str = "stats",
+    imported_team_ids: list[int] | None = None,
 ) -> None:
     result = backfill(
         season,
@@ -564,9 +601,15 @@ def run(
         game_ids=game_ids,
         limit=limit,
         source=source,
+        imported_team_ids=imported_team_ids,
     )
     print(
         f"Saved {len(result)} official player-game status observations "
         f"({int(result.participation_state.eq('did_not_play').sum())} explicit DNP). "
         "Coverage: listed players only; not all missed games."
     )
+    if imported_team_ids is not None:
+        print(
+            f"Team-scoped import only: {', '.join(map(str, imported_team_ids))}; "
+            "not a full-game import."
+        )

@@ -565,6 +565,9 @@ def backfill_game_availability(
     cached_reports: Path | None = typer.Option(
         None, "--cached-reports", help="Retained Final Box PDFs and capture receipts; offline only"
     ),
+    imported_team_ids: list[int] | None = typer.Option(
+        None, "--import-team-id", help="Explicit team scope for retained reports (repeatable)"
+    ),
     game_id: list[int] | None = typer.Option(
         None, "--game-id", help="Specific finalized game ID (repeatable)"
     ),
@@ -581,6 +584,7 @@ def backfill_game_availability(
         season_type,
         cached_boxscores=cached_boxscores,
         cached_reports=cached_reports,
+        imported_team_ids=imported_team_ids,
         game_ids=game_id,
         limit=limit,
         source=source,
