@@ -12,7 +12,7 @@ from tests.test_deployed_union_pair_browser import _table
 from tests.test_owned_opponent_or_real_data import ORACLE, _qualify
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET = "index-CJ1uR2hx.js"
+ASSET = "index-ClijrUhz.js"
 FOLDER = "owned-or-browser"
 DESCRIPTION = "(Opponent: BOS, WAS; 110+ BOS OPP PTS) OR (Opponent: BOS, WAS; 125+ WAS OPP PTS)"
 HEADLINE = "Lakers had 2 games matching at least one condition in 2023-24."

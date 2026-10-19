@@ -11,7 +11,7 @@ from tests.test_deployed_union_pair_browser import _table
 from tests.test_owned_opponent_or_real_data import ORACLE, _qualify
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET = "index-CJ1uR2hx.js"
+ASSET = "index-ClijrUhz.js"
 FOLDER = "leading-list-browser"
 REFUSAL = "A condition on another named team's statistics is not supported for this sample yet."
 

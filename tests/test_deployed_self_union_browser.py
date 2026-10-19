@@ -14,7 +14,7 @@ from tests.test_deployed_union_pair_browser import _table
 from tests.test_self_opponent_union_real_data import ORACLE, _qualify
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET = "index-CJ1uR2hx.js"
+ASSET = "index-ClijrUhz.js"
 FOLDER = "self-union-browser"
 PLAYER_HASH = "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760"
 PLAYER = dict(
