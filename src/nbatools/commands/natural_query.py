@@ -394,6 +394,7 @@ from nbatools.commands._playoff_record_route_utils import (
 from nbatools.commands._teammate_resolution import (
     availability_pair,
     name_before_scope,
+    played_matchup_pair,
     resolve_teammate,
     shares_side,
 )
@@ -4088,6 +4089,11 @@ def _route_parsed_query(parsed: dict) -> dict:
         max_value=max_value,
         occurrence_event=occurrence_event,
     )
+    played_pair = (
+        played_matchup_pair(q)
+        if team and opponent and team_record_availability_intent and not without_player
+        else None
+    )
 
     # Generic semantic/product boundaries must fail before route inference can
     # turn them into plausible player, finder, or leaderboard answers. Keep the
@@ -6095,10 +6101,13 @@ def _route_parsed_query(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     # Team-record player availability routing
     # ---------------------------------------------------------------------------
-    elif team and team_record_availability_intent and _multi_player_availability_boundary(q):
-        # Multi-player availability is requested but not execution-backed.
-        # Preserve the team-record route context, then let execution return an
-        # honest unsupported-filter result instead of an unfiltered record.
+    elif (
+        team
+        and team_record_availability_intent
+        and (played_pair or _multi_player_availability_boundary(q))
+    ):
+        # Preserve the team record and every availability predicate. Only a
+        # complete pair reading can replace the default unsupported marker.
         route = "team_record"
         notes.append(
             "unsupported_boundary: multi-player availability filters are outside "
@@ -6124,7 +6133,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             "end_date": end_date,
             "unsupported_filters": ["multi_player_availability"],
         }
-        pair = availability_pair(
+        pair = played_pair or availability_pair(
             q,
             team=team,
             player=None,
@@ -6138,6 +6147,9 @@ def _route_parsed_query(parsed: dict) -> dict:
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
             route_kwargs[f"{pair.mode}_player"] = pair.players
             applied_pair = pair
+            if played_pair:
+                # The named players are predicates of the explicit team record.
+                parsed.update(player=None, with_player=pair.players, without_player=None)
             notes.pop()
     elif (
         team
