@@ -15116,3 +15116,125 @@ cases:
     - path: result.sections.finder.0.ast
       equals: 30
     review_notes: Preimplementation source oracle SHA8f0de7f0086aab457a62d957dd287fc4fd1212264aa9c6b201ad201e11e4cc44 in tests/fixtures/latest_original_both/source_and_baseline.json. Maker CSV/PDF identity qualification only; independent, R2 and deployed acceptance remain separate. Original Feb1 game retained for either Boolean; No means not both. Five production participation games are not seasonwide absence coverage; all46 original obligations remain open.
+
+  - id: qualified_scalar_played_source_yes
+    query: Did Jayson Tatum play in the Celtics last game against Lakers in 2023-24?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Played check
+      value: Jayson Tatum played
+    - kind: window
+      label: Sample selection
+      value: Select the latest original team game before checking the played predicate
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Jayson Tatum
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.answer_phrase
+      equals: "Yes: Jayson Tatum played in the Boston Celtics' last game against the Los Angeles Lakers (2024-02-01): 23 points, 7 rebounds and 3 assists."
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.pts
+      equals: 105
+    - path: result.sections.finder.0.reb
+      equals: 54
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Maker source oracle SHA1d55567df1bd2cd8ea400b1d24ac0da1e5de22fe7c917c566c4c0984fbb3ddd1 frozen before implementation. Exact original team-game evidence remains separate from checked player identity; no DNP player zero or older stat line. Independent review/R2/deployment remain separate. Five production participation games, not seasonwide absence or medical evidence; all46 original absence positives remain open.
+
+  - id: qualified_scalar_played_source_dnp_no
+    query: Did Anthony Davis play in the Lakers last game against Celtics in 2023-24?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Played check
+      value: Anthony Davis played
+    - kind: window
+      label: Sample selection
+      value: Select the latest original team game before checking the played predicate
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.answer_phrase
+      equals: "No: Anthony Davis did not play in the Los Angeles Lakers' last game against the Boston Celtics (2024-02-01)."
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.pts
+      equals: 114
+    - path: result.sections.finder.0.reb
+      equals: 52
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Maker source oracle SHA1d55567df1bd2cd8ea400b1d24ac0da1e5de22fe7c917c566c4c0984fbb3ddd1 frozen before implementation. Exact original team-game evidence remains separate from checked player identity; no DNP player zero or older stat line. Independent review/R2/deployment remain separate. Five production participation games, not seasonwide absence or medical evidence; all46 original absence positives remain open.
+
+  - id: qualified_scalar_played_source_unknown
+    query: Did AD play last game in 2025-26?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: unsupported
+    expected_route: game_finder
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.player_context
+      equals:
+        player_id: 203076
+        player_name: Anthony Davis
+    - path: result.metadata.team
+      equals: null
+    - path: result.metadata.with_player
+      equals: null
+    review_notes: Legitimate question remains unavailable because latest DAL game22501193 has no qualified AD game-day identity/state; appearance22500531 is not membership or DNP proof. This contains the false omission-based No while preserving known-source Yes/DNP No positives. Source fixture1d55567 records immutable raw identities and missing observations; no collection or current-team assertion.

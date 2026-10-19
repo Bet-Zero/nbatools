@@ -13,7 +13,10 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from nbatools.query_service import _played_phrase, execute_natural_query
+from nbatools.query_service import execute_natural_query
+from tests.test_qualified_scalar_played import explicit_lebron_dnp as _explicit_lebron_dnp
+
+explicit_lebron_dnp = _explicit_lebron_dnp
 
 pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
 
@@ -41,29 +44,19 @@ def test_played_in_the_teams_last_game(query, name, team):
     assert f"({team_last['game_date']} vs the {team_last['opponent_team_name']})" in phrase
 
 
-def test_missing_the_teams_last_game_is_a_no():
-    row = pd.Series(
-        {
-            "team_abbr": "LAL",
-            "team_name": "Los Angeles Lakers",
-            "game_date": "2026-10-04",
-            "minutes": 30.0,
-            "pts": 20,
-        }
+def test_explicit_dnp_in_the_teams_last_game_is_a_no(explicit_lebron_dnp):
+    # A missing appearance alone cannot prove this desired No answer. The
+    # controlled fixture explicitly states the selected game's DNP identity.
+    result = execute_natural_query("did LeBron play in the Lakers' last game")
+    original = explicit_lebron_dnp
+    assert result.result_status == "ok"
+    assert result.metadata["answer_phrase"].startswith(
+        "No: LeBron James did not play in the Los Angeles Lakers' last game"
     )
-    team_games = pd.DataFrame(
-        {
-            "team_abbr": ["LAL", "LAL"],
-            "team_name": ["Los Angeles Lakers"] * 2,
-            "game_date": ["2026-10-04", "2026-10-06"],
-            "opponent_team_name": ["Boston Celtics", "Miami Heat"],
-        }
-    )
-    phrase = _played_phrase("LeBron James", row, team_games)
-    assert phrase == (
-        "No: LeBron James did not play in the Los Angeles Lakers' last game "
-        "(2026-10-06 vs the Miami Heat); his last game was 2026-10-04."
-    )
+    assert str(original.game_date)[:10] in result.metadata["answer_phrase"]
+    rows = result.result.to_dict()["sections"]["finder"]
+    assert [int(row["game_id"]) for row in rows] == [int(original.game_id)]
+    assert not any("player_name" in row or "player_id" in row for row in rows)
 
 
 @pytest.mark.parametrize(

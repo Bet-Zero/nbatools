@@ -761,6 +761,11 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "record when LeBron plays at least 35 minutes' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "scalar_participation":
+        return (
+            "This whole-game played check has an unresolved identity or unsupported scope; "
+            "no partial player answer or omission-based No was returned."
+        )
     if filter_id == "unresolved_player_availability":
         return (
             "the requested availability player could not be resolved confidently; "
