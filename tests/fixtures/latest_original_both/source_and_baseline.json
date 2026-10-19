@@ -1,0 +1,211 @@
+{
+  "status": "PREIMPLEMENTATION source/baseline freeze only; BOTH latest-original yes/no remains UNFINISHED. No runtime promotion or independent approval claimed.",
+  "baseline_revision": "75f34211d0e6923a7e1d66e0e976f3d1ff9a3db0",
+  "maker": "/root/participation_request",
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "production_coverage": "5 participation games/170 rows; Boston17 staging is not used. No full-season absence/tenure/health/on-court claim. All46 original PR462 absence obligations remain open.",
+  "source_method": "Standard-library CSV equality joins on game_id/player_id/canonical side/date plus positive minutes and exact retained PDF hashes. Desired truth derives from source facts, not engine agreement.",
+  "source_hashes": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+  },
+  "candidate_team_rows": [
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": "1610612747",
+      "opponent_team_id": "1610612738",
+      "wl": "W",
+      "pts": "114",
+      "reb": "52",
+      "ast": "30"
+    },
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": "1610612747",
+      "opponent_team_id": "1610612738",
+      "wl": "L",
+      "pts": "115",
+      "reb": "43",
+      "ast": "24"
+    }
+  ],
+  "selected_original_facts": [
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "team_id": "1610612738",
+      "player_id": "1628369",
+      "player_name": "Jayson Tatum",
+      "participation_state": "played",
+      "coverage_scope": "listed_player_rows_only",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "source_minutes": "36.61666666666667",
+      "source_comment": ""
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "team_id": "1610612747",
+      "player_id": "203076",
+      "player_name": "Anthony Davis",
+      "participation_state": "did_not_play",
+      "coverage_scope": "listed_player_rows_only",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "source_minutes": "",
+      "source_comment": "INACTIVE - Injury/Illness - Bilateral Achilles; Tendinopathy & Left Hip Spasm"
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "team_id": "1610612747",
+      "player_id": "1630559",
+      "player_name": "Austin Reaves",
+      "participation_state": "played",
+      "coverage_scope": "listed_player_rows_only",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "source_minutes": "34.56666666666667",
+      "source_comment": ""
+    }
+  ],
+  "cases": [
+    {
+      "query": "Of the Lakers last game against Celtics in 2023-24, did BOTH Jayson Tatum and Anthony Davis play?",
+      "players": [
+        [
+          1628369,
+          "Jayson Tatum"
+        ],
+        [
+          203076,
+          "Anthony Davis"
+        ]
+      ],
+      "baseline": {
+        "route": "player_game_finder",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "answer_phrase": null,
+        "last_n": 1,
+        "last_n_scope": "qualifying",
+        "player": "Jayson Tatum",
+        "team": "LAL",
+        "opponent": "BOS",
+        "unsupported_filters": [
+          "multi_player_availability"
+        ],
+        "sections": {}
+      },
+      "existing_consumer_probe": {
+        "selector": "game_summary.select_team_summary_sample(team=LAL,opponent=BOS,season=2023-24,last_n=1,last_n_scope=window), without availability filtering",
+        "selected_original_game_ids": [
+          22300684
+        ],
+        "qualification": "filter_played on that fixed one-game frame, opponent_context=True",
+        "qualified_subset_game_ids": [],
+        "original_row_preserved_for_false": true,
+        "status": "Direct existing helper probe only; not an implemented natural boolean answer"
+      },
+      "desired": {
+        "truth": false,
+        "selected_original_game_ids": [
+          22300684
+        ],
+        "selected_original_game_date": "2024-02-01",
+        "known_predicates": 2,
+        "selection": "Select the latest original subject-versus-opponent game before qualifying BOTH played predicates. Preserve that original game for either truth value; never select the latest qualifying meeting.",
+        "result_meaning": "Successful known yes/no answer with original game identity/date; false means not both, not neither. Exact route/metadata spelling awaits technical contract review."
+      }
+    },
+    {
+      "query": "Of the Lakers last game against Celtics in 2023-24, did BOTH Jayson Tatum and Austin Reaves play?",
+      "players": [
+        [
+          1628369,
+          "Jayson Tatum"
+        ],
+        [
+          1630559,
+          "Austin Reaves"
+        ]
+      ],
+      "baseline": {
+        "route": "player_game_finder",
+        "result_status": "no_result",
+        "result_reason": "filter_not_supported",
+        "answer_phrase": null,
+        "last_n": 1,
+        "last_n_scope": "qualifying",
+        "player": "Jayson Tatum",
+        "team": "LAL",
+        "opponent": "BOS",
+        "unsupported_filters": [
+          "multi_player_availability"
+        ],
+        "sections": {}
+      },
+      "existing_consumer_probe": {
+        "selector": "game_summary.select_team_summary_sample(team=LAL,opponent=BOS,season=2023-24,last_n=1,last_n_scope=window), without availability filtering",
+        "selected_original_game_ids": [
+          22300684
+        ],
+        "qualification": "filter_played on that fixed one-game frame, opponent_context=True",
+        "qualified_subset_game_ids": [
+          22300684
+        ],
+        "original_row_preserved_for_false": true,
+        "status": "Direct existing helper probe only; not an implemented natural boolean answer"
+      },
+      "desired": {
+        "truth": true,
+        "selected_original_game_ids": [
+          22300684
+        ],
+        "selected_original_game_date": "2024-02-01",
+        "known_predicates": 2,
+        "selection": "Select the latest original subject-versus-opponent game before qualifying BOTH played predicates. Preserve that original game for either truth value; never select the latest qualifying meeting.",
+        "result_meaning": "Successful known yes/no answer with original game identity/date; false means not both, not neither. Exact route/metadata spelling awaits technical contract review."
+      }
+    }
+  ],
+  "proposed_contract": {
+    "scope": "Exactly two distinct resolved PLAYED players; scalar explicit season; explicit subject/opponent; latest ORIGINAL one whole matchup. Subject/opponent/date/venue selection precedes selecting last one, with no participation cohort predicate. Qualify both names only on that selected canonical row.",
+    "minimal_reuse": "Use existing full-frame team summary selector without availability predicates, then existing filter_played with opponent_context=True. Preserve original selected row for Yes and No; display projection follows qualification. Existing FinderResult and answer_phrase renderer are plausible consumers; no new public field or result class is required.",
+    "projection_boundary": "Direct game_finder FinderResult.games drops canonical team/opponent IDs and is not a valid input to qualified participation. Full canonical selection must be retained before projection; do not infer sides from displayed labels.",
+    "false_meaning": "A fully qualified original game where at least one named player explicitly did_not_play means not BOTH. It does not mean neither. No original candidate, unknown/missing/unresolved/contradictory observation cannot become No.",
+    "error_boundary": "Participation qualification must run within protected execution or explicit error-to-result handling. Existing yes/no metadata postprocessing runs outside the execution exception boundary and cannot simply raise source errors.",
+    "presentation": "Existing original game ID/date remain visible for either answer. Participation predicates are checks, not matching cohort filters when truth is false. Preserve subject/opponent, season, original selection and both canonical names in truthful metadata/labels.",
+    "reader_guards": "Add bounded dedicated BOTH reader; retain existing scalar BOTH exclusion. Reject or retain unfinished N>1, qualifying/either/OR/mixed polarity, extra players/status/stat/outcome/period or unread clauses. Preserve legacy scalar and qualifying/window cohort semantics.",
+    "minimal_touchpoints": [
+      "commands/natural_query.py existing yes/no reader and internal note boundary",
+      "commands/game_summary.py existing full-frame selector (reuse; no framework)",
+      "commands/_participation_observations.py existing qualified same-game both-name filter (reuse)",
+      "query_service.py protected execution and existing answer_phrase finalization",
+      "frontend existing GameLogResult answer_phrase consumer (verify without assuming new renderer)"
+    ],
+    "required_controls": [
+      "False and true raw-source latest-original pairs pin canonical IDs/sides/date/PDF hashes",
+      "First false cannot hide unknown/missing second observation",
+      "Older unknown outside selected original window does not block selected known fact",
+      "Wrong-date/side/duplicate/contradictory observation rejects honestly",
+      "No original candidate differs from known false",
+      "Aliases/clause order consume the entire question; unknown names and extra clauses do not yield partial or false",
+      "Both truth values retain original game identity/date and labels; no latest-qualifying substitution"
+    ],
+    "authorization": "Feasibility/source baseline only. Root must review this bounded contract before runtime implementation."
+  }
+}
