@@ -1359,11 +1359,6 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return yes_no
 
     full = parse_query(query)
-    if any("opponent_team" in c for c in (full.get("route_kwargs") or {}).get("conditions") or []):
-        # Branch inheritance does not yet preserve named condition owners.
-        # This composition remains unfinished; never answer another team's
-        # games or relabel the flattened branches as an executed union.
-        raise ValueError("Named opponent stat conditions with OR are not yet supported.")
 
     base = _build_parse_state(query)
     # The raw name detections can mistake a list member for the subject.
@@ -1378,12 +1373,50 @@ def _execute_or_query_build_result(query: str) -> tuple:
     for key in ("player", "team", "opponent"):
         if key in canonical:
             base[key] = canonical[key]
+    full_kwargs = full.get("route_kwargs") or {}
+    from nbatools.commands._player_game_context import team_subject_stat_conditions
+
+    opponents = canonical.get("opponent")
+    owned_or = isinstance(opponents, list) and any(
+        item["team"] in opponents
+        for clause in clauses
+        for item in team_subject_stat_conditions(clause, tuple(opponents))
+    )
+    if owned_or and (
+        full.get("route") != "game_finder"
+        or not full_kwargs.get("team")
+        or full_kwargs.get("player")
+        or not isinstance(full_kwargs.get("opponent"), list)
+        or full_kwargs.get("last_n")
+    ):
+        raise ValueError("This named-opponent OR composition is not yet supported.")
+
     conditionless = False
     explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
     full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))
     clause_parsed = []
     for clause in clauses:
         clause_state = _build_parse_state(clause)
+        owned_condition = None
+        if owned_or:
+            # A bare "Wizards score 125" names a predicate owner, not a
+            # replacement subject. Mask only its consumed stat-clause span
+            # before deciding whether another explicit subject was written.
+            from nbatools.commands.natural_query import _team_mentions
+
+            owners = team_subject_stat_conditions(clause, tuple(canonical["opponent"]))
+            if len(owners) != 1 or owners[0]["team"] not in canonical["opponent"]:
+                raise ValueError("Each named-opponent OR branch needs one qualified stat owner.")
+            owner = owners[0]
+            remaining = clause[: owner["start"]] + " " + clause[owner["end"] :]
+            if not _team_mentions(remaining):
+                clause_state.update(team=canonical["team"], opponent=canonical["opponent"])
+            owned_condition = {
+                "stat": "opponent_" + owner["stat"],
+                "min_value": owner["min_value"],
+                "max_value": owner["max_value"],
+                "opponent_team": owner["team"],
+            }
         if full_query_has_explicit_season and not explicit_season_pattern.search(clause):
             clause_state["season"] = None
             clause_state["start_season"] = None
@@ -1425,6 +1458,18 @@ def _execute_or_query_build_result(query: str) -> tuple:
             # no condition ("or better", "or 2024-25") still refuses below.
             clause_state["finder_intent"] = True
         merged = _merge_inherited_context(base, clause_state)
+        if owned_or:
+            kwargs = merged.get("route_kwargs") or {}
+            if (
+                merged["route"] != "game_finder"
+                or kwargs.get("team") != canonical["team"]
+                or kwargs.get("opponent") != canonical["opponent"]
+                or kwargs.get("conditions") != [owned_condition]
+                or kwargs.get("unsupported_filters")
+            ):
+                raise ValueError(
+                    "This named-opponent OR branch has an unsupported scope or condition."
+                )
         if not has_condition and not (merged.get("route_kwargs") or {}).get("conditions"):
             # "Lakers or Celtics over 130 points": a clause with no condition
             # would list every game of that team. ("top 3 games by assists
@@ -1460,6 +1505,10 @@ def _execute_or_query_build_result(query: str) -> tuple:
             parsed["conditions"] = boolean_conditions
             parsed["route_kwargs"]["conditions"] = boolean_conditions
 
+    # An unavailable branch cannot be silently treated as an empty sample.
+    for result in results:
+        if isinstance(result, NoResult) and result.result_reason not in (None, "no_match"):
+            return result, full
     combined = _combine_or_results(results)
     rank_stat = _or_rank_stat(canonicalize_ranked_stat_games(normalize_text(query)))
     if rank_stat and isinstance(combined, FinderResult) and rank_stat in combined.games:
@@ -1504,16 +1553,21 @@ def _execute_or_query_build_result(query: str) -> tuple:
             and value != {}
         }
         primary = primary_condition_from_kwargs(kwargs)
+        if primary and any(
+            condition.get("opponent_team")
+            and all(condition.get(key) == primary.get(key) for key in primary)
+            for condition in kwargs.get("conditions") or []
+        ):
+            primary = None  # The same bound already carries its stronger named owner.
         conditions = normalize_stat_conditions(
             ([primary] if primary else [])
             + list(kwargs.get("conditions") or [])
             + list(item.get("extra_conditions") or [])
         )
         branches.append({"scope": scope, "conditions": conditions})
-    if branches and any(branch["scope"] != branches[0]["scope"] for branch in branches[1:]):
-        for result in results:
-            if isinstance(result, NoResult) and result.result_reason not in (None, "no_match"):
-                return result, full
+    if branches and (
+        owned_or or any(branch["scope"] != branches[0]["scope"] for branch in branches[1:])
+    ):
         parsed["boolean_filter_branches"] = branches
         for key in set().union(*(branch["scope"] for branch in branches)):
             values = [branch["scope"].get(key) for branch in branches]

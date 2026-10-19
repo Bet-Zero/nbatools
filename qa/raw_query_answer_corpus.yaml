@@ -14649,3 +14649,51 @@ cases:
     review_notes: Frozen K07 independent raw oracle; exact filtered bucket keys, discrimination, W/L and
       arithmetic checked in test_k07_split_real_data.py. Original unmet positive baselines retained. No
       human or deployed acceptance inferred.
+  - id: owned_opponent_or_games
+    query: Lakers games against Celtics and Wizards when Celtics score at least 110 or Wizards score at least 125 in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 2
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.stat
+      equals: null
+    - path: result.metadata.boolean_filter_branches.0.conditions.0.opponent_team
+      equals: BOS
+    - path: result.metadata.boolean_filter_branches.1.conditions.0.opponent_team
+      equals: WAS
+    - path: result.sections.finder.0.game_id
+      equals: 22300856
+    - path: result.sections.finder.1.game_id
+      equals: 22300403
+    review_notes: Frozen independent reciprocal-source oracle in tests/fixtures/owned_opponent_or/primary.json; exactly two LAL games, 249PTS/88REB/54AST. Only atomic named-opponent finder OR promoted; broader compositions remain unfinished.
+  - id: owned_opponent_or_aliases
+    query: Lakers games against BOS and WAS when BOS score at least 110 or WAS score at least 125 in 2023-24
+    category: context_filter
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 2
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.boolean_filter_branches.0.conditions.0.opponent_team
+      equals: BOS
+    - path: result.metadata.boolean_filter_branches.1.conditions.0.opponent_team
+      equals: WAS
+    - path: result.sections.finder.0.game_id
+      equals: 22300856
+    - path: result.sections.finder.1.game_id
+      equals: 22300403
+    review_notes: Same frozen numerical oracle; abbreviations resolve only in an established opponent-list/stat-clause context, preserving ordinary copula wording elsewhere.

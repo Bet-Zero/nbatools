@@ -67,6 +67,7 @@ Find games matching conditions. Returns a list of matching games with box-score 
 - recent filtered windows (last N games)
 - multi-condition filtering with boolean logic
 - grouped boolean filtering (AND / OR / parentheses)
+- team game finders preserve a named opponent and its bound in each atomic OR branch over a shared opponent list (for example, Lakers games against Boston/Washington when Boston scores at least110 or Washington scores at least125); labels retain the owner/bound pairing. Player, summary, grouped and last-N named-opponent OR combinations remain unfinished.
 - season-high / best-game routing (e.g., "Cade Cunningham season high" routes to top single games)
 
 Examples:
