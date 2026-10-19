@@ -715,7 +715,23 @@ def player_ids_for_name(name: str) -> frozenset[str]:
     _read_player_names()
     if _player_ids_by_name_cache is None:
         return frozenset()
-    return _player_ids_by_name_cache.get(_normalize_for_matching(name), frozenset())
+    key = _normalize_for_matching(name)
+    exact = _player_ids_by_name_cache.get(key)
+    if exact:
+        return exact
+    # An omitted generational suffix is an alias only when the data has one
+    # possible identity. Exact unsuffixed identities always retain precedence;
+    # a father/son or other collision must never be resolved using a team.
+    suffixes = {"jr", "sr", "ii", "iii", "iv", "v"}
+    if key.split() and key.split()[-1] in suffixes:
+        return frozenset()
+    candidates = {
+        player_id
+        for stored, ids in _player_ids_by_name_cache.items()
+        if stored.rsplit(" ", 1)[-1] in suffixes and stored.rsplit(" ", 1)[0] == key
+        for player_id in ids
+    }
+    return frozenset(candidates)
 
 
 def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:

@@ -216,3 +216,134 @@ def test_existing_structured_sample_and_unfiltered_opponent_control():
         assert row["games"] == expected["games"]
         for stat in ("pts", "reb", "ast"):
             assert row[stat + "_sum"] == expected["totals"][stat]
+
+
+REVEALED = []
+for _filename, _sha, _key, _sample_key in [
+    (
+        "revealed_root_controls.json",
+        "2a5b7544e88a7d48f9b6c497cd59db55eca35a2bedfa8a312f2d24d4a491922c",
+        "cases",
+        "independent_samples",
+    ),
+    (
+        "revealed_checker_controls.json",
+        "dccd27e2d12ae93b6c4f2b37e957a3dd07c82dd142c2c98c6e7b3308fe1ee867",
+        "positive_controls",
+        "source_samples",
+    ),
+]:
+    _path = FIXTURE.parent / _filename
+    assert hashlib.sha256(_path.read_bytes()).hexdigest() == _sha
+    _oracle = json.loads(_path.read_text())
+    REVEALED.extend((_oracle, case, _sample_key) for case in _oracle[_key])
+
+
+@pytest.mark.parametrize("oracle,case,sample_key", REVEALED)
+def test_revealed_independent_source_samples_preserve_complete_ids_and_scope(
+    oracle, case, sample_key, monkeypatch
+):
+    for path, sha in oracle["source_hashes"].items():
+        assert (
+            hashlib.sha256(
+                data_path(path if path.startswith("raw/") else "raw/" + path).read_bytes()
+            ).hexdigest()
+            == sha
+        )
+    raw = list(csv.DictReader(data_path("raw/player_game_stats/2024-25_regular_season.csv").open()))
+    samples = case[sample_key]
+    assert all(row in raw for sample in samples for row in sample["selected_rows"])
+    captured = []
+    compute = player_compare.summarize_player
+
+    @wraps(compute)
+    def capture(frame, *args, **kwargs):
+        captured.append(frame.copy())
+        return compute(frame, *args, **kwargs)
+
+    monkeypatch.setattr(player_compare, "summarize_player", capture)
+    result = execute_natural_query(case["query"])
+    assert result.route == "player_compare" and result.result_status == "ok", result.metadata
+    assert len(captured) == 2
+    contexts = result.metadata["players_context"]
+    assert [c["player_id"] for c in contexts] == [s["player_id"] for s in samples]
+    assert result.metadata["team"] == case["team"]
+    assert result.metadata["opponent"] == case["opponent"]
+    for frame, summary, sample in zip(
+        captured, result.result.to_dict()["sections"]["summary"], samples
+    ):
+        expected = sample["selected_rows"]
+
+        def key(row):
+            return (
+                int(row["game_id"]),
+                str(row["game_date"])[:10],
+                int(row["player_id"]),
+                int(row["team_id"]),
+                int(row["opponent_team_id"]),
+            )
+
+        assert {key(row) for row in frame.to_dict("records")} == {key(row) for row in expected}
+        assert summary["player_name"] == sample["player_name"]
+        assert summary["games"] == len(expected) == sample["games"]
+        for stat in ("pts", "reb", "ast"):
+            total = sum(int(row[stat]) for row in expected)
+            assert total == summary[stat + "_sum"] == sample["totals"][stat]
+            assert summary[stat + "_avg"] == round(total / len(expected), 3)
+        assert not result.metadata.get("head_to_head_used")
+
+
+@pytest.mark.parametrize(
+    "bound,wiggins_ids,lowered",
+    [
+        ("under 20.000000000000001 points", [22400644], 20),
+        ("at most 19.999999999999999 points", [], 19),
+    ],
+)
+def test_precision_source_audit_uses_original_decimal_and_actual_wiggins20(
+    bound, wiggins_ids, lowered, monkeypatch
+):
+    authenticate()
+    captured = []
+    compute = player_compare.summarize_player
+
+    @wraps(compute)
+    def capture(frame, *args, **kwargs):
+        captured.append(frame.copy())
+        return compute(frame, *args, **kwargs)
+
+    monkeypatch.setattr(player_compare, "summarize_player", capture)
+    result = execute_natural_query(
+        "Compare Andrew Wiggins and Dennis Schroder for Warriors against Lakers in 2024-25 with "
+        + bound
+    )
+    assert result.result_status == "ok" and result.route == "player_compare"
+    assert sorted(captured[0].game_id.astype(int)) == wiggins_ids
+    assert sorted(captured[1].game_id.astype(int)) == [22400408, 22400644]
+    assert not len(captured[0]) or set(captured[0].player_id.astype(int)) == {203952}
+    row = result.result.to_dict()["sections"]["summary"][0]
+    assert row["games"] == len(wiggins_ids)
+    assert row["pts_sum"] == (20 if wiggins_ids else 0)
+    assert row["pts_avg"] == (20 if wiggins_ids else None)
+    assert result.metadata["max_value"] == lowered
+    assert bound.split()[2 if bound.startswith("at most") else 1] in str(
+        result.metadata["applied_filters"]
+    )
+
+
+_REVEALED_GUARDS = json.loads((FIXTURE.parent / "revealed_root_controls.json").read_text())[
+    "safety_queries"
+] + [
+    c["query"]
+    for c in json.loads((FIXTURE.parent / "revealed_checker_controls.json").read_text())[
+        "safety_controls"
+    ]
+]
+
+
+@pytest.mark.parametrize("query", _REVEALED_GUARDS)
+def test_revealed_comparison_guards_never_return_partial_or_changed_grain(query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert not result.result.to_dict()["sections"]
+    assert not result.metadata.get("applied_filters")

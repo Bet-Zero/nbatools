@@ -3122,15 +3122,33 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
 
 
 def extract_threshold_conditions(
-    text: str, *, exact_stat: str | frozenset[str] | None = None
+    text: str,
+    *,
+    exact_stat: str | frozenset[str] | None = None,
+    preserve_numeric_text: bool = False,
 ) -> list[dict]:
     """Read threshold spans; an exact statistic retains operator inclusivity.
 
     Legacy consumers keep their epsilon-shifted bounds and dictionary shape.
     Exact-time consumers use unshifted bounds plus internal inclusive flags.
+    ``preserve_numeric_text`` additionally retains original decimal values as
+    JSON-safe strings for consumers that compare them using Decimal.
     """
 
     exact_stats = {exact_stat} if isinstance(exact_stat, str) else set(exact_stat or ())
+
+    def numeric(value_text, stat):
+        if preserve_numeric_text and stat in exact_stats:
+            from decimal import Decimal
+
+            return Decimal(value_text)
+        return _normalize_threshold_value(value_text, stat)
+
+    def bounds(value_text, stat, mode, epsilon):
+        value = numeric(value_text, stat)
+        if stat in exact_stats:
+            return (value, None) if mode == "min" else (None, value)
+        return (value + epsilon, None) if mode == "min" else (None, value - epsilon)
 
     def exact_flags(stat, mode=None, epsilon=0.0):
         if stat not in exact_stats:
@@ -3296,8 +3314,8 @@ def extract_threshold_conditions(
                 stat = detect_stat(m.group(3))
                 if stat is None:
                     continue
-                low = _normalize_threshold_value(m.group(1), stat)
-                high = _normalize_threshold_value(m.group(2), stat)
+                low = numeric(m.group(1), stat)
+                high = numeric(m.group(2), stat)
                 if low > high:
                     low, high = high, low
                 matches.append(
@@ -3316,12 +3334,8 @@ def extract_threshold_conditions(
                     continue
                 if mode == "max" and _MARGIN_BEFORE.search(text[: m.start()]):
                     continue
-                stat, min_value, max_value = _parse_threshold_match(
-                    m.group(1),
-                    m.group(2),
-                    mode,
-                    0.0 if detect_stat(m.group(2)) in exact_stats else epsilon,
-                )
+                stat = detect_stat(m.group(2))
+                min_value, max_value = bounds(m.group(1), stat, mode, epsilon)
                 matches.append(
                     {
                         "start": m.start(),
@@ -3346,8 +3360,8 @@ def extract_threshold_conditions(
                 # threshold, not an assist range.
                 if all(re.fullmatch(r"(?:19[4-9]|20[0-9])\d", g) for g in (m.group(2), m.group(3))):
                     continue
-                low = _normalize_threshold_value(m.group(2), stat)
-                high = _normalize_threshold_value(m.group(3), stat)
+                low = numeric(m.group(2), stat)
+                high = numeric(m.group(3), stat)
                 if low > high:
                     low, high = high, low
                 matches.append(
@@ -3362,7 +3376,7 @@ def extract_threshold_conditions(
                     }
                 )
             else:
-                min_value, max_value = _threshold_bounds(
+                min_value, max_value = bounds(
                     m.group(2), stat, mode, 0.0 if stat in exact_stats else epsilon
                 )
                 matches.append(
@@ -3408,7 +3422,7 @@ def extract_threshold_conditions(
                 "start": m.start(),
                 "end": m.end(),
                 "stat": stat,
-                "min_value": _normalize_threshold_value(m.group(1), stat),
+                "min_value": numeric(m.group(1), stat),
                 "max_value": None,
                 "text": m.group(0).rstrip(" +"),
             }
@@ -3421,7 +3435,7 @@ def extract_threshold_conditions(
         if upper:
             matches.append(upper)
             continue
-        min_value = _normalize_threshold_value(m.group(1), stat)
+        min_value = numeric(m.group(1), stat)
         matches.append(
             {
                 "start": m.start(),
@@ -3452,7 +3466,7 @@ def extract_threshold_conditions(
                 "end": m.end(),
                 "stat": stat,
                 "min_value": None,
-                "max_value": _normalize_threshold_value(m.group(1), stat),
+                "max_value": numeric(m.group(1), stat),
                 "text": m.group(0),
             }
         )
@@ -3502,11 +3516,22 @@ def extract_threshold_conditions(
             continue
         deduped.append(item)
 
+    if preserve_numeric_text:
+        # JSON-safe internal note values retain the original decimal cutoff.
+        # Conversion happens after numerical range ordering and deduplication.
+        for item in deduped:
+            if item["stat"] in exact_stats:
+                for edge in ("min_value", "max_value"):
+                    if item[edge] is not None:
+                        item[edge] = str(item[edge])
     return deduped
 
 
 def extract_stat_predicate_spans(
-    text: str, *, exact_stat: str | frozenset[str] | None = None
+    text: str,
+    *,
+    exact_stat: str | frozenset[str] | None = None,
+    preserve_numeric_text: bool = False,
 ) -> list[dict]:
     """Complete numerical predicate spans, including their directly governing verb.
 
@@ -3516,7 +3541,9 @@ def extract_stat_predicate_spans(
     """
     verbs = r"play(?:ed|s)?|ha(?:d|s|ve)|record(?:ed|s)?|scor(?:e|es|ed)|put(?:s)?\s+up"
     found = []
-    for condition in extract_threshold_conditions(text, exact_stat=exact_stat):
+    for condition in extract_threshold_conditions(
+        text, exact_stat=exact_stat, preserve_numeric_text=preserve_numeric_text
+    ):
         start, end = condition["start"], condition["end"]
         verb = re.search(rf"\b(?:(?:have|has|had)\s+)?(?P<verb>{verbs})\s*$", text[:start])
         if verb:

@@ -16018,7 +16018,7 @@ cases:
       Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
       humanreview fields stay literal. All46 absence positives unchanged.
     query: Compare Luka Doncic and Blorg for the Lakers against Warriors in 2024-25
-    expected_reason: filter_not_supported
+    expected_reason: unsupported
     hard_assertions:
     - path: result.metadata.player
       equals: null

@@ -1,0 +1,34 @@
+{
+  "status": "corrective candidate after independent03b review; not accepted/deployed",
+  "unchanged_source_sha256": "4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205",
+  "unchanged_consumer_contract_sha256": "a2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11",
+  "identity": "Validate complete operand first, then bind to one data-backed canonical ID/name. Exact normalized names take precedence; omitted generational suffix variants require a unique ID. No shared-team guessing for ambiguous IDs.",
+  "sample": "One representable venue/window/date range. Complete common static scope is anchored by the existing native data-through date and checked against final executable kwargs. Two-player comparison operation cannot become team-grain split output.",
+  "predicate": "All admitted integer count conditions execute before aggregation. Exact threshold reader optionally preserves original numeric text as JSON-safe internal bound strings; default legacy dictionaries/operators unchanged. Decimal comparisons and labels preserve long input cutoffs, including exact report-second minutes and MIN+count consumers. No float round-trip/epsilon.",
+  "internal_compatibility": "No new public schema. Existing exact-note min_value/max_value may be lossless numeric strings; protected exact consumers explicitly use Decimal. Comparison execution bounds remain equivalent inclusive integers.",
+  "review_provenance": {
+    "root_2a5": "pre-code, revealed after03b finding",
+    "checker_dccd": "pre-inspection, not pre-code; revealed after03b finding",
+    "hauser_precision": "post-start source audit of accepted531; not pre-code"
+  },
+  "unrepresented_positive_obligations": [
+    {
+      "query": "Compare Andrew Wiggins and Dennis Schroder for Warriors against Lakers in2024-25 at home and on the road",
+      "desired": "Two player samples split by venue; not a team split or one venue. No split capability promoted."
+    },
+    {
+      "query": "Compare Andrew Wiggins and Dennis Schroder for Warriors against Lakers in2024-25 last1games and last2games",
+      "desired": "Preserve both requested windows; ambiguous/unrepresented composition needs a real consumer, never first-window substitution."
+    },
+    {
+      "query": "Compare Andrew Wiggins and Dennis Schroder for Warriors against Lakers in2024-25 after January1,2025 and before January20,2025",
+      "desired": "Intersection of all date predicates, source empty. No fragmented-date capability promoted; complete since...through range works separately."
+    },
+    {
+      "query": "Compare Andrew Wiggins and Dennis Schroder for Warriors against Lakers in2024-25 since January1,2025 and since February1,2025",
+      "desired": "Preserve both date predicates; never ignore second lower bound."
+    }
+  ],
+  "preserved": "All46 original absence positives and previously frozen remaining-positive obligations remain open. Five production report games/170rows; no collection, data publication or broader participation completeness claim.",
+  "classification": "The new player_comparison_scope admission guard reports unsupported combination, not dataset unavailable. Existing precise-time qualification gaps keep filter_not_supported."
+}

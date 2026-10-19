@@ -1049,12 +1049,23 @@ def _execute_build_result(
     # no-result rather than executing unfiltered and returning misleading data.
     if unsupported_filters:
         primary = unsupported_filters[0]
+        # This admission guard represents an unimplemented comparison scope,
+        # not missing data for a supported filter. Other data guards keep
+        # their existing dataset-unavailable reason and explanation.
+        comparison_scope = primary == "player_comparison_scope"
+        reason = "unsupported" if comparison_scope else "filter_not_supported"
+        note = (
+            "The requested player comparison combination is not implemented; "
+            "no partial answer was returned."
+            if comparison_scope
+            else _unsupported_filter_note(primary, unsupported_filters)
+        )
         return NoResult(
             query_class=route_to_query_class(route),
-            reason="filter_not_supported",
+            reason=reason,
             result_status="no_result",
-            result_reason="filter_not_supported",
-            notes=[_unsupported_filter_note(primary, unsupported_filters)],
+            result_reason=reason,
+            notes=[note],
         )
 
     if conference_blocked_filters:

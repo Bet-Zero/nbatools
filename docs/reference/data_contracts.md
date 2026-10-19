@@ -176,6 +176,12 @@ head-to-head is implied. Static date/venue restrictions and fully consumed commo
 count predicates retain their existing selection order. Metadata keeps both
 canonical player contexts and separate historical `Playing for` / `Opponent`
 filter labels; a missing second operand never becomes a single-player finder.
+A complete operand binds to one canonical data ID before team filtering. Exact
+name identities take precedence over uniquely ID-bound omitted-suffix variants;
+shared team context cannot guess between ambiguous identities. The final route
+must retain both subjects, comparison grain and every consumed static sample
+field. Multiple venue/window/date fragments with no equivalent single consumer
+remain unfinished and yield no partial team-grain or first-window answer.
 
 For this new comparison slice, exact threshold spans on the existing integer
 count vocabulary PTS/REB/AST/FG3M/STL/BLK/TOV lower mathematically to equivalent
@@ -183,7 +189,10 @@ inclusive integer bounds through Decimal ceil/floor rules. Strict lower uses
 floor+1, inclusive lowerceil; strict upper uses ceil-1, inclusive upperfloor.
 Original normalized predicate text/operator/cutoff remain visible in `Count
 filter`; differing bounds are explicitly labeled as equivalent integer execution.
-Legacy unfiltered comparison dictionaries and consumers are unchanged. Negative
+Exact consumers retain original numeric lexemes as JSON-safe internal bound
+strings when requested, including precise original-game minutes and MIN+count
+checks; Decimal comparisons and labels avoid a float round-trip. Default legacy
+threshold dictionaries remain unchanged. Negative
 resulting ceilings and ranges containing no integers remain real empty samples,
 not absolute values or dropped clauses. A partial-empty comparison keeps a
 zero-games summary row with null per-game averages and additive sums0 while the

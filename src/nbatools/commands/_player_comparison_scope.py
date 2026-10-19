@@ -10,7 +10,11 @@ from nbatools.commands._matchup_utils import (
     _is_exact_player_reference_phrase,
     detect_player,
 )
-from nbatools.commands.entity_resolution import TEAM_ALIASES
+from nbatools.commands.entity_resolution import (
+    TEAM_ALIASES,
+    canonical_player_names_by_id,
+    player_ids_for_name,
+)
 
 _TEAM = "|".join(re.escape(a) for a in sorted(TEAM_ALIASES, key=len, reverse=True))
 _SHARED_TEAM = re.compile(
@@ -63,13 +67,28 @@ def _sample_remainder(text: str) -> str:
     # Use the shared date tokens and resolver; unrecognized/invalid dates are
     # left unread, rather than silently claiming an applied date restriction.
     token = _date_token_pattern()
-    for m in re.finditer(
-        rf"\b(?:(?:from|between)\s+{token}\s+(?:to|through|and)\s+{token}"
-        rf"|(?:since|after|before|until|through|on)\s+{token})",
-        text,
-    ):
+    date_matches = list(
+        re.finditer(
+            rf"\b(?:(?:from|since|after)\s+{token}\s+(?:to|through)\s+{token}"
+            rf"|between\s+{token}\s+and\s+{token}"
+            rf"|(?:since|after|before|until|through|on)\s+{token})",
+            text,
+        )
+    )
+    # The native range reader represents one complete range, not an arbitrary
+    # intersection of individually recognized fragments.
+    if len(date_matches) > 1:
+        return "multiple date scopes"
+    for m in date_matches:
         if any(extract_date_range(m[0], season=season)):
             spans.append(m.span())
+    venue_pattern = (
+        r"\b(?:at\s+home|home\s+games?|on\s+the\s+road|on\s+road|away\s+games?"
+        r"|road\s+games?|at\s+away|home|away)\b"
+    )
+    windows = list(re.finditer(r"\b(?:last|past|most\s+recent)\s+\d+\s+games?\b", text))
+    if len(re.findall(venue_pattern, text)) > 1 or len(windows) > 1:
+        return "multiple static sample scopes"
     rest = _mask(text, spans)
     rest = re.sub(
         r"\b(?:(?:in|during|over|for)\s+(?:the\s+)?)?(?:19|20)\d{2}-\d{2}(?:\s+(?:regular\s+)?season)?\b",
@@ -115,32 +134,41 @@ def read_shared_comparison(text: str) -> dict | None:
         return request  # Distinct per-player team owners remain unfinished.
     team = teams[0]
     masked = _mask(text, [team.span()])
-    match = next((m for pattern in _OPERANDS if (m := pattern.search(masked))), None)
-    if match is None:
+    accepted = []
+    for pattern in _OPERANDS:
+        for match in pattern.finditer(masked):
+            players = []
+            for key in ("a", "b"):
+                phrase = match[key].strip()
+                player = detect_player(phrase)
+                if not player or not _is_exact_player_reference_phrase(phrase, player):
+                    break
+                ids = player_ids_for_name(player)
+                if len(ids) != 1:
+                    break
+                players.append(canonical_player_names_by_id()[next(iter(ids))])
+            if len(players) != 2 or players[0] == players[1]:
+                continue
+            last_name_end = match.start("b") + len(match["b"].rstrip())
+            if match.start() < team.start() < last_name_end:
+                continue
+            if _sample_remainder(_mask(text, [team.span(), match.span()])):
+                continue
+            accepted.append((match, players))
+    if not accepted:
         return request
-    players = []
-    for key in ("a", "b"):
-        phrase = match[key].strip()
-        player = detect_player(phrase)
-        if not player or not _is_exact_player_reference_phrase(phrase, player):
-            return request
-        players.append(player)
-    if players[0] == players[1]:
+    # Choose complete operands, never the first incidental syntactic match
+    # inside another intent (e.g. 'How did A and B compare ... versus TEAM').
+    if len({tuple(players) for _, players in accepted}) != 1:
         return request
+    match, players = accepted[0]
     request["players"] = players
-    # The team span must be outside both complete operands. A team on only
-    # the first operand must not become a global filter after deleting it.
-    last_name_end = match.start("b") + len(match["b"].rstrip())
-    if match.start() < team.start() < last_name_end:
-        return request
     rest = _mask(text, [team.span(), match.span()])
-    if _sample_remainder(rest):
-        return request
     from nbatools.commands._parse_helpers import extract_threshold_conditions
     from nbatools.commands.natural_query import _YES_NO_STATS
 
     count_stats = _YES_NO_STATS - {"minutes"}
-    checks = extract_threshold_conditions(text, exact_stat=count_stats)
+    checks = extract_threshold_conditions(text, exact_stat=count_stats, preserve_numeric_text=True)
     if any(c["stat"] not in count_stats or re.search(r"%|\bpercent\b", c["text"]) for c in checks):
         return request
     lowered = []
@@ -160,7 +188,22 @@ def read_shared_comparison(text: str) -> dict | None:
                 number += 1 if edge == "min" else -1
             condition[edge + "_value"] = number
         lowered.append(condition)
+    from nbatools.commands._parse_helpers import detect_home_away, extract_last_n
+
+    opponent = re.search(
+        rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?P<team>{_TEAM})(?![\w'-])", rest
+    )
+    home, away = detect_home_away(rest)
     request.update(
+        sample={
+            "team": TEAM_ALIASES[team["team"]],
+            "opponent": TEAM_ALIASES[opponent["team"]] if opponent else None,
+            "season": seasons[0],
+            "home_only": home,
+            "away_only": away,
+            "last_n": extract_last_n(rest),
+        },
+        sample_text=rest,
         team=TEAM_ALIASES[team["team"]],
         unsupported=None,
         subject_span=match.span(),
@@ -172,7 +215,15 @@ def read_shared_comparison(text: str) -> dict | None:
 
 def count_filter_descriptions(request: dict) -> list[str]:
     """Original predicates remain visible beside equivalent integer execution."""
-    from nbatools.commands._original_minutes import check_description
+
+    def check_description(check):
+        parts = []
+        for edge, symbol in (("min", ">"), ("max", "<")):
+            value = check[edge + "_value"]
+            if value is not None:
+                sign = symbol + ("=" if check[edge + "_inclusive"] else "")
+                parts.append(f"{sign} {value}")
+        return " and ".join(parts) + " " + check["stat"].upper()
 
     descriptions = []
     for original, executed in zip(request["count_checks"], request["conditions"]):
@@ -182,3 +233,36 @@ def count_filter_descriptions(request: dict) -> list[str]:
             label += f" (integer execution: {normalized})"
         descriptions.append(label)
     return descriptions
+
+
+def comparison_contract_matches(request: dict, route: str, kwargs: dict) -> bool:
+    """Every admitted subject and static sample must survive family routing."""
+    if route != "player_compare":
+        return False
+    if [kwargs.get("player_a"), kwargs.get("player_b")] != request["players"]:
+        return False
+    if request.get("conditions"):
+        from nbatools.commands._condition_utils import normalize_stat_conditions
+
+        if normalize_stat_conditions(kwargs.get("conditions")) != normalize_stat_conditions(
+            request["conditions"]
+        ):
+            return False
+    return all(kwargs.get(key) == value for key, value in request["sample"].items())
+
+
+def has_mixed_comparison_operands(text: str) -> bool:
+    """An opponent modifier cannot turn player/team operands into one player."""
+    for pattern in _OPERANDS:
+        for match in pattern.finditer(text):
+            a, b = match["a"].strip(), match["b"].strip()
+            for player_phrase, team_phrase in ((a, b), (b, a)):
+                team_phrase = re.sub(r"^the\s+", "", team_phrase)
+                player = detect_player(player_phrase)
+                if (
+                    team_phrase in TEAM_ALIASES
+                    and player
+                    and _is_exact_player_reference_phrase(player_phrase, player)
+                ):
+                    return True
+    return False
