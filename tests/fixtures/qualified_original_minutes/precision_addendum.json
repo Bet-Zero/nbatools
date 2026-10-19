@@ -1,0 +1,50 @@
+{
+  "origin": "Independent checker found the legacy strict-bound epsilon issue after source/contract freeze; root approved this bounded internal exact-bound extension before runtime implementation.",
+  "original_source_sha256": "f95253c6d2bda90c8d9ff2c908d479f7a404bcdc0be62f3b4b7d2d5d1ecb26ad",
+  "original_contract_sha256": "0b8d2466ae45593b2a4a146bce765918a58304057a5a343691f039e9b0e90419",
+  "representation": "Existing extract_threshold_conditions gains optional exact_stat mode. For that statistic, numerical bounds remain unshifted and min_inclusive/max_inclusive booleans retain the parsed operator. Default legacy dictionaries and epsilon behavior remain unchanged. Exact flags live only inside existing internal yes_no note checks, not public request fields or route conditions.",
+  "comparison": "Compare integer source seconds against decimal minute bounds times60, honoring explicit inclusivity. Do not reverse-engineer operator semantics from an epsilon-adjusted number.",
+  "source_grain": "source_minutes must be finite, positive and within serialization tolerance of integer seconds; no rounded canonical minutes or arbitrary fractional-second source precision.",
+  "near_second_controls": [
+    {
+      "source_seconds": 2197,
+      "predicate": "over36.6166minutes",
+      "expected": true
+    },
+    {
+      "source_seconds": 2197,
+      "predicate": "under36.6167minutes",
+      "expected": true
+    },
+    {
+      "source_seconds": 2197,
+      "predicate": "at least36.6167minutes",
+      "expected": false
+    },
+    {
+      "source_seconds": 2197,
+      "predicate": "at most36.6166minutes",
+      "expected": false
+    },
+    {
+      "source_seconds": 1500,
+      "predicate": "over25minutes",
+      "expected": false
+    },
+    {
+      "source_seconds": 1500,
+      "predicate": "at least25minutes",
+      "expected": true
+    },
+    {
+      "source_seconds": 1500,
+      "predicate": "under25minutes",
+      "expected": false
+    },
+    {
+      "source_seconds": 1500,
+      "predicate": "at most25minutes",
+      "expected": true
+    }
+  ]
+}
