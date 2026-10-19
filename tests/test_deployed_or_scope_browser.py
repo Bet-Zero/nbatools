@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -182,6 +183,8 @@ def _validate_answers(receipt, cases, output):
             table["rows"], sorted(case["rows"], key=lambda row: row["game_date"], reverse=True)
         ):
             cells = dict(zip(table["headers"], displayed))
+            when = date.fromisoformat(expected["game_date"])
+            assert cells["Date"] == f"{when:%b} {when.day}"
             assert expected["team_abbr"] in cells["TM"]
             assert expected["opponent_team_abbr"] in cells["Opp"]
             assert cells["W/L"] == expected["wl"]
