@@ -8,7 +8,7 @@
     "/root",
     "/root/comparison_checker"
   ],
-  "semantic_status": "approved; numerical R2/browser/CI/merge/public acceptance separately pending",
+  "semantic_status": "independently accepted runtime/source/R2/local browser; final CI/normal merge/public remain pending",
   "root_review": {
     "original_2a5": {
       "positive_pass": 5,
@@ -49,18 +49,42 @@
     "Maker initial wrong-cwd skips, source-test path/metadata mistakes and interrupted adjacency attempt are not acceptance."
   ],
   "r2": {
-    "status": "requested, not accepted",
+    "status": "accepted; underlying actual outputs independently inspected",
     "run_id": 39212750948,
     "reviewed_sha": "7c81f558b6c08879696462fbbddffe95ae235af2",
     "request_sha": "10c939edb52f7218bb2e03addfba93e20aca3d1b",
     "required_tests": 93,
-    "qa_cases": 19
+    "qa_cases": 19,
+    "selected": 93,
+    "executed": 93,
+    "passed": 93,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "seconds": 36.678,
+    "qa_checks": 362,
+    "qa_suspicious": 0,
+    "qa_informational_frontend_hero": 3,
+    "required_artifact": 12168168233,
+    "required_zip_sha256": "9b41532e44b829e1b3d007a3c5826e1b8f23c5420d38584bde3fd7b3297c4658",
+    "qa_artifact": 12168685437,
+    "qa_zip_sha256": "fe16054656c35efe2fc847a730475a296c4cc5c539c6169cccc133dc886e0d6c",
+    "root_inspection": "SHA-verified/extracted archives separately; required summary/all93JUnit cases; all19 actual output records; product-review JSON/Markdown. Existing human_review_pending/missing_variants literal unchanged. No public acceptance inferred."
   },
   "browser": {
-    "status": "pending",
+    "status": "local accepted; actual public pending",
     "local_runtime": "fa3552915a75bfd22c53c946ff8a30a4d92df57a",
     "unchanged_asset": "index-ClijrUhz.js",
-    "asset_sha256": "22b53c0649bc56dd6bc332876f6150623575929ff3f9b03f9de6441508c9bccb"
+    "asset_sha256": "22b53c0649bc56dd6bc332876f6150623575929ff3f9b03f9de6441508c9bccb",
+    "checker_gate_sha": "79c6fe30397b4313e3fb0f1cc964589577d1c7b9",
+    "integration_sha": "c3a74dc",
+    "answers": 16,
+    "readiness": 32,
+    "pngs": 16,
+    "receipt_sha256": "e2e8d37efb8376cd3862d90feb86a64c6ebea26b48ed8b21d94e1050411df63c",
+    "root_review": "Full3file source/validator/helper review; independently replayed all80 rejected corruptions+2 valid ISO, verified all16 PNG hashes/32ready and inspected actual mobile primary/suffix/partialempty/no_match/unsupported/Hauser outputs. Source raw joins/Decimal and official1359second truth agree. No runtime/UI source/asset change.",
+    "production_selector": "tests/test_deployed_player_comparison_team_browser.py::test_deployed_player_comparison_team_desktop_and_mobile"
   },
   "unfinished": [
     "Different per-player team ownership",
@@ -70,5 +94,11 @@
     "All46 original absence positives; no season-wide membership inference",
     "Medical-clearance/subject correctness is next separate package"
   ],
-  "data_boundary": "No source acquisition or production data publication. Five production participation games/170rows; Boston17staged only. PDF and collection handoff unchanged."
+  "data_boundary": "No source acquisition or production data publication. Five production participation games/170rows; Boston17staged only. PDF and collection handoff unchanged.",
+  "fixed_preflight": {
+    "passed": 8811,
+    "ordinary_skipped": 1763,
+    "seconds": 155.13,
+    "runtime": "fa3552915a75bfd22c53c946ff8a30a4d92df57a"
+  }
 }
