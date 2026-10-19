@@ -406,6 +406,8 @@ Common combinations:
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
+- explicit-matchup two-player played conjunctions for team records: `Lakers record against Celtics with Jayson Tatum playing while Austin Reaves plays in 2023-24`; AND/shared-playing and comma forms preserve both predicates. Each player may be on the subject or opponent team, independently qualified by the same game's team/date identity. Every original candidate game needs qualified evidence for both players, including a genuine empty answer. A missing observation is unavailable, not proof of DNP or nonmembership. Player-owned stat/status clauses, mixed polarity and broader boolean compositions remain separate unfinished requirements.
+- new two-clause played conjunctions with last-N remain unfinished; they are not promoted into the existing participation-cohort-before-last-N execution. Latest-original-game and latest-qualifying-meeting requirements are retained separately, and existing native cooperative pair behavior is preserved.
 - home / away
 - wins / losses
 - season ranges

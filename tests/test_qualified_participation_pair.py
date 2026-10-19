@@ -174,6 +174,16 @@ def test_team_pair_wording_preserves_condition_and_exact_sample(qualified_pair, 
     _assert_answer(result, expected, mode=mode)
 
 
+def test_existing_native_cooperative_pair_last_n_is_preserved(qualified_pair):
+    expected = qualified_pair["teams"].loc[
+        qualified_pair["teams"].game_id.eq(qualified_pair["ids"][3])
+    ]
+    result = execute_natural_query(
+        "Lakers record vs Celtics last 1 game with LeBron James and Anthony Davis both playing in 2023-24"
+    )
+    _assert_answer(result, expected, mode="with")
+
+
 @pytest.mark.parametrize(
     "query",
     [
