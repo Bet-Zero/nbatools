@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "r2-validation/**": false,
+      "codex/*-production-gate": false
+    }
+  },
   "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
   "outputDirectory": "src/nbatools/ui/dist",
   "env": {
