@@ -86,7 +86,6 @@ def test_condition_owner_survives_normalization_and_deduplication():
 @pytest.mark.parametrize(
     "condition",
     [
-        "when Celtics score at least 110 or Wizards score at least 125",
         "when Celtics score at least 110 and (at least 110 points or at least 50 rebounds)",
     ],
 )

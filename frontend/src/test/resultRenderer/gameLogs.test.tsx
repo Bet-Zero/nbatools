@@ -5,6 +5,34 @@ import { makeResponse } from "./helpers";
 
 describe("ResultRenderer game-log patterns", () => {
 
+  it("keeps named opponent OR bounds paired on a team's game list", () => {
+    const value = "(Opponent: BOS, WAS; 110+ BOS OPP PTS) OR (Opponent: BOS, WAS; 125+ WAS OPP PTS)";
+    render(<ResultRenderer data={makeResponse({
+      query: "Lakers games against Celtics and Wizards when Celtics score at least 110 or Wizards score at least 125 in 2023-24",
+      route: "game_finder",
+      result: {
+        query_class: "finder", result_status: "ok", notes: [], caveats: [],
+        metadata: {
+          team_context: { team_id: 1610612747, team_abbr: "LAL", team_name: "Lakers" },
+          season: "2023-24", stat: null, min_value: null, max_value: null,
+          boolean_filter_mode: "any", threshold_conditions: [],
+          boolean_filter_branches: [
+            { scope: { team: "LAL", opponent: ["BOS", "WAS"] }, conditions: [{ stat: "opponent_pts", min_value: 110, max_value: null, opponent_team: "BOS" }] },
+            { scope: { team: "LAL", opponent: ["BOS", "WAS"] }, conditions: [{ stat: "opponent_pts", min_value: 125, max_value: null, opponent_team: "WAS" }] },
+          ],
+          applied_filters: [{ kind: "boolean", label: "Any branch (OR)", value }],
+        },
+        sections: { finder: [
+          { game_id: 22300403, team_abbr: "LAL", team_name: "Lakers", pts: 115, opponent_pts: 126 },
+          { game_id: 22300856, team_abbr: "LAL", team_name: "Lakers", pts: 134, opponent_pts: 131 },
+        ] },
+      },
+    })} />);
+    expect(screen.getByText("Lakers had 2 games matching at least one condition in 2023-24.")).toBeVisible();
+    expect(within(screen.getByLabelText("Game-log averages")).queryByText(value)).not.toBeInTheDocument();
+    expect(screen.queryByText(/highest-scoring|games with 110/)).not.toBeInTheDocument();
+  });
+
   it.each([true, false])("keeps OR sample labels paired and the headline neutral (different opponents=%s)", (different) => {
     const value = different
       ? "(Opponent: BOS, WAS; 30+ PTS) OR (Opponent: NYK; 9+ AST)"

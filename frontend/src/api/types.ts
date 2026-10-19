@@ -93,7 +93,12 @@ export interface AppliedFilter {
 
 export interface BooleanFilterBranch {
   scope: Record<string, unknown>;
-  conditions: Array<{ stat: string; min_value: number | null; max_value: number | null }>;
+  conditions: Array<{
+    stat: string;
+    min_value: number | null;
+    max_value: number | null;
+    opponent_team?: string;
+  }>;
 }
 
 export interface DisambiguationCandidate {

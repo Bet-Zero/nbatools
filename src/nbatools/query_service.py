@@ -350,7 +350,8 @@ def _build_applied_filters(
                     parts.insert(0, str(scope[key]))
             bounds = []
             for condition in branch["conditions"]:
-                label = _filter_stat_label(condition["stat"]).upper()
+                owner = f"{condition['opponent_team']} " if condition.get("opponent_team") else ""
+                label = owner + _filter_stat_label(condition["stat"]).upper()
                 if condition.get("min_value") is not None:
                     bounds.append(f"{_minimum_threshold_phrase(condition['min_value'])} {label}")
                 if condition.get("max_value") is not None:
