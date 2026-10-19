@@ -477,8 +477,9 @@ Contract rules:
   still means No to the conjunctive played check without inventing either zero.
   The original TEAM row remains separate from the checked-player identity;
   Minutes check and Count check labels preserve both requested predicates.
-  The valid native bare minutes-AND-HAVE/RECORD statistical check is restored
-  only when its complete actor, predicates and scope are consumed. Broader
+  The valid native bare MIN-first minutes-AND-HAVE/RECORD statistical check is restored
+  only when its complete actor, predicates and scope are consumed. Reversed
+  count-first native bare checks remain valid unfinished ordering cases. Broader
   original OR/grouped/outcome/extra-owner compositions remain unfinished;
   a legacy numerical note never authorizes an unread clause or older-row
   substitution. No all-AND language-completeness claim is made.
