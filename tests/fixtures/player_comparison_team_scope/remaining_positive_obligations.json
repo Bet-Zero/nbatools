@@ -1,0 +1,22 @@
+{
+  "status": "Valid desired compositions remain UNFINISHED when guarded. These are not invalid inputs or completed features; root approved this scalar-opponent/shared-team slice separately.",
+  "obligations": [
+    {
+      "query": "Compare Luka Doncic's Dallas averages with Anthony Davis's Lakers averages in 2024-25",
+      "desired": "Different per-subject team owners: LukaDAL22games619/183/172 versus ADLAL42games1081/499/141. Existing one-shared-team kwarg does not represent two separate owners. Original immutable contract retains the positive."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis for the Lakers against Warriors and Celtics in 2024-25",
+      "desired": "Both independent player samples retain sharedownteamLAL and complete opponentORunion[GSW,BOS]. Current team-before-against list boundary safely contains this new combination; existing no-team comparison unions remain delivered."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis for Lakers against Warriors in 2024-25 with at least 30 minutes",
+      "desired": "Both same-team samples filtered by the requested time metric. Do not apply integer count lowering to minutes or claim precise official time from rounded canonicalMIN. Time precision contract remains separate."
+    },
+    {
+      "query": "Compare Luka Doncic and Anthony Davis for Lakers against Warriors in 2024-25 with over 50 percent shooting",
+      "desired": "A fully owned shooting-rate filter with its actual metric/precision and denominator, not an integer count transform or a dropped clause."
+    }
+  ],
+  "preserved": "All46 PR462 absence positives, medical/status/on-court distinctions, membership/source coverage limits and PR531 singular-three obligation remain unchanged."
+}

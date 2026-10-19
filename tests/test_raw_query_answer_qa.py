@@ -363,7 +363,7 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 151
+    assert len(selected) == 156
     assert {
         "original_window_played_pair_source_empty",
         "original_window_played_pair_source_positive",
@@ -382,6 +382,11 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         "qualified_original_stat_pair_source_zero",
         "qualified_original_stat_pair_source_dnp_no",
         "qualified_original_stat_pair_source_unknown",
+        "player_comparison_team_scope_source_primary",
+        "player_comparison_team_scope_source_question",
+        "player_comparison_team_scope_source_count_partial_empty",
+        "player_comparison_team_scope_source_count_empty",
+        "player_comparison_team_scope_unresolved_operand",
     } <= {case["id"] for case in selected}
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
 

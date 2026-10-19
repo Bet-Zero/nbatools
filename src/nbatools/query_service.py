@@ -480,7 +480,15 @@ def _build_applied_filters(
     conditions = normalize_stat_conditions(
         route_kwargs.get("conditions") or source.get("conditions")
     )
-    if conditions:
+    comparison_scope = source.get("player_comparison_scope") or {}
+    if comparison_scope.get("count_checks"):
+        from nbatools.commands._player_comparison_scope import count_filter_descriptions
+
+        applied_filters.extend(
+            {"label": "Count filter", "value": value, "kind": "threshold"}
+            for value in count_filter_descriptions(comparison_scope)
+        )
+    elif conditions:
         for cond in conditions:
             stat = cond["stat"]
             owner = f"{cond['opponent_team']} " if cond.get("opponent_team") else ""

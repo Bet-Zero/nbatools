@@ -471,6 +471,21 @@ Examples:
 - `Jokic head-to-head vs Embiid since 2021`
 - `Kobe vs LeBron playoffs in 2008-09`
 
+A shared historical team sample is supported with two resolved players, one
+explicit regular season and optionally one scalar opponent. For example,
+`Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in
+2024-25` compares Dončić's one Lakers appearance (19PTS/8REB/7AST) with Davis's
+two (18PTS/7.5REB/1.5AST per game). `How did ... compare for the Lakers ...?`,
+reversed names and complete playing-for wording preserve both subjects. These
+are independent appearance samples, not games where both played together.
+Historical `Playing for` and `Opponent` labels keep the sample visible. Complete
+common date/venue and integer-count filters apply before summarizing; decimal
+count cutoffs keep exact strictness with explicitly labeled equivalent integer
+execution. Unknown/ambiguous operands or unread clauses cannot become a
+single-player result. Different team filters per player, shared-team opponent
+unions and rate/time filtering in this new scope remain unfinished; the existing
+unfiltered comparison families retain their tested semantics.
+
 ### Team comparison
 
 Examples:

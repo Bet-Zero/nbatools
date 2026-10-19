@@ -15712,3 +15712,315 @@ cases:
       Explicit DNP is No without numericzero; real recordedREB0 is distinct. Original TEAM row and checked player identity stay
       separate. Independent review, actual R2 and deployed proof remain pending; human review fields retain historical meaning.
       Five production reports only; all46 absence positives remain open.
+  - id: player_comparison_team_scope_source_primary
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    expected_filters:
+    - kind: team
+      label: Playing for
+      value: LAL
+    - kind: team
+      label: Opponent
+      value: GSW
+    review_notes: Source4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205/contracta2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11
+      frozen before runtime; integer-count addendum approved separately. Raw canonical player/game/actualteam/opponent/date
+      keys and direct means/totals are the oracle; natural/structured agreement is not independent proof. Historical shared
+      Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
+      humanreview fields stay literal. All46 absence positives unchanged.
+    query: Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in 2024-25
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: GSW
+    - path: result.metadata.season
+      equals: 2024-25
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.without_player
+      equals: null
+    - path: result.metadata.players_context.0.player_id
+      equals: 1629029
+    - path: result.sections.summary.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.summary.0.games
+      equals: 1
+    - path: result.sections.summary.0.pts_sum
+      equals: 19
+    - path: result.sections.summary.0.pts_avg
+      equals: 19.0
+    - path: result.sections.summary.0.reb_sum
+      equals: 8
+    - path: result.sections.summary.0.reb_avg
+      equals: 8.0
+    - path: result.sections.summary.0.ast_sum
+      equals: 7
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    - path: result.metadata.players_context.1.player_id
+      equals: 203076
+    - path: result.sections.summary.1.player_name
+      equals: Anthony Davis
+    - path: result.sections.summary.1.games
+      equals: 2
+    - path: result.sections.summary.1.pts_sum
+      equals: 36
+    - path: result.sections.summary.1.pts_avg
+      equals: 18.0
+    - path: result.sections.summary.1.reb_sum
+      equals: 15
+    - path: result.sections.summary.1.reb_avg
+      equals: 7.5
+    - path: result.sections.summary.1.ast_sum
+      equals: 3
+    - path: result.sections.summary.1.ast_avg
+      equals: 1.5
+  - id: player_comparison_team_scope_source_question
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: sentence
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    expected_filters:
+    - kind: team
+      label: Playing for
+      value: LAL
+    - kind: team
+      label: Opponent
+      value: GSW
+    review_notes: Source4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205/contracta2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11
+      frozen before runtime; integer-count addendum approved separately. Raw canonical player/game/actualteam/opponent/date
+      keys and direct means/totals are the oracle; natural/structured agreement is not independent proof. Historical shared
+      Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
+      humanreview fields stay literal. All46 absence positives unchanged.
+    query: How did Luka Doncic and Anthony Davis compare for the Lakers against the Warriors in 2024-25?
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: GSW
+    - path: result.metadata.season
+      equals: 2024-25
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.without_player
+      equals: null
+    - path: result.metadata.players_context.0.player_id
+      equals: 1629029
+    - path: result.sections.summary.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.summary.0.games
+      equals: 1
+    - path: result.sections.summary.0.pts_sum
+      equals: 19
+    - path: result.sections.summary.0.pts_avg
+      equals: 19.0
+    - path: result.sections.summary.0.reb_sum
+      equals: 8
+    - path: result.sections.summary.0.reb_avg
+      equals: 8.0
+    - path: result.sections.summary.0.ast_sum
+      equals: 7
+    - path: result.sections.summary.0.ast_avg
+      equals: 7.0
+    - path: result.metadata.players_context.1.player_id
+      equals: 203076
+    - path: result.sections.summary.1.player_name
+      equals: Anthony Davis
+    - path: result.sections.summary.1.games
+      equals: 2
+    - path: result.sections.summary.1.pts_sum
+      equals: 36
+    - path: result.sections.summary.1.pts_avg
+      equals: 18.0
+    - path: result.sections.summary.1.reb_sum
+      equals: 15
+    - path: result.sections.summary.1.reb_avg
+      equals: 7.5
+    - path: result.sections.summary.1.ast_sum
+      equals: 3
+    - path: result.sections.summary.1.ast_avg
+      equals: 1.5
+  - id: player_comparison_team_scope_source_count_partial_empty
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+    - summary
+    - comparison
+    expected_row_counts:
+      summary: 2
+    expected_filters:
+    - kind: team
+      label: Playing for
+      value: LAL
+    - kind: team
+      label: Opponent
+      value: GSW
+    - kind: threshold
+      label: Count filter
+      value: '> 35.99999 PTS (integer execution: >= 36 PTS)'
+    review_notes: Source4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205/contracta2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11
+      frozen before runtime; integer-count addendum approved separately. Raw canonical player/game/actualteam/opponent/date
+      keys and direct means/totals are the oracle; natural/structured agreement is not independent proof. Historical shared
+      Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
+      humanreview fields stay literal. All46 absence positives unchanged.
+    query: Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in 2024-25 with over 35.99999 points
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: GSW
+    - path: result.metadata.season
+      equals: 2024-25
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.without_player
+      equals: null
+    - path: result.metadata.players_context.0.player_id
+      equals: 1629029
+    - path: result.sections.summary.0.player_name
+      equals: Luka Dončić
+    - path: result.sections.summary.0.games
+      equals: 0
+    - path: result.sections.summary.0.pts_sum
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: null
+    - path: result.sections.summary.0.reb_sum
+      equals: 0
+    - path: result.sections.summary.0.reb_avg
+      equals: null
+    - path: result.sections.summary.0.ast_sum
+      equals: 0
+    - path: result.sections.summary.0.ast_avg
+      equals: null
+    - path: result.metadata.players_context.1.player_id
+      equals: 203076
+    - path: result.sections.summary.1.player_name
+      equals: Anthony Davis
+    - path: result.sections.summary.1.games
+      equals: 1
+    - path: result.sections.summary.1.pts_sum
+      equals: 36
+    - path: result.sections.summary.1.pts_avg
+      equals: 36
+    - path: result.sections.summary.1.reb_sum
+      equals: 13
+    - path: result.sections.summary.1.reb_avg
+      equals: 13
+    - path: result.sections.summary.1.ast_sum
+      equals: 3
+    - path: result.sections.summary.1.ast_avg
+      equals: 3
+  - id: player_comparison_team_scope_source_count_empty
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_shape: no_result
+    expected_sections: []
+    expected_filters:
+    - kind: team
+      label: Playing for
+      value: LAL
+    - kind: team
+      label: Opponent
+      value: GSW
+    - kind: threshold
+      label: Count filter
+      value: '>= 0.1 and <= 0.9 PTS (integer execution: >= 1 and <= 0 PTS)'
+    review_notes: Source4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205/contracta2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11
+      frozen before runtime; integer-count addendum approved separately. Raw canonical player/game/actualteam/opponent/date
+      keys and direct means/totals are the oracle; natural/structured agreement is not independent proof. Historical shared
+      Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
+      humanreview fields stay literal. All46 absence positives unchanged.
+    query: Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in 2024-25 with between 0.1 and 0.9 points
+    hard_assertions:
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: GSW
+    - path: result.metadata.season
+      equals: 2024-25
+    - path: result.metadata.head_to_head_used
+      equals: false
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.without_player
+      equals: null
+    - path: result.metadata.players_context.0.player_id
+      equals: 1629029
+    - path: result.metadata.players_context.1.player_id
+      equals: 203076
+    expected_reason: no_match
+  - id: player_comparison_team_scope_unresolved_operand
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: typo_partial
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: Source4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205/contracta2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11
+      frozen before runtime; integer-count addendum approved separately. Raw canonical player/game/actualteam/opponent/date
+      keys and direct means/totals are the oracle; natural/structured agreement is not independent proof. Historical shared
+      Playingfor sample is not simultaneous coappearance/current membership. Independent review/R2/browser/deploy pending, historical
+      humanreview fields stay literal. All46 absence positives unchanged.
+    query: Compare Luka Doncic and Blorg for the Lakers against Warriors in 2024-25
+    expected_reason: filter_not_supported
+    hard_assertions:
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.with_player
+      equals: null

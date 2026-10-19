@@ -3257,6 +3257,15 @@ def _build_parse_state(query: str) -> dict:
     player_a, player_b = extract_player_comparison(q)
     if comparison_scope:
         player_a, player_b = comparison_scope["players"] or [None, None]
+        if not comparison_scope["unsupported"] and comparison_scope["conditions"]:
+            threshold_conditions = comparison_scope["conditions"]
+            primary = threshold_conditions[0]
+            stat, min_value, max_value = (
+                primary["stat"],
+                primary["min_value"],
+                primary["max_value"],
+            )
+            extra_conditions = threshold_conditions[1:]
     bare_player_vs_player = False
     if player_a and player_b:
         bare_a, bare_b = detect_bare_player_vs_player_query(q)

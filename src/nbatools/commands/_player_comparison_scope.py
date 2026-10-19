@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 
 from nbatools.commands._constants import STOP_WORDS
 from nbatools.commands._matchup_utils import (
@@ -13,8 +14,8 @@ from nbatools.commands.entity_resolution import TEAM_ALIASES
 
 _TEAM = "|".join(re.escape(a) for a in sorted(TEAM_ALIASES, key=len, reverse=True))
 _SHARED_TEAM = re.compile(
-    r"\b(?:(?:while|when)\s+(?:each\s+)?(?:playing|played)\s+for"
-    r"|(?:only\s+)?(?:in\s+)?their\s+games?\s+for|for|on)\s+"
+    r"\b(?:(?:(?:while|when)\s+)?(?:each\s+)?(?:playing|played)\s+for"
+    r"|(?:only\s+)?(?:in\s+)?their\s+games?\s+for|(?:while\s+)?on|for|as)\s+"
     rf"(?:the\s+)?(?P<team>{_TEAM})(?![\w'-])"
 )
 _INTENT = re.compile(r"\bcompar(?:e|ing|ison)\b|\bside[ -]by[ -]side\b")
@@ -47,13 +48,16 @@ def _sample_remainder(text: str) -> str:
         opponent_lists,
     )
 
-    spans = [(start, end) for start, end, _ in opponent_lists(text)]
-    spans += [
-        m.span()
-        for m in re.finditer(
-            rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:{_TEAM})(?![\w'-])", text
-        )
-    ]
+    # This promotion has one scalar opponent. Keep existing no-team unions
+    # unchanged, and retain new team+union questions as unfinished positives.
+    if opponent_lists(text):
+        return "unpromoted opponent union"
+    opponents = list(
+        re.finditer(rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:{_TEAM})(?![\w'-])", text)
+    )
+    if len(opponents) > 1:
+        return "multiple opponent clauses"
+    spans = [m.span() for m in opponents]
     spans += [(b["start"], b["end"]) for b in extract_threshold_conditions(text)]
     season = extract_season(text)
     # Use the shared date tokens and resolver; unrecognized/invalid dates are
@@ -132,5 +136,49 @@ def read_shared_comparison(text: str) -> dict | None:
     rest = _mask(text, [team.span(), match.span()])
     if _sample_remainder(rest):
         return request
-    request.update(team=TEAM_ALIASES[team["team"]], unsupported=None, subject_span=match.span())
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+    from nbatools.commands.natural_query import _YES_NO_STATS
+
+    count_stats = _YES_NO_STATS - {"minutes"}
+    checks = extract_threshold_conditions(text, exact_stat=count_stats)
+    if any(c["stat"] not in count_stats or re.search(r"%|\bpercent\b", c["text"]) for c in checks):
+        return request
+    lowered = []
+    for check in checks:
+        condition = dict(check, min_inclusive=True, max_inclusive=True)
+        for edge in ("min", "max"):
+            bound = check[edge + "_value"]
+            if bound is None:
+                continue
+            value = Decimal(str(bound))
+            if not value.is_finite():
+                return request
+            inclusive = check[edge + "_inclusive"]
+            rounding = ROUND_CEILING if (edge == "min") == inclusive else ROUND_FLOOR
+            number = int(value.to_integral_value(rounding=rounding))
+            if not inclusive:
+                number += 1 if edge == "min" else -1
+            condition[edge + "_value"] = number
+        lowered.append(condition)
+    request.update(
+        team=TEAM_ALIASES[team["team"]],
+        unsupported=None,
+        subject_span=match.span(),
+        count_checks=checks,
+        conditions=lowered,
+    )
     return request
+
+
+def count_filter_descriptions(request: dict) -> list[str]:
+    """Original predicates remain visible beside equivalent integer execution."""
+    from nbatools.commands._original_minutes import check_description
+
+    descriptions = []
+    for original, executed in zip(request["count_checks"], request["conditions"]):
+        label = check_description(original)
+        normalized = check_description(executed)
+        if label != normalized:
+            label += f" (integer execution: {normalized})"
+        descriptions.append(label)
+    return descriptions

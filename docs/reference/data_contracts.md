@@ -165,6 +165,36 @@ designation, both participant rows use `is_home=0` and `is_away=0`. Neutral
 participants must not be mislabeled as two away teams; trusted venue-relative
 filtering remains owned by the canonical game identity contract.
 
+Explicit two-player comparisons can apply one shared historical playing-for
+team filter, separately from one scalar opponent, in a named regular season.
+Complete canonical operand spans are read independently of sample modifiers:
+`Compare A and B for the Lakers against Warriors` and `How did A and B compare
+for the Lakers against Warriors?` both retain A, B, own teamLAL and opponentGSW.
+The existing `player_compare` consumer independently selects each player's
+actual team-game appearances; neither simultaneous membership/coappearance nor
+head-to-head is implied. Static date/venue restrictions and fully consumed common
+count predicates retain their existing selection order. Metadata keeps both
+canonical player contexts and separate historical `Playing for` / `Opponent`
+filter labels; a missing second operand never becomes a single-player finder.
+
+For this new comparison slice, exact threshold spans on the existing integer
+count vocabulary PTS/REB/AST/FG3M/STL/BLK/TOV lower mathematically to equivalent
+inclusive integer bounds through Decimal ceil/floor rules. Strict lower uses
+floor+1, inclusive lowerceil; strict upper uses ceil-1, inclusive upperfloor.
+Original normalized predicate text/operator/cutoff remain visible in `Count
+filter`; differing bounds are explicitly labeled as equivalent integer execution.
+Legacy unfiltered comparison dictionaries and consumers are unchanged. Negative
+resulting ceilings and ranges containing no integers remain real empty samples,
+not absolute values or dropped clauses. A partial-empty comparison keeps a
+zero-games summary row with null per-game averages and additive sums0 while the
+other independent sample exists; both-empty yields `no_match`. These are observed
+appearance-sample aggregates, never invented DNP player rows or absence evidence.
+Fractional/rate/time metrics outside this count domain, differently owned team
+filters per player, and the new shared-team plus opponent-union composition
+remain distinct unfinished positives. Existing no-team opponent unions remain
+supported. Source/consumer/numeric addendum and retained obligations live under
+`tests/fixtures/player_comparison_team_scope/`.
+
 Player sample-aware metrics such as:
 
 - USG%

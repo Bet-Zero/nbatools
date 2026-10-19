@@ -152,3 +152,8 @@ case_ids:
   - qualified_original_stat_pair_source_zero
   - qualified_original_stat_pair_source_dnp_no
   - qualified_original_stat_pair_source_unknown
+  - player_comparison_team_scope_source_primary
+  - player_comparison_team_scope_source_question
+  - player_comparison_team_scope_source_count_partial_empty
+  - player_comparison_team_scope_source_count_empty
+  - player_comparison_team_scope_unresolved_operand
