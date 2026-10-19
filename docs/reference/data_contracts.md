@@ -427,8 +427,21 @@ Contract rules:
   PLAYED checks; playoff wording remains unfinished. Original selection can include home/road context or one explicit ISO
   date boundary. Latest-qualifying Boolean, N>1, mixed polarity, health/status,
   on-court, extra statistic and unread compositions remain unfinished.
-  The legacy scalar appearance/omission yes/no helper is unchanged and does not
-  provide qualified absence proof; it is not reused for BOTH checks.
+  Scalar latest-original played checks use that same full canonical selection
+  and qualified observation path at one-name arity. Explicit season/team/opponent
+  context chooses the original matchup before participation, rather than the
+  player's most recent appearance. Known played and explicit DNP yield Yes/No
+  with the original team-game row; unknown/missing/conflicting facts yield an
+  unavailable result without an older appearance substitute. A bare request's
+  last-appearance team is only a candidate and needs qualified same-game subject
+  membership; it is never certified as the current team from omission.
+  Canonical `metadata.player` and identity-only `player_context` identify the
+  checked target, while the finder row and caveat label totals as team evidence.
+  No player row or zero box score is fabricated for DNP. Basic Yes stat details
+  come only from a positive appearance matching the selected game/player/side/date.
+  The old date/appearance-omission-to-No formatter has been removed. Scalar
+  score/outcome yes-no semantics and legacy calendar/freshness interpretation
+  are unchanged; qualifying/N>1, status/on-court and unread compositions stay open.
   All 46 original PR462 absence obligations remain open. Baselines
   and exact original/qualifying source requirements are retained in
   `tests/fixtures/qualified_played_pair/temporal_obligations.json`; root-frozen

@@ -1653,53 +1653,6 @@ _YES_NO_STAT_WORDS = {
 }
 
 
-def _yes_no_played(metadata: dict[str, Any], row: Any, scope: list) -> str | None:
-    """ "did LeBron play last night": his last game against his team's last.
-
-    "Yes: LeBron James played in the Los Angeles Lakers' last game
-    (2026-10-06 vs the Miami Heat): 22 points, 10 rebounds and 8 assists."
-    """
-    if scope or "team_abbr" not in row.index or "season" not in row.index:
-        return None
-    from nbatools.commands._seasons import resolve_seasons
-    from nbatools.commands.data_utils import load_team_games_for_seasons
-
-    end = metadata.get("end_season") or metadata.get("season") or row["season"]
-    try:
-        seasons = resolve_seasons(None, str(row["season"]), str(end))
-        team_games = load_team_games_for_seasons(
-            seasons, str(metadata.get("season_type") or row.get("season_type") or "Regular Season")
-        )
-    except (FileNotFoundError, ValueError):
-        return None
-    return _played_phrase(metadata.get("player") or row.get("player_name"), row, team_games)
-
-
-def _played_phrase(player: Any, row: Any, team_games: Any) -> str | None:
-    games = team_games[team_games["team_abbr"] == row["team_abbr"]]
-    if games.empty:
-        return None
-    games = games.assign(_date=pd.to_datetime(games["game_date"])).sort_values("_date")
-    last = games.iloc[-1]
-    team = last.get("team_name") or row.get("team_name") or row.get("team_abbr")
-    day = str(last["_date"].date())
-    opponent = last.get("opponent_team_name")
-    where = f"({day}" + (f" vs the {opponent}" if isinstance(opponent, str) else "") + ")"
-    # The player rows list the games he appeared in.
-    if pd.Timestamp(row["game_date"]) == last["_date"]:
-        line = ", ".join(
-            f"{compact_number(float(row[c]))} {w}"
-            for c, w in (("pts", "points"), ("reb", "rebounds"), ("ast", "assists"))
-            if c in row.index and pd.notna(row[c])
-        )
-        line = " and".join(line.rsplit(",", 1)) if line.count(",") else line
-        return f"Yes: {player} played in the {team}' last game {where}: {line}."
-    return (
-        f"No: {player} did not play in the {team}' last game {where}; his last game was "
-        f"{pd.Timestamp(row['game_date']).date()}."
-    )
-
-
 _SINCE_EVENT_WORDS = {"triple_double": "triple-double", "double_double": "double-double"}
 
 
@@ -1836,19 +1789,24 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
     if not note or not isinstance(result, FinderResult) or result.games.empty:
         return
     request = json.loads(note.split(":", 1)[1])
-    if request.get("event") == "played_pair":
+    if request.get("event") in ("played_pair", "played_scalar"):
         # Already qualified inside protected execution, before display projection.
         metadata.update(result.metadata)
         filters = list(metadata.get("applied_filters") or [])
+        scalar = len(request["players"]) == 1
         for item in filters:
             if item.get("label") == "Sample selection":
                 item["value"] = (
-                    "Select the latest original matchup game before checking both played predicates"
+                    "Select the latest original team game before checking the played predicate"
+                    if scalar
+                    else "Select the latest original matchup game "
+                    "before checking both played predicates"
                 )
         filters.append(
             {
                 "label": "Played check",
-                "value": " and ".join(request["players"]) + " both played",
+                "value": " and ".join(request["players"])
+                + (" played" if scalar else " both played"),
                 "kind": "player",
             }
         )
@@ -1881,9 +1839,8 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
     shown = list(dict.fromkeys(shown))
     event = request.get("event")
     if event == "played":
-        phrase = _yes_no_played(metadata, row, request.get("scope") or [])
-        if phrase:
-            metadata["answer_phrase"] = phrase
+        # Legacy scalar notes are never evidence. Admitted played checks run
+        # through protected original-game qualification before this formatter.
         return
     if event in ("triple_double", "double_double"):
         cats = [c for c in ("pts", "reb", "ast", "stl", "blk") if c in row.index]
