@@ -31,7 +31,9 @@ const latestBothIds = ["latest-both-yes", "latest-both-no", "latest-both-unknown
 const latestBoth = cases.length === latestBothIds.length && latestBothIds.every(id => cases.some(item => item.id === id));
 const scalarPlayedIds = ["scalar-played-yes", "scalar-played-no", "scalar-played-unknown-bare"];
 const scalarPlayed = cases.length === scalarPlayedIds.length && scalarPlayedIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed) throw new Error("Expected a complete reviewed browser bundle");
+const originalMinutesIds = ["minutes-exact-yes", "minutes-exact-no", "minutes-dnp-no", "minutes-time-unknown"];
+const originalMinutes = cases.length === originalMinutesIds.length && originalMinutesIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
