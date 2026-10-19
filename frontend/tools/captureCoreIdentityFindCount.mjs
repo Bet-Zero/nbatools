@@ -15,7 +15,9 @@ const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][
 const splits = cases.length === 12 && cases.every(item => /^k07[_-]/.test(item.id));
 const unionPairIds = ["union-record", "union-seasons", "union-opponent-split", "union-team-comparison", "union-player-comparison", "pair-out", "pair-playing", "pair-player-bound", "pair-qualified-empty", "pair-third-player", "owned-window", "owned-qualifying", "owned-player-team", "owned-player-opponent"];
 const unionPairs = cases.length === unionPairIds.length && unionPairIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs) throw new Error("Expected a complete reviewed browser bundle");
+const orScopeIds = ["or-shared", "or-different-opponents", "or-different-seasons"];
+const orScopes = cases.length === orScopeIds.length && orScopeIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
