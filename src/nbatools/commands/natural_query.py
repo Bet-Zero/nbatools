@@ -11943,8 +11943,12 @@ def _season_split_refusal(parsed: dict, dropped: list[str]) -> dict:
 
 
 def _parse_query_once(query: str) -> dict:
+    from nbatools.commands._latest_original_both import prepare
+
     return _per_season_games(
-        _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+        prepare(
+            _yes_no_last_game(_last_n_in_date_order(_finalize_route(_build_parse_state(query))))
+        )
     )
 
 

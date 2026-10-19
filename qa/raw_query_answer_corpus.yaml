@@ -15008,3 +15008,111 @@ cases:
     expected_row_counts:
       summary: 1
       game_log: 1
+
+  - id: latest_original_both_source_false
+    query: Of the Lakers last game against Celtics in 2023-24, did BOTH Jayson Tatum and Anthony Davis play?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Played check
+      value: Jayson Tatum and Anthony Davis both played
+    - kind: team
+      label: Opponent
+      value: BOS
+    - kind: window
+      label: Sample selection
+      value: Select the latest original matchup game before checking both played predicates
+    hard_assertions:
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.unsupported_filters
+      equals: []
+    - path: result.metadata.answer_phrase
+      equals: "No: Jayson Tatum and Anthony Davis did not both play in the Los Angeles Lakers' latest original game against the Boston Celtics (2024-02-01)."
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.team_id
+      equals: 1610612747
+    - path: result.sections.finder.0.opponent_team_id
+      equals: 1610612738
+    - path: result.sections.finder.0.pts
+      equals: 114
+    - path: result.sections.finder.0.reb
+      equals: 52
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Preimplementation source oracle SHA8f0de7f0086aab457a62d957dd287fc4fd1212264aa9c6b201ad201e11e4cc44 in tests/fixtures/latest_original_both/source_and_baseline.json. Maker CSV/PDF identity qualification only; independent, R2 and deployed acceptance remain separate. Original Feb1 game retained for either Boolean; No means not both. Five production participation games are not seasonwide absence coverage; all46 original obligations remain open.
+
+  - id: latest_original_both_source_true
+    query: Of the Lakers last game against Celtics in 2023-24, did BOTH Jayson Tatum and Austin Reaves play?
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_sections:
+    - finder
+    expected_row_counts:
+      finder: 1
+    expected_filters:
+    - kind: player
+      label: Played check
+      value: Jayson Tatum and Austin Reaves both played
+    - kind: team
+      label: Opponent
+      value: BOS
+    - kind: window
+      label: Sample selection
+      value: Select the latest original matchup game before checking both played predicates
+    hard_assertions:
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.team
+      equals: LAL
+    - path: result.metadata.opponent
+      equals: BOS
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.unsupported_filters
+      equals: []
+    - path: result.metadata.answer_phrase
+      equals: "Yes: Jayson Tatum and Austin Reaves both played in the Los Angeles Lakers' latest original game against the Boston Celtics (2024-02-01)."
+    - path: result.sections.finder.0.game_id
+      equals: 22300684
+    - path: result.sections.finder.0.team_id
+      equals: 1610612747
+    - path: result.sections.finder.0.opponent_team_id
+      equals: 1610612738
+    - path: result.sections.finder.0.pts
+      equals: 114
+    - path: result.sections.finder.0.reb
+      equals: 52
+    - path: result.sections.finder.0.ast
+      equals: 30
+    review_notes: Preimplementation source oracle SHA8f0de7f0086aab457a62d957dd287fc4fd1212264aa9c6b201ad201e11e4cc44 in tests/fixtures/latest_original_both/source_and_baseline.json. Maker CSV/PDF identity qualification only; independent, R2 and deployed acceptance remain separate. Original Feb1 game retained for either Boolean; No means not both. Five production participation games are not seasonwide absence coverage; all46 original obligations remain open.

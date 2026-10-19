@@ -414,9 +414,21 @@ Contract rules:
   qualifying and window) retain participation-cohort-before-last-N ordering.
   Ordinary within/among/of-original-window and explicit qualifying forms preserve
   that distinction; unsupported routes/compositions do not inherit the new order.
-  Bare new separate-clause temporal requests remain contained. The boolean
-  latest-original-game question "did BOTH play?" remains a separate unfinished
-  positive, and all 46 original PR462 absence obligations remain open. Baselines
+  Bare new separate-clause temporal record requests remain contained.
+  A bounded latest-original-one-matchup Boolean check ("did BOTH play?") selects
+  the full canonical team row without a participation predicate, then qualifies
+  both resolved names with the existing same-game identity/date checks inside
+  protected execution. Both Yes and No retain that original game ID/date and
+  team statistics; No means not both, never neither. Missing/unknown/contradictory
+  facts or no original game cannot produce No. Metadata labels the predicates
+  as played checks, not a matching `with_player` cohort on a false answer.
+  This requires one explicit season, subject/opponent and exactly two PLAYED
+  checks; original selection can include home/road context or one explicit ISO
+  date boundary. Latest-qualifying Boolean, N>1, mixed polarity, health/status,
+  on-court, extra statistic and unread compositions remain unfinished.
+  The legacy scalar appearance/omission yes/no helper is unchanged and does not
+  provide qualified absence proof; it is not reused for BOTH checks.
+  All 46 original PR462 absence obligations remain open. Baselines
   and exact original/qualifying source requirements are retained in
   `tests/fixtures/qualified_played_pair/temporal_obligations.json`; root-frozen
   preimplementation temporal controls are now retained as revealed regressions

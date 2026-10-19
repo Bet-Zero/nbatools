@@ -1836,6 +1836,24 @@ def _add_yes_no_last_game_metadata(metadata: dict[str, Any], result: Any) -> Non
     if not note or not isinstance(result, FinderResult) or result.games.empty:
         return
     request = json.loads(note.split(":", 1)[1])
+    if request.get("event") == "played_pair":
+        # Already qualified inside protected execution, before display projection.
+        metadata.update(result.metadata)
+        filters = list(metadata.get("applied_filters") or [])
+        for item in filters:
+            if item.get("label") == "Sample selection":
+                item["value"] = (
+                    "Select the latest original matchup game before checking both played predicates"
+                )
+        filters.append(
+            {
+                "label": "Played check",
+                "value": " and ".join(request["players"]) + " both played",
+                "kind": "player",
+            }
+        )
+        metadata["applied_filters"] = filters
+        return
     row = result.games.iloc[0]
     met = []
     shown = []
@@ -3508,7 +3526,15 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         )
 
     try:
-        result = _execute_build_result(route, kwargs, extra_conditions)
+        from nbatools.commands._latest_original_both import build_result as build_both_result
+        from nbatools.commands._latest_original_both import request_from_notes
+
+        both_request = request_from_notes(parsed.get("notes"))
+        result = (
+            build_both_result(kwargs, both_request)
+            if both_request is not None
+            else _execute_build_result(route, kwargs, extra_conditions)
+        )
     except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
         if isinstance(exc, FileNotFoundError):
             reason = "no_data"
