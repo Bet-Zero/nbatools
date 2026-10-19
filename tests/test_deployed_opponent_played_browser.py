@@ -1,4 +1,4 @@
-"""Bounded public opposing-player played, qualified empty and unfinished clause."""
+"""Public played predicates distinguish qualified pair empties from unread clauses."""
 
 import hashlib
 import json
@@ -16,8 +16,8 @@ from tests.test_opponent_played_real_data import ORACLE
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
 FIXTURES = ROOT / "tests/fixtures/opponent_played"
 OBLIGATION = json.loads((FIXTURES / "additional_clause_obligation.json").read_text())
-ASSET = "index-CA4gtUQi.js"
-LAL, BOS, TATUM = 1610612747, 1610612738, 1628369
+ASSET = "index-CJ1uR2hx.js"
+LAL, BOS, TATUM, GABE = 1610612747, 1610612738, 1628369, 1629216
 
 
 def _cases():
@@ -88,6 +88,7 @@ def _cases():
                 kind="positive" if positive_case else "empty",
                 query=frozen["query"],
                 season=season,
+                with_player="Jayson Tatum",
                 expected=expected,
                 rows=chosen.to_dict("records"),
                 text=["Los Angeles Lakers", "1-1", "Jayson Tatum", "50% win rate", "2023-24"]
@@ -98,19 +99,55 @@ def _cases():
             )
         )
     report = data_read_csv("raw/player_game_availability/2023-24_regular_season.csv")
+    players = data_read_csv("raw/player_game_stats/2023-24_regular_season.csv")
+    tatum = next(case for case in ORACLE["primary_cases"] if case["query"].endswith("2023-24"))
+    tatum_facts = {fact["game_id"]: fact for fact in tatum["observations"]}
+    paired_games = set(tatum["candidate_game_ids"])
     for fact in OBLIGATION["independent_source_rows"]:
+        assert fact["player_id"] == GABE and fact["player_name"] == "Gabe Vincent"
         rows = report.loc[
             report.game_id.eq(fact["game_id"]) & report.player_id.eq(fact["player_id"])
         ]
         assert len(rows) == 1
         for key, value in fact.items():
             assert rows.iloc[0][key] == value
+        row = rows.iloc[0]
+        same_game = tatum_facts[fact["game_id"]]
+        assert row.team_id == LAL and row.participation_state == "did_not_play"
+        assert row.coverage_scope == "listed_player_rows_only" and row.source_comment
+        assert not row.source_minutes > 0
+        assert row.game_date == same_game["game_date"]
+        assert row.source_sha256 == same_game["source_sha256"]
+        assert same_game["team_id"] == BOS and same_game["participation_state"] == "played"
+        assert players.loc[
+            players.game_id.eq(fact["game_id"])
+            & players.player_id.eq(fact["player_id"])
+            & players.minutes.gt(0)
+        ].empty
+        if row.participation_state != "played":
+            paired_games.discard(fact["game_id"])
+    assert len(OBLIGATION["independent_source_rows"]) == 2
+    assert sorted(paired_games) == OBLIGATION["desired_game_ids"] == []
+    # Deliberately promote the exact retained natural obligation. Its original
+    # unsupported baseline remains in the historical source fixture/commits.
     cases.append(
         dict(
             id="opponent-played-extra-clause",
-            kind="guard",
+            kind="empty",
             query=OBLIGATION["query"],
             season="2023-24",
+            with_player="Jayson Tatum and Gabe Vincent",
+            text=["No Matching Results", "No games or records matched the query filters."],
+            forbidden=["Unavailable Filter", "Data Not Available", "1-1", "114.5"],
+        )
+    )
+    cases.append(
+        dict(
+            id="opponent-played-unresolved-first",
+            kind="guard",
+            query="Lakers record against Celtics with Blorg playing while Tatum plays in 2023-24",
+            season="2023-24",
+            with_player="Jayson Tatum",
             text=[
                 "Unavailable Filter",
                 "These player participation conditions are not supported together yet. Try one condition at a time.",
@@ -118,7 +155,7 @@ def _cases():
             forbidden=["No Matching Results", "1-1", "114.5", "with-player and without-player"],
         )
     )
-    assert len(cases) == 3
+    assert len(cases) == 4
     return cases
 
 
@@ -153,8 +190,15 @@ def _validate_answers(receipt, cases, output):
         assert meta["team"] == "LAL" and meta["team_context"]["team_id"] == LAL
         assert meta["opponent"] == "BOS" and meta["opponent_context"]["team_id"] == BOS
         assert meta["player"] is None and not meta.get("player_context")
-        assert meta["with_player"] == "Jayson Tatum" and not meta["without_player"]
+        assert meta["with_player"] == case["with_player"] and not meta["without_player"]
         assert meta["season"] == case["season"] and meta["season_type"] == "Regular Season"
+        if case["kind"] == "guard":
+            # This is an unread condition, so the API claims no applied filter.
+            assert not meta.get("applied_filters")
+        else:
+            assert {"label": "With player", "value": case["with_player"], "kind": "player"} in meta[
+                "applied_filters"
+            ]
         if case["kind"] != "positive":
             assert payload["result_status"] == "no_result" and not sections
             assert payload["result_reason"] == (
@@ -167,9 +211,6 @@ def _validate_answers(receipt, cases, output):
                 assert not meta.get("unsupported_filters")
             continue
         assert payload["result_status"] == "ok" and not meta.get("unsupported_filters")
-        assert {"label": "With player", "value": "Jayson Tatum", "kind": "player"} in meta[
-            "applied_filters"
-        ]
         assert len(sections["summary"]) == len(sections["by_season"]) == 1
         for summary in (sections["summary"][0], sections["by_season"][0]):
             _summary(summary, case["expected"])

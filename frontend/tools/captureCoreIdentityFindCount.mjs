@@ -17,7 +17,7 @@ const unionPairIds = ["union-record", "union-seasons", "union-opponent-split", "
 const unionPairs = cases.length === unionPairIds.length && unionPairIds.every(id => cases.some(item => item.id === id));
 const orScopeIds = ["or-shared", "or-different-opponents", "or-different-seasons"];
 const orScopes = cases.length === orScopeIds.length && orScopeIds.every(id => cases.some(item => item.id === id));
-const opponentPlayedIds = ["opponent-played-positive", "opponent-played-empty", "opponent-played-extra-clause"];
+const opponentPlayedIds = ["opponent-played-positive", "opponent-played-empty", "opponent-played-extra-clause", "opponent-played-unresolved-first"];
 const opponentPlayed = cases.length === opponentPlayedIds.length && opponentPlayedIds.every(id => cases.some(item => item.id === id));
 const ownedOrIds = ["owned-or-positive", "owned-or-unread-prefix"];
 const ownedOr = cases.length === ownedOrIds.length && ownedOrIds.every(id => cases.some(item => item.id === id));
