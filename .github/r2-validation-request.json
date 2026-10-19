@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "7184230f2d21111c74fdfc03c06f2003616fd94d",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_or_scope_browser.py::test_deployed_or_scope_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
