@@ -60,7 +60,7 @@ def test_explicit_qualifying_keeps_cohort_first(pair_sample):
     assert _ids(result) == [pair_sample["ids"][0]]
 
 
-@pytest.mark.parametrize("scope", ["qualifying", "window", "outcome_window"])
+@pytest.mark.parametrize("scope", [None, "qualifying", "window", "outcome_window"])
 def test_legacy_structured_scopes_unchanged(pair_sample, scope):
     assert _ids(_record(last_n_scope=scope)) == [pair_sample["ids"][0]]
 
@@ -308,3 +308,60 @@ def test_two_distinct_temporal_windows_are_not_collapsed(pair_sample):
     )
     assert result.result_status == "no_result" and result.result_reason != "no_match"
     assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("last_n", [None, 1])
+@pytest.mark.parametrize(
+    "route",
+    [
+        "team_record",
+        "game_summary",
+        "player_game_summary",
+        "game_finder",
+        "player_game_finder",
+        "team_split_summary",
+        "player_split_summary",
+    ],
+)
+def test_explicit_null_scope_keeps_legacy_qualifying_behavior(pair_sample, route, last_n):
+    options = dict(team="LAL", opponent="BOS", season="2023-24", last_n=last_n)
+    if route.startswith("player_"):
+        options["player"] = "LeBron James"
+    if route.endswith("split_summary"):
+        options["split"] = "opponent"
+    unset = execute_structured_query(route, last_n_scope=None, **options)
+    qualifying = execute_structured_query(route, last_n_scope="qualifying", **options)
+    assert unset.result_status == qualifying.result_status == "ok"
+    assert unset.result.to_dict()["sections"] == qualifying.result.to_dict()["sections"]
+    if route == "team_record":
+        sections = unset.result.to_dict()["sections"]
+        expected = (
+            [int(pair_sample["ids"][-1])]
+            if last_n
+            else [int(value) for value in pair_sample["ids"]]
+        )
+        source = pair_sample["candidates"].loc[pair_sample["candidates"].game_id.isin(expected)]
+        summary = sections["summary"][0]
+        assert summary["games"] == len(expected)
+        assert summary["wins"] == int(source.wl.eq("W").sum())
+        for stat in ["pts", "reb", "ast"]:
+            assert summary[stat + "_avg"] == source[stat].mean()
+        if last_n:
+            assert sorted(int(row["game_id"]) for row in sections["game_log"]) == expected
+        else:
+            # The accepted unfiltered record does not expose a game-log table.
+            assert "game_log" not in sections
+    if last_n:
+        assert {
+            "label": "Sample selection",
+            "value": "Select the last 1 games matching the conditions",
+            "kind": "window",
+        } in unset.metadata["applied_filters"]
+
+
+def test_scope_validation_distinguishes_unset_unknown_and_unsupported_mode():
+    validate_last_n_scope(None)
+    with pytest.raises(ValueError, match="Unknown last-N"):
+        validate_last_n_scope("original_typo")
+    with pytest.raises(ValueError, match="Original participation"):
+        validate_last_n_scope("original_window")

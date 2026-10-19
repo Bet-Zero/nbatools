@@ -340,8 +340,10 @@ LAST_N_SCOPES = ("qualifying", "window", "outcome_window", "original_window")
 WINDOW_SCOPES = ("window", "outcome_window")
 
 
-def validate_last_n_scope(scope: str, *, allow_original_window: bool = False) -> None:
-    """Never silently lower an unsupported sample ordering to qualifying."""
+def validate_last_n_scope(scope: str | None, *, allow_original_window: bool = False) -> None:
+    """Preserve an unset legacy scope; reject unsupported explicit orderings."""
+    if scope is None:
+        return
     if scope not in LAST_N_SCOPES:
         raise ValueError(f"Unknown last-N sample selection: {scope}")
     if scope == "original_window" and not allow_original_window:

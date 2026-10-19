@@ -15,6 +15,11 @@ ORACLE_PATH = (
     Path(__file__).parent / "fixtures/original_window_played_pair/source_and_baseline.json"
 )
 ORACLE = json.loads(ORACLE_PATH.read_text())
+SOURCE_IDENTITIES = {
+    "Jayson Tatum": (1628369, 1610612738),
+    "Anthony Davis": (203076, 1610612747),
+    "Austin Reaves": (1630559, 1610612747),
+}
 
 
 @pytest.mark.parametrize(
@@ -50,10 +55,15 @@ def test_original_and_qualifying_windows_keep_source_order_identity_and_numbers(
     for game in candidates.itertuples():
         played = []
         for name in names:
-            observation = report.loc[report.game_id.eq(game.game_id) & report.player_name.eq(name)]
+            player_id, team_id = SOURCE_IDENTITIES[name]
+            observation = report.loc[
+                report.game_id.eq(game.game_id) & report.player_id.eq(player_id)
+            ]
             assert len(observation) == 1
             fact = observation.iloc[0]
-            assert fact.team_id in [game.team_id, game.opponent_team_id]
+            assert fact.player_id == player_id and fact.player_name == name
+            assert fact.team_id == team_id
+            assert team_id == (game.opponent_team_id if name == "Jayson Tatum" else game.team_id)
             assert fact.game_date == game.game_date
             assert fact.coverage_scope == "listed_player_rows_only"
             assert (
@@ -66,13 +76,16 @@ def test_original_and_qualifying_windows_keep_source_order_identity_and_numbers(
             )
             appearances = players.loc[
                 players.game_id.eq(game.game_id)
-                & players.player_name.eq(name)
+                & players.player_id.eq(player_id)
                 & players.minutes.gt(0)
             ]
             assert len(appearances) == int(fact.participation_state == "played")
             if len(appearances):
-                assert appearances.iloc[0].team_id == fact.team_id
-                assert appearances.iloc[0].game_date == fact.game_date
+                appearance = appearances.iloc[0]
+                assert appearance.player_id == fact.player_id == player_id
+                assert appearance.player_name == fact.player_name == name
+                assert appearance.team_id == fact.team_id == team_id
+                assert appearance.game_date == fact.game_date
             else:
                 assert fact.participation_state == "did_not_play" and fact.source_comment
             played.append(fact.participation_state == "played")
@@ -157,3 +170,49 @@ def test_original_and_qualifying_windows_keep_source_order_identity_and_numbers(
             assert sum(row[stat] for row in rows) == total == summary[stat + "_avg"]
         assert rows[0]["game_date"] == source_rows.game_date.iloc[0]
         assert rows[0]["team_id"] == 1610612747 and rows[0]["opponent_team_id"] == 1610612738
+
+
+@pytest.mark.parametrize(
+    "last_n,expected_ids,expected_totals",
+    [
+        (None, [22300403, 22300684], [229, 95, 54]),
+        (1, [22300684], [114, 52, 30]),
+    ],
+)
+def test_unset_scope_keeps_accepted_record_sample(last_n, expected_ids, expected_totals):
+    teams = pd.read_csv(data_path("raw/team_game_stats/2023-24_regular_season.csv"))
+    assert (
+        hashlib.sha256(
+            data_path("raw/team_game_stats/2023-24_regular_season.csv").read_bytes()
+        ).hexdigest()
+        == ORACLE["source_hashes"]["raw/team_game_stats/2023-24_regular_season.csv"]
+    )
+    candidates = teams.loc[
+        teams.team_id.eq(1610612747) & teams.opponent_team_id.eq(1610612738)
+    ].sort_values(["game_date", "game_id"], ascending=False)
+    selected = candidates if last_n is None else candidates.head(last_n)
+    assert sorted(selected.game_id.astype(int)) == expected_ids
+    assert [int(selected[stat].sum()) for stat in ["pts", "reb", "ast"]] == expected_totals
+    for scope in [None, "qualifying"]:
+        result = execute_structured_query(
+            "team_record",
+            team="LAL",
+            opponent="BOS",
+            season="2023-24",
+            last_n=last_n,
+            last_n_scope=scope,
+        )
+        assert result.result_status == "ok"
+        sections = result.result.to_dict()["sections"]
+        if last_n:
+            assert sorted(int(row["game_id"]) for row in sections["game_log"]) == expected_ids
+        else:
+            assert "game_log" not in sections
+        summary = sections["summary"][0]
+        assert summary["games"] == len(expected_ids)
+        assert summary["wins"] == int(selected.wl.eq("W").sum())
+        assert summary["losses"] == int(selected.wl.eq("L").sum())
+        for stat, total in zip(["pts", "reb", "ast"], expected_totals):
+            if last_n:
+                assert sum(row[stat] for row in sections["game_log"]) == total
+            assert summary[stat + "_avg"] == total / len(expected_ids)
