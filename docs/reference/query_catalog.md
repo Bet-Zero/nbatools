@@ -478,6 +478,14 @@ explicit regular season and optionally one scalar opponent. For example,
 two (18PTS/7.5REB/1.5AST per game). `How did ... compare for the Lakers ...?`,
 reversed names and complete playing-for wording preserve both subjects. These
 are independent appearance samples, not games where both played together.
+A conditional medical/status owner does not replace the primary subject:
+`Boston record against Lakers in 2025-26 when Derrick White is medically cleared`
+retains the Boston record request and reports unavailable qualified status data.
+The same condition on an Embiid/Jokic comparison retains both players. No medical
+filter is delivered, no reduced unfiltered answer runs, and participation never
+establishes clearance/health or an absence reason. Existing played/unfiltered
+questions keep their source-backed answers.
+
 Historical `Playing for` and `Opponent` labels keep the sample visible. Complete
 common date/venue and integer-count filters apply before summarizing; decimal
 count cutoffs keep exact strictness with explicitly labeled equivalent integer

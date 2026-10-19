@@ -324,7 +324,12 @@ def named_metrics(parsed: dict) -> tuple[str, ...]:
 #: condition the product cannot apply. Recognizing the words is not interpreting
 #: them: nothing here decides what counts as injured, and nothing infers it from
 #: missed games. It exists so the clause is refused instead of dropped.
+_MEDICAL_CLEARANCE_STATUS = (
+    r"\b(?:medically\s+cleared(?:\s+to\s+play)?|cleared\s+medically|medical\s+clearance"
+    r"|cleared\s+(?:to\s+play|for\s+(?:play|basketball(?:\s+activities)?)))\b"
+)
 _UNSUPPORTED_AVAILABILITY_STATUS = (
+    (_MEDICAL_CLEARANCE_STATUS, "medical clearance"),
     (r"\b(?:injured|injury|injuries|hurt)\b", "injury status"),
     (r"\b(?:load\s+management|rest(?:ing|ed)?\s+(?:game|games|night))\b", "rest status"),
     (r"\b(?:healthy|fully\s+fit)\b", "health status"),
@@ -355,6 +360,108 @@ def unsupported_availability_status(parsed: dict) -> str | None:
         if re.search(pattern, text):
             return label
     return None
+
+
+_STATUS_CONNECTOR = re.compile(r"\b(?:when|whenever|while|if|where|during|with|without)\s+")
+_STATUS_AUXILIARY = re.compile(
+    r"\s+(?:(?:is|was|were|are|has|have|had|been|being|not|never|still|yet)\s*)+$"
+)
+_STATUS_OWNER_WORD = re.compile(r"[a-z][a-z'.-]*(?:\s+[a-z][a-z'.-]*){0,5}")
+_STATUS_OWNER_BOUNDARIES = {
+    "and",
+    "or",
+    "but",
+    "when",
+    "while",
+    "if",
+    "where",
+    "during",
+    "with",
+    "without",
+    "against",
+    "vs",
+    "versus",
+    "record",
+    "summary",
+    "compare",
+    "show",
+    "what",
+    "how",
+    "in",
+    "at",
+    "on",
+    "for",
+    "since",
+    "through",
+    "season",
+}
+
+
+def availability_status_subject_view(text: str) -> tuple[str, list[dict]]:
+    """Keep conditional status owners out of the primary subject scan.
+
+    Only whole subordinate owner/predicate spans are masked. The caller keeps
+    full text and these spans for final status authorization; masking is never
+    permission to execute the reduced question. Unknown owner names stay raw.
+    """
+    found = []
+    connectors = list(_STATUS_CONNECTOR.finditer(text))
+    for pattern, category in _UNSUPPORTED_AVAILABILITY_STATUS:
+        for status in re.finditer(pattern, text):
+            start, end = status.span()
+            # The existing active/available rule includes its governing text.
+            # Its final predicate still uses the same complete owner proof.
+            if category == "roster status":
+                terminal = list(re.finditer(r"\b(?:active|available)\b", status[0]))
+                if terminal:
+                    start = status.start() + terminal[-1].start()
+            previous = [c for c in connectors if c.end() <= start]
+            if not previous:
+                continue
+            connector = previous[-1]
+            prefix = text[connector.end() : start].strip()
+            owner = _STATUS_AUXILIARY.sub("", prefix).strip()
+            if not owner:
+                # A qualified status noun can bind its owner with FOR/OF:
+                # 'with medical clearance for White'. Keep static scope
+                # following that complete name outside the condition span.
+                suffix = re.match(
+                    r"\s+(?:for|of)\s+([a-z][a-z'.-]*(?:\s+[a-z][a-z'.-]*){0,5}?)"
+                    r"(?=\s+(?:in|at|on|during|against|vs|versus|when|while|and|or|record|show|compare)\b|[,;.!?]|$)",
+                    text[end:],
+                )
+                if suffix:
+                    owner = suffix[1]
+                    end += suffix.end()
+            owner = re.sub(r"^(?:the|a|an)\s+", "", owner)
+            if not _STATUS_OWNER_WORD.fullmatch(owner):
+                continue
+            if set(owner.split()) & _STATUS_OWNER_BOUNDARIES:
+                continue
+            if connector[0].strip() == "with" and re.search(
+                r"\bcompar(?:e|ing|ison)\b", text[: connector.start()]
+            ):
+                # WITH can join the primary comparison operands. A status
+                # predicate must not erase that second comparison subject.
+                from nbatools.commands._matchup_utils import extract_player_comparison
+
+                a, b = extract_player_comparison(text[: connector.start()])
+                if not (a and b):
+                    continue
+            clause = {
+                "start": connector.start(),
+                "end": end,
+                "owner_text": owner,
+                "condition": category,
+                "text": text[connector.start() : end],
+            }
+            if not any(c["start"] < end and connector.start() < c["end"] for c in found):
+                found.append(clause)
+    masked = text
+    for clause in sorted(found, key=lambda c: c["start"], reverse=True):
+        start, end = clause["start"], clause["end"]
+        masked = masked[:start] + " " * (end - start) + masked[end:]
+    return masked, sorted(found, key=lambda c: c["start"])
 
 
 # ---------------------------------------------------------------------------
