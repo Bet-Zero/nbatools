@@ -461,8 +461,11 @@ Contract rules:
   Minutes-check labels describe checks on the retained game, not an applied
   player cohort; table totals remain team evidence. Native bare statistical
   minutes, multi-stat AND/OR/outcome checks outside this bounded original-matchup
-  extension retain their existing semantics; broader original stat compositions
-  remain unfinished. Frozen source/consumer/precision contracts are under
+  extension retain their tested accepted-main semantics; broader original stat
+  compositions remain unfinished. A carried-forward statistical admission gap
+  still refuses the valid Pritchard minutes-AND-`have`-assists check on
+  his last game; restoring that old positive is a separate obligation, not
+  proof that every AND wording is preserved. Frozen source/consumer/precision contracts are under
   `tests/fixtures/qualified_original_minutes/`.
   All 46 original PR462 absence obligations remain open. Baselines
   and exact original/qualifying source requirements are retained in
