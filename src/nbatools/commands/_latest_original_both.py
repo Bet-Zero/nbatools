@@ -160,9 +160,9 @@ def _admitted_minutes_check(text: str, out: dict) -> bool:
     unqualified presence check. Require a direct minutes predicate and consume
     every remaining predicate and the original-game scope before deferring.
     """
-    from nbatools.commands._constants import STAT_PATTERN
+    from nbatools.commands._constants import contains_boolean_or
     from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase, detect_player
-    from nbatools.commands._parse_helpers import detect_stat, extract_threshold_conditions
+    from nbatools.commands._parse_helpers import extract_stat_predicate_spans
     from nbatools.commands._teammate_resolution import _only_the_name
 
     kwargs = out.get("route_kwargs") or {}
@@ -196,10 +196,22 @@ def _admitted_minutes_check(text: str, out: dict) -> bool:
     # The static scope must be a complete suffix; unknown words cannot be
     # hidden by a previously admitted numerical/outcome note.
     for boundary in re.finditer(r"\s+", tail):
-        if _read_scope(tail[boundary.end() :], require_matchup=False, require_season=False) is None:
+        scope = _read_scope(tail[boundary.end() :], require_matchup=False, require_season=False)
+        if scope is None:
             continue
         predicates = tail[: boundary.start()]
-        bounds = extract_threshold_conditions(predicates)
+        # Restore native implicit-actor statistical verbs on bare AND checks.
+        # Explicit team-original combinations use the qualified consumer above;
+        # never reopen an older appearance fallback for a newly read clause.
+        bounds = (
+            [
+                b
+                for b in extract_stat_predicate_spans(predicates)
+                if b.get("verb") not in ("have", "has", "had", "record", "records", "recorded")
+            ]
+            if scope["team"] or contains_boolean_or(predicates)
+            else extract_stat_predicate_spans(predicates)
+        )
         if not bounds or bounds[0]["start"] != 0 or bounds[0]["stat"] != "minutes":
             continue
 
@@ -208,15 +220,7 @@ def _admitted_minutes_check(text: str, out: dict) -> bool:
 
         if set(map(signature, bounds)) != set(map(signature, checks)):
             continue
-        spans = []
-        for bound in bounds:
-            end = bound["end"]
-            # Verb thresholds can stop before their optional unit (score 20
-            # points). Consume it only when it names the very same statistic.
-            unit = re.match(rf"\s+({STAT_PATTERN})\b", predicates[end:])
-            if unit and detect_stat(unit[1]) == bound["stat"]:
-                end += unit.end()
-            spans.append((bound["start"], end))
+        spans = [(bound["start"], bound["end"]) for bound in bounds]
         outcomes = list(re.finditer(r"\b(?:win|won|lose|lost)\b", predicates))
         if len(outcomes) > 1:
             continue
@@ -450,16 +454,25 @@ def build_result(kwargs: dict, request: dict) -> FinderResult | NoResult:
     day = str(pd.Timestamp(row["game_date"]).date())
     minutes_check = (request.get("checks") or [None])[0]
     if minutes_check:
-        from nbatools.commands._original_minutes import answer_phrase
+        from nbatools.commands._original_minutes import answer_phrase, same_game_count
         from nbatools.commands._participation_observations import qualified_report_seconds
 
+        count_check = next((c for c in request["checks"] if c["stat"] != "minutes"), None)
         try:
             seconds = qualified_report_seconds(
                 row, players[0], [season], season_type, played=passed
             )
-        except ValueError as exc:
+            # Validate every required played fact before testing either bound.
+            count = (
+                same_game_count(row, players[0], [season], season_type, count_check["stat"])
+                if passed and count_check
+                else None
+            )
+        except (FileNotFoundError, ValueError) as exc:
             return unavailable(str(exc))
-        phrase = answer_phrase(row, players[0], minutes_check, seconds)
+        phrase = answer_phrase(
+            row, players[0], minutes_check, seconds, count_check=count_check, count=count
+        )
     elif scalar:
         verb = "played" if passed else "did not play"
         matchup = f" against the {row['opponent_team_name']}" if kwargs["opponent"] else ""

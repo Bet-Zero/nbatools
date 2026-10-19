@@ -1,0 +1,142 @@
+{
+  "runtime": "751876a973bdf54acca56242bf0cb51ee4aa2de4",
+  "generation": "availability-opening-s4-v1-20261017",
+  "independent_reviewers": [
+    "root",
+    "comparison_checker"
+  ],
+  "source_fixture_sha256": "78e57eddf60d6b227d8f73e0a57487347efaa0fc3d57c343c99d629ffbc6dad0",
+  "root_private": {
+    "preimplementation_oracle_sha256": "80311f66a1855805c6f68b98cbcdcd5379251e53086d817bea08ea83aa5f9e3b",
+    "additional_audit_sha256": "d31455f77fc7f1dac2e8c62bd8ba6708507fea9b594cc25c2d62094467b7d6ea",
+    "receipt_sha256": "bc88025838cd4e068b47f5f43ec42fe8503fdbacb06a6f048f7994d18507d4a8",
+    "passed": 8,
+    "findings": [],
+    "cases": [
+      {
+        "query": "Did Derrick White record at least 6 assists and play fewer than 33 minutes in Celtics latest game against Lakers during the 2023-24 regular season?",
+        "expected": true,
+        "status": "ok",
+        "reason": null,
+        "answer": "Yes: Derrick White played 32:44 with 6 AST in the Boston Celtics' latest original game against the Los Angeles Lakers (2024-02-01); the check was played < 33 minutes and >= 6 AST."
+      },
+      {
+        "query": "For the Lakers last matchup versus Boston in 2023-24, did Austin Reaves play more than 34.5 minutes and have over 1.99999 rebounds?",
+        "expected": true,
+        "status": "ok",
+        "reason": null,
+        "answer": "Yes: Austin Reaves played 34:34 with 2 REB in the Los Angeles Lakers' latest original game against the Boston Celtics (2024-02-01); the check was played > 34.5 minutes and > 1.99999 REB."
+      },
+      {
+        "query": "Did Jrue Holiday play at least 29.2 minutes and record 7+ assists in Boston last meeting against Lakers in 2023-24?",
+        "expected": false,
+        "status": "ok",
+        "reason": null,
+        "answer": "No: Jrue Holiday played 29:10 with 7 AST in the Boston Celtics' latest original game against the Los Angeles Lakers (2024-02-01); the check was played >= 29.2 minutes and >= 7 AST."
+      },
+      {
+        "query": "Did Jaylen Brown score over 31.99999 points and play more than 36 minutes in Boston latest matchup against Lakers during the 2025-26 season?",
+        "expected": true,
+        "status": "ok",
+        "reason": null,
+        "answer": "Yes: Jaylen Brown played 36:01 with 32 PTS in the Boston Celtics' latest original game against the Los Angeles Lakers (2026-02-22); the check was played > 36 minutes and > 31.99999 PTS."
+      },
+      {
+        "query": "Did LeBron James play fewer than 10 minutes and have under 1 assist in Lakers last game against Celtics in 2023-24?",
+        "expected": false,
+        "status": "ok",
+        "reason": null,
+        "answer": "No: LeBron James did not play in the Los Angeles Lakers' latest original game against the Boston Celtics (2024-02-01); the check was played < 10 minutes and < 1 AST."
+      },
+      {
+        "query": "Did LeBron James play at least 30 minutes and record at least 10 assists in Lakers last game against Pelicans in 2023-24?",
+        "expected": null,
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "answer": null
+      },
+      {
+        "query": "Did Derrick White play at least 32 minutes and record more than 6 assists in Celtics last game against Lakers in 2023-24?",
+        "expected": false,
+        "status": "ok",
+        "reason": null,
+        "answer": "No: Derrick White played 32:44 with 6 AST in the Boston Celtics' latest original game against the Los Angeles Lakers (2024-02-01); the check was played >= 32 minutes and > 6 AST."
+      },
+      {
+        "query": "Did Derrick White play under 33 minutes and have at most 0 steals in Celtics last game against Lakers in 2023-24?",
+        "expected": true,
+        "status": "ok",
+        "reason": null,
+        "answer": "Yes: Derrick White played 32:44 with 0 STL in the Boston Celtics' latest original game against the Los Angeles Lakers (2024-02-01); the check was played < 33 minutes and <= 0 STL."
+      }
+    ]
+  },
+  "checker_private": {
+    "oracle_sha256": "c617ed72b97afa56815d22ddb61d3794156c05987075f94482588779c6d9d184",
+    "passed": 8,
+    "adjacent_assertions": 14,
+    "source_integrity_controls": 11
+  },
+  "root_fixed_broad": {
+    "passed": 8747,
+    "ordinary_skipped": 1716,
+    "seconds": 150.76
+  },
+  "root_actual_source": {
+    "selected": 69,
+    "executed": 69,
+    "passed": 69,
+    "skipped": 0,
+    "seconds": 10.0
+  },
+  "unresolved": [
+    "Count-first native bare order remains desired positive; source22301195 38MIN/17AST.",
+    "Singular-three contextual alias remains desired positive.",
+    "Original OR/grouped/outcome/extra-owner/period compositions remain unfinished.",
+    "All46 original462 absence obligations remain open."
+  ],
+  "r2_acceptance": {
+    "reviewed_sha": "07a31792fd813e5a8f33fb84e89b783c834c4922",
+    "request_sha": "358aef3d9687050cc9b8b9eeab5e3e6a8954fe59",
+    "run": 39207166557,
+    "required": {
+      "selected": 69,
+      "executed": 69,
+      "passed": 69,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 0,
+      "seconds": 32.79,
+      "artifact": 12166391731,
+      "zip_sha256": "33944ee83c7004cc1335cb68a9d22adf20000b82a253e901c3dfae78dc0ab7da"
+    },
+    "qa": {
+      "cases": 14,
+      "passed": 14,
+      "checks": 245,
+      "suspicious": 0,
+      "artifact": 12166157681,
+      "zip_sha256": "3ceaf9220a5b452ee1ce28183575a294e9648b7760b68e57112feb1e7b6c0556"
+    },
+    "independent_artifact_review": "root downloaded, hashverified, read summary/JUnit/all14outputs/productreview; historical human_review_pending/missing_variants unchanged"
+  },
+  "browser_acceptance": {
+    "gate_author": "comparison_checker",
+    "gate_commit": "6104efbb8f584382d5ea8d3d0bfd1366c7e69979",
+    "integrated_gate": "3245885f003010b17ae9c6d595042130e7b443ab",
+    "runtime": "751876a973bdf54acca56242bf0cb51ee4aa2de4",
+    "served_code": "07a31792fd813e5a8f33fb84e89b783c834c4922",
+    "served_base": "http://127.0.0.1:8780",
+    "receipt_sha256": "0ddb2cfa6c07ca7d62ca958d5ad46e2847e94bd26455d5e16111ed283e0b5fdc",
+    "answers": 10,
+    "readiness": 20,
+    "pngs": 10,
+    "source_sha256": "c617ed72b97afa56815d22ddb61d3794156c05987075f94482588779c6d9d184",
+    "independent_gate_review": "root full3file review; all8prior bundles and strict targets/spacing retained;3files byte-identical to6104;62corruptions rejected+2validISO replay; PDF/Decimal truth rederived and10PNG hashes verified; mobile Yes/recordedzero/unavailable inspected",
+    "public_acceptance": "Pending actual accepted531 deployment; last public runtime is4f7/Clijr with previous50answer acceptance."
+  },
+  "data_publication": "No data writes; existing five production participation games are not seasonwide evidence.",
+  "integration": "Accepted520/e7 and docs/test-only descendants leave runtime and frontend/src byte-identical to751."
+}

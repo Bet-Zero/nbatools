@@ -1,0 +1,924 @@
+{
+  "status": "READ-ONLY preimplementation source/contract recommendation, not an implementation or acceptance claim. PR530 frozen branch remains untouched.",
+  "investigator": "/root/participation_request",
+  "baseline_revisions": {
+    "accepted366": "3660729696641930c63d872ec6ad48ae25e7973a",
+    "acceptedb4": "b4d12be7f9cda2a28a849b7d91d86e34a8bd21e1"
+  },
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "source_hashes": {
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4"
+  },
+  "source_fact": {
+    "canonical_player_row": {
+      "game_id": "0022300684",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "game_date": "2024-02-01",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "team_name": "Boston Celtics",
+      "opponent_team_id": "1610612747",
+      "opponent_team_abbr": "LAL",
+      "opponent_team_name": "Los Angeles Lakers",
+      "is_home": "1",
+      "is_away": "0",
+      "player_id": "1630202",
+      "player_name": "Payton Pritchard",
+      "starter_flag": "0",
+      "start_position": "",
+      "minutes": "21",
+      "pts": "8",
+      "fgm": "3",
+      "fga": "6",
+      "fg_pct": "0.5",
+      "fg3m": "2",
+      "fg3a": "5",
+      "fg3_pct": "0.4",
+      "ftm": "0",
+      "fta": "0",
+      "ft_pct": "",
+      "oreb": "0",
+      "dreb": "0",
+      "reb": "0",
+      "ast": "1",
+      "stl": "0",
+      "blk": "1",
+      "tov": "1",
+      "pf": "1",
+      "plus_minus": "13",
+      "comment": ""
+    },
+    "report_observation": {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "season": "2023-24",
+      "season_type": "Regular Season",
+      "team_id": "1610612738",
+      "team_abbr": "BOS",
+      "player_id": "1630202",
+      "player_name": "Payton Pritchard",
+      "participation_state": "played",
+      "source_minutes": "21.3",
+      "source_comment": "",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+      "identity_source_sha256": "",
+      "coverage_scope": "listed_player_rows_only"
+    },
+    "catalog_rows": [
+      {
+        "game_id": "0022300684",
+        "season": "2023-24",
+        "season_type": "Regular Season",
+        "game_date": "2024-02-01",
+        "game_datetime": "",
+        "status": "Final",
+        "is_final": "1",
+        "home_team_id": "1610612738",
+        "away_team_id": "1610612747",
+        "home_team_abbr": "BOS",
+        "away_team_abbr": "LAL",
+        "home_team_name": "Boston Celtics",
+        "away_team_name": "Los Angeles Lakers",
+        "arena": "",
+        "city": "",
+        "attendance": "",
+        "overtime_periods": "",
+        "is_playoff": "0",
+        "playoff_round": "",
+        "series_id": "",
+        "series_game_number": ""
+      }
+    ],
+    "team_rows": [
+      {
+        "game_id": "0022300684",
+        "season": "2023-24",
+        "season_type": "Regular Season",
+        "game_date": "2024-02-01",
+        "team_id": "1610612738",
+        "team_abbr": "BOS",
+        "team_name": "Boston Celtics",
+        "opponent_team_id": "1610612747",
+        "opponent_team_abbr": "LAL",
+        "opponent_team_name": "Los Angeles Lakers",
+        "is_home": "1",
+        "is_away": "0",
+        "wl": "L",
+        "minutes": "240",
+        "pts": "105",
+        "fgm": "41",
+        "fga": "97",
+        "fg_pct": "0.423",
+        "fg3m": "16",
+        "fg3a": "48",
+        "fg3_pct": "0.333",
+        "ftm": "7",
+        "fta": "7",
+        "ft_pct": "1.0",
+        "oreb": "14",
+        "dreb": "40",
+        "reb": "54",
+        "ast": "30",
+        "stl": "4",
+        "blk": "12",
+        "tov": "15",
+        "pf": "19",
+        "plus_minus": "-9.0"
+      },
+      {
+        "game_id": "0022300684",
+        "season": "2023-24",
+        "season_type": "Regular Season",
+        "game_date": "2024-02-01",
+        "team_id": "1610612747",
+        "team_abbr": "LAL",
+        "team_name": "Los Angeles Lakers",
+        "opponent_team_id": "1610612738",
+        "opponent_team_abbr": "BOS",
+        "opponent_team_name": "Boston Celtics",
+        "is_home": "0",
+        "is_away": "1",
+        "wl": "W",
+        "minutes": "241",
+        "pts": "114",
+        "fgm": "38",
+        "fga": "94",
+        "fg_pct": "0.404",
+        "fg3m": "19",
+        "fg3a": "36",
+        "fg3_pct": "0.528",
+        "ftm": "19",
+        "fta": "26",
+        "ft_pct": "0.731",
+        "oreb": "15",
+        "dreb": "37",
+        "reb": "52",
+        "ast": "30",
+        "stl": "11",
+        "blk": "2",
+        "tov": "7",
+        "pf": "8",
+        "plus_minus": "9.0"
+      }
+    ],
+    "pdf_line": "11 Payton Pritchard                                      21:18 3     6    2    5                      0       0       0      0      0   1    1   0   1   1      13     8",
+    "pdf_time": "21:18",
+    "elapsed_seconds": 1278,
+    "equation": "21 * 60 + 18 =1278",
+    "precision": "Report21:18/source_minutes21.3 is distinct from canonical21. The primary >=21 test is true under either representation; no rounded-field exact-time claim is authorized."
+  },
+  "baseline_evidence": {
+    "accepted366": {
+      "artifact_sha256": "7cb648ca067bd5a25533e6adc315b713a4a1691b4397514db0507c1a117705d6",
+      "cases": [
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 55,
+              "end": 72,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and record at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 57,
+              "end": 74,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and score at least 1 point in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 8 points in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 50,
+              "end": 66,
+              "stat": "pts",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "score at least 1"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"pts\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 50,
+              "end": 67,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have fewer than 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "No: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 55,
+              "end": 74,
+              "stat": "ast",
+              "min_value": null,
+              "max_value": 0.9999,
+              "text": "fewer than 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": null, \"max_value\": 0.9999}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 30 minutes or have at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "unsupported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 54,
+              "end": 71,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Anthony Davis play at least 30 minutes and have at least 1 assist in the Lakers last game against Celtics in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Anthony Davis had 39 minutes and 4 assists in his last game against the Boston Celtics (2023-12-25).",
+          "spans": [
+            {
+              "start": 23,
+              "end": 42,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 52,
+              "end": 69,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300403,
+              "game_date": "2023-12-25 00:00:00",
+              "player_id": 203076,
+              "player_name": "Anthony Davis",
+              "team_abbr": "LAL",
+              "opponent_team_abbr": "BOS",
+              "minutes": 39,
+              "pts": 40,
+              "reb": 13,
+              "ast": 4
+            }
+          ]
+        },
+        {
+          "query": "Did LeBron play at least 30 minutes and have at least 10 assists last game in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: LeBron James had 38 minutes and 17 assists in his last game (2024-04-14 vs the New Orleans Pelicans).",
+          "spans": [
+            {
+              "start": 16,
+              "end": 35,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 45,
+              "end": 64,
+              "stat": "ast",
+              "min_value": 10.0,
+              "max_value": null,
+              "text": "at least 10 assists"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 10.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": []}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22301195,
+              "game_date": "2024-04-14 00:00:00",
+              "player_id": 2544,
+              "player_name": "LeBron James",
+              "team_abbr": "LAL",
+              "opponent_team_abbr": "NOP",
+              "minutes": 38,
+              "pts": 28,
+              "reb": 11,
+              "ast": 17
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have a healthy knee in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            }
+          ],
+          "note": null,
+          "unsupported_filters": [
+            "availability_status"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have LeBron record at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 69,
+              "end": 86,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        }
+      ]
+    },
+    "acceptedb4": {
+      "artifact_sha256": "487839a8604b9e3ba90ce3104a3c027ad08ff9aa9c9cd84f2842ba2bc34d20f2",
+      "cases": [
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 55,
+              "end": 72,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and record at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 57,
+              "end": 74,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and score at least 1 point in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 8 points in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 50,
+              "end": 66,
+              "stat": "pts",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "score at least 1"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"pts\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "ok",
+          "reason": null,
+          "route": "player_game_finder",
+          "answer": "Yes: Payton Pritchard had 21 minutes and 1 assists in his last game against the Los Angeles Lakers (2024-02-01).",
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 50,
+              "end": 67,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": null,
+          "selected_row_facts": [
+            {
+              "game_id": 22300684,
+              "game_date": "2024-02-01 00:00:00",
+              "player_id": 1630202,
+              "player_name": "Payton Pritchard",
+              "team_abbr": "BOS",
+              "opponent_team_abbr": "LAL",
+              "minutes": 21,
+              "pts": 8,
+              "reb": 0,
+              "ast": 1
+            }
+          ]
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have fewer than 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 55,
+              "end": 74,
+              "stat": "ast",
+              "min_value": null,
+              "max_value": 0.9999,
+              "text": "fewer than 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": null, \"max_value\": 0.9999}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 30 minutes or have at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "unsupported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 54,
+              "end": 71,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Anthony Davis play at least 30 minutes and have at least 1 assist in the Lakers last game against Celtics in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 23,
+              "end": 42,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 52,
+              "end": 69,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did LeBron play at least 30 minutes and have at least 10 assists last game in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 16,
+              "end": 35,
+              "stat": "minutes",
+              "min_value": 30.0,
+              "max_value": null,
+              "text": "at least 30 minutes"
+            },
+            {
+              "start": 45,
+              "end": 64,
+              "stat": "ast",
+              "min_value": 10.0,
+              "max_value": null,
+              "text": "at least 10 assists"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 30.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 10.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": []}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have a healthy knee in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            }
+          ],
+          "note": null,
+          "unsupported_filters": [
+            "availability_status",
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        },
+        {
+          "query": "Did Payton Pritchard play at least 21 minutes and have LeBron record at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+          "status": "no_result",
+          "reason": "filter_not_supported",
+          "route": "player_game_finder",
+          "answer": null,
+          "spans": [
+            {
+              "start": 26,
+              "end": 45,
+              "stat": "minutes",
+              "min_value": 21.0,
+              "max_value": null,
+              "text": "at least 21 minutes"
+            },
+            {
+              "start": 69,
+              "end": 86,
+              "stat": "ast",
+              "min_value": 1.0,
+              "max_value": null,
+              "text": "at least 1 assist"
+            }
+          ],
+          "note": "yes_no_last_game: {\"checks\": [{\"stat\": \"minutes\", \"min_value\": 21.0, \"max_value\": null}, {\"stat\": \"ast\", \"min_value\": 1.0, \"max_value\": null}], \"outcome\": null, \"event\": null, \"scope\": [\"opponent\"]}",
+          "unsupported_filters": [
+            "scalar_participation"
+          ],
+          "selected_row_facts": []
+        }
+      ]
+    }
+  },
+  "root_cause": {
+    "same_parsed_meaning": "Both revisions already parse minutes>=21 and ast>=1 into equal numerical spans and the existing yes_no_last_game note.",
+    "full_consumption_mismatch": "The numerical spans start at at least; HAVE/RECORD before the second bound is outside the span, leaving CHECK and have CHECK. The broad scalar-presence fallback rejects it even though the numerical condition is admitted. SCORE spans include its verb and therefore pass.",
+    "not_an_entity_or_missing_source_problem": "Pritchard1630202 has qualified same-game BOS participation/time and positive canonical AST1. Existing sources suffice.",
+    "owner_guard_counterexample": "366 wrongly accepts have LeBron record1assist as Pritchard AST1; retain its unsupported/unread status rather than globally stripping HAVE/RECORD or bypassing on any note."
+  },
+  "desired_positive_obligations": [
+    {
+      "query": "Did Payton Pritchard play at least 21 minutes and have at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+      "truth": true,
+      "reason": "Original Feb1 Pritchard has source21:18 and canonical AST1; same known original/player appearance, no absence inference."
+    },
+    {
+      "query": "Did Payton Pritchard play at least 21 minutes and record at least 1 assist in the Celtics last game against Lakers in 2023-24?",
+      "truth": true,
+      "reason": "Original Feb1 Pritchard has source21:18 and canonical AST1; same known original/player appearance, no absence inference."
+    },
+    {
+      "query": "Did Payton Pritchard play at least 21 minutes and have fewer than 1 assist in the Celtics last game against Lakers in 2023-24?",
+      "truth": false,
+      "reason": "Original Feb1 Pritchard has source21:18 and canonical AST1; same known original/player appearance, no absence inference."
+    }
+  ],
+  "recommended_contract": {
+    "grammatical_reader": "Extend the recognized statistical-predicate span to consume a directly governing HAVE/RECORD verb (and coherent inflection) only when it immediately governs an already recognized complete numeric-stat bound at a clause boundary. Keep original threshold stat/bounds/operators, canonical primary actor and all remaining text. Never delete arbitrary verbs globally or exempt any note wholesale. Prefer shared threshold/predicate span utility over sentence-case allowlists.",
+    "native_bare_compatibility": "Preserve existing accepted-b4 bare player-last-appearance statistical checks/AND/OR/outcome consumers and their documented canonical-stat representation. Bare LeBron>=30min AND have>=10AST is a valid366 restoration target, backed by22301195/38canonicalMIN/17AST; do not introduce inferred current-team or scalar-omission semantics.",
+    "explicit_original_scope_boundary": "Do not revive an older appearance for an explicitly named team latest matchup. 366 AD minutes+haveAST query returns Christmas22300403 despite originalFeb1 explicitDNP. That is a wrong-sample sentinel, not a valid historical positive. A span-only bypass without preserving scope would restore a false accepted answer.",
+    "smallest_coherent_original_extension_recommendation": "For explicit original-matchup minutes AND one box-score bound, reuse530 original TEAM selector and protected membership/report-time check, then read the additional integer statistic only from the exact canonical game/player/actual-side/date positive appearance. Reuse existing internal checks list/result schema. Pritchard21:18 plus AST1 can answer primaryYes and AST<1No; no precise-time downgrade to roundedMIN. Broader mixed/OR/grouped/outcome owners remain separately unfinished unless deliberately supported.",
+    "dnp_and_unknown_proposal_requiring_root_contract_review": "For the explicit original conjunction, DNP means PLAYED is false, so No may state did not play without assigning AST/minuteszero or fabricating a player row. If membership/state/time or the required positive box-score statistic is unknown/conflicting, return data-unavailable and never an older row. Do not count that guard as delivery of broader original-stat compositions.",
+    "output": "Preserve named target identity separately from original TEAM-game evidence on the qualified original path. Label checks and report MM:SS; do not present105team points/240team minutes as player values. Native appearance-stat consumer remains player grain and must be labeled consistently.",
+    "required_guard_controls": [
+      "HAVE/RECORD aliases and lower/upper bounds; positive and false AST with source-backed Pritchard; bareLeBron legacy restoration",
+      "Direct governing verb vs extra named player/team, healthy/status/non-numeric clauses, negation and unread tail: no partial owner/condition acceptance",
+      "Full clause identity and homogeneous existing AND/OR contract; OR-have was already unsupported366 and remains an unfinished positive, not presumed restored",
+      "Pritchard original samegame vs AD olderappearance sentinel; source precision near-second thresholds in any newly promoted original minutes composition",
+      "Missing/conflicting source facts or missing samegame additionalstat cannot substitute historical values; no invented DNP playerzero",
+      "Preserve530 one-predicate time,529 scalar/BOTH, tested b4 statistical cases and all46absence positives"
+    ],
+    "scope_choice": "Root should deliberately approve the original-matchup compound path or keep it contained while restoring bare/native grammar. Do not accidentally open the AD wrong-sample path with a blanket span admission."
+  },
+  "dependencies": "All needed bounded Pritchard/AD/LeBron raw rows and Feb1report are already in verified generation. No collection, cloud-source investigation, production data write or publication is required. Broader source precision/absence/seasonwide membership remains unproved."
+}

@@ -192,6 +192,7 @@ STAT_ALIASES: dict[str, str] = {
     "turnover": "tov",
     "tov": "tov",
     # Minutes
+    "minute": "minutes",
     "minutes": "minutes",
     "min": "minutes",
     "mins": "minutes",

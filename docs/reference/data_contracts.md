@@ -461,12 +461,31 @@ Contract rules:
   Minutes-check labels describe checks on the retained game, not an applied
   player cohort; table totals remain team evidence. Native bare statistical
   minutes, multi-stat AND/OR/outcome checks outside this bounded original-matchup
-  extension retain their tested accepted-main semantics; broader original stat
-  compositions remain unfinished. A carried-forward statistical admission gap
-  still refuses the valid Pritchard minutes-AND-`have`-assists check on
-  his last game; restoring that old positive is a separate obligation, not
-  proof that every AND wording is preserved. Frozen source/consumer/precision contracts are under
-  `tests/fixtures/qualified_original_minutes/`.
+  extension retain their tested accepted-main semantics. A bounded original-game
+  conjunction also accepts one minutes predicate AND one distinct player count
+  from the existing PTS/REB/AST/FG3M/STL/BLK/TOV vocabulary, including full
+  HAVE/RECORD verbs, reversed order and a count range with its own inner AND.
+  Both predicates retain their exact operator inclusivity; the shared extractor
+  can apply its optional exact mode to a set of statistics without changing
+  default dictionaries. Before comparing either played bound, the consumer
+  requires exact report seconds AND a finite nonnegative integer count from
+  the canonical row with that report's player/game/actual-side/date identity.
+  A report-qualified 0:20 appearance remains played if canonical minutes round
+  to0; a positive rounded MIN is not the participation requirement. Recorded
+  count0 on a qualified appearance is real evidence; missing/null/fractional
+  counts are unavailable even if the other predicate is false. Explicit DNP
+  still means No to the conjunctive played check without inventing either zero.
+  The original TEAM row remains separate from the checked-player identity;
+  Minutes check and Count check labels preserve both requested predicates.
+  The valid native bare MIN-first minutes-AND-HAVE/RECORD statistical check is restored
+  only when its complete actor, predicates and scope are consumed. Reversed
+  count-first native bare checks remain valid unfinished ordering cases. Broader
+  original OR/grouped/outcome/extra-owner compositions remain unfinished;
+  a legacy numerical note never authorizes an unread clause or older-row
+  substitution. No all-AND language-completeness claim is made.
+  Frozen source/consumer/precision contracts are under
+  `tests/fixtures/qualified_original_minutes/` and
+  `tests/fixtures/qualified_original_stat_pair/`.
   All 46 original PR462 absence obligations remain open. Baselines
   and exact original/qualifying source requirements are retained in
   `tests/fixtures/qualified_played_pair/temporal_obligations.json`; root-frozen

@@ -147,3 +147,8 @@ case_ids:
   - qualified_original_minutes_source_exact_no
   - qualified_original_minutes_source_exact_yes
   - qualified_original_minutes_source_unknown
+  - qualified_original_stat_pair_source_yes
+  - qualified_original_stat_pair_source_no
+  - qualified_original_stat_pair_source_zero
+  - qualified_original_stat_pair_source_dnp_no
+  - qualified_original_stat_pair_source_unknown
