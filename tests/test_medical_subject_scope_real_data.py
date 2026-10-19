@@ -201,3 +201,53 @@ def test_unfiltered_comparison_keeps_independent_observed_samples(monkeypatch):
         for stat in ("pts", "reb", "ast"):
             assert row[stat + "_sum"] == frame[stat].sum() == sample["totals"][stat]
     assert not result.metadata.get("unsupported_availability")
+
+
+REVEALED_ROLES = json.loads((ROOT / "revealed_poststart_roles.json").read_text())
+REVEALED_CHAINS = json.loads((ROOT / "revealed_poststart_chains.json").read_text())
+
+
+@pytest.mark.parametrize(
+    "query",
+    [c["query"] for c in REVEALED_ROLES["cases"] + REVEALED_CHAINS],
+)
+def test_revealed_poststart_conditional_roles_preserve_source_team_subject(query, monkeypatch):
+    """4b's historical role leaks are not precode/medical truth oracles."""
+    authenticate()
+    assert hashlib.sha256((ROOT / "revealed_poststart_roles.json").read_bytes()).hexdigest() == (
+        "7874738ba4262bb36ba9a90b1c6dbbc576d5c204223cfa0aaac08465c00ea584"
+    )
+    assert hashlib.sha256((ROOT / "revealed_poststart_chains.json").read_bytes()).hexdigest() == (
+        "9394aacd71abb265eb8c2c529b94b97f9fdd3763a7d5d9b670619c7b92393feb"
+    )
+    from nbatools.commands import _natural_query_execution as execution
+
+    def forbidden(**kwargs):
+        pytest.fail("An unavailable status chain executed a numerical builder")
+
+    for route in ("team_record", "player_compare", "player_game_summary", "game_finder"):
+        monkeypatch.setitem(execution._get_build_result_map(), route, forbidden)
+    result = execute_natural_query(query)
+    assert_unavailable(result, "team_record")
+    assert result.metadata["team_context"]["team_id"] == 1610612738
+    assert result.metadata["opponent_context"]["team_id"] == 1610612747
+    assert result.metadata["season"] == "2025-26"
+    assert result.metadata.get("player") is None and result.metadata.get("player_context") is None
+    assert result.metadata.get("with_player") is None
+    assert result.metadata.get("without_player") is None
+    assert result.query == query and result.metadata["query_text"] == query
+
+
+def test_accepted_available_win_count_guard_keeps_operation_without_played_equivalence():
+    authenticate()
+    path = ROOT / "available_win_count_accepted_baseline.json"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == (
+        "9c14e1cbd40163684d791bb864bc8cc4c009f13edf62b69ff457f00171579253"
+    )
+    baseline = json.loads(path.read_text())
+    assert baseline["accepted_main"] == "835ad17f9e67d8efdd124c189992de56778e319e"
+    result = execute_natural_query(baseline["query"])
+    assert_unavailable(result, "team_record")
+    assert result.metadata["team_context"]["team_id"] == 1610612747
+    assert parse_query(baseline["query"])["route_kwargs"]["wins_only"] is True
+    assert result.metadata.get("player") is None

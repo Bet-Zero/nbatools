@@ -678,12 +678,17 @@ _MINUTES_BOUND_TAIL = (
 )
 
 
+# Shared participation predicate vocabulary. Consumers may identify its owner
+# without interpreting health/status as participation or executing a cohort.
+_PARTICIPATION_PREDICATE = (
+    r"(?:plays?|played|playing|sits?|sat|rests?|rested|(?:is|was)\s+resting"
+    r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)"
+)
+
 # "and Luka sits", "while Davis is out": another player's availability clause.
 _AVAILABILITY_CLAUSE = re.compile(
     r"(?:\b(?:with|and|while|when|but)\b|[,;])\s*"
-    r"((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)"
-    r"\s+(?:plays?|played|playing|sits?|sat|rests?|rested|(?:is|was)\s+resting"
-    r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"
+    r"((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)" + r"\s+" + _PARTICIPATION_PREDICATE + r"\b"
 )
 
 # "plays and scores 30", "played and had 10 assists": the player's own stat

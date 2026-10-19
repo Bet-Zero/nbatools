@@ -6305,7 +6305,14 @@ def _route_parsed_query(parsed: dict) -> dict:
             "end_date": end_date,
             "unsupported_filters": ["unresolved_player_availability"],
         }
-    elif team and team_record_availability_intent and with_player and not without_player:
+    elif (
+        team
+        and team_record_availability_intent
+        and not without_player
+        and (with_player or (parsed.get("status_condition_spans") and count_intent and not player))
+    ):
+        # A requested team win count keeps its operation even when an
+        # unavailable status actor is correctly excluded from played cohorts.
         route = "team_record"
         route_kwargs = {
             "team": team,

@@ -306,6 +306,13 @@ inferred from played, DNP, box-score omission or current membership. This is
 correctness containment; medical-state filtering remains unfinished and no new
 status feed or public result schema is introduced. Ordinary played and unfiltered
 consumers retain their existing source qualification and numerical semantics.
+The same internal role proof covers adjective-before-owner status, coordinated
+owners, and subordinate status/played predicate chains in either order. All
+actors in a status-containing chain stay conditional; no partial played filter
+is advertised as applied. Sports clearance for contact or practice remains an
+unavailable medical condition. A requested team win count keeps its team-record
+operation without treating AVAILABLE as evidence that the actor played. Broader
+OR consumers remain unfinished and may retain their existing unsupported reason.
 
 **Optional new additive dataset**:
 `data/raw/player_game_availability/{season}_{season_type_safe}.csv`

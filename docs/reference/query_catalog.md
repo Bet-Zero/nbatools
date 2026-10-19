@@ -484,7 +484,10 @@ retains the Boston record request and reports unavailable qualified status data.
 The same condition on an Embiid/Jokic comparison retains both players. No medical
 filter is delivered, no reduced unfiltered answer runs, and participation never
 establishes clearance/health or an absence reason. Existing played/unfiltered
-questions keep their source-backed answers.
+questions keep their source-backed answers. This includes conditional owner
+phrases such as `with a healthy Derrick White`, coordinated status owners, and
+status/played condition chains in either order; none creates an applied played
+cohort when the complete status requirement is unavailable.
 
 Historical `Playing for` and `Opponent` labels keep the sample visible. Complete
 common date/venue and integer-count filters apply before summarizing; decimal

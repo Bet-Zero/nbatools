@@ -128,3 +128,105 @@ def test_active_population_is_not_a_conditional_game_day_status():
     text = "active players scoring leaderboard in 2025-26"
     assert unsupported_availability_status({"normalized_query": text}) is None
     assert availability_status_subject_view(text) == (text, [])
+
+
+@pytest.mark.parametrize(
+    "condition",
+    [
+        "with a healthy Derrick White",
+        "with a medically cleared Derrick White",
+        "when Derrick White and Jaylen Brown are healthy",
+        "when neither Derrick White nor Jaylen Brown is injured",
+        "when Derrick White is cleared for contact",
+        "when Derrick White is medically cleared to return",
+        "when Derrick White has been medically cleared and Jaylen Brown played",
+        "when Jaylen Brown played and Derrick White is medically cleared",
+        "when Derrick White is medically cleared and Jayson Tatum is healthy",
+        "when Blorg is medically cleared and Jayson Tatum played",
+        "when Jayson Tatum played and Blorg is medically cleared",
+        "when medical clearance for Derrick White has been granted",
+    ],
+)
+@pytest.mark.parametrize("prefix", [False, True])
+def test_conditional_chain_roles_never_become_primary_or_applied_cohorts(
+    no_arithmetic, condition, prefix
+):
+    subject = "Boston record against Lakers in 2025-26"
+    query = f"{condition}, {subject}?" if prefix else f"{subject} {condition}?"
+    result = execute_natural_query(query)
+    unavailable(result, "team_record")
+    assert result.metadata["team"] == "BOS" and result.metadata["opponent"] == "LAL"
+    assert result.metadata["season"] == "2025-26"
+    assert result.metadata.get("player") is None and result.metadata.get("player_context") is None
+    assert result.query == query
+    notes = " ".join(result.metadata["notes"])
+    assert condition.lower().split(" has been granted")[0] in notes
+
+
+@pytest.mark.parametrize(
+    "condition",
+    [
+        "when Embiid is cleared for contact and Tyrese Maxey played",
+        "when Tyrese Maxey played and Embiid is healthy",
+        "with a healthy Embiid",
+        "when Embiid and Tyrese Maxey are healthy",
+    ],
+)
+def test_comparison_keeps_both_operands_through_status_and_played_chain(no_arithmetic, condition):
+    query = (
+        "Compare Luka Doncic with Anthony Davis for Lakers against Warriors in 2024-25 " + condition
+    )
+    result = execute_natural_query(query)
+    unavailable(result, "player_compare")
+    assert [p["player_name"] for p in result.metadata["players_context"]] == [
+        "Luka Dončić",
+        "Anthony Davis",
+    ]
+    assert result.metadata["team"] == "LAL" and result.metadata["opponent"] == "GSW"
+
+
+def test_status_chain_mask_keeps_unread_tail_and_played_only_path():
+    text = (
+        "when derrick white is healthy and jaylen brown played, "
+        "boston record against lakers in 2025-26 and do a backflip"
+    )
+    masked, clauses = availability_status_subject_view(text)
+    assert len(masked) == len(text)
+    assert "boston record against lakers in 2025-26 and do a backflip" in masked
+    assert "derrick white" not in masked and "jaylen brown" not in masked
+    assert clauses[0]["text"] == "when derrick white is healthy and jaylen brown played"
+    played_only = "boston record against lakers in 2025-26 when derrick white played"
+    assert availability_status_subject_view(played_only) == (played_only, [])
+
+
+@pytest.mark.parametrize("verb", ["win", "won"])
+@pytest.mark.parametrize("owner", ["Reaves available", "Blorg healthy"])
+def test_status_owner_mask_preserves_requested_team_win_count(no_arithmetic, verb, owner):
+    query = f"How many games did the Lakers {verb} with {owner}?"
+    parsed = parse_query(query)
+    assert parsed["route"] == "team_record" and parsed["team"] == "LAL"
+    assert parsed["player"] is None and parsed["with_player"] is None
+    assert parsed["route_kwargs"]["wins_only"] is True
+    result = execute_natural_query(query)
+    unavailable(result, "team_record")
+    assert parse_query(query)["route_kwargs"]["wins_only"] is True
+
+
+@pytest.mark.parametrize("prefix", [False, True])
+def test_unimplemented_status_or_chain_preserves_subject_and_all_conditions(no_arithmetic, prefix):
+    subject = "Boston record against Lakers in 2025-26"
+    condition = "when Derrick White is healthy or Jayson Tatum played"
+    query = f"{condition}, {subject}?" if prefix else f"{subject} {condition}?"
+    result = execute_natural_query(query)
+    # OR team records remain unfinished. The existing OR boundary may explain
+    # that combination first; it must retain the health requirement and actors.
+    assert result.route == "team_record" and result.result_status == "no_result"
+    assert result.result_reason == "unsupported"
+    assert result.metadata.get("player") is None
+    assert result.metadata.get("with_player") is None
+    assert not result.metadata.get("applied_filters")
+    assert not result.metadata.get("answer_phrase")
+    assert not result.result.to_dict()["sections"]
+    assert result.metadata["team"] == "BOS" and result.metadata["opponent"] == "LAL"
+    assert result.metadata["unsupported_availability"]["condition"] == "health status"
+    assert condition.lower() in " ".join(result.metadata["notes"])
