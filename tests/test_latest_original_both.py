@@ -26,6 +26,12 @@ def _assert_answer(result, game_id, truth):
     assert result.metadata["player"] is None
     assert not result.metadata["with_player"] and not result.metadata["without_player"]
     assert not result.metadata["unsupported_filters"]
+    assert result.metadata["intent"] == "finder"
+    assert not result.metadata.get("player_context") and not result.metadata.get("players_context")
+    assert not any(
+        n.startswith("unsupported_boundary:") or "no result was executed" in n
+        for n in result.metadata.get("notes") or []
+    )
     assert result.metadata["team"] == "LAL" and result.metadata["opponent"] == "BOS"
     assert result.metadata["season"] == "2023-24"
     request = next(
@@ -75,6 +81,7 @@ def test_original_row_survives_either_boolean_value(pair_sample, truth):
         "Of the LA Lakers latest original game vs BOS during the 2023-24 season, did Tatum and Reaves both play?",
         _query(scope="last one game"),
         _query().replace("Of the", "For the"),
+        _query().replace("Of the", "In the").replace("last game", "most recent matchup"),
     ],
 )
 def test_whole_question_aliases_and_clause_order(pair_sample, query):
@@ -230,3 +237,23 @@ def test_unadmitted_both_check_exposes_no_partial_player_or_applied_cohort(pair_
     assert not result.metadata["with_player"] and not result.metadata["without_player"]
     assert not result.metadata.get("applied_filters") and not result.metadata.get("answer_phrase")
     assert not result.result.to_dict()["sections"]
+
+
+def test_successful_full_reader_preserves_context_notes_without_stale_refusal(pair_sample):
+    from nbatools.commands._latest_original_both import prepare
+
+    qualification = "qualification: observations cover listed player rows only"
+    default = "default: retained contextual caveat"
+    parsed = prepare(
+        {
+            "normalized_query": _query().lower().rstrip("?"),
+            "notes": [qualification, default, "unsupported_boundary: no result was executed"],
+            "intent": "unsupported",
+        }
+    )
+    assert qualification in parsed["notes"] and default in parsed["notes"]
+    assert not any(n.startswith("unsupported_boundary:") for n in parsed["notes"])
+    assert parsed["intent"] == "finder"
+    # Existing confidence scoring still accounts for the retained default; a
+    # successful family reading is not an invented certainty score.
+    assert 0 <= parsed["confidence"] < 0.85

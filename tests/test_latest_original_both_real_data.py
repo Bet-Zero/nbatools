@@ -210,6 +210,12 @@ def test_revealed_root_preimplementation_boolean_source_controls(which):
     assert truth is case["expected_both_played"]
     result = execute_natural_query(case["query"])
     assert result.route == "game_finder" and result.result_status == "ok"
+    assert result.metadata["intent"] == "finder"
+    assert not result.metadata.get("player_context") and not result.metadata.get("players_context")
+    assert not any(
+        n.startswith("unsupported_boundary:") or "no result was executed" in n
+        for n in result.metadata.get("notes") or []
+    )
     assert result.metadata["player"] is None
     assert (
         result.metadata["team"] == case["subject"]

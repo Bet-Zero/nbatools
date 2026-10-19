@@ -142,11 +142,20 @@ def prepare(out: dict) -> dict:
         limit=1,
         unsupported_filters=[],
     )
+    from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
+    from nbatools.commands._constants import route_to_intent
+
     result = dict(out)
     result.update(
         route="game_finder",
+        intent=route_to_intent("game_finder"),
         route_kwargs=kwargs,
+        unsupported_filters=[],
+        season_type="Regular Season",
         player=None,
+        player_a=None,
+        player_b=None,
+        opponent_player=None,
         with_player=None,
         without_player=None,
         season=request["season"],
@@ -168,7 +177,16 @@ def prepare(out: dict) -> dict:
         home_only=request["home_only"],
         away_only=request["away_only"],
     )
-    result["notes"] = list(out.get("notes") or []) + [_PREFIX + json.dumps(request)]
+    # The whole request is now admitted by this reader. Retain contextual
+    # notes, but replace the old reader's refusal rather than contradict the
+    # executed answer with "no result was executed".
+    result["notes"] = [
+        note
+        for note in out.get("notes") or []
+        if not (isinstance(note, str) and note.startswith("unsupported_boundary:"))
+    ] + [_PREFIX + json.dumps(request)]
+    result["confidence"] = compute_parse_confidence(result)
+    result["alternates"] = generate_alternates(result)
     return result
 
 
