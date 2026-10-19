@@ -1402,12 +1402,22 @@ def _execute_or_query_build_result(query: str) -> tuple:
             # A bare "Wizards score 125" names a predicate owner, not a
             # replacement subject. Mask only its consumed stat-clause span
             # before deciding whether another explicit subject was written.
+            from nbatools.commands._matchup_utils import (
+                _tail_is_read_scope,
+                names_other_player_availability,
+            )
             from nbatools.commands.natural_query import _team_mentions
 
             owners = team_subject_stat_conditions(clause, tuple(canonical["opponent"]))
             if len(owners) != 1 or owners[0]["team"] not in canonical["opponent"]:
                 raise ValueError("Each named-opponent OR branch needs one qualified stat owner.")
             owner = owners[0]
+            if not _tail_is_read_scope(clause, owner["end"]) or names_other_player_availability(
+                clause, None
+            ):
+                # Exact recognized bounds do not prove that an additional
+                # player/status clause was consumed, even for an unknown name.
+                raise ValueError("This named-opponent OR branch has an unread condition.")
             remaining = clause[: owner["start"]] + " " + clause[owner["end"] :]
             if not _team_mentions(remaining):
                 clause_state.update(team=canonical["team"], opponent=canonical["opponent"])

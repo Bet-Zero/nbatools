@@ -55,6 +55,12 @@ def test_named_owners_bind_to_each_executed_branch(query):
         QUERY.replace("Wizards score at least 125", "Knicks score at least 125"),
         QUERY.replace("Wizards score at least 125", "Wizards games with at least 125 points"),
         QUERY.replace("Wizards score at least 125", "Lakers score at least 125"),
+        QUERY.replace("Wizards score at least 125", "Wizards score at least 125 and Blorg playing"),
+        QUERY.replace("Wizards score at least 125", "Wizards score at least 125, Blorg playing"),
+        QUERY.replace(
+            "Wizards score at least 125", "Wizards score at least 125 while Gabe Vincent plays"
+        ),
+        QUERY.replace("when Celtics", "when Blorg plays and Celtics"),
         QUERY.replace(
             "Wizards score at least 125", "Wizards score at least 125 and Blorg score at least 20"
         ),
