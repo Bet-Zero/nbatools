@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "ce72fa5756d0a1e10e6398e57cff49b679e69c7b",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_qualified_played_pair_real_data.py",
+    "tests/test_opponent_played_real_data.py::test_additional_qualified_clause_returns_source_proven_conjunction_empty"
+  ],
+  "raw_qa_cases": [
+    "qualified_played_pair_source_empty",
+    "qualified_played_pair_source_positive"
+  ]
+}
