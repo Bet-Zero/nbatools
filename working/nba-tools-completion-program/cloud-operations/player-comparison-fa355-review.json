@@ -1,0 +1,74 @@
+{
+  "runtime_sha": "fa3552915a75bfd22c53c946ff8a30a4d92df57a",
+  "reviewed_source_and_docs_sha": "7c81f558b6c08879696462fbbddffe95ae235af2",
+  "generation": "availability-opening-s4-v1-20261017",
+  "source_sha256": "4d77fb2982004cf073dbdc2865db2437cfc82f9a8f57d478b14f6ae19c460205",
+  "contract_sha256": "a2ccd1247994825d7ec693584e7943d6c1e3425680a61c9c992c4dbc482c0d11",
+  "independent_reviewers": [
+    "/root",
+    "/root/comparison_checker"
+  ],
+  "semantic_status": "approved; numerical R2/browser/CI/merge/public acceptance separately pending",
+  "root_review": {
+    "original_2a5": {
+      "positive_pass": 5,
+      "safeguard_pass": 2,
+      "receipt_sha256": "a2d9098a77619c4716c47bdadfdb6e4ab56c83b9abce2ea8f3c0bb3b1347b80a"
+    },
+    "revision_ff851": {
+      "positive_pass": 4,
+      "safeguard_pass": 2,
+      "additional_moderate_precision_pass": 2,
+      "official_hauser_1359_seconds_exact_precision_pass": 3,
+      "receipt_sha256": "4cc6647436cf7257b2243ebcf484e3879eb21595c23dbbeecab7f03426bccbf0",
+      "checks": "Captured actual game/player/team IDs and away sides; reciprocal-score W/L; independent raw totals/Decimal means; canonical context; historical Playing for/Opponent labels; exact father ID896 zero sums/null means; original decimal cutoff and exact MM:SS truth."
+    },
+    "source_tests": {
+      "selected": 93,
+      "executed": 93,
+      "passed": 93,
+      "skipped": 0,
+      "seconds": 25.71
+    }
+  },
+  "checker_review": {
+    "saved_dccd_pass": 10,
+    "fresh_b040_pass": 2,
+    "precision_context_pass": 37,
+    "legacy_default_equivalence_probes": 248,
+    "fresh_source_oracle_sha256": "b040130168b3d4596b378c8a8400adbdb41f7865b116445e4f530dfeb48ebb91",
+    "fresh_oracle_provenance": "After99d/finding, before viewingfa355; not preimplementation. Now revealed after actual execution.",
+    "fresh_samples": [
+      "Wendell Carter Jr. ORL/BOS3games34PTS19REB8AST versus Franz Wagner1/23/8/2",
+      "Dereck Lively II DAL/HOU >6.0000000000000001PTS1game8/6/6 versus Spencer Dinwiddie3/38/4/5"
+    ]
+  },
+  "preserved_unaccepted_history": [
+    "03b canonical identity, incidental operands, dropped static scopes, rounded exact cutoffs",
+    "99d broad8810passed1757ordinaryskips154.43s but two required Oubre/Walker positives refused; blocked",
+    "Maker initial wrong-cwd skips, source-test path/metadata mistakes and interrupted adjacency attempt are not acceptance."
+  ],
+  "r2": {
+    "status": "requested, not accepted",
+    "run_id": 39212750948,
+    "reviewed_sha": "7c81f558b6c08879696462fbbddffe95ae235af2",
+    "request_sha": "10c939edb52f7218bb2e03addfba93e20aca3d1b",
+    "required_tests": 93,
+    "qa_cases": 19
+  },
+  "browser": {
+    "status": "pending",
+    "local_runtime": "fa3552915a75bfd22c53c946ff8a30a4d92df57a",
+    "unchanged_asset": "index-ClijrUhz.js",
+    "asset_sha256": "22b53c0649bc56dd6bc332876f6150623575929ff3f9b03f9de6441508c9bccb"
+  },
+  "unfinished": [
+    "Different per-player team ownership",
+    "Common-team plus opponent unions",
+    "Multiple unrepresented date/window/venue compositions",
+    "Comparison ratio/time predicate filters",
+    "All46 original absence positives; no season-wide membership inference",
+    "Medical-clearance/subject correctness is next separate package"
+  ],
+  "data_boundary": "No source acquisition or production data publication. Five production participation games/170rows; Boston17staged only. PDF and collection handoff unchanged."
+}
