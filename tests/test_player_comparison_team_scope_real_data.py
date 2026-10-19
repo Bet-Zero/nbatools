@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from nbatools.commands import player_compare
+from nbatools.commands.natural_query import parse_query
 from nbatools.data_source import data_path
 from nbatools.query_service import execute_natural_query, execute_structured_query
 
@@ -232,6 +233,12 @@ for _filename, _sha, _key, _sample_key in [
         "positive_controls",
         "source_samples",
     ),
+    (
+        "revealed_revision_controls.json",
+        "ff851ebdb90bec56854e20984ca55d45d17e61523b4024a7cfba35579b616255",
+        "cases",
+        "samples",
+    ),
 ]:
     _path = FIXTURE.parent / _filename
     assert hashlib.sha256(_path.read_bytes()).hexdigest() == _sha
@@ -246,11 +253,17 @@ def test_revealed_independent_source_samples_preserve_complete_ids_and_scope(
     for path, sha in oracle["source_hashes"].items():
         assert (
             hashlib.sha256(
-                data_path(path if path.startswith("raw/") else "raw/" + path).read_bytes()
+                data_path(
+                    path if path.startswith(("raw/", "metadata/")) else "raw/" + path
+                ).read_bytes()
             ).hexdigest()
             == sha
         )
     raw = list(csv.DictReader(data_path("raw/player_game_stats/2024-25_regular_season.csv").open()))
+    for kind, key_name in (("games", "catalog"), ("team_game_stats", "reciprocal_teams")):
+        if key_name in oracle:
+            known = list(csv.DictReader(data_path(f"raw/{kind}/2024-25_regular_season.csv").open()))
+            assert all(row in known for row in oracle[key_name])
     samples = case[sample_key]
     assert all(row in raw for sample in samples for row in sample["selected_rows"])
     captured = []
@@ -269,6 +282,10 @@ def test_revealed_independent_source_samples_preserve_complete_ids_and_scope(
     assert [c["player_id"] for c in contexts] == [s["player_id"] for s in samples]
     assert result.metadata["team"] == case["team"]
     assert result.metadata["opponent"] == case["opponent"]
+    if "away_only" in case:
+        assert parse_query(case["query"])["route_kwargs"]["away_only"] == case["away_only"]
+        away_filter = {"label": "Location", "value": "Away", "kind": "location"}
+        assert (away_filter in result.metadata["applied_filters"]) == case["away_only"]
     for frame, summary, sample in zip(
         captured, result.result.to_dict()["sections"]["summary"], samples
     ):
@@ -289,7 +306,7 @@ def test_revealed_independent_source_samples_preserve_complete_ids_and_scope(
         for stat in ("pts", "reb", "ast"):
             total = sum(int(row[stat]) for row in expected)
             assert total == summary[stat + "_sum"] == sample["totals"][stat]
-            assert summary[stat + "_avg"] == round(total / len(expected), 3)
+            assert summary[stat + "_avg"] == (round(total / len(expected), 3) if expected else None)
         assert not result.metadata.get("head_to_head_used")
 
 
@@ -338,6 +355,11 @@ _REVEALED_GUARDS = json.loads((FIXTURE.parent / "revealed_root_controls.json").r
     for c in json.loads((FIXTURE.parent / "revealed_checker_controls.json").read_text())[
         "safety_controls"
     ]
+]
+
+
+_REVEALED_GUARDS += json.loads((FIXTURE.parent / "revealed_revision_controls.json").read_text())[
+    "contained_unfinished_queries"
 ]
 
 

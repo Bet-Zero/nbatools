@@ -713,9 +713,13 @@ def player_ids_for_name(name: str) -> frozenset[str]:
     ``_player_identity.select_player_rows``. IDs are strings, as read.
     """
     _read_player_names()
+    return _indexed_player_ids(_normalize_for_matching(name))
+
+
+def _indexed_player_ids(key: str) -> frozenset[str]:
+    """Resolve a complete normalized name against the already-loaded ID index."""
     if _player_ids_by_name_cache is None:
         return frozenset()
-    key = _normalize_for_matching(name)
     exact = _player_ids_by_name_cache.get(key)
     if exact:
         return exact
@@ -799,7 +803,17 @@ def _get_player_index() -> dict[str, list[str]]:
 
 def _build_player_full_name_index(data_dir: Path | None = None) -> dict[str, str]:
     """Build a normalized full-name → canonical full-name index from game stats."""
-    return {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
+    index = {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
+    for key in _player_ids_by_name_cache or {}:
+        stem, _, suffix = key.rpartition(" ")
+        if suffix not in {"jr", "sr", "ii", "iii", "iv", "v"} or stem in index:
+            continue
+        ids = _indexed_player_ids(stem)
+        if len(ids) == 1:
+            canonical = (_player_name_by_id_cache or {}).get(next(iter(ids)))
+            if canonical:
+                index[stem] = canonical
+    return index
 
 
 def _get_player_full_name_index() -> dict[str, str]:

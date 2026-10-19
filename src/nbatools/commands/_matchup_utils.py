@@ -18,6 +18,7 @@ from nbatools.commands.entity_resolution import (
     ResolutionResult,
     mask_copula_team_lookalikes,
     phrase_has_partial_nickname_player_typo,
+    player_ids_for_name,
     resolve_player_in_query,
     resolve_team_in_query,
 )
@@ -200,7 +201,12 @@ def _is_exact_player_reference_phrase(phrase: str, player: str) -> bool:
         return False
     if PLAYER_ALIASES.get(cleaned) == player:
         return True
-    return cleaned == normalize_text(player).strip(" .?!,;:")
+    if cleaned == normalize_text(player).strip(" .?!,;:"):
+        return True
+    # Complete data-backed names may omit a uniquely identified generational
+    # suffix. Partial name matches and ambiguous stems are not exact operands.
+    ids = player_ids_for_name(cleaned)
+    return len(ids) == 1 and ids == player_ids_for_name(player)
 
 
 def detect_bare_player_vs_player_query(text: str) -> tuple[str | None, str | None]:
