@@ -1,0 +1,29 @@
+{
+  "origin": "Root-approved contract clarification frozen BEFORE implementation; extends approved0424 without rewriting its bytes.",
+  "approved_main_base": "4f7d6f050a5435768475d592c32ace1d83f06338",
+  "existing_yes_no_count_vocabulary": [
+    "ast",
+    "blk",
+    "fg3m",
+    "pts",
+    "reb",
+    "stl",
+    "tov"
+  ],
+  "count_meaning": "Exactly one distinct ordinary player-count statistic from the existing yes/no vocabulary, alongside one minutes predicate. No percentage/rate/period/outcome or new statistic registry.",
+  "count_ranges": "A between low and high count range is ONE bound span/predicate; its internal AND is consumed by the shared threshold reader, not mistaken for the outer conjunction. Reversed same-player predicate order and full HAVE/RECORD/PLAY grammar are required.",
+  "scope": "One resolved player; explicit canonical team/latest original named matchup/scalar regular season. Original TEAM-game first under static date/venue filters. Flat AND of exactly two complete player-owned statistical predicates only; no owner/status/unread words dropped.",
+  "exact_operator_semantics": "Unshifted bounds plus explicit min_inclusive/max_inclusive apply to BOTH minutes and the count statistic, including close decimal count cutoffs. Default legacy operator/dictionary behavior remains unchanged. No epsilon-reversal guess.",
+  "played_data_requirement": "Qualify protected same-game membership/state, exact official report time and the exact same positive canonical player/game/actual-side/date appearance. Load and validate BOTH played facts before evaluating either predicate, even if the other is already false. The count must be known finite nonnegative integer; missing/null count never becomes0.",
+  "dnp_requirement": "Explicit source-qualified DNP means the PLAYED conjunct is false, so No may state did-not-play without assigning minutes/countzero or fabricating a player row. Both requested predicates/owners must still be fully parsed. Unknown/contradictory membership/state is unavailable, neverDNPNo.",
+  "actual_zero": "A positive appearance with actual recorded0count is a real numericalzero and can satisfy count<=0. This is different from DNP, absent appearance or unknown statistic. Pritchard actualREB0 on original22300684 provides the retained positivezero control.",
+  "output": "Existing game_finder/FinderResult original TEAM row; checked metadata.player and identity-only player_context separate from team totals. Show both actual checks and exact MM:SS/count for played, explicit did-not-play forDNP. Applied check labels retain both canonical player-owned normalized bounds. Generic flattened player-stat hero metadata staysclear. Unknown lacks rows/Boolean/acceptedcheck. No new public request/result field.",
+  "compatibility": "Restore fully read native HAVE/RECORD statistical positive grammar while preserving tested legacy appearance-stat AND/OR/outcome cases outside the admitted original slice. Old366 AD Christmas substitution and changed-owner acceptance are wrong-answer sentinels, not valid compatibility obligations. Existing single original-minutes530/plain529/BOTH remain covered.",
+  "unadmitted_compositions": "OR/grouped/mixed/outcome/extra-owner/stat/medical/period/multi-season/N>1/qualifying compositions remain unfinished when not deliberately implemented, not bad input or delivered refusal. Preserve all46 absence positives.",
+  "private_preimplementation_controls_unopened": {
+    "root_sha256": "80311f66a1855805c6f68b98cbcdcd5379251e53086d817bea08ea83aa5f9e3b",
+    "checker_hash_prefix": "c617",
+    "checker_note": "Full checker SHA remains with the independent checker; the maker has not opened the private source or received its full hash."
+  },
+  "validation": "Source facts derive from byte-authenticated inventory CSV/PDF rows; no engine agreement is used as a truth oracle. Numerical source expectations remain separate from parser baseline results. No new collection or data publication needed."
+}
