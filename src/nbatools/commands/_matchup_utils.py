@@ -551,7 +551,11 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
             return True
         if bool(left_player) != bool(right_player):
             other = (right if left_player else left).strip()
-            if other and (_bare_surname(other) or not re.search(r"\d", other)):
+            if (
+                other
+                and not _tail_is_read_scope(" " + other, 0)
+                and (_bare_surname(other) or not re.search(r"\d", other))
+            ):
                 # An unresolved second name still belongs to the request.
                 # Never consume "Tatum and Blorg" as just Tatum. Numeric
                 # stat clauses retain their separate threshold handling.
@@ -562,7 +566,7 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
 def _joins_second_player(text: str, m: re.Match) -> bool:
     """'with LeBron and Davis': the name list goes on past the match."""
     nxt = re.match(
-        r"\s+(?:and|&)\s+([a-z][a-z'\-]+)(?:\s+([a-z][a-z'\-]+))?"
+        r"\s*(?:\band\b|&|[,;/])\s*([a-z][a-z'\-]+)(?:\s+([a-z][a-z'\-]+))?"
         # A name list ends the clause; "and maxey scores 30" is his own line.
         rf"(?=\s*$|[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
         r")\b)",
@@ -581,7 +585,7 @@ def _joins_second_player(text: str, m: re.Match) -> bool:
         nxt.group(1) not in _NON_PLAYER_SUBJECTS
         and not detect_team_in_text(two)
         and detect_stat(two) is None
-        and not _tail_is_read_scope(" " + two, 0)
+        and not _tail_is_read_scope(" " + text[m.end() + nxt.start(1) :], 0)
     )
 
 
@@ -670,7 +674,8 @@ _MINUTES_BOUND_TAIL = (
 
 # "and Luka sits", "while Davis is out": another player's availability clause.
 _AVAILABILITY_CLAUSE = re.compile(
-    r"\b(?:and|while|when|but)\s+((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)"
+    r"(?:\b(?:and|while|when|but)\b|[,;])\s*"
+    r"((?:(?!\b(?:and|while|when|but)\b)[\w .'\-])+?)"
     r"\s+(?:plays?|played|playing|sits?|sat|rests?|rested|(?:is|was)\s+resting"
     r"|(?:is|was)\s+out|out|(?:does|did)(?:n'?t|\s+not)\s+play)\b"
 )
@@ -679,7 +684,7 @@ _AVAILABILITY_CLAUSE = re.compile(
 # condition, not bare presence. Only singular or past verbs: "and score 120
 # points" / "and record 30 assists" have the team as subject.
 _OWN_STAT_CLAUSE = (
-    r"\s+and\s+(?:scores|scored|scoring|grabs|grabbed|dishes|dished|has|had"
+    r"\s+and\s+(?:(?:he|she)\s+)?(?:scores|scored|scoring|grabs|grabbed|dishes|dished|has|had"
     r"|records|recorded|puts\s+up|makes|made|hits)\b"
 )
 # "plays at home and scores 30": a short setting between "plays" and the clause.
@@ -700,6 +705,10 @@ def _states_own_stat(tail: str) -> bool:
     m = re.match(_PRESENCE_SETTING + _OWN_STAT_CLAUSE, tail)
     if m is None:
         return False
+    if re.search(r"\band\s+(?:he|she)\s+", m.group(0)):
+        # An explicit player pronoun keeps ownership even above team-like
+        # numerical ceilings; it cannot become a team-total predicate.
+        return True
     clause = re.split(r"\b(?:and|while|when|but)\b", tail[m.end() :], maxsplit=1)[0]
     if re.search(r"\b(?:as\s+a\s+team|team|teams|combined)\b", clause):
         return False
@@ -851,7 +860,7 @@ def presence_states_player_condition(text: str) -> bool:
     """
     return any(
         _states_player_condition(text[m.end() :])
-        for m in re.finditer(r"\s(?:plays?|played)\b", text)
+        for m in re.finditer(r"\s(?:plays?|played|playing)\b", text)
     )
 
 

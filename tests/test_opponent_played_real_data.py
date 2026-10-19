@@ -112,7 +112,37 @@ def test_additional_qualified_clause_never_returns_tatum_only_answer():
     )
     assert structured.result_status == "no_result" and structured.result_reason == "no_match"
     assert not structured.result.to_dict()["sections"]
-    natural = execute_natural_query(obligation["query"])
-    assert natural.result_status == "no_result"
-    assert not natural.result.to_dict()["sections"]
-    assert "multi_player_availability" in natural.metadata["unsupported_filters"]
+    for query in [
+        obligation["query"],
+        obligation["query"].replace(
+            "playing while Gabe Vincent plays", "playing, Gabe Vincent plays"
+        ),
+        obligation["query"].replace("playing while Gabe Vincent plays", ", Gabe Vincent playing"),
+    ]:
+        natural = execute_natural_query(query)
+        assert natural.result_status == "no_result"
+        assert not natural.result.to_dict()["sections"]
+        assert "multi_player_availability" in natural.metadata["unsupported_filters"]
+
+
+@pytest.mark.parametrize(
+    "mode,season,game,wins,totals",
+    [
+        ("with", "2023-24", 22300684, 1, (114, 52, 30)),
+        ("without", "2025-26", 22500338, 0, (105, 35, 15)),
+    ],
+)
+def test_understood_road_setting_is_not_an_unresolved_second_player(
+    mode, season, game, wins, totals
+):
+    result = execute_natural_query(
+        f"Lakers record against Celtics {mode} Tatum and on the road in {season}"
+    )
+    assert result.result_status == "ok", result.metadata
+    rows = result.result.to_dict()["sections"]["game_log"]
+    assert len(rows) == 1 and int(rows[0]["game_id"]) == game
+    assert rows[0]["team_id"] == 1610612747 and rows[0]["opponent_team_id"] == 1610612738
+    assert rows[0]["is_away"] == 1
+    assert tuple(rows[0][stat] for stat in ("pts", "reb", "ast")) == totals
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert summary["games"] == 1 and summary["wins"] == wins
