@@ -385,7 +385,7 @@ Contract rules:
   A numerical condition attached to the teammate is not applied to the primary
   subject; that combined capability remains unfinished.
   Conflicting report/positive observations reject. Same-team predicates bind team IDs; an explicit opponent clause permits
-  opposing-team observations, with mixed side ownership rejected as ambiguous.
+  opposing-team observations, with ambiguous ownership for an individual player rejected.
   Team records with an explicit opponent also qualify `with_player` against
   that same game's subject/opponent team IDs and date, using the shared
   observation checks. This permits an opposing player's verified `played`
@@ -395,6 +395,19 @@ Contract rules:
   ambiguous evidence remains unavailable. Without explicit matchup context,
   the existing played filter retains its same-team meaning. Neither path
   transfers membership to another game or establishes tenure or medical status.
+  Natural explicit-matchup team records can retain two resolved played predicates
+  joined by AND, while or a comma in the existing `with_player` conjunction.
+  Each player independently binds the subject or opponent side; a pair can
+  legitimately contain one player from each team. The full consumed clause is
+  preserved for guards, and both names remain in applied filter metadata.
+  Missing/unknown evidence for the second player cannot be hidden by an empty
+  first predicate. This does not promote mixed played/absent, OR, player-owned
+  numeric conditions, medical/status or on-court language.
+  New two-clause played compositions with last-N are not promoted: their
+  temporal meaning remains unfinished. Existing native availability cohorts
+  still select participation before last-N. The separate latest-original-game
+  predicate and latest-qualifying-meeting requirements are retained in
+  `tests/fixtures/qualified_played_pair/temporal_obligations.json`.
   Readers cache by immutable data generation and do not infer injury or on-court
   absence. Publication lineage is validated before activation. This consumer
   does not certify complete rosters, unlisted players, full-season coverage or

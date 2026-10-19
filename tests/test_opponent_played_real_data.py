@@ -89,8 +89,8 @@ def test_opponent_played_has_qualified_same_game_membership(case, consumer):
         assert summary[stat + "_avg"] == pytest.approx(expected["means"][stat])
 
 
-def test_additional_qualified_clause_never_returns_tatum_only_answer():
-    """Engine conjunction is empty; natural composition remains explicitly unfinished."""
+def test_additional_qualified_clause_returns_source_proven_conjunction_empty():
+    """Promote the exact natural obligation, retaining its historical baseline."""
     obligation = json.loads(
         (
             Path(__file__).parent / "fixtures/opponent_played/additional_clause_obligation.json"
@@ -120,9 +120,10 @@ def test_additional_qualified_clause_never_returns_tatum_only_answer():
         obligation["query"].replace("playing while Gabe Vincent plays", ", Gabe Vincent playing"),
     ]:
         natural = execute_natural_query(query)
-        assert natural.result_status == "no_result"
+        assert natural.result_status == "no_result" and natural.result_reason == "no_match"
         assert not natural.result.to_dict()["sections"]
-        assert "multi_player_availability" in natural.metadata["unsupported_filters"]
+        assert natural.metadata["with_player"] == "Jayson Tatum and Gabe Vincent"
+        assert not natural.metadata["unsupported_filters"]
 
 
 @pytest.mark.parametrize(

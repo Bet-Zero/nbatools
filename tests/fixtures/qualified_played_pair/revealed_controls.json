@@ -1,0 +1,165 @@
+{
+  "reviewer": "/root",
+  "frozen_before_candidate": true,
+  "generation": "availability-opening-s4-v1-20261017",
+  "sources": {
+    "raw/games/2025-26_regular_season.csv": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+    "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+    "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+    "raw/player_game_availability/2025-26_regular_season.csv": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902",
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/player_game_availability/2023-24_regular_season.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c"
+  },
+  "method": "Independent stdlib CSV reciprocal canonical games/team identity + exact listed same-game player/team/date observations and positive canonical minutes. No engine output or missing-row absence inference. Two heldouts kept unexposed until maker freeze.",
+  "cases": [
+    {
+      "query": "Lakers record against Celtics with Derrick White playing while Rui Hachimura plays in 2025-26",
+      "subject": "LAL",
+      "opponent": "BOS",
+      "season": "2025-26",
+      "names": [
+        "Derrick White",
+        "Rui Hachimura"
+      ],
+      "candidate_game_ids": [
+        22500338,
+        22500823
+      ],
+      "observations": [
+        {
+          "game_id": "0022500338",
+          "game_date": "2025-12-05",
+          "team_id": "1610612738",
+          "player_id": "1628401",
+          "player_name": "Derrick White",
+          "participation_state": "played",
+          "source_sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+          "source_minutes": "29.616666666666667",
+          "source_comment": ""
+        },
+        {
+          "game_id": "0022500338",
+          "game_date": "2025-12-05",
+          "team_id": "1610612747",
+          "player_id": "1629060",
+          "player_name": "Rui Hachimura",
+          "participation_state": "played",
+          "source_sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+          "source_minutes": "29.266666666666666",
+          "source_comment": ""
+        },
+        {
+          "game_id": "0022500823",
+          "game_date": "2026-02-22",
+          "team_id": "1610612738",
+          "player_id": "1628401",
+          "player_name": "Derrick White",
+          "participation_state": "played",
+          "source_sha256": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+          "source_minutes": "35.3",
+          "source_comment": ""
+        },
+        {
+          "game_id": "0022500823",
+          "game_date": "2026-02-22",
+          "team_id": "1610612747",
+          "player_id": "1629060",
+          "player_name": "Rui Hachimura",
+          "participation_state": "played",
+          "source_sha256": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+          "source_minutes": "21.433333333333334",
+          "source_comment": ""
+        }
+      ],
+      "expected": {
+        "game_ids": [
+          22500338,
+          22500823
+        ],
+        "games": 2,
+        "wins": 0,
+        "losses": 2,
+        "sums": {
+          "pts": 194.0,
+          "reb": 74.0,
+          "ast": 33.0
+        }
+      }
+    },
+    {
+      "query": "Celtics record against Lakers with LeBron James playing, Jaylen Brown playing in 2023-24",
+      "subject": "BOS",
+      "opponent": "LAL",
+      "season": "2023-24",
+      "names": [
+        "LeBron James",
+        "Jaylen Brown"
+      ],
+      "candidate_game_ids": [
+        22300403,
+        22300684
+      ],
+      "observations": [
+        {
+          "game_id": "0022300403",
+          "game_date": "2023-12-25",
+          "team_id": "1610612747",
+          "player_id": "2544",
+          "player_name": "LeBron James",
+          "participation_state": "played",
+          "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+          "source_minutes": "36.78333333333333",
+          "source_comment": ""
+        },
+        {
+          "game_id": "0022300403",
+          "game_date": "2023-12-25",
+          "team_id": "1610612738",
+          "player_id": "1627759",
+          "player_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+          "source_minutes": "32.56666666666667",
+          "source_comment": ""
+        },
+        {
+          "game_id": "0022300684",
+          "game_date": "2024-02-01",
+          "team_id": "1610612747",
+          "player_id": "2544",
+          "player_name": "LeBron James",
+          "participation_state": "did_not_play",
+          "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+          "source_minutes": "",
+          "source_comment": "INACTIVE - Injury/Illness - Left Ankle; Peroneal Tendinopathy"
+        },
+        {
+          "game_id": "0022300684",
+          "game_date": "2024-02-01",
+          "team_id": "1610612738",
+          "player_id": "1627759",
+          "player_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+          "source_minutes": "27.4",
+          "source_comment": ""
+        }
+      ],
+      "expected": {
+        "game_ids": [
+          22300403
+        ],
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "sums": {
+          "pts": 126.0,
+          "reb": 44.0,
+          "ast": 31.0
+        }
+      }
+    }
+  ]
+}

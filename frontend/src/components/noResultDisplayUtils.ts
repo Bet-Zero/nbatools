@@ -248,6 +248,9 @@ export function readableNoResultMessage(
   if (unsupportedStatMessage) return unsupportedStatMessage;
 
   if (reason === "filter_not_supported") {
+    if (unsupportedFilters(metadata).includes("other_team_stat")) {
+      return "A condition on another named team's statistics is not supported for this sample yet.";
+    }
     const metric = metricFromMetadata(metadata);
     if (metric) {
       return `${metricLabel(metric)} is not available for this query.`;
