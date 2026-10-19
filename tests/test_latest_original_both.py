@@ -190,3 +190,43 @@ def test_other_positive_obligations_remain_honestly_unfinished(pair_sample, quer
     assert not str(result.metadata.get("answer_phrase") or "").startswith(("Yes:", "No:"))
     # No partial single-player result may masquerade as the full BOTH answer.
     assert result.result_status == "no_result", (query, result.metadata)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        _query("Blorg and Austin Reaves"),
+        _query("Jayson Tatum and Austin Reaves").replace(
+            " play?", " play while LeBron was healthy?"
+        ),
+        _query().replace(" play?", " play with LeBron?"),
+        _query().replace(" play?", " play without LeBron?"),
+    ],
+)
+def test_unadmitted_both_check_exposes_no_partial_player_or_applied_cohort(pair_sample, query):
+    from nbatools.commands.natural_query import parse_query
+
+    parsed = parse_query(query)
+    for state in (parsed, parsed["route_kwargs"]):
+        assert not any(
+            state.get(k)
+            for k in (
+                "player",
+                "player_a",
+                "player_b",
+                "opponent_player",
+                "with_player",
+                "without_player",
+            )
+        )
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result" and result.result_reason == "filter_not_supported"
+    assert result.metadata["query_text"] == query
+    assert result.metadata["team"] == "LAL" and result.metadata["opponent"] == "BOS"
+    assert result.metadata["season"] == "2023-24"
+    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert result.metadata["player"] is None
+    assert not result.metadata.get("player_context") and not result.metadata.get("players_context")
+    assert not result.metadata["with_player"] and not result.metadata["without_player"]
+    assert not result.metadata.get("applied_filters") and not result.metadata.get("answer_phrase")
+    assert not result.result.to_dict()["sections"]

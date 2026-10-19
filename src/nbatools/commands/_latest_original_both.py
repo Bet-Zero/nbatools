@@ -116,6 +116,18 @@ def prepare(out: dict) -> dict:
         kwargs["unsupported_filters"] = list(
             dict.fromkeys([*(kwargs.get("unsupported_filters") or []), "multi_player_availability"])
         )
+        # None of the recognized names is the primary answer subject, and
+        # an unadmitted check did not apply a with/without matching cohort.
+        for key in (
+            "player",
+            "player_a",
+            "player_b",
+            "opponent_player",
+            "with_player",
+            "without_player",
+        ):
+            result[key] = None
+            kwargs[key] = None
         result["route_kwargs"] = kwargs
         return result
     kwargs = {
