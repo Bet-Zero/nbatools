@@ -389,8 +389,8 @@ Contract rules:
   Team records with an explicit opponent also qualify `with_player` against
   that same game's subject/opponent team IDs and date, using the shared
   observation checks. This permits an opposing player's verified `played`
-  predicate without treating that player as a teammate. Every candidate game
-  must have qualified participation; explicit did-not-play observations can
+  predicate without treating that player as a teammate. Every game in the
+  participation sample must have qualified evidence; explicit did-not-play observations can
   establish a genuine empty played sample. Missing, unknown, contradictory or
   ambiguous evidence remains unavailable. Without explicit matchup context,
   the existing played filter retains its same-team meaning. Neither path
@@ -403,11 +403,24 @@ Contract rules:
   Missing/unknown evidence for the second player cannot be hidden by an empty
   first predicate. This does not promote mixed played/absent, OR, player-owned
   numeric conditions, medical/status or on-court language.
-  New two-clause played compositions with last-N are not promoted: their
-  temporal meaning remains unfinished. Existing native availability cohorts
-  still select participation before last-N. The separate latest-original-game
-  predicate and latest-qualifying-meeting requirements are retained in
-  `tests/fixtures/qualified_played_pair/temporal_obligations.json`.
+  Explicit two-player played team records can distinguish original-window
+  and qualifying last-N samples for a full-game, scalar-season matchup.
+  `last_n_scope=original_window` selects and restricts the original matchup IDs
+  after subject/opponent, venue and date context, then qualifies BOTH players
+  across that entire selected window before remaining predicates. Older games
+  outside that window need no participation qualification for this request;
+  missing/unknown evidence inside it cannot be hidden by another false predicate.
+  Explicit qualifying last-N and all legacy scopes (including unset/None,
+  qualifying and window) retain participation-cohort-before-last-N ordering.
+  Ordinary within/among/of-original-window and explicit qualifying forms preserve
+  that distinction; unsupported routes/compositions do not inherit the new order.
+  Bare new separate-clause temporal requests remain contained. The boolean
+  latest-original-game question "did BOTH play?" remains a separate unfinished
+  positive, and all 46 original PR462 absence obligations remain open. Baselines
+  and exact original/qualifying source requirements are retained in
+  `tests/fixtures/qualified_played_pair/temporal_obligations.json`; root-frozen
+  preimplementation temporal controls are now retained as revealed regressions
+  in `tests/fixtures/original_window_played_pair/revealed_controls.json`.
   Readers cache by immutable data generation and do not infer injury or on-court
   absence. Publication lineage is validated before activation. This consumer
   does not certify complete rosters, unlisted players, full-season coverage or

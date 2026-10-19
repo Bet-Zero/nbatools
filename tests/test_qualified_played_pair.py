@@ -118,11 +118,9 @@ def test_existing_structured_conjunction_is_same_sample(pair_sample, pair):
     )
 
 
-@pytest.mark.parametrize(
-    "scope", ["within their last 1 game", "in their last 1 qualifying game", "last 1 game"]
-)
-def test_unfinished_new_pair_temporal_composition_never_opens_wrong_sample(pair_sample, scope):
-    """Containment only: the legitimate temporal obligations remain unfinished."""
+@pytest.mark.parametrize("scope", ["last 1 game"])
+def test_unfinished_bare_pair_temporal_composition_never_opens_wrong_sample(pair_sample, scope):
+    """The bare reading retains the previous new-pair boundary."""
     result = execute_natural_query(
         f"Lakers record against Celtics {scope} with Tatum playing while Reaves plays in 2023-24"
     )

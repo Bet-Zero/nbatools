@@ -340,6 +340,9 @@ def select_team_summary_sample(
     Shared by the team summary and the team split summary, so a split view
     splits the same sample the summary would describe.
     """
+    from nbatools.commands.data_utils import validate_last_n_scope
+
+    validate_last_n_scope(last_n_scope)
     seasons = resolve_seasons(season, start_season, end_season, selected_seasons=sample_seasons)
     if sample_seasons is not None and df is not None:
         df = df[df["season"].isin(seasons)].copy()

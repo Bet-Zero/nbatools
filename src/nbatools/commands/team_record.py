@@ -16,6 +16,7 @@ ComparisonResult, LeaderboardResult, NoResult).
 from __future__ import annotations
 
 import math
+import re
 
 import pandas as pd
 
@@ -277,8 +278,56 @@ def build_team_record_result(
     Returns a SummaryResult with wins/losses/win_pct prominently. ``last_n``
     keeps the team's N most recent games after every other filter, the same
     selection the team and player summaries make; the selected games are
-    returned in ``game_log``.
+    returned in ``game_log``. Explicit ``original_window`` instead selects a
+    full-game matchup window before qualifying both played predicates; all
+    legacy scope values keep availability as cohort context.
     """
+    from nbatools.commands.data_utils import validate_last_n_scope
+
+    validate_last_n_scope(last_n_scope, allow_original_window=True)
+    from nbatools.commands.entity_resolution import (
+        ALL_TEAM_ABBRS,
+        player_ids_for_name,
+        resolve_player,
+    )
+
+    original_window = last_n_scope == "original_window"
+    names = re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
+    resolved_names = [resolve_player(name).resolved for name in names] if original_window else []
+    if original_window and (
+        last_n is None
+        or not isinstance(season, str)
+        or team not in ALL_TEAM_ABBRS
+        or start_season
+        or end_season
+        or not isinstance(opponent, str)
+        or opponent not in ALL_TEAM_ABBRS
+        or opponent == team
+        or not with_player
+        or len(names) != 2
+        or not all(resolved_names)
+        or len(set(resolved_names)) != 2
+        or bool(player_ids_for_name(resolved_names[0]) & player_ids_for_name(resolved_names[1]))
+        or without_player
+        or quarter is not None
+        or half is not None
+        or wins_only
+        or losses_only
+        or clutch
+        or series_situation
+        or back_to_back
+        or rest_days is not None
+        or one_possession
+        or nationally_televised
+    ):
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=[
+                "Original participation windows require a full-game, single-season team matchup "
+                "and exactly two played predicates"
+            ],
+        )
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
     if wins_only and losses_only:
@@ -405,7 +454,7 @@ def build_team_record_result(
         df = base_df
 
     window_game_ids = None
-    if last_n is not None and last_n_scope in WINDOW_SCOPES:
+    if last_n is not None and (last_n_scope in WINDOW_SCOPES or original_window):
         # "how many games over 120 in their last 10": the window is the
         # team's N most recent games in play; results and stat conditions
         # are then counted inside it.
@@ -418,7 +467,7 @@ def build_team_record_result(
             start_date=start_date,
             end_date=end_date,
         )
-        if with_player and not sample.empty:
+        if with_player and not sample.empty and not original_window:
             sample = filter_with_player(
                 sample,
                 with_player,
@@ -449,6 +498,27 @@ def build_team_record_result(
         )
         window_game_ids = last_n_window_game_ids(
             sample, last_n, last_n_outcome(last_n_scope, wins_only, losses_only)
+        )
+
+    if original_window:
+        # Scope and restrict first. Qualify every named predicate over the
+        # complete original window before a false sibling predicate can hide
+        # missing evidence; older out-of-window rows are not required.
+        df = apply_last_n_sample(sample, last_n, window_game_ids)
+        if not df.empty:
+            df = filter_with_player(
+                df,
+                with_player,
+                seasons,
+                season_type,
+                team=team,
+                strict_team_match=True,
+                opponent=opponent,
+            )
+        qualified_window_games = len(df)
+        notes.append(
+            f"Original window selected {len(window_game_ids)} game(s) "
+            "before testing both played predicates"
         )
 
     df = _apply_game_filters(
@@ -490,7 +560,7 @@ def build_team_record_result(
             ],
         )
 
-    if with_player and not df.empty:
+    if with_player and not df.empty and not original_window:
         df = filter_with_player(
             df,
             with_player,
@@ -619,7 +689,13 @@ def build_team_record_result(
     if last_n is not None:
         noun = "game" if last_n == 1 else "games"
         played = len(window_game_ids) if window_game_ids is not None else len(df)
-        caveats.append(f"last {last_n} {noun} (played {played})")
+        if original_window:
+            caveats.append(
+                f"last {last_n} original {noun} "
+                f"(selected {played}; both played in {qualified_window_games})"
+            )
+        else:
+            caveats.append(f"last {last_n} {noun} (played {played})")
     if start_date or end_date:
         dp = []
         if start_date:

@@ -557,7 +557,13 @@ def _build_applied_filters(
     if last_n is not None:
         applied_filters.append({"label": "Last N games", "value": str(last_n), "kind": "window"})
         scope = route_kwargs.get("last_n_scope") or source.get("last_n_scope") or "qualifying"
-        if scope == "window":
+        if scope == "original_window":
+            noun = "game" if last_n == 1 else "games"
+            selection = (
+                f"Select the last {last_n} original matchup {noun} "
+                "before checking both played predicates"
+            )
+        elif scope == "window":
             selection = f"Check conditions within the last {last_n} games"
         elif scope == "qualifying":
             selection = f"Select the last {last_n} games matching the conditions"
@@ -1286,7 +1292,7 @@ def _count_context(
                 unit = "loss" if unit == "losses" else "win"
                 return f"in {owner} last {unit}"
             return f"in {owner} last {last_n} {unit}"
-        if last_n_scope != "window":
+        if last_n_scope not in {"window", "original_window"}:
             # "last 10 games where he scored 30": the count is capped at N,
             # so say so rather than claiming a 10-game window.
             return f"(limited to the {last_n} most recent)"

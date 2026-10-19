@@ -135,3 +135,6 @@ case_ids:
   - jokic_since_all_star_break
   - cooled_off_last_10
   - tatum_clutch_stats
+  - original_window_played_pair_source_empty
+  - original_window_played_pair_source_positive
+  - original_window_played_pair_source_qualifying

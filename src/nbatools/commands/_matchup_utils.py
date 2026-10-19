@@ -982,7 +982,7 @@ _READ_SCOPE_UNIT = (
     r"|at\s+home|on\s+the\s+road|home|road|away"
     r"|(?:in\s+the\s+)?(?:playoffs|postseason|regular\s+season)"
     r"|in\s+(?:a\s+)?(?:win|loss|wins|losses)"
-    r"|in\s+(?:the|their|his)\s+last\s+\d+\s+games?"
+    r"|(?:in|within|among|of)\s+(?:(?:the|their|his|its)\s+)?last\s+(?:\d+\s+)?(?:(?:qualifying|original)\s+)?(?:games?|meetings?|matchups?)"
     r"|after\s+the\s+all[- ]star\s+break"
     r"|if\s+(?P<plr>[a-z][\w.'\-]*(?:\s+[a-z][\w.'\-]*)?)\s+plays?"
 )

@@ -1,5 +1,5 @@
 {
-  "status": "UNFINISHED positive temporal compositions; containment is not delivery",
+  "status": "Explicit original-window and qualifying team-record positives promoted with source tests; boolean BOTH question remains UNFINISHED",
   "generation": "availability-opening-s4-v1-20261017",
   "source_hashes": {
     "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
@@ -86,7 +86,9 @@
         "pts": 115,
         "reb": 43,
         "ast": 24
-      }
+      },
+      "implementation_test": "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[latest-qualifying]",
+      "status": "Implemented candidate; independent/R2/deployed acceptance separate"
     }
   ],
   "interpretation_baseline": {
@@ -113,5 +115,15 @@
     "existing_contract": "Availability chooses the participation cohort before last-N selection, including structured window. The earlier within wording is retained as an interpretation baseline, not claimed as a repaired scalar bug.",
     "candidate_pair_before_containment": "1c1fd8df69e1d51590576ccc2cf4793b0975e9c8 selected22300403 for the same within wording."
   },
-  "current_boundary": "Do not promote NEW played_matchup_pair clauses when last_n exists. Preserve preexisting native cooperative pair handling; do not claim the excluded qualifying or window questions are invalid or implemented."
+  "promoted_original_window_record_obligation": {
+    "query": "Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony Davis plays in 2023-24",
+    "expected_window_game_ids": [
+      22300684
+    ],
+    "expected_qualifying_game_ids": [],
+    "qualification": "Both same-game facts are known: Tatum played, Davis explicitly did not play. No medical/status inference.",
+    "implementation_test": "tests/test_original_window_played_pair_real_data.py::test_original_and_qualifying_windows_keep_source_order_identity_and_numbers[qualified-empty-original]"
+  },
+  "prior_boundary": "Do not promote NEW played_matchup_pair clauses when last_n exists. Preserve preexisting native cooperative pair handling; do not claim the excluded qualifying or window questions are invalid or implemented.",
+  "current_boundary": "Explicit original/qualifying record windows are implemented for the bounded full-game scalar-season matchup with two played predicates. Bare new-pair temporal composition and boolean BOTH questions remain unfinished; existing legacy/native cohort-first behavior is preserved."
 }

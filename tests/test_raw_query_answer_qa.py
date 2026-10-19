@@ -363,7 +363,12 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 134
+    assert len(selected) == 137
+    assert {
+        "original_window_played_pair_source_empty",
+        "original_window_played_pair_source_positive",
+        "original_window_played_pair_source_qualifying",
+    } <= {case["id"] for case in selected}
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
 
 
