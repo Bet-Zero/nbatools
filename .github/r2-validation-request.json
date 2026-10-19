@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "4f08328ff77a06126c69399119a9a2267e7a0152",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_qualified_original_minutes_real_data.py",
+    "tests/test_qualified_scalar_played_real_data.py",
+    "tests/test_latest_original_both_real_data.py",
+    "tests/test_original_window_played_pair_real_data.py",
+    "tests/test_qualified_played_pair_real_data.py",
+    "tests/test_c1_yes_no_played_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "qualified_original_minutes_source_dnp_no",
+    "qualified_original_minutes_source_exact_no",
+    "qualified_original_minutes_source_exact_yes",
+    "qualified_original_minutes_source_unknown",
+    "qualified_scalar_played_source_yes",
+    "qualified_scalar_played_source_dnp_no",
+    "qualified_scalar_played_source_unknown",
+    "latest_original_both_source_false",
+    "latest_original_both_source_true"
+  ]
+}
