@@ -1,0 +1,247 @@
+{
+  "run": 39389938663,
+  "reviewed": "748b7d1c4ec50d159c8f41231ea8825d04373906",
+  "request": "e4ba7673fc2c491f703f293c3cf720dd4908be97",
+  "generation": "availability-opening-s4-v1-20261017",
+  "selected": 2,
+  "executed": 2,
+  "passed": 2,
+  "skipped": 0,
+  "answers": 26,
+  "readiness": 52,
+  "PNGs": 26,
+  "gates": [
+    {
+      "folder": "player-comparison-team-browser",
+      "answers": 16,
+      "readiness": 32,
+      "receipt_sha256": "5ee9cde8762396d57428a8de10efa4d4df2672be8cec2c022ec92232e6a23cbb"
+    },
+    {
+      "folder": "original-stat-pair-browser",
+      "answers": 10,
+      "readiness": 20,
+      "receipt_sha256": "b4ee9e1d115c11a0616fae94199ea1ff1c3b42ae5a878f796c9bf09940ec8fa2"
+    }
+  ],
+  "independent_raw_samples": [
+    {
+      "case": "comparison-shared-primary",
+      "player": "Luka Don\u010di\u0107",
+      "game_ids": [
+        22401117
+      ],
+      "totals": {
+        "pts": 19,
+        "reb": 8,
+        "ast": 7
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-shared-primary",
+      "player": "Anthony Davis",
+      "game_ids": [
+        22400408,
+        22400644
+      ],
+      "totals": {
+        "pts": 36,
+        "reb": 15,
+        "ast": 3
+      },
+      "wins": 2
+    },
+    {
+      "case": "comparison-canonical-alias",
+      "player": "Jimmy Butler III",
+      "game_ids": [
+        22401117
+      ],
+      "totals": {
+        "pts": 11,
+        "reb": 4,
+        "ast": 2
+      },
+      "wins": 1
+    },
+    {
+      "case": "comparison-canonical-alias",
+      "player": "Dennis Schr\u00f6der",
+      "game_ids": [
+        22400408,
+        22400644
+      ],
+      "totals": {
+        "pts": 21,
+        "reb": 3,
+        "ast": 8
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-omitted-suffix",
+      "player": "Wendell Carter Jr.",
+      "game_ids": [
+        22400393,
+        22400577,
+        22401156
+      ],
+      "totals": {
+        "pts": 34,
+        "reb": 19,
+        "ast": 8
+      },
+      "wins": 2
+    },
+    {
+      "case": "comparison-omitted-suffix",
+      "player": "Franz Wagner",
+      "game_ids": [
+        22401156
+      ],
+      "totals": {
+        "pts": 23,
+        "reb": 8,
+        "ast": 2
+      },
+      "wins": 1
+    },
+    {
+      "case": "comparison-exact-partial-empty",
+      "player": "Andrew Wiggins",
+      "game_ids": [],
+      "totals": {
+        "pts": 0,
+        "reb": 0,
+        "ast": 0
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-exact-partial-empty",
+      "player": "Dennis Schr\u00f6der",
+      "game_ids": [
+        22400408,
+        22400644
+      ],
+      "totals": {
+        "pts": 21,
+        "reb": 3,
+        "ast": 8
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-count-empty",
+      "player": "Andrew Wiggins",
+      "game_ids": [],
+      "totals": {
+        "pts": 0,
+        "reb": 0,
+        "ast": 0
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-count-empty",
+      "player": "Dennis Schr\u00f6der",
+      "game_ids": [],
+      "totals": {
+        "pts": 0,
+        "reb": 0,
+        "ast": 0
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-suffix-exact-count",
+      "player": "Dereck Lively II",
+      "game_ids": [
+        22400460
+      ],
+      "totals": {
+        "pts": 8,
+        "reb": 6,
+        "ast": 6
+      },
+      "wins": 0
+    },
+    {
+      "case": "comparison-suffix-exact-count",
+      "player": "Spencer Dinwiddie",
+      "game_ids": [
+        22400460,
+        22400741,
+        22400961
+      ],
+      "totals": {
+        "pts": 38,
+        "reb": 4,
+        "ast": 5
+      },
+      "wins": 1
+    }
+  ],
+  "loaded_asset": "index-ClijrUhz.js",
+  "visual_inspection": "PASS: actual7mobile PNGs inspected: primarycomparison, partialempty, fullempty, VanderbiltYes, reversedHauserNo, explicitDNPNo, precise-timeunavailable; all26 actualDOM/table validations andPNG hashes passed",
+  "artifact_id": 12249172670,
+  "zip_sha256": "1f0cbdabf9c91acf2ea6b09381bae971975aef5de9cef06dba23486f06649cb4",
+  "production_before": {
+    "time": "2026-10-20T07:56:45Z",
+    "sha": "835ad17f9e67d8efdd124c189992de56778e319e",
+    "id": "dpl_2FXMGuTm3SbWf1L6kRJSctV9PGR8",
+    "state": "READY"
+  },
+  "production_after": {
+    "time": "2026-10-20T08:02:22Z",
+    "sha": "835ad17f9e67d8efdd124c189992de56778e319e",
+    "id": "dpl_2FXMGuTm3SbWf1L6kRJSctV9PGR8",
+    "state": "READY"
+  },
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "seconds": 208.137,
+  "root_receipt_sha256": "99ca2448d7358805ba47649922c875b34ae88a3a7440693b6067c427bc66b2e4",
+  "runtime_sha": "fa3552915a75bfd22c53c946ff8a30a4d92df57a",
+  "public_status": "accepted bounded PR531/532 consumers; not whole-product or cold/warm performance acceptance",
+  "watch": {
+    "id": "6ad58b9b748881919020300facc32fa9",
+    "enabled": false,
+    "reason": "paused after accepted deployment and actual public acceptance"
+  },
+  "preserved_initial_failure": {
+    "run": 39388512752,
+    "request_sha": "1cd930382790a0c60df2ce64fb7ebf6ccb652c23",
+    "selected": 2,
+    "executed": 2,
+    "passed": 0,
+    "failed": 2,
+    "skipped": 0,
+    "artifact": 12249075765,
+    "zip_sha256": "e84950b8f1d3c2606ab2bed025567f98858057aefb45c46c8ecf1a42c7117d5c",
+    "partial_answers": 11,
+    "partial_ready": 22,
+    "partial_PNG": 11,
+    "reason": "non-JSON query response; exact HTTP cause not retained by original helper",
+    "followup": "one independently reviewed helper-only diagnostic run passed unchanged runtime; initial failure is not rewritten as acceptance or a resolved platform cause"
+  },
+  "diagnostic_review": {
+    "commit": "748b7d1c4ec50d159c8f41231ea8825d04373906",
+    "helper_sha256": "50b3926a82e5dc72b6bf436bfbe8fafdd323f8b4674b452cc0ff21ba89489d58",
+    "maker": "/root/comparison_checker",
+    "independent_reviewer": "/root",
+    "mocked_checks": 6,
+    "root_additional_checks": "original error identity, exact safe schema, credential-header exclusion, valid-response transparency; no network requests",
+    "ci": 39389717188,
+    "executed_ci_pass": 8,
+    "runtime_assertions_limits_requests_changed": false
+  },
+  "unfinished": [
+    "PR533 bb616 medical-owner chain still leaks a played cohort for coordinated medical adjectives; docs head10c8 and source/contract retained",
+    "All46 original PR462 absence positives remain open",
+    "Five production participation games/170listed rows are not full membership coverage; Boston17 remains staging",
+    "Different per-player comparison teams, shared-team opponent unions and broader compositions remain unfinished"
+  ],
+  "production_data_writes": 0,
+  "paid_or_credential_or_protection_changes": false
+}
