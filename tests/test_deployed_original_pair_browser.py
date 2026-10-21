@@ -15,7 +15,7 @@ from tests.test_original_window_played_pair_real_data import ORACLE, ORACLE_PATH
 from tests.test_qualified_participation_pair_real_data import _qualified_source
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET, FOLDER = "index-CJ1uR2hx.js", "original-pair-browser"
+ASSET, FOLDER = "index-ClijrUhz.js", "original-pair-browser"
 ORIGINAL = "Select the last 1 original matchup game before checking both played predicates"
 QUALIFYING = "Select the last 1 games matching the conditions"
 
@@ -146,11 +146,11 @@ def _cases():
             else "in their last 1 qualifying game"
         )
         label = ORIGINAL if scope == "original_window" else QUALIFYING
-        text = (
-            ["No Matching Results"]
-            if not expected["games"]
-            else [truth["names"], label, "Los Angeles Lakers"]
-        )
+        text = [truth["names"], label]
+        if not expected["games"]:
+            text.append("No Matching Results")
+        else:
+            text.append("Los Angeles Lakers")
         forbidden = ["Unavailable Filter", "Data Not Available", "undefined", "NaN", "Infinity"]
         if expected["games"]:
             forbidden.append("No Matching Results")
@@ -264,8 +264,6 @@ def _validate_answers(receipt, cases, output):
             in m["applied_filters"]
         )
         if not case["expected"]["games"]:
-            # This renderer shows a generic empty card, with scope in collapsed notes.
-            # Pair and selection labels above are API assertions, not visible-label claims.
             assert (
                 payload["result_status"] == "no_result"
                 and payload["result_reason"] == "no_match"
