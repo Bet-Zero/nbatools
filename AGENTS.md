@@ -228,14 +228,20 @@ Use existing commands and runners:
 - Frontend changes need locked install/build/lint/tests and rebuilt served assets.
   Inspect actual changed rendering; unchanged renderers need targeted output checks,
   not a fresh owner screenshot tour. Track implementation and deployment separately.
-- Docs-only work: `make docs-governance` and `git diff --check`. Existing CI may run
-  more checks automatically; do not disable those checks to save time.
+- Docs-only work: `make docs-governance` and `git diff --check`. CI's narrow
+  planning-document path still runs delivery-policy tests, lint and both security
+  verdicts. Other documentation, executable inputs, helpers, mixed or unknown
+  changes retain application checks; do not broaden the allowlist by file suffix.
 
 ## CI, cost and merge safeguards
 
 Preserve `.github/workflows/ci.yml` checks: lint, docs-governance, frontend-verify,
 blocking production frontend-security, informational whole-tree frontend-security-dev,
-test-fast on PRs and the full-suite main/nightly/dispatch backstop. Do not suppress
+test-fast on application-impacting PRs and test-full on application-impacting main
+pushes; nightly/manual runs always select the full suite. Full includes fast, so
+do not run both matrices on the same main/nightly candidate. Scope failure remains
+blocking and conservatively selects application checks. Unselected jobs are not
+new executed acceptance. Follow `CONTRIBUTING.md` for the exact selection. Do not suppress
 failures, remove backstops, raise audit/latency thresholds or weaken assertions.
 Dev advisories remain maintenance, not automatic unrelated feature blockers.
 

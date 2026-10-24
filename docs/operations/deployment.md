@@ -493,11 +493,40 @@ after an explicitly approved publication.
 `vercel.json` disables automatic Git deployments for `r2-validation/**` and
 `codex/*-production-gate`. These branches carry read-only validation requests or
 browser acceptance tests; ordinary CI and the existing validation workflow still
-run. Main and other feature branches retain the default automatic deployments.
+run. Main and other feature branches remain eligible for automatic deployment,
+subject to the narrow ignored-build check below.
 The [Git deployment control](https://vercel.com/docs/project-configuration/git-configuration)
 prevents matching automatic triggers rather than merely skipping a build. Keep
 these rules when integrating older branches; existing deployments are unchanged,
 and this does not establish a quota balance or reset time.
+
+`ignoreCommand` runs `node tools/delivery_scope.mjs vercel` before a Git build.
+It compares `VERCEL_GIT_PREVIOUS_SHA` (Vercel's last successful deployment on this
+project/branch) with `VERCEL_GIT_COMMIT_SHA`, not `HEAD^`. Only regular, non-executable
+changes to the three planning files named in `CONTRIBUTING.md`, `tests/**`,
+task evidence excluded by `.vercelignore`, or the exact `frontend/tools/captureCoreIdentityFindCount.mjs` helper
+may skip a build. Tests are excluded from function bundles, working evidence is
+excluded by `.vercelignore`, and the capture helper is invoked by browser acceptance tests,
+not part of `tsc -b && vite build`. Root `README.md` feeds Python packaging;
+`frontend/src/test` feeds TypeScript compilation. Neither is ignored. Runtime,
+frontend, dependencies, contracts, configuration, workflow/selector changes and
+unknown paths remain eligible. Mixed changes receive the conservative decision.
+If build/runtime code begins consuming an allowlisted path, remove that exemption
+in the same reviewed change; a previously valid input boundary is not permanent.
+
+Missing/invalid/shallow/non-ancestor comparison history, an initial deployment,
+and a same-revision redeploy all continue the build. The documented Vercel exit
+protocol is 0 = ignore, 1 = build; no deployment failure is converted to success.
+Existing branch suppression, production artifacts, rollback and separate data
+publication controls are unchanged. An ignored build is not deployed acceptance,
+does not close the first-request HTTP504, and may still create a Vercel canceled
+deployment entry; no quota/reset or zero-capacity-cost claim is made. For an explicit
+authorized environment-only redeploy, supply the nonsecret per-build variable
+`NBATOOLS_FORCE_BUILD=1` (for example with the CLI's `--build-env` option); the
+ignore command then reports an explicit forced build even at a newer docs-only
+revision. This one-way override only enables builds, does not grant deployment
+authority, and should not be saved as a project-wide setting. Preserve normal
+release/verification gates; source equality is not environment equivalence.
 
 For the existing ChatGPT Vercel connection, project reads and deployment lists
 for `nbatools` work **without** `teamId` or `slug`. The project ID is

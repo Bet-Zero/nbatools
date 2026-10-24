@@ -201,7 +201,7 @@ def test_frontend_install_steps_are_unconditional_and_failure_sensitive() -> Non
                 )
 
 
-# ── B. Frontend verification is unconditional ────────────────────────
+# ── B. Frontend verification runs whenever application impact is possible ──
 
 
 def test_frontend_verification_job_never_runs_a_dependency_audit() -> None:
@@ -232,16 +232,13 @@ def test_frontend_verification_runs_build_lint_and_tests() -> None:
             )
 
 
-def test_frontend_verification_job_is_unconditional() -> None:
-    """Verification must report a verdict on every supported trigger."""
+def test_frontend_verification_uses_only_the_reviewed_scope_gate() -> None:
+    """Unknown/failed selection runs verification; only proven prose can omit it."""
     for name, job in _jobs_running(BUILD_CMD).items():
         label = f"frontend verification job {name!r}"
-        _assert_unconditional(job, label)
+        assert job.get("if") == "always() && needs.change-scope.outputs.application != 'false'"
         _assert_not_continue_on_error(job, label)
-        assert not _needs(job), (
-            f"{label} declares needs={_needs(job)}; another job's failure "
-            "would skip frontend verification entirely"
-        )
+        assert _needs(job) == ["change-scope"]
 
 
 def test_frontend_verification_steps_are_unconditional_and_failure_sensitive() -> None:
