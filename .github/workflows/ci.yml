@@ -2,11 +2,14 @@ name: CI
 
 # ── Trigger policy ────────────────────────────────────────────────
 #
-#   pull_request  → lint + docs-governance + frontend-verify
-#                   + frontend-security + test-fast
-#   push to main  → the above + test-full
-#   nightly       → the above + test-full
-#   manual        → the above + test-full
+#   all triggers  → scope/policy + lint + docs-governance + both security audits
+#   pull_request  → frontend-verify + three-version test-fast when app impact is possible
+#   push to main  → frontend-verify + three-version test-full when app impact is possible
+#   nightly/manual → frontend-verify + three-version test-full unconditionally
+#
+# Only the three explicitly reviewed planning files can omit application jobs.
+# No workflow-level path filters: every invocation reports its selection. Missing
+# or failed scope output selects the conservative path and cannot make CI green.
 #
 # Frontend code verification and frontend dependency security are two
 # independent jobs on purpose.  `frontend-verify` reports whether the
@@ -33,6 +36,32 @@ permissions:
   contents: read
 
 jobs:
+  change-scope:
+    runs-on: ubuntu-latest
+    outputs:
+      application: ${{ steps.scope.outputs.application }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install pytest PyYAML
+      - run: node --check tools/delivery_scope.mjs
+      - name: Required delivery policy checks (no application installation)
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: python -m pytest --noconftest -o addopts= -q tests/test_delivery_scope.py tests/test_ci_workflow_policy.py tests/test_docs_governance.py
+      - id: scope
+        env:
+          SCOPE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          SCOPE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node tools/delivery_scope.mjs ci
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -59,6 +88,8 @@ jobs:
   # audit.  A newly published npm advisory must never stop the repo
   # from learning whether the code itself is healthy.
   frontend-verify:
+    needs: change-scope
+    if: always() && needs.change-scope.outputs.application != 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -136,9 +167,12 @@ jobs:
       - run: npm --prefix frontend audit --audit-level=low
 
   # ── Fast feedback ────────────────────────────────────────────────
-  # Runs on every trigger.  Uses `make test-unit` which excludes
+  # PR feedback only; the full suite includes these tests on other triggers.
+  # Uses `make test-unit` which excludes
   # slow and data-dependent tests and runs in parallel via xdist.
   test-fast:
+    needs: change-scope
+    if: always() && github.event_name == 'pull_request' && needs.change-scope.outputs.application != 'false'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -157,7 +191,8 @@ jobs:
   # Skipped on pull requests to keep PR feedback fast.
   # Uses `make test` which runs the entire suite in parallel.
   test-full:
-    if: github.event_name != 'pull_request'
+    needs: change-scope
+    if: always() && github.event_name != 'pull_request' && needs.change-scope.outputs.application != 'false'
     runs-on: ubuntu-latest
     strategy:
       matrix:

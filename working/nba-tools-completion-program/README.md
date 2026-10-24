@@ -15,140 +15,53 @@ require a new agent to read that history before starting the task below.
 
 ## Resume checkpoint
 
-Replace this checkpoint as work advances; do not append another active diary.
-Owner explicitly resumed normal development on 2026-10-18 (America/Detroit), accepting minimum cloud/data setup. Live main and all five pending feature heads were reconciled before changes. This is not a frozen head to reset to; check newer branch/PR evidence.
+Reconciled **2026-10-24** from live main/PRs and the [October 21 pushed stop
+checkpoint][saved-stop]. Replace current state here; keep detailed receipts in
+existing PRs/bindings. Historical records below are evidence, not restart instructions.
 
 | Field | Current handoff |
 | --- | --- |
-| Stop marker | OWNER-REQUESTED CLEAN SESSION STOP — 2026-10-21 UTC. Root is closing this session after saving all recoverable authored work; no implementation or public-validation worker remains active. Deployment watch6ad58b9b748881919020300facc32fa9 is disabled with no next run. This is a resumable checkpoint, not completion of NBA Tools or approval of pending fixes. No owner decision/manual QA is outstanding. |
-| Main / integration | Live main4aad08d69876601ff279d8d110a948769d4a36fc normally merged [PR534](https://github.com/Bet-Zero/nbatools/pull/534) froma2e5734214f1437b1e10da3e85d1412dedd74b54 after CI39391088412 all8executed PASS. Post-main39391672501 all11/fullPython3.11/3.12/3.13 PASS, rechecked at this stop. Its helper/docs changes leave application/API/frontend/config/dependencies identical to accepted835. Actual public alias remains READY835ad17f9e67d8efdd124c189992de56778e319e/dpl_2FXMGuTm3SbWf1L6kRJSctV9PGR8; fresh4aad rebuild failed its public gate and was restored. PR534 discussion preserves exact evidence. No new deployment or merge is part of this stop. |
-| Active candidate | PARKED, NOT ACCEPTED: [PR533](https://github.com/Bet-Zero/nbatools/pull/533), codex/medical-subject-scope, /workspace/work/resumption/medical-subject-scope. Runtimebb616ed307b5ffa5f8c75d850cd76e1e21421051 remains unchanged; this branch adds only the current stop checkpoint after prior docs head10c8da38c2442be85f23da2ed60bce69e8e135a0. Independent checker failure remains: “Boston record against Lakers in2025-26 with a medically cleared Derrick White and a healthy Jaylen Brown.” loses status spans and applies White as a played cohort (comment6262298467:20pass/1rolefail). Source-onlyf69/sourcea96da8646a6d5323f9d14b455c0ad89fdc1eb4285f0b9d47f41939c400e6e615/contractd1f6aa6ff8fc53becf6601cdba908fe6c1f7bfe363b24d1a591a7f7a27324189 unchanged. No medical capability or approval claimed. Separate browser draft is now pushed on codex/medical-subject-production-gate atb1aeb0998772cc619547fb1649662d4b69bcc54e (425lines, helper/test only): Ruff/format/Node syntax/diff checks pass; no capture, independent acceptance, R2 request, merge or deployment. |
-| Verified / pending | PR532 independent fa355 source/R2/local acceptance remains valid (93required0skip/19QA362checks;8811stable passes1763ordinaryskips). PR531 original MIN+count source evidence remains69required0skip/14QA245checks. New actual public run39389938663 reviewed748b7d1c4ec50d159c8f41231ea8825d04373906/requeste4ba7673fc2c491f703f293c3cf720dd4908be97 executed2selected=passed with0skip/fail/error/xfail;208.137s summed test-case time:26answers52ready26PNG. Root SHA-verified/read archive/JUnit, replayed both source/API/DOM/table/identity/qualification validators, separately rederived12raw comparison samples/IDs/sums/Decimal means/reciprocal records, verified allPNG/readiness and inspected7mobile views. No non-JSON errors occurred in that complete run. Initial39388512752 remains failed0of2/11partial answers22ready; platform cause is not declared fixed. Cold/warm performance and whole-product acceptance remain separate. |
-| Exact NEXT | STOP now at owner request. At a future resumed session, read this pushed branch checkpoint and PR534 final discussion before using the older checkpoint on main. First qualify/reproduce and fix the first-request HTTP504 within the EXISTING20-second execution budget, then resume PR533 coordinated medical-owner repair through independent/source/stable/R2/browser/CI gates. Preserve qualified White/BOS-LAL2–0 and Embiid/Jokic controls; no played/active/healthy equivalence. The medical browser WIP must be reconciled with newer main helper diagnostics before any acceptance. Keep both unfinished PRs533 and462 open; no unchanged public retries, data publication, provider hunt or new acquisition campaign. No further work starts automatically. |
-| Source preparation | K01expanded source39091056182 passed1required0skip,16CSV including sixEwing-era teamfiles; oracle freezes348coveredgames205–143/5027PTS2928REB412AST. PR482 combined no-write snapshot39091103560 (reviewed072bd3b78389d9cf27058d6bf0eb137495563bd1/requeste23a27b00ee9e9910e4d441c43c9c586f27fca89) passed1required0skip, independently accepted703objects402749125bytes,684base unchanged+18overlay+derivednames. Artifact12122218736 ZIP290778578b035bdb4df8c1594f238697fa7d40c2dea32d72586df93a67b2f801; manifest5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52. Sixconsumerchecks/Brownkeys passed; projectedbucket1167483320bytes. No production writes. |
-| Pinned data | **Active production R2 generation** `availability-opening-s4-v1-20261017` (pointer switched `2026-10-18T06:15:50Z`; manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`). Prior `queue-d-production-0574735-20260716` retained unchanged; five qualified NBA participation-game sources are included but not season-wide evidence. |
-| Next independent implementation | K08/#462 original13df00fb84f142a0f4803ac196ebe9ff3a1355db andall46positiveabsence obligations remain open. Exact Feb1PDF is retained at source-evidence/tatum-20260201; hash e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9/27521B. IndependentBostonoracleSHA986622658fb005269483b23e9bbed509c3aa67f2fe9200a28f5bc7cac09ab964 qualifies17listed=12played2DNP3inactive, Tatum1628369 explicitinactive forBOSgame22500702. Scoped extension can use this existingfact; no additionalsource needed forBoston. FullMIL identityrequest remains exactexistingbackup-laptophandoff, not newcloudinvestigation. Same-date other-game/tenure/nonmembership semantics remain unaccepted. |
-| Local state to preserve | All existing worktrees/branches preserved; no reset, prune, force-push, deletion or shared-runtime edit. Root checkout remains codex/k06-delivery/4371ae5. Authored medical browser draft is committed/pushed atb1aeb0998772cc619547fb1649662d4b69bcc54e; source worktrees otherwise clean. Final local-head audit found three earlier local-only branches. Their EXACT source trees are now pushed on separate archival WIP branches without changing any original branch/worktree: codex/k08-qualified-pair-tests original758087508e8d09ee03ca1e20e867b3008a89b1d6 -> codex/parked-k08-wip-20261021/30424056c83f1ee990194611608869e7d08ca906; codex/original-pair-production-gate original8c1affb0743d8428ff0c37b68a1f4e5f88adb8e5 -> codex/parked-original-pair-gate-20261021/0c4f1ed90ea67138b9e0d68028778317b30f4ada; codex/owned-or-production-gate original5c998795258e1d569dc4ef3b1b3df951642640f0 -> codex/parked-owned-or-gate-20261021/c8fb239abd3ec378aaf9cd8147bff937cc2cbbbd. All three original/preservation tree hashes are equal. Four local-only commits received separate preservation copies using existing-account noreply metadata; original commit objects remain unchanged. No archival branch is a new acceptance or merge candidate. Intentional local generated-asset symlink remains untracked at /workspace/work/resumption/comparison-stable-fa355/src/nbatools/ui/dist -> /workspace/work/resumption/qualified-empty-context/src/nbatools/ui/dist; preserve it, do not commit generated assets. Existing ignored source/evidence and unpushed462 integration ports remain in place; positive obligations and blocker evidence remain remote in PR462/checkpoint. Earlier c10936b original-volume recovery remains unavailable as already recorded in cloud-operations/preservation.json; this stop does not claim recovered unique unpublished work. Root alone owns this stop; no child agents active. |
-| Deployed verification | Exact restored production835/dpl_2FXMGuTm3SbWf1L6kRJSctV9PGR8 confirmed READY at this2026-10-21 stop; this is identity reconciliation, not a new browser run. Accepted bracket2026-10-20 07:56:45–08:02:22UTC stayed835/Clijr: R2run39389938663 passed2selected=executed=passed0skip/fail/error/xfail,26answers52ready26PNG; artifact12249172670 ZIP1f0cbdabf9c91acf2ea6b09381bae971975aef5de9cef06dba23486f06649cb4 independently checked. Initial39388512752 failed0of2 and remains retained. Automatic4aad/dpl_EMPXZJR2mMKCyUMY6swnxFHGR3LZ separately failed39392363519:1passed/1failed/0skip, FIRST comparison HTTP504 FUNCTION_INVOCATION_TIMEOUT at20233ms; stat-pair10answers20ready passed. Artifact12249684485 ZIP7b50545805fb3324f2d42918e0601363fb2cac042b374098a930b9b304165a1d retained; PR534comment6286711278 records failure and restore, comment6286780001 final conclusion. Restore via existing promotion accepted08:22:28UTC Oct20; no rebuild or extra create. First-request cause/reliability remain unresolved. Watch disabled, no fresh acceptance or owner action claimed. |
-| P2 and other unfinished findings | PR478 records the frozen comparison: both paths12/20 correct,3 wrong accepted,5 valid refusals; 8 controls separate. Do not adopt the candidate or rewrite frozen results after repairs. PR479 repairs the two lost-opponent cases; PR480 addresses final-window grammar. K03 review also retains nonzero exact equality and distinct-player grouped OR as unfinished composition gaps; new league exact-nonzero wording is contained, not delivered equality. Single-opponent prefixed question copula is repaired by merged PR511. Still open: medically-cleared language can change subject, and broader qualified entity validation. Independent heldout review also reproduced an unchanged question+true-opponent-list subject swap on main15c51bd ande5e08b7: “What was New York’s away record against Miami and Washington in2023-24?” and the equivalent opponent-prefix form answer WAS-vs-MIA. The plain subject-first list computes NYK3games2–1/340PTS123REB78AST, but final metadata incorrectly says WAS/MIA on both base and candidate; a Lakers/Celtics+Wizards opponent-split query also computes LAL rows with wrong final metadata. Merged PR512 repairs these bounded subject/list-metadata examples and ordinary team/player comparison unions with exact source checks. Still unfinished: explicit team-filter player-comparison grammar, broader grouped/cross-window OR and unresolved-owner compositions, broader self-only/unresolved-owner interpretation, and broader third-team calculations. Bounded atomic owned OR was delivered521; bounded self-opponent unions were delivered524 and verified publicly39196490518. PR523 repairs leading-list third-team refusal identity/copy only. PR514 delivers bounded AND/window own-team and named-opponent scoring conditions; it does not close broader grouped/cross-window boolean grammar. Atomic owned OR521 is accepted separately. No general grammar completion or positive demotion is claimed. PR462 originalhead13df00fb84f142a0f4803ac196ebe9ff3a1355db retains46positive obligations; local462-integration has unpushed ports,88passed1failed due to absent qualified BOS+NYK/Tatum nonmembership. Preserve those positives.  Next bounded priority after532: actualaccepted05ba medical-ownership baseline /workspace/work/resumption/medical-ownership-05ba-baseline.json/log retains Boston-record-to-White-summary subject swap and Embiid/Jokic comparison dropping medically-cleared clause. Qualified medical-clearance data absent; preserve requested subjects and honest unavailability without equating played/active/health, no current-runtime expansion/sourcehunt. FrozenP2 results unchanged. |
-| Publication boundary | **PUBLISHED AND VERIFIED.** On 2026-10-18 the owner authorized package `opening-s4-availability-v1`, then separately approved the protected GitHub deployment. Run [39102232398](https://github.com/Bet-Zero/nbatools/actions/runs/39102232398) `success`: `published_and_verified`, 703 immutable objects / 402,749,125 bytes, exact manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`, active pointer verified, previous generation retained, six deployed application answers verified and readiness `ready`. Durable [release receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-39102232398) includes `receipt.json`. Publication environment now confirmed valid: `r2-publication` ID `24614443886`, main-only Branch, required reviewer Bet-Zero, admin bypass disabled. Earlier HTTP404 audit was from before setup and is **resolved**. No recurring publication authorization. |
-| Runtime / continuation | Independent751 root fullcode/contract/source/test/QA review, fixed broad8747passed1716ordinaryskips150.76s; actualsource69passed0skip10.00s. Root6preimplementation+2audit controls PASS receiptbc88025838cd4e068b47f5f43ec42fe8503fdbacb06a6f048f7994d18507d4a8; checker8private/14adjacent/11controlled PASS, no wronganswer blocker. R2 run39207166557 reviewed07a31792fd813e5a8f33fb84e89b783c834c4922/request358aef3d9687050cc9b8b9eeab5e3e6a8954fe59 passed69selected=executed=passed0skip/fail/error/xfail32.79s and14QA245checks0suspicious. Root hashverified/read both artifacts/JUnit/all14outputs/productreview; human_review_pending/missing_variants retain historical meaning. Checker actual10desktop/mobile answers20ready10PNG on751/Clijr passed; root independently reviewed6104gate/helper/source, replayed62rejectedcorruptions+2validISO, rederived qualifiedPDF/Decimal truth and all10PNG hashes, viewed mobileYes/zero/unavailable. Receipt0ddb2cfa6c07ca7d62ca958d5ad46e2847e94bd26455d5e16111ed283e0b5fdc. Both required played facts qualify before either bound; realzero/DNP/unknown remain distinct. Native bare restoration only MIN-first complete HAVE/RECORD AND; reversed bareLeBron AST>=10 ANDMIN>=30 remains validunfinished (source22301195 rounded38MIN/17AST). Singular-three positive preserved unchanged1b23e2c88a88326eac457ddebbbb0a9415cce7ccb61ac7f296b7144617a6fc22. Explicit-original reverse is delivered separately; broader OR/grouped/outcome/extraowner/period andall46absence obligations remainopen. No newdata/publication. |
-
-S4 source acceptance: run [39007679992](https://github.com/Bet-Zero/nbatools/actions/runs/39007679992),
-reviewed `9895ee04ec9b0144e314dac3e9981e3737b6aacc`, request
-`9c844e3d7a96c0be9fd040764264102b2fc97c0f`: **1 selected/executed/passed, 0 skips/failures/errors/xfails**.
-Artifact12091388833 ZIP SHA256 `8f459cbbb90d7652ccb84e77cb625c416e63376cc2b1b454c5d8fb5e452573d2`.
-Four official BOS-LAL PDFs: 2023-12-25, 2024-02-01, 2025-12-05, 2026-02-22.
-Checker independently matched all91played names/teams/minute-seconds, all8team
-240-minute totals, receipt/import hashes and both68-row season files:136listed
-rows=91played+45explicitDNP. Tatum played both2023 games and explicitly did not
-play both2025 games. Scores: BOS126-LAL115; LAL114-BOS105; BOS126-LAL105;
-BOS111-LAL89. Initial run39007279540 failed on PDF-extracted `SCORE BYPERIOD`;
-the bounded whitespace repair preserves all source/date/team/identity/total gates.
-34report tests passed. These four games establish no season-wide absence claim.
-
-S1/S2 accepted numerical scope on `queue-d-production-0574735-20260716`:
-BOS home versus NYK: 2023-24 **3 games, 2–1, 356 points**; 2025-26 **2 games,
-1–1, 212 points**. Curry >=25 versus POR: **2 games/58 points** and **3 games/121
-points**. Curry >=25 versus LAL: **3 games/109 points** and an explicitly empty
-2025-26 sample (his sole recorded appearance scored23). The positive 2024-25
-LAL sample, **3 games/112 points**, must remain excluded. Exact raw IDs, PTS/REB/AST
-means, labels, structured/natural splits and one-season controls passed. Fixture
-suite51passed; checker held-out GSW away/NYK and Curry>=28/BOS passed. Deployed
-S1/S2 verification subsequently passed in39010886782; remaining K07/S4 obligations stay open.
-
-S3 request `248b8e245d35168e423aaa4785bc124f9e04a631` on
-`r2-validation/subject-ownership-10ff2e2a` selects
-`tests/test_subject_ownership_contract.py::test_s3_owned_scoring_and_venue_actual_data`.
-Independent raw expectations: LAL own>=110/opponent<110/home, 2023-24,
-**8 games, 8–0, 998 points**; LeBron own>=25/opponent<110/home, **8 games,
-7–1, 228 points**. Tests-only candidate passed fixture and independent unfamiliar
-road/entity/threshold probes; actual gate subsequently passed in39005515673 and implementation merged in PR471. Reconcile with latest main
-before extending its scope. No runtime drift requires repeating already valid source
-arithmetic; new acceptance must still execute.
-
-S5 evidence: numerical artifact12091999945 ZIPe3a5494e5a8b7ea16be736f6f92277fb8d19337460ab1ed9ce33a5c286f373b3;
-rawQA artifact12092762362 ZIPc8785c92975ffdb977cbed574a90b5e79c98a8609cac0f3248273afe7191295f.
-BOS date+NYK3games3–0/363PTS; last10 window>=110:6games5–1/762PTS;
-last10 qualifying:10games8–2/1255PTS. Curry date+LAL3games2–1/109PTS;
-last10 window>=30:2games1–1/66PTS; last10 qualifying:10games6–4/364PTS.
-ExactIDs/REB/AST/labels independently verified. Wider product-review fields retain
-human_review_pending/missing_variants; no invented human signoff or family closure.
-S5 runtime merged01c38d9130957e90bc32f38b739ff1ca396cb76d; deployed S5 passed6required actual checks in39086312677 after the rate limit cleared organically. Bounded P2 evaluation is complete in PR478; its candidate was not adopted. No paid model/provider authorized here.
-
-S1/S2/S3 deployed numerical evidence: corrected reviewed9da2e10f7fb694274bb9c1154b598d37fb0e54f1,
-request6555c70b7381945b68bc180e5848ebe385ef3a63, run39010886782 passed4/4zero skips.
-Artifact12092947116 ZIPbe02a8900942baea03c17296857fdc5f648c59345661529debb5564ec60f3727.
-Checker /root/availability_checker independently confirmed four API responses,
-identities/labels/numbers and all eight before/after readiness checks. Generation
-is bracketed as queue-d-production-0574735-20260716, not attributed per response.
-Earlier39010672735 remains failed4/4: test read metadata at wrong envelope level;
-corrected access retains all assertions. Test-only branch merged as PR475; post-merge CI39011702006 passed.
-
-S4 bounded actual evidence on the same pinned base plus four qualified official
-reports: games22300403/22300684 with Tatum (2023-24), Celtics1–1/115.5PPG,
-Brown13.5PTS6.5REB4.5AST; games22500338/22500823 without Tatum (2025-26),
-Celtics2–0/118.5PPG, Brown31PTS8REB7.5AST. Each opposite named-season bucket
-is qualified empty. Natural clause orders and structured queries match exact
-game/team/player IDs. This is four-game coverage, not seasonwide absence,
-injury/status, permanent storage or deployed S4 acceptance. A teammate-owned
-statistical condition is safely contained and remains an unfinished capability.
+| Outcome / authority | **Product development remains paused at the owner's October 21 stop.** PR535 completed the planning/handoff cleanup. The current owner authorization covers only bounded CI/deployment-selection efficiency work and its normal landing; product work stays paused. At the saved stop no product worker or public-validation run remained active and deployment watch `6ad58b9b748881919020300facc32fa9` was disabled; this operational assignment starts none. Core-1 is not accepted. No owner technical decision or manual QA is outstanding for this handoff. |
+| Operational assignment | [Delivery-efficiency task PR](https://github.com/Bet-Zero/nbatools/pulls?q=is%3Apr+head%3Aci%2Fbounded-delivery-efficiency) contains the diagnosis, independent review, controlled selection cases and landing receipts for narrow planning-document CI, removal of duplicate fast/full matrices, and non-build-input deployment suppression. No application repair, data change or dependency upgrade. Stop after its applicable gates and landing. |
+| Main / deployment | Reconciled main `4f77a69d6c189f51539e9da222294b2dad8577fd` includes PR535 and [PR534][pr534]; PR535's blocking PR and full post-main CI passed (development audit remains advisory). Last saved public identity (October 21): `835ad17f9e67d8efdd124c189992de56778e319e`, deployment `dpl_2FXMGuTm3SbWf1L6kRJSctV9PGR8`, asset `index-ClijrUhz.js`. At reconciliation, main's application/API/frontend/config/dependency bytes match that accepted runtime; helper/docs differ. This assignment changes deployment selection only, not application behavior. This reconciliation makes no fresh deployment claim. Follow newer accepted main without resetting preserved work. |
+| Accepted / unresolved delivery | PR531/532's bounded consumers passed 26 public desktop/mobile answers and 52 readiness checks in [39389938663][public-531-532]; independent conclusions and hashes are in the [durable receipt](cloud-operations/public-531-532-835.json). The fresh `4aad08d6` deployment then failed [39392363519][failed-first-request]: first comparison HTTP504 `FUNCTION_INVOCATION_TIMEOUT` at 20,233 ms; stat-pair checks passed. The prior deployment was restored. **First-request reliability/cause and K12 cold/warm acceptance remain unresolved**; see [failure/restore][restore] and [final conclusion][restore-final]. A later passing request did not close this defect. |
+| Parked repair | [PR533][pr533], `codex/medical-subject-scope`, pushed handoff `39aa65afdf74fc2aba70a54f9eddc1ef22c3779d`; runtime `bb616ed307b5ffa5f8c75d850cd76e1e21421051` is **not accepted**. The [independent check][medical-check] found that coordinated “medically cleared Derrick White and a healthy Jaylen Brown” drops status spans and applies a played cohort (20 pass / 1 role failure). The separate browser WIP is pushed at `codex/medical-subject-production-gate` / `b1aeb0998772cc619547fb1649662d4b69bcc54e`; syntax/lint only, no capture or acceptance. Reconcile it with PR534's helper diagnostics before use. No medical-status capability is delivered. |
+| Data / source blocker | Last verified generation `availability-opening-s4-v1-20261017`, manifest SHA256 `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`; [October 18 publication receipt][publication] records 703 objects / 402,749,125 bytes and retained previous generation. Five qualified participation games are not season-wide absence evidence. All **46 original positive absence obligations** on [PR462][pr462] (`13df00fb84f142a0f4803ac196ebe9ff3a1355db`) remain open. PR515's Boston 17 observations are staged only: Tatum explicitly inactive in game `22500702`; other-game membership/tenure/nonmembership remains unaccepted. Reuse the [exact source/identity handoff](collection-requests/tatum-membership-20260201.md), including the remaining Milwaukee identity request. Current medical-owner repair needs no acquisition/provider hunt. |
+| Preserve | Keep PR533/462 open and their positive tests, source oracles, revealed/private controls and unpushed integration ports. The [saved stop][saved-stop] names the three remotely preserved `codex/parked-*-20261021` branches, exact original/preservation revisions and equal trees, plus the medical browser WIP. They are preservation copies, not merge candidates. Preserve original worktrees, ignored evidence and the untracked generated-asset symlink; do not reset, prune or force-push. [Preservation record](cloud-operations/preservation.json) records unavailable original-volume `c10936b` work; recovery is not claimed. Local paths in old receipts are provenance, not prerequisites available in this checkout. |
+| NEXT / reason | **Stop after this operational assignment lands. On an authorized product resume, qualify/reproduce and repair the saved first-request HTTP504 within the existing 20-second execution budget.** This repairs a confirmed deployed failure and advances K12's reliable answer-delivery obligation; warm/cold milestone goals below remain unchanged. Use PR534's retained evidence, not unchanged public retries. After that dependency is resolved, resume the existing PR533 coordinated medical-owner correctness repair through normal independent/source/CI/deployed gates. Preserve White/BOS–LAL 2–0 and Embiid/Jokic controls; never equate played, active and healthy. No product work starts under this operational authorization. |
 
 ### First-session procedure
 
-Inspect the repository without resetting or overwriting another agent's work:
+1. Read AGENTS and ROADMAP, then this checkpoint and the relevant acceptance row.
+   Inspect remote, live main, current branch/dirty work and open/recently updated
+   PRs without resetting another session's work. The linked task PR is the first
+   lead; compare its latest pushed README and discussion with this main copy and
+   current owner decisions. A branch name alone is not proof a worker is active.
+2. Follow the freshest applicable handoff, preserving newer work. On a blocked
+   branch, keep this same README checkpoint on the task branch and link its exact
+   revision from the existing PR. A successor can find it through live PRs even
+   before main is synchronized; no separate main documentation PR is needed at
+   each stop, and failing runtime must never be merged to publish its checkpoint.
+3. If product work is authorized, perform NEXT with its recorded reason. If it has
+   already succeeded, use its evidence and select the next justified outcome under
+   AGENTS. Do not replay historical investigations, source arithmetic or broad
+   suites solely to refresh status. An owner stop is not an invitation to select
+   independent product work.
 
-```sh
-git remote -v
-git status --short --branch
-git fetch origin
-git log -1 --format='%H %s' origin/main
-```
+### Blocked-branch continuation
 
-Read live PR metadata, changed files, discussion and check results through GitHub
-or `gh`. The observed branch names above are resume leads, not proof a worker is
-still running. Coordinate on the PR; preserve its author/session evidence. If its
-head moved or merged, inspect that actual revision before choosing the next step.
-Do not create duplicate repair PRs without explaining why the original cannot be
-continued. Never force-push someone else's work to match this handoff.
+Preserve #462's required positives and exact source dependency; do not repeatedly
+run known missing-data failures or add unrelated features to its red branch.
+Within an authorized product session, a genuinely independent required outcome
+may proceed from live main through its own checks and review. Keep the blocked
+obligation visible; never replace it with refusal/xfail/skip or relax a gate.
+Synchronize a compact main pointer at the next safe independent merge. Turn
+completion is not product completion or evidence of a background worker.
 
-On the #462 candidate, after the normal editable project installation in an agent
-execution environment (not the owner's laptop):
-
-```sh
-DATA_SOURCE=local python -m pytest -q \
-  tests/test_participation_coverage.py tests/test_played_season_splits.py
-```
-
-These are fixture-only checks on #462, not real NBA verification and not a
-request to treat the mixed candidate as releasable. The 46 known positive
-absence requirements remain open and intentionally fail its normal suite.
-When extracting independent work, test the isolated candidate separately and
-keep missing-source evidence and regression expectations traceable on #462.
-
-### How to resume execution without an endless red PR
-
-1. Check the current #462 diff/commits and the approved S1/S2 evidence. Find the
-   smallest truly independent P1 delivery that does **not** rely on invented
-   absences. Start its candidate from live main and carry only necessary code,
-   positive tests and corpus cases. If no such slice exists, move to another
-   independent package rather than refactoring the blocked P0a all night.
-2. Verify that new PR with a real checker, required selected/executed/skipped
-   counts on pinned R2 where applicable, broad applicable CI and actual output.
-   Merge only green and correctly scoped changes; do not use the status of #462
-   as a substitute for the isolated candidate's own evidence.
-3. Leave #462's 46 required absence obligations open on their original candidate.
-   Don't delete, mark expected failure, weaken, or disguise them as safety passes.
-   Investigate source sufficiency separately. A future qualified dataset/contract
-   unlocks their implementation. More unrelated P1 commits on #462 only increase
-   the unmergeable backlog.
-4. After a safe independent merge, publish one concise checkpoint to this same
-   queue on main and update #462's PR discussion. If a Codex turn ends, its
-   successor uses the latest pushed PR checkpoint and checks whether a scheduled
-   thread wake-up is **actually** enabled. Do not claim invisible automation.
-
-The aim is continuous *forward progress*, not removal of legitimate failure gates
-or pretending an interactive Codex turn is an always-on service.
+Detailed S1–S5 source arithmetic, artifact hashes, prior failed runs, K03 receipts
+and earlier PR history remain in the [immutable pre-cleanup queue][prior-queue]
+and [latest pushed stop][saved-stop]. Consult only the record needed for the next
+action; the acceptance table and carry-forward section below retain live gaps.
 
 ## 1. Preserved product and starting evidence
 
@@ -163,7 +76,7 @@ career complete. Salary/trade-rule work is outside this repository's purpose.
 | Operations/history | B1/C1/C2 delivered substantial counts, rankings, splits, conditions, streaks, franchise/series/history work, most recently #450 season lists | Implemented does not mean every combination or deployment is accepted. Old individual fixes are not the new sequence |
 | Participation/period | Starter roles, period rows and schedule-context features were served only for 2024-25/2025-26; rosters and core games span the historical window | Existing-snapshot slices can proceed. Earlier role/period coverage remains an explicit dependency |
 | Specialized data | Served play-by-play, clutch, lineup and on/off files were absent; awards/injury/status require qualified reference sources | Missing sources remain unfinished work; do not derive injury or simultaneous presence from participation |
-| Runtime | Prior profiling found material read/index/frame costs and several useful fixes; compact name lookup publication is still to verify | Follow O's bounded measurement/metadata path before suggesting a migration |
+| Runtime | Prior profiling found material read/index/frame costs and useful fixes; the previously pending compact name lookup is now published (O1 below) | Publication does not establish cold/warm performance; follow the current measured defect before suggesting a migration |
 | Product acceptance | Existing monitor checks availability and one representative route, not all numeric answers; integrated E remains open | P3 is a real interface/numeric/latency checkpoint, not a monitor screenshot or green-CI claim |
 
 Reuse existing helpers such as `_player_identity.py`, `_condition_utils.py`,
@@ -192,10 +105,12 @@ PRs, but each must advance a named outcome; no quota of phrase fixes.
 
 ### P0a. Participation is not injury or status
 
-**Observed defect, not a delivered repair:** #462 maps injured/similar status
+**Original defect on #462 (October 15):** it mapped injured/similar status
 words to missing participation and healthy/available/active to playing. Its
-fixture removes player rows to justify those readings. The source facts do not
-support that equivalence. Inspect `docs/reference/data_contracts.md` and the
+fixture removed player rows to justify those readings. The current remaining
+medical-owner defect is parked on [PR533][pr533]; see the checkpoint for its exact
+failure and preservation state. The source facts do not support that equivalence.
+Inspect `docs/reference/data_contracts.md` and the
 current participation contract; meaning must be checked before arithmetic.
 
 Preserve real improvements to teammate names/pairs and valid participation
@@ -204,8 +119,8 @@ questions when coverage and relevant membership are qualified. They cannot be
 advertised as injured games or a cause of absence. Likewise played does not mean
 healthy, and listed active/available does not prove actual minutes played.
 
-Repair the existing candidate, not a fresh unrelated parser expansion. Status-
-specific wording without a source needs honest unavailable/clarification behavior,
+Continue the relevant existing candidate when authorized. Status-specific wording
+without a source needs honest unavailable/clarification behavior,
 not a converted participation answer. Colloquial 'out' can only use a clearly
 stated did-not-play meaning where unambiguous; never imply injury. Do not equate
 resting/suspended/sidelined or other causes with all absences without evidence.
@@ -221,17 +136,11 @@ injury-statistics feature. If the bug already landed, repair main via a bounded 
 
 ### P0b. Required numerical acceptance must actually fail when wrong
 
-Inspect `.github/workflows/r2-real-data-validation.yml`, related harness tests,
-`tests/conftest.py` and its `needs_data` skip behavior. The observed workflow sets
-`continue-on-error: true` on numerical tests; targeted mode may skip other gates.
-The last inspected numerical run passed, but a green workflow alone is insufficient.
-
-Strengthen the EXISTING read-only validation path. Required tests for a feature
-must be non-optional and tied to a resolved candidate SHA and one pinned generation.
-Avoid a moving branch being independently checked out at different revisions by
-separate jobs. If older exploratory checks need to stay informational, identify
-and separate them explicitly; never reclassify a failing acceptance test merely
-to keep green. Preserve the full Raw QA/filter-sweep backstop and secret-free CI.
+**Enforcement delivered in [PR464](https://github.com/Bet-Zero/nbatools/pull/464).**
+Do not repeat the original workflow investigation to refresh this queue. Required
+feature tests remain non-optional and bound to a resolved SHA and pinned generation;
+exploratory checks cannot replace them. Preserve full Raw QA/filter-sweep and
+secret-free CI. The acceptance contract below remains controlling.
 
 Acceptance in a controlled test/validation context: a required assertion failure,
 a typo or empty required selection, zero executed tests, all-required-skipped run,
@@ -243,14 +152,15 @@ labeled, isolated from production data, and leaves no failing test in main.
 
 Use the existing `r2-validation` environment; no credential expansion, duplicate
 workflow or branch-protection change. Independent checker verifies enforcement,
-not just YAML appearance. Until this lands, manually inspect required underlying
-jobs/counts and block dependent merges on any real failure or unavailable evidence.
+not just YAML appearance. Inspect required underlying jobs/counts and block
+dependent merges on any real failure or unavailable evidence.
 
 ### P0c. Preserve and integrate pending work
 
-Refresh #455 and #462. Keep the useful game-list population/owner/opponent work
-and participation/composition fixes. Do not merge either solely because it is
-mergeable or its PR body lists old green totals. Reconcile shared parser changes,
+**Current disposition:** [PR455][pr455] merged on October 16; [PR462][pr462]
+remains blocked with all 46 positive obligations retained. PR533 is a separate
+unaccepted correctness repair, not permission to merge #462. Keep useful
+population/ownership and participation work. Reconcile shared parser changes,
 review the actual combined candidate and its semantics, and run applicable checks.
 Do not treat an automated-review invitation as completed independent review.
 
@@ -260,6 +170,9 @@ and the checkpoint names P1. Unrelated blocked work must not create an indefinit
 P0 phase. No pending capability is silently discarded or marked complete.
 
 ## 4. P1 - Deliver shared interpretation, not a new engine
+
+The contracts below are retained requirements, not a request to restart P1. Use
+the Core-1 rows and [retained S1–S5 receipts][prior-queue] for delivered scope and gaps.
 
 **Outcome:** changing a record/summary into a season split does not silently change
 who, which games, whose condition, or statistical basis the question asks for.
@@ -305,6 +218,13 @@ file extraction without those answers is not completion. Other families stay
 on their working paths. Then start P2; do not finish every engine feature first.
 
 ## 5. P2 - Bounded input-layer comparison
+
+**Decision completed in [PR478](https://github.com/Bet-Zero/nbatools/pull/478):**
+[the frozen comparison](p2-language/decision.md) found both paths 12/20 correct,
+3 wrong accepted and 5 valid refusals; 8 safety controls were separate. The
+candidate was not adopted; a model alternative was not evaluated. Preserve those
+original outcomes after repairs. The following decision contract is retained,
+not a request to repeat the comparison before continuing Core-1.
 
 Use the P1-verified subset and freeze the candidate code/data and semantic truth
 before tuning. This is one decision-sized comparison, not a provider tournament.
@@ -352,26 +272,34 @@ Before tuning a row, bind the obligations to explicit test/corpus IDs and indepe
 expectations in its PR and the evidence column. Reuse existing tests/evidence where
 applicable. Do this while building the selected row, not as a new audit-only phase.
 
-States: **I** implemented/merged; **N** independently numerically verified (fixture
-and real-data scope distinguished); **L** held-out language verified; **D** actual
-API/rendered/deployed path verified. 'Unassessed' means current integrated acceptance
-is not established, not that all underlying code is absent. Never infer a percentage
-from PR or test counts. Each row passes only when every bound required case passes.
+States are separate evidence claims: **I** implemented/merged; **N** independently
+checked numerical correctness (qualified real data versus fixtures stated); **L**
+checked with unfamiliar wording; **D** verified through the deployed application.
+The links bind historical evidence to its code/data; they do not certify newer
+integration automatically. Revealed language failures stay regressions, not fresh
+held-outs. “Not established” identifies missing evidence, not missing code. No
+completion percentage or whole-row pass is inferred from counts.
 
-| ID | Required positive behavior and bounded combinations | State / evidence |
-| --- | --- | --- |
-| K01 | Correct player/team identity and covered scope: aliases/accent spelling, one same-name collision, one renamed player, historical franchise, partial-career label | PR483 merged;14actual numerical/14QA137checks accepted. Historical boundedD39094178858 and52combinedK01/K03 browser responses39097220860 passed; current integratedD pending. |
-| K02 | Player summary/team record: explicit season, explicit date range + opponent, last-N window versus qualifying last-N with one threshold | PR486/PR490 merged;13actual numerical/13QA183checks accepted. PR508 repaired canonical opponent validation;39167992465 passed66actual responses/132readiness checks on current generation, independently accepted. |
-| K03 | Find/count: two AND thresholds including exact zero, strict versus inclusive bound, grouped OR, games versus distinct-player count, qualified zero result | PR481/PR487 merged;12actual numerical/12QA61checks accepted. Historical52K01/K03 browser responses39097220860 passed; current integratedD pending. |
-| K04 | Ranking: totals versus per-game, ratio-of-totals shooting with declared attempts floor, top-N versus last-N, one event-count ranking and tie policy | PR485/PR490 merged;20actual numerical/20QA693checks accepted. PR508/39167992465 passed66actual summary/ranking responses on current generation with source-oracle and independent screenshot/receipt review. |
-| K05 | Cross-subject conditions: own-player/team versus opponent stat in one request, plus home/road; another entity and threshold | PR488/PR492 merged;8actual numerical/8QA242checks accepted.40combined ownership/comparison production responses39163942659 passed on current generation. Prior independent source/semantic/local review; lead inspected actual artifact. |
-| K06 | Comparisons: two players with same named sample/basis; two teams' independent samples versus explicit head-to-head meetings; opponent filter retained | PR532 bounded shared-team comparisons: fa355 independent identity/row/count/label review; R2 run39212750948 includes all12 original K06 comparison samples/bases plus source93 total and19QA. Local comparison16answers32ready accepted; finalmerge/public pending. Different per-player teams and shared-team opponent unions remain unfinished; whole-row closure not inferred |
-| K07 | Splits: filter before home/away split; team and player named-season splits with non-adjacent seasons; opponent + threshold or participation retained | PR493/494 merged; current-generation numerical/QA gates accepted. Production run39176663385 passed1 required test,24 desktop/mobile answers and48 ready immutable-generation checks with exact identities, buckets, values and labels; independently accepted. Bounded deployed split gate closed. |
-| K08 | Participation: one and two qualified teammates played/did-not-play; add one stat bound; show membership/coverage distinction and separate injury-status safety controls | PR513 bounded pair support accepted with8 actual source tests; PR516 production gate covers pair played/DNP, player bound, qualified empty and extra-clause safety. PR515 stages17 Boston observations only. Broader integrated acceptance, all46 original absence obligations and other-game membership remain open; no season-wide or medical-status claim. |
-| K09 | Sequences: team winning streak and player threshold-appearance streak; count distinct runs; best N-game stretch versus last N; excluded-game/season continuity | Prior C2; integrated acceptance unassessed |
-| K10 | Playoff/history: game versus series record versus appearances; one round/series-situation filter; one franchise/title-count query with exact definition and covered span | Prior C2; integrated acceptance unassessed |
-| K11 | Population/ownership: league, named team's players, rookie and broad-position game lists; named opponent stays opponent, historical roster slice and missing-roster safety | #455 pending at revision; integrated acceptance unassessed |
-| K12 | Answer delivery: actual subject/sample/basis labels; count/list/split/comparison rendering; valid zero versus no-data; snapshot freshness disclosure; representative cold/warm behavior | P3/O; integrated acceptance unassessed |
+**Core-1 remains open.** K01–K08 have bounded delivery/checking evidence; K09–K11
+lack full integrated acceptance here, and K12 has a confirmed deployed failure.
+Closure still requires the complete obligations below on a fixed P3 candidate and
+served generation. Reuse valid evidence by checking affected code/data scope;
+do not rerun everything merely because a planning document changed.
+
+| ID | Required positive behavior and bounded combinations | I — implemented/merged | N — independent numerical check | L — unfamiliar wording | D — deployed application | Exact remaining obligation / unavailable evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| K01 | Correct player/team identity and covered scope: aliases/accent spelling, one same-name collision, one renamed player, historical franchise, partial-career label | [PR483][pr483] merged; identity/span binding in [K01](k01-binding.md). | 14 qualified actual-data cases accepted; independent raw identity/arithmetic review in PR483. | Independent fresh identity wording checked; revealed repairs retained as regressions. | Historical bounded gate and 52 combined K01/K03 desktop/mobile answers passed [39097220860][d-k01-k03]. | Current integrated D not established; carry forward partial-career/ambiguity findings in the binding, without inventing missing career data. |
+| K02 | Player summary/team record: explicit season, explicit date range + opponent, last-N window versus qualifying last-N with one threshold | [PR486][pr486]/PR490 merged; [13-case binding](k02-binding.md); PR508 corrected canonical-opponent validation. | 13 required actual cases / 13 QA accepted with independent keys/arithmetic review. | Independent command, polite-summary/list and changed-entity probes checked; original failures retained. | 66 combined K02/K04 answers / 132 readiness checks accepted on the published generation in [39167992465][d-k02-k04]. | Bounded gate accepted; full fixed-candidate P3 acceptance not established. Preserve date/opponent and window-versus-qualifying semantics; K12 reliability remains open. |
+| K03 | Find/count: two AND thresholds including exact zero, strict versus inclusive bound, grouped OR, games versus distinct-player count, qualified zero result | [PR481][pr481]/PR487 merged; [12-case binding](k03-binding.md) and count-grain rendering repair. | 12 required actual cases / 12 QA accepted; independent exact keys, grain and arithmetic. | Independent changed-entity strict/inclusive and grouped-OR probes checked. | Historical 52 combined K01/K03 answers passed [39097220860][d-k01-k03]. | Current integrated D not established. Nonzero equality and distinct-player grouped-OR gaps remain in the binding/carry-forward; no general composition closure. |
+| K04 | Ranking: totals versus per-game, ratio-of-totals shooting with declared attempts floor, top-N versus last-N, one event-count ranking and tie policy | [PR485][pr485]/PR490 merged; [20-case binding](k04-binding.md). | 20 required actual cases / 20 QA accepted; independent ratios, floors, ordering and ties. | 10 held-out cases plus second independent 9-probe set checked after repairs; revealed cases are regressions, not a fresh score. | 66 combined K02/K04 answers accepted in [39167992465][d-k02-k04], with source/visual review. | Bounded gate accepted; full fixed-candidate P3 acceptance and K12 performance not established. |
+| K05 | Cross-subject conditions: own-player/team versus opponent stat in one request, plus home/road; another entity and threshold | [PR488][pr488]/PR492 merged; [8-case binding](k05-binding.md). | 8 required actual cases / 8 QA accepted; independent source/owner review. | 4 primary + 4 unfamiliar cases checked; changed ownership/negation reviewed. | 40 combined K05/K06 answers accepted on the published generation in [39163942659][d-k05-k06]. | Bounded gate accepted; full fixed-candidate P3 acceptance not established. Broader owned-boolean additions are not automatic prerequisites. |
+| K06 | Comparisons: two players with same named sample/basis; two teams' independent samples versus explicit head-to-head meetings; opponent filter retained | [PR491][pr491]/PR492 and [PR532][pr532] merged; [original 12-case binding](k06-binding.md). | All 12 original samples/bases rechecked within PR532's 93 required actual cases; independent source identities/rows/values accepted. | Independent comparison wording/entity/date probes and PR532 suffix controls checked; original failures retained. | Original comparison gate in [39163942659][d-k05-k06]; PR532's 16 answers within the accepted [26-answer run][public-531-532]. | Full fixed-candidate P3 acceptance not established; first-request failure remains K12. Different per-player teams/shared-team opponent unions remain additional unfinished combinations, not new original-binding obligations. |
+| K07 | Splits: filter before home/away split; team and player named-season splits with non-adjacent seasons; opponent + threshold or participation retained | [PR493][pr493]/PR494 merged; [12-case split binding](k07-binding.md); S4 participation implementation retained. | 12 required actual cases / 12 QA accepted; independent keys/buckets/arithmetic. Qualified four-game S4 source checks retained in [prior receipts][prior-queue]. | Six held-outs and fresh changed-entity/threshold probes checked; revealed failures retained. | 24 answers / 48 readiness checks accepted in [39176663385][d-k07] for the bound threshold/season splits. | Bounded split gate accepted. Explicit integrated D evidence for S4 participation-retaining splits on the P3 candidate is not established here; do not infer it from threshold-only cases. |
+| K08 | Participation: one and two qualified teammates played/did-not-play; add one stat bound; show membership/coverage distinction and separate injury-status safety controls | [PR513][pr513] bounded pair support merged; PR515 stages Boston observations only. PR462/533 remain unaccepted. | 8 actual pair-source tests independently accepted; qualified five-game coverage only. All 46 original absence positives remain open. | Independent fresh pair/extra-clause probes checked for the bounded slice; PR533 has a confirmed coordinated medical-owner failure. | Pair played/DNP, bound, qualified-empty and safety consumers accepted in [PR516's 28-answer run][d-k08]; not all absence obligations. | Required but blocked: membership/other-game applicability, the 46 retained positives and PR533 safety repair. Boston 17 is staging; full Milwaukee identity qualification unresolved. No season-wide absence or medical-status capability claimed. |
+| K09 | Sequences: team winning streak and player threshold-appearance streak; count distinct runs; best N-game stretch versus last N; excluded-game/season continuity | Prior C2 sequence implementations retained; full bound set not established. | Current integrated numerical acceptance not established. | Current bound unfamiliar-language acceptance not established. | Current integrated deployed acceptance not established. | Bind/accept the listed team/player streak, distinct-run, best-versus-last and continuity obligations using existing code/evidence; no claim that implementation is absent. |
+| K10 | Playoff/history: game versus series record versus appearances; one round/series-situation filter; one franchise/title-count query with exact definition and covered span | Prior C2 history implementations retained; full bound set not established. | Current integrated numerical acceptance not established. | Current bound unfamiliar-language acceptance not established. | Current integrated deployed acceptance not established. | Bind/accept game/series/appearance distinctions, the situation filter and exact franchise/title definition/covered span. Missing qualified history must remain explicit. |
+| K11 | Population/ownership: league, named team's players, rookie and broad-position game lists; named opponent stays opponent, historical roster slice and missing-roster safety | [PR455][pr455] merged; population/opponent work is no longer pending integration. | PR455: 19 required actual cases plus independent source/row controls accepted; full row not established. | Full row's bound unfamiliar-language evidence not established. | Full row's deployed acceptance not established. | Establish the full listed league/team/rookie/position/historical-roster and missing-roster binding/evidence on P3's candidate; do not infer full K11 closure from PR455. |
+| K12 | Answer delivery: actual subject/sample/basis labels; count/list/split/comparison rendering; valid zero versus no-data; snapshot freshness disclosure; representative cold/warm behavior | Rendering/identity/zero-context repairs merged through PR532; PR534 adds diagnostics only. | Independent numerical checks exist for bounded consumers above; full row not established. | Unfamiliar wording checked within those consumers; full delivery set not established. | Multiple bounded desktop/mobile gates passed, including [26 answers][public-531-532]; fresh deployment first request failed [HTTP504][failed-first-request]. | Repair first-request reliability; establish representative warm/cold budgets and complete fixed-candidate labels/rendering/zero-versus-no-data/freshness evidence. A restored alias or passing monitor is insufficient. |
 
 For each statistical row, use controlled discriminating rows AND representative
 qualified real-data numeric checks. Exercise a second entity/value and unfamiliar
@@ -402,25 +330,14 @@ is NOT unattended-current-data acceptance; do not rename it full release readine
 
 ## 7. O - Independent snapshot/runtime work
 
-**O1: inspect compact identity metadata first.** Verify the actual served generation
-and whether `metadata/player_names.csv` exists/is used. Inspect
-`generation_publication.py` / `_write_player_names` and the reader. The writer can
-derive this lookup from staged existing player-game rows; a fresh NBA pull is not
-intrinsically needed. Do not assume it is missing or automatically beneficial.
-
-If missing, stage the existing immutable snapshot, derive/validate metadata, compare
-identity results and measured cold/warm cost, then publish only under existing
-write authority and deployment safeguards. Preserve original NBA data dates,
-checksums/lineage, unchanged stats and last-good rollback. A metadata-only generation
-is not new coverage. Without publication access, leave that exact gate open, deliver
-the validated candidate/evidence, and continue independent work; never widen a
-read-only key or ask the owner to restore their laptop as a runner.
-
-October 15 source inspection confirmed `_write_player_names` derives
-`metadata/player_names.csv` solely from staged existing player-game rows, and
-`_read_published_player_names` consumes it with `first_seen` ordering or falls
-back to full scanning. Actual served-generation metadata/access and production
-performance remain unverified; no generation was staged/published in this session.
+**O1: compact identity metadata is published; performance acceptance is separate.**
+[PR482](https://github.com/Bet-Zero/nbatools/pull/482) qualified derived names from
+existing rows; the [October 18 publication][publication] includes them. Do not
+repeat the former missing-metadata investigation. Preserve source dates, unchanged
+statistics, lineage and last-good generation. Metadata is not new NBA coverage;
+representative cold/warm improvement remains unestablished. Follow the checkpoint's
+observed first-request defect before proposing another metadata publication or
+hosting/database migration. Publication still needs its existing separate authority.
 
 **O2: distinguish possible work from source blockers.** Maintain in this section a
 short list of stored, derivable, missing and unverified inputs with consumer and
@@ -448,14 +365,21 @@ work is retained; verify actual CLI help/runbook before executing consequential 
 
 These preserve the original program and the unfinished boundary; implementation
 status must be reconciled before work, not assumed from old examples. Specific
-unresolved examples/evidence remain in the immutable prior queue and current PRs.
+unresolved examples/evidence remain in the [pre-cleanup queue][prior-queue],
+bindings and current PRs. This section does not demote required defects or
+source-blocked positives: K08/PR462/PR533 remain open above. Additional combinations
+may wait; ordinary paraphrases and confirmed defects still follow AGENTS. Before
+choosing any follow-up, name the exact obligation/defect/dependency, or explain why
+an added capability precedes a named unfinished Core-1 obligation in the existing
+PR/checkpoint. Do not create a separate observation tracker.
 
 | Retained area | Next dependency-backed direction |
 | --- | --- |
-| Remaining A/B/C combinations | Transfer newly discovered requested combinations outside K01-K12 here with root cause; use shared request semantics, not another endless phrase stream |
+| Remaining A/B/C combinations | Retain broader grouped/cross-window OR, extra/unresolved owners and third-team calculations; bounded atomic OR (#521), self-opponent unions (#524), and original-stat pairs (#531) do not establish general grammar. Record new discretionary combinations here with root cause; selection needs a specific reason |
 | Identity/availability edge cases | Shared-name cross-filters, on/off name paths, membership timing and qualified absence; distinguish whole-game from on-court presence |
 | Dates/samples and opposing metrics | Remaining selector/window, repeated-month/season, opponent-metric summary and multi-subject cases: reproduce current code first; do not preserve an old wrong-answer workaround |
-| Counts, rankings and sequences | Additional compound/grouped/population/eligibility/series conditions and meaningful combinations beyond the bound checkpoint |
+| Counts, rankings and sequences | [K03 binding](k03-binding.md) retains nonzero equality and distinct-player grouped OR beyond its frozen cases. [PR531](https://github.com/Bet-Zero/nbatools/pull/531) / [saved stop][saved-stop] retain reversed bare-stat and singular-three wording gaps; do not relabel ordinary paraphrases optional. Additional compound/population/eligibility/series combinations remain broader scope |
+| Comparison extensions | PR532 delivered bounded shared-team filters; different per-player teams and shared-team opponent unions remain unfinished additions beyond the [original K06 binding](k06-binding.md). Do not reopen the already delivered bounded team-filter repair |
 | Historical reference | Remaining playoff/championship membership, awards, calendar/reference facts with qualified sources; participation-based title counts are not an invented official ring roster |
 | D1 roles/context | Needed pre-2024-25 starter/bench/period/context coverage, team bench outputs and reference joins; existing qualified slices may ship first |
 | D2 specialized inputs | Separate period, play-by-play/clutch, lineup and on/off subpackages with exact grain, denominators, sources and representative validation; no fabricated data |
@@ -478,12 +402,13 @@ implementation versus deployment, and safety versus feature-completion distincti
 Reuse focused commands while editing, `make test-preflight` / `make test` for high
 fan-in integration, and the existing targeted/full R2 workflow. CI's data-free or
 all-suite selection does not mean required remote data ran. Required assertions,
-missing data or all-skipped acceptance remain blockers even before P0b enforcement.
+missing data or all-skipped acceptance remain blockers under delivered P0b enforcement.
 A documentation-only plan change runs `make docs-governance` / `git diff --check`,
 not a new full remote NBA corpus. Do not fabricate independent or human review.
 
-Update the Resume checkpoint at work start, review-ready, merge, actual block and
-session limit. Add the active package's I/N/L/D evidence to the table or PR pointer;
+Update the Resume checkpoint when work start, review, merge, block or session stop
+changes the successor's next action or evidence. Keep unchanged detail in its PR.
+Add the active package's I/N/L/D evidence to the table or PR pointer;
 replace stale next actions and owner/file claims. Preserve unresolved findings.
 Minimum successor handoff:
 
@@ -496,7 +421,8 @@ Tests: exact command/run, selected/executed/skipped, result and scope
 Independent checker: actual session/review, findings fixed/open
 Deployment: URL/revision/generation, checked or still pending
 Blocker: exact dependency/access and what may proceed independently
-NEXT: one concrete action/command, expected outcome, then next package
+NEXT: one concrete action/command and outcome; brief obligation/defect/dependency
+      justification, or why an added capability precedes unfinished Core-1 work
 ```
 
 A PR comment may hold detail while the checkpoint points to it. Keep needed code,
@@ -506,23 +432,35 @@ credentials or synthetic facts as real data. No new handoff subsystem is needed.
 
 A successor verifies the checkpoint against live state, preserves newer commits,
 and performs NEXT. If that action already succeeded, record evidence and advance;
-if blocked, state the actual dependency and choose the named independent task.
+if blocked, state the actual dependency and choose the named independent task
+only within current owner authorization.
 Do not restart all audits, reconstruct old threads, or ask the owner to choose a
 technical task. Report: Now answers; Still unfinished; Verification; Next; Needed
 from you (normally nothing). Work continues only within an actual active session.
 
-Opponent-clause acceptance: reviewed664b7e49ec38900eed3560304a19440d7f370340,
-requeste9a59745f308effdec3bc48ff22ef343e6023742, run39012662199.
-Numericalartifact12093825320 ZIP SHA256fdf839875402aeec409104bc8ab746af9d10ec8ef9abc2a4159212a7d8f808f6;
-RawQAartifact12092644599 ZIP SHA256fe8d41d6b5760bfee5e8a2b0f6187a59f44835e9a8f314d2437fd34830e08030.
-DEN awayUTA two games eachseason:222/258PTS; MIN homeDEN twoeach:222/226PTS.
-ExactIDs/WL/REB/AST independently checked. RawQA firstquery10.826seconds includes
-remote cold data access; second0.0463seconds. This is not deployed latency acceptance.
-
-K03 final actual receipt: reviewed350d05e011ef884cba73c3690cc093b4753448db,
-request9525de66a4efd45b8c87ced739000e47f2e6f9ce, run39090625877.
-12selected/executed/passed0skipped/errors;12RawQA61checks passed.
-Numericalartifact12122497556 ZIP7d5f3d15e615fb9bab897d059fe0b9644268b8d8b5419ed3c832bb876ca70bc7;
-QA12122472545 ZIPbaea83daa123cebea8157beb81d388979be74ec6a98701bf2685e7dd2d9defd4.
-League count now says20player-games;11distinctplayers remains separate. Historical
-human-review fields stay unreviewed; no browser acceptance or production write.
+[saved-stop]: https://github.com/Bet-Zero/nbatools/blob/39aa65afdf74fc2aba70a54f9eddc1ef22c3779d/working/nba-tools-completion-program/README.md#resume-checkpoint
+[prior-queue]: https://github.com/Bet-Zero/nbatools/blob/4aad08d69876601ff279d8d110a948769d4a36fc/working/nba-tools-completion-program/README.md
+[public-531-532]: https://github.com/Bet-Zero/nbatools/actions/runs/39389938663
+[failed-first-request]: https://github.com/Bet-Zero/nbatools/actions/runs/39392363519
+[restore]: https://github.com/Bet-Zero/nbatools/pull/534#issuecomment-6286711278
+[restore-final]: https://github.com/Bet-Zero/nbatools/pull/534#issuecomment-6286780001
+[medical-check]: https://github.com/Bet-Zero/nbatools/pull/533#issuecomment-6262298467
+[publication]: https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-39102232398
+[d-k01-k03]: https://github.com/Bet-Zero/nbatools/actions/runs/39097220860
+[d-k02-k04]: https://github.com/Bet-Zero/nbatools/actions/runs/39167992465
+[d-k05-k06]: https://github.com/Bet-Zero/nbatools/actions/runs/39163942659
+[d-k07]: https://github.com/Bet-Zero/nbatools/pull/493#issuecomment-6256586688
+[d-k08]: https://github.com/Bet-Zero/nbatools/pull/516#issuecomment-6257073563
+[pr455]: https://github.com/Bet-Zero/nbatools/pull/455
+[pr462]: https://github.com/Bet-Zero/nbatools/pull/462
+[pr481]: https://github.com/Bet-Zero/nbatools/pull/481
+[pr483]: https://github.com/Bet-Zero/nbatools/pull/483
+[pr485]: https://github.com/Bet-Zero/nbatools/pull/485
+[pr486]: https://github.com/Bet-Zero/nbatools/pull/486
+[pr488]: https://github.com/Bet-Zero/nbatools/pull/488
+[pr491]: https://github.com/Bet-Zero/nbatools/pull/491
+[pr493]: https://github.com/Bet-Zero/nbatools/pull/493
+[pr513]: https://github.com/Bet-Zero/nbatools/pull/513
+[pr532]: https://github.com/Bet-Zero/nbatools/pull/532
+[pr533]: https://github.com/Bet-Zero/nbatools/pull/533
+[pr534]: https://github.com/Bet-Zero/nbatools/pull/534

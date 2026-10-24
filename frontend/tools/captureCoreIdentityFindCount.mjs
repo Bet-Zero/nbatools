@@ -72,7 +72,22 @@ try {
       lastQueryAt = start;
       await page.getByRole("button", { name: "Query", exact: true }).click();
       const response = await responsePromise;
-      const payload = await response.json();
+      let payload;
+      try {
+        payload = await response.json();
+      } catch (error) {
+        const elapsedMs = Date.now() - start;
+        const responseHeaders = response.headers();
+        const body = await response.text().catch(() => "<response body unavailable>");
+        await writeFile(`${output}/public-response-error.json`, JSON.stringify({
+          viewport, case: item.id, query: item.query, http: response.status(), elapsedMs,
+          "content-type": (responseHeaders["content-type"] ?? "").slice(0, 200),
+          "x-vercel-id": (responseHeaders["x-vercel-id"] ?? "").slice(0, 200),
+          "retry-after": (responseHeaders["retry-after"] ?? "").slice(0, 200),
+          body: body.slice(0, 1500),
+        }, null, 2));
+        throw error;
+      }
       await page.locator('[data-app-state="loading"]').waitFor({ state: "detached", timeout: 60000 });
       const text = await page.locator('[data-state-surface="result"]').innerText();
       const after = await context.request.get(base + "/readiness");

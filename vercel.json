@@ -6,6 +6,7 @@
       "codex/*-production-gate": false
     }
   },
+  "ignoreCommand": "node tools/delivery_scope.mjs vercel",
   "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
   "outputDirectory": "src/nbatools/ui/dist",
   "env": {
