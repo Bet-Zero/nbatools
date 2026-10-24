@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "39cdf8c7cc758382f29c25f344a662091f7c898b",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_medical_subject_browser.py::test_deployed_medical_subject_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
