@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import warnings
 from pathlib import Path
 
 import pandas as pd
@@ -159,6 +160,27 @@ def _capture_browser(cases, tmp_path, folder):
         for ready in [item["readinessBefore"], item["readinessAfter"]]:
             assert ready["ready"] is True and ready["immutable_generation"] is True
             assert ready["active_generation"] == generation
+    # Compact public measurements remain readable when artifact transport is
+    # unavailable. Keep the full source/DOM evidence in the existing artifact.
+    warnings.warn(
+        json.dumps(
+            {
+                "browser_measurements": folder,
+                "base": receipt["base"],
+                "latency_scope": "query-button click through JSON response; cold start is not guaranteed",
+                "responses": [
+                    {
+                        "id": item["id"],
+                        "viewport": item["viewport"],
+                        "http": item["http"],
+                        "response_ms": item["responseElapsedMs"],
+                    }
+                    for item in receipt["receipts"]
+                ],
+            }
+        ),
+        stacklevel=1,
+    )
     return receipt
 
 

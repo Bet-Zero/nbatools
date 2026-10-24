@@ -1,0 +1,49 @@
+{
+  "checked_at": "2026-10-19T07:16:56Z",
+  "accepted_main": "835ad17f9e67d8efdd124c189992de56778e319e",
+  "post_main_ci": {
+    "run_id": 39214125850,
+    "executed_jobs": 11,
+    "all_passed": true,
+    "full_python": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ]
+  },
+  "automatic_main_status": "Vercel failure build-rate-limit",
+  "active_equivalent_validation_runs": [],
+  "existing_accepted_sha_production_deployments": [],
+  "ordinary_attempts_this_wake": 1,
+  "request": {
+    "project": "prj_luTVKSLCFRQP3BYwk93XETz9WwCy",
+    "target": "production",
+    "git_source": {
+      "type": "github",
+      "repo_id": 1206758648,
+      "ref": "835ad17f9e67d8efdd124c189992de56778e319e"
+    }
+  },
+  "response": {
+    "status": 402,
+    "code": "payment_required",
+    "resource": "api-deployments-free-per-day",
+    "message": "Vercel API request failed (402: payment_required). Resource is limited - try again in 24 hours (more than 100, code: \"api-deployments-free-per-day\").",
+    "retry_after_seconds": 86400,
+    "request_id": "cle1:sfo1::s2xbx-1792394215501-33a2abaf3aee"
+  },
+  "next_attempt_not_before": "2026-10-20T07:17:00Z",
+  "last_good": {
+    "sha": "4f7d6f050a5435768475d592c32ace1d83f06338",
+    "deployment": "dpl_S47a87AZ9qGAeCq2J1pzy4Mgp6QU",
+    "asset": "index-ClijrUhz.js",
+    "state": "READY"
+  },
+  "public_acceptance": "531/532 pending; no new public capture attempted against old software",
+  "watch": {
+    "id": "6ad58b9b748881919020300facc32fa9",
+    "enabled": true,
+    "mode": "hourly read-only reconciliation; no further create before retry_after"
+  },
+  "owner_attention": "none; no upgrade/credential/data publication authorized or requested"
+}

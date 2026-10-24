@@ -16024,3 +16024,116 @@ cases:
       equals: null
     - path: result.metadata.with_player
       equals: null
+
+  - id: medical_subject_team_unavailable
+    query: Boston record against the Lakers in 2025-26 when Derrick White is medically cleared.
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: Source a96da864/contract d1f6aa6 were independently approved before runtime. This is subject-preservation
+      and honest missing-status-data containment, not medical filtering. Played/PDF observations do not prove clearance,
+      injury, health or absence reasons. Public combined comparison display stays unchanged. All46 absence positives
+      and literal historical human-review fields remain untouched.
+    hard_assertions:
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.metadata.season
+      equals: 2025-26
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.without_player
+      equals: null
+    - path: result.metadata.unsupported_availability.condition
+      equals: medical clearance
+    expected_reason: filter_not_supported
+
+  - id: medical_subject_comparison_unavailable
+    query: Show Embiid and Jokic side by side against Knicks in 2023-24 when Embiid is medically cleared.
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: Source a96da864/contract d1f6aa6 were independently approved before runtime. This is subject-preservation
+      and honest missing-status-data containment, not medical filtering. Played/PDF observations do not prove clearance,
+      injury, health or absence reasons. Public combined comparison display stays unchanged. All46 absence positives
+      and literal historical human-review fields remain untouched.
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Joel Embiid, Nikola Jokić
+    - path: result.metadata.players_context
+      equals:
+      - player_id: 203954
+        player_name: Joel Embiid
+      - player_id: 203999
+        player_name: Nikola Jokić
+    - path: result.metadata.opponent
+      equals: NYK
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.with_player
+      equals: null
+    - path: result.metadata.unsupported_availability.condition
+      equals: medical clearance
+    expected_reason: filter_not_supported
+
+  - id: medical_subject_team_played_control
+    query: Boston record against Lakers in 2025-26 when Derrick White plays.
+    category: context_filter
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+    - summary
+    - by_season
+    - game_log
+    review_notes: Source a96da864/contract d1f6aa6 were independently approved before runtime. This is subject-preservation
+      and honest missing-status-data containment, not medical filtering. Played/PDF observations do not prove clearance,
+      injury, health or absence reasons. Public combined comparison display stays unchanged. All46 absence positives
+      and literal historical human-review fields remain untouched.
+    hard_assertions:
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.metadata.opponent
+      equals: LAL
+    - path: result.metadata.with_player
+      equals: Derrick White
+    - path: result.sections.summary.0.games
+      equals: 2
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 118.5
+    - path: result.sections.summary.0.reb_avg
+      equals: 44.0
+    - path: result.sections.summary.0.ast_avg
+      equals: 30.0

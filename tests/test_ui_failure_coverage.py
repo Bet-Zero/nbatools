@@ -782,9 +782,13 @@ class TestWithoutPlayer:
         assert parsed["team"] == "LAL"
         assert parsed["player"] is None
         assert parsed["wins_only"] is True
-        assert parsed.get("with_player") == "Austin Reaves"
-        assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
+        # AVAILABLE is status, not evidence of a played cohort. The accepted
+        # baseline already refused this data requirement; preserve its team
+        # win-count operation without advertising an applied presence filter.
+        assert parsed.get("with_player") is None
+        assert parsed["route_kwargs"].get("with_player") is None
         assert parsed["route_kwargs"]["wins_only"] is True
+        assert "availability_status" in parsed["route_kwargs"]["unsupported_filters"]
 
     @pytest.mark.needs_data
     def test_public_query_wave_2c_count_short_lebron_triple_doubles(self):

@@ -294,6 +294,26 @@ Contract rules:
 
 ## 1A-availability. Official player-game participation and DNP observations
 
+Conditional medical/health/status owners are separate from the primary query
+subject. Complete subordinate owner/status spans are excluded only from primary
+entity and operation selection; the full original question and requested status
+reach the existing availability-status authorization guard. A Boston record stays
+a Boston team record; a player comparison retains both primary players and its
+existing combined display. Unsupported status conditions return qualified-data
+unavailability before statistics execute, with no applied filters or answer.
+Medical clearance, health, inactive/active status and absence reasons are not
+inferred from played, DNP, box-score omission or current membership. This is
+correctness containment; medical-state filtering remains unfinished and no new
+status feed or public result schema is introduced. Ordinary played and unfiltered
+consumers retain their existing source qualification and numerical semantics.
+The same internal role proof covers adjective-before-owner status, coordinated
+owners, and subordinate status/played predicate chains in either order. All
+actors in a status-containing chain stay conditional; no partial played filter
+is advertised as applied. Sports clearance for contact or practice remains an
+unavailable medical condition. A requested team win count keeps its team-record
+operation without treating AVAILABLE as evidence that the actor played. Broader
+OR consumers remain unfinished and may retain their existing unsupported reason.
+
 **Optional new additive dataset**:
 `data/raw/player_game_availability/{season}_{season_type_safe}.csv`
 

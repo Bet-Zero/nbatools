@@ -324,7 +324,12 @@ def named_metrics(parsed: dict) -> tuple[str, ...]:
 #: condition the product cannot apply. Recognizing the words is not interpreting
 #: them: nothing here decides what counts as injured, and nothing infers it from
 #: missed games. It exists so the clause is refused instead of dropped.
+_MEDICAL_CLEARANCE_STATUS = (
+    r"\b(?:medically\s+cleared(?:\s+to\s+(?:play|return))?|cleared\s+medically|medical\s+clearance"
+    r"|cleared\s+(?:to\s+(?:play|return|practice)|for\s+(?:play|contact|practice|basketball(?:\s+activities)?)))\b"
+)
 _UNSUPPORTED_AVAILABILITY_STATUS = (
+    (_MEDICAL_CLEARANCE_STATUS, "medical clearance"),
     (r"\b(?:injured|injury|injuries|hurt)\b", "injury status"),
     (r"\b(?:load\s+management|rest(?:ing|ed)?\s+(?:game|games|night))\b", "rest status"),
     (r"\b(?:healthy|fully\s+fit)\b", "health status"),
@@ -355,6 +360,198 @@ def unsupported_availability_status(parsed: dict) -> str | None:
         if re.search(pattern, text):
             return label
     return None
+
+
+_STATUS_ANCHOR = r"when|whenever|while|if|where|during|with|without"
+_STATUS_CONNECTOR = re.compile(rf"(?:\b(?:{_STATUS_ANCHOR}|and|or|but)\b|[,;])\s+")
+_STATUS_AUXILIARY = re.compile(
+    r"\s+(?:(?:is|was|were|are|has|have|had|been|being|not|never|still|yet)\s*)+$"
+)
+_STATUS_OWNER_WORD = re.compile(r"[a-z][a-z'.-]*(?:\s+[a-z][a-z'.-]*){0,5}")
+_STATUS_OWNER_BOUNDARIES = {
+    "and",
+    "or",
+    "but",
+    "when",
+    "while",
+    "if",
+    "where",
+    "during",
+    "with",
+    "without",
+    "against",
+    "vs",
+    "versus",
+    "record",
+    "summary",
+    "compare",
+    "show",
+    "what",
+    "how",
+    "in",
+    "at",
+    "on",
+    "for",
+    "since",
+    "through",
+    "season",
+    "is",
+    "was",
+    "were",
+    "are",
+    "has",
+    "have",
+    "had",
+    "been",
+    "being",
+    "plays",
+    "play",
+    "played",
+    "playing",
+    "sits",
+    "sat",
+    "rests",
+    "rested",
+}
+
+
+def _complete_status_owners(text: str) -> bool:
+    """A whole name phrase or coordinated names, without interpreting status."""
+    owners = re.split(r"\s*(?:[,;&]|\b(?:and|or|nor|plus)\b)\s*", text)
+    for owner in owners:
+        owner = re.sub(r"^(?:the|a|an|both|either|neither)\s+", "", owner)
+        if not _STATUS_OWNER_WORD.fullmatch(owner) or owner in {"a", "an", "the"}:
+            return False
+        if set(owner.split()) & _STATUS_OWNER_BOUNDARIES:
+            return False
+        if unsupported_availability_status({"normalized_query": owner}):
+            return False
+    return bool(owners)
+
+
+def availability_status_subject_view(text: str) -> tuple[str, list[dict]]:
+    """Keep conditional status owners out of the primary subject scan.
+
+    Only whole subordinate owner/predicate spans are masked. The caller keeps
+    full text and these spans for final status authorization; masking is never
+    permission to execute the reduced question. Unknown owner names stay raw.
+    """
+    members = []
+    connectors = list(_STATUS_CONNECTOR.finditer(text))
+    for pattern, category in _UNSUPPORTED_AVAILABILITY_STATUS:
+        for status in re.finditer(pattern, text):
+            start, status_end = status.span()
+            # The contextual active/available matcher includes its governing
+            # text; ownership attaches to the terminal predicate itself.
+            if category == "roster status":
+                terminal = list(re.finditer(r"\b(?:active|available)\b", status[0]))
+                if terminal:
+                    start = status.start() + terminal[-1].start()
+            for connector in (c for c in connectors if c.end() <= start):
+                end = status_end
+                prefix = text[connector.end() : start].strip()
+                owner = _STATUS_AUXILIARY.sub("", prefix).strip()
+                if not owner or owner in {"a", "an", "the"}:
+                    # The same status may precede an owner (a healthy White)
+                    # or name a property (medical clearance for White).
+                    suffix = re.match(
+                        r"\s+(?:(?:for|of)\s+)?([a-z][a-z'.& -]*?)"
+                        r"(?=\s+(?:in|at|on|during|against|vs|versus|when|while|is|was|has|have|record|show|compare|what|how)\b|[,;.!?]|$)",
+                        text[end:],
+                    )
+                    if suffix:
+                        # A following coordinated predicate belongs to another
+                        # member, not to this owner's name. Prefer the whole
+                        # name list; if it includes a predicate, stop at the
+                        # latest connector leaving a complete owner phrase.
+                        # The normal member grouping below retains both clauses.
+                        owner_ends = [len(suffix[1])] + [
+                            c.start() for c in reversed(list(_STATUS_CONNECTOR.finditer(suffix[1])))
+                        ]
+                        for owner_end in owner_ends:
+                            candidate = suffix[1][:owner_end].rstrip()
+                            if _complete_status_owners(candidate):
+                                owner = candidate
+                                end += suffix.start(1) + len(candidate)
+                                break
+                owner = re.sub(r"^(?:the|a|an)\s+", "", owner)
+                if not _complete_status_owners(owner):
+                    continue
+                if connector[0].strip() == "with" and re.search(
+                    r"\bcompar(?:e|ing|ison)\b", text[: connector.start()]
+                ):
+                    # WITH may join primary operands instead of conditions.
+                    from nbatools.commands._matchup_utils import extract_player_comparison
+                    from nbatools.commands._player_comparison_scope import read_shared_comparison
+
+                    preceding = text[: connector.start()]
+                    a, b = extract_player_comparison(preceding)
+                    shared = read_shared_comparison(preceding)
+                    if not (a and b) and not (shared and len(shared["players"]) == 2):
+                        continue
+                members.append(
+                    {
+                        "start": connector.start(),
+                        "end": end,
+                        "owner_text": owner,
+                        "condition": category,
+                        "anchor": bool(re.fullmatch(_STATUS_ANCHOR, connector[0].strip())),
+                    }
+                )
+                # Prefer a complete coordinated owner phrase over its final
+                # name following AND. A previous predicate cannot be an owner.
+                break
+
+    if not members:
+        return text, []
+
+    from nbatools.commands._matchup_utils import _PARTICIPATION_PREDICATE
+
+    # Reuse native participation syntax for *roles*, never for status truth.
+    # A played-only chain remains on its existing path; a chain containing an
+    # unavailable status must not leak any of its actors into the primary scan
+    # or advertise a partially applied played cohort.
+    participation = re.compile(r"([a-z][a-z'.& ,;-]*?)\s+" + _PARTICIPATION_PREDICATE + r"\b")
+    for connector in connectors:
+        match = participation.match(text, connector.end())
+        if match and _complete_status_owners(match[1].strip()):
+            members.append(
+                {
+                    "start": connector.start(),
+                    "end": match.end(),
+                    "owner_text": match[1].strip(),
+                    "condition": None,
+                    "anchor": bool(re.fullmatch(_STATUS_ANCHOR, connector[0].strip())),
+                }
+            )
+    groups = []
+    for member in sorted(members, key=lambda c: (c["start"], -c["end"])):
+        if groups and not re.sub(
+            r"[\s,;]+|\b(?:and|or|but)\b", "", text[groups[-1][-1]["end"] : member["start"]]
+        ):
+            groups[-1].append(member)
+        else:
+            groups.append([member])
+    found = []
+    for group in groups:
+        status_members = [m for m in group if m["condition"]]
+        if not status_members or not any(m["anchor"] for m in group):
+            continue
+        start, end = min(m["start"] for m in group), max(m["end"] for m in group)
+        found.append(
+            {
+                "start": start,
+                "end": end,
+                "owner_text": "; ".join(dict.fromkeys(m["owner_text"] for m in group)),
+                "condition": status_members[0]["condition"],
+                "text": text[start:end],
+            }
+        )
+    masked = text
+    for clause in reversed(found):
+        start, end = clause["start"], clause["end"]
+        masked = masked[:start] + " " * (end - start) + masked[end:]
+    return masked, found
 
 
 # ---------------------------------------------------------------------------

@@ -37,7 +37,9 @@ const originalStatPairIds = ["stat-pair-exact-yes", "stat-pair-count-no-reversed
 const originalStatPair = cases.length === originalStatPairIds.length && originalStatPairIds.every(id => cases.some(item => item.id === id));
 const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canonical-alias", "comparison-omitted-suffix", "comparison-exact-partial-empty", "comparison-count-empty", "comparison-unread-split", "comparison-suffix-exact-count", "comparison-hauser-precision"];
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison) throw new Error("Expected a complete reviewed browser bundle");
+const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
+const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -88,6 +90,7 @@ try {
         }, null, 2));
         throw error;
       }
+      const responseElapsedMs = Date.now() - start;
       await page.locator('[data-app-state="loading"]').waitFor({ state: "detached", timeout: 60000 });
       const text = await page.locator('[data-state-surface="result"]').innerText();
       const after = await context.request.get(base + "/readiness");
@@ -110,7 +113,7 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start,
+      const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
         payload, text, readinessBefore, readinessAfter, overflow, errors: [...errors], missing,
         headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);

@@ -157,3 +157,6 @@ case_ids:
   - player_comparison_team_scope_source_count_partial_empty
   - player_comparison_team_scope_source_count_empty
   - player_comparison_team_scope_unresolved_operand
+  - medical_subject_team_unavailable
+  - medical_subject_comparison_unavailable
+  - medical_subject_team_played_control

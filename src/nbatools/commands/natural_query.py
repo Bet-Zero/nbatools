@@ -2954,6 +2954,9 @@ def _build_parse_state(query: str) -> dict:
         # "who won the title last year": a title belongs to one season, so the
         # year reads as that season instead of falling back to every season.
         q = _TITLE_RELATIVE_YEAR.sub(r"\1 season", q)
+    from nbatools.commands._compound_event_authorization import availability_status_subject_view
+
+    subject_q, status_condition_spans = availability_status_subject_view(q)
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
@@ -3257,8 +3260,8 @@ def _build_parse_state(query: str) -> dict:
 
     from nbatools.commands._player_comparison_scope import read_shared_comparison
 
-    comparison_scope = read_shared_comparison(q)
-    player_a, player_b = extract_player_comparison(q)
+    comparison_scope = read_shared_comparison(subject_q)
+    player_a, player_b = extract_player_comparison(subject_q)
     if comparison_scope:
         player_a, player_b = comparison_scope["players"] or [None, None]
         if not comparison_scope["unsupported"] and comparison_scope["conditions"]:
@@ -3277,15 +3280,15 @@ def _build_parse_state(query: str) -> dict:
     team_a, team_b = (None, None)
 
     if not (player_a and player_b):
-        team_a, team_b = extract_team_comparison(q)
+        team_a, team_b = extract_team_comparison(subject_q)
         if not (team_a and team_b):
-            team_a, team_b = extract_adjacent_playoff_team_comparison(q)
+            team_a, team_b = extract_adjacent_playoff_team_comparison(subject_q)
 
     player = None
     entity_ambiguity: dict | None = None
     if not (player_a and player_b) and comparison_scope is None:
         player_result = detect_player_resolved(
-            _mask_opponent_group_phrase(q, opponent_conference, opponent_division)
+            _mask_opponent_group_phrase(subject_q, opponent_conference, opponent_division)
         )
         if player_result.is_confident:
             player = player_result.resolved
@@ -3300,7 +3303,7 @@ def _build_parse_state(query: str) -> dict:
     opponent = None
     opponent_quality = None
     opponent_player = None
-    q_without_opponent = q
+    q_without_opponent = subject_q
     team = None
     on_off_request = detect_on_off(q)
     lineup_request = detect_lineup_query(q)
@@ -3324,11 +3327,11 @@ def _build_parse_state(query: str) -> dict:
         opponent_quality = detect_opponent_quality(q)
         opponent = _third_team_opponent(q, team_a, team_b)
     if not (team_a and team_b):
-        opponent, q_without_opponent = detect_opponent(q)
+        opponent, q_without_opponent = detect_opponent(subject_q)
 
         # If no team opponent found via "vs", check if "vs" targets a player
         if opponent is None and not (player_a and player_b):
-            opp_player, q_cleaned = detect_opponent_player(q)
+            opp_player, q_cleaned = detect_opponent_player(subject_q)
             if opp_player:
                 opponent_player = opp_player
                 q_without_opponent = q_cleaned
@@ -3350,12 +3353,12 @@ def _build_parse_state(query: str) -> dict:
 
     # Detect game-absence only when the query is not an on/off-court request.
     if on_off_request is None:
-        presence_q = q
+        presence_q = subject_q
         if comparison_scope and not comparison_scope["unsupported"]:
             start, end = comparison_scope["subject_span"]
             # The WITH joining two comparison operands is not an availability
             # predicate. Only this fully consumed subject span is masked.
-            presence_q = q[:start] + " " * (end - start) + q[end:]
+            presence_q = subject_q[:start] + " " * (end - start) + subject_q[end:]
         with_player, q_without_presence = detect_with_player(presence_q)
         without_player, q_without_absence = detect_without_player(presence_q)
         unresolved_with_player = (
@@ -3628,6 +3631,7 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        "status_condition_spans": status_condition_spans,
         "requested_availability_status": unsupported_availability_status(
             {"normalized_query": normalize_text(query)}
         ),
@@ -6301,7 +6305,14 @@ def _route_parsed_query(parsed: dict) -> dict:
             "end_date": end_date,
             "unsupported_filters": ["unresolved_player_availability"],
         }
-    elif team and team_record_availability_intent and with_player and not without_player:
+    elif (
+        team
+        and team_record_availability_intent
+        and not without_player
+        and (with_player or (parsed.get("status_condition_spans") and count_intent and not player))
+    ):
+        # A requested team win count keeps its operation even when an
+        # unavailable status actor is correctly excluded from played cohorts.
         route = "team_record"
         route_kwargs = {
             "team": team,
@@ -11110,8 +11121,12 @@ def _finalize_route(parsed: dict) -> dict:
         )
         out["route_kwargs"] = kwargs
         out["notes"] = list(out.get("notes") or []) + [
+            *(
+                "requested_availability_condition: " + c["text"]
+                for c in parsed.get("status_condition_spans") or []
+            ),
             "unsupported_boundary: participation does not establish health/status "
-            "or on-court presence; the requested condition needs qualified data and a consumer"
+            "or on-court presence; the requested condition needs qualified data and a consumer",
         ]
         return out
     route = out.get("route")

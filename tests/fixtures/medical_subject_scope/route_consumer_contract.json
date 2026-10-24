@@ -1,0 +1,99 @@
+{
+  "status": "READ-ONLY proposed bounded correctness contract; no runtime/tests/PR implemented",
+  "problem": "A conditional medical/status owner is not the primary query subject. Unknown medical clearance is not participation or an absence fact. Preserve the requested operation/subjects and refuse the whole unsupported-data condition before execution.",
+  "baselines": {
+    "accepted_main": "05ba2451e943fe4e2db11a64b5ea7db62fd267c3",
+    "reviewed_comparison_runtime": "fa3552915a75bfd22c53c946ff8a30a4d92df57a",
+    "comparison_probe_documentation_head": "13306f9c078c04cecfd19e514b62fc0c4f6c951f",
+    "runtime_equivalence": "git diff fa35529..13306f9 -- src is empty",
+    "baseline_05ba_sha256": "8cac93a4561a7a9f4debc50f63ae5e3555d3d786888c869b35c127d5220c78a6",
+    "baseline_fa_sha256": "319e1d1a2f0482c647a371da307c18b00d4b4ccde55d4cf55af3abdfc667598a"
+  },
+  "source_facts_sha256": "a96da8646a6d5323f9d14b455c0ad89fdc1eb4285f0b9d47f41939c400e6e615",
+  "same_root_cause": [
+    "Medical clearance is absent from the central unsupported availability-status vocabulary, so the final status guard does not fire.",
+    "Primary entity selection scans the full conditional clause; White becomes primary player for a Boston record even when existing healthy/injured/questionable status guards correctly refuse arithmetic.",
+    "Comparison subjects may survive, yet an unrecognized status clause is dropped and ordinary unfiltered statistics execute. Unknown owner Blorg currently also permits a broad unfiltered Boston record."
+  ],
+  "desired_examples": [
+    {
+      "query": "Boston record against the Lakers in 2025-26 when Derrick White is medically cleared.",
+      "route": "team_record",
+      "primary_team": "BOS",
+      "opponent": "LAL",
+      "season": "2025-26",
+      "primary_player": null,
+      "primary_player_context": null,
+      "status_owner": "Derrick White",
+      "result_status": "no_result",
+      "result_reason": "filter_not_supported",
+      "sections": {},
+      "answer_phrase": null
+    },
+    {
+      "query": "When Derrick White is medically cleared, what is Boston record against the Lakers in 2025-26?",
+      "same_as": "suffix team-record example; ordinary prefix must preserve the same operation and subject"
+    },
+    {
+      "query": "Show Embiid and Jokic side by side against Knicks in 2023-24 when Embiid is medically cleared.",
+      "route": "player_compare",
+      "primary_players": [
+        {
+          "player_id": 203954,
+          "player_name": "Joel Embiid"
+        },
+        {
+          "player_id": 203999,
+          "player_name": "Nikola Jokić"
+        }
+      ],
+      "primary_player": null,
+      "opponent": "NYK",
+      "season": "2023-24",
+      "status_owner": "Joel Embiid",
+      "result_status": "no_result",
+      "result_reason": "filter_not_supported",
+      "sections": {},
+      "answer_phrase": null
+    },
+    {
+      "query": "Show Embiid and Jokic side by side against Knicks in 2023-24 when Tyrese Maxey is healthy.",
+      "same_as": "comparison subjects remain Embiid/Jokic; Maxey is only conditional owner, never primary/third comparison operand"
+    },
+    {
+      "query": "Boston record against Lakers in 2025-26 when Blorg is medically cleared.",
+      "meaning": "Unresolved conditional owner stays unresolved in the retained clause; never assume a known ID or execute a broad team record."
+    }
+  ],
+  "bounded_shared_repair": {
+    "vocabulary": "Extend existing _UNSUPPORTED_AVAILABILITY_STATUS / unsupported_availability_status with an explicit medical-clearance category. Reuse health/status lexical ownership and existing final availability_status guard; do not create a medical metric/filter consumer.",
+    "subject_selection": "Read complete subordinate condition spans before primary player/team/comparison entity selection. Keep the full normalized/original query for final guards, residual checks and user metadata. Use a position-preserving masked subject view only for primary subject/operation resolution, not a global query deletion.",
+    "span_proof": "A small internal clause record can retain original offsets, complete owner phrase, resolved identity only when exact/confident, status category, negation and governing conditional connector. Prefix and suffix when/while/if/whenever/where/during clauses preserve surrounding matchup/season/venue/date words. Mask only the complete proven status-owner clause. Unread/malformed residual text must not become an accepted partial answer.",
+    "with_without_caution": "Do not erase comparison operands joined by WITH or interpret health/status as played/not-played cohorts. Existing with/without participation remains distinct. Only proven subordinate status spans may be excluded from primary entity scans; bare/direct status questions keep their target identity and remain honestly unavailable.",
+    "route_boundary": "The primary base operation is team_record / player_compare / existing player consumer as requested. Existing _finalize_route adds availability_status and unsupported_availability.condition; existing _execute_build_result returns NoResult(filter_not_supported) before statistics execute. Preserve full subject/sample identity in metadata while applied_filters/body/answer remain empty.",
+    "metadata": "Reuse current fields/results only. metadata.player/player_context are primary-subject identity, never a substitute for conditional owner; comparisons keep players_context; team/opponent/season remain intact. Retain the owner/status clause through existing unsupported_availability condition and notes/original query. Any span/owner structure is internal, not a new public schema. Applied filters may be absent or empty on refusal; assert no falsely applied filters, not a new list/null schema requirement.",
+    "scope": "Correct conditional ownership and honest unavailability for declared medical/health/status wording. No injury, active/inactive, availability, healthy, tenure, on-court or absence equivalence; no medical data collection/publication or broader feature claim."
+  },
+  "anticipated_touchpoints": [
+    "commands/_compound_event_authorization.py: existing central status vocabulary, optional shared complete status-clause reader and existing requested_availability_status semantics.",
+    "commands/natural_query.py::_build_parse_state: primary subject/operation input, including read_shared_comparison/extract_player_comparison, primary detect_player_resolved and team/opponent detection; retain full text for requested status and residual checks.",
+    "commands/natural_query.py::_finalize_route: reuse existing availability_status / unsupported_availability.condition and whole-request no-result enforcement, with preserved primary route and identity.",
+    "commands/_matchup_utils.py existing availability readers: verify that status owner is not accepted with_player/without_player and comparison WITH is not erased; no redefinition of played semantics.",
+    "Existing query-service metadata/NoResult renderer: verify truthful subject, missing-qualified-status explanation, empty applied_filters/body and no fake zero. No frontend/new result class expected."
+  ],
+  "meaningful_validation": [
+    "Source-backed Boston record + suffix/prefix medically-cleared refusal retains team_record/BOS/LAL/2025-26 and no White primary identity; actual White played/unfiltered controls still2-0/237PTS88REB60AST with exact game IDs0022500338+0022500823.",
+    "Source-backed Embiid/Jokic comparison + status condition retains both canonical IDs/NYK/2023-24 and no arithmetic; unfiltered controls independently match Embiid1game30/10/3 and Jokic2games61/25/14.",
+    "Equivalent existing healthy/injured/questionable/active/available conditional words preserve primary subject, prefix/suffix/order/aliases and negation; recognized unavailable conditions do not become numeric zero, membership or played/absence.",
+    "Unknown or ambiguous owner, different owner from comparison subjects, condition-first wording and unread tails never execute a reduced scope or change grain. Direct status target is not erased; comparison WITH is not a medical cohort.",
+    "Positive ordinary unfiltered/played/scalar/BOTH/original-minutes/stat-pair/shared-team-comparison controls retain current facts and labels. Active-player population wording is not misclassified as a conditional game-day status.",
+    "No demotion of all46 absence positives or frozen P2 outputs; containment is a correctness repair, not delivery of medical-state filtering."
+  ],
+  "data_boundary": "Played/PDF-listed observations and source comments do not establish medical clearance, health, historical injury status, current membership or absence reasons. No qualified medical status consumer/data is available. This correctness guard requires no new collection or publication. Five production report games/170 rows; Boston17 staged only. All46 absence positives untouched.",
+  "next_authority": "Root reviews this source/consumer contract, finishes current comparison merge, then authorizes a fresh source-only branch and sole runtime writer. No current comparison branch edits.",
+  "literal_correction_provenance": {
+    "preserved_original_source_sha256": "b683a45764b7f674549d6f96921c6c1a591a250e8a283e49b221c6fdb752fd7f",
+    "preserved_original_contract_sha256": "a9ad14fbf828930722aee0bca206f44ab62df204bff1d30e1df2671762fbff13",
+    "meaning": "Only ordinary exact saved-baseline query literals and absent/empty filter expectation clarified; no source facts, runtime, declared capability or scope changed."
+  }
+}
