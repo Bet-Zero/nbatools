@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "467202d4a6d645ec3d1f86d134ab6737086874f8",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_player_comparison_team_browser.py::test_deployed_player_comparison_team_desktop_and_mobile",
+    "tests/test_deployed_medical_subject_browser.py::test_deployed_medical_subject_desktop_and_mobile",
+    "tests/test_deployed_original_stat_pair_browser.py::test_deployed_original_stat_pair_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
