@@ -92,7 +92,7 @@ try {
       }
       const responseElapsedMs = Date.now() - start;
       await page.locator('[data-app-state="loading"]').waitFor({ state: "detached", timeout: 60000 });
-      if (medicalSubjects && viewport === "mobile" && item.id === "medical-played-positive") {
+      if (medicalSubjects && item.id === "medical-played-positive") {
         for (const title of ["Record Detail", "Game Detail"]) {
           await page.getByRole("region", { name: title, exact: true }).getByRole("button").click();
         }

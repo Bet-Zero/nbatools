@@ -365,12 +365,9 @@ def _validate_answers(receipt, cases, output):
             assert len(rows) == 2
             truth = {int(r["game_id"]): r for r in expected["team_rows"]}
             assert {r["game_id"] for r in rows} == set(truth)
-            if item["viewport"] == "mobile":
-                matching = [t for t in item["tables"] if t.get("sectionLabel") == "Game Detail"]
-                assert len(matching) == 1
-                table = matching[0]
-            else:
-                table = _table(item, "Game log")
+            matching = [t for t in item["tables"] if t.get("sectionLabel") == "Game Detail"]
+            assert len(matching) == 1
+            table = matching[0]
             assert len(table["rows"]) == 2 and not table["footers"]
             for row in rows:
                 source = truth[row["game_id"]]
@@ -388,32 +385,31 @@ def _validate_answers(receipt, cases, output):
                     and row["wl"] == source["wl"]
                 )
             displayed = [dict(zip(table["headers"], row)) for row in table["rows"]]
-            if item["viewport"] == "mobile":
-                displayed_by_id = {int(r["Game Id"].replace(",", "")): r for r in displayed}
-                assert set(displayed_by_id) == set(truth)
-                for game_id, shown in displayed_by_id.items():
-                    source = truth[game_id]
-                    assert shown["Team Name"] == source["team_name"]
-                    assert shown["Opponent Team Name"] == source["opponent_team_name"]
-                    assert shown["Game Date"] == datetime.fromisoformat(
-                        source["game_date"]
-                    ).strftime("%b %-d")
-                    assert shown["Wl"] == source["wl"]
-                    for stat in ("pts", "reb", "ast"):
-                        assert float(shown[stat.title()]) == int(source[stat])
-                    other = next(
-                        r for r in expected["reciprocal_rows"] if r["game_id"] == source["game_id"]
-                    )
-                    assert float(shown["Opponent Pts"]) == int(other["pts"])
-                continue
-            assert all(
-                r["Team"] == "BOSBoston Celtics" and r["Opp"] == "LALLos Angeles Lakers"
-                for r in displayed
-            )
-            assert sorted(r["Score"] for r in displayed) == ["111-89", "126-105"]
-            assert all(r["W/L"] == "W" for r in displayed)
-            for stat in ("PTS", "REB", "AST"):
-                assert sum(float(r[stat]) for r in displayed) == expected["totals"][stat.lower()]
+            displayed_by_id = {int(r["Game Id"].replace(",", "")): r for r in displayed}
+            assert set(displayed_by_id) == set(truth)
+            for game_id, shown in displayed_by_id.items():
+                source = truth[game_id]
+                assert shown["Team Name"] == source["team_abbr"] + source["team_name"]
+                assert shown["Opponent Team Name"] == (
+                    source["opponent_team_abbr"] + source["opponent_team_name"]
+                )
+                assert shown["Game Date"] == datetime.fromisoformat(source["game_date"]).strftime(
+                    "%b %-d"
+                )
+                assert shown["Wl"] == source["wl"]
+                for stat in ("pts", "reb", "ast"):
+                    assert float(shown[stat.title()]) == int(source[stat])
+                other = [
+                    r
+                    for r in expected["reciprocal_rows"]
+                    if r["game_id"] == source["game_id"]
+                    and r["team_id"] == source["opponent_team_id"]
+                    and r["opponent_team_id"] == source["team_id"]
+                ]
+                assert len(other) == 1
+                assert float(shown["Opponent Pts"]) == int(other[0]["pts"])
+            for stat in ("pts", "reb", "ast"):
+                assert sum(float(r[stat.title()]) for r in displayed) == expected["totals"][stat]
         else:
             assert not meta.get("with_player") and not meta.get("head_to_head_used")
             expected = case["expected"]
