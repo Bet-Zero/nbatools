@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "1e0ef2e8c7467a39d38e7343161bce81f4a8da9a",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_runtime_profile_real_data.py::test_first_request_shared_team_comparison_profile",
+    "tests/test_player_comparison_team_scope_real_data.py",
+    "tests/test_k01_identity_real_data.py",
+    "tests/test_player_identity_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "player_comparison_team_scope_source_primary",
+    "player_comparison_team_scope_source_count_partial_empty",
+    "player_comparison_team_scope_source_count_empty"
+  ]
+}
