@@ -14,7 +14,7 @@ language approaches on verified capabilities; accept a finite deployed core.
 The October 2 hands-off delegation and 1996-97+ scope remain. The old four-stream
 execution model and indefinite phrase-patch continuation are superseded.
 
-Read in order:
+At session entry, read in order (do not reread unchanged material in the session):
 
 1. This file for authority and safeguards.
 2. `ROADMAP.md` for destination, sequence and milestone boundaries.
@@ -72,13 +72,20 @@ replaced with current state, not expanded into a diary. The roadmap keeps durabl
 direction when this temporary program eventually closes.
 
 - Verify remote, live main, open PRs, current branch/dirty work, and the checkpoint
-  before writing. Preserve newer work; never reset or force-push another session's
+  before writing; establish the authorized outcome, acceptance, working revision,
+  blockers and applicable prior evidence once. Read only history needed for that
+  outcome. Recheck live state at consequential boundaries, possible concurrent
+  writes or new uncertainty, not after every command. Preserve newer work; never
+  reset or force-push another session's
   branch to match an old snapshot. Resume an existing candidate when appropriate.
 - One lead owns integration. Use at most two non-overlapping implementation lanes
   plus independent checking. One active owner handles shared parser/request/service
   changes. Separate hunks in the same semantic path are not independent lanes.
   If capacity is one agent, interleave; do not invent a running team.
 - Reproduce the selected defect, define the intended meaning, then implement.
+  Inspect affected consumers and use focused tests while editing. Select checking
+  by affected behavior and risk, not diff size: a small parser, calculation,
+  security or verification-policy edit can require substantial checking.
   Do not restart a whole-project audit, create a new framework/queue, or request
   a fresh owner query battery. If already repaired, verify and advance.
 - Before selecting follow-up work, record one brief justification in the existing
@@ -93,14 +100,20 @@ direction when this temporary program eventually closes.
   evidence and deployed verification separately. Do not close a desired feature
   with a new refusal, parser registration, documentation or a green test total.
 - Before a material stage transition, merge, block or session stop, update the
-  checkpoint with package, actual owner/lane, branch and exact SHA, data generation,
+  checkpoint only when continuation changes, with package, actual owner/lane,
+  branch and exact SHA, applicable data generation,
   completed evidence, unresolved findings, and one precise next action. Commit/push
   safe WIP to its task branch where permitted; identify any unpushed work explicitly.
 - Keep PR-specific detail in the PR and one short pointer in the queue. Preserve
   reproducible tests and compact durable conclusions when generated artifacts can
   expire. Do not make a private chat, local laptop or ignored output the only handoff.
-- Continue authorized work after acceptance within the active session. An access
-  or checker blocker stops the dependent acceptance/merge, not independent tasks.
+- Use a PR comment for final execution/landing receipts when another checkpoint
+  commit adds no continuation value; link detailed evidence instead of duplicating
+  it across documents, PR text and owner updates. No update after every test.
+- Continue only within the current authorized outcome. When that outcome and its
+  applicable gates are satisfied, deliver and stop; useful discoveries do not
+  automatically authorize another task. An access or checker blocker stops the
+  dependent acceptance/merge, not already authorized independent tasks.
   No fresh owner prompt is needed at every routine package boundary. Do not claim
   background execution without an actual running service.
 
@@ -120,8 +133,8 @@ by absent qualified source data, record it once with its exact failing tests and
 source dependency. Do not rerun identical broad suites, spend the next turn
 re-explaining the block, or pile unrelated green features into its perpetually
 red branch. Preserve every unmet positive obligation and its failing evidence.
-Try a bounded source/qualification investigation; in parallel, branch from live
-main to extract a semantically independent, reviewable improvement whose normal
+Within existing authorization, try a bounded source/qualification investigation
+or branch from live main to extract a semantically independent improvement whose normal
 CI and required numerical gates actually pass. Check dependencies before
 porting any code; if inseparable, choose another independent P1/O task instead.
 Never change desired positives to refusal/xfail/skip, suppress a gate, or merge
@@ -195,14 +208,60 @@ IDs as well as values, counts, ordering, denominator, labels and actual output.
 Natural/structured agreement alone is not an independent oracle.
 
 A separate checker verifies material query, computation, data or validation-gate
-changes. It supplies unfamiliar wording/entities/thresholds and independently
+changes, including changes to how verification obligations are satisfied. For
+policy changes, check coverage equivalence, invalidation, safety and instruction
+conflicts; do not rerun the application without an executable reason. For query
+changes, it supplies unfamiliar wording/entities/thresholds and independently
 derives expectations from qualified rows or controlled fixtures. Self-review is
 not independent. Record reviewer identity/session, revision, data and unresolved
 findings in the PR; a bot comment or installed integration is not proof of review.
-No counterfeit agent/human approval. If a checker is unavailable, leave one exact
-handoff and continue independent work; do not route routine reviewer debates
-through the owner. Docs-only planning changes require accurate self-review and
-normal checks, not fabricated runtime/independent acceptance.
+No counterfeit agent/human approval. Ordinary prose/cosmetic changes need accurate
+self-review and normal checks, not separate semantic review unless they affect
+meaning, behavior, authority or another applicable review requirement. Unavailable
+review/access blocks dependent acceptance; leave one exact handoff, never
+self-approve. Avoid identical failed invocations; retry only with a reason to
+expect a different result. Do not route routine reviewer debates through the owner.
+
+The author owns focused reproduction, implementation checks and required coverage
+missing from automation. CI owns the standard checks it actually executes. The
+checker owns independent judgment of affected meaning, selected data, arithmetic
+and other material risks. The integration lead confirms evidence applicability
+and resolution of blocking findings; it does not automatically repeat checker
+arithmetic, artifact inspection or test execution. Green CI alone is not review.
+
+Before broad validation or final independent review, freeze the relevant candidate.
+Use an isolated checkout/worktree if another writer or task could move it. Do not
+edit, merge, rebase or switch that checkout while checks run. Independent work
+must use isolated state and already be authorized; do not invent work to fill waits.
+During finalization, fix actual blockers without adding optional instrumentation,
+stronger acceptance or adjacent features. Retain material follow-ons in the
+existing appropriate location.
+
+Reuse existing PR/commit/run evidence only when it covers the required behavior
+and assertions, relevant code/dependencies/configuration/data/execution conditions
+are unchanged or demonstrably unaffected, required checks actually ran and passed,
+no unresolved finding or contradiction invalidates it, and release/exact-candidate
+requirements remain satisfied. Check applicability once on selection and again
+when something relevant changes. Identify the original revision and why reuse
+applies; never claim an old execution happened on a new head or that matching
+workflow names make another PR's green result applicable.
+
+If a repair changes reviewed semantics or risk, repeat affected checks and review
+(a focused delta review where sufficient), plus required exact-head gates. No hard
+limit on justified review rounds; no repeat review of unchanged material solely
+for reassurance. Receipt/checkpoint-only changes do not automatically invalidate
+unchanged semantic evidence or waive required final-head CI. Final acceptance
+identifies the actual candidate and reused evidence.
+
+Consume existing structured summaries for candidate/generation, checks actually
+executed, selected/executed/skipped counts where needed, conclusion and unresolved
+findings. Once applicable success is established, record a compact link and move
+on. Open detailed logs, raw outputs or artifacts for failures, contradictions,
+incomplete/untrusted summaries, specific independent-review needs or concrete
+integration questions, not routinely for every passing case. Use completion
+signals or appropriately spaced status checks; do not repeatedly fetch unchanged
+full logs or narrate waiting. Advisory failures stay advisory unless new evidence
+establishes a relevant blocking problem; report them without unrelated repairs.
 
 Use existing commands and runners:
 
@@ -211,9 +270,13 @@ Use existing commands and runners:
 - `make test-impacted` is for small localized changes. Testmon is serial, misses
   data/environment/dynamic-import changes, and can overselect. After 60 seconds
   without useful progress, use focused tests or parallel domain/preflight tests.
-- High fan-in changes need `make test-preflight` or `make test` on a stable candidate.
-  Avoid repeated overlapping full runs per edit. While remote checks run, work on
-  independent tasks without moving the candidate being validated.
+- High fan-in changes need broad coverage equivalent to `make test-preflight` or
+  `make test` on a stable candidate. Valid hosted evidence can satisfy it; an extra
+  local run is not mandatory. Compare actual selected tests, configuration,
+  relevant code/dependencies, data generation and execution conditions. Fast or
+  data-free CI is not automatically equivalent to preflight or authenticated
+  numerical validation. Run missing required pre-merge coverage once through an
+  existing suitable route; future main/nightly results cannot bypass that gate.
 - `make test-unit` / `test-ci-fast` exclude `needs_data` and `slow`;
   `test-preflight` excludes `slow`; `make test` selects all. Disclose executed,
   skipped and unavailable tests. `fixture_data` and `needs_data` stay separate.
@@ -223,7 +286,8 @@ Use existing commands and runners:
 - Required feature-acceptance tests must execute and pass on the candidate/data.
   Empty selections, all-skipped runs, missing required datasets, informational
   failures or a green outer workflow are not acceptance. P0b enforcement landed
-  in PR464; continue inspecting underlying jobs/counts for dependent acceptance.
+  in PR464; confirm required jobs/counts through trustworthy summaries, opening
+  underlying details when needed under the result-consumption rule above.
   Never demote a failing required test to exploratory to obtain a green result.
 - Frontend changes need locked install/build/lint/tests and rebuilt served assets.
   Inspect actual changed rendering; unchanged renderers need targeted output checks,
@@ -279,8 +343,10 @@ product-review outputs and record agent checking in the PR; legacy
 `human_review_complete`, a named human reviewer or a schema state. Launch/branding
 remain separate owner decisions.
 
-Owner updates lead with **Now answers; Still unfinished; Verification; Next;
-Needed from you (normally nothing)**. Explain useful examples in basketball terms.
+For product delivery, owner updates lead with **Now answers; Still unfinished;
+Verification; Next; Needed from you (normally nothing)**. For bounded operational
+work, lead with its outcome, verification and remaining blocker, if any. Explain
+product examples in basketball terms; do not narrate each routine check or wait.
 Separate correctness containment, completed capability and operational work.
 Keep receipts and coordination in the repo instead of owner homework.
 
