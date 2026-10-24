@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "839605a313594f35e8773a818e47193d847e1ea1",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_medical_subject_scope_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "medical_subject_team_unavailable",
+    "medical_subject_comparison_unavailable",
+    "medical_subject_team_played_control"
+  ]
+}
