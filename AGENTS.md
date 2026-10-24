@@ -61,7 +61,9 @@ for the active generation, and distinguish production coverage from staging and
 unknown completeness. Produce a bounded collection requirement for missing raw
 data; do not invent values or investigate providers repeatedly. The laptop does
 not run application development. Existing protected publication remains required.
-The owner explicitly resumed normal development on 2026-10-18 after accepting minimum cloud/data setup. Continue the saved completion program under the existing gates.
+The October 18 setup acceptance removed that setup dependency. Follow current
+owner authorization and the Resume checkpoint's stop/resume state; historical
+resumption is not permission to restart paused product work.
 
 ## Execution and session continuity
 
@@ -79,6 +81,14 @@ direction when this temporary program eventually closes.
 - Reproduce the selected defect, define the intended meaning, then implement.
   Do not restart a whole-project audit, create a new framework/queue, or request
   a fresh owner query battery. If already repaired, verify and advance.
+- Before selecting follow-up work, record one brief justification in the existing
+  PR/checkpoint: the specific agreed obligation it closes, confirmed defect it
+  repairs, or necessary dependency it resolves. If it adds a capability, explain
+  why it should precede a named unfinished Core-1 obligation. A category label or
+  useful new combination alone is insufficient. Ordinary paraphrases and genuine
+  correctness repairs remain required; do not call them enhancements to defer
+  them. Keep discretionary discoveries in the queue's existing carry-forward
+  section, without a new ticket or owner approval for every observation.
 - Track implementation/merge, independent numerical evidence, unfamiliar-language
   evidence and deployed verification separately. Do not close a desired feature
   with a new refusal, parser registration, documentation or a green test total.
@@ -117,12 +127,16 @@ porting any code; if inseparable, choose another independent P1/O task instead.
 Never change desired positives to refusal/xfail/skip, suppress a gate, or merge
 a knowingly incorrect behavior just to make progress appear continuous.
 
-A successor reads the freshest pushed branch checkpoint and PR evidence if main's
-checkpoint has not caught up because the feature PR is unmergeable. At the next
-safe independent merge/operational checkpoint, synchronize a compact resume
-pointer back to the sole queue on main. No second tracker. Before any unavoidable
-turn end, record whether the stop was normal task completion, missing source,
-checker/access/approval, runtime error, usage limit, or actual scheduled wake-up;
+A successor checks the task PR linked from main's Resume checkpoint, then live
+open/recently updated PRs for a newer handoff. Read the existing README at that
+pushed branch revision and reconcile its PR evidence and current owner decisions.
+When stopping on an unmergeable branch, link that branch checkpoint and exact SHA
+from its PR so it is discoverable without a separate documentation merge. Never
+merge failing runtime to publish a handoff. At the next safe independent merge,
+synchronize a compact pointer back to the sole queue on main. No second tracker.
+Before any unavoidable turn end, record whether the stop was normal task
+completion, missing source, checker/access/approval, runtime error, usage limit,
+or actual scheduled wake-up;
 name exactly what can proceed without owner intervention. Turn completion is
 not project completion.
 
@@ -208,8 +222,8 @@ Use existing commands and runners:
   at meaningful integration checkpoints. No full remote corpus for a docs edit.
 - Required feature-acceptance tests must execute and pass on the candidate/data.
   Empty selections, all-skipped runs, missing required datasets, informational
-  failures or a green outer workflow are not acceptance. P0 repairs enforcement;
-  until landed, inspect underlying jobs/counts manually and block dependent merges.
+  failures or a green outer workflow are not acceptance. P0b enforcement landed
+  in PR464; continue inspecting underlying jobs/counts for dependent acceptance.
   Never demote a failing required test to exploratory to obtain a green result.
 - Frontend changes need locked install/build/lint/tests and rebuilt served assets.
   Inspect actual changed rendering; unchanged renderers need targeted output checks,
