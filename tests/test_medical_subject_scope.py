@@ -135,6 +135,10 @@ def test_active_population_is_not_a_conditional_game_day_status():
     [
         "with a healthy Derrick White",
         "with a medically cleared Derrick White",
+        "with a medically cleared Derrick White and a healthy Jaylen Brown",
+        "with a healthy Derrick White and a medically cleared Jaylen Brown",
+        "with a healthy Derrick White and Jaylen Brown played",
+        "with a healthy Derrick White and Jaylen Brown",
         "when Derrick White and Jaylen Brown are healthy",
         "when neither Derrick White nor Jaylen Brown is injured",
         "when Derrick White is cleared for contact",
@@ -169,6 +173,7 @@ def test_conditional_chain_roles_never_become_primary_or_applied_cohorts(
         "when Embiid is cleared for contact and Tyrese Maxey played",
         "when Tyrese Maxey played and Embiid is healthy",
         "with a healthy Embiid",
+        "with a medically cleared Embiid and a healthy Tyrese Maxey",
         "when Embiid and Tyrese Maxey are healthy",
     ],
 )
@@ -230,3 +235,16 @@ def test_unimplemented_status_or_chain_preserves_subject_and_all_conditions(no_a
     assert result.metadata["team"] == "BOS" and result.metadata["opponent"] == "LAL"
     assert result.metadata["unsupported_availability"]["condition"] == "health status"
     assert condition.lower() in " ".join(result.metadata["notes"])
+
+
+def test_coordinated_adjective_members_keep_complete_status_span():
+    condition = "with a medically cleared derrick white and a healthy jaylen brown"
+    text = "boston record against lakers in 2025-26 " + condition + ", show the source"
+    masked, clauses = availability_status_subject_view(text)
+    assert len(masked) == len(text)
+    assert len(clauses) == 1
+    assert clauses[0]["text"] == condition
+    assert clauses[0]["owner_text"] == "derrick white; jaylen brown"
+    assert "boston record against lakers in 2025-26" in masked
+    assert masked.endswith(", show the source")
+    assert "derrick white" not in masked and "jaylen brown" not in masked

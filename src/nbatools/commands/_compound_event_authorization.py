@@ -459,9 +459,21 @@ def availability_status_subject_view(text: str) -> tuple[str, list[dict]]:
                         r"(?=\s+(?:in|at|on|during|against|vs|versus|when|while|is|was|has|have|record|show|compare|what|how)\b|[,;.!?]|$)",
                         text[end:],
                     )
-                    if suffix and _complete_status_owners(suffix[1]):
-                        owner = suffix[1]
-                        end += suffix.end()
+                    if suffix:
+                        # A following coordinated predicate belongs to another
+                        # member, not to this owner's name. Prefer the whole
+                        # name list; if it includes a predicate, stop at the
+                        # latest connector leaving a complete owner phrase.
+                        # The normal member grouping below retains both clauses.
+                        owner_ends = [len(suffix[1])] + [
+                            c.start() for c in reversed(list(_STATUS_CONNECTOR.finditer(suffix[1])))
+                        ]
+                        for owner_end in owner_ends:
+                            candidate = suffix[1][:owner_end].rstrip()
+                            if _complete_status_owners(candidate):
+                                owner = candidate
+                                end += suffix.start(1) + len(candidate)
+                                break
                 owner = re.sub(r"^(?:the|a|an)\s+", "", owner)
                 if not _complete_status_owners(owner):
                     continue
