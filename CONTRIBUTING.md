@@ -34,6 +34,11 @@ Makefile targets prefer `.venv/bin/python -m pytest` when `.venv` exists and
 fall back to `python3 -m pytest` otherwise. You can still override `PYTHON` or
 `PYTEST` for unusual environments.
 
+The application-command tiers below apply to affected code, not every receipt
+edit. Use focused tests while implementing helpers/policy, then the stable
+candidate's applicable CI/review gates. The narrow planning-document CI path
+under **Continuous Integration** preserves governance and policy checking.
+
 ### Command tiers
 
 | Tier | Commands |
@@ -144,10 +149,33 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 
 | Trigger                      | Lint | Docs governance | Frontend verify (build/lint/test) | Frontend security (shipped deps) | Frontend security (dev tree) | `make test-unit` | `make test` |
 | ---------------------------- | ---- | --------------- | --------------------------------- | -------------------------------- | ---------------------------- | ---------------- | ----------- |
-| Pull request                 | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                |             |
-| Push to `main`               | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
-| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
-| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
+| Pull request                 | ✓    | ✓               | Impact                            | ✓                                | ✓ (reports)                  | Impact           |             |
+| Push to `main`               | ✓    | ✓               | Impact                            | ✓                                | ✓ (reports)                  |                  | Impact      |
+| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  |                  | ✓           |
+| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  |                  | ✓           |
+
+**Impact** means all changes except an exclusively non-executable, regular-file
+diff of `AGENTS.md`, `ROADMAP.md` and/or
+`working/nba-tools-completion-program/README.md`. These are reviewed instructions
+and handoffs, not runtime/build inputs. Their semantic review is still required;
+a Markdown suffix alone does not qualify. Root `README.md` is packaging metadata;
+other docs, tests/helpers, generated inputs, dependencies, configuration and the
+selection mechanism itself conservatively select application checks.
+
+Every run also executes `change-scope`: Node syntax, controlled Git-history tests,
+CI policy and documentation-governance tests, without installing the application.
+It compares the entire PR base/head or main before/after range, never just the
+receipt commit. Missing/shallow/non-ancestor history selects all application jobs.
+A failed policy/scope job fails CI and its missing output also selects those jobs.
+The summary explains selection; unselected jobs remain visibly skipped, not
+reported as executed passes. There are no workflow-level path filters that leave
+required statuses waiting. Relevant numerical/data acceptance remains separately
+required under AGENTS; this selector does not certify or reuse an NBA result.
+
+The selector and workflow must receive independent review when changed. Before
+reusing other evidence, the PR must retain its original revision and state why
+relevant code, configuration, dependencies, data generation and environment still
+apply; a documentation descendant is not a new exact-revision execution.
 
 - **`docs-governance`** (`make docs-governance`): Verifies the generated
   repository inventory plus durable-doc and working/archive policy checks.
@@ -183,8 +211,8 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
   CI should weigh a compromised build tool more heavily.
   `tests/test_ci_workflow_policy.py` guards the whole design, including that
   exactly one audit verdict can fail the workflow.
-- **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs in parallel across Python 3.11/3.12/3.13. Provides fast feedback on every trigger.
-- **`test-full`** (`make test`): Full regression suite in parallel. Runs on main push, nightly, and manual dispatch. Skipped on PRs to keep feedback fast.
+- **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs across Python 3.11/3.12/3.13 on applicable PRs.
+- **`test-full`** (`make test`): Same installation/configuration and all tests, including the fast subset. Runs across all three versions on applicable main pushes and every nightly/manual run. It replaces the duplicate fast matrix on those triggers; PRs retain fast feedback.
 
 ### A red `frontend-security` is policy-blocking, not merge-blocking
 
