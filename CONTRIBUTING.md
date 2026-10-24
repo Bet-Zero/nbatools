@@ -24,7 +24,7 @@ Makefile targets provide deterministic test commands:
 ```bash
 make doctor           # Lightweight local tool/setup check; does not run tests
 make test-impacted    # Default for localized changes — tests affected by recent edits (testmon, serial)
-make test-preflight   # Default for cross-cutting changes — all tests except slow (parallel)
+make test-preflight   # Broad coverage route — all tests except slow (parallel)
 make test-ci-fast     # Local equivalent of the PR CI fast gate
 make test-smoke-all   # Stable + phase natural-query smoke suites
 make test             # Full regression suite (parallel via xdist)
@@ -34,19 +34,20 @@ Makefile targets prefer `.venv/bin/python -m pytest` when `.venv` exists and
 fall back to `python3 -m pytest` otherwise. You can still override `PYTHON` or
 `PYTEST` for unusual environments.
 
-The application-command tiers below apply to affected code, not every receipt
-edit. Use focused tests while implementing helpers/policy, then the stable
-candidate's applicable CI/review gates. The narrow planning-document CI path
+The application-command tiers below apply to affected behavior and risk, not diff
+size or every receipt edit. Follow AGENTS.md's verification ownership and reuse
+rules: focused author checks, existing CI for standard checks, independent judgment
+where required, lead confirmation of applicability and resolved findings. The narrow planning-document CI path
 under **Continuous Integration** preserves governance and policy checking.
 
 ### Command tiers
 
 | Tier | Commands |
 | --- | --- |
-| Quick sanity | `make doctor`; `make docs-governance`; `make test-smoke-queries`; `make test-api` |
-| Before commit | Quick sanity plus `npm --prefix frontend run lint`; `npm --prefix frontend test`; run focused pytest/domain targets for touched code |
-| Before push | `npm --prefix frontend run build`; `npm --prefix frontend run lint`; `npm --prefix frontend test`; `make test-ci-fast` |
-| Before release | `make test`; Raw QA public acceptance: `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --run-id latest_public_query_acceptance --overwrite-run-id --fail-on-expectation-failure` |
+| Setup when needed | `make doctor` verifies local tools without running tests |
+| While editing / before commit | Focused reproduction and relevant pytest/domain checks; docs changes: `make docs-governance` and `git diff --check` |
+| Before merge | Applicable blocking CI and risk/acceptance coverage; fill only missing required coverage through an existing suitable route. Frontend build/lint/tests may be supplied by CI |
+| Before release | Full regression and Raw QA public acceptance remain required: `make test`; `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --run-id latest_public_query_acceptance --overwrite-run-id --fail-on-expectation-failure`. Reuse only applicable successful evidence under AGENTS; preserve release/exact-candidate gates |
 
 ### When to use each
 
@@ -54,10 +55,10 @@ under **Continuous Integration** preserves governance and policy checking.
 | --------------------- | ----------------------------------------------------------------------------------------------- |
 | `make doctor`         | Lightweight local setup check; verifies tools are present without running heavy tests           |
 | `make test-impacted`  | Default for **localized** changes — small, leaf-level edits in a single module                  |
-| `make test-preflight` | Default for **cross-cutting** changes — see "When to skip testmon" below                        |
-| `make test-ci-fast`   | Match the PR `test-fast` gate locally without using testmon                                     |
+| `make test-preflight` | Broad coverage route for cross-cutting risk; equivalent hosted evidence can satisfy it          |
+| `make test-ci-fast`   | Local PR fast-gate route when needed; no mandatory duplicate of applicable CI                    |
 | `make test-smoke-all` | Parser/query phase closure when the queue asks for both smoke suites                            |
-| `make test`           | Before merging, in CI, or when you want full confidence                                         |
+| `make test`           | Full regression when required by affected risk or release; applicable hosted results may supply it |
 
 ### Domain / subset targets
 
@@ -99,14 +100,19 @@ The domain targets (`make test-parser`, etc.) deliberately do **not** combine wi
 
 ### When to skip testmon
 
-`make test-impacted` runs serial (`-n0`). When testmon selects a large number of tests, it costs more wall time than `make test-preflight` running in parallel. Skip `test-impacted` and use `make test-preflight` instead when **any** of these apply:
+`make test-impacted` runs serial (`-n0`) and can overselect. Prefer a focused/domain
+slice while editing and broader coverage on the stable candidate when risk warrants it:
 
 - The diff touches a high fan-in module: `src/nbatools/query_service.py`, `src/nbatools/commands/natural_query.py`, parser core, the API layer, or shared fixtures/conftest files.
-- The diff exceeds ~50 lines in a single `src/` file.
-- A previous `test-impacted` run on the same change selected more than ~300 tests, or visibly stalls past ~2 minutes without finishing.
+- A previous `test-impacted` run overselects or makes no useful progress after 60 seconds.
 - Data files, environment variables, or dynamically loaded modules changed (testmon does not track these).
 
-For tight iteration on a high fan-in change, use a domain slice (`make test-query`, `make test-api`, `make test-parser`, etc.) first — these run the whole slice in parallel without testmon — then run `make test-preflight` once before finishing.
+For high fan-in integration, establish broad coverage equivalent to preflight/full
+under AGENTS. Compare selected tests, configuration, relevant code/dependencies,
+data generation and conditions; PR fast CI excludes data/slow tests and is not
+automatically equivalent. Fill missing required pre-merge coverage once; do not
+defer it to main/nightly. Freeze the candidate in isolated state before costly
+validation/final review; do not move that checkout while it runs.
 
 ### Testmon limitations
 
@@ -117,7 +123,8 @@ It may miss tests affected by:
 - changes in data files or fixtures loaded at runtime
 - environment variable changes
 
-When in doubt, run `make test`.
+Resolve uncertainty about affected behavior and coverage, then run the missing
+checks; uncertainty alone is not a reason to repeat all accepted verification.
 
 ### Parser examples sweep
 
@@ -157,7 +164,9 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 **Impact** means all changes except an exclusively non-executable, regular-file
 diff of `AGENTS.md`, `ROADMAP.md` and/or
 `working/nba-tools-completion-program/README.md`. These are reviewed instructions
-and handoffs, not runtime/build inputs. Their semantic review is still required;
+and handoffs, not runtime/build inputs. Apply AGENTS.md's review criteria: material
+meaning/authority/verification-policy changes need independent review; ordinary
+prose/cosmetic edits do not acquire a separate review gate just from their path;
 a Markdown suffix alone does not qualify. Root `README.md` is packaging metadata;
 other docs, tests/helpers, generated inputs, dependencies, configuration and the
 selection mechanism itself conservatively select application checks.
