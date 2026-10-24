@@ -21,6 +21,7 @@ and [PR533][pr533]. This replaces the prior pause; PR535/536 are completed work.
 
 | Field | Current handoff |
 | --- | --- |
+| Bounded policy assignment | `policy/agent-execution-overhead` changes only agent execution guidance under the current owner request; this lead must stop after its review/checks/landing and required post-merge inspection. PR535/536 are complete. PR537 merged as `2f467a24`; its [final public receipt](https://github.com/Bet-Zero/nbatools/pull/537#issuecomment-6382153151) remains bounded, not full K12 acceptance. Separately owned PR533 has a newer [branch-first handoff at c8ef10d3](https://github.com/Bet-Zero/nbatools/blob/c8ef10d3dbd6e45f6205e66b3517743d391507eb/working/nba-tools-completion-program/README.md#resume-checkpoint); follow any newer accepted revision for that work. Do not execute the historical product NEXT below under this policy assignment, absorb its application changes, or overwrite its continuation. Policy evidence and landing receipts belong in this assignment's PR. |
 | Authority / owner | Product pause lifted by the owner's current instruction. Root `/root` owns integration; independent checker `/root/independent_checker` successfully resumed after helper-service errors. Those errors did not establish owner quota exhaustion. No background implementation worker is claimed. No new efficiency audit. |
 | Main / deployment | Live main `3906c105cbc84c7d5b7e3343875e8b611238f6df`; PR535/536 complete. Vercel reports main deployment `dpl_8EtPRSmtf16QPWRERAq1hHboRwWP` READY. That metadata is not new numerical or cold-start acceptance. |
 | First objective / reason | Repair confirmed first-request HTTP504 from [39392363519][failed-first-request] within existing limits; this closes a confirmed K12 dependency. PR537 candidate `1e0ef2e8c7467a39d38e7343161bce81f4a8da9a` on `codex/first-request-timeout`, runtime `f609a8464c681517af49fc241bf61f545d3159b5`, prefetches the same 30 identity rosters through the existing bounded pool before ordered parsing. No limits or infrastructure changed. |
@@ -400,12 +401,16 @@ checks/counts, actual checker evidence, deployed result and remaining issues.
 Make every requested clause accounted for. Maintain fixture versus real-data,
 implementation versus deployment, and safety versus feature-completion distinctions.
 
-Reuse focused commands while editing, `make test-preflight` / `make test` for high
-fan-in integration, and the existing targeted/full R2 workflow. CI's data-free or
-all-suite selection does not mean required remote data ran. Required assertions,
+Use focused commands while editing and AGENTS.md's verification ownership,
+stable-candidate, summary-consumption and evidence-reuse rules for integration.
+Equivalent successful hosted evidence can supply broad preflight/full coverage;
+fill missing required pre-merge coverage once through an existing route. CI's
+data-free or all-suite selection does not mean required remote data ran. Required assertions,
 missing data or all-skipped acceptance remain blockers under delivered P0b enforcement.
-A documentation-only plan change runs `make docs-governance` / `git diff --check`,
-not a new full remote NBA corpus. Do not fabricate independent or human review.
+A documentation-only change runs `make docs-governance` / `git diff --check`,
+not a new full remote NBA corpus. Apply AGENTS review criteria to changed meaning,
+authority or verification policy; cosmetic prose needs no separate semantic review.
+Do not fabricate independent or human review.
 
 Update the Resume checkpoint when work start, review, merge, block or session stop
 changes the successor's next action or evidence. Keep unchanged detail in its PR.
@@ -426,7 +431,10 @@ NEXT: one concrete action/command and outcome; brief obligation/defect/dependenc
       justification, or why an added capability precedes unfinished Core-1 work
 ```
 
-A PR comment may hold detail while the checkpoint points to it. Keep needed code,
+A PR comment holds final execution/landing receipts when another documentation
+commit adds no meaningful continuation value. Link detail from the checkpoint
+instead of copying it into each surface. The handoff fields above are an operating
+default for applicable facts, not a new form to reproduce after each check. Keep needed code,
 tests and conclusions in tracked repo/PR state; do not depend exclusively on a
 private conversation, expiring artifact or local ignored output. Do not commit
 credentials or synthetic facts as real data. No new handoff subsystem is needed.
