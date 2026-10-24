@@ -90,6 +90,7 @@ try {
         }, null, 2));
         throw error;
       }
+      const responseElapsedMs = Date.now() - start;
       await page.locator('[data-app-state="loading"]').waitFor({ state: "detached", timeout: 60000 });
       const text = await page.locator('[data-state-surface="result"]').innerText();
       const after = await context.request.get(base + "/readiness");
@@ -112,7 +113,7 @@ try {
       })));
       const forbidden = (item.forbidden ?? []).filter(value => text.includes(value));
       const missing = item.text.filter(value => !text.includes(value));
-      const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start,
+      const receipt = { id: item.id, viewport, query: item.query, http: response.status(), elapsedMs: Date.now() - start, responseElapsedMs,
         payload, text, readinessBefore, readinessAfter, overflow, errors: [...errors], missing,
         headers, grainErrors, tables, forbidden, assets, screenshot, screenshotSha256: createHash("sha256").update(image).digest("hex") };
       receipts.push(receipt);
