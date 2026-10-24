@@ -15,21 +15,20 @@ require a new agent to read that history before starting the task below.
 
 ## Resume checkpoint
 
-Reconciled **2026-10-24** after the owner explicitly resumed normal product development.
-Detailed receipts stay in [PR537](https://github.com/Bet-Zero/nbatools/pull/537)
-and [PR533][pr533]. This replaces the prior pause; PR535/536 are completed work.
+Reconciled **2026-10-24** for the owner's bounded instruction: finish only
+[PR533][pr533] under the execution policy landed in [PR538](https://github.com/Bet-Zero/nbatools/pull/538), then stop.
+Detailed accepted evidence and final receipts remain in PR533; the prior
+[branch handoff at c8ef10d3](https://github.com/Bet-Zero/nbatools/blob/c8ef10d3dbd6e45f6205e66b3517743d391507eb/working/nba-tools-completion-program/README.md#resume-checkpoint)
+is preserved in ancestry.
 
 | Field | Current handoff |
 | --- | --- |
-| Authority / owner | Product pause lifted by the owner's current instruction. Root `/root` owns integration; independent checker `/root/independent_checker` successfully resumed after helper-service errors. Those errors did not establish owner quota exhaustion. No background implementation worker is claimed. No new efficiency audit. |
-| Main / deployment | Live main `2f467a24f8eecd83b8372fbed6577049595fc53a` normally merged PR537 after independent/R2/CI gates. Its automatic deployment `dpl_FTjCuaNePv5GVJoUG1RgCyfZ8SKa` is READY on the production alias. Public run40078870496 passed2required gates/26desktop-mobile answers52readiness checks, zero skips/failures; first comparison succeeded. This is bounded delivery evidence, not full K12/cold-start acceptance. PR535/536 remain complete. |
-| First objective / reason | Repair confirmed first-request HTTP504 from [39392363519][failed-first-request] within existing limits; this closes a confirmed K12 dependency. PR537 candidate `1e0ef2e8c7467a39d38e7343161bce81f4a8da9a` on `codex/first-request-timeout`, runtime `f609a8464c681517af49fc241bf61f545d3159b5`, prefetches the same 30 identity rosters through the existing bounded pool before ordered parsing. No limits or infrastructure changed. |
-| Timeout evidence / limits | Controlled full-query replay on restored qualified bytes with simulated 700ms roster GETs: serial26.226s, parallel7.139s, identical result+metadata, 30GETs each, peak1 versus8. Local-disk cold0.930s. 87 secret-free focused checks, 30 real identity checks and39 real comparison checks passed. R2 run40076781871:70required tests selected/executed/passed, zero skips/failures;3selected QA cases passed. Actual runner cold query8.655s/warm0.114s; imports0.450s+nameindex1.170s bring cold stages to10.275s. This is not a deployed cold<=10s pass or exclusive historical-cause proof. Vercel historical runtime logs returned403; no CLI credential fallback exists. PR534 failure/restore evidence remains preserved; no unchanged production retries. |
-| Second objective | PR533 resumed from preserved `39aa65afdf74fc2aba70a54f9eddc1ef22c3779d`, reconciled with3906 by merge `98358b63`. Corrective runtime `0a47babbf8f581e168267a86ec89b699773b68ac` on `codex/medical-subject-resume-20261024` stops an adjective-owner suffix before a following coordinated predicate. 80 focused cases and29 authenticated real-source cases passed. Medical facts remain unavailable; no reduced numeric answer or medical capability is claimed. |
-| Data | Restored permanent cloud-backup-39117892814 with existing verifier: generation `availability-opening-s4-v1-20261017`, manifest `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`, 703objects/402749125bytes; archive `fef91156538a6b6c946910fddcf904f6640b91fa21e7afe1ff630c861157a97f`. Local restored data is evidence, not fresh acquisition or a current-pointer verification. No R2 writes/publication. |
-| Review / blocker | Independent checker `/root/independent_checker` approved timeout1e0/source plus the bounded R2 request after independently reconstructing all2597 contexts from30rosters and passing53source cases. It also approved cumulative medical runtime0a47babb after80fixture+29source checks and24unfamiliar probes with independent Boston row arithmetic. Exact timeout CI40076670155 and medical CI40076015592 blocking jobs passed; development-security remains advisory. Medical R2 run40076860494 passed29required tests0skips and3QA cases36checks0suspicious. Browser gate reconciled with PR534 diagnostics at `cb7569a1944270e5053392a696811a78ee382796`, approved independently by exact test/helper hashes; includes original coordinated failure and positive controls. Frozen integration68583b55 broad preflight passed8937 with1793ordinarydata-skips/0failures in256.43s;132root focused checks and independent81fixture+4source integration checks passed. Final CI/browser capture remain pending. Measurement-only gate additions log public button-click-through-JSON timings without payloads, queries, headers or credentials; independent safety checks passed. Changed-deployment proof remains required; neither capability nor full K12 is closed. |
-| Preserve | PR462 and all46 positive absence obligations stay open; Boston17 staging, remaining Milwaukee identity request, source oracles, frozen P2 controls and preserved branches remain unchanged. PR533 browser WIP `b1aeb0998772cc619547fb1649662d4b69bcc54e` is preserved and now reconciled atcb7569a1 with PR534 diagnostics; exact coordinated regression replaces its old adjective-only case, with positive controls retained. Original-volume work is not recovered. |
-| NEXT / stop reason | PR537 is normally merged and its changed-deployment comparison/stat-pair gates passed. Finish PR533 stable integration broad/finalCI, normal landing and one combined comparison/medical/stat-pair capture on its changed deployment. Preserve all positive requirements and cold/warm/rollback limits. Then bind K09 required streak/run-count/stretch/continuity obligations to existing source tests and independent expectations before tuning. Product work remains authorized; there is no current helper quota blocker. Core-1 remains open; K09–K11 full bindings and K12 fixed-candidate acceptance remain required after these defects. |
+| Authority / owner | Root `/root` owns this bounded integration. PR535/536/537/538 are complete. Do not reopen the timeout repair, restart historical investigations, or begin another Core-1 capability. No background worker is claimed. |
+| Candidate / integration | Task branch `codex/medical-subject-scope`, saved head `c8ef10d3dbd6e45f6205e66b3517743d391507eb`, reconciled with main `244fa9a0cbe214e515c10ba2c82034534a07271d`. Preserve saved application/tests/browser work and current main AGENTS/CONTRIBUTING/queue execution policy. The reconciliation changes only instructions and this checkpoint; no reviewed executable semantics, dependencies, configuration or data change. The exact reconciliation SHA is recorded in PR533. |
+| Accepted evidence reused | Independent checker `/root/independent_checker` approved cumulative runtime `0a47babb` at `839605a3` after 80 fixture cases, 29 source cases, 24 unfamiliar probes and independent Boston row arithmetic; approved integration `68583b55` with 81 fixture and four source controls. Root passed 132 integration checks. Frozen `68583b55` broad preflight passed 8,937 with 1,793 ordinary data skips, zero failures. R2 run40076860494 passed all29 required tests, zero skips, plus3 QA cases/36 checks. Final saved-head CI40079354563 passed. These remain applicable to unchanged executable paths; new exact-head CI remains required. |
+| Data / browser | Generation `availability-opening-s4-v1-20261017`, manifest `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`. Approved browser gate `cb7569a1` retains PR534 diagnostics, eight source-bound medical cases/16 desktop-mobile answers, including the coordinated predicate failure. Measurement-only additions `3250cf45` are independently approved. No acquisition or publication. |
+| Preserve / limits | Medical/status facts remain unavailable; this repair preserves primary subjects and every condition, with no partial numeric answer or medical capability claim. All46 PR462 positive absence obligations, Boston17 staging, Milwaukee identity request, frozen P2 controls and other preserved branches remain open/unchanged. PR537 deployed run40078870496 remains accepted as bounded26-answer/52-readiness evidence, not full K12 or a cold-start guarantee. |
+| NEXT / stop reason | Finish applicable exact-head CI, normal PR533 landing, post-merge CI and one combined comparison/medical/stat-pair capture on the changed main deployment (42 desktop/mobile answers). Reuse accepted review/numerical/broad evidence under AGENTS; fill only missing or invalidated coverage. Preserve cold/warm and rollback limits. On success record the landing/deployment receipt in PR533 and stop; on a genuine blocker preserve exact state and report it without unchanged retries. No next Core-1 task is authorized in this session. |
 
 ### First-session procedure
 
@@ -400,12 +399,16 @@ checks/counts, actual checker evidence, deployed result and remaining issues.
 Make every requested clause accounted for. Maintain fixture versus real-data,
 implementation versus deployment, and safety versus feature-completion distinctions.
 
-Reuse focused commands while editing, `make test-preflight` / `make test` for high
-fan-in integration, and the existing targeted/full R2 workflow. CI's data-free or
-all-suite selection does not mean required remote data ran. Required assertions,
+Use focused commands while editing and AGENTS.md's verification ownership,
+stable-candidate, summary-consumption and evidence-reuse rules for integration.
+Equivalent successful hosted evidence can supply broad preflight/full coverage;
+fill missing required pre-merge coverage once through an existing route. CI's
+data-free or all-suite selection does not mean required remote data ran. Required assertions,
 missing data or all-skipped acceptance remain blockers under delivered P0b enforcement.
-A documentation-only plan change runs `make docs-governance` / `git diff --check`,
-not a new full remote NBA corpus. Do not fabricate independent or human review.
+A documentation-only change runs `make docs-governance` / `git diff --check`,
+not a new full remote NBA corpus. Apply AGENTS review criteria to changed meaning,
+authority or verification policy; cosmetic prose needs no separate semantic review.
+Do not fabricate independent or human review.
 
 Update the Resume checkpoint when work start, review, merge, block or session stop
 changes the successor's next action or evidence. Keep unchanged detail in its PR.
@@ -426,7 +429,10 @@ NEXT: one concrete action/command and outcome; brief obligation/defect/dependenc
       justification, or why an added capability precedes unfinished Core-1 work
 ```
 
-A PR comment may hold detail while the checkpoint points to it. Keep needed code,
+A PR comment holds final execution/landing receipts when another documentation
+commit adds no meaningful continuation value. Link detail from the checkpoint
+instead of copying it into each surface. The handoff fields above are an operating
+default for applicable facts, not a new form to reproduce after each check. Keep needed code,
 tests and conclusions in tracked repo/PR state; do not depend exclusively on a
 private conversation, expiring artifact or local ignored output. Do not commit
 credentials or synthetic facts as real data. No new handoff subsystem is needed.
