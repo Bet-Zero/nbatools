@@ -79,6 +79,7 @@ from nbatools.commands.structured_results import (  # noqa: F401
 from nbatools.data_source import (
     data_generation_context,
     data_glob,
+    data_prefetch,
     data_read_csv_dicts,
     data_source_cache_key,
 )
@@ -154,7 +155,11 @@ def _read_csv_dicts(path: Path) -> list[dict[str, str]]:
 @lru_cache(maxsize=1)
 def _player_identity_lookup(generation_key: str) -> dict[str, dict[str, Any]]:
     lookup: dict[str, dict[str, Any]] = {}
-    for csv_path in data_glob("raw/rosters/*.csv"):
+    paths = data_glob("raw/rosters/*.csv")
+    # Cold responses also decorate player identity. Fetch historical rosters in
+    # bounded parallel batches, then preserve their existing ordered precedence.
+    data_prefetch(paths)
+    for csv_path in paths:
         for row in _read_csv_dicts(csv_path):
             player_id = _coerce_int(row.get("player_id"))
             player_name = _clean_text(row.get("player_name"))
