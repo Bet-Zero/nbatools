@@ -14,7 +14,7 @@ from tests.test_core_identity_find_count_browser import _capture_browser
 from tests.test_deployed_union_pair_browser import _identity, _table
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET, FOLDER = "index-ClijrUhz.js", "original-stat-pair-browser"
+ASSET, FOLDER = "index-vEjeGbzQ.js", "original-stat-pair-browser"
 SOURCE_PATH = (
     Path(__file__).parent / "fixtures/qualified_original_stat_pair/checker_revealed_controls.json"
 )

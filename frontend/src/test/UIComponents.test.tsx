@@ -998,6 +998,24 @@ describe("NoResultDisplay", () => {
     ).toBeInTheDocument();
   });
 
+  it("keeps unavailable medical status distinct from participation combinations", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          unsupported_filters: ["multi_player_availability", "availability_status"],
+          unsupported_availability: { condition: "medical clearance" },
+        }}
+      />,
+    );
+
+    expect(screen.getByText(
+      "The requested filter or metric is not available in the current dataset.",
+    )).toBeInTheDocument();
+    expect(screen.queryByText(/Try one condition at a time/)).not.toBeInTheDocument();
+  });
+
   it("shows entity disambiguation candidates when provided", () => {
     render(
       <NoResultDisplay

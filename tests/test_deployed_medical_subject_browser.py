@@ -14,7 +14,7 @@ from tests.test_core_identity_find_count_browser import _capture_browser
 from tests.test_deployed_union_pair_browser import _identity, _summary, _table
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET, FOLDER = "index-ClijrUhz.js", "medical-subject-browser"
+ASSET, FOLDER = "index-vEjeGbzQ.js", "medical-subject-browser"
 FIXTURES = Path(__file__).parent / "fixtures/medical_subject_scope"
 GENERATION = "availability-opening-s4-v1-20261017"
 
@@ -365,7 +365,12 @@ def _validate_answers(receipt, cases, output):
             assert len(rows) == 2
             truth = {int(r["game_id"]): r for r in expected["team_rows"]}
             assert {r["game_id"] for r in rows} == set(truth)
-            table = _table(item, "Game log")
+            if item["viewport"] == "mobile":
+                matching = [t for t in item["tables"] if t.get("sectionLabel") == "Game Detail"]
+                assert len(matching) == 1
+                table = matching[0]
+            else:
+                table = _table(item, "Game log")
             assert len(table["rows"]) == 2 and not table["footers"]
             for row in rows:
                 source = truth[row["game_id"]]
@@ -383,6 +388,24 @@ def _validate_answers(receipt, cases, output):
                     and row["wl"] == source["wl"]
                 )
             displayed = [dict(zip(table["headers"], row)) for row in table["rows"]]
+            if item["viewport"] == "mobile":
+                displayed_by_id = {int(r["Game Id"].replace(",", "")): r for r in displayed}
+                assert set(displayed_by_id) == set(truth)
+                for game_id, shown in displayed_by_id.items():
+                    source = truth[game_id]
+                    assert shown["Team Name"] == source["team_name"]
+                    assert shown["Opponent Team Name"] == source["opponent_team_name"]
+                    assert shown["Game Date"] == datetime.fromisoformat(
+                        source["game_date"]
+                    ).strftime("%b %-d")
+                    assert shown["Wl"] == source["wl"]
+                    for stat in ("pts", "reb", "ast"):
+                        assert float(shown[stat.title()]) == int(source[stat])
+                    other = next(
+                        r for r in expected["reciprocal_rows"] if r["game_id"] == source["game_id"]
+                    )
+                    assert float(shown["Opponent Pts"]) == int(other["pts"])
+                continue
             assert all(
                 r["Team"] == "BOSBoston Celtics" and r["Opp"] == "LALLos Angeles Lakers"
                 for r in displayed
