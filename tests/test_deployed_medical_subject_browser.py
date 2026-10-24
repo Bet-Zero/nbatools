@@ -397,10 +397,15 @@ def _validate_answers(receipt, cases, output):
                 assert shown["Wl"] == source["wl"]
                 for stat in ("pts", "reb", "ast"):
                     assert float(shown[stat.title()]) == int(source[stat])
-                other = next(
-                    r for r in expected["reciprocal_rows"] if r["game_id"] == source["game_id"]
-                )
-                assert float(shown["Opponent Pts"]) == int(other["pts"])
+                other = [
+                    r
+                    for r in expected["reciprocal_rows"]
+                    if r["game_id"] == source["game_id"]
+                    and r["team_id"] == source["opponent_team_id"]
+                    and r["opponent_team_id"] == source["team_id"]
+                ]
+                assert len(other) == 1
+                assert float(shown["Opponent Pts"]) == int(other[0]["pts"])
             for stat in ("pts", "reb", "ast"):
                 assert sum(float(r[stat.title()]) for r in displayed) == expected["totals"][stat]
         else:
