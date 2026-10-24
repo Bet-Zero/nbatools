@@ -92,6 +92,11 @@ try {
       }
       const responseElapsedMs = Date.now() - start;
       await page.locator('[data-app-state="loading"]').waitFor({ state: "detached", timeout: 60000 });
+      if (medicalSubjects && viewport === "mobile" && item.id === "medical-played-positive") {
+        for (const title of ["Record Detail", "Game Detail"]) {
+          await page.getByRole("region", { name: title, exact: true }).getByRole("button").click();
+        }
+      }
       const text = await page.locator('[data-state-surface="result"]').innerText();
       const after = await context.request.get(base + "/readiness");
       const readinessAfter = await after.json();
@@ -107,6 +112,7 @@ try {
       }
       const tables = await page.locator('[data-state-surface="result"] table').evaluateAll(nodes => nodes.map(table => ({
         label: table.getAttribute("aria-label"),
+        sectionLabel: table.closest("section[aria-label]")?.getAttribute("aria-label"),
         headers: [...table.querySelectorAll("thead th")].map(cell => cell.textContent.trim()),
         rows: [...table.querySelectorAll("tbody tr")].map(row => [...row.querySelectorAll("td")].map(cell => cell.textContent.trim())),
         footers: [...table.querySelectorAll("tfoot tr")].map(row => [...row.querySelectorAll("th,td")].map(cell => cell.textContent.trim())),

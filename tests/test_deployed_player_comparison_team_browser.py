@@ -17,7 +17,7 @@ from tests.test_deployed_original_stat_pair_browser import _validate_answers as 
 from tests.test_deployed_union_pair_browser import _identity, _table
 
 pytestmark = [pytest.mark.needs_data, pytest.mark.query, pytest.mark.slow]
-ASSET, FOLDER = "index-ClijrUhz.js", "player-comparison-team-browser"
+ASSET, FOLDER = "index-vEjeGbzQ.js", "player-comparison-team-browser"
 FIXTURES = Path(__file__).parent / "fixtures/player_comparison_team_scope"
 GENERATION = "availability-opening-s4-v1-20261017"
 

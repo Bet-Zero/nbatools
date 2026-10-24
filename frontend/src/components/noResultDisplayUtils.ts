@@ -235,6 +235,10 @@ export function readableNoResultMessage(
   const unsupportedBoundary = unsupportedBoundaryMessage(metadata);
   if (unsupportedBoundary) return unsupportedBoundary;
 
+  if (unsupportedFilters(metadata).includes("availability_status")) {
+    return "The requested filter or metric is not available in the current dataset.";
+  }
+
   if (isMultiPlayerAvailabilityUnsupported(metadata, detailTexts)) {
     return "These player participation conditions are not supported together yet. Try one condition at a time.";
   }
