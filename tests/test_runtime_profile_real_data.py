@@ -54,3 +54,15 @@ def test_career_query_with_a_frame_cache_that_holds_every_season(tmp_path):
         NBATOOLS_FRAME_CACHE_MAX_ENTRIES="256",
         NBATOOLS_FRAME_CACHE_MAX_BYTES=str(2 * 1024**3),
     )
+
+
+def test_first_request_shared_team_comparison_profile(tmp_path):
+    # Reproduce PR534's first query in a fresh process/cache. The default
+    # profile reaches comparisons after other queries have warmed identity.
+    report = _profile(
+        tmp_path,
+        "Compare Luka Doncic and Anthony Davis for the Lakers against the Warriors in 2024-25",
+    )
+    queries = [stage for stage in report["stages"] if "status" in stage]
+    assert len(queries) == 2
+    assert all(stage["route"] == "player_compare" for stage in queries)
