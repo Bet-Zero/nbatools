@@ -393,8 +393,8 @@ def _validate_answers(receipt, cases, output):
                 assert set(displayed_by_id) == set(truth)
                 for game_id, shown in displayed_by_id.items():
                     source = truth[game_id]
-                    assert shown["Team Name"] == "BOSBoston Celtics"
-                    assert shown["Opponent Team Name"] == "LALLos Angeles Lakers"
+                    assert shown["Team Name"] == source["team_name"]
+                    assert shown["Opponent Team Name"] == source["opponent_team_name"]
                     assert shown["Game Date"] == datetime.fromisoformat(
                         source["game_date"]
                     ).strftime("%b %-d")
