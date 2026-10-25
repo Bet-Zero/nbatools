@@ -16137,3 +16137,289 @@ cases:
       equals: 44.0
     - path: result.sections.summary.0.ast_avg
       equals: 30.0
+
+  - id: k09_t1
+    query: Heat longest winning streak in 2012-13
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_sections:
+    - streak
+    hard_assertions:
+    - path: result.metadata.team
+      equals: MIA
+    - path: result.sections.streak.0.streak_length
+      equals: 27
+    - path: result.sections.streak.0.start_game_id
+      equals: 21200707
+    - path: result.sections.streak.0.end_game_id
+      equals: 21201049
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_p1
+    query: Curry longest streak of 20 point games in 2025-26
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.streak.0.streak_length
+      equals: 11
+    - path: result.sections.streak.0.start_game_id
+      equals: 22500392
+    - path: result.sections.streak.0.end_game_id
+      equals: 22500556
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_r1
+    query: how many times did the Heat win 5 straight in 2012-13
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_sections:
+    - count
+    - streak
+    hard_assertions:
+    - path: result.metadata.team
+      equals: MIA
+    - path: result.sections.count.0.count
+      equals: 4
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_r2
+    query: How many times did Curry score 20 or more points in 3 straight appearances
+      in 2025-26?
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - count
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.count.0.count
+      equals: 5
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_w1
+    query: Celtics best 10 game stretch in 2023-24
+    category: streak
+    priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_stretch_leaderboard
+    expected_sections:
+    - leaderboard
+    hard_assertions:
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.sections.leaderboard.0.wins
+      equals: 10
+    - path: result.sections.leaderboard.0.losses
+      equals: 0
+    - path: result.sections.leaderboard.0.net_per_game
+      equals: 20.3
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_w2
+    query: Stephen Curry best 5 game 3 point shooting stretch in 2015-16
+    category: streak
+    priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_sections:
+    - leaderboard
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.leaderboard.0.stretch_value
+      equals: 0.592
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_c1
+    query: Stephen Curry longest streak of 20 point games in 2025-26 from 2026-01-22
+      to 2026-04-05
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.streak.0.streak_length
+      equals: 5
+    - path: result.sections.streak.0.start_game_id
+      equals: 22500630
+    - path: result.sections.streak.0.end_game_id
+      equals: 22501142
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_c2
+    query: Curry most consecutive games with a three from 2015-16 to 2016-17
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.streak.0.streak_length
+      equals: 84
+    - path: result.sections.streak.0.start_game_id
+      equals: 21500003
+    - path: result.sections.streak.0.end_game_id
+      equals: 21600069
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_r2_synonym_control
+    query: How many times did Curry score 20 or more points in 3 straight games in 2025-26?
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: synonym
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - count
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.count.0.count
+      equals: 5
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_w1_last_n_control
+    query: Celtics record in their last 10 games in 2023-24
+    category: streak
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    - game_log
+    hard_assertions:
+    - path: result.metadata.team
+      equals: BOS
+    - path: result.sections.summary.0.wins
+      equals: 7
+    - path: result.sections.summary.0.losses
+      equals: 3
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_w2_last_n_control
+    query: Stephen Curry best 5 game 3 point shooting stretch over his last 5 games
+      in 2015-16
+    category: streak
+    priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_sections:
+    - leaderboard
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.leaderboard.0.stretch_value
+      equals: 0.381
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.
+  - id: k09_c2_single_season_control
+    query: Curry most consecutive games with a three in 2015-16
+    category: streak
+    priority: p1
+    acceptance:
+      family: streaks
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_sections:
+    - streak
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Stephen Curry
+    - path: result.sections.streak.0.streak_length
+      equals: 79
+    - path: result.sections.streak.0.start_game_id
+      equals: 21500003
+    - path: result.sections.streak.0.end_game_id
+      equals: 21501227
+    review_notes: K09 frozen independent source binding; exact raw keys/ratios/continuity
+      checked by test_k09_sequences_real_data.py.

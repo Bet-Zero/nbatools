@@ -1,0 +1,731 @@
+{
+  "generation": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "base_revision": "2acb83fc",
+  "reviewer": "/root/gate_checker",
+  "derivation": "Independent csv.DictReader loops on restored qualified raw bytes; sorted by game_date/game_id, maximal boolean runs and enumerated exact windows; no engine-generated numeric expectations. Structured source oracles are not new deployed acceptance.",
+  "source_hashes": {
+    "raw/team_game_stats/2012-13_regular_season.csv": "48cf332f3691415ad3073672a4dfd38232f8f85ec3e73602eb7625d0d21acb54",
+    "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/player_game_stats/2015-16_regular_season.csv": "c652b3d40815b6b9282eb383f256eefa5ff5f704d3731c590aea620e95d2a3fa",
+    "raw/player_game_stats/2016-17_regular_season.csv": "a57f30cc321a68a2934d31ada53735d40a6075b1a6b943972628df16842b589f",
+    "raw/team_game_stats/2015-16_regular_season.csv": "20e646c772224739dc1ed475a714ef7a39be9b5a0278690cc38285edd5801415",
+    "raw/team_game_stats/2016-17_regular_season.csv": "e1c9ecd0b6b0423effdb1b4c7c16ae4acf85447f07272dd13e773474b5b57f77",
+    "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37"
+  },
+  "cases": [
+    {
+      "id": "K09-T1",
+      "obligation": "team winning streak",
+      "query": "Heat longest winning streak in 2012-13",
+      "seasons": [
+        "2012-13"
+      ],
+      "route": "team_streak_finder",
+      "subject": {
+        "team_id": 1610612748,
+        "team_abbr": "MIA"
+      },
+      "predicate": {
+        "wl": "W"
+      },
+      "observed_sample_games": 82,
+      "expected": {
+        "games": 27,
+        "start_date": "2013-02-03",
+        "end_date": "2013-03-25",
+        "game_ids": [
+          "0021200707",
+          "0021200711",
+          "0021200726",
+          "0021200741",
+          "0021200753",
+          "0021200770",
+          "0021200787",
+          "0021200802",
+          "0021200809",
+          "0021200826",
+          "0021200833",
+          "0021200845",
+          "0021200868",
+          "0021200880",
+          "0021200892",
+          "0021200903",
+          "0021200921",
+          "0021200938",
+          "0021200952",
+          "0021200956",
+          "0021200975",
+          "0021200985",
+          "0021200998",
+          "0021201009",
+          "0021201026",
+          "0021201041",
+          "0021201049"
+        ]
+      }
+    },
+    {
+      "id": "K09-P1",
+      "obligation": "player threshold-appearance streak",
+      "query": "Curry longest streak of 20 point games in 2025-26",
+      "seasons": [
+        "2025-26"
+      ],
+      "route": "player_streak_finder",
+      "subject": {
+        "player_id": 201939,
+        "player_name": "Stephen Curry"
+      },
+      "predicate": {
+        "pts_min": 20
+      },
+      "observed_sample_appearances": 43,
+      "expected": {
+        "games": 11,
+        "start_date": "2025-12-20",
+        "end_date": "2026-01-11",
+        "game_ids": [
+          "0022500392",
+          "0022500407",
+          "0022500011",
+          "0022500441",
+          "0022500449",
+          "0022500462",
+          "0022500492",
+          "0022500508",
+          "0022500526",
+          "0022500539",
+          "0022500556"
+        ],
+        "wins": 8,
+        "losses": 3
+      }
+    },
+    {
+      "id": "K09-R1",
+      "obligation": "count distinct maximal team runs, not overlapping windows",
+      "query": "how many times did the Heat win 5 straight in 2012-13",
+      "seasons": [
+        "2012-13"
+      ],
+      "route": "team_streak_finder",
+      "subject": {
+        "team_id": 1610612748
+      },
+      "predicate": {
+        "wl": "W",
+        "minimum_run_length": 5
+      },
+      "expected": {
+        "count": 4,
+        "runs": [
+          {
+            "games": 6,
+            "start_date": "2012-11-15",
+            "end_date": "2012-12-01",
+            "game_ids": [
+              "0021200121",
+              "0021200138",
+              "0021200163",
+              "0021200186",
+              "0021200220",
+              "0021200233"
+            ]
+          },
+          {
+            "games": 6,
+            "start_date": "2012-12-15",
+            "end_date": "2012-12-26",
+            "game_ids": [
+              "0021200339",
+              "0021200359",
+              "0021200378",
+              "0021200392",
+              "0021200407",
+              "0021200411"
+            ]
+          },
+          {
+            "games": 27,
+            "start_date": "2013-02-03",
+            "end_date": "2013-03-25",
+            "game_ids": [
+              "0021200707",
+              "0021200711",
+              "0021200726",
+              "0021200741",
+              "0021200753",
+              "0021200770",
+              "0021200787",
+              "0021200802",
+              "0021200809",
+              "0021200826",
+              "0021200833",
+              "0021200845",
+              "0021200868",
+              "0021200880",
+              "0021200892",
+              "0021200903",
+              "0021200921",
+              "0021200938",
+              "0021200952",
+              "0021200956",
+              "0021200975",
+              "0021200985",
+              "0021200998",
+              "0021201009",
+              "0021201026",
+              "0021201041",
+              "0021201049"
+            ]
+          },
+          {
+            "games": 8,
+            "start_date": "2013-04-05",
+            "end_date": "2013-04-17",
+            "game_ids": [
+              "0021201126",
+              "0021201140",
+              "0021201157",
+              "0021201165",
+              "0021201180",
+              "0021201194",
+              "0021201204",
+              "0021201220"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "K09-R2",
+      "obligation": "count distinct maximal player appearance runs",
+      "query": "How many times did Curry score 20 or more points in 3 straight appearances in 2025-26?",
+      "synonym_control_query": "How many times did Curry score 20 or more points in 3 straight games in 2025-26?",
+      "seasons": [
+        "2025-26"
+      ],
+      "route": "player_streak_finder",
+      "subject": {
+        "player_id": 201939
+      },
+      "predicate": {
+        "pts_min": 20,
+        "minimum_run_length": 3
+      },
+      "expected": {
+        "count": 5,
+        "runs": [
+          {
+            "games": 3,
+            "start_date": "2025-10-21",
+            "end_date": "2025-10-24",
+            "game_ids": [
+              "0022500002",
+              "0022500006",
+              "0022500097"
+            ],
+            "wins": 2,
+            "losses": 1
+          },
+          {
+            "games": 3,
+            "start_date": "2025-10-30",
+            "end_date": "2025-11-04",
+            "game_ids": [
+              "0022500139",
+              "0022500144",
+              "0022500169"
+            ],
+            "wins": 1,
+            "losses": 2
+          },
+          {
+            "games": 3,
+            "start_date": "2025-11-18",
+            "end_date": "2025-11-24",
+            "game_ids": [
+              "0022500249",
+              "0022500056",
+              "0022500291"
+            ],
+            "wins": 1,
+            "losses": 2
+          },
+          {
+            "games": 11,
+            "start_date": "2025-12-20",
+            "end_date": "2026-01-11",
+            "game_ids": [
+              "0022500392",
+              "0022500407",
+              "0022500011",
+              "0022500441",
+              "0022500449",
+              "0022500462",
+              "0022500492",
+              "0022500508",
+              "0022500526",
+              "0022500539",
+              "0022500556"
+            ],
+            "wins": 8,
+            "losses": 3
+          },
+          {
+            "games": 5,
+            "start_date": "2026-01-22",
+            "end_date": "2026-04-05",
+            "game_ids": [
+              "0022500630",
+              "0022500644",
+              "0022500678",
+              "0022500696",
+              "0022501142"
+            ],
+            "wins": 2,
+            "losses": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "K09-W1",
+      "obligation": "best N-game team stretch differs from last N",
+      "query": "Celtics best 10 game stretch in 2023-24",
+      "last_n_control_query": "Celtics record in their last 10 games in 2023-24",
+      "seasons": [
+        "2023-24"
+      ],
+      "route": "team_stretch_leaderboard",
+      "subject": {
+        "team_id": 1610612738,
+        "team_abbr": "BOS"
+      },
+      "metric": "wins, then reciprocal-score net per game, then latest end",
+      "expected": {
+        "games": 10,
+        "start_date": "2024-02-07",
+        "end_date": "2024-03-03",
+        "game_ids": [
+          "0022300729",
+          "0022300743",
+          "0022300759",
+          "0022300771",
+          "0022300780",
+          "0022300797",
+          "0022300816",
+          "0022300836",
+          "0022300859",
+          "0022300872"
+        ],
+        "wins": 10,
+        "losses": 0,
+        "reciprocal_score_margin_sum": 203,
+        "net_per_game": 20.3,
+        "stored_plus_minus_sum": 203.0,
+        "team_id": 1610612738,
+        "reciprocal_row_keys": [
+          [
+            "0022300729",
+            1610612737
+          ],
+          [
+            "0022300743",
+            1610612764
+          ],
+          [
+            "0022300759",
+            1610612748
+          ],
+          [
+            "0022300771",
+            1610612751
+          ],
+          [
+            "0022300780",
+            1610612751
+          ],
+          [
+            "0022300797",
+            1610612741
+          ],
+          [
+            "0022300816",
+            1610612752
+          ],
+          [
+            "0022300836",
+            1610612755
+          ],
+          [
+            "0022300859",
+            1610612742
+          ],
+          [
+            "0022300872",
+            1610612744
+          ]
+        ]
+      },
+      "last_n_control_expected": {
+        "games": 10,
+        "start_date": "2024-03-28",
+        "end_date": "2024-04-14",
+        "game_ids": [
+          "0022301060",
+          "0022301074",
+          "0022301087",
+          "0022301105",
+          "0022301118",
+          "0022301134",
+          "0022301148",
+          "0022301167",
+          "0022301173",
+          "0022301186"
+        ],
+        "wins": 7,
+        "losses": 3,
+        "reciprocal_score_margin_sum": 99,
+        "net_per_game": 9.9,
+        "stored_plus_minus_sum": 99.0,
+        "team_id": 1610612738,
+        "reciprocal_row_keys": [
+          [
+            "0022301060",
+            1610612737
+          ],
+          [
+            "0022301074",
+            1610612740
+          ],
+          [
+            "0022301087",
+            1610612766
+          ],
+          [
+            "0022301105",
+            1610612760
+          ],
+          [
+            "0022301118",
+            1610612758
+          ],
+          [
+            "0022301134",
+            1610612757
+          ],
+          [
+            "0022301148",
+            1610612749
+          ],
+          [
+            "0022301167",
+            1610612752
+          ],
+          [
+            "0022301173",
+            1610612766
+          ],
+          [
+            "0022301186",
+            1610612764
+          ]
+        ]
+      },
+      "data_note": "Both selected windows stored plus_minus agree with exact reciprocal score margins; no global raw plus_minus trust inferred."
+    },
+    {
+      "id": "K09-W2",
+      "obligation": "best N-game player stretch differs from last N; rate uses makes/attempts",
+      "query": "Stephen Curry best 5 game 3 point shooting stretch in 2015-16",
+      "last_n_control_query": "Stephen Curry best 5 game 3 point shooting stretch over his last 5 games in 2015-16",
+      "seasons": [
+        "2015-16"
+      ],
+      "route": "player_stretch_leaderboard",
+      "subject": {
+        "player_id": 201939
+      },
+      "metric": "fg3m sum / fg3a sum, rounded3; latest-end breaks equal rounded rates",
+      "expected": {
+        "games": 5,
+        "start_date": "2015-11-28",
+        "end_date": "2015-12-06",
+        "game_ids": [
+          "0021500245",
+          "0021500259",
+          "0021500268",
+          "0021500290",
+          "0021500300"
+        ],
+        "made_threes": 29,
+        "three_point_attempts": 49,
+        "three_point_percentage": 0.592,
+        "unrounded_ratio": 0.5918367346938775
+      },
+      "last_n_control_expected": {
+        "games": 5,
+        "start_date": "2016-04-05",
+        "end_date": "2016-04-13",
+        "game_ids": [
+          "0021501163",
+          "0021501177",
+          "0021501190",
+          "0021501201",
+          "0021501227"
+        ],
+        "made_threes": 24,
+        "three_point_attempts": 63,
+        "three_point_percentage": 0.381,
+        "unrounded_ratio": 0.38095238095238093
+      }
+    },
+    {
+      "id": "K09-C1",
+      "obligation": "player appearance continuity across unobserved player/team dates; no health or qualified-absence inference",
+      "query": "Stephen Curry longest streak of 20 point games in 2025-26 from 2026-01-22 to 2026-04-05",
+      "seasons": [
+        "2025-26"
+      ],
+      "route": "player_streak_finder",
+      "subject": {
+        "player_id": 201939
+      },
+      "predicate": {
+        "pts_min": 20
+      },
+      "expected": {
+        "games": 5,
+        "start_date": "2026-01-22",
+        "end_date": "2026-04-05",
+        "game_ids": [
+          "0022500630",
+          "0022500644",
+          "0022500678",
+          "0022500696",
+          "0022501142"
+        ],
+        "wins": 2,
+        "losses": 3
+      },
+      "raw_points": [
+        38,
+        26,
+        27,
+        23,
+        29
+      ],
+      "coverage_note": "Exactly these five positive-minute player rows in requested dates; temporal gaps do not create failed appearance rows or establish medical status. Missing-stat/failing-row and intentional filtered-sample boundaries are separate controlled witnesses."
+    },
+    {
+      "id": "K09-C2",
+      "obligation": "explicit cross-selected-season streak versus single-season containment",
+      "query": "Curry most consecutive games with a three from 2015-16 to 2016-17",
+      "single_season_control_query": "Curry most consecutive games with a three in 2015-16",
+      "seasons": [
+        "2015-16",
+        "2016-17"
+      ],
+      "route": "player_streak_finder",
+      "subject": {
+        "player_id": 201939
+      },
+      "predicate": {
+        "fg3m_min": 1
+      },
+      "expected": {
+        "games": 84,
+        "start_date": "2015-10-27",
+        "end_date": "2016-11-03",
+        "game_ids": [
+          "0021500003",
+          "0021500030",
+          "0021500035",
+          "0021500051",
+          "0021500069",
+          "0021500083",
+          "0021500092",
+          "0021500104",
+          "0021500120",
+          "0021500125",
+          "0021500144",
+          "0021500164",
+          "0021500177",
+          "0021500187",
+          "0021500200",
+          "0021500214",
+          "0021500236",
+          "0021500245",
+          "0021500259",
+          "0021500268",
+          "0021500290",
+          "0021500300",
+          "0021500314",
+          "0021500336",
+          "0021500351",
+          "0021500381",
+          "0021500397",
+          "0021500434",
+          "0021500438",
+          "0021500468",
+          "0021500504",
+          "0021500520",
+          "0021500524",
+          "0021500548",
+          "0021500556",
+          "0021500568",
+          "0021500583",
+          "0021500592",
+          "0021500605",
+          "0021500622",
+          "0021500634",
+          "0021500652",
+          "0021500675",
+          "0021500691",
+          "0021500707",
+          "0021500718",
+          "0021500739",
+          "0021500769",
+          "0021500788",
+          "0021500799",
+          "0021500815",
+          "0021500822",
+          "0021500836",
+          "0021500848",
+          "0021500855",
+          "0021500874",
+          "0021500911",
+          "0021500931",
+          "0021500943",
+          "0021500958",
+          "0021500971",
+          "0021500981",
+          "0021500996",
+          "0021501011",
+          "0021501026",
+          "0021501036",
+          "0021501050",
+          "0021501066",
+          "0021501080",
+          "0021501094",
+          "0021501112",
+          "0021501119",
+          "0021501136",
+          "0021501152",
+          "0021501163",
+          "0021501177",
+          "0021501190",
+          "0021501201",
+          "0021501227",
+          "0021600003",
+          "0021600025",
+          "0021600036",
+          "0021600054",
+          "0021600069"
+        ],
+        "wins": 75,
+        "losses": 9
+      },
+      "single_season_control_expected": {
+        "games": 79,
+        "start_date": "2015-10-27",
+        "end_date": "2016-04-13",
+        "game_ids": [
+          "0021500003",
+          "0021500030",
+          "0021500035",
+          "0021500051",
+          "0021500069",
+          "0021500083",
+          "0021500092",
+          "0021500104",
+          "0021500120",
+          "0021500125",
+          "0021500144",
+          "0021500164",
+          "0021500177",
+          "0021500187",
+          "0021500200",
+          "0021500214",
+          "0021500236",
+          "0021500245",
+          "0021500259",
+          "0021500268",
+          "0021500290",
+          "0021500300",
+          "0021500314",
+          "0021500336",
+          "0021500351",
+          "0021500381",
+          "0021500397",
+          "0021500434",
+          "0021500438",
+          "0021500468",
+          "0021500504",
+          "0021500520",
+          "0021500524",
+          "0021500548",
+          "0021500556",
+          "0021500568",
+          "0021500583",
+          "0021500592",
+          "0021500605",
+          "0021500622",
+          "0021500634",
+          "0021500652",
+          "0021500675",
+          "0021500691",
+          "0021500707",
+          "0021500718",
+          "0021500739",
+          "0021500769",
+          "0021500788",
+          "0021500799",
+          "0021500815",
+          "0021500822",
+          "0021500836",
+          "0021500848",
+          "0021500855",
+          "0021500874",
+          "0021500911",
+          "0021500931",
+          "0021500943",
+          "0021500958",
+          "0021500971",
+          "0021500981",
+          "0021500996",
+          "0021501011",
+          "0021501026",
+          "0021501036",
+          "0021501050",
+          "0021501066",
+          "0021501080",
+          "0021501094",
+          "0021501112",
+          "0021501119",
+          "0021501136",
+          "0021501152",
+          "0021501163",
+          "0021501177",
+          "0021501190",
+          "0021501201",
+          "0021501227"
+        ],
+        "wins": 71,
+        "losses": 8
+      },
+      "all_maximal_run_lengths": [
+        84,
+        15,
+        35,
+        21
+      ],
+      "observed_sample_appearances": 158,
+      "coverage_note": "Streaks retain existing selected-season continuity; team rolling windows remain within each season and require separate positive/negative controlled witnesses."
+    }
+  ],
+  "player_streak_outcome_qualification": "Player raw rows lack W/L. Expected player streak wins/losses are independently joined to a unique raw team row by (season, season_type, game_id, team_id); date/opponent identities and reciprocal score outcomes verified. No raw plus_minus assumption. Existing query/IDs/statistical expectations unchanged."
+}

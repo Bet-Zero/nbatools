@@ -9,6 +9,8 @@ if (!["https://nbatools.vercel.app", "http://127.0.0.1:8765"].includes(base)) {
   throw new Error("Only production alias or local verification server allowed");
 }
 const cases = JSON.parse(await readFile(input, "utf8"));
+const sequenceIds = ["k09-t1", "k09-p1", "k09-r1", "k09-r2", "k09-w1", "k09-w2", "k09-c1", "k09-c2", "k09-r2-synonym", "k09-w1-last", "k09-w2-last", "k09-c2-single"];
+const sequences = cases.length === sequenceIds.length && sequenceIds.every(id => cases.some(item => item.id === id));
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
@@ -39,7 +41,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects) throw new Error("Expected a complete reviewed browser bundle");
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -62,7 +64,7 @@ try {
     for (const item of cases) {
       // Public admission permits ten queries/minute; preserve it without retries
       // or bypasses. Readiness requests do not invoke statistical queries.
-      if (base.startsWith("https:")) {
+      if (base.startsWith("https:") || sequences) {
         await new Promise(resolve => setTimeout(resolve, Math.max(0, 7000 - (Date.now() - lastQueryAt))));
       }
       errors = [];

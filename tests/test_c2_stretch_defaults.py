@@ -27,6 +27,42 @@ def _board(query: str) -> tuple[list[dict], dict]:
 
 
 @pytest.mark.parametrize(
+    "wording",
+    [
+        "best 5 game 3 point shooting stretch",
+        "best 3 point shooting 5 game stretch",
+        "best 5 game three point shooting stretch",
+    ],
+)
+def test_shooting_stretch_metric_is_not_a_scoring_filter(wording):
+    _, metadata = _board(f"Curry {wording} in {SEASON}")
+    assert metadata["stretch_metric"] == metadata["stat"] == "fg3_pct"
+    assert metadata["min_value"] is None and metadata["max_value"] is None
+    assert not any(f["kind"] == "threshold" for f in metadata.get("applied_filters", []))
+
+
+def test_shooting_metric_consumption_preserves_a_separate_scoring_bound():
+    from nbatools.commands.natural_query import _build_parse_state
+
+    state = _build_parse_state(
+        "Curry best 5 game 3 point shooting stretch with at least 20 points in 2015-16"
+    )
+    assert state["stretch_metric"] == "fg3_pct"
+    assert state["stat"] == "pts" and state["min_value"] == 20
+    assert [(c["stat"], c["min_value"]) for c in state["threshold_conditions"]] == [("pts", 20)]
+
+
+@pytest.mark.parametrize("bound", ["at least 20 points", "under 20 points"])
+def test_unconsumed_stretch_condition_does_not_claim_a_filtered_answer(bound):
+    result = execute_natural_query(
+        f"Curry best 5 game 3 point shooting stretch with {bound} in every game in {SEASON}"
+    )
+    assert result.result_status != "ok"
+    assert result.metadata["unsupported_filters"] == ["stretch_stat_condition"]
+    assert not result.result.to_dict().get("sections")
+
+
+@pytest.mark.parametrize(
     ("unsized", "sized", "route"),
     [
         ("Celtics best stretch", "Celtics best 10 game stretch", "team_stretch_leaderboard"),
@@ -173,13 +209,23 @@ def test_worst_wording_says_worst(query):
     ("query", "metric"),
     [
         ("best 5 game scoring stretch by a Lakers player", "pts"),
-        ("LeBron best 5 game scoring stretch while shooting 50 percent", "pts"),
         ("Curry best 3 point shooting 5 game stretch", "fg3_pct"),
     ],
 )
 def test_shooting_only_counts_when_it_names_the_stretch(query, metric):
     rows, _ = _board(f"{query} in {SEASON}")
     assert rows[0]["stretch_metric"] == metric
+
+
+def test_shooting_clause_does_not_rename_or_silently_filter_a_scoring_stretch():
+    from nbatools.commands.natural_query import _build_parse_state
+
+    query = f"LeBron best 5 game scoring stretch while shooting 50 percent in {SEASON}"
+    assert _build_parse_state(query)["stretch_metric"] == "pts"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result"
+    assert result.metadata["unsupported_filters"] == ["stretch_stat_condition"]
+    assert not result.result.to_dict().get("sections")
 
 
 @pytest.mark.parametrize(
