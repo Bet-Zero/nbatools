@@ -1385,7 +1385,7 @@ def _resolve_seattle_city(text: str) -> ResolutionResult:
     # The historical NBA city has a unique SEA identity, but qualified names
     # such as Seattle Storm/University must not be consumed as that team.
     # Keep this guarded reading out of the unconditional alias maps.
-    if re.search(r"\bseattle\b(?!\s+(?:storm|university)\b)", text):
+    if re.search(r"\bseattle\b(?!(?:['’]s)?\s+(?:storm|university)\b)", text):
         return _confident("SEA", source="historical_city")
     return _no_match()
 

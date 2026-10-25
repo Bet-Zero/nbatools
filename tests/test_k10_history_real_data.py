@@ -132,6 +132,15 @@ def _assert_case(result, case, sources):
     sections = body["sections"]
     assert len(sections["summary"]) == 1
     row = sections["summary"][0]
+    source_names = {
+        r["team_name"]
+        for season in case["seasons"]
+        for r in sources[f"raw/team_game_stats/{season}_playoffs.csv"]
+        if int(r["team_id"]) == case["team_id"]
+    }
+    assert row["team_name"] in source_names
+    if phrase := meta.get("answer_phrase"):
+        assert phrase.startswith(f"The {row['team_name']} ")
     assert (row["season_start"], row["season_end"]) == (case["seasons"][0], case["seasons"][-1])
     if ident in ("K10-G1", "K10-R1", "K10-Q1"):
         _record(row, expected)

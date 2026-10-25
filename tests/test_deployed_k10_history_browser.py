@@ -84,6 +84,8 @@ def _validate(receipt, bindings, sources, output):
             result=SimpleNamespace(to_dict=lambda: body),
         )
         _assert_case(result, case, sources)
+        if phrase := meta.get("answer_phrase"):
+            assert phrase in item["text"]
         assert "Regular Season" not in item["text"]
         assert len(item["tables"]) == 1
         table = item["tables"][0]
@@ -93,6 +95,11 @@ def _validate(receipt, bindings, sources, output):
         if ident in ("K10-G1", "K10-Q1"):
             assert table["label"] == "Team record" and len(shown) == 1
             row, expected = shown[0], case["expected"]
+            subject = sections["summary"][0]["team_name"]
+            assert (
+                f"The {subject} are {expected['wins']}-{expected['losses']} "
+                f"in the {case['seasons'][0]} playoffs"
+            ) in item["text"]
             assert row["Team"] == "GSWGolden State Warriors"
             assert row["W-L"] == f"{expected['wins']}-{expected['losses']}"
             assert int(row["Games"]) == expected["games"]

@@ -20,7 +20,9 @@ def test_seattle_alias_is_era_specific(name):
     assert rows.loc[team_value_mask(rows, "OKC"), "team_abbr"].tolist() == ["SEA", "OKC"]
 
 
-@pytest.mark.parametrize("name", ["Seattle Storm", "Seattle University"])
+@pytest.mark.parametrize(
+    "name", ["Seattle Storm", "Seattle University", "Seattle's Storm", "Seattle’s University"]
+)
 def test_seattle_city_alone_does_not_resolve_an_nba_team(name):
     assert not resolve_team(name).is_confident
     assert not resolve_team_in_query(f"{name} record in 2007-08").is_confident
