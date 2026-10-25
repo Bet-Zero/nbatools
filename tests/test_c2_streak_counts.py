@@ -64,6 +64,24 @@ def _count(query: str) -> tuple[int, dict, list[dict]]:
     return payload["sections"]["count"][0]["count"], result.metadata, payload["sections"]
 
 
+@pytest.mark.parametrize("unit", ["games", "appearances"])
+def test_player_appearance_count_preserves_run_length_and_stat_threshold(unit):
+    games = _player("Stephen Curry", SEASON)
+    runs = _run_lengths(games["pts"] >= 20)
+    expected = sum(length >= 3 for length in runs)
+    assert expected == 8  # discriminates maximal runs from qualifying games/windows
+
+    count, metadata, sections = _count(
+        f"How many times did Curry score 20 or more points in 3 straight {unit} in {SEASON}?"
+    )
+    assert metadata["route"] == "player_streak_finder"
+    assert count == expected
+    assert sorted(row["streak_length"] for row in sections["streak"]) == sorted(
+        length for length in runs if length >= 3
+    )
+    assert all(row["condition"] == "pts>=20" for row in sections["streak"])
+
+
 @pytest.mark.parametrize(
     ("query", "abbr", "outcome", "length", "seasons"),
     [

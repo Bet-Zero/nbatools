@@ -2134,6 +2134,10 @@ def extract_streak_request(text: str) -> dict | None:
     normalized = re.sub(r"[?.!,]+$", "", text)
     if not _STREAK_WORD.search(normalized):
         return None
+    # A player's consecutive appearances are the existing played-game sample.
+    # Canonicalize the unit only inside this reader; retain the original query
+    # for subjects, other clauses, metadata and authorization.
+    normalized = re.sub(r"\bappearances?\b", "games", normalized)
     # Several game conditions ("30 point 10 rebound games") go to the generic
     # reader first: the fixed patterns would keep only one of them.
     request = _generic_streak_request(normalized, compound_only=True)

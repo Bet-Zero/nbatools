@@ -160,3 +160,15 @@ case_ids:
   - medical_subject_team_unavailable
   - medical_subject_comparison_unavailable
   - medical_subject_team_played_control
+  - k09_t1
+  - k09_p1
+  - k09_r1
+  - k09_r2
+  - k09_w1
+  - k09_w2
+  - k09_c1
+  - k09_c2
+  - k09_r2_synonym_control
+  - k09_w1_last_n_control
+  - k09_w2_last_n_control
+  - k09_c2_single_season_control
