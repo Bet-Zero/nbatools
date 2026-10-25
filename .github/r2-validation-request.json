@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "025070f9a16644621fb222f8715d32ba035817c8",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k09_sequences_real_data.py",
+    "tests/test_c2_stretch_defaults_real_data.py",
+    "tests/test_c2_streak_counts_real_data.py",
+    "tests/test_c2_streaks_real_data.py",
+    "tests/test_c2_team_stretches_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k09_t1",
+    "k09_p1",
+    "k09_r1",
+    "k09_r2",
+    "k09_w1",
+    "k09_w2",
+    "k09_c1",
+    "k09_c2",
+    "k09_r2_synonym_control",
+    "k09_w1_last_n_control",
+    "k09_w2_last_n_control",
+    "k09_c2_single_season_control"
+  ]
+}
