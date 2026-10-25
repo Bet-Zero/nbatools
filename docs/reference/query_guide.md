@@ -338,8 +338,7 @@ Northwest Division teams` execute as filtered `team_record_leaderboard` results.
 Mixed conference-plus-division phrasing such as `Lakers record against Western
 Conference Pacific Division teams` does not return a
 broader conference-only or division-only answer. Playoff division record
-phrasing remains unsupported, and `conference finals` record phrasing remains a
-playoff-round unsupported boundary.
+phrasing remains unsupported.
 
 ## Playoff history and rounds
 
@@ -354,11 +353,18 @@ playoff-round unsupported boundary.
 - `best second-round record since 2010`
 
 Adjacent team names are only treated as a matchup in explicit playoff
-series/history contexts. Single-team round-record phrasing such as
-`Warriors Finals record since 2015`, `Celtics conference finals record`, and
-`Bulls Finals record` is currently unsupported and returns
-`no_result` / `filter_not_supported` rather than a broad regular-season record.
-Bulls Finals-era round labels are not reliable in the current pre-2001 data.
+series/history contexts. Single-team round records retain the requested round
+and report labeled game and completed-series records over the covered span.
+An explicit series-record question answers the aggregate series record first;
+playoff appearances count distinct seasons, not games or series. Play-in games
+are excluded.
+
+Team titles count completed Finals series won within the requested scope.
+`Lakers titles from 2000 to 2002` means titles won in those calendar years
+(seasons1999-00 through2001-02); explicit season ranges keep their season
+bounds. Franchise history follows the permanent team ID and discloses historical
+identities, such as Seattle in a Thunder appearance count. These team title
+counts do not establish an official player-ring roster.
 
 ## Season-high / best-game queries
 

@@ -234,10 +234,16 @@ def _resolve_playoff_span_defaults(
 # "LeBron series wins": series results, not a game summary or a series
 # situation ("game 7s", "up 3-1 in a series").
 _PLAYER_SERIES = re.compile(
-    r"(?<!season\s)(?<!regular\s)\bseries\s+(?:records?|wins?|won|losses|lost|history|results)\b"
+    r"(?<!\bseason\s)(?<!\bregular\s)\bseries\s+(?:records?|wins?|won|losses|lost|history|results)\b"
     r"|\bhow\s+many\s+(?:playoff\s+|postseason\s+)?series\b"
     r"|\b(?:won|lost|win|lose)\s+(?:a\s+|\d+\s+)?(?:playoff\s+|postseason\s+)?series\b"
 )
+
+
+def detect_series_record_intent(text: str) -> bool:
+    """A series result/count request, distinct from a game record or situation."""
+    return bool(_PLAYER_SERIES.search(text.lower()))
+
 
 _PAIR_TIME_WORDS_RE = re.compile(
     r"\b(?:19|20)\d{2}s?\b|\b\d{2}s\b|\b(?:this|these|current|last|past|since|"
@@ -338,7 +344,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str | None, dict] | None:
     if (
         (player or (team and not opponent and not playoff_round_filter))
         and not (player_a or player_b or team_a or team_b)
-        and _PLAYER_SERIES.search(q)
+        and detect_series_record_intent(q)
     ):
         blocked = None
         if (

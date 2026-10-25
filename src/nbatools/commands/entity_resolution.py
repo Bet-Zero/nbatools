@@ -1381,6 +1381,15 @@ def resolve_players_in_query(text: str) -> list[str]:
     return players
 
 
+def _resolve_seattle_city(text: str) -> ResolutionResult:
+    # The historical NBA city has a unique SEA identity, but qualified names
+    # such as Seattle Storm/University must not be consumed as that team.
+    # Keep this guarded reading out of the unconditional alias maps.
+    if re.search(r"\bseattle\b(?!(?:['’]s)?\s+(?:storm|university)\b)", text):
+        return _confident("SEA", source="historical_city")
+    return _no_match()
+
+
 def resolve_team(text: str) -> ResolutionResult:
     """Resolve a team reference from user text.
 
@@ -1410,7 +1419,7 @@ def resolve_team(text: str) -> ResolutionResult:
         if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
             return _confident(TEAM_ALIASES_EXPANDED[key], source="team_alias")
 
-    return _no_match()
+    return _resolve_seattle_city(q)
 
 
 # ``was`` is both the Washington abbreviation and the English copula, so an
@@ -1492,7 +1501,7 @@ def resolve_team_in_query(text: str) -> ResolutionResult:
         if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
             return _confident(TEAM_ALIASES_EXPANDED[key], source="team_alias")
 
-    return _no_match()
+    return _resolve_seattle_city(q)
 
 
 def resolve_stat(stat_value: str | None) -> ResolutionResult:
