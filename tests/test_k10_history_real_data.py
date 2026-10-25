@@ -33,6 +33,20 @@ ROUTES = dict(
     )
 )
 ROUNDS = {1: "First Round", 2: "Second Round", 3: "Conference Finals", 4: "Finals"}
+CONTROL_QUERIES = {
+    "K10-F1-seattle": (
+        "K10-F1",
+        "How many times did Seattle make the playoffs between 2000-01 and 2004-05?",
+    ),
+    "K10-S1-postseason": ("K10-S1", "Golden State postseason series record in 2015-16"),
+}
+
+
+def _bindings(oracle):
+    cases = {c["id"]: c for c in oracle["cases"]}
+    for key, (original, query) in CONTROL_QUERIES.items():
+        cases[key] = dict(cases[original], query=query, era_only=key == "K10-F1-seattle")
+    return cases
 
 
 def _qualified_sources():
@@ -93,6 +107,17 @@ def _assert_case(result, case, sources):
     assert meta["query_text"] == case["query"]
     assert meta["season_type"] == "Playoffs"
     assert meta["team_context"]["team_id"] == case["team_id"]
+    assert meta["team"] == (
+        "SEA"
+        if case.get("era_only")
+        else "OKC"
+        if ident == "K10-F1"
+        else "LAL"
+        if ident == "K10-T1"
+        else "CLE"
+        if ident == "K10-T2"
+        else "GSW"
+    )
     assert (
         not meta.get("unsupported_filters") and not meta.get("player") and not meta.get("opponent")
     )
@@ -150,7 +175,8 @@ def _assert_case(result, case, sources):
         assert f"playoffs {expected['appearances']} times" in meta["answer_phrase"]
         if ident == "K10-F1":
             assert row["team_name"] == "Seattle SuperSonics"
-            assert "Seattle SuperSonics" in " ".join(body.get("caveats") or [])
+            if not case.get("era_only"):
+                assert "Seattle SuperSonics" in " ".join(body.get("caveats") or [])
     else:
         assert row["titles"] == expected["titles"]
         finals = [r for r in sections["series"] if r["playoff_round"] == "Finals"]
@@ -167,17 +193,17 @@ def _assert_case(result, case, sources):
         assert f"({', '.join(expected['title_seasons'])})" in meta["answer_phrase"]
 
 
-@pytest.mark.parametrize("ident", IDS)
+@pytest.mark.parametrize("ident", [*IDS, *CONTROL_QUERIES])
 def test_k10_bound_history(ident, qualified_oracle, monkeypatch):
     from nbatools.commands import playoff_history, team_record
 
     oracle, sources = qualified_oracle
-    case = next(c for c in oracle["cases"] if c["id"] == ident)
+    case = _bindings(oracle)[ident]
     # Observe the real selected sample at its aggregation boundary, without
     # replacing its calculation, source loader or filtering result.
     selected = []
-    if ident in ("K10-G1", "K10-S1", "K10-R1", "K10-Q1"):
-        module = team_record if ident in ("K10-G1", "K10-Q1") else playoff_history
+    if case["id"] in ("K10-G1", "K10-S1", "K10-R1", "K10-Q1"):
+        module = team_record if case["id"] in ("K10-G1", "K10-Q1") else playoff_history
         original = module._compute_record
 
         def observe(frame):

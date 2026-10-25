@@ -363,7 +363,7 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 179
+    assert len(selected) == 181
     assert {
         "original_window_played_pair_source_empty",
         "original_window_played_pair_source_positive",

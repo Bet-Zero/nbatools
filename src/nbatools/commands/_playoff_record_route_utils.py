@@ -234,7 +234,7 @@ def _resolve_playoff_span_defaults(
 # "LeBron series wins": series results, not a game summary or a series
 # situation ("game 7s", "up 3-1 in a series").
 _PLAYER_SERIES = re.compile(
-    r"(?<!season\s)(?<!regular\s)\bseries\s+(?:records?|wins?|won|losses|lost|history|results)\b"
+    r"(?<!\bseason\s)(?<!\bregular\s)\bseries\s+(?:records?|wins?|won|losses|lost|history|results)\b"
     r"|\bhow\s+many\s+(?:playoff\s+|postseason\s+)?series\b"
     r"|\b(?:won|lost|win|lose)\s+(?:a\s+|\d+\s+)?(?:playoff\s+|postseason\s+)?series\b"
 )

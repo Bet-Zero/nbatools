@@ -9,6 +9,13 @@ from nbatools.query_service import _add_playoff_history_answer_metadata
 pytestmark = [pytest.mark.query]
 
 
+@pytest.mark.parametrize("prefix", ["regular season", "season", "regular"])
+def test_series_classifier_keeps_non_playoff_series_exclusions(prefix):
+    from nbatools.commands._playoff_record_route_utils import detect_series_record_intent
+
+    assert not detect_series_record_intent(f"Lakers {prefix} series record against Celtics")
+
+
 @pytest.mark.parametrize(
     "query", ["Lakers titles from 2000 to 2002", "Cavaliers titles from 2014-15 to 2017-18"]
 )
@@ -24,6 +31,7 @@ def test_team_title_scope_is_the_postseason(query):
     "query",
     [
         "Lakers playoff series record in 2023-24",
+        "Lakers postseason series record in 2023-24",
         "How many playoff series have the Lakers won in 2023-24?",
     ],
 )
