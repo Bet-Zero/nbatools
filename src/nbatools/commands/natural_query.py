@@ -4813,6 +4813,29 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
     elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
         route, route_kwargs = lineup_route
+    elif window_size is not None and (
+        min_value is not None or max_value is not None or parsed.get("threshold_conditions")
+    ):
+        # Rolling-window consumers do not apply game-level stat predicates.
+        # Keep a genuine clause distinct from the consumed metric phrase and
+        # refuse it rather than badge an unfiltered ranking as filtered.
+        team_scope = bool(team or team_a or team_b or team_rolling_stretch_boundary) and not (
+            player or stretch_names_players
+        )
+        route = "team_stretch_leaderboard" if team_scope else "player_stretch_leaderboard"
+        notes.append(
+            "unsupported_boundary: game-level stat conditions within rolling stretches "
+            "are not supported yet; no unfiltered stretch ranking was substituted"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "stretch_stat_condition",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
     elif window_size is not None and parsed.get("stretch_opponent_description"):
         # "best stretch against the worst defenses": no filter reads that
         # description, so refuse rather than rank stretches against everyone.

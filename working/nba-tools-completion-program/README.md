@@ -358,6 +358,8 @@ work is retained; verify actual CLI help/runbook before executing consequential 
 
 ## 8. Carry-forward scope (not silently completed by Core-1)
 
+K09 review exposed unconsumed game-level statistical conditions within rolling stretches (for example, Curry’s best five-game 3P stretch with at least 20 points in every game, or LeBron’s scoring stretch while shooting 50 percent). These desired filtered-window answers remain unfinished; the bounded repair refuses them instead of claiming an ignored condition was applied. Unconditional K09 best/last windows remain positive acceptance cases.
+
 These preserve the original program and the unfinished boundary; implementation
 status must be reconciled before work, not assumed from old examples. Specific
 unresolved examples/evidence remain in the [pre-cleanup queue][prior-queue],
