@@ -121,6 +121,8 @@ def _validate(receipt, bindings, sources, output):
                 for r in sections["streak"]
             ]
             for shown, actual in zip(rows, sections["streak"], strict=True):
+                if "Team" in shown:
+                    assert shown["Team"] == "MIAHeat"
                 assert int(shown["Games"]) == actual["games"]
                 assert shown["Record"] == f"{actual['wins']}-{actual['losses']}"
                 for label, key in (("Start", "start_date"), ("End", "end_date")):
@@ -143,6 +145,7 @@ def _validate(receipt, bindings, sources, output):
             table = _table(item, "Team record")
             rows = [dict(zip(table["headers"], r)) for r in table["rows"]]
             assert len(rows) == 1
+            assert rows[0]["Team"] == "BOSBoston Celtics"
             assert rows[0]["W-L"] == "7-3" and int(rows[0]["Games"]) == 10
             assert float(rows[0]["PPG"]) == pytest.approx(
                 sections["summary"][0]["pts_avg"], abs=0.051
@@ -157,10 +160,21 @@ def _validate(receipt, bindings, sources, output):
             displayed = [dict(zip(table["headers"], r)) for r in table["rows"]]
             for shown, actual in zip(displayed, sections["leaderboard"], strict=True):
                 if case["id"] == "K09-W1":
+                    assert shown["Team"] == "BOSBoston Celtics"
+                    assert shown["Season"] == "2023-24"
                     assert shown["W-L"] == f"{actual['wins']}-{actual['losses']}"
                     assert float(shown["Net/G"]) == pytest.approx(actual["net_per_game"], abs=0.051)
                     date_columns = (("From", "window_start_date"), ("To", "window_end_date"))
                 else:
+                    assert shown["Player"] == "SCStephen CurryGSW"
+                    assert shown["Season"] == "2015-16"
+                    assert meta["stat"] == meta["stretch_metric"] == "fg3_pct"
+                    assert meta["min_value"] is None and meta["max_value"] is None
+                    assert not meta["threshold_conditions"]
+                    assert not any(
+                        f["kind"] == "threshold" for f in meta.get("applied_filters", [])
+                    )
+                    assert "3+ PTS" not in item["text"] and "PPG" not in item["text"]
                     assert shown["Window"] == "5 games"
                     assert float(shown["3P%"].rstrip("%")) == pytest.approx(
                         actual["stretch_value"] * 100, abs=0.051

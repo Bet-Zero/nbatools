@@ -4603,9 +4603,15 @@ def detect_stretch_query(text: str) -> dict | None:
     if re.search(r"\b(?:winning|losing)\s+streak\b", text):
         return None
 
-    shooting = next(
-        (key for pattern, key in _STRETCH_SHOOTING_PATTERNS if re.search(pattern, text)), None
+    shooting_match = next(
+        (
+            (key, match)
+            for pattern, key in _STRETCH_SHOOTING_PATTERNS
+            if (match := re.search(pattern, text))
+        ),
+        None,
     )
+    shooting = shooting_match[0] if shooting_match else None
     if re.search(r"\bgame\s+score\b", text):
         stretch_metric = "game_score"
     elif shooting is not None:
@@ -4623,6 +4629,7 @@ def detect_stretch_query(text: str) -> dict | None:
     return {
         "window_size": window_size,
         "stretch_metric": stretch_metric,
+        "metric_span": shooting_match[1].span() if shooting_match else None,
         "window_defaulted": _extract_explicit_window_size(text) is None,
         "worst": bool(stretch_grade_is_worst(text)),
         "opponent_description": (

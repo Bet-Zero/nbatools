@@ -52,7 +52,7 @@ def _qualified_sources():
     return oracle, sources
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def qualified_oracle():
     return _qualified_sources()
 

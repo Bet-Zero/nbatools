@@ -3052,11 +3052,23 @@ def _build_parse_state(query: str) -> dict:
                 bare_year_season = bare_year
                 season = bare_year[1]
 
+    stretch_request = detect_stretch_query(q)
+    q_stat = q
+    if stretch_request and (metric_span := stretch_request.get("metric_span")):
+        # A named shooting-rate metric is not a game-level scoring bound.
+        # Keep the original query for window, subject and clause ownership;
+        # only the consumed metric span is excluded from threshold detection.
+        start, end = metric_span
+        q_stat = q[:start] + " " * (end - start) + q[end:]
     min_attempts = extract_min_attempts(q)
     # Metric and threshold detection skip the attempt qualifier: "minimum 150
     # three point attempts" qualifies the ranking, it does not name its metric.
-    q_metric = text_without_min_attempts(q)
-    stat = detect_stat(q_metric)
+    q_metric = text_without_min_attempts(q_stat)
+    stat = (
+        stretch_request["stretch_metric"]
+        if stretch_request and stretch_request.get("metric_span")
+        else detect_stat(q_metric)
+    )
     if (
         min_attempts
         and min_attempts.get("attempt_stat")
@@ -3066,8 +3078,8 @@ def _build_parse_state(query: str) -> dict:
         # "Curry games with 10 free throw attempts": with no rate asked, the
         # attempts are the stat itself (the bound was dropped).
         min_attempts = None
-        q_metric = q
-        stat = detect_stat(q)
+        q_metric = q_stat
+        stat = detect_stat(q_stat)
     last_n = extract_last_n(q)
     min_games = extract_min_games(q)
     top_n = extract_top_n(q)
@@ -3080,7 +3092,6 @@ def _build_parse_state(query: str) -> dict:
         split_type = "season"
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
-    stretch_request = detect_stretch_query(q)
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     window_defaulted = bool(stretch_request and stretch_request.get("window_defaulted"))

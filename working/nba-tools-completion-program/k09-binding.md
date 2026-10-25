@@ -85,3 +85,5 @@ subjects, count versus longest, exact source boundaries/values, displayed streak
 lengths/W-L/dates and best-versus-last rates are required. Its final independent
 gate review, stable broad preflight, hosted R2/QA, normal CI/landing and one changed-
 deployment capture remain pending.
+
+The first full-candidate review (`8ab19561`) rejected phantom 3+PTS/PPG chips on the correctly calculated three-point stretch. The repair excludes the recognized shooting-metric span from generic scoring-threshold detection and supplies the actual rate basis; a separate explicit points bound remains present. The browser validator now requires the rate basis, no phantom bound, and actual team/player/season labels. Earlier local captures do not establish acceptance of those corrected assertions. The failed broad run (2 failures/12 errors) exposed source fixture setup ordering, public slice count/acceptance metadata and a missing declared pypdf installation; these are repaired before the next stable run.

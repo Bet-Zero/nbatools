@@ -16142,6 +16142,11 @@ cases:
     query: Heat longest winning streak in 2012-13
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_streak_finder
@@ -16162,6 +16167,11 @@ cases:
     query: Curry longest streak of 20 point games in 2025-26
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder
@@ -16182,6 +16192,11 @@ cases:
     query: how many times did the Heat win 5 straight in 2012-13
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_streak_finder
@@ -16200,6 +16215,11 @@ cases:
       in 2025-26?
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder
@@ -16217,6 +16237,11 @@ cases:
     query: Celtics best 10 game stretch in 2023-24
     category: streak
     priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_stretch_leaderboard
@@ -16237,6 +16262,11 @@ cases:
     query: Stephen Curry best 5 game 3 point shooting stretch in 2015-16
     category: streak
     priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_stretch_leaderboard
@@ -16254,6 +16284,11 @@ cases:
       to 2026-04-05
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder
@@ -16274,6 +16309,11 @@ cases:
     query: Curry most consecutive games with a three from 2015-16 to 2016-17
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder
@@ -16294,6 +16334,11 @@ cases:
     query: How many times did Curry score 20 or more points in 3 straight games in 2025-26?
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: synonym
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder
@@ -16311,6 +16356,11 @@ cases:
     query: Celtics record in their last 10 games in 2023-24
     category: streak
     priority: p1
+    acceptance:
+      family: team_records
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -16331,6 +16381,11 @@ cases:
       in 2015-16
     category: streak
     priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_stretch_leaderboard
@@ -16347,6 +16402,11 @@ cases:
     query: Curry most consecutive games with a three in 2015-16
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: inverse_sibling
+      review_required: true
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_streak_finder

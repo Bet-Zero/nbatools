@@ -27,6 +27,32 @@ def _board(query: str) -> tuple[list[dict], dict]:
 
 
 @pytest.mark.parametrize(
+    "wording",
+    [
+        "best 5 game 3 point shooting stretch",
+        "best 3 point shooting 5 game stretch",
+        "best 5 game three point shooting stretch",
+    ],
+)
+def test_shooting_stretch_metric_is_not_a_scoring_filter(wording):
+    _, metadata = _board(f"Curry {wording} in {SEASON}")
+    assert metadata["stretch_metric"] == metadata["stat"] == "fg3_pct"
+    assert metadata["min_value"] is None and metadata["max_value"] is None
+    assert not any(f["kind"] == "threshold" for f in metadata.get("applied_filters", []))
+
+
+def test_shooting_metric_consumption_preserves_a_separate_scoring_bound():
+    from nbatools.commands.natural_query import _build_parse_state
+
+    state = _build_parse_state(
+        "Curry best 5 game 3 point shooting stretch with at least 20 points in 2015-16"
+    )
+    assert state["stretch_metric"] == "fg3_pct"
+    assert state["stat"] == "pts" and state["min_value"] == 20
+    assert [(c["stat"], c["min_value"]) for c in state["threshold_conditions"]] == [("pts", 20)]
+
+
+@pytest.mark.parametrize(
     ("unsized", "sized", "route"),
     [
         ("Celtics best stretch", "Celtics best 10 game stretch", "team_stretch_leaderboard"),
