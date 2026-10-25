@@ -4488,7 +4488,12 @@ def _route_parsed_query(parsed: dict) -> dict:
             season = None
             start_season, end_season = resolve_career("Playoffs")
         out = dict(parsed)
-        out.update(season=season, start_season=start_season, end_season=end_season)
+        out.update(
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            season_type="Playoffs",
+        )
         out["route"] = "playoff_history"
         out["route_kwargs"] = {
             "team": team,

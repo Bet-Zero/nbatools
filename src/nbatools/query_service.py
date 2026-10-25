@@ -1478,6 +1478,17 @@ def _add_playoff_history_answer_metadata(metadata: dict[str, Any], result: Any) 
     if re.search(r"\b(?:titles?|championships?|champions?)\b", query_text) and not vs:
         metadata["answer_phrase"] = _team_titles_phrase(team, series, metadata)
         return
+    from nbatools.commands._playoff_record_route_utils import detect_series_record_intent
+
+    if detect_series_record_intent(query_text):
+        span = f"in {first}" if first == last else f"from {first} to {last}"
+        open_series = int((series["result"] == "In progress").sum())
+        pending = f", with {open_series} in progress" if open_series else ""
+        metadata["answer_phrase"] = (
+            f"The {team} went {won}-{lost} in playoff series{vs} {span} "
+            f"({games} in games){pending}."
+        )
+        return
     if first == last:
         runs = "; ".join(_series_line(r) for _, r in series.iterrows())
         title = " and won the title" if int(row.get("titles", 0) or 0) and not vs else ""

@@ -239,6 +239,12 @@ _PLAYER_SERIES = re.compile(
     r"|\b(?:won|lost|win|lose)\s+(?:a\s+|\d+\s+)?(?:playoff\s+|postseason\s+)?series\b"
 )
 
+
+def detect_series_record_intent(text: str) -> bool:
+    """A series result/count request, distinct from a game record or situation."""
+    return bool(_PLAYER_SERIES.search(text.lower()))
+
+
 _PAIR_TIME_WORDS_RE = re.compile(
     r"\b(?:19|20)\d{2}s?\b|\b\d{2}s\b|\b(?:this|these|current|last|past|since|"
     r"recent|recently|decade|era|season|seasons|year|years)\b"
@@ -338,7 +344,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str | None, dict] | None:
     if (
         (player or (team and not opponent and not playoff_round_filter))
         and not (player_a or player_b or team_a or team_b)
-        and _PLAYER_SERIES.search(q)
+        and detect_series_record_intent(q)
     ):
         blocked = None
         if (
