@@ -95,7 +95,7 @@ def _assert_run(actual, expected, selected):
     assert str(actual["end_date"])[:10] == expected["end_date"]
     assert int(actual["start_game_id"]) == int(expected["game_ids"][0])
     assert int(actual["end_game_id"]) == int(expected["game_ids"][-1])
-    for stat in ("pts", "reb", "ast"):
+    for stat in ("pts", "reb", "ast", "fg3m"):
         assert actual[stat + "_avg"] == pytest.approx(
             sum(float(r[stat]) for r in selected) / len(selected), abs=0.00051
         )
@@ -116,6 +116,14 @@ def _assert_case(result, case, sources, field="query"):
         ]
     if "predicate" in case:
         runs = _runs(sample, case["predicate"])
+        condition = (
+            "wins"
+            if "wl" in case["predicate"]
+            else "made_three"
+            if "fg3m_min" in case["predicate"]
+            else "pts>=20"
+        )
+        assert all(row["condition"] == condition for row in sections["streak"])
         if "count" in expected:
             runs = [r for r in runs if len(r) >= case["predicate"]["minimum_run_length"]]
             assert len(runs) == expected["count"]
@@ -138,6 +146,21 @@ def _assert_case(result, case, sources, field="query"):
     ]
     assert [r["game_id"] for r in selected] == expected["game_ids"]
     assert len(selected) == expected["games"]
+    # Every displayed window has a qualified source sample, not only rank one.
+    for row in sections.get("leaderboard", []):
+        window = [
+            r
+            for r in sample
+            if str(row["window_start_date"])[:10]
+            <= r["game_date"]
+            <= str(row["window_end_date"])[:10]
+        ]
+        assert len(window) == row["window_size"] == expected["games"]
+        if case["id"] == "K09-W2":
+            assert row["stretch_value"] == pytest.approx(
+                sum(int(r["fg3m"]) for r in window) / sum(int(r["fg3a"]) for r in window),
+                abs=0.00051,
+            )
     if case["id"] == "K09-W1":
         pairs = {
             (r["game_id"], r["team_id"]): r
@@ -149,12 +172,35 @@ def _assert_case(result, case, sources, field="query"):
         )
         assert margin == expected["reciprocal_score_margin_sum"]
         assert sum(r["wl"] == "W" for r in selected) == expected["wins"]
+        for row in sections.get("leaderboard", []):
+            window = [
+                r
+                for r in sample
+                if str(row["window_start_date"])[:10]
+                <= r["game_date"]
+                <= str(row["window_end_date"])[:10]
+            ]
+            assert row["wins"] == sum(r["wl"] == "W" for r in window)
+            assert row["losses"] == len(window) - row["wins"]
+            assert row["net_per_game"] == pytest.approx(
+                sum(
+                    int(r["pts"]) - int(pairs[(r["game_id"], r["opponent_team_id"])]["pts"])
+                    for r in window
+                )
+                / len(window),
+                abs=0.0051,
+            )
         if field == "last_n_control_query":
             assert [r["game_id"] for r in sample[-10:]] == expected["game_ids"]
             assert {int(r["game_id"]) for r in sections["game_log"]} == {
                 int(r["game_id"]) for r in selected
             }
             actual = sections["summary"][0]
+            for stat in ("pts", "reb", "ast"):
+                assert actual[stat + "_avg"] == pytest.approx(
+                    sum(float(r[stat]) for r in selected) / len(selected), abs=0.00051
+                )
+            assert actual["plus_minus_avg"] == expected["net_per_game"]
         else:
             actual = sections["leaderboard"][0]
             assert str(actual["window_start_date"])[:10] == expected["start_date"]

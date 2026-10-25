@@ -57,3 +57,31 @@ broad coverage, authenticated targeted R2/Raw QA, normal CI/landing and the exis
 browser runner on the changed deployment remain required before K09 acceptance.
 Fresh reviewer wording is reserved until the candidate freezes. Revealed failures
 remain regressions. Core-1 and K10–K12 are not closed by this binding.
+
+## Candidate checking, October 25
+
+Semantic candidate `22b15a89` was independently approved by `/root/gate_checker`
+after checking the frozen oracle, eight source hashes, count/continuity meaning
+and original-query preservation. Fresh qualified-source Tatum/LeBron/Curry
+wordings changed entity, threshold and order; exact maximal-run counts/endpoints
+matched independent raw loops. Six playoff/history/non-streak appearance collision
+controls were unchanged. The revealed Curry appearance failure remains a regression.
+
+Author checks before broad validation: 163 focused cases passed; all twelve source
+queries/controls passed on byte-verified restored data with zero skips; twelve Raw
+QA cases passed 73 assertions with zero suspicious findings. Six frontend-hero
+informational flags are not failures. The local actual API and reused unchanged
+served asset `index-vEjeGbzQ.js` passed all 24 desktop/mobile answers and 48 readiness
+brackets using the same frozen numerical validator, actual table values, identity
+contexts, screenshot hashes and absence of errors/overflow. This is qualified
+local/source evidence, not new authenticated R2 or deployed acceptance.
+
+The browser check is `tests/test_deployed_k09_sequences_browser.py::test_deployed_k09_sequences_desktop_and_mobile`.
+It uses the existing complete-bundle capture runner and all twelve source-bound
+query/control selections. The K09 bundle retains the existing seven-second
+admission spacing in both local and public checking. Other bundles and production
+admission/timeout limits are unchanged. Current generation/asset/readiness,
+subjects, count versus longest, exact source boundaries/values, displayed streak
+lengths/W-L/dates and best-versus-last rates are required. Its final independent
+gate review, stable broad preflight, hosted R2/QA, normal CI/landing and one changed-
+deployment capture remain pending.
