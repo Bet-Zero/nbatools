@@ -69,6 +69,18 @@ def _assert_rendered(item, case):
         return
     if ident in ("K12-S1", "K12-H1"):
         summary = sections["summary"][0]
+        expected = case["original"]
+        averages = expected["expected"]["averages"] if ident == "K12-H1" else expected["means"]
+        name = "Patrick Ewing" if ident == "K12-H1" else "Stephen Curry"
+        basis = (
+            "over his covered career games (1996-97–2001-02)"
+            if ident == "K12-H1"
+            else "in the 2023-24 regular season"
+        )
+        assert (
+            f"{name} has averaged {averages['pts']:.1f} points, "
+            f"{averages['reb']:.1f} rebounds and {averages['ast']:.1f} assists {basis}."
+        ) in text
         assert summary["player_name"] in text
         for stat, noun in (("pts", "points"), ("reb", "rebounds"), ("ast", "assists")):
             assert f"{summary[stat + '_avg']:.1f} {noun}" in text
@@ -83,6 +95,11 @@ def _assert_rendered(item, case):
     if ident == "K12-R1":
         row = _table(item, "Team record")[0]
         expected = case["original"]
+        assert (
+            f"The Boston Celtics are {expected['wins']}-{expected['losses']} "
+            "in the 2023-24 regular season against the Knicks, "
+            f"a {expected['wins'] / expected['games']:.0%} win rate."
+        ) in text
         assert row["Team"].endswith("Boston Celtics")
         assert row["W-L"] == f"{expected['wins']}-{expected['losses']}"
         assert int(row["Games"]) == expected["games"]
@@ -132,6 +149,12 @@ def _assert_rendered(item, case):
         return
     assert ident == "K12-M1"
     shown = {row["Metric"]: row for row in _table(item, "Comparison metrics")}
+    first, second = case["original"]["samples"]
+    leader, other = sorted((first, second), key=lambda sample: sample["wins"], reverse=True)
+    assert (
+        f"{leader['name']} has {leader['wins']} wins to {other['name']}'s {other['wins']} "
+        "in the 2023-24 regular season."
+    ) in text
     for sample in case["original"]["samples"]:
         assert sample["name"] in text
         for stat, value in sample["means"].items():
