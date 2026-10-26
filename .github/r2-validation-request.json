@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "641a23898156db87bbc71323999cabe919a0bac7",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k12_delivery_real_data.py::test_k12_answer_delivery[K12-H1]",
+    "tests/test_runtime_profile_real_data.py::test_k12_controlled_delivery_budgets[historical]"
+  ],
+  "raw_qa_cases": [
+    "k12_h1"
+  ]
+}
