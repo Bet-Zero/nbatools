@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "cc67746cb39349b3943d2e18b9c1e014955c1943",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k12_delivery_real_data.py",
+    "tests/test_runtime_profile_real_data.py::test_k12_controlled_delivery_budgets"
+  ],
+  "raw_qa_cases": [
+    "k12_s1",
+    "k12_r1",
+    "k12_b1",
+    "k12_c1",
+    "k12_l1",
+    "k12_x1",
+    "k12_m1",
+    "k12_z1",
+    "k12_e1",
+    "k12_n1",
+    "k12_h1",
+    "k12_r1_win_loss"
+  ]
+}
