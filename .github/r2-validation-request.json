@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "4d518f8d94986460244d8eec4a11fb3d0295eca8",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_k11_population_browser.py::test_deployed_k11_population_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
