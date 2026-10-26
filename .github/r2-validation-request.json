@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "06bc17d0fee1aa2b5db147e6170db583aaa559df",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_deployed_k12_delivery_browser.py::test_deployed_k12_delivery_desktop_and_mobile"
+  ],
+  "raw_qa_cases": []
+}
