@@ -36,6 +36,23 @@ establish historical membership. The official2026-27 schedule remains planning
 source JSON: future/TBD rows never become Final in the completed-game contract.
 These inputs do not provide exact period/on-off data or full current freshness.
 
+The existing publication-derived `metadata/player_names.csv` has one distinct
+`(player_id, player_name, season)` row across both game season types, with
+`first_seen` preserving source order. It is generated from all staged player-game
+files by `_write_player_names`, not from roster snapshots. Named multi-season
+loads may use the union of seasons for **every** matching ID and spelling to
+exclude irrelevant files before reading. Actual game rows still determine
+identity selection, team filtering, sample values and ambiguity notes; requested
+search spans and partial-career disclosures remain explicit. Missing/malformed
+season metadata, unavailable season coverage, unknown identities and empty
+intersections retain a full scan. A well-formed arbitrary list is not completeness
+proof: use the authenticated publication producer and qualified generation.
+K12 independently reconciled the existing immutable index against all60served
+player-game files/786,773rows:14,581valid named tuples and their order match
+exactly. Three nameless rows for unindexed ID2179 remain outside that index's
+valid-name contract and cannot establish an identity. This index is neither
+historical roster membership nor evidence of absence, injury or status.
+
 The goal is to keep query behavior stable as the repo grows. Commands should depend on explicit dataset contracts, not on accidental columns or vague assumptions.
 
 This is a living document. Update it whenever:

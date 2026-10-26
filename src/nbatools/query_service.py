@@ -300,6 +300,27 @@ def _add_identity_contexts(
         meta["opponent_context"] = opponent_context
 
 
+def _bind_selected_summary_player(metadata: dict[str, Any], result: Any) -> None:
+    """A summary's selected player rows outrank a same-name roster lookup."""
+    if metadata.get("route") != "player_game_summary" or not metadata.get("player"):
+        return
+    rows = getattr(result, "game_log", None)
+    if not isinstance(rows, pd.DataFrame) or rows.empty:
+        return
+    if not {"player_id", "player_name"}.issubset(rows.columns):
+        return
+    ids = {_coerce_int(value) for value in rows["player_id"]}
+    if None in ids or len(ids) != 1:
+        return
+    player_id = ids.pop()
+    context = metadata.get("player_context") or {}
+    if context.get("player_id") == player_id:
+        return
+    name = _clean_text(rows["player_name"].iloc[0])
+    if name:
+        metadata["player_context"] = {"player_id": player_id, "player_name": name}
+
+
 def _opponent_quality_surface_term(value: Any) -> str | None:
     if isinstance(value, dict):
         return _clean_text(value.get("surface_term"))
@@ -3306,6 +3327,7 @@ def _finalize_natural_query_result(
             metadata,
             result.games,
         )
+    _bind_selected_summary_player(metadata, result)
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
@@ -3813,6 +3835,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
             route=route,
         )
 
+    _bind_selected_summary_player(metadata, result)
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_stretch_answer_metadata(metadata, result)
     _add_player_stretch_answer_metadata(metadata, result)

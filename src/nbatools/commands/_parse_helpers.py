@@ -4233,6 +4233,9 @@ def build_opponent_quality_note(opponent_quality: dict | None = None) -> str | N
 
 
 def detect_wins_losses(text: str) -> tuple[bool, bool]:
+    # "win-loss record" names the record basis, not two sample predicates.
+    # Keep genuine outcome clauses elsewhere in the same question.
+    text = re.sub(r"\bwin[\s-]+loss\s+record\b", "record", text)
     wins_only = bool(re.search(r"\bwins?\b|\bwon\b", text))
     losses_only = bool(
         re.search(r"\bloss(?:es)?\b|\blost\b", text)

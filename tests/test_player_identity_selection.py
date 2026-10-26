@@ -474,3 +474,134 @@ def test_fullphrase_lookup_and_exact_operand_share_unique_id_suffix_binding(
         "Controlled Alpha and unread", "Controlled Alpha Jr."
     )
     assert not _is_exact_player_reference_phrase("Controlled Gamma", "Controlled Gamma II")
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("Mike James", {"2005-06", "2017-18"}),
+        ("Bobby Portis", {"2023-24", "2025-26"}),
+        ("Unknown Player", None),
+    ],
+)
+def test_published_seasons_preserve_all_ids_and_spellings(monkeypatch, request, name, expected):
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame(
+        {
+            "player_id": [2229, 1628455, 1626171, 1626171],
+            "player_name": ["Mike James", "Mike James", "Bobby Portis", "Bobby Portis Jr."],
+            "season": ["2005-06", "2017-18", "2023-24", "2025-26"],
+            "first_seen": [0, 1, 2, 3],
+        }
+    )
+    _patch_source(monkeypatch, published, [])
+    available = published.season.tolist()
+    assert entity_resolution.player_seasons_for_name(name, available) == expected
+    # An available season missing from the published ledger invalidates exclusion.
+    assert entity_resolution.player_seasons_for_name(name, [*available, "2026-27"]) is None
+
+
+@pytest.mark.parametrize("season", [None, "bad", "2023-25"])
+def test_unusable_published_seasons_keep_full_scan(monkeypatch, request, season):
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame(
+        {"player_id": [121], "player_name": ["Patrick Ewing"], "first_seen": [0]}
+    )
+    if season is not None:
+        published["season"] = season
+    _patch_source(monkeypatch, published, [])
+    assert entity_resolution.player_seasons_for_name("Patrick Ewing", ["1996-97"]) is None
+
+
+def test_multiseason_load_keeps_same_name_selection_and_notes(roster_index, monkeypatch):
+    from nbatools.commands import data_utils
+
+    seasons = ["1996-97", "2001-02", "2005-06", "2010-11"]
+    frames = {}
+    for index, season in enumerate(seasons):
+        player_id = 201607 if season == "2010-11" else (121 if index < 2 else 999)
+        frames[season] = pd.DataFrame(
+            {
+                "player_id": [player_id],
+                "player_name": ["Other" if player_id == 999 else "Patrick Ewing"],
+                "season": [season],
+                "game_date": [season[:4] + "-12-01"],
+                "team_abbr": ["NOH" if player_id == 201607 else "NYK"],
+            }
+        )
+    loaded = []
+    monkeypatch.setattr(data_utils, "data_exists", lambda path: True)
+    monkeypatch.setattr(data_utils, "data_prefetch", lambda paths: list(paths))
+    monkeypatch.setattr(
+        data_utils,
+        "_load_player_games_cached",
+        lambda season, *args: loaded.append(season) or frames[season],
+    )
+    monkeypatch.setattr(
+        entity_resolution,
+        "player_seasons_for_name",
+        lambda *args: {"1996-97", "2001-02", "2010-11"},
+    )
+    optimized = data_utils.load_player_games_for_seasons(
+        seasons, "Regular Season", player="Patrick Ewing"
+    )
+    assert loaded == ["1996-97", "2001-02", "2010-11"]
+    monkeypatch.setattr(entity_resolution, "player_seasons_for_name", lambda *args: None)
+    baseline = data_utils.load_player_games_for_seasons(
+        seasons, "Regular Season", player="Patrick Ewing"
+    )
+    for team in (None, "NOH"):
+        before, after = [], []
+        pd.testing.assert_frame_equal(
+            select_player_rows(baseline, "Patrick Ewing", team=team, notes=before).reset_index(
+                drop=True
+            ),
+            select_player_rows(optimized, "Patrick Ewing", team=team, notes=after).reset_index(
+                drop=True
+            ),
+        )
+        assert before == after
+    assert "Another player" in before[0]
+
+
+def test_season_candidates_follow_generation_and_keep_no_overlap_fallback(monkeypatch, request):
+    request.addfinalizer(entity_resolution.reset_player_index)
+    published = pd.DataFrame(
+        {
+            "player_id": [121, 999],
+            "player_name": ["Patrick Ewing", "Other"],
+            "season": ["1996-97", "2010-11"],
+            "first_seen": [0, 1],
+        }
+    )
+    _patch_source(monkeypatch, published, [])
+    available = ["1996-97", "2010-11"]
+    assert entity_resolution.player_seasons_for_name("Patrick Ewing", available) == {"1996-97"}
+    assert entity_resolution.player_seasons_for_name("Patrick Ewing", ["2010-11"]) is None
+    # A new generation changes this same displayed name's identity and season.
+    published["player_id"] = [999, 201607]
+    published["player_name"] = ["Other", "Patrick Ewing"]
+    monkeypatch.setattr(entity_resolution, "data_source_cache_key", lambda: "published-next")
+    assert entity_resolution.player_seasons_for_name("Patrick Ewing", available) == {"2010-11"}
+
+
+def test_single_season_player_load_does_not_consult_membership(roster_index, monkeypatch):
+    from nbatools.commands import data_utils
+
+    monkeypatch.setattr(
+        entity_resolution,
+        "player_seasons_for_name",
+        lambda *args: pytest.fail("Single-season path changed"),
+    )
+    monkeypatch.setattr(data_utils, "data_exists", lambda path: True)
+    monkeypatch.setattr(data_utils, "data_prefetch", lambda paths: list(paths))
+    frame = pd.DataFrame({"player_id": [121], "player_name": ["Patrick Ewing"]})
+    monkeypatch.setattr(data_utils, "_load_player_games_cached", lambda *args: frame)
+    assert (
+        len(
+            data_utils.load_player_games_for_seasons(
+                ["1996-97"], "Regular Season", player="Patrick Ewing"
+            )
+        )
+        == 1
+    )

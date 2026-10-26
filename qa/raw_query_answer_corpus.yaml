@@ -17041,3 +17041,301 @@ cases:
       identities, ranked keys and missing-roster disclosure in test_k11_population_real_data.py;
       revealed leading-season control is a regression, not fresh held-out success. Historical
       human-review fields remain unchanged.
+
+  - id: k12_s1
+    query: Stephen Curry averages in 2023-24
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - by_season
+    - game_log
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.player_context.player_id
+      equals: 201939
+    - path: result.sections.summary.0.games
+      equals: 74
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_r1
+    query: Celtics record vs NYK from 2023-11-01 to 2024-03-01
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    - by_season
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 3
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_b1
+    query: Top 5 players by three point percentage in 2023-24 minimum 300 attempts
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: leaderboards
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_sections:
+    - leaderboard
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_c1
+    query: In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers?
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: count_queries
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.primary_count
+      equals: 4
+    - path: result.metadata.player_context.player_id
+      equals: 1628973
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_l1
+    query: top 5 scoring games by rookies in 2023-24
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - finder
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_x1
+    query: Nuggets home vs away splits against Timberwolves with at least 110 points
+      in 2023-24
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: splits
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_sections:
+    - summary
+    - split_comparison
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_m1
+    query: Compare Stephen Curry and Jalen Brunson averages in 2023-24.
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_sections:
+    - summary
+    - comparison
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 74
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_z1
+    query: How many Nikola Jokic games reached at least 80 points in 2023-24?
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: count_queries
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+    - count
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.primary_count
+      equals: 0
+    - path: result.metadata.player_context.player_id
+      equals: 203999
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_e1
+    query: List Jalen Brunson games with 80 or more points in 2023-24.
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_sections: []
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.metadata.player_context.player_id
+      equals: 1628973
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+    expected_reason: no_match
+  - id: k12_n1
+    query: Stephen Curry stats in 2026-27
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_summary
+    expected_sections: []
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2026-27
+    - path: result.metadata.player_context.player_id
+      equals: 201939
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+    expected_reason: no_data
+  - id: k12_h1
+    query: Patrick Ewing career stats
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: canonical
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_sections:
+    - summary
+    - by_season
+    - game_log
+    hard_assertions:
+    - path: result.metadata.player_context.player_id
+      equals: 121
+    - path: result.sections.summary.0.games
+      equals: 348
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.
+  - id: k12_r1_win_loss
+    query: Celtics win-loss record against Knicks from 2023-11-01 to 2024-03-01
+    category: answer_delivery
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      review_required: true
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections:
+    - summary
+    - by_season
+    hard_assertions:
+    - path: result.metadata.season
+      equals: 2023-24
+    - path: result.sections.summary.0.games
+      equals: 3
+    review_notes: K12 finite composite07c1 reuses qualified accepted source expectations;
+      exact numeric/identity/basis checks remain in test_k12_delivery_real_data.py.
+      N1 is a separate missing-source control, not a completed statistical feature.
+      Actual rendering/freshness and declared performance are independently gated; actual
+      Vercel cold proof remains unestablished.

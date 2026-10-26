@@ -1285,6 +1285,12 @@ def load_player_games_for_seasons(
     data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
     available = [s for s in seasons if data_exists(f"data/raw/player_game_stats/{s}_{safe}.csv")]
+    if player and len(available) > 1:
+        from nbatools.commands.entity_resolution import player_seasons_for_name
+
+        candidate_seasons = player_seasons_for_name(player, available)
+        if candidate_seasons is not None:
+            available = [season for season in available if season in candidate_seasons]
     data_prefetch(
         f"data/raw/{kind}/{season}_{safe}.csv"
         for season in available

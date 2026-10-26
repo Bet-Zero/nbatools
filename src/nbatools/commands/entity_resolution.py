@@ -716,6 +716,31 @@ def player_ids_for_name(name: str) -> frozenset[str]:
     return _indexed_player_ids(_normalize_for_matching(name))
 
 
+def player_seasons_for_name(name: str, available: list[str]) -> frozenset[str] | None:
+    """Candidate seasons from the publication-derived game-row name ledger.
+
+    Its union across season types and every matching ID/spelling is a superset
+    of rows selection can retain. This is not roster membership or absence
+    evidence. Unknown identities or an unusable ledger retain the full scan.
+    """
+    ids = player_ids_for_name(name)
+    published = _read_published_player_names()
+    if not ids or published is None or "season" not in published.columns:
+        return None
+    seasons = published["season"].astype(str)
+    if not seasons.str.fullmatch(r"\d{4}-\d{2}").all():
+        return None
+    if any((int(value[:4]) + 1) % 100 != int(value[5:]) for value in seasons.unique()):
+        return None
+    if not set(available).issubset(set(seasons)):
+        return None
+    rows = published[published["player_id"].isin(ids)]
+    if set(rows["player_id"]) != set(ids):
+        return None
+    candidates = frozenset(rows["season"].astype(str))
+    return candidates if candidates.intersection(available) else None
+
+
 def _indexed_player_ids(key: str) -> frozenset[str]:
     """Resolve a complete normalized name against the already-loaded ID index."""
     if _player_ids_by_name_cache is None:
