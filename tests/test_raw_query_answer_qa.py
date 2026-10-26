@@ -363,7 +363,20 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 181
+    assert len(selected) == 192
+    assert {
+        "k11_l1",
+        "k11_l2",
+        "k11_t1",
+        "k11_t2",
+        "k11_r1",
+        "k11_r2",
+        "k11_p1",
+        "k11_p2",
+        "k11_p3",
+        "k11_c1",
+        "k11_r2_leading_season",
+    } <= {case["id"] for case in selected}
     assert {
         "original_window_played_pair_source_empty",
         "original_window_played_pair_source_positive",
