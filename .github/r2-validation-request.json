@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "039039ab1c9844e39a94590288780d6082d84f2b",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k11_population_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k11_l1",
+    "k11_l2",
+    "k11_t1",
+    "k11_t2",
+    "k11_r1",
+    "k11_r2",
+    "k11_p1",
+    "k11_p2",
+    "k11_p3",
+    "k11_c1",
+    "k11_r2_leading_season"
+  ]
+}
