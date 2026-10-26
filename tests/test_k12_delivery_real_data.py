@@ -50,6 +50,11 @@ def _qualified_sources():
     raw = ORACLE.read_bytes()
     assert hashlib.sha256(raw).hexdigest() == ORACLE_SHA
     oracle = json.loads(raw)
+    # Independently qualified against all 60 inventory-matched player-game files.
+    index = data_path("metadata/player_names.csv").read_bytes()
+    assert hashlib.sha256(index).hexdigest() == (
+        "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2"
+    )
     for name, digest in oracle["reused_oracles"].items():
         assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest, name
     sources = {}

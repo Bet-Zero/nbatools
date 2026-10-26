@@ -68,7 +68,8 @@ def test_first_request_shared_team_comparison_profile(tmp_path):
     assert all(stage["route"] == "player_compare" for stage in queries)
 
 
-def test_k12_controlled_delivery_budgets(tmp_path):
+@pytest.mark.parametrize("group", ["common", "historical"])
+def test_k12_controlled_delivery_budgets(tmp_path, group):
     """Declared controlled cold/warm sample; production cold remains separate."""
     import hashlib
     import math
@@ -81,8 +82,11 @@ def test_k12_controlled_delivery_budgets(tmp_path):
     oracle, sources = _qualified_sources()
     bindings = _bindings(oracle)
     common = ("K12-S1", "K12-R1", "K12-B1", "K12-M1")
+    selected = common if group == "common" else ("K12-H1",)
+    expected_cold = 2 * len(selected)
+    expected_warm = 40 if group == "common" else 0
     samples, problems = [], []
-    for ident in (*common, "K12-H1"):
+    for ident in selected:
         for repetition in (1, 2):
             case = bindings[ident]
             cache = tmp_path / f"{ident}-{repetition}"
@@ -155,10 +159,11 @@ def test_k12_controlled_delivery_budgets(tmp_path):
     report = dict(
         generation=oracle["generation_id"],
         scope="Controlled GitHub fresh-process R2; not Vercel cold-start acceptance",
-        cold_expected=10,
+        group=group,
+        cold_expected=expected_cold,
         samples=samples,
         problems=problems,
-        common_warm_expected=40,
+        common_warm_expected=expected_warm,
         common_warm_executed=len(warm),
         common_warm_p95=warm[math.ceil(0.95 * len(warm)) - 1] if warm else None,
         common_by_case={
@@ -180,8 +185,9 @@ def test_k12_controlled_delivery_budgets(tmp_path):
     output.mkdir(parents=True, exist_ok=True)
     (output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n")
     warnings.warn(RuntimeProfileReport("K12_MEASUREMENTS " + json.dumps(report)), stacklevel=1)
-    assert not problems and len(samples) == 10 and len(warm) == 40
-    assert report["common_warm_p95"] <= 3
+    assert not problems and len(samples) == expected_cold and len(warm) == expected_warm
+    if expected_warm:
+        assert report["common_warm_p95"] <= 3
     for sample in samples:
         assert sample["cold_seconds"] <= (10 if sample["id"] in common else 20), sample
         if sample["id"] == "K12-H1":
