@@ -1,0 +1,130 @@
+{
+  "generation_id": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "reused_oracles": {
+    "working/nba-tools-completion-program/k02-raw-oracle.json": "7063b4d91ad641f8d0440f3b44d4db4eec64ede562de7b761099605891162021",
+    "working/nba-tools-completion-program/k04-independent-oracle.json": "d1dd08d99e15886db0e2a4f3e417b1db36d9350bd5bca3a631525c58d8d20ece",
+    "working/nba-tools-completion-program/k06-raw-oracle.json": "bc4738f886e8215597ac6d3f061bb264a7ed65e79952f02d1685189e60554ade",
+    "working/nba-tools-completion-program/k07-raw-oracle.json": "cf8a18fe9ed2515fab83f57320055381503a55ca8330ab79d68535e01b416e71",
+    "working/nba-tools-completion-program/k11-raw-oracle.json": "b2491ba1ba5026bd0c7a853e1b44f7aa8c72adc71fbd8bbb077f26975cd77649",
+    "tests/k03_expected.json": "46368623b79ff62dbb94f920180866908e54a3b1059fce0b200ea7cf499d5f20",
+    "tests/k01_historical_expected.json": "ded324dd5c9462694170bb92883e3343cc53fe4d116de08dc529bfaf420b6152"
+  },
+  "source_hashes": {
+    "raw/player_game_stats/1996-97_regular_season.csv": "00f6a5dc8e7479a917b4a5308509ba622647583b824aa4be5b3e21024611996b",
+    "raw/team_game_stats/1996-97_regular_season.csv": "453250d161899111ef5492bd0d3988899c57307e50f773d3a90e1012ac7e7ad2",
+    "raw/player_game_stats/1997-98_regular_season.csv": "e583fde4c2fe95994ecd4aca81739051268cc40e536cad7adba67ad753bb8349",
+    "raw/team_game_stats/1997-98_regular_season.csv": "842f3018277601282f6a840efd7b3aca3d0ee0a77b5e578f0aa975f6baafd637",
+    "raw/player_game_stats/1998-99_regular_season.csv": "c48f3e69e00196bdbab975a0a68fadbcdadbde82bd816ae48c5c644b826dd747",
+    "raw/team_game_stats/1998-99_regular_season.csv": "734c128057a2ac88713a42aa091cd80c6e18744a4fc7ab2763755b691aac55a2",
+    "raw/player_game_stats/1999-00_regular_season.csv": "5990edf5686c2cf2e5b8f92c20f7ea5a88a308c9ae2ba39666a290c7c3cf9a87",
+    "raw/team_game_stats/1999-00_regular_season.csv": "510da2c5d4c6a1a33fcf0818a1942905bbab24c1a39b5d4736ee12c35061a109",
+    "raw/player_game_stats/2000-01_regular_season.csv": "2623c5bc577bc8139088aa506a77dae94b0527d4bde060964d737e34e7d5a151",
+    "raw/team_game_stats/2000-01_regular_season.csv": "d0f3c981998c8d2e036d9b903b289e3dfa5e9056b23c19d5f9268a5ab61659aa",
+    "raw/player_game_stats/2001-02_regular_season.csv": "54cd78100a56040a9a836adbeae80e4adc0c23479846e4db9fc7e8a1413bb52a",
+    "raw/team_game_stats/2001-02_regular_season.csv": "cedf88f547d75252a7021391e30dc7baa59c83df895b062a4ca1a8b2b1694d30",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/rosters/2023-24.csv": "03d546b63345c29490994df09e81b45b8792400825c35ddd71f4147b74eeab78"
+  },
+  "cases": [
+    {
+      "id": "K12-S1",
+      "kind": "summary",
+      "query": "Stephen Curry averages in 2023-24",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k02-raw-oracle.json",
+        "id": "K02-A2"
+      }
+    },
+    {
+      "id": "K12-R1",
+      "kind": "record",
+      "query": "Celtics record vs NYK from 2023-11-01 to 2024-03-01",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k02-raw-oracle.json",
+        "id": "K02-B1"
+      }
+    },
+    {
+      "id": "K12-B1",
+      "kind": "ranking",
+      "query": "Top 5 players by three point percentage in 2023-24 minimum 300 attempts",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k04-independent-oracle.json",
+        "id": "K04-B1"
+      }
+    },
+    {
+      "id": "K12-C1",
+      "kind": "count",
+      "query": "In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers?",
+      "reference": {
+        "file": "tests/k03_expected.json",
+        "id": "K03-A2"
+      }
+    },
+    {
+      "id": "K12-L1",
+      "kind": "list",
+      "query": "top 5 scoring games by rookies in 2023-24",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k11-raw-oracle.json",
+        "id": "K11-R1"
+      }
+    },
+    {
+      "id": "K12-X1",
+      "kind": "split",
+      "query": "Nuggets home vs away splits against Timberwolves with at least 110 points in 2023-24",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k07-raw-oracle.json",
+        "id": "K07-C1"
+      }
+    },
+    {
+      "id": "K12-M1",
+      "kind": "comparison",
+      "query": "Compare Stephen Curry and Jalen Brunson averages in 2023-24.",
+      "reference": {
+        "file": "working/nba-tools-completion-program/k06-raw-oracle.json",
+        "id": "K06-A1"
+      }
+    },
+    {
+      "id": "K12-Z1",
+      "kind": "zero",
+      "query": "How many Nikola Jokic games reached at least 80 points in 2023-24?",
+      "reference": {
+        "file": "tests/k03_expected.json",
+        "id": "K03-E1"
+      }
+    },
+    {
+      "id": "K12-E1",
+      "kind": "empty",
+      "query": "List Jalen Brunson games with 80 or more points in 2023-24.",
+      "reference": {
+        "file": "tests/k03_expected.json",
+        "id": "K03-E2"
+      }
+    },
+    {
+      "id": "K12-N1",
+      "kind": "unavailable",
+      "query": "Stephen Curry stats in 2026-27",
+      "reference": null
+    },
+    {
+      "id": "K12-H1",
+      "kind": "partial_career",
+      "query": "Patrick Ewing career stats",
+      "reference": {
+        "file": "tests/k01_historical_expected.json",
+        "id": "K01-E1"
+      }
+    }
+  ],
+  "meaning": "Finite answer-delivery acceptance reuses independently accepted numerical/source meanings. Ten stored-data cases include a qualified empty list and zero count; N1 is unavailable-source safety, never a new completed statistical feature. H1 is 348 stored games only, covered1996-97..2001-02; no earlier-career or current-data claim. Source qualification is reused by identical hashes; this is not recomputation of unchanged arithmetic."
+}

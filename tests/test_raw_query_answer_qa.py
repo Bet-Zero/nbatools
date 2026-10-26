@@ -363,7 +363,21 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 192
+    assert len(selected) == 204
+    assert {
+        "k12_s1",
+        "k12_r1",
+        "k12_b1",
+        "k12_c1",
+        "k12_l1",
+        "k12_x1",
+        "k12_m1",
+        "k12_z1",
+        "k12_e1",
+        "k12_n1",
+        "k12_h1",
+        "k12_r1_win_loss",
+    } <= {case["id"] for case in selected}
     assert {
         "k11_l1",
         "k11_l2",

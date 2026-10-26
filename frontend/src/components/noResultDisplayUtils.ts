@@ -37,7 +37,7 @@ const RECENT_DEFENSE_ALTERNATIVES = [
 ];
 
 const NO_DATA_STEPS = [
-  "Try a season covered by the local data",
+  "Try a season covered by this snapshot",
   "Broaden the date window",
   "Remove narrow split filters",
 ];
@@ -245,6 +245,14 @@ export function readableNoResultMessage(
 
   if (isBarePlayerVsPlayerAmbiguity(reason, metadata)) {
     return "This could mean a few different things. Try a more specific query, such as a season comparison or stats-vs phrasing.";
+  }
+
+  if (reason === "no_data") {
+    const subject = metadata?.player_context?.player_name ?? metadata?.team_context?.team_name ?? metadata?.player ?? metadata?.team;
+    const season = metadata?.season;
+    if (typeof subject === "string" && subject.trim() && typeof season === "string" && season.trim()) {
+      return `Data is not available for ${subject} in ${season}.`;
+    }
   }
 
   if (isDateNoMatch(reason, metadata)) {

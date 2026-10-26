@@ -1311,3 +1311,12 @@ When updating this file, also check whether these should be updated in the same 
 - `current_state_guide.md` = strict verified behavior / shipped state
 - `query_guide.md` = broader narrative reference with structured + natural examples
 - `quick_query_guide.md` = shortest path to trying the tool
+
+
+For unavailable named player/team season data, the result identifies the requested
+subject and season in its unavailable message; this is requested scope, not a claim
+that filters executed or that the answer is zero. A qualified empty query remains
+“No Matching Results”, while a qualified count can correctly return zero. Historical
+player summary identity metadata follows the uniquely selected game-log player ID,
+so a same-name roster entry cannot substitute a different player's display context.
+“Win-loss record” names record basis; genuine won/lost sample clauses remain separate.

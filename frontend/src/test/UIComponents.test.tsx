@@ -1090,6 +1090,13 @@ describe("NoResultDisplay", () => {
     expect(screen.getByLabelText("Suggested next steps")).toBeInTheDocument();
   });
 
+  it("names the unavailable requested player and season without claiming an executed empty sample", () => {
+    render(<NoResultDisplay reason="no_data" status="no_result" metadata={{ player_context: { player_id: 201939, player_name: "Stephen Curry" }, player: "Stephen Curry", season: "2026-27" }} />);
+    expect(screen.getByText("Data is not available for Stephen Curry in 2026-27.")).toBeVisible();
+    expect(screen.queryByLabelText("Result context")).not.toBeInTheDocument();
+    expect(screen.queryByText(/0 games/)).not.toBeInTheDocument();
+  });
+
   it("shows supplied caveats in details", () => {
     render(
       <NoResultDisplay

@@ -128,9 +128,75 @@ def _hotspots(fn, limit: int = 12) -> list[str]:
     return rows
 
 
+def delivery_sample(query: str, warm_repeats: int = 5) -> dict[str, Any]:
+    """One unprimed process sample; caller times startup using the shared clock.
+
+    Unlike the diagnostic profile above, no name-index priming or hotspot call
+    precedes/interleaves this sample. This is controlled runtime evidence, not a
+    measurement of a Vercel cold start or of HTTP/browser delivery.
+    """
+    import hashlib
+
+    if not 1 <= warm_repeats <= 10:
+        raise ValueError("warm_repeats must be between 1 and 10")
+    initial_files = _files_cached()
+    if initial_files:
+        raise ValueError("Delivery samples require a fresh empty data cache")
+    from nbatools.api_handlers import query_result_to_payload
+    from nbatools.data_source import data_generation_context
+    from nbatools.dataframe_cache import frame_cache_info
+    from nbatools.query_service import execute_natural_query
+
+    def answer():
+        payload = query_result_to_payload(execute_natural_query(query))
+        encoded = json.dumps(payload, sort_keys=True, allow_nan=False).encode()
+        ready_at = time.monotonic_ns()
+        return payload, hashlib.sha256(encoded).hexdigest(), ready_at
+
+    with data_generation_context() as generation:
+        first, fingerprint, first_ready_at = answer()
+        warm = []
+        for index in range(warm_repeats):
+            started = time.monotonic_ns()
+            payload, digest, ready_at = answer()
+            warm.append(
+                {
+                    "index": index + 1,
+                    "seconds": (ready_at - started) / 1e9,
+                    "fingerprint": digest,
+                    "status": payload["result_status"],
+                    "route": payload["route"],
+                }
+            )
+    cache = frame_cache_info()
+    return {
+        "query": query,
+        "generation": generation,
+        "data_source": os.environ.get("DATA_SOURCE", "local"),
+        "initial_cache_files": initial_files,
+        "frame_cache_max_entries": cache.max_entries,
+        "frame_cache_max_bytes": cache.max_bytes,
+        "first_answer_monotonic_ns": first_ready_at,
+        "first_payload": first,
+        "first_fingerprint": fingerprint,
+        "warm": warm,
+        "measurement_scope": "Controlled fresh-process runtime; not deployed cold-start proof",
+    }
+
+
 def main(argv: list[str] | None = None) -> None:
-    queries = tuple(argv if argv else sys.argv[1:]) or DEFAULT_QUERIES
-    print(json.dumps(profile(queries), indent=2))
+    arguments = list(argv if argv is not None else sys.argv[1:])
+    if arguments and arguments[0] == "--delivery-sample":
+        import argparse
+
+        parser = argparse.ArgumentParser(description="Unprimed controlled delivery sample")
+        parser.add_argument("--delivery-sample", action="store_true")
+        parser.add_argument("--warm-repeats", type=int, default=5)
+        parser.add_argument("query")
+        options = parser.parse_args(arguments)
+        print(json.dumps(delivery_sample(options.query, options.warm_repeats)))
+    else:
+        print(json.dumps(profile(tuple(arguments) or DEFAULT_QUERIES), indent=2))
 
 
 if __name__ == "__main__":

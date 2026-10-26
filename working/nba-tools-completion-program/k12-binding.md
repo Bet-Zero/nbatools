@@ -1,0 +1,43 @@
+# K12 finite answer-delivery binding
+
+Owner authorized K12 after completed K11, then stop. Base live main `4d518f8d94986460244d8eec4a11fb3d0295eca8`; only open PR at entry is preserved PR462. `/root` owns the sole maker/integration lane; `/root/k11_checker` separately checks numerical meaning/language; `/root/k11_gate_checker` separately checks validation/performance gates. Existing instructions and source/semantic/browser implementations are reused, not rebuilt. This closes only K12's existing delivery obligations; it cannot close all Core-1 while PR462's46absence positives and other retained obligations remain open.
+
+## Frozen delivery cases
+
+The independent composite oracle [k12-delivery-oracle.json](k12-delivery-oracle.json), SHA256 `07c1f729b8751811ad63b00e0e2bb80928a5b6e932e2cddaf53c89066a89dbda`, was frozen before K12 engine baseline. It references seven existing accepted oracle files/case IDs and15inventory-matched source hashes. Existing expected arithmetic is retained with its original revision; only missing/current rendered acceptance is added.
+
+| ID | Query | Delivery obligation |
+| --- | --- | --- |
+| K12-S1 | Stephen Curry averages in 2023-24 | Actual named-player summary, means/totals/sample and season |
+| K12-R1 | Celtics record vs NYK from 2023-11-01 to 2024-03-01 | Named-team record, explicit opponent/date range and game basis |
+| K12-B1 | Top 5 players by three point percentage in 2023-24 minimum 300 attempts | Ratio of totals, declared300attempt floor, ordered ranking |
+| K12-C1 | In 2023-24, how many Jalen Brunson games had 8 or more assists and no turnovers? | Exact qualifying game count, not distinct players |
+| K12-L1 | top 5 scoring games by rookies in 2023-24 | Rookie player-game population, scope and incomplete classifications |
+| K12-X1 | Nuggets home vs away splits against Timberwolves with at least 110 points in 2023-24 | Filter before home/away split; exact subject/opponent/threshold/buckets |
+| K12-M1 | Compare Stephen Curry and Jalen Brunson averages in 2023-24. | Two explicit player samples, common basis and rendered comparison |
+| K12-Z1 | How many Nikola Jokic games reached at least 80 points in 2023-24? | Qualified zero count, not missing source |
+| K12-E1 | List Jalen Brunson games with 80 or more points in 2023-24. | Qualified empty list, honest no-match and requested scope |
+| K12-N1 | Stephen Curry stats in 2026-27 | Separate missing-source control; honest unavailable scope |
+| K12-H1 | Patrick Ewing career stats | 348covered games; exact1996-97..2001-02span and earlier-career limitation |
+
+Snapshot freshness is checked across the actual UI, separately from query-specific data-through dates. Generation `availability-opening-s4-v1-20261017`, manifest `5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52`; inventory release `data-inventory-39158132815`/JSONd5f72265, existing verified703-object restoration and K11's live-pointer/read-only receipts are reused. No2026-27production season is invented. Classification snapshots are not game-date membership or medical status. No NBA acquisition/publication.
+
+## Frozen measurement sample and budgets
+
+Common sample: S1 summary, R1 record, B1 ranking and M1 comparison. Each gets two fresh R2 process/cache runs, followed by five measured in-process warm repeats per run:8controlled cold observations and40warm observations. H1's bounded six-season covered career gets two separate fresh runs and five warm repeats each. Keep production defaults (16frame entries/128MiB), one immutable generation, exact queries and source acceptance. Time full process start through first answer readiness, including imports, generation resolution and serialization; no index priming, earlier query, profiler hotspot call or enlarged cache before that answer. Do not sum old stage subtotals as cold wall time. Preserve failures/timeouts in the denominator and report exact counts; no unchanged reruns or outlier removal. Warm p95 uses nearest rankceil(.95*N), with per-case and pooled values and finite sample scope disclosed. Goals remain common warm p95<=3s, each common cold<=10s, each admitted historical<=20s without unhandled timeout.
+
+The actual browser bundle uses the same11delivery questions plus the revealed R1 win-loss wording control and five declared primed repeats of the four common cases,32entries per viewport/64answers in fixed order. Seven-second public admission spacing stays outside button-click-through-JSON timing. Check all payloads/actual rendering, source identities/bases/values, zero-vs-no-data, freshness, screenshots/assets and exact desktop/mobile case set; check historical HTTP200/no unhandled timeout and<=20s. Report40primed-repeat observations with empirical p95<=3s; these are observed deployment repeats, not a guarantee that Vercel reused one warm process.
+
+Controlled GitHub fresh-process timings are not Vercel cold-start proof. Readiness requests can prime imports, and a first observed request is not a trustworthy cold marker. Current targeted Vercel runtime-log access returned403; no marker exists in the public response. Keep actual deployed-cold acceptance explicitly unestablished unless qualified evidence becomes available; never relabel the controlled sample to close that requirement. Complete independent functional work and controlled/deployed measurements without weakening that remaining gate. PR537's accepted504repair and subsequent gates remain closed absent a newly reproduced defect; its historical10.275s diagnostic is not a new failure or current deployed-cold result.
+
+Freeze the relevant candidate before broad checking/final independent review. Reuse applicable K01–K11 source/review/browser evidence; run only missing or invalidated coverage plus mandatory exact-head gates through the existing targeted R2/Raw QA/browser routes. Do not count wrapper success, empty selection or required skips as acceptance. A pending access/performance goal remains open even if the functional subpackage is sound. No new framework, host, paid service, credentials, thresholds, timeout repair by assumption, next capability or Core-1 closure claim.
+
+
+## Confirmed baseline repairs
+
+The initial source baseline reused correct existing numerical values. Four adapter assumptions about summary-row IDs/team abbreviation fields were corrected to use the existing public identity metadata; no expected number/source/query changed. Independent review then confirmed the H1 context incorrectly advertised Ewing Jr ID201607 while348selected game rows used Patrick Ewing ID121. A controlled natural/structured reproduction failed before repair. Shared summary finalization now prefers a unique selected player ID/name from the actual game log over a mismatched same-name roster decoration; matching contexts, unavailable rows and multi-ID rows retain their prior handling. No roster precedence, game selection or statistic changed.
+
+Six independently frozen language probes had four correct answers, the same H1 identity error under possessive wording, and one new R1 defect: `Celtics win-loss record against Knicks from 2023-11-01 to 2024-03-01` treated the record-basis noun as both wins-only and losses-only. The existing outcome helper now removes that noun before recognizing genuine outcome clauses. Retain this wording as the revealed R1 control, not a fresh held-out success. The11primary queries and original numerical oracles remain unchanged.
+
+
+The64-answer local baseline passed source/type/scope/render/freshness checks for all unchanged paths after correcting the validator's career phrase assumption: the UI correctly says “covered career games (1996-97–2001-02)” and separately shows GAMES348. No new H1wording requirement is invented. It exposed N1's generic no-data message with no visible subject/year. A failed renderer regression reproduces that omission; the no-data message now states the requested player and2026-27season from metadata, without presenting requested filters as executed or inventing zero. Guidance refers to the snapshot rather than local implementation. Preserve the original64baseline and use a separate focused N1desktop/mobile capture for the changed output; never merge/substitute DOM/screenshot receipts. The final hosted gate still requires all64actual answers on its declared asset/candidate. Unchanged source arithmetic and correctly rendered baseline consumers remain reusable.
