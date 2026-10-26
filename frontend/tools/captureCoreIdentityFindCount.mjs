@@ -14,6 +14,8 @@ const sequences = cases.length === sequenceIds.length && sequenceIds.every(id =>
 const historyIds = ["k10-g1", "k10-s1", "k10-a1", "k10-r1", "k10-q1", "k10-f1", "k10-t1", "k10-t2"];
 const historyControlIds = ["k10-f1-seattle", "k10-s1-postseason"];
 const playoffHistory = [historyIds, historyControlIds, [...historyIds, ...historyControlIds]].some(ids => cases.length === ids.length && ids.every(id => cases.some(item => item.id === id)));
+const populationIds = ["k11-l1", "k11-l2", "k11-t1", "k11-t2", "k11-r1", "k11-r2", "k11-p1", "k11-p2", "k11-p3", "k11-c1", "k11-r2-leading-season"];
+const populations = cases.length === populationIds.length && populationIds.every(id => cases.some(item => item.id === id));
 const core = cases.length === 26 && cases.every(item => /^k0[13][_-]/.test(item.id));
 const summaryRanking = cases.length === 33 && cases.every(item => /^k0[24][_-]/.test(item.id));
 const ownershipComparison = cases.length === 20 && cases.every(item => /^k0[56][_-]/.test(item.id));
@@ -44,7 +46,7 @@ const sharedTeamComparisonIds = ["comparison-shared-primary", "comparison-canoni
 const sharedTeamComparison = cases.length === sharedTeamComparisonIds.length && sharedTeamComparisonIds.every(id => cases.some(item => item.id === id));
 const medicalSubjectIds = ["medical-team-primary", "medical-prefix-owner", "medical-opponent-union", "medical-comparison-owner", "medical-adjective-owner", "medical-status-played-chain", "medical-played-positive", "medical-unfiltered-comparison"];
 const medicalSubjects = cases.length === medicalSubjectIds.length && medicalSubjectIds.every(id => cases.some(item => item.id === id));
-if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory) throw new Error("Expected a complete reviewed browser bundle");
+if (!core && !summaryRanking && !ownershipComparison && !splits && !unionPairs && !orScopes && !opponentPlayed && !ownedOr && !selfUnion && !leadingList && !originalPair && !latestBoth && !scalarPlayed && !originalMinutes && !originalStatPair && !sharedTeamComparison && !medicalSubjects && !sequences && !playoffHistory && !populations) throw new Error("Expected a complete reviewed browser bundle");
 await mkdir(output, { recursive: true });
 let executablePath;
 for (const file of ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"]) {
@@ -67,7 +69,7 @@ try {
     for (const item of cases) {
       // Public admission permits ten queries/minute; preserve it without retries
       // or bypasses. Readiness requests do not invoke statistical queries.
-      if (base.startsWith("https:") || sequences || playoffHistory) {
+      if (base.startsWith("https:") || sequences || playoffHistory || populations) {
         await new Promise(resolve => setTimeout(resolve, Math.max(0, 7000 - (Date.now() - lastQueryAt))));
       }
       errors = [];

@@ -9147,6 +9147,15 @@ def _group_game_list_frame(parsed: dict) -> dict | None:
     players listed at the position group, ranked as the league list ranks.
     """
     q = parsed["normalized_query"]
+    # The frame owns the group, while the existing season parser owns time.
+    # Move an explicit leading season behind the frame so reparsing keeps both.
+    leading_season = re.match(
+        r"^(?:in|during|for)\s+(?:the\s+)?(?P<season>\d{4}-\d{2})"
+        r"(?:\s+season)?\s*,?\s+",
+        q,
+    )
+    if leading_season and leading_season.group("season") == parsed.get("season"):
+        q = q[leading_season.end() :] + " in " + leading_season.group("season")
     if parsed.get("game_list_reparse") or parsed.get("player") or not _no_team_owner(parsed, q):
         return None
     if re.search(r"\brookies?\s+of\s+the\s+year\b", q) or _GAME_LIST_ALLOWED.search(q):

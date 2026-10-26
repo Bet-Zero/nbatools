@@ -10,6 +10,7 @@ import type { DisplayMode } from "../../../displayMode";
 import {
   formatAverageValue,
   formatCompactDate,
+  formatColHeader,
   formatValue,
   trimProseTrailingZeroes,
 } from "../../tableFormatting";
@@ -286,7 +287,19 @@ function finderCountHeadline(
     return `${subject} ${rows.length} ${gameNoun} matching at least one condition${timeframe}.`;
   }
   if (mode !== "player") return null;
-  if (data.result?.metadata?.sort_by === "stat" && data.result?.metadata?.stat === "pts") {
+  const metadata = data.result?.metadata;
+  if (metadata?.sort_by === "stat" && !hasPinnedEntity(metadata, "player")) {
+    const rookie = metadata.applied_filters?.some(filter => filter.label === "Experience" && filter.value === "Rookies");
+    const position = metadata.position_filter;
+    const group = position ? `${rookie ? "rookie " : ""}${position}` : rookie ? "rookies" : "players";
+    const team = metadata.team_context?.team_name;
+    const population = team ? `${team} ${group}` : group;
+    const metrics: Record<string, string> = { pts: "scoring", reb: "rebounding", ast: "assist" };
+    const metric = typeof metadata.stat === "string" ? metrics[metadata.stat] ?? formatColHeader(metadata.stat).toLowerCase() : "statistical";
+    const direction = metadata.ascending === true ? "Bottom" : "Top";
+    return `${direction} ${rows.length} ${metric} ${gameNoun} by ${population}${timeframe}.`;
+  }
+  if (metadata?.sort_by === "stat" && metadata?.stat === "pts") {
     const direction = data.result.metadata.ascending === true ? "lowest" : "highest";
     return `${player}'s ${rows.length} ${direction}-scoring ${gameNoun}${timeframe}.`;
   }

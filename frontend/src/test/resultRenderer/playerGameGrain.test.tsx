@@ -25,6 +25,20 @@ describe("player-game row grain", () => {
     }
   });
 
+  it.each([
+    [{ team_context: { team_id: 1610612747, team_name: "Lakers", team_abbr: "LAL" } }, "Top 2 scoring games by Lakers players in 2023-24."],
+    [{ position_filter: "guards", applied_filters: [{ kind: "position", label: "Experience", value: "Rookies" }] }, "Top 2 scoring games by rookie guards in 2023-24."],
+    [{ position_filter: "centers", stat: "reb" }, "Top 2 rebounding games by centers in 2023-24."],
+  ])("names the requested population rather than the first player (%s)", (scope, headline) => {
+    render(<ResultRenderer data={makeResponse({ route: "player_game_finder", result: {
+      query_class: "finder", result_status: "ok", notes: [], caveats: [],
+      metadata: { season: "2023-24", sort_by: "stat", stat: "pts", ...scope },
+      sections: { finder: players },
+    } })} />);
+    expect(screen.getByText(headline)).toBeVisible();
+    expect(screen.queryByText(/Anthony Edwards's 2|Anthony Edwards had 2/)).not.toBeInTheDocument();
+  });
+
   it("keeps a pinned player count in player grain without a redundant player column", () => {
     render(<ResultRenderer data={makeResponse({ route: "player_game_finder", result: {
       query_class: "count", result_status: "ok", notes: [], caveats: [],

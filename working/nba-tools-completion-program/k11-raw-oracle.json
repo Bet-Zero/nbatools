@@ -1,0 +1,810 @@
+{
+  "prebaseline_oracle_sha256": "7c7a5da7c870deee6e3c05758b38db7668915d504b01c08a98a49ac9799e8190",
+  "oracle_corrections": [
+    "Canonical queries, source bytes and meanings remain frozen. Candidate counts include all stored raw game rows, including zero-minute values; this is a game list, not a participation assertion.",
+    "L1/L2 established leaderboard route ranks by metric only. Finder uses metric/date. Equal rank keys at the top-N boundary permit any exact qualified tied source row; no invented ID tie-break."
+  ],
+  "generation_id": "availability-opening-s4-v1-20261017",
+  "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "inventory_sha256": "d5f72265f5b7baf113ed25d29c65494cb9f3eb40896073b7a657c687ede16f04",
+  "source_hashes": {
+    "raw/player_game_stats/1998-99_regular_season.csv": "c48f3e69e00196bdbab975a0a68fadbcdadbde82bd816ae48c5c644b826dd747",
+    "raw/team_game_stats/1998-99_regular_season.csv": "734c128057a2ac88713a42aa091cd80c6e18744a4fc7ab2763755b691aac55a2",
+    "raw/games/1998-99_regular_season.csv": "7cda3260d409cf0cc076ae175b25d3ca70d803db1bc51e101f441e1ddc6dbb77",
+    "raw/rosters/1998-99.csv": "9baf1e358222481a0a16c3571b0d6f833bfc9f8846192514f9059edaa0541da2",
+    "raw/player_game_stats/2023-24_regular_season.csv": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+    "raw/team_game_stats/2023-24_regular_season.csv": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+    "raw/games/2023-24_regular_season.csv": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+    "raw/rosters/2023-24.csv": "03d546b63345c29490994df09e81b45b8792400825c35ddd71f4147b74eeab78"
+  },
+  "qualification": {
+    "1998-99": {
+      "game_count": 725,
+      "player_rows": 14923,
+      "team_rows": 1450,
+      "roster_rows": 347,
+      "roster_player_ids": 347
+    },
+    "2023-24": {
+      "game_count": 1230,
+      "player_rows": 26401,
+      "team_rows": 2460,
+      "roster_rows": 532,
+      "roster_player_ids": 532
+    }
+  },
+  "meaning": "Player-game grain over observed stored rows. Season/player roster classifications are snapshot facts, never game-date membership. Incomplete classifications require visible caveat; none are imputed from current season.",
+  "cases": [
+    {
+      "id": "K11-L1",
+      "query": "top 5 scoring games in 2023-24",
+      "season": "2023-24",
+      "metric": "pts",
+      "limit": 5,
+      "date_tiebreak": false,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022300610",
+            "player_id": "1626157",
+            "player_name": "Karl-Anthony Towns",
+            "team_abbr": "MIN",
+            "opponent_team_abbr": "CHA",
+            "game_date": "2024-01-22",
+            "pts": "62",
+            "reb": "8",
+            "ast": "2"
+          },
+          {
+            "game_id": "0022300636",
+            "player_id": "1626164",
+            "player_name": "Devin Booker",
+            "team_abbr": "PHX",
+            "opponent_team_abbr": "IND",
+            "game_date": "2024-01-26",
+            "pts": "62",
+            "reb": "5",
+            "ast": "4"
+          }
+        ],
+        "candidate_rows": 26401,
+        "unknown_rows": 0,
+        "rows": [
+          {
+            "game_id": "0022300634",
+            "player_id": "1629029",
+            "player_name": "Luka Don\u010di\u0107",
+            "team_abbr": "DAL",
+            "opponent_team_abbr": "ATL",
+            "game_date": "2024-01-26",
+            "pts": "73",
+            "reb": "10",
+            "ast": "7"
+          },
+          {
+            "game_id": "0022300608",
+            "player_id": "203954",
+            "player_name": "Joel Embiid",
+            "team_abbr": "PHI",
+            "opponent_team_abbr": "SAS",
+            "game_date": "2024-01-22",
+            "pts": "70",
+            "reb": "18",
+            "ast": "5"
+          },
+          {
+            "game_id": "0022300315",
+            "player_id": "203507",
+            "player_name": "Giannis Antetokounmpo",
+            "team_abbr": "MIL",
+            "opponent_team_abbr": "IND",
+            "game_date": "2023-12-13",
+            "pts": "64",
+            "reb": "14",
+            "ast": "3"
+          },
+          {
+            "game_id": "0022300610",
+            "player_id": "1626157",
+            "player_name": "Karl-Anthony Towns",
+            "team_abbr": "MIN",
+            "opponent_team_abbr": "CHA",
+            "game_date": "2024-01-22",
+            "pts": "62",
+            "reb": "8",
+            "ast": "2"
+          },
+          {
+            "game_id": "0022300636",
+            "player_id": "1626164",
+            "player_name": "Devin Booker",
+            "team_abbr": "PHX",
+            "opponent_team_abbr": "IND",
+            "game_date": "2024-01-26",
+            "pts": "62",
+            "reb": "5",
+            "ast": "4"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-L2",
+      "query": "top 3 assist games vs Celtics in 2023-24",
+      "season": "2023-24",
+      "metric": "ast",
+      "limit": 3,
+      "opponent": "BOS",
+      "date_tiebreak": false,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022301202",
+            "player_id": "1630169",
+            "player_name": "Tyrese Haliburton",
+            "team_abbr": "IND",
+            "opponent_team_abbr": "BOS",
+            "game_date": "2023-12-04",
+            "pts": "26",
+            "reb": "10",
+            "ast": "13"
+          },
+          {
+            "game_id": "0022300611",
+            "player_id": "1629029",
+            "player_name": "Luka Don\u010di\u0107",
+            "team_abbr": "DAL",
+            "opponent_team_abbr": "BOS",
+            "game_date": "2024-01-22",
+            "pts": "33",
+            "reb": "18",
+            "ast": "13"
+          }
+        ],
+        "candidate_rows": 881,
+        "unknown_rows": 0,
+        "rows": [
+          {
+            "game_id": "0022301034",
+            "player_id": "1627749",
+            "player_name": "Dejounte Murray",
+            "team_abbr": "ATL",
+            "opponent_team_abbr": "BOS",
+            "game_date": "2024-03-25",
+            "pts": "19",
+            "reb": "5",
+            "ast": "15"
+          },
+          {
+            "game_id": "0022300684",
+            "player_id": "1626156",
+            "player_name": "D'Angelo Russell",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "BOS",
+            "game_date": "2024-02-01",
+            "pts": "16",
+            "reb": "8",
+            "ast": "14"
+          },
+          {
+            "game_id": "0022301202",
+            "player_id": "1630169",
+            "player_name": "Tyrese Haliburton",
+            "team_abbr": "IND",
+            "opponent_team_abbr": "BOS",
+            "game_date": "2023-12-04",
+            "pts": "26",
+            "reb": "10",
+            "ast": "13"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-T1",
+      "query": "Lakers players top 5 scoring games in 2023-24",
+      "season": "2023-24",
+      "metric": "pts",
+      "limit": 5,
+      "team": "LAL",
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022300856",
+            "player_id": "203076",
+            "player_name": "Anthony Davis",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "WAS",
+            "game_date": "2024-02-29",
+            "pts": "40",
+            "reb": "15",
+            "ast": "4"
+          }
+        ],
+        "candidate_rows": 868,
+        "unknown_rows": 0,
+        "rows": [
+          {
+            "game_id": "0022300915",
+            "player_id": "1626156",
+            "player_name": "D'Angelo Russell",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "MIL",
+            "game_date": "2024-03-08",
+            "pts": "44",
+            "reb": "6",
+            "ast": "9"
+          },
+          {
+            "game_id": "0022300516",
+            "player_id": "203076",
+            "player_name": "Anthony Davis",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "TOR",
+            "game_date": "2024-01-09",
+            "pts": "41",
+            "reb": "11",
+            "ast": "6"
+          },
+          {
+            "game_id": "0022301078",
+            "player_id": "2544",
+            "player_name": "LeBron James",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "BKN",
+            "game_date": "2024-03-31",
+            "pts": "40",
+            "reb": "7",
+            "ast": "5"
+          },
+          {
+            "game_id": "0022300973",
+            "player_id": "2544",
+            "player_name": "LeBron James",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "GSW",
+            "game_date": "2024-03-16",
+            "pts": "40",
+            "reb": "8",
+            "ast": "9"
+          },
+          {
+            "game_id": "0022300856",
+            "player_id": "203076",
+            "player_name": "Anthony Davis",
+            "team_abbr": "LAL",
+            "opponent_team_abbr": "WAS",
+            "game_date": "2024-02-29",
+            "pts": "40",
+            "reb": "15",
+            "ast": "4"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-T2",
+      "query": "Celtics players top 3 rebounding games vs Knicks in 2023-24",
+      "season": "2023-24",
+      "metric": "reb",
+      "limit": 3,
+      "team": "BOS",
+      "opponent": "NYK",
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022301167",
+            "player_id": "204001",
+            "player_name": "Kristaps Porzi\u0146\u0123is",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2024-04-11",
+            "pts": "14",
+            "reb": "8",
+            "ast": "1"
+          }
+        ],
+        "candidate_rows": 50,
+        "unknown_rows": 0,
+        "rows": [
+          {
+            "game_id": "0022300065",
+            "player_id": "1628369",
+            "player_name": "Jayson Tatum",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2023-10-25",
+            "pts": "34",
+            "reb": "11",
+            "ast": "4"
+          },
+          {
+            "game_id": "0022301227",
+            "player_id": "201143",
+            "player_name": "Al Horford",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2023-12-08",
+            "pts": "14",
+            "reb": "10",
+            "ast": "2"
+          },
+          {
+            "game_id": "0022301167",
+            "player_id": "204001",
+            "player_name": "Kristaps Porzi\u0146\u0123is",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2024-04-11",
+            "pts": "14",
+            "reb": "8",
+            "ast": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-R1",
+      "query": "top 5 scoring games by rookies in 2023-24",
+      "season": "2023-24",
+      "metric": "pts",
+      "limit": 5,
+      "rookies": true,
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022301000",
+            "player_id": "1631096",
+            "player_name": "Chet Holmgren",
+            "team_abbr": "OKC",
+            "opponent_team_abbr": "UTA",
+            "game_date": "2024-03-20",
+            "pts": "35",
+            "reb": "14",
+            "ast": "1"
+          },
+          {
+            "game_id": "0022301001",
+            "player_id": "1641713",
+            "player_name": "GG Jackson",
+            "team_abbr": "MEM",
+            "opponent_team_abbr": "GSW",
+            "game_date": "2024-03-20",
+            "pts": "35",
+            "reb": "5",
+            "ast": "3"
+          }
+        ],
+        "candidate_rows": 2851,
+        "unknown_rows": 569,
+        "rows": [
+          {
+            "game_id": "0022301193",
+            "player_id": "1641713",
+            "player_name": "GG Jackson",
+            "team_abbr": "MEM",
+            "opponent_team_abbr": "DEN",
+            "game_date": "2024-04-14",
+            "pts": "44",
+            "reb": "12",
+            "ast": "1"
+          },
+          {
+            "game_id": "0022301070",
+            "player_id": "1641705",
+            "player_name": "Victor Wembanyama",
+            "team_abbr": "SAS",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2024-03-29",
+            "pts": "40",
+            "reb": "20",
+            "ast": "7"
+          },
+          {
+            "game_id": "0022300131",
+            "player_id": "1641705",
+            "player_name": "Victor Wembanyama",
+            "team_abbr": "SAS",
+            "opponent_team_abbr": "PHX",
+            "game_date": "2023-11-02",
+            "pts": "38",
+            "reb": "10",
+            "ast": "2"
+          },
+          {
+            "game_id": "0022300207",
+            "player_id": "1631096",
+            "player_name": "Chet Holmgren",
+            "team_abbr": "OKC",
+            "opponent_team_abbr": "GSW",
+            "game_date": "2023-11-18",
+            "pts": "36",
+            "reb": "10",
+            "ast": "5"
+          },
+          {
+            "game_id": "0022301000",
+            "player_id": "1631096",
+            "player_name": "Chet Holmgren",
+            "team_abbr": "OKC",
+            "opponent_team_abbr": "UTA",
+            "game_date": "2024-03-20",
+            "pts": "35",
+            "reb": "14",
+            "ast": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-R2",
+      "query": "top 5 scoring games by rookies in 1998-99",
+      "season": "1998-99",
+      "metric": "pts",
+      "limit": 5,
+      "rookies": true,
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0029800667",
+            "player_id": "1718",
+            "player_name": "Paul Pierce",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "MIA",
+            "game_date": "1999-04-29",
+            "pts": "31",
+            "reb": "5",
+            "ast": "2"
+          }
+        ],
+        "candidate_rows": 1551,
+        "unknown_rows": 1281,
+        "rows": [
+          {
+            "game_id": "0029800713",
+            "player_id": "1729",
+            "player_name": "Ricky Davis",
+            "team_abbr": "CHH",
+            "opponent_team_abbr": "BOS",
+            "game_date": "1999-05-05",
+            "pts": "32",
+            "reb": "7",
+            "ast": "2"
+          },
+          {
+            "game_id": "0029800713",
+            "player_id": "1802",
+            "player_name": "Brad Miller",
+            "team_abbr": "CHH",
+            "opponent_team_abbr": "BOS",
+            "game_date": "1999-05-05",
+            "pts": "32",
+            "reb": "13",
+            "ast": "4"
+          },
+          {
+            "game_id": "0029800384",
+            "player_id": "1713",
+            "player_name": "Vince Carter",
+            "team_abbr": "TOR",
+            "opponent_team_abbr": "HOU",
+            "game_date": "1999-03-25",
+            "pts": "32",
+            "reb": "2",
+            "ast": "6"
+          },
+          {
+            "game_id": "0029800709",
+            "player_id": "1722",
+            "player_name": "Michael Dickerson",
+            "team_abbr": "HOU",
+            "opponent_team_abbr": "MIN",
+            "game_date": "1999-05-04",
+            "pts": "31",
+            "reb": "3",
+            "ast": "5"
+          },
+          {
+            "game_id": "0029800667",
+            "player_id": "1718",
+            "player_name": "Paul Pierce",
+            "team_abbr": "BOS",
+            "opponent_team_abbr": "MIA",
+            "game_date": "1999-04-29",
+            "pts": "31",
+            "reb": "5",
+            "ast": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-P1",
+      "query": "top 5 rebounding games by centers in 2023-24",
+      "season": "2023-24",
+      "metric": "reb",
+      "limit": 5,
+      "position": "centers",
+      "codes": [
+        "C",
+        "C-F"
+      ],
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022300946",
+            "player_id": "1631105",
+            "player_name": "Jalen Duren",
+            "team_abbr": "DET",
+            "opponent_team_abbr": "TOR",
+            "game_date": "2024-03-13",
+            "pts": "24",
+            "reb": "23",
+            "ast": "5"
+          }
+        ],
+        "candidate_rows": 3188,
+        "unknown_rows": 569,
+        "rows": [
+          {
+            "game_id": "0022300878",
+            "player_id": "203994",
+            "player_name": "Jusuf Nurki\u0107",
+            "team_abbr": "PHX",
+            "opponent_team_abbr": "OKC",
+            "game_date": "2024-03-03",
+            "pts": "14",
+            "reb": "31",
+            "ast": "4"
+          },
+          {
+            "game_id": "0022300846",
+            "player_id": "203083",
+            "player_name": "Andre Drummond",
+            "team_abbr": "CHI",
+            "opponent_team_abbr": "CLE",
+            "game_date": "2024-02-28",
+            "pts": "17",
+            "reb": "26",
+            "ast": "1"
+          },
+          {
+            "game_id": "0022300408",
+            "player_id": "203083",
+            "player_name": "Andre Drummond",
+            "team_abbr": "CHI",
+            "opponent_team_abbr": "ATL",
+            "game_date": "2023-12-26",
+            "pts": "24",
+            "reb": "25",
+            "ast": "1"
+          },
+          {
+            "game_id": "0022300009",
+            "player_id": "1631109",
+            "player_name": "Mark Williams",
+            "team_abbr": "CHA",
+            "opponent_team_abbr": "WAS",
+            "game_date": "2023-11-10",
+            "pts": "21",
+            "reb": "24",
+            "ast": "3"
+          },
+          {
+            "game_id": "0022300946",
+            "player_id": "1631105",
+            "player_name": "Jalen Duren",
+            "team_abbr": "DET",
+            "opponent_team_abbr": "TOR",
+            "game_date": "2024-03-13",
+            "pts": "24",
+            "reb": "23",
+            "ast": "5"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-P2",
+      "query": "top 3 assist games by guards in 2023-24",
+      "season": "2023-24",
+      "metric": "ast",
+      "limit": 3,
+      "position": "guards",
+      "codes": [
+        "G",
+        "G-F"
+      ],
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022300905",
+            "player_id": "1630193",
+            "player_name": "Immanuel Quickley",
+            "team_abbr": "TOR",
+            "opponent_team_abbr": "PHX",
+            "game_date": "2024-03-07",
+            "pts": "21",
+            "reb": "9",
+            "ast": "18"
+          }
+        ],
+        "candidate_rows": 12028,
+        "unknown_rows": 569,
+        "rows": [
+          {
+            "game_id": "0022300441",
+            "player_id": "1630169",
+            "player_name": "Tyrese Haliburton",
+            "team_abbr": "IND",
+            "opponent_team_abbr": "NYK",
+            "game_date": "2023-12-30",
+            "pts": "22",
+            "reb": "5",
+            "ast": "23"
+          },
+          {
+            "game_id": "0022300422",
+            "player_id": "1630169",
+            "player_name": "Tyrese Haliburton",
+            "team_abbr": "IND",
+            "opponent_team_abbr": "CHI",
+            "game_date": "2023-12-28",
+            "pts": "21",
+            "reb": "3",
+            "ast": "20"
+          },
+          {
+            "game_id": "0022300905",
+            "player_id": "1630193",
+            "player_name": "Immanuel Quickley",
+            "team_abbr": "TOR",
+            "opponent_team_abbr": "PHX",
+            "game_date": "2024-03-07",
+            "pts": "21",
+            "reb": "9",
+            "ast": "18"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-P3",
+      "query": "top 3 scoring games by forwards in 1998-99",
+      "season": "1998-99",
+      "metric": "pts",
+      "limit": 3,
+      "position": "forwards",
+      "codes": [
+        "F",
+        "F-G",
+        "F-C"
+      ],
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0029800443",
+            "player_id": "1495",
+            "player_name": "Tim Duncan",
+            "team_abbr": "SAS",
+            "opponent_team_abbr": "VAN",
+            "game_date": "1999-04-01",
+            "pts": "39",
+            "reb": "13",
+            "ast": "0"
+          }
+        ],
+        "candidate_rows": 5899,
+        "unknown_rows": 1281,
+        "rows": [
+          {
+            "game_id": "0029800184",
+            "player_id": "686",
+            "player_name": "Antonio McDyess",
+            "team_abbr": "DEN",
+            "opponent_team_abbr": "VAN",
+            "game_date": "1999-02-28",
+            "pts": "46",
+            "reb": "19",
+            "ast": "1"
+          },
+          {
+            "game_id": "0029800032",
+            "player_id": "255",
+            "player_name": "Grant Hill",
+            "team_abbr": "DET",
+            "opponent_team_abbr": "WAS",
+            "game_date": "1999-02-08",
+            "pts": "46",
+            "reb": "7",
+            "ast": "7"
+          },
+          {
+            "game_id": "0029800443",
+            "player_id": "1495",
+            "player_name": "Tim Duncan",
+            "team_abbr": "SAS",
+            "opponent_team_abbr": "VAN",
+            "game_date": "1999-04-01",
+            "pts": "39",
+            "reb": "13",
+            "ast": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K11-C1",
+      "query": "top 3 scoring games by rookie guards in 2023-24",
+      "season": "2023-24",
+      "metric": "pts",
+      "limit": 3,
+      "position": "guards",
+      "codes": [
+        "G",
+        "G-F"
+      ],
+      "rookies": true,
+      "date_tiebreak": true,
+      "expected": {
+        "boundary_rows": [
+          {
+            "game_id": "0022300554",
+            "player_id": "1630703",
+            "player_name": "Scoot Henderson",
+            "team_abbr": "POR",
+            "opponent_team_abbr": "PHX",
+            "game_date": "2024-01-14",
+            "pts": "33",
+            "reb": "7",
+            "ast": "9"
+          }
+        ],
+        "candidate_rows": 1486,
+        "unknown_rows": 569,
+        "rows": [
+          {
+            "game_id": "0022300547",
+            "player_id": "1641722",
+            "player_name": "Jordan Hawkins",
+            "team_abbr": "NOP",
+            "opponent_team_abbr": "DAL",
+            "game_date": "2024-01-13",
+            "pts": "34",
+            "reb": "5",
+            "ast": "4"
+          },
+          {
+            "game_id": "0022300576",
+            "player_id": "1641718",
+            "player_name": "Keyonte George",
+            "team_abbr": "UTA",
+            "opponent_team_abbr": "GSW",
+            "game_date": "2024-02-15",
+            "pts": "33",
+            "reb": "2",
+            "ast": "6"
+          },
+          {
+            "game_id": "0022300554",
+            "player_id": "1630703",
+            "player_name": "Scoot Henderson",
+            "team_abbr": "POR",
+            "opponent_team_abbr": "PHX",
+            "game_date": "2024-01-14",
+            "pts": "33",
+            "reb": "7",
+            "ast": "9"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -706,6 +706,16 @@ Leaderboard no-match behavior:
   to the full team leaderboard and the backend answer phrase pinpoints the
   team's value and league rank. Date-windowed, season-range, opponent, and
   home/away/wins/losses variants remain unsupported boundaries
+- ranked player-game populations preserve league, named-team players, rookie and
+  broad-position ownership, including named opponents and historical named seasons
+  (`Lakers players top 5 scoring games in 2023-24`, `top 3 assist games vs Celtics
+  in 2023-24`, `In 1998-99, rookies top 5 scoring performances`). These are
+  individual games, with population labels separate from an individual leader.
+  Roster classifications join by season/player, not current or game-date team
+  membership. Missing classifications produce a visible incomplete-population
+  caveat and export scope; missing/wrong-season roster data is unavailable, never
+  an invented empty result. The existing snapshot's rankings over known
+  classifications do not claim complete roster coverage.
 - league-wide threshold game lists (`who dropped 40 this week`, `who scored
   50+ points this season`) are supported through `top_player_games` with a
   minimum-value filter; every qualifying game is listed
