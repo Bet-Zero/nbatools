@@ -64,8 +64,13 @@ def _assert_rendered(item, case):
         return
     assert "Data Not Available" not in text and "No Matching Results" not in text
     if ident in ("K12-C1", "K12-Z1"):
-        assert meta["count_phrase"] in text
-        assert ("4 games" if ident == "K12-C1" else "0 games") in text
+        expected = (
+            "Jalen Brunson has had 4 games with 8+ assists and at most 0 turnovers "
+            "in the 2023-24 regular season."
+            if ident == "K12-C1"
+            else "Nikola Jokić has had 0 games with 80+ points in the 2023-24 regular season."
+        )
+        assert meta["count_phrase"] == expected and expected in text
         return
     if ident in ("K12-S1", "K12-H1"):
         summary = sections["summary"][0]
