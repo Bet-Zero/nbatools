@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "4a543b6fc00547a9c3285c30196c504623e83f52",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_k08_structured_source_probe_real_data.py::test_bounded_structured_source_research"
+  ],
+  "raw_qa_cases": []
+}
