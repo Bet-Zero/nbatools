@@ -1,0 +1,57 @@
+{
+  "workflow_run_id": 40547168307,
+  "workflow_run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/40547168307",
+  "reviewed_sha": "ddef86a07eeda95c740e6866a4782a25e789b8e1",
+  "request_sha": "3feced47a02f58b135a188fa4c8dd3f6a0bb30d1",
+  "review_url": "https://github.com/Bet-Zero/nbatools/pull/546#issuecomment-6448316915",
+  "reviewer": "/root/k08_three_checker (separate Codex agent; not Claude)",
+  "source_artifact_id": 12750809462,
+  "source_zip_sha256": "be00e2815bb2e66081fc2c247cdace2969bd25801f039762f8a0af75bc5a3b21",
+  "classification": "existing_original_byte_transfer_no_new_NBA_acquisition",
+  "source_requests": 0,
+  "production_writes": 0,
+  "files": [
+    {
+      "bytes": 312,
+      "name": "20251024_MINLAL.json",
+      "sha256": "4abc7b29e60e55b382d0c7e8a5025c68b50597a1bac209e2ef2f5c70c58aec06"
+    },
+    {
+      "bytes": 27147,
+      "name": "91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306.pdf",
+      "sha256": "91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306"
+    },
+    {
+      "bytes": 312,
+      "name": "20251026_LALSAC.json",
+      "sha256": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326"
+    },
+    {
+      "bytes": 26990,
+      "name": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf",
+      "sha256": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06"
+    },
+    {
+      "bytes": 312,
+      "name": "20251027_PORLAL.json",
+      "sha256": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99"
+    },
+    {
+      "bytes": 27688,
+      "name": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf",
+      "sha256": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5"
+    }
+  ],
+  "required_harness": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "conclusion": "success"
+  },
+  "acceptance_limit": "Original byte/provenance transfer only; independent PDF player-state and numerical qualification remains separate.",
+  "local_file_verification": "All six decoded original bytes match each logged length and SHA256; original source receipts and capture times preserved."
+}
