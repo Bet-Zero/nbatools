@@ -6,6 +6,11 @@ analyzes in the cloud. Commercial provider evaluation and cloud NBA access
 investigations are stopped. No provider key is needed. The owner resumed normal development on October 18 after accepting minimum setup. Missing specialized data does not prevent
 work on supported core datasets.
 
+The owner's 2026-10-27 K08 exception in [AGENTS.md](../../AGENTS.md#narrow-k08-report-acquisition-exception-owner-2026-10-27)
+authorizes exactly three named official reports through the existing GitHub
+Actions acquisition route. All other acquisition and publication restrictions
+below remain in force; that exception is not a general cloud-fetch authorization.
+
 ## Before implementing a data-dependent change
 
 1. Read the active generation's generated `inventory.md` and `inventory.json`.

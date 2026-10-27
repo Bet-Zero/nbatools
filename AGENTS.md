@@ -65,6 +65,29 @@ The October 18 setup acceptance removed that setup dependency. Follow current
 owner authorization and the Resume checkpoint's stop/resume state; historical
 resumption is not permission to restart paused product work.
 
+### Narrow K08 report-acquisition exception (owner, 2026-10-27)
+
+The owner authorizes acquisition and staging through the previously proven GitHub
+Actions targeted-validation route for **only** the first three official reports
+in `working/nba-tools-completion-program/collection-requests/lebron-participation-2025-26.json`:
+`0022500019` / `20251024_MINLAL.pdf`, `0022500113` / `20251026_LALSAC.pdf`, and
+`0022500122` / `20251027_PORLAL.pdf`. This narrowly supersedes laptop-only acquisition
+for those reports. It does not authorize the remaining 17, other source/identity
+requests, new credentials, paid services, automatic refresh, or production R2
+publication. Reuse original retained bytes for subsequent qualification/replay;
+retries need a diagnosed reason. Preserve the existing read-only workflow,
+independent source qualification and separately protected publication boundary.
+
+Own acquisition, qualification and implementation across routine PR boundaries
+within the active session. A merged PR or unavailable execution route alone is
+not a stop: diagnose the specific blocker and advance independent useful K08 work
+where possible. Consequential changes retain independent review before merge;
+prefer Claude as a separate reviewing model when available within existing access
+and cost authority. If unavailable, use a genuinely separate available checker,
+record its actual identity/model, reviewed revision and approval; do not invent a
+Claude review, new paid access or model availability dependency. Preserve all 46
+positive obligations and the participation/membership/injury distinctions.
+
 ## Execution and session continuity
 
 The completion-program README is the sole active queue. Its Resume checkpoint is
