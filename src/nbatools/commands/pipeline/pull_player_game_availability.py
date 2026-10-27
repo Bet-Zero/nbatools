@@ -149,7 +149,9 @@ def normalize_boxscore_availability(
     frame["season"] = str(season)
     frame["season_type"] = str(season_type)
     if source != SOURCE and not re.fullmatch(
-        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8})", source
+        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8}|"
+        r"nba_stats_structured_archive:[a-f0-9]{40}:\d{10})",
+        source,
     ):
         raise ValueError("Unrecognized availability source")
     frame["source"] = source
@@ -170,7 +172,8 @@ def validate_availability(frame: pd.DataFrame) -> None:
     if not frame["participation_state"].isin(["played", "did_not_play", "unknown"]).all():
         raise ValueError("Unknown participation state")
     allowed = frame["source"].eq(SOURCE) | frame["source"].str.fullmatch(
-        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8})"
+        r"(?:espn_game_summary:\d+|nba_official_finalbox:\d{8}_[A-Z]{4,8}|"
+        r"nba_stats_structured_archive:[a-f0-9]{40}:\d{10})"
     )
     if not allowed.all() or not frame["coverage_scope"].eq(COVERAGE).all():
         raise ValueError("Untrusted availability source or completeness claim")
@@ -314,6 +317,13 @@ def validate_publication(root: Path) -> None:
                 or set(rows.team_id.map(int)) != expected_teams
             ):
                 raise ValueError("Availability date/team/season differs from canonical game")
+            if receipt.get("source") == "structured":
+                from nbatools.commands.pipeline.structured_participation import (
+                    validate_structured_import,
+                )
+
+                validate_structured_import(root, game_id, rows, receipt)
+                continue
             if receipt.get("source") != "report" or receipt.get("sha256") != _game_digest(rows):
                 raise ValueError("Availability import is incomplete or lacks source provenance")
             if rows.source.nunique() != 1 or rows.source_sha256.nunique() != 1:

@@ -56,12 +56,12 @@ def load_observations(seasons: list[str], season_type: str) -> pd.DataFrame:
             if not (
                 rows.coverage_scope.eq("listed_player_rows_only")
                 & rows.source.astype(str).str.fullmatch(
-                    r"nba_official_finalbox:[0-9]{8}_[A-Z]{4,6}"
+                    r"(?:nba_official_finalbox:[0-9]{8}_[A-Z]{4,6}|nba_stats_structured_archive:[a-f0-9]{40}:[0-9]{10})"
                 )
                 & rows.source_sha256.astype(str).str.fullmatch(r"[0-9a-f]{64}")
             ).all():
                 raise ValueError(
-                    "Player-game participation lacks retained official report evidence"
+                    "Player-game participation lacks retained qualified source evidence"
                 )
             return rows
 

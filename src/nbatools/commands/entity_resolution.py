@@ -352,7 +352,9 @@ CURATED_TEAM_ALIASES: dict[str, str] = {
 }
 
 TEAM_ALIASES_EXPANDED: dict[str, str] = {
-    # Historical names identify their own era, not the current OKC franchise.
+    # Historical names identify their own era, not a current franchise span.
+    "njn": "NJN",
+    "new jersey nets": "NJN",
     # Do not add bare "Seattle": that would also consume "Seattle Storm".
     "seattle supersonics": "SEA",
     "supersonics": "SEA",
