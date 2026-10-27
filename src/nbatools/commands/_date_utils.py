@@ -181,6 +181,15 @@ def _parse_date_token(token: str, season: str | None) -> str | None:
         return None
 
 
+def _explicit_date_range_pattern() -> str:
+    """One shared lexical contract for reading and masking a two-ended range."""
+    token = _date_token_pattern()
+    return (
+        rf"\b(?:(?:from\s+)?({token})\s+(?:to|through|thru|until|till)"
+        rf"|between\s+({token})\s+and)\s+({token})(?!\d)"
+    )
+
+
 def _extract_explicit_date_range(
     text: str,
     season: str | None,
@@ -192,11 +201,7 @@ def _extract_explicit_date_range(
     matcher alone read it as November 1 only.
     """
     token = _date_token_pattern()
-    m = re.search(
-        rf"\b(?:(?:from\s+)?({token})\s+(?:to|through|thru|until|till)"
-        rf"|between\s+({token})\s+and)\s+({token})(?!\d)",
-        text,
-    )
+    m = re.search(_explicit_date_range_pattern(), text)
     if m:
         start = _parse_date_token(m.group(1) or m.group(2), season)
         end = _parse_date_token(m.group(3), season)
@@ -287,6 +292,18 @@ def explicit_date_is_open_ended(text: str) -> bool:
             text,
         )
     )
+
+
+def strip_explicit_calendar_date_clauses(text: str) -> str:
+    """Mask one date clause that uses the date reader's exact lexical contract.
+
+    Preserve additional dates regardless of separator, so the caller can reject
+    unread scope rather than silently answer a partial list. Never erase stats.
+    """
+    ranged = re.sub(_explicit_date_range_pattern(), " ", text, count=1, flags=re.IGNORECASE)
+    if ranged != text:
+        return ranged
+    return re.sub(rf"\b{_date_token_pattern()}(?!\d)", " ", text, count=1, flags=re.IGNORECASE)
 
 
 def invalid_explicit_date(text: str) -> str | None:

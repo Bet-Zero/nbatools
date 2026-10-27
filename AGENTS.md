@@ -65,6 +65,54 @@ The October 18 setup acceptance removed that setup dependency. Follow current
 owner authorization and the Resume checkpoint's stop/resume state; historical
 resumption is not permission to restart paused product work.
 
+### Narrow K08 report-acquisition exception (owner, 2026-10-27)
+
+The owner authorizes acquisition and staging through the previously proven GitHub
+Actions targeted-validation route for **only** the first three official reports
+in `working/nba-tools-completion-program/collection-requests/lebron-participation-2025-26.json`:
+`0022500019` / `20251024_MINLAL.pdf`, `0022500113` / `20251026_LALSAC.pdf`, and
+`0022500122` / `20251027_PORLAL.pdf`. This narrowly supersedes laptop-only acquisition
+for those reports. It does not authorize the remaining 17, other source/identity
+requests, new credentials, paid services, automatic refresh, or production R2
+publication. Reuse original retained bytes for subsequent qualification/replay;
+retries need a diagnosed reason. Preserve the existing read-only workflow,
+independent source qualification and separately protected publication boundary.
+
+Own acquisition, qualification and implementation across routine PR boundaries
+within the active session. A merged PR or unavailable execution route alone is
+not a stop: diagnose the specific blocker and advance independent useful K08 work
+where possible. Consequential changes retain independent review before merge;
+prefer Claude as a separate reviewing model when available within existing access
+and cost authority. If unavailable, use a genuinely separate available checker,
+record its actual identity/model, reviewed revision and approval; do not invent a
+Claude review, new paid access or model availability dependency. Preserve all 46
+positive obligations and the participation/membership/injury distinctions.
+
+### K08 historical participation strategy (current owner direction, 2026-10-27)
+
+Target reliable participation coverage from 1997 onward at scale. Audit existing
+NBA data first; qualify small representative structured-source samples across
+late 1990s, 2000s, 2010s and recent seasons, including Traditional V3, Summary
+V3 and historical archives (Summary V2 where supported). This bounded research
+and development supersedes the general cloud-source investigation pause for this
+assignment; it is not bulk/backfill authority. Endpoint classes, indexed files,
+empty inactive lists and missing rows do not establish complete historical data.
+Use official PDFs as targeted fallback/corroboration unless executed evidence
+shows they are the best practical primary source. Do not expand PDF collection
+while selecting the scalable strategy. Preserve the already-completed three-PDF
+capture; reuse its originals rather than repeating acquisition.
+
+Deliver and independently verify a bounded working statistical capability, not
+only a research/checkpoint document. Establish observed historical coverage,
+quality failures, unknowns and exact acquisition requirements before any large
+backfill. Keep played, explicit DNP/inactive, qualified same-game association,
+verified nonmembership and unknown distinct; do not infer tenure/nonmembership
+from roster snapshots or another game on the same date. No bulk acquisition,
+production R2 changes, new paid services or credential expansion is authorized.
+Continue routine research/development/review/safe merges across PR and route
+boundaries within this active assignment, preferring cross-model review for
+consequential correctness changes when available under existing authority.
+
 ## Execution and session continuity
 
 The completion-program README is the sole active queue. Its Resume checkpoint is

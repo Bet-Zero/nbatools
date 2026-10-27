@@ -77,3 +77,63 @@ def test_season_wordings_are_missed_games(query):
 def test_two_named_seasons_refuse():
     result = execute_natural_query("how many games did LeBron miss in 2024-25 and 2025-26")
     assert result.result_status == "no_result"
+
+
+@pytest.mark.parametrize(
+    "query,start,end",
+    [
+        (
+            "how many games did LeBron James miss from 2025-10-24 to 2025-10-27 in 2025-26",
+            "2025-10-24",
+            "2025-10-27",
+        ),
+        (
+            "how many home games did LeBron miss between October 24 and October 27 in 2025-26",
+            "2025-10-24",
+            "2025-10-27",
+        ),
+        ("number of games LeBron James missed on October 26, 2025", "2025-10-26", "2025-10-26"),
+    ],
+)
+def test_missed_count_preserves_validated_calendar_scope(query, start, end):
+    parsed = parse_query(query)
+    assert parsed["route"] == "game_finder"
+    assert parsed["route_kwargs"]["without_player"] == "LeBron James"
+    assert (parsed["route_kwargs"]["start_date"], parsed["route_kwargs"]["end_date"]) == (
+        start,
+        end,
+    )
+
+
+def test_calendar_mask_keeps_unrelated_stat_clause():
+    from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
+
+    text = strip_explicit_calendar_date_clauses(
+        "between October 24 and October 27 and scored 30 points"
+    )
+    assert "and scored 30 points" in text
+
+
+@pytest.mark.parametrize(
+    "dates",
+    [
+        "on 2025-10-24 and 2025-10-27",
+        "on October 24 and October 27",
+        "on October 24 or October 27",
+        "on 2025-10-24, 2025-10-27",
+        "from October 24 - October 27",
+    ],
+)
+def test_unread_date_list_cannot_become_partial_missed_count(dates):
+    parsed = parse_query(f"how many games did LeBron miss {dates} in 2025-26")
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["missed_games_extra_clause"]
+    result = execute_natural_query(f"how many games did LeBron miss {dates} in 2025-26")
+    assert result.result_status == "no_result"
+    assert "count" not in result.result.to_dict()["sections"]
+
+
+def test_calendar_mask_does_not_own_and_without_between():
+    from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
+
+    assert "and" in strip_explicit_calendar_date_clauses("on October 24 and October 27")
+    assert "and" not in strip_explicit_calendar_date_clauses("between October 24 and October 27")

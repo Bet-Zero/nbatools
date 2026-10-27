@@ -28,6 +28,7 @@ from nbatools.commands._date_utils import (
     has_explicit_calendar_date,
     invalid_explicit_date,
     seasons_for_explicit_dates,
+    strip_explicit_calendar_date_clauses,
     unread_date_landmark,
     unread_month_pair,
     uses_fuzzy_date_term,
@@ -11004,8 +11005,19 @@ def _missed_games(parsed: dict) -> dict | None:
     if len(who.split()) > 3 or _team_mentions(who) or _MISSED_NOT_A_COUNT.search(who):
         # "how many games did the Lakers win when LeBron missed": not his count.
         return None
-    rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", shape.group("rest")))
+    rest = shape.group("rest")
+    if parsed.get("start_date") or parsed.get("end_date"):
+        rest = strip_explicit_calendar_date_clauses(rest)
+    rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", rest))
     if _MISSED_NOT_A_COUNT.search(rest):
+        if parsed.get("start_date") or parsed.get("end_date"):
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["missed_games_extra_clause"]
+            refused["notes"] = [
+                "unsupported_boundary: missed-game count includes an unread date list or "
+                "additional condition; no partial sample is answered"
+            ]
+            return refused
         return None
     if parsed.get("season_list") or (
         re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season")

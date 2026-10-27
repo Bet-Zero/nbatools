@@ -343,7 +343,7 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   player_id, player_name, participation_state, source_minutes, source_comment,
   source, source_sha256, identity_source_sha256, coverage_scope`.
 - **Producer:** `nbatools.commands.pipeline.pull_player_game_availability`
-  prefers **NBA Official Final Box PDFs**, which list the game's playing,
+  supports **NBA Official Final Box PDFs** as targeted fallback/corroboration; these list playing,
   DNP/DND and inactive athletes with historical reasons. `--source report`
   validates PDF game date, visitor/home teams and both final scores against
   existing NBA game logs, plus unambiguous NBA player identities. PDFs are
@@ -424,6 +424,12 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   each used profile's ID/name and original HTML hash; publication verifies all
   HTML receipts and canonical global-ID consistency. These HTML/index files stay
   alongside the report sources and must accompany permanent publication.
+  An explicitly named inactive entry with empty parentheses (observed `Stevens ()`
+  in the retained October26report) still establishes nonparticipation under the
+  inactive heading; its medical/absence reason remains unknown. Original source
+  clocks are retained: the October26Lakers displayed clocks sum to240:01 while the
+  printed team total is240:00; no correction or false exact-time reconciliation
+  is claimed. This does not change the game-specific DNP/points qualification.
   Source
   status/minutes do not determine output participation, and unlisted PDF players
   never become rows. `identity_source_sha256` binds any fallback to retained
@@ -436,6 +442,43 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   The bounded official-report numerical test retains these actual source files
   and derived CSVs in the existing validation artifact; artifact staging is
   temporary and does not satisfy permanent R2 publication.
+- **Structured archival producer:** `pipeline.structured_participation.stage_structured_game`
+  qualifies retained Traditional V3 plus Summary V2 or V3 responses offline into
+  this same dataset. Recommended scalable source is the structured combination;
+  no per-game PDF prerequisite is introduced. Traditional supplies participant/DNP
+  rows; Summary supplies explicit game-specific inactive identities and the final
+  game/date/home-away/score envelope. An empty inactive array establishes no
+  roster completeness. Every original response is retained by hash (2MB bound),
+  with an archive revision, pinned source URL, retrieval timestamp and attribution.
+  `source=nba_stats_structured_archive:<revision>:<game_id>` and `source_sha256`
+  bind the exact composite `.structured.json` receipt and both original JSONs.
+  Archive retrieval is not an original NBA capture or freshness timestamp.
+  The bounded source is SportsDataverse hoopR's attributed NBA Stats raw archive,
+  pinned to revision2e44b7c039f104bc6b41a1de494411e83a03714e (CC BY4.0).
+  Qualification requires both teams, exact final/date/game identity, source and
+  canonical team scores, complete agreement with canonical played identity/point
+  rows, and no played/DNP/inactive conflicts. Known canonical name/ID contradictions
+  reject for all listed players; exact given/family reversal is permitted for
+  identities such as Yao Ming. Multiple broadcast summary records may differ in
+  broadcaster only: all required game scope fields must agree. Explicit DNP rows
+  cannot contain positive on-court activity counts. Original malformed durations
+  (observed1997`29:60`) reject the game rather than being quietly normalized.
+  Original comments, including legacy garbage suffixes, are opaque provenance,
+  never qualified medical causes. Coverage stays `listed_player_rows_only`.
+  Existing qualified rows cannot be dropped or contradicted by a replacement.
+  Publication validation rebuilds the rows from retained originals and the
+  canonical game, rejecting altered sources, packets or normalized rows. This
+  prepares verifiable staging; it grants no production publication authority.
+  Structured `source_minutes` supports participation and retains source resolution;
+  it is not certified original-scorer whole-second precision. Exact-report
+  positive-seconds consumers continue to require qualified Final Box PDF
+  provenance. Structured explicit DNP can still prove No without a clock; general
+  same-game identity/count facts do not require exact-time authority. This prevents historical rounded clocks from silently
+  becoming precise threshold evidence.
+  Runtime consumes these qualified rows through existing observation/sample
+  helpers. A season-wide query still needs known predicates across every candidate
+  game. Same-game opposite-team association can disprove same-team absence;
+  unlisted players and unrelated same-date games cannot establish nonmembership.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and

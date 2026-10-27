@@ -60,6 +60,14 @@ def success(result, gid, truth, player="Jayson Tatum"):
 @pytest.fixture
 def exact_sample(pair_sample):
     ledger = pair_sample["ledger"]
+    # Controlled clock fixture models an already-qualified PDF source kind.
+    # It has no retained original bytes and is not publishable NBA evidence.
+    ledger["source"] = (
+        "nba_official_finalbox:"
+        + pd.to_datetime(ledger.game_date).dt.strftime("%Y%m%d")
+        + "_BOSLAL"
+    )
+    ledger["coverage_scope"] = "controlled_fixture"
     ledger["source_minutes"] = ledger.participation_state.map({"played": 25.0})
     first = pair_sample["candidates"].sort_values("game_date").iloc[0]
     return pair_sample, f"on {str(first.game_date)[:10]}", int(first.game_id)

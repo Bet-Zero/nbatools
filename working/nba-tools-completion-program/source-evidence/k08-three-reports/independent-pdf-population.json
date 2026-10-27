@@ -1,0 +1,494 @@
+[
+  {
+    "game_id": 22500019,
+    "reference": "20251024_MINLAL",
+    "sides": [
+      {
+        "team_id": 1610612750,
+        "players": 15,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14400,
+        "points": 110,
+        "rows": [
+          [
+            1630183,
+            "Jaden McDaniels",
+            1622,
+            10
+          ],
+          [
+            203944,
+            "Julius Randle",
+            1777,
+            26
+          ],
+          [
+            203497,
+            "Rudy Gobert",
+            1690,
+            2
+          ],
+          [
+            1630162,
+            "Anthony Edwards",
+            2081,
+            31
+          ],
+          [
+            1628978,
+            "Donte DiVincenzo",
+            1696,
+            13
+          ],
+          [
+            1629675,
+            "Naz Reid",
+            1366,
+            5
+          ],
+          [
+            201144,
+            "Mike Conley",
+            552,
+            0
+          ],
+          [
+            1630545,
+            "Terrence Shannon Jr.",
+            808,
+            0
+          ],
+          [
+            1641740,
+            "Jaylen Clark",
+            807,
+            9
+          ],
+          [
+            1630538,
+            "Bones Hyland",
+            983,
+            9
+          ],
+          [
+            1642265,
+            "Rob Dillingham",
+            59,
+            0
+          ],
+          [
+            1642866,
+            "Joan Beringer",
+            287,
+            2
+          ],
+          [
+            204060,
+            "Joe Ingles",
+            239,
+            0
+          ],
+          [
+            1631159,
+            "Leonard Miller",
+            239,
+            2
+          ],
+          [
+            1630548,
+            "Johnny Juzang",
+            194,
+            1
+          ]
+        ]
+      },
+      {
+        "team_id": 1610612747,
+        "players": 11,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14400,
+        "points": 128,
+        "rows": [
+          [
+            1630559,
+            "Austin Reaves",
+            2195,
+            25
+          ],
+          [
+            1629060,
+            "Rui Hachimura",
+            1911,
+            23
+          ],
+          [
+            1629028,
+            "Deandre Ayton",
+            1852,
+            15
+          ],
+          [
+            1629216,
+            "Gabe Vincent",
+            1446,
+            5
+          ],
+          [
+            1629029,
+            "Luka Doncic",
+            2095,
+            49
+          ],
+          [
+            1631222,
+            "Jake LaRavia",
+            1662,
+            6
+          ],
+          [
+            203935,
+            "Marcus Smart",
+            1240,
+            3
+          ],
+          [
+            1642261,
+            "Dalton Knecht",
+            448,
+            0
+          ],
+          [
+            1629020,
+            "Jarred Vanderbilt",
+            1176,
+            2
+          ],
+          [
+            1642355,
+            "Bronny James",
+            194,
+            0
+          ],
+          [
+            1631132,
+            "Christian Koloko",
+            181,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "game_id": 22500113,
+    "reference": "20251026_LALSAC",
+    "sides": [
+      {
+        "team_id": 1610612747,
+        "players": 9,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14401,
+        "points": 127,
+        "rows": [
+          [
+            203935,
+            "Marcus Smart",
+            1848,
+            11
+          ],
+          [
+            1629060,
+            "Rui Hachimura",
+            2414,
+            18
+          ],
+          [
+            1629028,
+            "Deandre Ayton",
+            2157,
+            22
+          ],
+          [
+            1630559,
+            "Austin Reaves",
+            2344,
+            51
+          ],
+          [
+            1629216,
+            "Gabe Vincent",
+            1133,
+            3
+          ],
+          [
+            1629020,
+            "Jarred Vanderbilt",
+            1612,
+            9
+          ],
+          [
+            1631222,
+            "Jake LaRavia",
+            1953,
+            11
+          ],
+          [
+            1642261,
+            "Dalton Knecht",
+            761,
+            2
+          ],
+          [
+            1643024,
+            "Chris Manon",
+            179,
+            0
+          ]
+        ]
+      },
+      {
+        "team_id": 1610612758,
+        "players": 12,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14400,
+        "points": 120,
+        "rows": [
+          [
+            203897,
+            "Zach LaVine",
+            2398,
+            32
+          ],
+          [
+            201942,
+            "DeMar DeRozan",
+            2392,
+            21
+          ],
+          [
+            1627734,
+            "Domantas Sabonis",
+            1830,
+            10
+          ],
+          [
+            1631165,
+            "Keon Ellis",
+            1079,
+            6
+          ],
+          [
+            203471,
+            "Dennis Schroder",
+            2100,
+            18
+          ],
+          [
+            1629234,
+            "Drew Eubanks",
+            221,
+            0
+          ],
+          [
+            1628370,
+            "Malik Monk",
+            1469,
+            15
+          ],
+          [
+            1642403,
+            "Isaac Jones",
+            76,
+            0
+          ],
+          [
+            1642928,
+            "Dylan Cardwell",
+            771,
+            0
+          ],
+          [
+            201566,
+            "Russell Westbrook",
+            1631,
+            18
+          ],
+          [
+            203967,
+            "Dario Saric",
+            268,
+            0
+          ],
+          [
+            1642269,
+            "Devin Carter",
+            165,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "game_id": 22500122,
+    "reference": "20251027_PORLAL",
+    "sides": [
+      {
+        "team_id": 1610612757,
+        "players": 13,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14400,
+        "points": 122,
+        "rows": [
+          [
+            1630166,
+            "Deni Avdija",
+            1944,
+            25
+          ],
+          [
+            1641739,
+            "Toumani Camara",
+            1817,
+            4
+          ],
+          [
+            1642270,
+            "Donovan Clingan",
+            1576,
+            16
+          ],
+          [
+            1631101,
+            "Shaedon Sharpe",
+            1724,
+            16
+          ],
+          [
+            201950,
+            "Jrue Holiday",
+            1823,
+            24
+          ],
+          [
+            203924,
+            "Jerami Grant",
+            1692,
+            22
+          ],
+          [
+            1642905,
+            "Yang Hansen",
+            516,
+            1
+          ],
+          [
+            1631104,
+            "Blake Wesley",
+            979,
+            4
+          ],
+          [
+            1631200,
+            "Kris Murray",
+            1438,
+            2
+          ],
+          [
+            1631126,
+            "Caleb Love",
+            669,
+            5
+          ],
+          [
+            1641712,
+            "Rayan Rupert",
+            74,
+            0
+          ],
+          [
+            1641871,
+            "Duop Reath",
+            74,
+            3
+          ],
+          [
+            1631321,
+            "Sidy Cissoko",
+            74,
+            0
+          ]
+        ]
+      },
+      {
+        "team_id": 1610612747,
+        "players": 10,
+        "reported_team_minutes": "240:00",
+        "displayed_player_seconds": 14400,
+        "points": 108,
+        "rows": [
+          [
+            1629020,
+            "Jarred Vanderbilt",
+            1682,
+            14
+          ],
+          [
+            1629060,
+            "Rui Hachimura",
+            2185,
+            16
+          ],
+          [
+            1629028,
+            "Deandre Ayton",
+            2133,
+            16
+          ],
+          [
+            1631222,
+            "Jake LaRavia",
+            1745,
+            3
+          ],
+          [
+            1630559,
+            "Austin Reaves",
+            2349,
+            41
+          ],
+          [
+            1642261,
+            "Dalton Knecht",
+            1482,
+            16
+          ],
+          [
+            1642355,
+            "Bronny James",
+            1181,
+            0
+          ],
+          [
+            1641733,
+            "Nick Smith Jr.",
+            1204,
+            2
+          ],
+          [
+            1631132,
+            "Christian Koloko",
+            200,
+            0
+          ],
+          [
+            1643024,
+            "Chris Manon",
+            239,
+            0
+          ]
+        ]
+      }
+    ]
+  }
+]
