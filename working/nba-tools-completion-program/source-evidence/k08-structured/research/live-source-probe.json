@@ -44,5 +44,22 @@
       "timeout_seconds": 12,
       "url": "https://stats.nba.com/stats/boxscoresummaryv3"
     }
-  ]
+  ],
+  "workflow_run_id": 40546192527,
+  "workflow_run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/40546192527",
+  "reviewed_sha": "4a543b6fc00547a9c3285c30196c504623e83f52",
+  "request_sha": "05ff0142db1942eb314da65fb66a383a67b418dd",
+  "reviewer": "/root/k08_three_checker (separate Codex agent; not Claude)",
+  "review_url": "https://github.com/Bet-Zero/nbatools/pull/546#issuecomment-6448188160",
+  "required_harness": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "conclusion": "success"
+  },
+  "acceptance_limit": "This test passed by recording a bounded source diagnostic. No NBA participation or historical completeness requirement was accepted."
 }
