@@ -247,7 +247,7 @@ def _split_inactives(record: str) -> list[tuple[str, str]]:
     tokens.append(current.strip())
     result = []
     for entry in tokens:
-        match = re.fullmatch(r"(.+?)\s+\((.+)\)", entry)
+        match = re.fullmatch(r"(.+?)\s+\((.*)\)", entry)
         if match is None:
             raise ValueError(f"Unrecognized official inactive row: {entry}")
         result.append((match.group(1).strip(), "INACTIVE - " + match.group(2).strip()))

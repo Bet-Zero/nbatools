@@ -424,6 +424,12 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   each used profile's ID/name and original HTML hash; publication verifies all
   HTML receipts and canonical global-ID consistency. These HTML/index files stay
   alongside the report sources and must accompany permanent publication.
+  An explicitly named inactive entry with empty parentheses (observed `Stevens ()`
+  in the retained October26report) still establishes nonparticipation under the
+  inactive heading; its medical/absence reason remains unknown. Original source
+  clocks are retained: the October26Lakers displayed clocks sum to240:01 while the
+  printed team total is240:00; no correction or false exact-time reconciliation
+  is claimed. This does not change the game-specific DNP/points qualification.
   Source
   status/minutes do not determine output participation, and unlisted PDF players
   never become rows. `identity_source_sha256` binds any fallback to retained

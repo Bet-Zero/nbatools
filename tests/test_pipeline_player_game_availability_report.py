@@ -708,3 +708,11 @@ def test_explicit_team_scope_requires_offline_report(nba_rows):
         backfill("2025-26", root=nba_rows, source="report", imported_team_ids=[2])
     with pytest.raises(ValueError, match="retained official report"):
         backfill("2025-26", root=nba_rows, source="stats", imported_team_ids=[2])
+
+
+def test_explicit_inactive_with_unreported_reason_is_not_dropped():
+    # Actual Oct26,2025 Kings report: Stevens (). The enclosing inactive list
+    # establishes nonparticipation; empty parentheses establish no medical cause.
+    assert report._split_inactives("Stevens ()") == [("Stevens", "INACTIVE - ")]
+    with pytest.raises(ValueError):
+        report._split_inactives("Stevens (")

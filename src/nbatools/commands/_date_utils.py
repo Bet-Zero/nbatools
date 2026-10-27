@@ -289,6 +289,25 @@ def explicit_date_is_open_ended(text: str) -> bool:
     )
 
 
+def strip_explicit_calendar_date_clauses(text: str) -> str:
+    """Mask explicit calendar dates after the caller has validated date scope.
+
+    Keep unrelated numbers/stat clauses. Range connectors are consumed only
+    between two actual date atoms, never as arbitrary trailing prose.
+    """
+    month = _month_name_pattern()
+    atom = (
+        rf"(?:{_ISO_DATE}|\d{{1,2}}/\d{{1,2}}(?:/\d{{2,4}})?|"
+        rf"(?:{month})\.?\s+\d{{1,2}}(?:st|nd|rd|th)?(?:,?\s+(?:19|20)\d{{2}})?)"
+    )
+    return re.sub(
+        rf"\b(?:(?:from|between|since|after|before|on)\s+)?{atom}"
+        rf"(?:\s*(?:to|through|thru|until|and|-)\s*{atom})?\b",
+        " ",
+        text,
+    )
+
+
 def invalid_explicit_date(text: str) -> str | None:
     """Return a named calendar date that does not exist, such as "2025-02-30".
 

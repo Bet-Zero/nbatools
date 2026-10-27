@@ -205,6 +205,8 @@ def _build(root, packet, source_dir, packet_hash):
     raw = _cached_boxscore(paths[0])
     for side in ("homeTeam", "awayTeam"):
         team = traditional[side]
+        if team["teamTricode"] != teams.loc[int(team["teamId"]), "team_abbr"]:
+            raise ValueError("Structured traditional team abbreviation mismatch")
         if _integer(team["statistics"]["points"]) != _integer(
             teams.loc[int(team["teamId"]), "pts"]
         ):
@@ -249,6 +251,7 @@ def _build(root, packet, source_dir, packet_hash):
         "steals",
         "blocks",
         "turnovers",
+        "foulsPersonal",
     )
     for side in ("homeTeam", "awayTeam"):
         for person in traditional[side]["players"]:

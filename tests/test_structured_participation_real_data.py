@@ -152,3 +152,85 @@ def test_historical_pair_bound_and_same_game_other_team(tmp_path, monkeypatch):
     assert response.json()["result"]["sections"]["summary"][0]["pts_avg"] == 97
 
     reset_data_source_cache()
+
+
+def test_targeted_pdf_fallback_and_date_bounded_missed_counts(tmp_path, monkeypatch):
+    from nbatools.commands.pipeline import player_game_availability_report as report
+    from nbatools.commands.pipeline.pull_player_game_availability import backfill
+
+    root, _ = stage(tmp_path, "2025-26", 22500002)
+    for dataset, filename in [
+        ("player_game_stats", "2024-25_regular_season.csv"),
+        ("rosters", "2025-26.csv"),
+        ("rosters", "2024-25.csv"),
+    ]:
+        destination = root / "raw" / dataset / filename
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        data_read_csv(f"data/raw/{dataset}/{filename}").to_csv(destination, index=False)
+    cache = EVIDENCE.parent / "k08-three-reports/acquired_data/raw/player_game_availability_sources"
+
+    def no_fetch(*args, **kwargs):
+        raise AssertionError("Retained fallback must never refetch any endpoint")
+
+    monkeypatch.setattr(report.urllib.request, "urlopen", no_fetch)
+    output = backfill(
+        "2025-26",
+        root=root,
+        source="report",
+        cached_reports=cache,
+        game_ids=[22500019, 22500113, 22500122],
+    )
+    selected = output.loc[output.game_id.astype(int).isin([22500019, 22500113, 22500122])]
+    # Checker used pdftotext and own ID/state parser: includes DND rows.
+    assert selected.groupby("game_id").size().to_dict() == {
+        "0022500019": 34,
+        "0022500113": 35,
+        "0022500122": 35,
+    }
+    assert selected.participation_state.eq("played").sum() == 70
+    assert selected.participation_state.eq("did_not_play").sum() == 34
+    validate_publication(root)
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    reset_data_source_cache()
+    record = execute_natural_query(
+        "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26"
+    )
+    assert record.result_status == "ok", record.metadata
+    summary = record.result.to_dict()["sections"]["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"], summary["pts_avg"]) == (
+        3,
+        2,
+        1,
+        121,
+    )
+    assert [int(r["game_id"]) for r in record.result.to_dict()["sections"]["game_log"]] == [
+        22500019,
+        22500113,
+        22500122,
+    ]
+    for query, expected in [
+        ("how many games did LeBron James miss from 2025-10-24 to 2025-10-27 in 2025-26", 3),
+        ("how many home games did LeBron miss between October 24 and October 27 in 2025-26", 2),
+        ("number of games LeBron James missed on October 26, 2025", 1),
+    ]:
+        result = execute_natural_query(query)
+        assert result.result_status == "ok", result.metadata
+        assert result.route == "game_finder"
+        assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
+        assert "LeBron James missed" in result.metadata["answer_phrase"]
+    pair = execute_natural_query(
+        "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26"
+    )
+    assert pair.result_status == "ok", pair.metadata
+    rows = pair.result.to_dict()["sections"]["finder"]
+    assert [(int(r["game_id"]), r["pts"], r["reb"], r["ast"]) for r in rows] == [
+        (22500113, 51, 11, 9),
+        (22500122, 41, 4, 5),
+    ]
+    unknown = execute_structured_query(
+        "team_record", team="LAL", season="2025-26", without_player="LeBron James"
+    )
+    assert unknown.result_status == "no_result"  # full-season remaining unknowns are not zero
+    reset_data_source_cache()

@@ -262,3 +262,16 @@ def test_inactive_identity_cannot_conflict_with_known_other_game_name(source):
     pd.concat([rows, other], ignore_index=True).to_csv(path, index=False)
     with pytest.raises(ValueError, match="listed name.*identity"):
         run(source)
+
+
+@pytest.mark.parametrize("side", ["homeTeam", "awayTeam"])
+def test_traditional_abbreviation_must_match_canonical_side(source, side):
+    source[3]["boxScoreTraditional"][side]["teamTricode"] = "WRONG"
+    with pytest.raises(ValueError, match="abbreviation"):
+        run(source)
+
+
+def test_nonparticipant_cannot_have_personal_fouls(source):
+    source[3]["boxScoreTraditional"]["homeTeam"]["players"][1]["statistics"]["foulsPersonal"] = 3
+    with pytest.raises(ValueError, match="nonparticipant.*activity"):
+        run(source)

@@ -1,0 +1,546 @@
+[
+  {
+    "game_id": 22500019,
+    "listed": 34,
+    "played": 26,
+    "did_not_play": 8,
+    "states": [
+      {
+        "team_id": 1610612747,
+        "player_id": 2544,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 203935,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1628467,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629020,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629028,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629029,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629060,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629216,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629637,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1630559,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631132,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631222,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1641733,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642261,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642355,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642876,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1643024,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 201144,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 203497,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 203944,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 204060,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1628978,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1629675,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1630162,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1630183,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1630538,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1630545,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1630548,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1631159,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1641740,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1642265,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1642402,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1642866,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612750,
+        "player_id": 1642911,
+        "state": "did_not_play"
+      }
+    ]
+  },
+  {
+    "game_id": 22500113,
+    "listed": 35,
+    "played": 21,
+    "did_not_play": 14,
+    "states": [
+      {
+        "team_id": 1610612747,
+        "player_id": 2544,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 203935,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1628467,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629020,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629028,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629029,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629060,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629216,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629637,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1630559,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631132,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631222,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1641733,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642261,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642355,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642876,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1643024,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 201566,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 201942,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 203471,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 203897,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 203926,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 203967,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1627734,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1628370,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1629234,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1631099,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1631165,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1631342,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1641815,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1642269,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1642363,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1642403,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1642875,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612758,
+        "player_id": 1642928,
+        "state": "played"
+      }
+    ]
+  },
+  {
+    "game_id": 22500122,
+    "listed": 35,
+    "played": 23,
+    "did_not_play": 12,
+    "states": [
+      {
+        "team_id": 1610612747,
+        "player_id": 2544,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 203935,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1628467,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629020,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629028,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629029,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629060,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629216,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1629637,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1630559,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631132,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1631222,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1641733,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642261,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642355,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1642876,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612747,
+        "player_id": 1643024,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 201950,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 203081,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 203924,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1629057,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1629680,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1630166,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1630703,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631101,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631104,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631126,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631200,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631321,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1631451,
+        "state": "did_not_play"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1641712,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1641739,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1641871,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1642270,
+        "state": "played"
+      },
+      {
+        "team_id": 1610612757,
+        "player_id": 1642905,
+        "state": "played"
+      }
+    ]
+  }
+]
