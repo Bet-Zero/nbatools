@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "1fed0c6914472b3771c2649271f97942be914d3e",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_structured_participation_real_data.py",
+    "tests/test_qualified_original_minutes_real_data.py::test_qualified_original_minutes_source_obligations"
+  ],
+  "raw_qa_cases": []
+}
