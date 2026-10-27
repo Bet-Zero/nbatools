@@ -120,3 +120,92 @@ def test_bounded_structured_source_research(tmp_path, capfd):
     assert 2 <= len(results) <= 8
     with capfd.disabled():
         print("K08_STRUCTURED_SOURCE_DIAGNOSTIC " + json.dumps(report, sort_keys=True), flush=True)
+
+
+def test_transport_exact_three_retained_reports(tmp_path, capfd):
+    """Transfer already acquired originals through existing Actions read access."""
+    import base64
+    import io
+    import re
+    import zipfile
+    from urllib.parse import urlparse
+
+    assert os.environ.get("SCOPE") == "targeted"
+    assert os.environ.get("TESTS") == (
+        "tests/test_k08_structured_source_probe_real_data.py::test_transport_exact_three_retained_reports"
+    )
+    artifact_id = 12750809462
+    expected_zip_sha = "be00e2815bb2e66081fc2c247cdace2969bd25801f039762f8a0af75bc5a3b21"
+    api_url = f"https://api.github.com/repos/Bet-Zero/nbatools/actions/artifacts/{artifact_id}/zip"
+    # The existing job supplies an actions:read token. Never send it to the
+    # storage redirect host or print headers, signed URLs, or exception strings.
+    try:
+        first = requests.get(
+            api_url,
+            headers={"Authorization": f"Bearer {os.environ['GH_TOKEN']}"},
+            allow_redirects=False,
+            timeout=20,
+        )
+        assert first.status_code == 302
+        location = first.headers["Location"]
+        host = urlparse(location)
+        valid_host = (
+            host.scheme == "https"
+            and bool(host.hostname)
+            and host.hostname.endswith(".blob.core.windows.net")
+        )
+        assert valid_host
+        with requests.get(location, stream=True, timeout=20, allow_redirects=False) as response:
+            assert response.status_code == 200
+            raw = response.raw.read(2_000_001, decode_content=True)
+    except requests.RequestException as error:
+        raise AssertionError(type(error).__name__) from None
+    assert len(raw) <= 2_000_000 and hashlib.sha256(raw).hexdigest() == expected_zip_sha
+    names = ("20251024_MINLAL", "20251026_LALSAC", "20251027_PORLAL")
+    prefix = "acquired_data/raw/player_game_availability_sources/"
+    retained = []
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        members = archive.infolist()
+        assert len({m.filename for m in members}) == len(members)
+        assert len(members) <= 100 and sum(m.file_size for m in members) <= 2_000_000
+        for name in names:
+            content = archive.read(prefix + name + ".json")
+            receipt = json.loads(content)
+            digest = receipt["sha256"]
+            assert re.fullmatch(r"[0-9a-f]{64}", digest)
+            assert receipt["raw_file"] == digest + ".pdf"
+            assert receipt["source_url"] == (f"https://statsdmz.nba.com/pdfs/{name[:8]}/{name}.pdf")
+            captured = datetime.fromisoformat(receipt["retrieved_at"])
+            assert captured.tzinfo is not None
+            pdf = archive.read(prefix + receipt["raw_file"])
+            assert pdf.startswith(b"%PDF") and len(pdf) == receipt["size_bytes"]
+            assert hashlib.sha256(pdf).hexdigest() == digest
+            for filename, payload in ((name + ".json", content), (receipt["raw_file"], pdf)):
+                retained.append(
+                    dict(
+                        name=filename,
+                        bytes=len(payload),
+                        sha256=hashlib.sha256(payload).hexdigest(),
+                        data_base64=base64.b64encode(payload).decode("ascii"),
+                    )
+                )
+    assert len(retained) == 6 and len({r["name"] for r in retained}) == 6
+    with capfd.disabled():
+        for item in retained:
+            print("K08_RETAINED_FILE " + json.dumps(item, sort_keys=True), flush=True)
+    output = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", tmp_path))
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "retained-transfer-receipt.json").write_text(
+        json.dumps(
+            dict(
+                artifact_id=artifact_id,
+                archive_sha256=expected_zip_sha,
+                classification="existing_original_byte_transfer_no_new_NBA_acquisition",
+                source_requests=0,
+                production_writes=0,
+                files=[{k: v for k, v in item.items() if k != "data_base64"} for item in retained],
+            ),
+            indent=2,
+        )
+        + "\n"
+    )
