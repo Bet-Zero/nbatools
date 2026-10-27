@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "status": "prepared_acquisition_requirement_not_collected_not_publication_approval",
+  "base_generation": "availability-opening-s4-v1-20261017",
+  "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+  "dataset": "raw/player_game_availability",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "requested_nba_game_ids": [
+    "0022500019",
+    "0022500024",
+    "0022500045",
+    "0022500113",
+    "0022500122",
+    "0022500136",
+    "0022500155",
+    "0022500163",
+    "0022500179",
+    "0022500185",
+    "0022500198",
+    "0022500222",
+    "0022500231",
+    "0022500308",
+    "0022500523",
+    "0022500774",
+    "0022500914",
+    "0022500922",
+    "0022500946",
+    "0022501155"
+  ],
+  "missing_nba_game_ids": [
+    "0022500019",
+    "0022500024",
+    "0022500045",
+    "0022500113",
+    "0022500122",
+    "0022500136",
+    "0022500155",
+    "0022500163",
+    "0022500179",
+    "0022500185",
+    "0022500198",
+    "0022500222",
+    "0022500231",
+    "0022500308",
+    "0022500523",
+    "0022500774",
+    "0022500914",
+    "0022500922",
+    "0022500946",
+    "0022501155"
+  ],
+  "game_ids_not_in_production_catalog": [],
+  "team_ids": [
+    "1610612747"
+  ],
+  "player_ids": [
+    "2544"
+  ],
+  "unobserved_requested_keys": [
+    {
+      "game_id": "22500019",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500024",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500045",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500113",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500122",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500136",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500155",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500163",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500179",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500185",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500198",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500222",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500231",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500308",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500523",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500774",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500914",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500922",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22500946",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    },
+    {
+      "game_id": "22501155",
+      "team_id": "1610612747",
+      "player_id": "2544"
+    }
+  ],
+  "key_absence_note": "Not observed in stored rows; absence does not establish DNP, injury or expected participation",
+  "required_columns": [
+    "coverage_scope",
+    "game_date",
+    "game_id",
+    "identity_source_sha256",
+    "participation_state",
+    "player_id",
+    "player_name",
+    "season",
+    "season_type",
+    "source",
+    "source_comment",
+    "source_minutes",
+    "source_sha256",
+    "team_abbr",
+    "team_id"
+  ],
+  "missing_columns": [],
+  "collection_needed": true,
+  "quality_review_required": true,
+  "unusable_fields": [],
+  "availability_note": "Present rows need trust review; player completeness is unknown",
+  "grain": "listed player-game participation",
+  "key_columns": [
+    "game_id",
+    "team_id",
+    "player_id"
+  ],
+  "source": "official boxscore participation or qualified final report",
+  "period_windows": [],
+  "completeness_requirement": "exact requested games/keys/windows; return all actual played rows, explicit DNP only from a complete qualified source; no inference from absence",
+  "acquisition_only": "backup laptop collects original responses + parameters + capture times; Codex validates/builds/tests in cloud",
+  "handoff": "immutable checksum-bound staging bundle; cloud review/read-only validation; registered package; separate owner-approved protected R2 publication",
+  "purpose": "Complete exact-game LeBron/LAL participation coverage for the frozen 2025-26 regular-season catalog. The 20 unknown keys are NOT asserted DNP; 60 played and 2 explicit DNP keys already have existing evidence.",
+  "source_requests": [
+    {
+      "game_id": "0022500019",
+      "game_date": "2025-10-24",
+      "url": "https://statsdmz.nba.com/pdfs/20251024/20251024_MINLAL.pdf",
+      "output": "sources/20251024_MINLAL.pdf"
+    },
+    {
+      "game_id": "0022500113",
+      "game_date": "2025-10-26",
+      "url": "https://statsdmz.nba.com/pdfs/20251026/20251026_LALSAC.pdf",
+      "output": "sources/20251026_LALSAC.pdf"
+    },
+    {
+      "game_id": "0022500122",
+      "game_date": "2025-10-27",
+      "url": "https://statsdmz.nba.com/pdfs/20251027/20251027_PORLAL.pdf",
+      "output": "sources/20251027_PORLAL.pdf"
+    },
+    {
+      "game_id": "0022500136",
+      "game_date": "2025-10-29",
+      "url": "https://statsdmz.nba.com/pdfs/20251029/20251029_LALMIN.pdf",
+      "output": "sources/20251029_LALMIN.pdf"
+    },
+    {
+      "game_id": "0022500024",
+      "game_date": "2025-10-31",
+      "url": "https://statsdmz.nba.com/pdfs/20251031/20251031_LALMEM.pdf",
+      "output": "sources/20251031_LALMEM.pdf"
+    },
+    {
+      "game_id": "0022500155",
+      "game_date": "2025-11-02",
+      "url": "https://statsdmz.nba.com/pdfs/20251102/20251102_MIALAL.pdf",
+      "output": "sources/20251102_MIALAL.pdf"
+    },
+    {
+      "game_id": "0022500163",
+      "game_date": "2025-11-03",
+      "url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf",
+      "output": "sources/20251103_LALPOR.pdf"
+    },
+    {
+      "game_id": "0022500179",
+      "game_date": "2025-11-05",
+      "url": "https://statsdmz.nba.com/pdfs/20251105/20251105_SASLAL.pdf",
+      "output": "sources/20251105_SASLAL.pdf"
+    },
+    {
+      "game_id": "0022500185",
+      "game_date": "2025-11-08",
+      "url": "https://statsdmz.nba.com/pdfs/20251108/20251108_LALATL.pdf",
+      "output": "sources/20251108_LALATL.pdf"
+    },
+    {
+      "game_id": "0022500198",
+      "game_date": "2025-11-10",
+      "url": "https://statsdmz.nba.com/pdfs/20251110/20251110_LALCHA.pdf",
+      "output": "sources/20251110_LALCHA.pdf"
+    },
+    {
+      "game_id": "0022500222",
+      "game_date": "2025-11-12",
+      "url": "https://statsdmz.nba.com/pdfs/20251112/20251112_LALOKC.pdf",
+      "output": "sources/20251112_LALOKC.pdf"
+    },
+    {
+      "game_id": "0022500045",
+      "game_date": "2025-11-14",
+      "url": "https://statsdmz.nba.com/pdfs/20251114/20251114_LALNOP.pdf",
+      "output": "sources/20251114_LALNOP.pdf"
+    },
+    {
+      "game_id": "0022500231",
+      "game_date": "2025-11-15",
+      "url": "https://statsdmz.nba.com/pdfs/20251115/20251115_LALMIL.pdf",
+      "output": "sources/20251115_LALMIL.pdf"
+    },
+    {
+      "game_id": "0022500308",
+      "game_date": "2025-11-30",
+      "url": "https://statsdmz.nba.com/pdfs/20251130/20251130_NOPLAL.pdf",
+      "output": "sources/20251130_NOPLAL.pdf"
+    },
+    {
+      "game_id": "0022500523",
+      "game_date": "2026-01-07",
+      "url": "https://statsdmz.nba.com/pdfs/20260107/20260107_LALSAS.pdf",
+      "output": "sources/20260107_LALSAS.pdf"
+    },
+    {
+      "game_id": "0022500774",
+      "game_date": "2026-02-10",
+      "url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf",
+      "output": "sources/20260210_SASLAL.pdf"
+    },
+    {
+      "game_id": "0022500914",
+      "game_date": "2026-03-06",
+      "url": "https://statsdmz.nba.com/pdfs/20260306/20260306_INDLAL.pdf",
+      "output": "sources/20260306_INDLAL.pdf"
+    },
+    {
+      "game_id": "0022500922",
+      "game_date": "2026-03-08",
+      "url": "https://statsdmz.nba.com/pdfs/20260308/20260308_NYKLAL.pdf",
+      "output": "sources/20260308_NYKLAL.pdf"
+    },
+    {
+      "game_id": "0022500946",
+      "game_date": "2026-03-10",
+      "url": "https://statsdmz.nba.com/pdfs/20260310/20260310_MINLAL.pdf",
+      "output": "sources/20260310_MINLAL.pdf"
+    },
+    {
+      "game_id": "0022501155",
+      "game_date": "2026-04-07",
+      "url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf",
+      "output": "sources/20260407_OKCLAL.pdf"
+    }
+  ],
+  "qualification": "Original final report must match exact date/game sides/scores, unique NBA player IDs and retained source hashes. Preserve every listed row. Absence of LeBron remains unknown. No inference of injury, tenure or medical reason.",
+  "staging_sequence": "Collect first three date-ordered reports, independently qualify/replay and validate bounded date-window answers, then collect remaining17 only after the contract works on actual sources. Acquisition on existing backup laptop only; no cloud NBA fetch. No publication authorization."
+}
