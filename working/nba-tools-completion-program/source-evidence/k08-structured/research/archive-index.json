@@ -1,0 +1,354 @@
+{
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "generated_at": "2026-10-27T16:50:53.998505+00:00",
+  "classification": "metadata_index_only_not_game_body_or_inactive_completeness",
+  "bulk_game_acquisition": false,
+  "scope": "four representative season indexes; not all historical seasons",
+  "endpoints": {
+    "boxscoretraditionalv3": {
+      "endpoint_tree_sha": "606e7b6e2656b543d464964382eee30e36f78c32",
+      "indexed_years": [
+        "1994",
+        "1995",
+        "1996",
+        "1997",
+        "1998",
+        "1999",
+        "2000",
+        "2001",
+        "2002",
+        "2003",
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026",
+        "2027"
+      ],
+      "samples": [
+        {
+          "season": "1997-98",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "20038361a78842f34a318b70e4012111a6e32228",
+          "indexed_game_files": 1375,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1189,
+              "indexed_games": 1189,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1189,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "e332faae6ee2443eb280fa677d1c6b3fc8e8d6da06585e31cb91ff967678e9f3"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 71,
+              "indexed_games": 71,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 71,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "5b775e9276e289b72b090143074d48028a400cac67ca3d525520ab0a64a57ca5"
+            }
+          ]
+        },
+        {
+          "season": "2004-05",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "f492b8b8a49b97be445d8008e8abf7e2f01d5b49",
+          "indexed_game_files": 1469,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "4a0ab5bb84699d6c397c558bd02da8760656cd784681e7ff512c4bcf746e2896"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 84,
+              "indexed_games": 84,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 86,
+              "indexed_outside_canonical_ids": [
+                "0040401000",
+                "0040401001"
+              ],
+              "canonical_source_sha256": "88678c2da5fef49eb430f26a3624198a50b2a1b9d6d6033f21d15f41117bfaf0"
+            }
+          ]
+        },
+        {
+          "season": "2014-15",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "d12d104539833e3df27aaa3b8d57206a21184aa5",
+          "indexed_game_files": 1432,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "716e7288045ef1c7b982ee9d13e0bc22571dd97578a3257fc8a94f9bcd27897f"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 81,
+              "indexed_games": 81,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 81,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "2906b60fb5d426e2795dea00d216bb91abaac499a327419558214b94220d5d2e"
+            }
+          ]
+        },
+        {
+          "season": "2025-26",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071",
+          "indexed_game_files": 1400,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 85,
+              "indexed_games": 85,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 85,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "ef43d8aca81734c638a34aac7a68885dc7de151f6825bf8c11878138d067bd89"
+            }
+          ]
+        }
+      ]
+    },
+    "boxscoresummaryv2": {
+      "endpoint_tree_sha": "4a8fadd011f1743cb9efe994793cc91aef96c3ba",
+      "indexed_years": [
+        "1994",
+        "1995",
+        "1997",
+        "1998",
+        "1999",
+        "2000",
+        "2001",
+        "2002",
+        "2003",
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026",
+        "2027"
+      ],
+      "samples": [
+        {
+          "season": "1997-98",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "6ce4b4e310be90895f5d7010bfc51ba5b2a61057",
+          "indexed_game_files": 1371,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1189,
+              "indexed_games": 1189,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1189,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "e332faae6ee2443eb280fa677d1c6b3fc8e8d6da06585e31cb91ff967678e9f3"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 71,
+              "indexed_games": 71,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 71,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "5b775e9276e289b72b090143074d48028a400cac67ca3d525520ab0a64a57ca5"
+            }
+          ]
+        },
+        {
+          "season": "2004-05",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "8694b34e194320c3ac5539ffb4000bd0c71b0fb2",
+          "indexed_game_files": 1469,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "4a0ab5bb84699d6c397c558bd02da8760656cd784681e7ff512c4bcf746e2896"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 84,
+              "indexed_games": 84,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 86,
+              "indexed_outside_canonical_ids": [
+                "0040401000",
+                "0040401001"
+              ],
+              "canonical_source_sha256": "88678c2da5fef49eb430f26a3624198a50b2a1b9d6d6033f21d15f41117bfaf0"
+            }
+          ]
+        },
+        {
+          "season": "2014-15",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "0f23847cd68d24e1d25c69ba26b65d89ee14e50b",
+          "indexed_game_files": 1432,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "716e7288045ef1c7b982ee9d13e0bc22571dd97578a3257fc8a94f9bcd27897f"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 81,
+              "indexed_games": 81,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 81,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "2906b60fb5d426e2795dea00d216bb91abaac499a327419558214b94220d5d2e"
+            }
+          ]
+        },
+        {
+          "season": "2025-26",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "22aa34e536e63ec611d2369a56bcf8667718972c",
+          "indexed_game_files": 1322,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 85,
+              "indexed_games": 85,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 85,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "ef43d8aca81734c638a34aac7a68885dc7de151f6825bf8c11878138d067bd89"
+            }
+          ]
+        }
+      ]
+    },
+    "boxscoresummaryv3": {
+      "endpoint_tree_sha": "5b31c11e319249c6541df7740993c2dd03ad5765",
+      "indexed_years": [
+        "2025",
+        "2026",
+        "2027"
+      ],
+      "samples": [
+        {
+          "season": "1997-98",
+          "status": "year_not_indexed"
+        },
+        {
+          "season": "2004-05",
+          "status": "year_not_indexed"
+        },
+        {
+          "season": "2014-15",
+          "status": "year_not_indexed"
+        },
+        {
+          "season": "2025-26",
+          "status": "untruncated_index_checked",
+          "season_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74",
+          "indexed_game_files": 1322,
+          "observed_slices": [
+            {
+              "season_type": "regular_season",
+              "canonical_final_games": 1230,
+              "indexed_games": 1230,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 1230,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620"
+            },
+            {
+              "season_type": "playoffs",
+              "canonical_final_games": 85,
+              "indexed_games": 85,
+              "missing_game_ids": [],
+              "indexed_matching_type_files": 85,
+              "indexed_outside_canonical_ids": [],
+              "canonical_source_sha256": "ef43d8aca81734c638a34aac7a68885dc7de151f6825bf8c11878138d067bd89"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "canonical_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52"
+}
