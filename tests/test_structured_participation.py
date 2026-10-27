@@ -319,3 +319,15 @@ def test_participation_source_does_not_grant_precise_report_time(monkeypatch):
         )
         == 600
     )
+
+
+def test_structured_replacement_preserves_stronger_pdf_time_authority(source):
+    run(source)
+    target = source[0] / "raw/player_game_availability/2025-26_regular_season.csv"
+    rows = pd.read_csv(target)
+    rows["source"] = "nba_official_finalbox:20251021_BBBAAA"
+    rows.to_csv(target, index=False)
+    before = target.read_bytes()
+    with pytest.raises(ValueError, match="downgrade qualified PDF clock authority"):
+        run(source)
+    assert target.read_bytes() == before

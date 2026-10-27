@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "prepared_acquisition_requirement_not_collected_not_publication_approval",
+  "status": "superseded_pdf_plan_first_three_captured_no_further_pdf_acquisition_authorized",
   "base_generation": "availability-opening-s4-v1-20261017",
   "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
   "dataset": "raw/player_game_availability",
@@ -194,7 +194,10 @@
   "acquisition_only": "backup laptop collects original responses + parameters + capture times; Codex validates/builds/tests in cloud",
   "handoff": "immutable checksum-bound staging bundle; cloud review/read-only validation; registered package; separate owner-approved protected R2 publication",
   "purpose": "Complete exact-game LeBron/LAL participation coverage for the frozen 2025-26 regular-season catalog. The 20 unknown keys are NOT asserted DNP; 60 played and 2 explicit DNP keys already have existing evidence.",
-  "source_requests": [
+  "source_requests": [],
+  "qualification": "Original final report must match exact date/game sides/scores, unique NBA player IDs and retained source hashes. Preserve every listed row. Absence of LeBron remains unknown. No inference of injury, tenure or medical reason.",
+  "staging_sequence": "Completed first3PDFs are retained in PR546. Do not continue the remaining17PDFs. Use the structured-first requirement packet for planning only; it authorizes no new acquisition or publication.",
+  "historical_pdf_fallback_candidates": [
     {
       "game_id": "0022500019",
       "game_date": "2025-10-24",
@@ -316,6 +319,12 @@
       "output": "sources/20260407_OKCLAL.pdf"
     }
   ],
-  "qualification": "Original final report must match exact date/game sides/scores, unique NBA player IDs and retained source hashes. Preserve every listed row. Absence of LeBron remains unknown. No inference of injury, tenure or medical reason.",
-  "staging_sequence": "Collect first three date-ordered reports, independently qualify/replay and validate bounded date-window answers, then collect remaining17 only after the contract works on actual sources. Acquisition on existing backup laptop only; no cloud NBA fetch. No publication authorization."
+  "authorized_pdf_game_ids": [
+    "0022500019",
+    "0022500113",
+    "0022500122"
+  ],
+  "authorization_state": "The three named PDFs were acquired/qualified under the owner exception; no repeated capture or remaining17PDF collection is authorized.",
+  "replacement_requirements": "lebron-structured-remaining-2025-26.json",
+  "production_coverage_note": "Base production still has20unknown LeBron keys;3are newly qualified in unpublished staging, leaving17staging unknowns. Do not label staging as published or count unknowns as absences."
 }
