@@ -275,3 +275,47 @@ def test_nonparticipant_cannot_have_personal_fouls(source):
     source[3]["boxScoreTraditional"]["homeTeam"]["players"][1]["statistics"]["foulsPersonal"] = 3
     with pytest.raises(ValueError, match="nonparticipant.*activity"):
         run(source)
+
+
+def test_participation_source_does_not_grant_precise_report_time(monkeypatch):
+    from nbatools.commands import _participation_observations as observations
+
+    candidate = pd.Series(
+        dict(game_id=22500002, team_id=1, opponent_team_id=2, game_date="2025-10-21")
+    )
+    ledger = pd.DataFrame(
+        [
+            dict(
+                game_id=22500002,
+                team_id=1,
+                player_id=11,
+                player_name="A Player",
+                game_date="2025-10-21",
+                participation_state="played",
+                source_minutes=10,
+                source=f"nba_stats_structured_archive:{REV}:0022500002",
+            )
+        ]
+    )
+    monkeypatch.setattr(observations, "load_observations", lambda *args: ledger)
+    with pytest.raises(ValueError, match="precise report time"):
+        observations.qualified_report_seconds(
+            candidate, "A Player", ["2025-26"], "Regular Season", played=True
+        )
+    ledger["participation_state"] = "did_not_play"
+    ledger["source_minutes"] = None
+    assert (
+        observations.qualified_report_seconds(
+            candidate, "A Player", ["2025-26"], "Regular Season", played=False
+        )
+        is None
+    )
+    ledger["participation_state"] = "played"
+    ledger["source_minutes"] = 10
+    ledger["source"] = "nba_official_finalbox:20251021_BBBAAA"
+    assert (
+        observations.qualified_report_seconds(
+            candidate, "A Player", ["2025-26"], "Regular Season", played=True
+        )
+        == 600
+    )

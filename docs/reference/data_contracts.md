@@ -469,6 +469,12 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   Publication validation rebuilds the rows from retained originals and the
   canonical game, rejecting altered sources, packets or normalized rows. This
   prepares verifiable staging; it grants no production publication authority.
+  Structured `source_minutes` supports participation and retains source resolution;
+  it is not certified original-scorer whole-second precision. Exact-report
+  positive-seconds consumers continue to require qualified Final Box PDF
+  provenance. Structured explicit DNP can still prove No without a clock; general
+  same-game identity/count facts do not require exact-time authority. This prevents historical rounded clocks from silently
+  becoming precise threshold evidence.
   Runtime consumes these qualified rows through existing observation/sample
   helpers. A season-wide query still needs known predicates across every candidate
   game. Same-game opposite-team association can disprove same-team absence;

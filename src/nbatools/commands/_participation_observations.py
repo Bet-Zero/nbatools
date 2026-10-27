@@ -254,6 +254,10 @@ def qualified_report_seconds(
         if not math.isfinite(value) or value != 0:
             raise ValueError(f"DNP conflicts with report time for {player}")
         return None
+    if not re.fullmatch(r"nba_official_finalbox:[0-9]{8}_[A-Z]{4,6}", str(row.get("source", ""))):
+        # Positive structured participation does not certify original-scorer
+        # MM:SS precision. Explicit DNP above needs no clock to prove No.
+        raise ValueError(f"No qualified precise report time for {player} on the original game")
     try:
         minutes = float(raw_minutes)
     except (TypeError, ValueError) as exc:

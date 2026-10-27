@@ -100,7 +100,7 @@ def test_retained_structured_game_and_answers(
     reset_data_source_cache()
 
 
-def test_summary_v3_matches_v2_and_existing_qualified_official_rows(tmp_path):
+def test_summary_v3_matches_v2_and_existing_qualified_official_rows(tmp_path, monkeypatch):
     root, rows = stage(tmp_path, "2025-26", 22500002, version=3)
     baseline = data_read_csv("data/raw/player_game_availability/2025-26_regular_season.csv")
     baseline = baseline.loc[pd.to_numeric(baseline.game_id).eq(22500002)]
@@ -108,6 +108,25 @@ def test_summary_v3_matches_v2_and_existing_qualified_official_rows(tmp_path):
     assert set(map(tuple, rows[keys].to_numpy())) == set(map(tuple, baseline[keys].to_numpy()))
     assert len(rows) == len(baseline) == 34
     validate_publication(root)
+    from nbatools.commands import _participation_observations as observations
+
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    reset_data_source_cache()
+    game = pd.Series(
+        dict(
+            game_id=22500002,
+            team_id=1610612747,
+            opponent_team_id=1610612744,
+            game_date="2025-10-21",
+        )
+    )
+    with pytest.raises(ValueError, match="precise report time"):
+        observations.qualified_report_seconds(
+            game, "Luka Doncic", ["2025-26"], "Regular Season", played=True
+        )
+    reset_data_source_cache()
 
 
 def test_legacy_invalid_duration_remains_unqualified(tmp_path):
