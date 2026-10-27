@@ -341,6 +341,10 @@ def stage_structured_game(
         validate_availability(old)
         previous = old.loc[pd.to_numeric(old.game_id).eq(game_id)]
         if not previous.empty:
+            if previous.source.astype(str).str.startswith("nba_official_finalbox:").any():
+                raise ValueError(
+                    "Structured replacement would downgrade qualified PDF clock authority"
+                )
             shared = previous.merge(
                 rows, on=["game_id", "team_id", "player_id"], suffixes=("_old", "_new")
             )

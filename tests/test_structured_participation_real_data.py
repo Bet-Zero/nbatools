@@ -253,3 +253,25 @@ def test_targeted_pdf_fallback_and_date_bounded_missed_counts(tmp_path, monkeypa
     )
     assert unknown.result_status == "no_result"  # full-season remaining unknowns are not zero
     reset_data_source_cache()
+
+
+def test_structured_import_does_not_replace_existing_qualified_pdf(tmp_path):
+    root, _ = stage(tmp_path, "2025-26", 22500002)
+    target = root / "raw/player_game_availability/2025-26_regular_season.csv"
+    # Existing authenticated-generation rows retain their stronger PDF source.
+    baseline = data_read_csv("data/raw/player_game_availability/2025-26_regular_season.csv")
+    baseline.to_csv(target, index=False)
+    before = target.read_bytes()
+    with pytest.raises(ValueError, match="downgrade qualified PDF clock authority"):
+        stage_structured_game(
+            root,
+            season="2025-26",
+            season_type="Regular Season",
+            game_id=22500002,
+            traditional=SOURCE / "boxscoretraditionalv3_0022500002.json",
+            summary=SOURCE / "boxscoresummaryv3_0022500002.json",
+            summary_version=3,
+            revision=PROVENANCE["revision"],
+            retrieved_at="2026-10-27T16:45:00+00:00",
+        )
+    assert target.read_bytes() == before

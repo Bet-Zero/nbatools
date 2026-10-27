@@ -466,6 +466,9 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   Original comments, including legacy garbage suffixes, are opaque provenance,
   never qualified medical causes. Coverage stays `listed_player_rows_only`.
   Existing qualified rows cannot be dropped or contradicted by a replacement.
+  Structured imports also reject replacement of qualified Final Box rows even
+  when participation agrees, preserving their stronger precise-clock authority;
+  mixed-source enrichment requires a separately qualified contract.
   Publication validation rebuilds the rows from retained originals and the
   canonical game, rejecting altered sources, packets or normalized rows. This
   prepares verifiable staging; it grants no production publication authority.

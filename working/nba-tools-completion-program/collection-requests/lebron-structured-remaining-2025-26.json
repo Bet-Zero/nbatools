@@ -333,6 +333,6 @@
     }
   ],
   "qualification": "Use existing offline structured producer. Exact final game/date/sides/scores, listed player identities/states, canonical played rows/points and retained source hashes must qualify. No inference of DNP/injury/nonmembership from omissions; reject conflicts/malformed clocks. SummaryV2 is a separately qualified fallback if V3 unavailable, not assumed equivalent.",
-  "execution_boundary": "No source fetched by this packet. Obtain an explicit bounded acquisition scope before collecting these 17; no bulk historical backfill, new credentials, paid services, refresh or R2 publication. Recheck/rebase active generation before execution/publication. PDFs only targeted fallback after specific structured-source gaps are diagnosed.",
+  "execution_boundary": "No source fetched by this packet. Any execution must stay within the current owner-authorized bounded scope; this packet itself grants no acquisition authority; no bulk historical backfill, new credentials, paid services, refresh or R2 publication. Recheck/rebase active generation before execution/publication. PDFs only targeted fallback after specific structured-source gaps are diagnosed.",
   "next_implementation": "Resolve source-only conditional names such as Patric Young from already-qualified observations; this requires no acquisition."
 }
