@@ -114,7 +114,16 @@ def test_calendar_mask_keeps_unrelated_stat_clause():
     assert "and scored 30 points" in text
 
 
-@pytest.mark.parametrize("dates", ["on 2025-10-24 and 2025-10-27", "on October 24 and October 27"])
+@pytest.mark.parametrize(
+    "dates",
+    [
+        "on 2025-10-24 and 2025-10-27",
+        "on October 24 and October 27",
+        "on October 24 or October 27",
+        "on 2025-10-24, 2025-10-27",
+        "from October 24 - October 27",
+    ],
+)
 def test_unread_date_list_cannot_become_partial_missed_count(dates):
     parsed = parse_query(f"how many games did LeBron miss {dates} in 2025-26")
     assert parsed["route_kwargs"]["unsupported_filters"] == ["missed_games_extra_clause"]
