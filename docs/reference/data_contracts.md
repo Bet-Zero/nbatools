@@ -381,6 +381,21 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   invalid inputs fail without network fallback. Unresolved identities also fail
   offline, rather than fetching CDN/profile sources or omitting listed rows.
   Cached reports cannot be combined with another source adapter.
+  Cached Stats V3 replay accepts original `boxScoreTraditional.homeTeam` and
+  `awayTeam` objects with `players[]`, not just legacy flattened `playerStats`
+  archives. Side IDs must agree with the envelope; the downstream normalizer
+  checks the requested game and canonical two-team set and rejects fractional,
+  null or nonpositive IDs and duplicate players. Player `comment` and
+  `statistics.minutes` retain explicit DNP versus unknown semantics. A missing
+  minutes value alone remains unknown. Mixed nested/flattened populations are
+  rejected. Every replay binds `source_sha256` to the original input bytes and
+  explicitly supplied archives are re-read even on resume; an old import digest
+  cannot hide a changed source. Preserve the original JSON with acquisition
+  URL/parameters/capture-time metadata in the existing collection bundle.
+  This is development staging: the V3 envelope supplies no independently checked
+  game date/finality, the byte hash proves integrity rather than authenticity,
+  and Stats rows remain ineligible for production publication/runtime filtering.
+  It establishes listed same-game association, never tenure or unlisted absence.
   These files must accompany publication inputs. Identity lookup may use the
   immediately preceding season's canonical player/team IDs; that lookup never
   establishes current membership or absence without an explicit report row.

@@ -115,7 +115,10 @@ def normalize_boxscore_availability(
     if frame[identity_columns].isna().any().any():
         raise ValueError("Box score has missing player/team identity fields")
     for key in ("game_id", "team_id", "player_id"):
-        frame[key] = pd.to_numeric(frame[key], errors="raise").astype("int64")
+        values = pd.to_numeric(frame[key], errors="raise")
+        if values.isna().any() or (values <= 0).any() or (values % 1 != 0).any():
+            raise ValueError("Box-score identities must be positive integers")
+        frame[key] = values.astype("int64")
     if not frame["game_id"].eq(int(game_id)).all():
         raise ValueError("Box-score game ID does not match requested game")
     if set(frame["team_id"]) != set(expected_team_ids):
@@ -192,12 +195,54 @@ def validate_availability(frame: pd.DataFrame) -> None:
 
 def _cached_boxscore(path: Path) -> pd.DataFrame:
     """Read retained NBA Stats V3 response JSON, not an invented player roster."""
-    document = json.loads(path.read_text(encoding="utf-8"))
+    content = path.read_bytes()
+    document = json.loads(content)
+    if not isinstance(document, dict):
+        raise ValueError("Expected NBA Stats V3 object")
     parent = document.get("boxScoreTraditional", document)
-    rows = parent.get("playerStats")
-    if not isinstance(rows, list) or not rows:
-        raise ValueError(f"Expected NBA Stats V3 boxScoreTraditional.playerStats: {path}")
-    return pd.DataFrame(rows)
+    if not isinstance(parent, dict):
+        raise ValueError("Expected NBA Stats V3 boxScoreTraditional object")
+    nested = any(key in parent for key in ("homeTeam", "awayTeam"))
+    if nested:
+        if "playerStats" in parent:
+            raise ValueError("Ambiguous nested and flattened box-score player rows")
+        # Original V3 responses have players inside each team; playerStats is
+        # the SDK's flattened dataset, not the original wire response.
+        rows = []
+        try:
+            game_id = parent["gameId"]
+            side_ids = [parent["homeTeamId"], parent["awayTeamId"]]
+            if side_ids[0] == side_ids[1]:
+                raise ValueError("Box-score sides must identify distinct teams")
+            for side, expected in zip(("homeTeam", "awayTeam"), side_ids):
+                team = parent[side]
+                if team["teamId"] != expected:
+                    raise ValueError("Box-score side identity contradicts envelope")
+                players = team["players"]
+                if not isinstance(players, list) or not players:
+                    raise ValueError("Box-score side has no listed player rows")
+                for player in players:
+                    rows.append(
+                        dict(
+                            gameId=game_id,
+                            teamId=team["teamId"],
+                            teamTricode=team["teamTricode"],
+                            personId=player["personId"],
+                            firstName=player["firstName"],
+                            familyName=player["familyName"],
+                            comment=player["comment"],
+                            minutes=player["statistics"].get("minutes"),
+                        )
+                    )
+        except (KeyError, TypeError, AttributeError) as exc:
+            raise ValueError("Incomplete NBA Stats V3 original response") from exc
+    else:
+        rows = parent.get("playerStats")
+        if not isinstance(rows, list) or not rows:
+            raise ValueError(f"Expected NBA Stats V3 listed player rows: {path}")
+    frame = pd.DataFrame(rows)
+    frame.attrs["source_sha256"] = hashlib.sha256(content).hexdigest()
+    return frame
 
 
 def _game_digest(frame: pd.DataFrame) -> str:
@@ -495,7 +540,12 @@ def backfill(
         receipt = receipts.get(str(ident), {})
         # An explicitly supplied retained source must be verified and replayed,
         # even when existing normalized rows have a valid local import digest.
-        if cached_reports is None and not previous.empty and receipt.get("source") == source:
+        if (
+            cached_reports is None
+            and cached_boxscores is None
+            and not previous.empty
+            and receipt.get("source") == source
+        ):
             if (
                 receipt.get("sha256") == _game_digest(previous)
                 and previous["game_date"].eq(str(row.game_date)).all()
