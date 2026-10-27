@@ -301,10 +301,12 @@ def strip_explicit_calendar_date_clauses(text: str) -> str:
         rf"(?:{month})\.?\s+\d{{1,2}}(?:st|nd|rd|th)?(?:,?\s+(?:19|20)\d{{2}})?)"
     )
     return re.sub(
-        rf"\b(?:(?:from|between|since|after|before|on)\s+)?{atom}"
-        rf"(?:\s*(?:to|through|thru|until|and|-)\s*{atom})?\b",
+        rf"\b(?:between\s+{atom}\s+and\s+{atom}|"
+        rf"(?:(?:from|since|after|before|on)\s+)?{atom}"
+        rf"(?:\s*(?:to|through|thru|until|-)\s*{atom})?)\b",
         " ",
         text,
+        flags=re.IGNORECASE,
     )
 
 

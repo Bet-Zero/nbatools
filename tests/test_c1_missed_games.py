@@ -112,3 +112,19 @@ def test_calendar_mask_keeps_unrelated_stat_clause():
         "between October 24 and October 27 and scored 30 points"
     )
     assert "and scored 30 points" in text
+
+
+@pytest.mark.parametrize("dates", ["on 2025-10-24 and 2025-10-27", "on October 24 and October 27"])
+def test_unread_date_list_cannot_become_partial_missed_count(dates):
+    parsed = parse_query(f"how many games did LeBron miss {dates} in 2025-26")
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["missed_games_extra_clause"]
+    result = execute_natural_query(f"how many games did LeBron miss {dates} in 2025-26")
+    assert result.result_status == "no_result"
+    assert "count" not in result.result.to_dict()["sections"]
+
+
+def test_calendar_mask_does_not_own_and_without_between():
+    from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
+
+    assert "and" in strip_explicit_calendar_date_clauses("on October 24 and October 27")
+    assert "and" not in strip_explicit_calendar_date_clauses("between October 24 and October 27")

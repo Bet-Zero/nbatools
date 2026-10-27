@@ -11010,6 +11010,14 @@ def _missed_games(parsed: dict) -> dict | None:
         rest = strip_explicit_calendar_date_clauses(rest)
     rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", rest))
     if _MISSED_NOT_A_COUNT.search(rest):
+        if parsed.get("start_date") or parsed.get("end_date"):
+            refused = _single_season_refusal(parsed)
+            refused["route_kwargs"]["unsupported_filters"] = ["missed_games_extra_clause"]
+            refused["notes"] = [
+                "unsupported_boundary: missed-game count includes an unread date list or "
+                "additional condition; no partial sample is answered"
+            ]
+            return refused
         return None
     if parsed.get("season_list") or (
         re.search(r"\b\d{4}(?:-\d{2})?\s+and\s+\d{4}", q) and not parsed.get("start_season")
