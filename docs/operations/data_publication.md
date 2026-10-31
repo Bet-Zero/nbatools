@@ -35,6 +35,14 @@ arbitrary artifact, commit, shell-command or expected-base input.
 
 ### Retained K08 package — preparation only
 
+[PR551](https://github.com/Bet-Zero/nbatools/pull/551) passed complete read-only
+preparation in [run41178844607](https://github.com/Bet-Zero/nbatools/actions/runs/41178844607):
+724objects,402,948,225bytes, manifest `de83522f…`, all13APIanswers and
+byte-exact63,805,709byte backup/restore within the unchanged bounds. Compact
+[acceptance receipt](https://github.com/Bet-Zero/nbatools/pull/551#issuecomment-6540420485)
+retains the full approval tuple and answers. Production is unchanged;
+publication has not been authorized.
+
 `retained-k08-availability-v1` prepares six already-qualified games: the retained
 1997 Nets/Indiana, 2004 Detroit/Houston and 2014 New Orleans/Orlando structured
 originals, plus the three authorized Lakers reports for October24/26/27,2025.
