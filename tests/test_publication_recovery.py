@@ -52,17 +52,17 @@ def test_all_thirteen_answers_pass_through_unchanged_real_admission_quota(monkey
 
     monkeypatch.setattr(gate.requests, "post", post)
     monkeypatch.setattr(gate.time, "sleep", sleep)
+    monkeypatch.setattr(gate.time, "monotonic", lambda: clock[0])
     receipt = {}
     assert len(gate.check_live_answers(package(13), receipt)) == 13
-    assert sleeps == [60]
+    assert len(sleeps) == 12
+    assert sleeps == pytest.approx([7.0] * 12)
     attempts = receipt["deployed_query_attempts"]
-    assert len(attempts) == 14
-    assert (attempts[10]["index"], attempts[10]["status"], attempts[10]["retry_after_seconds"]) == (
-        11,
-        429,
-        60,
+    assert len(attempts) == 13
+    assert all(row["status"] == 200 for row in attempts)
+    assert [row["started_after_seconds"] for row in attempts] == pytest.approx(
+        [7.0 * i for i in range(13)]
     )
-    assert all(row["status"] == 200 for row in attempts if "retry_after_seconds" not in row)
 
 
 @pytest.mark.parametrize(
@@ -71,6 +71,7 @@ def test_all_thirteen_answers_pass_through_unchanged_real_admission_quota(monkey
         (500, "internal_error", "1"),
         (504, "execution_timeout", "1"),
         (429, "concurrency_limited", "1"),
+        (429, {"code": "429", "message": "Too Many Requests"}, ""),
         (429, "rate_limited", ""),
         (429, "rate_limited", "0"),
         (429, "rate_limited", "-1"),
@@ -103,13 +104,30 @@ def test_a_second_rate_rejection_still_fails_with_exact_query_evidence(monkeypat
         "post",
         lambda *a, **k: Response(429, {"error": "rate_limited"}, {"Retry-After": "1"}),
     )
-    sleeps = []
-    monkeypatch.setattr(gate.time, "sleep", sleeps.append)
+    sleeps, clock = [], [0]
+
+    def sleep(delay):
+        sleeps.append(delay)
+        clock[0] += delay
+
+    monkeypatch.setattr(gate.time, "sleep", sleep)
+    monkeypatch.setattr(gate.time, "monotonic", lambda: clock[0])
     receipt = {}
     with pytest.raises(ValueError, match="fixture 0"):
         gate.check_live_answers(package(), receipt)
-    assert sleeps == [1]
+    assert sleeps == pytest.approx([1, 6.0])
     assert len(receipt["deployed_query_attempts"]) == 2
+
+
+def test_a_valid_retry_delay_and_minimum_spacing_both_apply(monkeypatch):
+    clock = [0]
+    responses = iter([Response(429, {"error": "rate_limited"}, {"Retry-After": "47"}), Response()])
+    monkeypatch.setattr(gate.requests, "post", lambda *a, **k: next(responses))
+    monkeypatch.setattr(gate.time, "sleep", lambda delay: clock.__setitem__(0, clock[0] + delay))
+    monkeypatch.setattr(gate.time, "monotonic", lambda: clock[0])
+    receipt = {}
+    assert len(gate.check_live_answers(package(), receipt)) == 1
+    assert [row["started_after_seconds"] for row in receipt["deployed_query_attempts"]] == [0, 47]
 
 
 def test_numeric_contradiction_is_never_retried_or_accepted(monkeypatch):

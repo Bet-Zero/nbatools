@@ -1,0 +1,491 @@
+{
+  "run_id": 41188880371,
+  "request_sha": "9e3bf17181f4ae98a3bd72597a3b4234479c5378",
+  "reviewed_parent": "622809934140c18f4bef36605730827c72ad2363",
+  "artifact_id": 13038152219,
+  "artifact_zip_sha256": "30f2357acad503ddbd915dbcc6d47197fd0175d23a0328c36a5a276096bcb018",
+  "required_summary": {
+    "candidate_sha": "9e3bf17181f4ae98a3bd72597a3b4234479c5378",
+    "generation": "availability-k08-retained-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_publication_recovery_real_data.py::test_recover_published_k08_generation"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "publication_state": "published_verification_failed",
+  "generation_id": "availability-k08-retained-v1-20261031",
+  "manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+  "verified_object_count": 724,
+  "deployed_readiness": {
+    "active_generation": "availability-k08-retained-v1-20261031",
+    "blockers": [],
+    "checked_at": "2026-10-31T09:33:21Z",
+    "exception": {
+      "applied": false,
+      "created_at": null,
+      "error": null,
+      "expires_at": null,
+      "owner": "John Matthew, project owner",
+      "reason": null
+    },
+    "immutable_generation": true,
+    "max_active_lag_hours": 24,
+    "ready": true,
+    "release_exception_owner": "John Matthew, project owner",
+    "season": "2025-26",
+    "season_state": "offseason",
+    "slices": [
+      {
+        "current_through": "2026-04-12",
+        "errors": [],
+        "expected_current_through": "2026-04-12",
+        "generation_id": "f49e2864076b4bdf8743a7a4da2e3962",
+        "postseason_complete": false,
+        "schedule_complete": true,
+        "season": "2025-26",
+        "season_type": "Regular Season",
+        "trusted": true,
+        "validation_state": "passed"
+      },
+      {
+        "current_through": "2026-06-13",
+        "errors": [],
+        "expected_current_through": "2026-06-13",
+        "generation_id": "5cb10d4b44754ebd9300d99007e44179",
+        "postseason_complete": true,
+        "schedule_complete": true,
+        "season": "2025-26",
+        "season_type": "Playoffs",
+        "trusted": true,
+        "validation_state": "passed"
+      }
+    ],
+    "status": "ready"
+  },
+  "deployed_answers": [
+    {
+      "query": "Lakers record without LeBron James on October 21 2025",
+      "summary": {
+        "ast_avg": 23.0,
+        "blk_avg": 2.0,
+        "efg_pct_avg": 0.597,
+        "fg3m_avg": 8.0,
+        "games": 1,
+        "losses": 1,
+        "plus_minus_avg": -10.0,
+        "pts_avg": 109.0,
+        "reb_avg": 39.0,
+        "season_end": "2025-26",
+        "season_start": "2025-26",
+        "season_type": "Regular Season",
+        "stl_avg": 7.0,
+        "team_name": "Los Angeles Lakers",
+        "tov_avg": 19.0,
+        "ts_pct_avg": 0.61,
+        "win_pct": 0.0,
+        "wins": 0
+      }
+    },
+    {
+      "query": "Warriors record without Moses Moody on October 21 2025",
+      "summary": {
+        "ast_avg": 29.0,
+        "blk_avg": 4.0,
+        "efg_pct_avg": 0.596,
+        "fg3m_avg": 17.0,
+        "games": 1,
+        "losses": 0,
+        "plus_minus_avg": 10.0,
+        "pts_avg": 119.0,
+        "reb_avg": 40.0,
+        "season_end": "2025-26",
+        "season_start": "2025-26",
+        "season_type": "Regular Season",
+        "stl_avg": 10.0,
+        "team_name": "Golden State Warriors",
+        "tov_avg": 18.0,
+        "ts_pct_avg": 0.656,
+        "win_pct": 1.0,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+      "summary": {
+        "ast_avg": 30.5,
+        "blk_avg": 9.5,
+        "efg_pct_avg": 0.54,
+        "fg3m_avg": 14.5,
+        "games": 2,
+        "losses": 1,
+        "plus_minus_avg": 1.0,
+        "pts_avg": 115.5,
+        "reb_avg": 49.0,
+        "season_end": "2023-24",
+        "season_start": "2023-24",
+        "season_type": "Regular Season",
+        "stl_avg": 6.0,
+        "team_name": "Boston Celtics",
+        "tov_avg": 11.5,
+        "ts_pct_avg": 0.568,
+        "win_pct": 0.5,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+      "summary": {
+        "ast_avg": 30.0,
+        "blk_avg": 5.0,
+        "efg_pct_avg": 0.629,
+        "fg3m_avg": 19.0,
+        "games": 2,
+        "losses": 0,
+        "plus_minus_avg": 21.5,
+        "pts_avg": 118.5,
+        "reb_avg": 44.0,
+        "season_end": "2025-26",
+        "season_start": "2025-26",
+        "season_type": "Regular Season",
+        "stl_avg": 7.5,
+        "team_name": "Boston Celtics",
+        "tov_avg": 14.0,
+        "ts_pct_avg": 0.653,
+        "win_pct": 1.0,
+        "wins": 2
+      }
+    },
+    {
+      "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+      "summary": {
+        "ast_avg": 4.5,
+        "ast_pct_avg": 20.749,
+        "ast_sum": 9.0,
+        "blk_avg": 0.0,
+        "blk_sum": 0.0,
+        "dreb_avg": 3.5,
+        "dreb_sum": 7.0,
+        "efg_pct_avg": 0.397,
+        "fg3_pct_avg": 0.125,
+        "fg3a_avg": 4.0,
+        "fg3a_sum": 8.0,
+        "fg3m_avg": 0.5,
+        "fg3m_sum": 1.0,
+        "fg_pct_avg": 0.379,
+        "fga_avg": 14.5,
+        "fga_sum": 29.0,
+        "fgm_avg": 5.5,
+        "fgm_sum": 11.0,
+        "ft_pct_avg": 0.571,
+        "fta_avg": 3.5,
+        "fta_sum": 7.0,
+        "ftm_avg": 2.0,
+        "ftm_sum": 4.0,
+        "games": 2,
+        "losses": 1,
+        "minutes_avg": 30.0,
+        "minutes_sum": 60.0,
+        "oreb_avg": 3.0,
+        "oreb_sum": 6.0,
+        "pf_avg": 4.0,
+        "pf_sum": 8.0,
+        "player_name": "Jaylen Brown",
+        "plus_minus_avg": -5.5,
+        "plus_minus_sum": -11.0,
+        "pts_avg": 13.5,
+        "pts_sum": 27.0,
+        "reb_avg": 6.5,
+        "reb_pct_avg": 10.777,
+        "reb_sum": 13.0,
+        "season_end": "2023-24",
+        "season_start": "2023-24",
+        "season_type": "Regular Season",
+        "stl_avg": 2.0,
+        "stl_sum": 4.0,
+        "tov_avg": 2.5,
+        "tov_pct_avg": 13.484,
+        "tov_sum": 5.0,
+        "ts_pct_avg": 0.421,
+        "usg_pct_avg": 26.205,
+        "win_pct": 0.5,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+      "summary": {
+        "ast_avg": 7.5,
+        "ast_pct_avg": 34.907,
+        "ast_sum": 15.0,
+        "blk_avg": 0.0,
+        "blk_sum": 0.0,
+        "dreb_avg": 7.5,
+        "dreb_sum": 15.0,
+        "efg_pct_avg": 0.46,
+        "fg3_pct_avg": 0.375,
+        "fg3a_avg": 8.0,
+        "fg3a_sum": 16.0,
+        "fg3m_avg": 3.0,
+        "fg3m_sum": 6.0,
+        "fg_pct_avg": 0.4,
+        "fga_avg": 25.0,
+        "fga_sum": 50.0,
+        "fgm_avg": 10.0,
+        "fgm_sum": 20.0,
+        "ft_pct_avg": 0.762,
+        "fta_avg": 10.5,
+        "fta_sum": 21.0,
+        "ftm_avg": 8.0,
+        "ftm_sum": 16.0,
+        "games": 2,
+        "losses": 0,
+        "minutes_avg": 35.0,
+        "minutes_sum": 70.0,
+        "oreb_avg": 0.5,
+        "oreb_sum": 1.0,
+        "pf_avg": 3.0,
+        "pf_sum": 6.0,
+        "player_name": "Jaylen Brown",
+        "plus_minus_avg": 15.0,
+        "plus_minus_sum": 30.0,
+        "pts_avg": 31.0,
+        "pts_sum": 62.0,
+        "reb_avg": 8.0,
+        "reb_pct_avg": 13.489,
+        "reb_sum": 16.0,
+        "season_end": "2025-26",
+        "season_start": "2025-26",
+        "season_type": "Regular Season",
+        "stl_avg": 2.0,
+        "stl_sum": 4.0,
+        "tov_avg": 4.0,
+        "tov_pct_avg": 11.898,
+        "tov_sum": 8.0,
+        "ts_pct_avg": 0.523,
+        "usg_pct_avg": 43.829,
+        "win_pct": 1.0,
+        "wins": 2
+      }
+    },
+    {
+      "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+      "summary": {
+        "ast_avg": 14.0,
+        "blk_avg": 2.0,
+        "efg_pct_avg": 0.354,
+        "fg3m_avg": 0.0,
+        "games": 1,
+        "losses": 0,
+        "plus_minus_avg": 2.0,
+        "pts_avg": 97.0,
+        "reb_avg": 51.0,
+        "season_end": "1997-98",
+        "season_start": "1997-98",
+        "season_type": "Regular Season",
+        "stl_avg": 11.0,
+        "team_name": "New Jersey Nets",
+        "tov_avg": 7.0,
+        "ts_pct_avg": 0.429,
+        "win_pct": 1.0,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+      "summary": {
+        "ast_avg": 20.0,
+        "blk_avg": 5.0,
+        "efg_pct_avg": 0.486,
+        "fg3m_avg": 6.0,
+        "games": 1,
+        "losses": 0,
+        "plus_minus_avg": 8.0,
+        "pts_avg": 87.0,
+        "reb_avg": 42.0,
+        "season_end": "2004-05",
+        "season_start": "2004-05",
+        "season_type": "Regular Season",
+        "stl_avg": 9.0,
+        "team_name": "Detroit Pistons",
+        "tov_avg": 12.0,
+        "ts_pct_avg": 0.524,
+        "win_pct": 1.0,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+      "summary": {
+        "ast_avg": 20.0,
+        "blk_avg": 17.0,
+        "efg_pct_avg": 0.426,
+        "fg3m_avg": 4.0,
+        "games": 1,
+        "losses": 0,
+        "plus_minus_avg": 17.0,
+        "pts_avg": 101.0,
+        "reb_avg": 62.0,
+        "season_end": "2014-15",
+        "season_start": "2014-15",
+        "season_type": "Regular Season",
+        "stl_avg": 10.0,
+        "team_name": "New Orleans Pelicans",
+        "tov_avg": 9.0,
+        "ts_pct_avg": 0.441,
+        "win_pct": 1.0,
+        "wins": 1
+      }
+    },
+    {
+      "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+      "summary": {
+        "ast_avg": 25.0,
+        "blk_avg": 3.667,
+        "efg_pct_avg": 0.568,
+        "fg3m_avg": 9.0,
+        "games": 3,
+        "losses": 1,
+        "plus_minus_avg": 3.667,
+        "pts_avg": 121.0,
+        "reb_avg": 42.333,
+        "season_end": "2025-26",
+        "season_start": "2025-26",
+        "season_type": "Regular Season",
+        "stl_avg": 8.667,
+        "team_name": "Los Angeles Lakers",
+        "tov_avg": 16.667,
+        "ts_pct_avg": 0.631,
+        "win_pct": 0.667,
+        "wins": 2
+      }
+    }
+  ],
+  "deployed_query_attempts": [
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_7a9c5fac173c40a08b43672f66a224a1",
+        "X-Vercel-Id": "cle1::iad1::chj49-1793439206167-acb441fb7154"
+      },
+      "index": 1,
+      "query": "Lakers record without LeBron James on October 21 2025",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_aed4387c8bec47d1b8e08c0c8632fae6",
+        "X-Vercel-Id": "cle1::iad1::88n8w-1793439213093-484bd4542146"
+      },
+      "index": 2,
+      "query": "Warriors record without Moses Moody on October 21 2025",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_19b4e047ce134caa8cef2f5ca0c237d8",
+        "X-Vercel-Id": "cle1::iad1::ft9p5-1793439213515-72f81998785e"
+      },
+      "index": 3,
+      "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_06e16645e4de44789973f0afa10e7f22",
+        "X-Vercel-Id": "cle1::iad1::dcf2q-1793439214926-f58267400227"
+      },
+      "index": 4,
+      "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_a50a56e1f8484792886268783428c61d",
+        "X-Vercel-Id": "cle1::iad1::q889g-1793439215309-83628f8d6004"
+      },
+      "index": 5,
+      "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_386749d87be1417cbb2eaa8b1bd5f052",
+        "X-Vercel-Id": "cle1::iad1::ms6n2-1793439216304-250ae42fc062"
+      },
+      "index": 6,
+      "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_f1d290ef0e444bea8ea716126934f67d",
+        "X-Vercel-Id": "cle1::iad1::4skl4-1793439216812-66d165f2a889"
+      },
+      "index": 7,
+      "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_2bcbbcf537134b76b4784c2d4ed297ca",
+        "X-Vercel-Id": "cle1::iad1::4skl4-1793439217763-45b1e1de0242"
+      },
+      "index": 8,
+      "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_4172cc89039c472fa82e99a4ada896de",
+        "X-Vercel-Id": "cle1::iad1::v8dx6-1793439218710-18d3d501f04a"
+      },
+      "index": 9,
+      "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "headers": {
+        "X-Request-Id": "req_b39049f9fbff4aa0af4f1d6ebcc77d01",
+        "X-Vercel-Id": "cle1::iad1::j7mj7-1793439219813-6aeb0cf65df0"
+      },
+      "index": 10,
+      "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+      "status": 200
+    },
+    {
+      "attempt": 1,
+      "body": "{\"error\":{\"code\":\"429\",\"message\":\"Too Many Requests\",\"id\":\"cle1::njcbw-1793439220177-f3a1f1c437db\"}}\n",
+      "headers": {
+        "X-Vercel-Id": "cle1::njcbw-1793439220177-f3a1f1c437db"
+      },
+      "index": 11,
+      "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+      "status": 429
+    }
+  ],
+  "production_writes": 0
+}

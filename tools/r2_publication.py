@@ -443,10 +443,20 @@ def check_live_answers(package, receipt):
         raise ValueError("Publication requires registered deployed checks")
     answers = receipt["deployed_answers"] = []
     attempts = receipt["deployed_query_attempts"] = []
+    started = next_request_at = time.monotonic()
     for index, case in enumerate(package["deployed_checks"], 1):
         for attempt in (1, 2):
             record = dict(index=index, query=case["query"], attempt=attempt)
             attempts.append(record)
+            delay_before_request = max(0, next_request_at - time.monotonic())
+            if delay_before_request:
+                record["pacing_seconds"] = delay_before_request
+                time.sleep(delay_before_request)
+            request_started = time.monotonic()
+            record["started_after_seconds"] = round(request_started - started, 3)
+            # Allow at most nine starts per rolling minute, including retries,
+            # leaving room for readiness at the edge. No quota is bypassed.
+            next_request_at = request_started + 7.0
             try:
                 response = requests.post(
                     "https://nbatools.vercel.app/query", json={"query": case["query"]}, timeout=30

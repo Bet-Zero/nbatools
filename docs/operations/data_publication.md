@@ -83,7 +83,10 @@ or roll back. Preserve that receipt and the previous generation.
 
 The focused13-query replay reproduced HTTP429 `rate_limited` at check11, the
 LeBron missed-count query for October24and27,2025, after ten correct answers.
-The public quota remains10queries/60seconds. The verifier honors a strict integer
+The public quota remains10queries/60seconds. Recovery41188880371 also retained
+an edgeHTTP429 withoutRetry-After at the same check, so waiting only after an
+application rejection was insufficient. The verifier spaces query starts7seconds
+apart (at most9per rolling minute, leaving readiness headroom) and honors a strict integer
 `Retry-After` of1..60 once per check, retaining every attempt and still requiring
 all registered numeric/route/identity/population assertions. Other HTTP failures
 and semantic contradictions remain failures. The original generic failure did
