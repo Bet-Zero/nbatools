@@ -448,5 +448,13 @@ def test_published_source_only_presence_count_is_verified_zero(names):
     assert [
         (int(r["game_id"]), r["pts"]) for r in absence.result.to_dict()["sections"]["finder"]
     ] == [(21400001, 26)]
+    # Positive played facts keep the same game when source and appearances agree.
+    positive = execute_natural_query(
+        f"How many Anthony Davis games with at least 20 points with Tyreke Evans {scope}"
+    )
+    assert positive.result_status == "ok", positive.metadata
+    positive_sections = positive.result.to_dict()["sections"]
+    assert positive_sections["count"] == [{"count": 1}]
+    assert [(int(r["game_id"]), r["pts"]) for r in positive_sections["finder"]] == [(21400001, 26)]
     unknown = execute_natural_query(f"How many Anthony Davis games with {names} in 2014-15")
     assert unknown.result_status == "no_result", unknown.metadata

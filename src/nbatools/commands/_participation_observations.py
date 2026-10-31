@@ -234,7 +234,11 @@ def _filter_observed(
                     if pd.Timestamp(other.game_date).date() == date:
                         states.append(False)
                         continue
-                if allow_appearance_omission and player_id in appearance_ids:
+                if (
+                    allow_appearance_omission
+                    and player_id in appearance_ids
+                    and not rows.game_id.eq(game).any()
+                ):
                     # Preserve existing appearance-based played filtering where
                     # no same-game source fact exists. This is not DNP proof.
                     states.append(False)

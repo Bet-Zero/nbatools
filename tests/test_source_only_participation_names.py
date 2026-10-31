@@ -541,3 +541,26 @@ def test_source_played_conflicting_exact_game_appearance_is_unavailable(listed_r
     query = f"How many LeBron James games with {NAME} in {SEASON} on {games.game_date.iloc[1]}"
     result = execute_natural_query(query)
     assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("damage", ["third_side", "opponent_wrong_date"])
+def test_later_appearance_cannot_turn_wrong_same_game_association_into_zero(listed_root, damage):
+    root, target, rows, games = listed_root
+    path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    later = (
+        players.loc[players.player_name.eq("LeBron James")]
+        .iloc[2:3]
+        .assign(player_id=999001, player_name=NAME)
+    )
+    pd.concat([players, later]).to_csv(path, index=False)
+    mask = rows.game_id.eq(games.game_id.iloc[1])
+    if damage == "third_side":
+        rows.loc[mask, "team_id"] = 1610612744
+    else:
+        rows.loc[mask, "team_id"] = games.opponent_team_id.iloc[1]
+        rows.loc[mask, "game_date"] = "2025-01-01"
+    rows.to_csv(target, index=False)
+    query = f"How many LeBron James games with {NAME} in {SEASON} on {games.game_date.iloc[1]}"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
