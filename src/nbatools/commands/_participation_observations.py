@@ -6,8 +6,8 @@ import re
 
 import pandas as pd
 
-from nbatools.commands._player_identity import player_name_mask
-from nbatools.commands.entity_resolution import player_ids_for_name
+from nbatools.commands._player_identity import player_name_key, player_name_mask
+from nbatools.commands.entity_resolution import ResolutionResult, player_ids_for_name
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
 from nbatools.dataframe_cache import FRAME_CACHE
 
@@ -68,6 +68,30 @@ def load_observations(seasons: list[str], season_type: str) -> pd.DataFrame:
         key = ("player_game_availability", data_source_cache_key(), season_type, season)
         frames.append(FRAME_CACHE.get_or_load(key, load))
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=_REQUIRED)
+
+
+def resolve_observed_name(phrase: str, seasons: list[str], season_type: str) -> ResolutionResult:
+    """Recognize an exact listed full name only for a participation condition.
+
+    An inactive player may have no appearance rows. Recognizing that identity
+    proves neither their state nor their team in another game; execution still
+    requires qualified observations for every candidate. Never extend the global
+    primary-player index or guess an inactive player's surname/first name.
+    """
+    key = player_name_key(phrase)
+    if len(key.split()) < 2:
+        return ResolutionResult()
+    rows = load_observations(seasons, season_type)
+    matched = rows.loc[player_name_mask(rows, phrase)]
+    if matched.empty:
+        return ResolutionResult()
+    names = sorted(set(matched.player_name.astype(str)))
+    ids = set(matched.player_id.astype(str)) | set(player_ids_for_name(phrase))
+    if len(ids) != 1:
+        return ResolutionResult(candidates=names, confidence="ambiguous", source="participation")
+    return ResolutionResult(
+        resolved=names[0], candidates=names, confidence="confident", source="participation"
+    )
 
 
 def filter_absent(

@@ -10,6 +10,7 @@ Pure functions for:
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 
 from nbatools.commands._constants import STOP_WORDS, normalize_text
 from nbatools.commands.entity_resolution import (
@@ -616,7 +617,9 @@ def _bare_surname(text: str) -> bool:
 _ABSENCE_CONJUNCTIONS = r"when|while"
 
 
-def detect_without_player(text: str) -> tuple[str | None, str]:
+def detect_without_player(
+    text: str, *, resolve_name: Callable[[str], str | None] | None = None
+) -> tuple[str | None, str]:
     """Detect absence patterns like 'without PLAYER', 'w/o PLAYER',
     'when PLAYER out', 'when PLAYER didn't play', 'no PLAYER',
     'sans PLAYER', 'minus PLAYER'.
@@ -631,7 +634,7 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     # Ordered most-specific first to avoid partial matches.
     absence_patterns = [
         # `without PLAYER` / `w/o PLAYER`
-        rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|[?.!,;:]|$)",
         # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
         r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
@@ -657,7 +660,7 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
                 continue
             if _phrase_names_multiple_players(phrase) or _joins_second_player(cleaned_text, m):
                 continue
-            player = detect_player(phrase)
+            player = (resolve_name or detect_player)(phrase)
             if player:
                 cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
                 # Whitespace cleanup after string surgery.
@@ -755,7 +758,10 @@ def names_other_player_availability(
         subject = re.sub(r"^(?:the|his|their)\s+", "", m.group(1).strip())
         if not subject or subject in _NON_PLAYER_SUBJECTS or subject in TEAM_ALIASES:
             continue
-        other = detect_player(subject)
+        # An already-read full condition name takes precedence over a different
+        # indexed player sharing its surname (including source-only inactives).
+        other = next((n for n in read if n and n.lower() == subject.lower()), None)
+        other = other or detect_player(subject)
         if other is None:
             # "when Davis sits", read as the teammate Anthony Davis.
             other = next(
@@ -900,7 +906,9 @@ def presence_names_player_condition(text: str, player: str) -> bool:
     return False
 
 
-def detect_with_player(text: str) -> tuple[str | None, str]:
+def detect_with_player(
+    text: str, *, resolve_name: Callable[[str], str | None] | None = None
+) -> tuple[str | None, str]:
     """Detect whole-game presence patterns like ``with PLAYER`` / ``w/ PLAYER``.
 
     This is intentionally separate from on/off-court parsing. Callers should
@@ -924,7 +932,7 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
                 continue
             if _phrase_names_multiple_players(phrase) or _joins_second_player(cleaned_text, m):
                 continue
-            player = detect_player(phrase)
+            player = (resolve_name or detect_player)(phrase)
             tail = cleaned_text[m.end() :]
             if (
                 player
@@ -1085,11 +1093,13 @@ def _superlative_names_a_stat(phrase: str, text: str) -> bool:
 _NEGATED_BOUND = r"(?:(?:more|fewer|less|greater)\s+than|over|above|under|below)\s+\d"
 
 
-def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
+def detect_unresolved_availability_player(
+    text: str, *, mode: str, resolve_name: Callable[[str], str | None] | None = None
+) -> str | None:
     """Return a raw availability name fragment that was requested but unresolved."""
     if mode == "without":
         patterns = [
-            rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+            rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|[?.!,;:]|$)",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
             r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
             rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
@@ -1168,7 +1178,7 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             return text[m.start(1) :].strip()
         if phrase and _phrase_names_multiple_players(phrase):
             return phrase
-        if phrase and not detect_player(phrase):
+        if phrase and not (resolve_name or detect_player)(phrase):
             return phrase
     return None
 
