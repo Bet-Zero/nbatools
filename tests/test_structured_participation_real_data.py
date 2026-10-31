@@ -239,6 +239,41 @@ def test_targeted_pdf_fallback_and_date_bounded_missed_counts(tmp_path, monkeypa
         assert result.route == "game_finder"
         assert result.result.to_dict()["sections"]["count"][0]["count"] == expected
         assert "LeBron James missed" in result.metadata["answer_phrase"]
+    for dates in [
+        "on 2025-10-24 and 2025-10-27",
+        "on October 24 and October 27",
+        "on October 27, October 24 and October 27",
+    ]:
+        query = f"how many games did LeBron James miss {dates} in 2025-26"
+        counted = execute_natural_query(query)
+        assert counted.result_status == "ok", counted.metadata
+        sections = counted.result.to_dict()["sections"]
+        assert sections["count"][0]["count"] == 2
+        assert {int(r["game_id"]) for r in sections["finder"]} == {22500019, 22500122}
+        assert "on 2025-10-24, 2025-10-27" in counted.metadata["answer_phrase"]
+        assert "from 2025-10-24 to" not in counted.metadata["answer_phrase"]
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from tools.raw_query_answer_qa import run_case
+
+    query = "how many home games did LeBron miss on October 24 and October 27 in 2025-26"
+    payload = TestClient(app).post("/query", json={"query": query}).json()
+    assert payload["result_status"] == "ok", payload
+    assert payload["result"]["sections"]["count"][0]["count"] == 2
+    checked = run_case(
+        dict(
+            id="k08_disjoint_missed_dates",
+            query=query,
+            category="participation",
+            priority="p1",
+            expected_status="ok",
+        ),
+        top_rows=5,
+    )
+    assert checked["expectation_results"]["fail_count"] == 0, checked
+    assert checked["sections"]["count"][0]["count"] == 2
+    assert "Dates" in str(checked["query_output_snapshot"])
     pair = execute_natural_query(
         "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26"
     )

@@ -1,3 +1,6 @@
+import re
+from datetime import date
+
 import pandas as pd
 
 from nbatools.commands._condition_utils import (
@@ -89,6 +92,7 @@ def _apply_filters(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    game_dates: list[str] | None = None,
 ) -> pd.DataFrame:
     out = attach_opponent_stats(df.copy(), stat, conditions)
     out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
@@ -103,6 +107,20 @@ def _apply_filters(
 
     if end_ts is not None:
         out = out[out["game_date"] <= end_ts].copy()
+
+    if game_dates is not None:
+        if not isinstance(game_dates, list) or not game_dates:
+            raise ValueError("game_dates must be a nonempty list of ISO calendar dates")
+        if any(
+            not isinstance(day, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", day)
+            for day in game_dates
+        ):
+            raise ValueError("game_dates requires valid ISO calendar dates")
+        try:
+            dates = [pd.Timestamp(date.fromisoformat(day)) for day in game_dates]
+        except (TypeError, ValueError) as exc:
+            raise ValueError("game_dates requires valid ISO calendar dates") from exc
+        out = out[out["game_date"].isin(dates)].copy()
 
     if team:
         team_upper = team.upper()
@@ -183,6 +201,7 @@ def build_result(
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
     per_season_limit: int | None = None,
+    game_dates: list[str] | None = None,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -248,6 +267,7 @@ def build_result(
             away_only=away_only,
             start_date=start_date,
             end_date=end_date,
+            game_dates=game_dates,
         )
         if without_player and not sample.empty:
             sample = filter_without_player(
@@ -271,6 +291,7 @@ def build_result(
         conditions=conditions,
         start_date=start_date,
         end_date=end_date,
+        game_dates=game_dates,
     )
 
     if without_player and not df.empty:
@@ -387,6 +408,7 @@ def run(
     sort_by: str = "game_date",
     ascending: bool = False,
     last_n: int | None = None,
+    game_dates: list[str] | None = None,
 ) -> None:
     result = build_result(
         season=season,
@@ -404,6 +426,7 @@ def run(
         max_value=max_value,
         start_date=start_date,
         end_date=end_date,
+        game_dates=game_dates,
         limit=limit,
         sort_by=sort_by,
         ascending=ascending,
