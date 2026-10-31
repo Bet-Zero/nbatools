@@ -3445,6 +3445,17 @@ def _build_parse_state(query: str) -> dict:
                 else None
             )
         )
+        if raw_scalar:
+            # A complete scalar clause cannot erase a separate absence
+            # request. The current scalar consumer has no second slot; keep
+            # that requested name visible to the unresolved-clause guard.
+            extra_absence = detect_without_player(
+                presence_remainder, resolve_name=resolve_condition_name
+            )[0] or detect_unresolved_availability_player(
+                presence_remainder, mode="without", resolve_name=resolve_condition_name
+            )
+            if extra_absence:
+                unresolved_without_player = raw_scalar.players + " and " + extra_absence
         if with_player and (not player or player.upper() == with_player.upper()):
             player_without_presence = detect_player_resolved(q_without_presence)
             if player_without_presence.is_confident:
@@ -7202,7 +7213,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
     if not route_kwargs.get("unsupported_filters") and (
         boundary_note := _unsupported_boundary_note(
-            applied_pair.mask_clause(q) if applied_pair else q,
+            applied_clause.mask_clause(q) if applied_clause else q,
             route,
             route_kwargs,
             requested_stat=stat,
@@ -11343,8 +11354,16 @@ def _finalize_route(parsed: dict) -> dict:
         ]
         return out
     route = out.get("route")
+    condition_q = parsed["normalized_query"]
+    scalar_absence = requested_scalar_absence(condition_q)
     if any(
-        presence_names_player_condition(parsed["normalized_query"], name)
+        presence_names_player_condition(
+            condition_q,
+            name,
+            absence_span=(scalar_absence.start, scalar_absence.end)
+            if scalar_absence and name == kwargs.get("without_player")
+            else None,
+        )
         for name in (
             parsed.get("with_player"),
             parsed.get("without_player"),

@@ -156,17 +156,22 @@ def test_team_record_with_scope_after_the_name(sparse_root):
 
 
 @pytest.mark.parametrize("subject", ["Lakers record", "LeBron James stats"])
+@pytest.mark.parametrize("scope", ["this season", "from 2025-10-01 to 2026-06-30 in 2025-26"])
 @pytest.mark.parametrize(
     "condition",
     ["with Davis out", "with Anthony Davis out", "with Davis not playing", "with Davis sitting"],
 )
-def test_scalar_absence_clause_has_one_polarity(sparse_root, subject, condition):
+def test_scalar_absence_clause_has_one_polarity(sparse_root, subject, condition, scope):
     root, out = sparse_root
     is_player = subject.startswith("LeBron")
     rows = pd.read_csv(root / PLAYERS if is_player else root / TEAMS)
     own = rows.player_name.eq("LeBron James") if is_player else rows.team_abbr.eq("LAL")
     expected = rows.loc[own & rows.game_id.isin(out["Anthony Davis"])]
-    result = execute_natural_query(f"{subject} {condition} this season")
+    if scope != "this season":
+        expected = expected.loc[
+            pd.to_datetime(expected.game_date).between("2025-10-01", "2026-06-30")
+        ]
+    result = execute_natural_query(f"{subject} {condition} {scope}")
     assert result.result_status == "ok", result.metadata
     assert result.metadata["without_player"] == "Anthony Davis"
     assert result.metadata["with_player"] is None
@@ -209,6 +214,13 @@ def test_pair_after_own_bound_is_not_read_as_extra_presence(sparse_root, conditi
         "with Davis injured",
         "with Davis missing",
         "with Davis out or Reaves out",
+        "with Davis out without Reaves",
+        "without Davis with Reaves out",
+        "with Reaves not playing more than 15 minutes",
+        "with Davis not playing more than 15 minutes",
+        "with Reaves out and scoring 30 points",
+        "with Davis out and scoring 30 points",
+        "with Reaves out scoring 30 points",
         "without Davis and Reaves played",
     ],
 )

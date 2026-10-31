@@ -896,8 +896,26 @@ def presence_states_player_condition(text: str) -> bool:
     )
 
 
-def presence_names_player_condition(text: str, player: str) -> bool:
+def presence_names_player_condition(
+    text: str, player: str, *, absence_span: tuple[int, int] | None = None
+) -> bool:
     """A named teammate owns an immediately attached numerical predicate."""
+    from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
+
+    if absence_span:
+        # The consumed scalar's actor is already resolved, including shorthand
+        # or source-only names. Keep attached MIN/stat ownership while excluding
+        # calendar numbers; masking the actor itself loses real conditions.
+        tail = strip_explicit_calendar_date_clauses(text[absence_span[1] :])
+        owned = re.match(_PRESENCE_SETTING + _OWN_STAT_CLAUSE, tail) or re.match(
+            _OWN_STAT_CLAUSE, " and " + tail.lstrip()
+        )
+        if _states_player_condition(tail) or (
+            owned
+            and re.search(r"\d", re.split(r"\b(?:when|while|against|versus|vs|in)\b", tail)[0])
+        ):
+            return True
+    text = strip_explicit_calendar_date_clauses(text)
     for match in re.finditer(
         r"\b(?:with|without)\s+([\w .&'\-]+?)"
         r"(?=\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes?|dished|"

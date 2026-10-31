@@ -17375,6 +17375,7 @@ cases:
     query: Lakers record with LeBron James out from 2025-10-24 to 2025-10-27 in 2025-26
     category: participation
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_sections: [summary, game_log]
@@ -17401,7 +17402,7 @@ cases:
     - path: result.metadata.player
       equals: Austin Reaves
     - path: result.metadata.without_player
-      equals: LeBron James and Luka Doncic
+      equals: LeBron James and Luka Dončić
     - path: result.sections.finder.0.game_id
       equals: 22500113
     - path: result.sections.finder.0.pts
