@@ -760,7 +760,11 @@ def names_other_player_availability(
             continue
         # An already-read full condition name takes precedence over a different
         # indexed player sharing its surname (including source-only inactives).
-        other = next((n for n in read if n and n.lower() == subject.lower()), None)
+        from nbatools.commands._player_identity import player_name_key
+
+        other = next(
+            (n for n in read if n and player_name_key(n) == player_name_key(subject)), None
+        )
         other = other or detect_player(subject)
         if other is None:
             # "when Davis sits", read as the teammate Anthony Davis.

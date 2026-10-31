@@ -9,6 +9,7 @@ import pytest
 from nbatools.commands import _participation_observations as observations
 from nbatools.commands.natural_query import parse_query
 from nbatools.data_source import reset_data_source_cache
+from nbatools.dataframe_cache import FRAME_CACHE
 from nbatools.query_service import execute_natural_query
 
 pytestmark = [pytest.mark.query, pytest.mark.fixture_data]
@@ -152,7 +153,44 @@ def test_unknown_state_and_opposite_side_remain_execution_checks(listed_root):
     _, target, rows, games = listed_root
     for changed in [rows.assign(participation_state="unknown"), rows.assign(team_id=1610612738)]:
         changed.to_csv(target, index=False)
+        FRAME_CACHE.clear()
         reset_data_source_cache()
         assert observations.resolve_observed_name(NAME, [SEASON], "Regular Season").resolved == NAME
         result = execute_natural_query(bounded(f"Lakers record without {NAME}", games))
         assert result.result_status != "ok", result.metadata
+
+
+def test_normalized_full_source_name_is_already_read_in_while_clause(listed_root):
+    _, target, rows, games = listed_root
+    rows.player_name = "Kellan Brówn"
+    rows.to_csv(target, index=False)
+    query = bounded("Lakers record while Kellan Brown did not play", games)
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    assert result.result.to_dict()["sections"]["summary"][0]["games"] == 1
+
+
+def test_raw_answer_checker_preserves_source_condition_and_primary(listed_root):
+    from tools.raw_query_answer_qa import run_case
+
+    query = bounded("LeBron James games without Sample Prospect", listed_root[3])
+    checked = run_case(
+        dict(
+            id="source_only_fixture",
+            query=query,
+            category="participation",
+            priority="p1",
+            expected_status="ok",
+        ),
+        top_rows=5,
+    )
+    assert checked["expectation_results"]["fail_count"] == 0, checked
+    assert NAME in str(checked["query_output_snapshot"])
+    assert checked["sections"]["summary"][0]["player_name"] == "LeBron James"
+
+
+def test_malformed_observations_fail_closed_before_execution(listed_root):
+    _, target, rows, games = listed_root
+    rows[["player_id", "player_name"]].to_csv(target, index=False)
+    result = execute_natural_query(bounded("Lakers record without Sample Prospect", games))
+    assert result.result_status == "no_result", result.metadata

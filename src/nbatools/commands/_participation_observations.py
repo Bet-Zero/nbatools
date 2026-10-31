@@ -81,7 +81,13 @@ def resolve_observed_name(phrase: str, seasons: list[str], season_type: str) -> 
     key = player_name_key(phrase)
     if len(key.split()) < 2:
         return ResolutionResult()
-    rows = load_observations(seasons, season_type)
+    try:
+        rows = load_observations(seasons, season_type)
+    except (ValueError, FileNotFoundError):
+        # Interpretation happens before the execution error boundary. An
+        # unqualified ledger must remain unresolved, not escape as an exception
+        # or fall back to a different player sharing a surname.
+        return ResolutionResult(confidence="ambiguous", source="participation_unavailable")
     matched = rows.loc[player_name_mask(rows, phrase)]
     if matched.empty:
         return ResolutionResult()
