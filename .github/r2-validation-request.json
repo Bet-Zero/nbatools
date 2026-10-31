@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "58a6dd2570dbf930711b240bb8be1371f2062ed6",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_retained_k08_publication_real_data.py::test_retained_k08_complete_snapshot_prepare"
+  ],
+  "raw_qa_cases": []
+}
