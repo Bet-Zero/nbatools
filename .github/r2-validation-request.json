@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "fd9990cff9b82ab2bb05fb5b74a2a0d0f53629ff",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_retained_k08_package_real_data.py::test_build_retained_six_game_overlay"
+  ],
+  "raw_qa_cases": []
+}
