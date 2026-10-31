@@ -91,7 +91,6 @@ def test_or_alternative_keeps_first_condition():
         "Lakers record with 23",
         # A player named after the stat bound cannot be combined yet.
         "Lakers record in games with 15 threes and LeBron",
-        "Lakers record in games with 120 points with LeBron",
         "Lakers record when LeBron scores 30 in games with 120 points",
         # "or" before a season is not a stat alternative.
         "LeBron 30 point games with 10 assists in 2023-24 or 2024-25",
@@ -230,3 +229,56 @@ def test_empty_opponent_quality_set_is_no_match(query):
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "no_match"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record in games with 120 points with LeBron",
+        "Lakers record with at least 120 points with LeBron James",
+    ],
+)
+def test_team_stat_bound_and_later_presence_both_select_the_sample(tmp_path, monkeypatch, query):
+    import shutil
+    from pathlib import Path
+
+    import pandas as pd
+
+    from nbatools.data_source import reset_data_source_cache
+
+    root = tmp_path / "fixture"
+    shutil.copytree(Path("qa/fixtures/query_engine_sample"), root)
+    suffix = "2025-26_regular_season.csv"
+    path = root / "data/raw/player_game_stats" / suffix
+    players = pd.read_csv(path)
+    teams = pd.read_csv(root / "data/raw/team_game_stats" / suffix)
+    teams = teams.loc[teams.team_abbr.eq("LAL")]
+    qualifying = teams.loc[teams.pts.ge(120)]
+    removed = qualifying.game_id.iloc[0]
+    players = players.loc[~(players.player_id.eq(2544) & players.game_id.eq(removed))]
+    players.to_csv(path, index=False)
+    played = players.loc[players.player_id.eq(2544) & players.minutes.gt(0)]
+    keys = set(zip(played.game_id, played.team_id))
+    expected = qualifying.loc[
+        [(g, t) in keys for g, t in zip(qualifying.game_id, qualifying.team_id)]
+    ]
+    assert 0 < len(expected) < len(qualifying) < len(teams)
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root))
+    reset_data_source_cache()
+    try:
+        result = _run(query)
+        sections = result.result.to_dict()["sections"]
+        actual = sections["game_log"]
+        assert {int(row["game_id"]) for row in actual} == set(expected.game_id.astype(int))
+        assert all(row["pts"] >= 120 for row in actual)
+        summary = sections["summary"][0]
+        assert (summary["games"], summary["wins"], summary["losses"], summary["pts_avg"]) == (
+            len(expected),
+            int(expected.wl.eq("W").sum()),
+            int(expected.wl.eq("L").sum()),
+            round(expected.pts.mean(), 1),
+        )
+        assert result.metadata["with_player"] == "LeBron James"
+    finally:
+        reset_data_source_cache()
