@@ -119,6 +119,28 @@ def test_pointer_authenticates_manifest_bytes():
         gate.verify_pointer_manifest(Client(), "bucket", "base")
 
 
+def test_prepare_rejects_changed_reviewed_base_before_publisher(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        gate,
+        "load_package",
+        lambda *a: ({}, {}, {"base_generation": "base", "base_manifest_sha256": "reviewed"}),
+    )
+    monkeypatch.setattr(gate, "acquire_overlay", lambda *a: {})
+
+    class Publication:
+        @staticmethod
+        def _resolve_r2_target(**kwargs):
+            return object(), "bucket"
+
+    monkeypatch.setattr(gate, "publisher_modules", lambda *a: Publication)
+    monkeypatch.setattr(gate, "verify_pointer_manifest", lambda *a: ({}, {}, "changed"))
+    monkeypatch.setattr(
+        gate.subprocess, "run", lambda *a, **k: pytest.fail("Changed base reached publisher")
+    )
+    with pytest.raises(ValueError, match="Base manifest differs"):
+        gate.prepare("package", tmp_path, tmp_path / "work")
+
+
 def test_publication_cannot_reach_prepare_or_writer_without_approval(tmp_path, monkeypatch):
     prepared = tmp_path / "prepared.json"
     prepared.write_text("{}")

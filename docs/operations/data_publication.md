@@ -33,6 +33,37 @@ full manifest SHA256 and storage projection before approving the dedicated
 that exact snapshot before invoking the existing immutable publisher. There is no
 arbitrary artifact, commit, shell-command or expected-base input.
 
+### Retained K08 package — preparation only
+
+[PR551](https://github.com/Bet-Zero/nbatools/pull/551) passed complete read-only
+preparation in [run41178844607](https://github.com/Bet-Zero/nbatools/actions/runs/41178844607):
+724objects,402,948,225bytes, manifest `de83522f…`, all13APIanswers and
+byte-exact63,805,709byte backup/restore within the unchanged bounds. Compact
+[acceptance receipt](https://github.com/Bet-Zero/nbatools/pull/551#issuecomment-6540420485)
+retains the full approval tuple and answers. Production is unchanged;
+publication has not been authorized.
+
+`retained-k08-availability-v1` prepares six already-qualified games: the retained
+1997 Nets/Indiana, 2004 Detroit/Houston and 2014 New Orleans/Orlando structured
+originals, plus the three authorized Lakers reports for October24/26/27,2025.
+It performs no source acquisition. Original retrieval timestamps and archive
+attribution remain; republication does not make the data fresh.
+
+The fixed publisher binds the existing base manifest `5497832b…` and permits only
+an append to the two registered 2025-26 availability CSV/import-lineage files.
+Each prior CSV cell and import entry must remain equal; the exact three new PDF
+game IDs and104new rows are bound to the reviewed artifact. Historical files and
+source originals are additions. The existing opening-game PDF clock authority
+cannot be replaced by the structured opener. All other existing snapshot objects,
+transport/backup limits and protected publication gates remain unchanged.
+
+Read-only acceptance must check the complete proposed snapshot, all thirteen
+registered API answers (including exact missed-date population and player game
+lists), and byte-exact bounded backup/restore. A successful preparation is still
+`prepared_no_writes`: it does not authorize publication or resolve full-season
+absence/membership coverage. Review the exact immutable publisher, source artifact,
+base/proposed manifests and storage projection before any separate owner approval.
+
 A separate read-only job downloads and checks every published object's bytes,
 checks the pointer and previous generation, and verifies deployed readiness and
 the selected package's registered application answers (including opening and
@@ -100,6 +131,7 @@ existing custodian rather than requesting its disclosure.
 Future updates use this same process: agents acquire and qualify data, commit a
 reviewed registry package with immutable code/source/base bindings, run read-only
 preparation, and obtain required publication authorization. Temporary Actions
-artifacts are not permanent data storage; reacquire/revalidate an expired package
-before registering a replacement. A prior approval never approves a changed
+artifacts are not permanent data storage; rebuild/revalidate an expired package
+from retained qualified originals where available before registering a replacement.
+Fresh acquisition still needs its applicable authorization. A prior approval never approves a changed
 artifact or a new generation.

@@ -77,6 +77,35 @@ def test_combined_wrapper_cannot_run_without_reviewed_inventory(tmp_path, monkey
         load(tmp_path / "publish-combined-availability.py").main()
 
 
+@pytest.mark.parametrize("failure", ["missing", "base", "path", "games", "count"])
+def test_retained_wrapper_requires_exact_fixed_inventory(tmp_path, monkeypatch, failure):
+    script = tmp_path / "publish-retained-k08-availability.py"
+    shutil.copy2(PROGRAM / script.name, script)
+    wrapper = load(script)
+    inventory = dict(
+        base_manifest_sha256=wrapper.BASE_MANIFEST,
+        append_only={
+            path: dict(added_game_ids=sorted(wrapper.PDF_GAMES), added_records=count)
+            for path, count in zip(wrapper.APPEND_PATHS, (104, 3))
+        },
+    )
+    if failure == "base":
+        inventory["base_manifest_sha256"] = "changed"
+    elif failure == "path":
+        inventory["append_only"]["raw/other.csv"] = {}
+    elif failure == "games":
+        inventory["append_only"][wrapper.APPEND_PATHS[0]]["added_game_ids"] = ["0022500002"]
+    elif failure == "count":
+        inventory["append_only"][wrapper.APPEND_PATHS[0]]["added_records"] = 105
+    if failure != "missing":
+        script.with_name("retained-k08-availability-inventory.json").write_text(
+            json.dumps(inventory)
+        )
+    # The delegated publisher is absent: all invalid inventories must stop first.
+    with pytest.raises(FileNotFoundError if failure == "missing" else ValueError):
+        wrapper.main()
+
+
 @pytest.mark.parametrize("failure", [None, "base", "overwrite", "unexpected_change", "code"])
 def test_fixed_inventory_preparation_preserves_existing_safeguards(tmp_path, monkeypatch, failure):
     overlay, inventory_path = package(tmp_path)

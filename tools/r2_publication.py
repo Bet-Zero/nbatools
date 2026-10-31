@@ -305,6 +305,8 @@ def prepare(name, publisher, work, *, expected=None):
         client=None, bucket_name=None, env=None, env_file=None
     )
     pointer, _, base_hash = verify_pointer_manifest(client, bucket, inventory["base_generation"])
+    if inventory.get("base_manifest_sha256") not in (None, base_hash):
+        raise ValueError("Base manifest differs from the reviewed package")
     subprocess.run(
         [
             sys.executable,
@@ -391,6 +393,35 @@ def publish(name, publisher, work, prepared_path):
     return receipt
 
 
+def verify_answer(case, answer):
+    """Check registered numeric sections, preserving the existing summary contract."""
+    if answer.get("result_status") != "ok":
+        raise ValueError("Deployed publication query returned no numeric result")
+    if "expected_route" in case and answer.get("route") != case["expected_route"]:
+        raise ValueError("Deployed publication query changed operation")
+    if ("summary" in case) == ("sections" in case):
+        raise ValueError("Publication check needs exactly one expectation shape")
+    expected = {"summary": [case["summary"]]} if "summary" in case else case["sections"]
+    actual = answer.get("result", {}).get("sections", {})
+    if not isinstance(expected, dict) or not expected:
+        raise ValueError("Publication check needs nonempty sections")
+    for section, wanted in expected.items():
+        rows = actual.get(section, [])
+        if not isinstance(wanted, list) or not wanted or len(rows) != len(wanted):
+            raise ValueError("Deployed publication query changed the verified population")
+        for row, fields in zip(rows, wanted):
+            if (
+                not isinstance(fields, dict)
+                or not fields
+                or not isinstance(row, dict)
+                or any(k not in row or row[k] != v for k, v in fields.items())
+            ):
+                raise ValueError("Deployed publication query differs from verified NBA evidence")
+    if "summary" in case:
+        return {"query": case["query"], "summary": actual["summary"][0]}
+    return {"query": case["query"], "sections": {key: actual[key] for key in expected}}
+
+
 def verify(name, publisher, work, published_path):
     policy, package, inventory = load_package(name, publisher)
     receipt = json.loads(published_path.read_text())
@@ -452,12 +483,7 @@ def verify(name, publisher, work, published_path):
             if response.status_code != 200:
                 raise ValueError("Deployed publication query did not succeed")
             answer = response.json()
-            rows = answer.get("result", {}).get("sections", {}).get("summary", [])
-            if answer.get("result_status") != "ok" or len(rows) != 1:
-                raise ValueError("Deployed publication query returned no numeric result")
-            if any(rows[0].get(k) != v for k, v in case["summary"].items()):
-                raise ValueError("Deployed publication query differs from verified NBA evidence")
-            answers.append({"query": case["query"], "summary": rows[0]})
+            answers.append(verify_answer(case, answer))
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]
         )
