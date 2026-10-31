@@ -20,6 +20,78 @@ from nbatools.commands.data_utils import load_player_games_for_seasons
 from nbatools.data_source import data_exists, data_generation_context, data_path
 
 
+def _observed_team_games(catalog, teams, season, season_type, team_id):
+    """Use reciprocal team rows; venue metadata is corroboration, not a denominator."""
+    catalog_fields = {"game_id", "game_date", "season", "season_type", "is_final"}
+    team_fields = {"game_id", "game_date", "season", "season_type", "team_id", "opponent_team_id"}
+    if not catalog_fields.issubset(catalog) or not team_fields.issubset(teams):
+        raise ValueError("Incomplete canonical catalog/team schema")
+    if not (catalog.season.eq(season) & catalog.season_type.eq(season_type)).all():
+        raise ValueError("Canonical season/type mismatch")
+    catalog = catalog.copy()
+    catalog["game_id"] = participation._ids(catalog.game_id)
+    if catalog.game_id.duplicated().any():
+        raise ValueError("Duplicate canonical game catalog")
+    catalog = catalog.set_index("game_id")
+    teams = teams.copy()
+    teams["game_id"] = pd.to_numeric(teams.game_id, errors="coerce")
+    own = teams.loc[pd.to_numeric(teams.team_id, errors="coerce").eq(team_id)].copy()
+    own["game_id"] = participation._ids(own.game_id)
+    if own.game_id.duplicated().any():
+        raise ValueError("Duplicate requested team game")
+    opposing = teams.loc[pd.to_numeric(teams.opponent_team_id, errors="coerce").eq(team_id)]
+    if not set(participation._ids(opposing.game_id)) <= set(own.game_id):
+        raise ValueError("Opposing team involvement lacks requested team row")
+    final = catalog.is_final.astype(str).str.lower().isin(["true", "1"])
+    known_side = pd.Series(False, index=catalog.index)
+    for field in ["home_team_id", "away_team_id"]:
+        if field in catalog:
+            known_side |= pd.to_numeric(catalog[field], errors="coerce").eq(team_id)
+    if not set(catalog.index[final & known_side]) <= set(own.game_id):
+        raise ValueError("Known canonical team involvement lacks team row")
+    result = []
+    for game_id, group in teams.loc[teams.game_id.isin(own.game_id)].groupby("game_id"):
+        if game_id not in catalog.index or not final.loc[game_id]:
+            raise ValueError("Team game lacks unique final canonical game")
+        game = catalog.loc[game_id]
+        day = pd.to_datetime(game.game_date, errors="raise")
+        dates = pd.to_datetime(group.game_date, errors="raise")
+        if (
+            pd.isna(day)
+            or dates.isna().any()
+            or not dates.dt.date.eq(day.date()).all()
+            or not (group.season.eq(season) & group.season_type.eq(season_type)).all()
+        ):
+            raise ValueError("Team game date/season differs from canonical game")
+        ids, opponents = (
+            participation._ids(group.team_id),
+            participation._ids(group.opponent_team_id),
+        )
+        if len(group) != 2 or ids.nunique() != 2 or set(ids) != set(opponents):
+            raise ValueError("Team game lacks unique reciprocal sides")
+        opponent = int(opponents.loc[ids.eq(team_id)].item())
+        if opponent == team_id or not opponents.loc[ids.eq(opponent)].eq(team_id).all():
+            raise ValueError("Team game sides are not reciprocal")
+        known = [
+            game[field]
+            for field in ["home_team_id", "away_team_id"]
+            if field in game and pd.notna(game[field])
+        ]
+        if known:
+            venue = participation._ids(pd.Series(known))
+            if venue.duplicated().any() or not set(venue) <= {team_id, opponent}:
+                raise ValueError("Populated canonical venue sides contradict team rows")
+        result.append(
+            dict(
+                game_id=int(game_id),
+                game_date=day.strftime("%Y-%m-%d"),
+                team_id=team_id,
+                opponent_team_id=opponent,
+            )
+        )
+    return pd.DataFrame(result, columns=["game_id", "game_date", "team_id", "opponent_team_id"])
+
+
 def build_report(
     *,
     generation: str,
@@ -70,30 +142,10 @@ def build_report(
         suffix = f"{season}_{season_type.lower().replace(' ', '_')}.csv"
         catalog = pd.read_csv(verified("raw/games/" + suffix))
         verified("raw/player_game_stats/" + suffix)
-        verified("raw/team_game_stats/" + suffix)
+        teams = pd.read_csv(verified("raw/team_game_stats/" + suffix))
         verified("raw/player_season_advanced/" + suffix, optional=True)
         verified("raw/player_game_availability/" + suffix, optional=True)
-        required = {
-            "game_id",
-            "game_date",
-            "season",
-            "season_type",
-            "is_final",
-            "home_team_id",
-            "away_team_id",
-        }
-        if not required.issubset(catalog) or catalog.game_id.duplicated().any():
-            raise ValueError("Incomplete or duplicate canonical game catalog")
-        if not (catalog.season.eq(season) & catalog.season_type.eq(season_type)).all():
-            raise ValueError("Canonical season/type mismatch")
-        for field in ["game_id", "home_team_id", "away_team_id"]:
-            catalog[field] = participation._ids(catalog[field])
-        if catalog.home_team_id.eq(catalog.away_team_id).any():
-            raise ValueError("Canonical game has identical sides")
-        games = catalog.loc[
-            catalog.is_final.astype(str).str.lower().isin(["true", "1"])
-            & (catalog.home_team_id.eq(team_id) | catalog.away_team_id.eq(team_id))
-        ].copy()
+        games = _observed_team_games(catalog, teams, season, season_type, team_id)
         observed_count = len(games)
         if game_ids is not None:
             if len(set(game_ids)) != len(game_ids) or not set(game_ids) <= set(games.game_id):
@@ -101,14 +153,6 @@ def build_report(
             games = games.loc[games.game_id.isin(game_ids)]
         if games.empty:
             raise ValueError("No requested observed final team games")
-        games["team_id"] = team_id
-        games["opponent_team_id"] = games.away_team_id.where(
-            games.home_team_id.eq(team_id), games.home_team_id
-        )
-        dates = pd.to_datetime(games.game_date, errors="raise")
-        if dates.isna().any():
-            raise ValueError("Missing canonical game date")
-        games["game_date"] = dates.dt.strftime("%Y-%m-%d")
         appearances = load_player_games_for_seasons([season], season_type)
         observations = participation.load_observations([season], season_type)
         identities = pd.concat([appearances, observations], ignore_index=True)

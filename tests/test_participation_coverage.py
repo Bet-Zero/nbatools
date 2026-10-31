@@ -48,6 +48,12 @@ def snapshot(tmp_path, monkeypatch):
     prototype = source_teams.loc[source_teams.team_id.eq(TEAM)].iloc[0]
     teams = pd.DataFrame([prototype] * 82).reset_index(drop=True)
     teams["game_id"] = games.game_id
+    teams["game_date"] = games.game_date
+    teams["opponent_team_id"] = games.away_team_id
+    reciprocal = teams.copy()
+    reciprocal["team_id"] = games.away_team_id
+    reciprocal["opponent_team_id"] = TEAM
+    teams = pd.concat([teams, reciprocal], ignore_index=True)
     teams.to_csv(root / "raw/team_game_stats" / SUFFIX, index=False)
     availability = (
         games.iloc[60:65][["game_id", "game_date"]]
@@ -244,3 +250,79 @@ def test_identity_metadata_is_bound_and_usable_without_fallback(snapshot, damage
             team_id=TEAM,
             player_id=PLAYER,
         )
+
+
+def test_missing_legacy_venue_sides_preserve_all_observed_team_games(snapshot):
+    root, _, _ = snapshot
+    path = root / "raw/games" / SUFFIX
+    catalog = pd.read_csv(path)
+    catalog[["home_team_id", "away_team_id"]] = float("nan")
+    # An unrelated final catalog game with unknown venue does not establish
+    # involvement for the requested team or add a candidate game.
+    unrelated = catalog.iloc[[0]].assign(game_id=22520000)
+    pd.concat([catalog, unrelated], ignore_index=True).to_csv(path, index=False)
+    teams_path = root / "raw/team_game_stats" / SUFFIX
+    teams = pd.read_csv(teams_path)
+    extra = teams.iloc[[0, 82]].copy()
+    extra["game_id"] = 22520000
+    extra["team_id"], extra["opponent_team_id"] = [1, 2], [2, 1]
+    pd.concat([teams, extra], ignore_index=True).to_csv(teams_path, index=False)
+    result = report(snapshot)
+    assert result["observed_team_games"] == result["requested_games"] == 82
+    assert result["counts"] == dict(played=60, did_not_play=5, same_game_other_side=0, unknown=17)
+    assert len(result["missing_keys"]) == 17
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "missing_own",
+        "missing_venue_and_own",
+        "missing_opponent",
+        "duplicate_opponent",
+        "wrong_opponent",
+        "own_opponent",
+        "date",
+        "opponent_date",
+        "not_final",
+        "not_cataloged",
+        "venue",
+        "invalid_side",
+        "scope",
+    ],
+)
+def test_candidate_team_games_require_exact_reciprocal_canonical_evidence(snapshot, damage):
+    root, _, _ = snapshot
+    teams_path = root / "raw/team_game_stats" / SUFFIX
+    catalog_path = root / "raw/games" / SUFFIX
+    teams, catalog = pd.read_csv(teams_path), pd.read_csv(catalog_path)
+    own = teams.index[teams.game_id.eq(22510000) & teams.team_id.eq(TEAM)][0]
+    other = teams.index[teams.game_id.eq(22510000) & ~teams.team_id.eq(TEAM)][0]
+    if damage in ["missing_own", "missing_venue_and_own"]:
+        teams = teams.drop(index=own)
+        if damage == "missing_venue_and_own":
+            catalog[["home_team_id", "away_team_id"]] = float("nan")
+    elif damage == "missing_opponent":
+        teams = teams.drop(index=other)
+    elif damage == "duplicate_opponent":
+        teams = pd.concat([teams, teams.loc[[other]]], ignore_index=True)
+    elif damage == "wrong_opponent":
+        teams.loc[other, "opponent_team_id"] = 1610612738
+    elif damage == "own_opponent":
+        teams.loc[own, "opponent_team_id"] = TEAM
+    elif damage in ["date", "opponent_date"]:
+        teams.loc[own if damage == "date" else other, "game_date"] = "2020-01-01"
+    elif damage == "not_final":
+        catalog.loc[0, "is_final"] = False
+    elif damage == "not_cataloged":
+        catalog = catalog.iloc[1:]
+    elif damage == "venue":
+        catalog.loc[0, "away_team_id"] = 1610612738
+    elif damage == "invalid_side":
+        teams.loc[other, "team_id"] = -1
+    elif damage == "scope":
+        teams.loc[other, "season_type"] = "Playoffs"
+    teams.to_csv(teams_path, index=False)
+    catalog.to_csv(catalog_path, index=False)
+    with pytest.raises(ValueError):
+        report(snapshot)
