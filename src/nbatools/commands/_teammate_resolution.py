@@ -13,6 +13,8 @@ import re
 import unicodedata
 from typing import NamedTuple
 
+import pandas as pd
+
 from nbatools.commands._franchise import team_value_mask
 from nbatools.commands._player_identity import select_player_rows
 from nbatools.commands._seasons import resolve_seasons
@@ -89,11 +91,40 @@ def shares_side(
     end_season: str | None,
     season_type: str,
 ) -> bool:
-    """Whether ``name`` played alongside ``player`` in the requested seasons."""
+    """Whether exact-game evidence associates ``name`` with ``player`` on a side."""
     side = _same_side_rows(None, player, season, start_season, end_season, season_type)
     if side is None:
         return False
-    return not select_player_rows(side, name).empty
+    if not select_player_rows(side, name).empty:
+        return True
+    # Listed nonparticipants have no appearance row. Exact-game association
+    # reads the condition; execution still qualifies every candidate's state.
+    from nbatools.commands._parse_helpers import default_season_for_context
+    from nbatools.commands._participation_observations import (
+        load_observations,
+        resolve_observed_name,
+    )
+    from nbatools.commands.data_utils import load_player_games_for_seasons
+
+    seasons = (
+        resolve_seasons(season, start_season, end_season)
+        if season or (start_season and end_season)
+        else [default_season_for_context(season_type)]
+    )
+    try:
+        if not resolve_observed_name(name, seasons, season_type).is_confident:
+            return False
+        listed = select_player_rows(load_observations(seasons, season_type), name)
+        own = select_player_rows(load_player_games_for_seasons(seasons, season_type), player)
+        keys = ["game_id", "team_id", "game_date"]
+        listed, own = listed[keys].copy(), own[keys].copy()
+        for rows in [listed, own]:
+            for col in keys[:2]:
+                rows[col] = pd.to_numeric(rows[col], errors="raise")
+            rows.game_date = pd.to_datetime(rows.game_date).dt.normalize()
+        return not listed.merge(own, on=keys).empty
+    except (ValueError, FileNotFoundError, KeyError):
+        return False
 
 
 def _same_side_rows(team, player, season, start_season, end_season, season_type):
@@ -148,7 +179,7 @@ class AvailabilityPair(NamedTuple):
         return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
 
 
-def requested_absence_pair(text: str) -> AvailabilityPair | None:
+def requested_availability_pair(text: str) -> AvailabilityPair | None:
     """Preserve a raw name-list condition BEFORE any scalar name resolution.
 
     This reads scope only. Returned names are unresolved and must never be
@@ -166,18 +197,16 @@ def requested_absence_pair(text: str) -> AvailabilityPair | None:
             absent = suffix.group("state") not in ("playing", "played")
             fragment = fragment[: suffix.start()]
         parts = [part.strip(" .") for part in fragment.split(" and ")]
-        if (
-            absent
-            and len(parts) >= 2
-            and all(
-                part
-                and not re.search(r"\d", part)
-                and detect_stat(part) is None
-                and not _tail_is_read_scope(" " + part, 0)
-                for part in parts
-            )
+        if len(parts) >= 2 and all(
+            part
+            and not re.search(r"\d", part)
+            and detect_stat(part) is None
+            and not _tail_is_read_scope(" " + part, 0)
+            for part in parts
         ):
-            return AvailabilityPair("without", fragment, match.start(), match.end())
+            return AvailabilityPair(
+                "without" if absent else "with", fragment, match.start(), match.end()
+            )
     return None
 
 
@@ -253,6 +282,7 @@ def availability_pair(
     start_season: str | None,
     end_season: str | None,
     season_type: str,
+    season_list: list[str] | None = None,
 ) -> AvailabilityPair | None:
     """A qualified two-teammate condition and its complete source span."""
     from nbatools.commands._matchup_utils import (
@@ -304,23 +334,22 @@ def availability_pair(
     side = None
     names = []
     for part in parts:
-        if mode == "without":
-            from nbatools.commands._parse_helpers import default_season_for_context
+        from nbatools.commands._parse_helpers import default_season_for_context
 
-            seasons = (
-                resolve_seasons(season, start_season, end_season)
-                if season or (start_season and end_season)
-                else [default_season_for_context(season_type)]
-            )
-            observed = resolve_observed_name(part, seasons, season_type)
-            if observed.confidence != "none":
-                if not observed.is_confident:
-                    return None
-                # Exact listed identity is enough to read a condition, not to
-                # prove absence/tenure. The consumer still qualifies both
-                # predicates on every original candidate game and actual side.
-                names.append(observed.resolved)
-                continue
+        seasons = season_list or (
+            resolve_seasons(season, start_season, end_season)
+            if season or (start_season and end_season)
+            else [default_season_for_context(season_type)]
+        )
+        observed = resolve_observed_name(part, seasons, season_type)
+        if observed.confidence != "none":
+            if not observed.is_confident:
+                return None
+            # Exact listed identity is enough to read a condition, not to
+            # prove play/absence/tenure. The consumer still qualifies both
+            # predicates on every original candidate game and actual side.
+            names.append(observed.resolved)
+            continue
         name = detect_player(part) or resolve_teammate(
             part,
             team=team,

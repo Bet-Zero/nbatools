@@ -396,7 +396,7 @@ from nbatools.commands._teammate_resolution import (
     availability_pair,
     name_before_scope,
     played_matchup_pair,
-    requested_absence_pair,
+    requested_availability_pair,
     resolve_teammate,
     shares_side,
 )
@@ -3396,27 +3396,29 @@ def _build_parse_state(query: str) -> dict:
         with_player, q_without_presence = detect_with_player(
             presence_q, resolve_name=resolve_condition_name
         )
-        raw_absence_pair = requested_absence_pair(presence_q)
-        if raw_absence_pair:
-            # A scalar match may recognize only A before AND. Preserve the
-            # complete raw request even if either name is unknown/unqualified.
-            without_player, q_without_absence = None, raw_absence_pair.mask_clause(presence_q)
-            if presence_q[raw_absence_pair.start :].startswith("with "):
-                with_player = None
+        raw_pair = requested_availability_pair(presence_q)
+        if raw_pair:
+            # Preserve the complete requested list before scalar resolution.
+            with_player = without_player = None
+            q_without_presence = q_without_absence = raw_pair.mask_clause(presence_q)
         else:
             without_player, q_without_absence = detect_without_player(
                 presence_q, resolve_name=resolve_condition_name
             )
         unresolved_with_player = (
-            detect_unresolved_availability_player(
-                presence_q, mode="with", resolve_name=resolve_condition_name
+            raw_pair.players
+            if raw_pair and raw_pair.mode == "with"
+            else (
+                detect_unresolved_availability_player(
+                    q_without_presence if with_player else presence_q,
+                    mode="with",
+                    resolve_name=resolve_condition_name,
+                )
             )
-            if with_player is None
-            else None
         )
         unresolved_without_player = (
-            raw_absence_pair.players
-            if raw_absence_pair
+            raw_pair.players
+            if raw_pair and raw_pair.mode == "without"
             else (
                 detect_unresolved_availability_player(
                     presence_q, mode="without", resolve_name=resolve_condition_name
@@ -3488,9 +3490,11 @@ def _build_parse_state(query: str) -> dict:
                 start_season=start_season,
                 end_season=end_season,
                 season_type=season_type,
+                season_list=season_list,
             )
-            if pair and pair.mode == "without":
-                without_player = pair.players
+            if pair:
+                with_player = pair.players if pair.mode == "with" else None
+                without_player = pair.players if pair.mode == "without" else None
                 unresolved_with_player = unresolved_without_player = None
                 # A leading two-player condition must not own the summary.
                 primary = detect_player_resolved(pair.mask_clause(presence_q))
@@ -4029,7 +4033,7 @@ def _counts_streaks(route_kwargs: dict) -> bool:
 
 _NOT_A_PERSON_WORD = re.compile(
     r"\b(?:the|a|an|true|effective|free|shooting|most|fewest|least|highest|lowest|best|worst"
-    r"|rest|days?|minutes?|points?|games?|teams?|sits?|plays?|and|or)\b|\d"
+    r"|rest|days?|minutes?|points?|games?|teams?|sits?|plays?|and|or|double|doubles|home|court|starters?|bench)\b|\d"
 )
 
 
@@ -4037,7 +4041,7 @@ def _names_a_person(fragment: str | None, *, require_index: bool = True) -> bool
     """ "davis" or "anthony davis" (a player's last name), not "30 points",
     "the fewest", "double doubles" or "home court".
 
-    Index-free checking only preserves an explicit unread absence request;
+    Index-free checking only preserves an explicit unread availability request;
     it never resolves identity or supplies participation evidence.
     """
     from nbatools.commands.entity_resolution import player_last_name_candidates
@@ -4276,6 +4280,7 @@ def _route_parsed_query(parsed: dict) -> dict:
                 start_season=start_season,
                 end_season=end_season,
                 season_type=season_type,
+                season_list=parsed.get("season_list"),
             )
         )
     if generic_boundary_note and not dedicated_availability_boundary:
@@ -6349,6 +6354,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             start_season=start_season,
             end_season=end_season,
             season_type=season_type,
+            season_list=parsed.get("season_list"),
         )
         if pair:
             # "Lakers record with LeBron and Davis": the games both played.
@@ -6826,7 +6832,7 @@ def _route_parsed_query(parsed: dict) -> dict:
     if (
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
-        and _multi_player_availability_boundary(q)
+        and (_multi_player_availability_boundary(q) or requested_availability_pair(q))
     ):
         # "LeBron stats with Davis and Austin": both teammates, or a refusal
         # rather than dropping one.
@@ -6838,6 +6844,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             start_season=route_kwargs.get("start_season"),
             end_season=route_kwargs.get("end_season"),
             season_type=route_kwargs.get("season_type") or "Regular Season",
+            season_list=parsed.get("season_list"),
         )
         if pair:
             route_kwargs.update(with_player=None, without_player=None)
@@ -6904,12 +6911,17 @@ def _route_parsed_query(parsed: dict) -> dict:
         route in ("player_game_summary", "player_game_finder")
         and route_kwargs.get("player")
         and (
-            unresolved_without_player
+            (unresolved_with_player or unresolved_without_player)
             and any(
                 _names_a_person(part.strip(), require_index=False)
-                for part in re.split(
-                    r"\s+and\s+|[,;&]", name_before_scope(unresolved_without_player)
+                for fragment in (unresolved_with_player, unresolved_without_player)
+                if fragment
+                and (
+                    fragment == unresolved_without_player
+                    or detect_stat(fragment) is None
+                    and re.search(r"\b(?:with|w/)\s+" + re.escape(fragment), q)
                 )
+                for part in re.split(r"\s+and\s+|[,;&]", name_before_scope(fragment))
             )
             or any(
                 _names_a_person(f) or _names_a_person(name_before_scope(f))
@@ -6918,7 +6930,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             )
         )
     ):
-        # An unread explicit absence name/pair remains requested even when its
+        # An unread explicit availability name/pair remains requested even when its
         # surnames are absent from the global appearance index. This marker
         # preserves a condition; it neither resolves identity nor proves DNP.
         existing_unsupported = list(route_kwargs.get("unsupported_filters") or [])

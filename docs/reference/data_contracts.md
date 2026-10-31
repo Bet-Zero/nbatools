@@ -489,11 +489,15 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   extend the primary-player, surname or first-name indexes. The primary subject
   is read separately from the consumed condition; execution still requires the
   appropriate state/date/side for every candidate game. Single-name and two-name
-  absence conditions use this bridge. Pair identity is read before deriving a
+  presence/absence conditions use this bridge. Pair identity is read before deriving a
   primary subject from the remaining text; exact listed names need no appearance
   rows to be recognized. Both predicates still need game/date/side evidence over
-  every original candidate. Appearance-backed teammate-presence association and
-  dated membership retain their separate support limits.
+  every original candidate. A source-only presence condition associates with the
+  primary player only through the same game/team/date; explicit DNP supports a
+  zero count, unknown or missing selected evidence does not. Source-only played
+  observations can select games without adding fabricated player statistics.
+  Existing appearance-backed presence remains supported. Dated membership
+  retains its separate support limits.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and

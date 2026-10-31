@@ -407,14 +407,15 @@ Common combinations:
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
 - exact full names listed only in qualified participation observations can identify
-  single or two-player absence conditions, while the team/player being asked about remains
-  the primary subject. Retained unpublished 2014 staging supports `Pelicans record
-  without Patric Young in 2014-15 from 2014-10-28 to 2014-10-28` (1–0, 101 PPG)
-  and Anthony Davis's 26-point game under that condition. This adds no production
-  coverage or season-wide absence claim. The same staged game answers NOP
-  without Darius Miller and Patric Young together, and preserves Anthony Davis
-  as the primary in a leading pair clause with his own points bound. Teammate
-  presence association and dated membership remain separate limits.
+  single or two-player presence/absence conditions, while the team/player being
+  asked about remains the primary subject. On the published qualified 2014-10-28
+  game, `Pelicans record without Patric Young in 2014-15 on October 28 2014`
+  returns 1–0, 101 PPG; Anthony Davis's own >=20-point finder returns his
+  26-point game. `How many Anthony Davis games with at least 20 points with
+  Patric Young in 2014-15 on October 28 2014` returns zero because Young is
+  explicitly DNP; adding Darius Miller preserves the two-player condition.
+  Exact-game association never implies tenure or injury. Unknown selected games
+  remain unavailable, and no global surname/primary-player index is broadened.
 - a player's stat threshold retains the existing game-finder default beside
   one or two absence conditions. Resolving a condition cannot turn requested
   game rows into a summary; explicit averages/summary/record/span requests keep

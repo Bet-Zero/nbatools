@@ -398,3 +398,169 @@ def test_resolved_absence_predicates_do_not_choose_output_grain(listed_pair, ari
     else:
         assert result.route == "player_game_summary"
         assert (sections["summary"][0]["games"], sections["summary"][0]["pts_avg"]) == (1, 30)
+
+
+@pytest.mark.parametrize("arity", [1, 2])
+@pytest.mark.parametrize("day_index", [0, 1])
+@pytest.mark.parametrize("subject", ["Lakers record", "LeBron James games with at least 1 point"])
+def test_source_only_presence_selects_known_played_or_explicit_zero(
+    listed_pair, arity, day_index, subject
+):
+    games = listed_pair[3]
+    names = NAME + (" and Alternate Newcomer" if arity == 2 else "")
+    day = games.game_date.iloc[day_index]
+    prefix = "How many " if subject.startswith("LeBron") else ""
+    query = f"{prefix}{subject} with {names} in {SEASON} on {day}"
+    result = execute_natural_query(query)
+    assert result.result_status == (
+        "no_result" if subject.startswith("Lakers") and not day_index else "ok"
+    ), result.metadata
+    assert result.metadata["with_player"] == names
+    sections = result.result.to_dict()["sections"]
+    if subject.startswith("Lakers"):
+        if day_index:
+            assert sections["summary"][0]["games"] == 1
+        else:
+            assert result.result.result_reason == "no_match"
+        actual = sections.get("game_log", [])
+    else:
+        assert result.route == "player_game_finder"
+        assert sections["count"][0]["count"] == day_index
+        actual = sections.get("finder", [])
+    assert [int(r["game_id"]) for r in actual] == (
+        [int(games.game_id.iloc[1])] if day_index else []
+    )
+
+
+@pytest.mark.parametrize(
+    "damage", ["unknown", "missing", "other_game", "wrong_date", "conflicting_appearance"]
+)
+def test_source_presence_never_turns_unqualified_coverage_into_zero(listed_root, damage):
+    root, target, rows, games = listed_root
+    if damage == "unknown":
+        rows.participation_state = "unknown"
+    elif damage == "missing":
+        rows = rows.iloc[1:]
+    elif damage == "other_game":
+        rows.game_id += 900
+    elif damage == "wrong_date":
+        rows.game_date = "2025-01-01"
+    else:
+        path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+        players = pd.read_csv(path)
+        other = (
+            players.loc[players.player_name.eq("LeBron James")]
+            .iloc[:1]
+            .assign(player_id=999001, player_name=NAME)
+        )
+        pd.concat([players, other]).to_csv(path, index=False)
+    rows.to_csv(target, index=False)
+    result = execute_natural_query(bounded(f"Lakers record with {NAME}", games))
+    assert result.result_status == "no_result", result.metadata
+
+
+def test_source_presence_pair_qualifies_unknown_before_false_sibling(listed_pair):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "participation_state"] = "unknown"
+    rows.to_csv(target, index=False)
+    for names in [
+        "Sample Prospect and Alternate Newcomer",
+        "Alternate Newcomer and Sample Prospect",
+    ]:
+        result = execute_natural_query(bounded(f"Lakers record with {names}", games))
+        assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("prefix", [True, False])
+def test_unindexed_presence_pair_cannot_drop_unresolved_second_name(listed_pair, prefix):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows = rows.loc[rows.player_name.eq("Ivo Quill")]
+    rows.to_csv(target, index=False)
+    condition = "with Ivo Quill and Ken Umber"
+    primary = "LeBron James games with at least 1 point"
+    query = f"{condition}, {primary}" if prefix else f"{primary} {condition}"
+    result = execute_natural_query(bounded(query, games))
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("state", ["played", "unknown"])
+def test_later_appearance_cannot_erase_exact_game_source_state(listed_root, state):
+    root, target, rows, games = listed_root
+    path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    later = (
+        players.loc[players.player_name.eq("LeBron James")]
+        .iloc[2:3]
+        .assign(player_id=999001, player_name=NAME)
+    )
+    assert not later.empty
+    pd.concat([players, later]).to_csv(path, index=False)
+    rows.loc[rows.game_id.eq(games.game_id.iloc[1]), "participation_state"] = state
+    rows.to_csv(target, index=False)
+    query = f"How many LeBron James games with {NAME} in {SEASON} on {games.game_date.iloc[1]}"
+    result = execute_natural_query(query)
+    assert result.result_status == ("ok" if state == "played" else "no_result"), result.metadata
+    if state == "played":
+        sections = result.result.to_dict()["sections"]
+        assert sections["count"][0]["count"] == 1
+        assert [int(r["game_id"]) for r in sections["finder"]] == [int(games.game_id.iloc[1])]
+
+
+def test_unknown_presence_after_stat_clause_is_not_dropped(listed_root):
+    query = bounded(
+        "How many LeBron James games with at least 1 point with Ivo Quill", listed_root[3]
+    )
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize(
+    "condition", ["with Ivo Quill with Sample Prospect", "with Sample Prospect with Ivo Quill"]
+)
+def test_resolved_presence_cannot_hide_extra_unknown_name(listed_root, condition):
+    query = bounded(f"How many LeBron James games {condition}", listed_root[3])
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("damage", ["team", "date"])
+def test_source_played_conflicting_exact_game_appearance_is_unavailable(listed_root, damage):
+    root, _, _, games = listed_root
+    path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    other = players.loc[
+        players.player_name.eq("LeBron James") & players.game_id.eq(games.game_id.iloc[1])
+    ].assign(player_id=999001, player_name=NAME)
+    assert len(other) == 1
+    if damage == "team":
+        other.team_id = 1610612738
+    else:
+        other.game_date = "2025-01-01"
+    pd.concat([players, other]).to_csv(path, index=False)
+    query = f"How many LeBron James games with {NAME} in {SEASON} on {games.game_date.iloc[1]}"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("damage", ["third_side", "opponent_wrong_date"])
+def test_later_appearance_cannot_turn_wrong_same_game_association_into_zero(listed_root, damage):
+    root, target, rows, games = listed_root
+    path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    later = (
+        players.loc[players.player_name.eq("LeBron James")]
+        .iloc[2:3]
+        .assign(player_id=999001, player_name=NAME)
+    )
+    pd.concat([players, later]).to_csv(path, index=False)
+    mask = rows.game_id.eq(games.game_id.iloc[1])
+    if damage == "third_side":
+        rows.loc[mask, "team_id"] = 1610612744
+    else:
+        rows.loc[mask, "team_id"] = games.opponent_team_id.iloc[1]
+        rows.loc[mask, "game_date"] = "2025-01-01"
+    rows.to_csv(target, index=False)
+    query = f"How many LeBron James games with {NAME} in {SEASON} on {games.game_date.iloc[1]}"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata

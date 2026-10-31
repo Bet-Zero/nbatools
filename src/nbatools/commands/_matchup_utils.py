@@ -940,8 +940,7 @@ def detect_with_player(
     ]
 
     for index, pattern in enumerate(presence_patterns):
-        m = re.search(pattern, cleaned_text)
-        if m:
+        for m in re.finditer(pattern, cleaned_text):
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
                 continue
@@ -1142,59 +1141,71 @@ def detect_unresolved_availability_player(
         raise ValueError(f"Unsupported availability mode: {mode}")
 
     for pattern in patterns:
-        m = re.search(pattern, text)
-        if not m:
-            continue
-        phrase = m.group(1).strip()
-        if (
-            mode == "with"
-            and re.search(r"\b(?:what|which)\s+record\b", text[: m.start()])
-            and re.search(r"\b(?:finish(?:ed)?|end(?:ed)?)\s*$", text[: m.start()])
-            and _tail_is_read_scope(text, m.start(1) - 1)
-        ):
-            # In "what record did X finish with in 2007-08", "with"
-            # refers back to the requested record. Only an entirely understood
-            # scope tail may follow; a person or unknown clause still blocks.
-            continue
-        if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
-            continue
-        stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
-        if (
-            stat_bound
-            # Only scope the parser already reads may follow the bound, so
-            # nothing ("and 2 days rest", "from Davis") is silently dropped.
-            and _tail_is_read_scope(text, stat_bound.end())
-            and not detect_player(text[stat_bound.end() :])
-            and not _names_conditional_player(text)
-        ):
-            # "record in games with 120 points": a stat bound, not a teammate.
-            # A player named later ("... with 15 threes and LeBron") or in a
-            # "when LeBron scores 30" clause still needs the availability
-            # reading, which this path cannot combine with the team bound.
-            continue
-        if (
-            mode == "with"
-            and re.match(r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase)
-            and (
-                re.search(r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text)
-                or (
-                    re.search(
-                        r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
-                        text,
-                    )
-                    and _superlative_names_a_stat(phrase, text)
+        for m in re.finditer(pattern, text):
+            phrase = m.group(1).strip()
+            if (
+                mode == "with"
+                and re.search(r"\b(?:what|which)\s+record\b", text[: m.start()])
+                and re.search(r"\b(?:finish(?:ed)?|end(?:ed)?)\s*$", text[: m.start()])
+                and _tail_is_read_scope(text, m.start(1) - 1)
+            ):
+                # In "what record did X finish with in 2007-08", "with"
+                # refers back to the requested record. Only an entirely understood
+                # scope tail may follow; a person or unknown clause still blocks.
+                continue
+            if mode == "with" and re.search(
+                r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase
+            ):
+                continue
+            stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
+            if (
+                stat_bound
+                and m.end(1) <= stat_bound.end()
+                and re.search(r"\b(?:with|w/)\s+", text[m.end() :])
+            ):
+                # Another explicit WITH follows this consumed stat clause.
+                # Inspect its name rather than returning the stat as unresolved.
+                continue
+            if (
+                stat_bound
+                # Only scope the parser already reads may follow the bound, so
+                # nothing ("and 2 days rest", "from Davis") is silently dropped.
+                and _tail_is_read_scope(text, stat_bound.end())
+                and not detect_player(text[stat_bound.end() :])
+                and not _names_conditional_player(text)
+            ):
+                # "record in games with 120 points": a stat bound, not a teammate.
+                # A player named later ("... with 15 threes and LeBron") or in a
+                # "when LeBron scores 30" clause still needs the availability
+                # reading, which this path cannot combine with the team bound.
+                continue
+            if (
+                mode == "with"
+                and re.match(
+                    r"(?:the\s+)?(?:most|fewest|least|highest|lowest|best|worst)\b", phrase
                 )
-            )
-        ):
-            # "season with the most wins / best record" ranks seasons, it
-            # names no player.
-            continue
-        if phrase and _joins_second_player(text, m):
-            return text[m.start(1) :].strip()
-        if phrase and _phrase_names_multiple_players(phrase):
-            return phrase
-        if phrase and not (resolve_name or detect_player)(phrase):
-            return phrase
+                and (
+                    re.search(
+                        r"\bseasons?\b.*\bwith\s+the\s+(?:most|fewest)\s+(?:wins|losses)\b", text
+                    )
+                    or (
+                        re.search(
+                            r"\bseasons?\s+with\s+the\s+(?:most|fewest|least|highest|lowest|best|worst)\b",
+                            text,
+                        )
+                        and _superlative_names_a_stat(phrase, text)
+                    )
+                )
+            ):
+                # "season with the most wins / best record" ranks seasons, it
+                # names no player.
+                continue
+            if phrase and _joins_second_player(text, m):
+                return text[m.start(1) :].strip()
+            if phrase and _phrase_names_multiple_players(phrase):
+                return phrase
+            if phrase and not (resolve_name or detect_player)(phrase):
+                return phrase
     return None
 
 
