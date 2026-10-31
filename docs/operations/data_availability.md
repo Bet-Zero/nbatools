@@ -60,6 +60,30 @@ initial live read-only scan. Expiring Actions artifacts are transport only.
 
 ## Precise missing-data request (Codex, in the cloud)
 
+For whole-game participation, inspect the requested team's observed final-game
+population before collecting more reports:
+
+```bash
+python -m tools.participation_coverage \
+  --generation availability-k08-retained-v1-20261031 \
+  --manifest-sha256 de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9 \
+  --season 2025-26 --team-id 1610612747 --player-id 2544 \
+  --output work/lebron-participation-coverage.json
+```
+
+The read-only report checks manifest-bound relevant bytes and applies the same
+runtime participation qualification to each catalog game. It separates positive
+play, explicit DNP, exact-game opposite-side association and unknown keys. It
+withholds a missed total while any key remains unknown; the report's denominator
+is the pinned observed catalog, not independent proof of a complete NBA season.
+`--game-ids` restricts a deliberately selected population. Missing keys are
+unresolved qualification keys: inspect their errors and repair contradictory
+existing evidence before requesting new sources. They imply neither DNP nor
+permission to acquire/publish data.
+The existing LeBron structured request is the retained17-game dependency after
+the three formerly staged reports were published. Qualified exact-game states
+across this population avoid assuming tenure from roster snapshots.
+
 Generate a request against the selected inventory, for example:
 
 ```bash
