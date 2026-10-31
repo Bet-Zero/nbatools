@@ -332,6 +332,8 @@ def test_source_only_inactive_name_preserves_subject_and_answers(tmp_path, monke
         "without Patric Young",
         "while Patric Young did not play",
         "when Patric Young was out",
+        "without Darius Miller and Patric Young",
+        "without Patric Young and Darius Miller",
     ]:
         result = execute_natural_query(f"Pelicans record {clause} {scope}")
         assert result.result_status == "ok", result.metadata
@@ -351,16 +353,24 @@ def test_source_only_inactive_name_preserves_subject_and_answers(tmp_path, monke
     from tools.raw_query_answer_qa import run_case
 
     # Actual API plus the existing answer/snapshot checker on the same stage.
-    query = f"Without Patric Young, Anthony Davis games with at least 20 points {scope}"
+    query = f"Without Darius Miller and Patric Young, Anthony Davis games with at least 20 points {scope}"
     response = TestClient(app).post("/query", json={"query": query})
     assert response.status_code == 200
     payload = response.json()
     assert payload["result_status"] == "ok", payload
+    assert payload["route"] == "player_game_finder", payload
     sections = payload["result"]["sections"]
-    actual = sections.get("finder", sections.get("game_log"))
+    actual = sections["finder"]
     assert [(int(r["game_id"]), r["player_name"], r["pts"]) for r in actual] == [
         (21400001, "Anthony Davis", 26)
     ]
+    scalar = execute_natural_query(
+        f"Anthony Davis games with at least 20 points without Patric Young {scope}"
+    )
+    assert scalar.route == "player_game_finder"
+    assert [
+        (int(r["game_id"]), r["pts"]) for r in scalar.result.to_dict()["sections"]["finder"]
+    ] == [(21400001, 26)]
     checked = run_case(
         dict(
             id="k08_source_only_young",

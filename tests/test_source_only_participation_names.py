@@ -95,10 +95,11 @@ def test_source_condition_never_replaces_primary_player(listed_root, query):
     query = bounded(query, games)
     parsed = parse_query(query)
     assert parsed["route_kwargs"]["player"] == "LeBron James"
+    assert parsed["route"] == "player_game_finder"
     assert parsed["route_kwargs"]["without_player"] == NAME
     result = execute_natural_query(query)
     assert result.result_status == "ok", result.metadata
-    actual = result.result.to_dict()["sections"]["game_log"]
+    actual = result.result.to_dict()["sections"]["finder"]
     expected = pd.read_csv(root / "data/raw/player_game_stats/2025-26_regular_season.csv")
     expected = expected.loc[
         expected.player_name.eq("LeBron James") & expected.game_id.eq(games.game_id.iloc[0])
@@ -194,3 +195,206 @@ def test_malformed_observations_fail_closed_before_execution(listed_root):
     rows[["player_id", "player_name"]].to_csv(target, index=False)
     result = execute_natural_query(bounded("Lakers record without Sample Prospect", games))
     assert result.result_status == "no_result", result.metadata
+
+
+@pytest.fixture
+def listed_pair(listed_root):
+    root, target, rows, games = listed_root
+    other = rows.copy().assign(player_id=999002, player_name="Alternate Newcomer")
+    pd.concat([rows, other]).to_csv(target, index=False)
+    return root, target, pd.concat([rows, other]), games
+
+
+@pytest.mark.parametrize(
+    "condition",
+    [
+        "without Sample Prospect and Alternate Newcomer",
+        "without Alternate Newcomer and Sample Prospect",
+        "with Sample Prospect and Alternate Newcomer both out",
+    ],
+)
+def test_two_source_only_conditions_answer_complete_pair(listed_pair, condition):
+    games = listed_pair[3]
+    query = bounded(f"Lakers record with at least 1 point {condition}", games)
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    sections = result.result.to_dict()["sections"]
+    assert [int(r["game_id"]) for r in sections["game_log"]] == [int(games.game_id.iloc[0])]
+    assert sections["summary"][0]["pts_avg"] == games.pts.iloc[0]
+    assert all(name in result.metadata["without_player"] for name in [NAME, "Alternate Newcomer"])
+
+
+def test_leading_source_only_pair_does_not_replace_primary(listed_pair):
+    query = bounded(
+        "Without Sample Prospect and Alternate Newcomer, LeBron James games with at least 1 point",
+        listed_pair[3],
+    )
+    parsed = parse_query(query)
+    assert parsed["route_kwargs"]["player"] == "LeBron James"
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    sections = result.result.to_dict()["sections"]
+    rows = sections.get("finder", sections.get("game_log"))
+    assert [(int(r["game_id"]), r["player_name"], r["pts"]) for r in rows] == [
+        (int(listed_pair[3].game_id.iloc[0]), "LeBron James", 30)
+    ]
+
+
+def test_shared_surname_fallback_cannot_collapse_two_source_names(listed_pair):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = "Second Prospect"
+    rows.to_csv(target, index=False)
+    result = execute_natural_query(
+        bounded("Lakers record without Sample Prospect and Second Prospect", games)
+    )
+    assert result.result_status == "ok", result.metadata
+    assert result.result.to_dict()["sections"]["summary"][0]["games"] == 1
+    assert result.metadata["without_player"] == "Sample Prospect and Second Prospect"
+
+
+@pytest.mark.parametrize(
+    "damage",
+    ["unknown_second", "missing_second", "global_conflict", "extra_source_condition", "medical"],
+)
+def test_source_pair_never_hides_missing_identity_state_or_extra_condition(
+    listed_pair, monkeypatch, damage
+):
+    _, target, rows, games = listed_pair
+    query = "Lakers record without Sample Prospect and Alternate Newcomer"
+    if damage == "unknown_second":
+        rows.loc[rows.player_name.eq("Alternate Newcomer"), "participation_state"] = "unknown"
+    elif damage == "missing_second":
+        rows = rows.loc[~rows.player_name.eq("Alternate Newcomer")]
+    elif damage == "global_conflict":
+        monkeypatch.setattr(
+            observations,
+            "player_ids_for_name",
+            lambda name: (
+                {"999003"}
+                if name == "alternate newcomer" or name == "Alternate Newcomer"
+                else set()
+            ),
+        )
+    elif damage == "extra_source_condition":
+        third = rows.iloc[:2].copy().assign(player_id=999004, player_name="Third Newcomer")
+        rows = pd.concat([rows, third])
+        query += " with Third Newcomer"
+    else:
+        query += " both injured"
+    rows.to_csv(target, index=False)
+    result = execute_natural_query(bounded(query, games))
+    assert result.result_status != "ok", result.metadata
+
+
+def test_leading_exact_pair_does_not_need_wrong_initial_primary_appearances(listed_pair):
+    root, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Curry"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = "Ken Curry"
+    rows.to_csv(target, index=False)
+    path = root / "data/raw/player_game_stats/2025-26_regular_season.csv"
+    players = pd.read_csv(path)
+    players.loc[~players.player_name.eq("Stephen Curry")].to_csv(path, index=False)
+    reset_data_source_cache()
+    query = bounded(
+        "Without Ivo Curry and Ken Curry, LeBron James games with at least 2 points", games
+    )
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["player"] == "LeBron James"
+    sections = result.result.to_dict()["sections"]
+    actual = sections.get("finder", sections.get("game_log"))
+    assert [(int(r["game_id"]), r["pts"]) for r in actual] == [(int(games.game_id.iloc[0]), 30)]
+
+
+@pytest.mark.parametrize("prefix", [False, True])
+@pytest.mark.parametrize("second", ["missing", "ambiguous", "extra"])
+def test_genuinely_unindexed_unread_pair_cannot_become_unfiltered_player_answer(
+    listed_pair, monkeypatch, prefix, second
+):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = "Ken Umber"
+    if second == "missing":
+        rows = rows.loc[~rows.player_name.eq("Ken Umber")]
+    elif second == "ambiguous":
+        rows = pd.concat(
+            [rows, rows.loc[rows.player_name.eq("Ken Umber")].assign(player_id=999003)]
+        )
+    else:
+        rows = pd.concat([rows, rows.iloc[:2].assign(player_id=999004, player_name="Third Fable")])
+    rows.to_csv(target, index=False)
+    condition = "without Ivo Quill and Ken Umber"
+    query = (
+        f"{condition}, LeBron James games with at least 2 points"
+        if prefix
+        else f"LeBron James games with at least 2 points {condition}"
+    )
+    if second == "extra":
+        query += " with Third Fable"
+    result = execute_natural_query(bounded(query, games))
+    assert result.result_status == "no_result", result.metadata
+    assert not result.result.to_dict()["sections"].get("finder")
+    assert not result.result.to_dict()["sections"].get("game_log")
+
+
+def test_genuinely_unknown_single_absence_is_not_an_unfiltered_player_summary(listed_root):
+    query = bounded("LeBron James stats without Ivo Quill", listed_root[3])
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize("separator", [", ", " , ", " ; "])
+def test_third_unindexed_comma_name_cannot_disappear_from_source_pair(listed_pair, separator):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = "Ken Umber"
+    rows.to_csv(target, index=False)
+    games = listed_pair[3]
+    result = execute_natural_query(
+        bounded(
+            f"LeBron James games with at least 2 points without Ivo Quill and Ken Umber{separator}Third Fable",
+            games,
+        )
+    )
+    assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize(
+    "second_name", ["J Umber", "J. Umber", "Ken Middle Umber", "Ken Middle Initial Umber"]
+)
+@pytest.mark.parametrize("known", [True, False])
+def test_complete_name_grammar_is_preserved_before_scalar_lookup(listed_pair, second_name, known):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = second_name
+    if not known:
+        rows = rows.loc[rows.player_name.eq("Ivo Quill")]
+    rows.to_csv(target, index=False)
+    query = bounded(
+        f"LeBron James games with at least 2 points without Ivo Quill and {second_name}", games
+    )
+    result = execute_natural_query(query)
+    assert result.result_status == ("ok" if known else "no_result"), result.metadata
+    if known:
+        assert result.metadata["without_player"] == f"Ivo Quill and {second_name}"
+        sections = result.result.to_dict()["sections"]
+        actual = sections.get("finder", sections.get("game_log"))
+        assert [(int(r["game_id"]), r["pts"]) for r in actual] == [(int(games.game_id.iloc[0]), 30)]
+
+
+@pytest.mark.parametrize("arity", [1, 2])
+@pytest.mark.parametrize("operation", ["games", "averages"])
+def test_resolved_absence_predicates_do_not_choose_output_grain(listed_pair, arity, operation):
+    condition = "without Sample Prospect" + (" and Alternate Newcomer" if arity == 2 else "")
+    query = bounded(f"LeBron James {operation} with at least 29 points {condition}", listed_pair[3])
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    sections = result.result.to_dict()["sections"]
+    if operation == "games":
+        assert result.route == "player_game_finder"
+        assert [(int(r["game_id"]), r["pts"]) for r in sections["finder"]] == [
+            (int(listed_pair[3].game_id.iloc[0]), 30)
+        ]
+    else:
+        assert result.route == "player_game_summary"
+        assert (sections["summary"][0]["games"], sections["summary"][0]["pts_avg"]) == (1, 30)

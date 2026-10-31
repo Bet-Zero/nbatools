@@ -554,7 +554,9 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
         left, right = phrase.split(sep, 1)
         left_player = detect_player(left.strip(" ."))
         right_player = detect_player(right.strip(" ."))
-        if left_player and right_player and left_player != right_player:
+        if left_player and right_player:
+            # Distinct full fragments can fall back to the same indexed
+            # surname. Keep the complete list for exact pair resolution.
             return True
         if bool(left_player) != bool(right_player):
             other = (right if left_player else left).strip()
@@ -572,10 +574,19 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
 
 def _joins_second_player(text: str, m: re.Match) -> bool:
     """'with LeBron and Davis': the name list goes on past the match."""
+    if m.start() == 0 and re.match(
+        r"\s*[,;]\s*(?:(?!(?:and|or|with|without)\b)[a-z][a-z.'\-]*\s+){1,6}"
+        r"(?:games?|stats?|averages?|summary|record)\b",
+        text[m.end() :],
+    ):
+        # A leading condition ends before the explicit primary question,
+        # "without A and B, LeBron games ...". A third comma-listed name has
+        # no such operation and must remain part of the requested condition.
+        return False
     nxt = re.match(
-        r"\s*(?:\band\b|&|[,;/])\s*([a-z][a-z'\-]+)(?:\s+([a-z][a-z'\-]+))?"
+        r"\s*(?:\band\b|&|[,;/])\s*([a-z][a-z.'\-]*)(?:\s+([a-z][a-z.'\-]*(?:\s+[a-z][a-z.'\-]*)*))?"
         # A name list ends the clause; "and maxey scores 30" is his own line.
-        rf"(?=\s*$|[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
+        rf"(?=\s*$|\s*[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
         r")\b)",
         text[m.end() :],
     )

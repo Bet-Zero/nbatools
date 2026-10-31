@@ -488,9 +488,12 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   requested seasons/type and rejects conflicting name/ID mappings. It does not
   extend the primary-player, surname or first-name indexes. The primary subject
   is read separately from the consumed condition; execution still requires the
-  appropriate state/date/side for every candidate game. Single-name absence
-  conditions use this bridge; source-only pairs and appearance-backed teammate
-  presence consumers retain their separate support limits.
+  appropriate state/date/side for every candidate game. Single-name and two-name
+  absence conditions use this bridge. Pair identity is read before deriving a
+  primary subject from the remaining text; exact listed names need no appearance
+  rows to be recognized. Both predicates still need game/date/side evidence over
+  every original candidate. Appearance-backed teammate-presence association and
+  dated membership retain their separate support limits.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
