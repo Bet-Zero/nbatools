@@ -156,6 +156,192 @@
           }
         }
       ]
+    },
+    "retained-k08-availability-v1": {
+      "publisher_sha": "105ebda9077cc84b6da0c83bf4a2b0288b0fc94f",
+      "script": "working/nba-tools-completion-program/publish-retained-k08-availability.py",
+      "script_sha256": "377d83c1d6f7bdb133fe6b4d664433ba5759405010e02743a1657a480303e97f",
+      "inventory": "working/nba-tools-completion-program/retained-k08-availability-inventory.json",
+      "inventory_sha256": "4b89b9d16af98d99f5d307d2f99ffca4826c4c08430c723c2ee02bebab2ba8a8",
+      "generation_id": "availability-k08-retained-v1-20261031",
+      "deployed_checks": [
+        {
+          "query": "Lakers record without LeBron James on October 21 2025",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 1,
+            "wins": 0,
+            "losses": 1,
+            "pts_avg": 109.0
+          }
+        },
+        {
+          "query": "Warriors record without Moses Moody on October 21 2025",
+          "summary": {
+            "team_name": "Golden State Warriors",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 119.0
+          }
+        },
+        {
+          "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 115.5,
+            "reb_avg": 49.0,
+            "ast_avg": 30.5
+          }
+        },
+        {
+          "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+          "summary": {
+            "team_name": "Boston Celtics",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 2,
+            "losses": 0,
+            "pts_avg": 118.5,
+            "reb_avg": 44.0,
+            "ast_avg": 30.0
+          }
+        },
+        {
+          "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+          "summary": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2023-24",
+            "season_end": "2023-24",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 1,
+            "losses": 1,
+            "pts_avg": 13.5,
+            "reb_avg": 6.5,
+            "ast_avg": 4.5
+          }
+        },
+        {
+          "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+          "summary": {
+            "player_name": "Jaylen Brown",
+            "season_start": "2025-26",
+            "season_end": "2025-26",
+            "season_type": "Regular Season",
+            "games": 2,
+            "wins": 2,
+            "losses": 0,
+            "pts_avg": 31.0,
+            "reb_avg": 8.0,
+            "ast_avg": 7.5
+          }
+        },
+        {
+          "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+          "summary": {
+            "team_name": "New Jersey Nets",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 97
+          }
+        },
+        {
+          "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+          "summary": {
+            "team_name": "Detroit Pistons",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 87
+          }
+        },
+        {
+          "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+          "summary": {
+            "team_name": "New Orleans Pelicans",
+            "games": 1,
+            "wins": 1,
+            "losses": 0,
+            "pts_avg": 101
+          }
+        },
+        {
+          "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+          "summary": {
+            "team_name": "Los Angeles Lakers",
+            "games": 3,
+            "wins": 2,
+            "losses": 1,
+            "pts_avg": 121
+          }
+        },
+        {
+          "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+          "expected_route": "game_finder",
+          "sections": {
+            "count": [
+              {
+                "count": 2
+              }
+            ],
+            "finder": [
+              {
+                "game_id": 22500122,
+                "game_date": "2025-10-27"
+              },
+              {
+                "game_id": 22500019,
+                "game_date": "2025-10-24"
+              }
+            ]
+          }
+        },
+        {
+          "query": "Without Darius Miller and Patric Young, Anthony Davis games with at least 20 points in 2014-15 from 2014-10-28 to 2014-10-28",
+          "expected_route": "player_game_finder",
+          "sections": {
+            "finder": [
+              {
+                "game_id": 21400001,
+                "player_name": "Anthony Davis",
+                "pts": 26
+              }
+            ]
+          }
+        },
+        {
+          "query": "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26",
+          "expected_route": "player_game_finder",
+          "sections": {
+            "finder": [
+              {
+                "game_id": 22500113,
+                "player_name": "Austin Reaves",
+                "pts": 51,
+                "reb": 11,
+                "ast": 9
+              },
+              {
+                "game_id": 22500122,
+                "player_name": "Austin Reaves",
+                "pts": 41,
+                "reb": 4,
+                "ast": 5
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 }
