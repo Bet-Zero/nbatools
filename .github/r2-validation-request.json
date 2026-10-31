@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "78c0029f21efeb7de91ee03c1934d3fd21698952",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_participation_coverage_real_data.py::test_current_lebron_population_and_exact_missing_requirement",
+    "tests/test_participation_coverage_real_data.py::test_deployed_absence_answers_on_qualified_population"
+  ],
+  "raw_qa_cases": []
+}
