@@ -11131,7 +11131,7 @@ def _missed_games(parsed: dict) -> dict | None:
         "limit": 100000,
     }
     if game_dates:
-        kwargs.update(game_dates=game_dates, start_date=game_dates[0], end_date=game_dates[-1])
+        kwargs.update(game_dates=game_dates, start_date=None, end_date=None)
     out = dict(parsed)
     out.update(
         route="game_finder",
@@ -11151,7 +11151,7 @@ def _missed_games(parsed: dict) -> dict | None:
     for key in ("season", "start_season", "end_season"):
         out[key] = kwargs[key]
     if game_dates:
-        out.update(game_dates=game_dates, start_date=game_dates[0], end_date=game_dates[-1])
+        out.update(game_dates=game_dates, start_date=None, end_date=None)
     out["confidence"] = compute_parse_confidence(out)
     out["alternates"] = generate_alternates(out)
     return out

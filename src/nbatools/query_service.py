@@ -347,6 +347,13 @@ def _threshold_filter_value(value: int | float, *, minimum: bool) -> str:
     return str(value)
 
 
+def _date_set_text(value: Any) -> str | None:
+    """Format list-shaped dates; invalid requests remain engine-rejected."""
+    if isinstance(value, list) and value and all(isinstance(day, str) for day in value):
+        return ", ".join(value)
+    return None
+
+
 def _build_applied_filters(
     source: dict[str, Any],
     *,
@@ -587,11 +594,9 @@ def _build_applied_filters(
                 "kind": "season",
             }
         )
-    if source.get("game_dates"):
-        applied_filters.append(
-            {"label": "Dates", "value": ", ".join(source["game_dates"]), "kind": "date"}
-        )
-    elif source.get("start_date") or source.get("end_date"):
+    if date_set := _date_set_text(source.get("game_dates")):
+        applied_filters.append({"label": "Dates", "value": date_set, "kind": "date"})
+    if source.get("start_date") or source.get("end_date"):
         date_value = " – ".join(filter(None, [source.get("start_date"), source.get("end_date")]))
         applied_filters.append({"label": "Date range", "value": date_value, "kind": "date"})
 
@@ -1312,9 +1317,9 @@ def _venue_and_dates(metadata: dict, parsed: dict | None = None) -> str:
     elif source.get("away_only") or metadata.get("away_only"):
         parts.append("on the road")
     start, end = metadata.get("start_date"), metadata.get("end_date")
-    if metadata.get("game_dates"):
-        parts.append("on " + ", ".join(metadata["game_dates"]))
-    elif start and end:
+    if date_set := _date_set_text(metadata.get("game_dates")):
+        parts.append("on " + date_set)
+    if start and end:
         parts.append(f"from {start} to {end}")
     elif start:
         parts.append(f"since {start}")

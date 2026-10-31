@@ -60,6 +60,21 @@ def test_disjoint_dates_do_not_require_or_include_intervening_unknown_game(tmp_p
             "value": ", ".join([dates[0], dates[2]]),
             "kind": "date",
         } in direct.metadata["applied_filters"]
+        intersected = execute_structured_query(
+            "game_finder",
+            team="LAL",
+            season="2025-26",
+            without_player="LeBron James",
+            game_dates=[dates[0], dates[2]],
+            start_date=dates[1],
+        )
+        assert intersected.result_status == "ok", intersected.metadata
+        assert [int(r["game_id"]) for r in intersected.result.to_dict()["sections"]["finder"]] == [
+            int(games.game_id.iloc[2])
+        ]
+        assert {"Dates", "Date range"} <= {
+            f["label"] for f in intersected.metadata["applied_filters"]
+        }
         unknown = execute_natural_query(
             f"how many games did LeBron miss on {dates[0]}, {dates[1]} and {dates[2]} in 2025-26"
         )
@@ -79,3 +94,14 @@ def test_structured_date_set_rejects_invalid_shape_and_dates(dates):
     frame = pd.DataFrame([dict(game_id=1, game_date="2025-10-24")])
     with pytest.raises(ValueError, match="game_dates"):
         _apply_filters(frame, game_dates=dates)
+
+
+@pytest.mark.parametrize("dates", [[True], [None], True, 42, [], "2025-10-24", ["2025-02-30"]])
+def test_public_structured_rejection_never_crashes_in_metadata(dates):
+    result = execute_structured_query("game_finder", team="LAL", season="2025-26", game_dates=dates)
+    assert result.result_status == "no_result", result.metadata
+    assert not any(
+        f["label"] == "Dates"
+        for f in result.metadata.get("applied_filters", [])
+        if not isinstance(dates, list) or not all(isinstance(day, str) for day in dates)
+    )
