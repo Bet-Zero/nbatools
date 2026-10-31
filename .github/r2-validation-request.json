@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "9d59ce20eff64f3b9074e209246c464a82d34e52",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_structured_participation_real_data.py::test_published_absence_clauses_preserve_subject_bound_and_pair"
+  ],
+  "raw_qa_cases": [
+    "k08_scalar_absence_single_polarity",
+    "k08_bounded_pair_gerund_absence"
+  ]
+}
