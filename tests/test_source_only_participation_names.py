@@ -342,11 +342,40 @@ def test_genuinely_unknown_single_absence_is_not_an_unfiltered_player_summary(li
     assert result.result_status == "no_result", result.metadata
 
 
-def test_third_unindexed_comma_name_cannot_disappear_from_source_pair(listed_pair):
+@pytest.mark.parametrize("separator", [", ", " , ", " ; "])
+def test_third_unindexed_comma_name_cannot_disappear_from_source_pair(listed_pair, separator):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = "Ken Umber"
+    rows.to_csv(target, index=False)
     games = listed_pair[3]
     result = execute_natural_query(
         bounded(
-            "LeBron James games without Sample Prospect and Alternate Newcomer, Third Fable", games
+            f"LeBron James games with at least 2 points without Ivo Quill and Ken Umber{separator}Third Fable",
+            games,
         )
     )
     assert result.result_status == "no_result", result.metadata
+
+
+@pytest.mark.parametrize(
+    "second_name", ["J Umber", "J. Umber", "Ken Middle Umber", "Ken Middle Initial Umber"]
+)
+@pytest.mark.parametrize("known", [True, False])
+def test_complete_name_grammar_is_preserved_before_scalar_lookup(listed_pair, second_name, known):
+    _, target, rows, games = listed_pair
+    rows.loc[rows.player_name.eq(NAME), "player_name"] = "Ivo Quill"
+    rows.loc[rows.player_name.eq("Alternate Newcomer"), "player_name"] = second_name
+    if not known:
+        rows = rows.loc[rows.player_name.eq("Ivo Quill")]
+    rows.to_csv(target, index=False)
+    query = bounded(
+        f"LeBron James games with at least 2 points without Ivo Quill and {second_name}", games
+    )
+    result = execute_natural_query(query)
+    assert result.result_status == ("ok" if known else "no_result"), result.metadata
+    if known:
+        assert result.metadata["without_player"] == f"Ivo Quill and {second_name}"
+        sections = result.result.to_dict()["sections"]
+        actual = sections.get("finder", sections.get("game_log"))
+        assert [(int(r["game_id"]), r["pts"]) for r in actual] == [(int(games.game_id.iloc[0]), 30)]

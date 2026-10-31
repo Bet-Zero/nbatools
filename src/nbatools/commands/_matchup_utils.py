@@ -584,9 +584,9 @@ def _joins_second_player(text: str, m: re.Match) -> bool:
         # no such operation and must remain part of the requested condition.
         return False
     nxt = re.match(
-        r"\s*(?:\band\b|&|[,;/])\s*([a-z][a-z'\-]+)(?:\s+([a-z][a-z'\-]+))?"
+        r"\s*(?:\band\b|&|[,;/])\s*([a-z][a-z.'\-]*)(?:\s+([a-z][a-z.'\-]*(?:\s+[a-z][a-z.'\-]*)*))?"
         # A name list ends the clause; "and maxey scores 30" is his own line.
-        rf"(?=\s*$|[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
+        rf"(?=\s*$|\s*[?.!,;:]|\s+(?:{STOP_WORDS}|this|since|vs|versus|against|available"
         r")\b)",
         text[m.end() :],
     )

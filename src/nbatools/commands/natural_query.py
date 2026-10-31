@@ -396,6 +396,7 @@ from nbatools.commands._teammate_resolution import (
     availability_pair,
     name_before_scope,
     played_matchup_pair,
+    requested_absence_pair,
     resolve_teammate,
     shares_side,
 )
@@ -3395,9 +3396,17 @@ def _build_parse_state(query: str) -> dict:
         with_player, q_without_presence = detect_with_player(
             presence_q, resolve_name=resolve_condition_name
         )
-        without_player, q_without_absence = detect_without_player(
-            presence_q, resolve_name=resolve_condition_name
-        )
+        raw_absence_pair = requested_absence_pair(presence_q)
+        if raw_absence_pair:
+            # A scalar match may recognize only A before AND. Preserve the
+            # complete raw request even if either name is unknown/unqualified.
+            without_player, q_without_absence = None, raw_absence_pair.mask_clause(presence_q)
+            if presence_q[raw_absence_pair.start :].startswith("with "):
+                with_player = None
+        else:
+            without_player, q_without_absence = detect_without_player(
+                presence_q, resolve_name=resolve_condition_name
+            )
         unresolved_with_player = (
             detect_unresolved_availability_player(
                 presence_q, mode="with", resolve_name=resolve_condition_name
@@ -3406,11 +3415,15 @@ def _build_parse_state(query: str) -> dict:
             else None
         )
         unresolved_without_player = (
-            detect_unresolved_availability_player(
-                presence_q, mode="without", resolve_name=resolve_condition_name
+            raw_absence_pair.players
+            if raw_absence_pair
+            else (
+                detect_unresolved_availability_player(
+                    presence_q, mode="without", resolve_name=resolve_condition_name
+                )
+                if without_player is None
+                else None
             )
-            if without_player is None
-            else None
         )
         if with_player and (not player or player.upper() == with_player.upper()):
             player_without_presence = detect_player_resolved(q_without_presence)

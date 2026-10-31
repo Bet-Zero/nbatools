@@ -128,7 +128,7 @@ def _same_side_rows(team, player, season, start_season, end_season, season_type)
 
 _PAIR = re.compile(
     r"\b(with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for|since|vs\.?"
-    r"|versus|against|at|on|from|during|when|while|with|without|w/o)\b|[?.!,;:]|$)"
+    r"|versus|against|at|on|from|during|when|while|with|without|w/o)\b|[?!,;:]|$)"
 )
 
 _PAIR_PARTICIPATION = re.compile(
@@ -146,6 +146,39 @@ class AvailabilityPair(NamedTuple):
     def mask_clause(self, text: str) -> str:
         """Preserve offsets while excluding the condition already consumed."""
         return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
+
+
+def requested_absence_pair(text: str) -> AvailabilityPair | None:
+    """Preserve a raw name-list condition BEFORE any scalar name resolution.
+
+    This reads scope only. Returned names are unresolved and must never be
+    passed to an execution consumer until availability_pair qualifies them.
+    Numeric/stat clauses and understood setting tails are not name lists.
+    """
+    from nbatools.commands._matchup_utils import _tail_is_read_scope
+    from nbatools.commands._parse_helpers import detect_stat
+
+    for match in _PAIR.finditer(text):
+        fragment = match.group(2).strip()
+        suffix = _PAIR_PARTICIPATION.search(fragment)
+        absent = match.group(1) != "with"
+        if suffix:
+            absent = suffix.group("state") not in ("playing", "played")
+            fragment = fragment[: suffix.start()]
+        parts = [part.strip(" .") for part in fragment.split(" and ")]
+        if (
+            absent
+            and len(parts) >= 2
+            and all(
+                part
+                and not re.search(r"\d", part)
+                and detect_stat(part) is None
+                and not _tail_is_read_scope(" " + part, 0)
+                for part in parts
+            )
+        ):
+            return AvailabilityPair("without", fragment, match.start(), match.end())
+    return None
 
 
 def played_matchup_pair(text: str) -> AvailabilityPair | None:
