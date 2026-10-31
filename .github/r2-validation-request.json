@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "4823874fc02742e44b1a5b5872d31d49b2827876",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_structured_participation_real_data.py::test_published_source_only_presence_count_is_verified_zero",
+    "tests/test_structured_participation_real_data.py::test_source_only_inactive_name_preserves_subject_and_answers",
+    "tests/test_qualified_played_pair_real_data.py::test_natural_played_pair_source_identity_sample_numbers_and_labels"
+  ],
+  "raw_qa_cases": [
+    "k08_source_only_presence_zero",
+    "k08_source_only_pair_presence_zero"
+  ]
+}
