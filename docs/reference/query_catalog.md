@@ -415,6 +415,10 @@ Common combinations:
   without Darius Miller and Patric Young together, and preserves Anthony Davis
   as the primary in a leading pair clause with his own points bound. Teammate
   presence association and dated membership remain separate limits.
+- a player's stat threshold retains the existing game-finder default beside
+  one or two absence conditions. Resolving a condition cannot turn requested
+  game rows into a summary; explicit averages/summary/record/span requests keep
+  their existing operation.
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - explicit-matchup two-player played conjunctions for team records: `Lakers record against Celtics with Jayson Tatum playing while Austin Reaves plays in 2023-24`; AND/shared-playing and comma forms preserve both predicates. Each player may be on the subject or opponent team, independently qualified by the same game's team/date identity. Every original candidate game needs qualified evidence for both players, including a genuine empty answer. A missing observation is unavailable, not proof of DNP or nonmembership. Player-owned stat/status clauses, mixed polarity and broader boolean compositions remain separate unfinished requirements.
 - missed-game counts accept separate complete dates joined by AND or commas:

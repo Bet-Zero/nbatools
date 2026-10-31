@@ -6527,7 +6527,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
-        or without_player
+        or (without_player and not player_threshold_finder_default(parsed)[0])
         or parsed.get("stat_context_only")
         or player_stat_context_summary_default(parsed)[0]
         or player_timeframe_summary_default(parsed)[0]

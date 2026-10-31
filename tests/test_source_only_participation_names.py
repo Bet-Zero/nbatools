@@ -95,10 +95,11 @@ def test_source_condition_never_replaces_primary_player(listed_root, query):
     query = bounded(query, games)
     parsed = parse_query(query)
     assert parsed["route_kwargs"]["player"] == "LeBron James"
+    assert parsed["route"] == "player_game_finder"
     assert parsed["route_kwargs"]["without_player"] == NAME
     result = execute_natural_query(query)
     assert result.result_status == "ok", result.metadata
-    actual = result.result.to_dict()["sections"]["game_log"]
+    actual = result.result.to_dict()["sections"]["finder"]
     expected = pd.read_csv(root / "data/raw/player_game_stats/2025-26_regular_season.csv")
     expected = expected.loc[
         expected.player_name.eq("LeBron James") & expected.game_id.eq(games.game_id.iloc[0])
@@ -379,3 +380,21 @@ def test_complete_name_grammar_is_preserved_before_scalar_lookup(listed_pair, se
         sections = result.result.to_dict()["sections"]
         actual = sections.get("finder", sections.get("game_log"))
         assert [(int(r["game_id"]), r["pts"]) for r in actual] == [(int(games.game_id.iloc[0]), 30)]
+
+
+@pytest.mark.parametrize("arity", [1, 2])
+@pytest.mark.parametrize("operation", ["games", "averages"])
+def test_resolved_absence_predicates_do_not_choose_output_grain(listed_pair, arity, operation):
+    condition = "without Sample Prospect" + (" and Alternate Newcomer" if arity == 2 else "")
+    query = bounded(f"LeBron James {operation} with at least 29 points {condition}", listed_pair[3])
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    sections = result.result.to_dict()["sections"]
+    if operation == "games":
+        assert result.route == "player_game_finder"
+        assert [(int(r["game_id"]), r["pts"]) for r in sections["finder"]] == [
+            (int(listed_pair[3].game_id.iloc[0]), 30)
+        ]
+    else:
+        assert result.route == "player_game_summary"
+        assert (sections["summary"][0]["games"], sections["summary"][0]["pts_avg"]) == (1, 30)
