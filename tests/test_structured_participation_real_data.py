@@ -458,3 +458,83 @@ def test_published_source_only_presence_count_is_verified_zero(names):
     assert [(int(r["game_id"]), r["pts"]) for r in positive_sections["finder"]] == [(21400001, 26)]
     unknown = execute_natural_query(f"How many Anthony Davis games with {names} in 2014-15")
     assert unknown.result_status == "no_result", unknown.metadata
+
+
+@pytest.mark.slow
+def test_deployed_source_only_presence_on_published_snapshot():
+    """Post-merge feature smoke only; no publication, acquisition or cold-start check."""
+    import os
+    import time
+    import urllib.request
+
+    from nbatools.commands._participation_observations import load_observations
+
+    generation = "availability-k08-retained-v1-20261031"
+    assert os.environ["NBATOOLS_DATA_GENERATION"] == generation
+    source = load_observations(["2014-15"], "Regular Season")
+    young = source.loc[source.game_id.eq(21400001) & source.player_id.eq(203942)].iloc[0]
+    assert (young.team_id, young.participation_state) == (1610612740, "did_not_play")
+    base = "https://nbatools.vercel.app"
+
+    def request(path, body=None):
+        data = json.dumps(body).encode() if body is not None else None
+        req = urllib.request.Request(
+            base + path,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "NBA-Tools-K08-feature-smoke",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=60) as response:
+            assert response.status == 200
+            return json.load(response)
+
+    before = request("/readiness")
+    assert before["ready"] is True and before["active_generation"] == generation
+    scope = "in 2014-15 on October 28 2014"
+    checks = []
+    queries = [
+        (
+            "Patric Young",
+            f"How many Anthony Davis games with at least 20 points with Patric Young {scope}",
+        ),
+        (
+            "Darius Miller and Patric Young",
+            f"With Darius Miller and Patric Young, how many Anthony Davis games with at least 20 points {scope}",
+        ),
+        (None, f"Anthony Davis games with at least 20 points without Patric Young {scope}"),
+    ]
+    for names, query in queries:
+        # Respect the unchanged public query quota; no client retries hide errors.
+        time.sleep(7)
+        payload = request("/query", {"query": query})
+        assert payload["result_status"] == "ok", payload
+        assert payload["route"] == "player_game_finder", payload
+        sections, metadata = payload["result"]["sections"], payload["result"]["metadata"]
+        assert metadata["player"] == "Anthony Davis"
+        if names:
+            assert sections["count"] == [{"count": 0}]
+            assert metadata["with_player"] == names
+        else:
+            assert [(int(r["game_id"]), r["pts"]) for r in sections["finder"]] == [(21400001, 26)]
+            assert metadata["without_player"] == "Patric Young"
+        checks.append(
+            dict(
+                query=query,
+                route=payload["route"],
+                sections=sections,
+                filters=metadata["applied_filters"],
+            )
+        )
+    after = request("/readiness")
+    assert after["ready"] is True and after["active_generation"] == generation
+    receipt = dict(
+        generation=generation, readiness_before=before, readiness_after=after, checks=checks
+    )
+    output = os.environ.get("NBATOOLS_ACQUISITION_OUTPUT")
+    if output:
+        target = Path(output) / "k08-source-presence-live.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(receipt, indent=2, default=str) + "\n")
+    print(json.dumps(receipt, default=str))
