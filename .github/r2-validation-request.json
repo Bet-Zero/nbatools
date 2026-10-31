@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "dc82042d347fd1fde501572953f8d266e7ed4e91",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_publication_recovery_real_data.py::test_diagnose_published_live_queries"
+  ],
+  "raw_qa_cases": []
+}
