@@ -1,0 +1,50 @@
+{
+  "backup_run_id": 41190106961,
+  "request_sha": "89fb25d2cc2528b14d314e9024a7adaea79eef4a",
+  "reviewed_parent": "f4207a903bbcc98e722f61cdb6a550d419a4ac6f",
+  "release_id": 429849188,
+  "release_url": "https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-41190106961",
+  "asset_sha256": {
+    "backup-receipt.json": "af82b665dad38f962366d42ab74552c27c287163198d9d4122f9939ad04696e4",
+    "restore-receipt.json": "91e4cd48b07e0c1d167a6d51d1bdef748f3e628012494a660565e491ce3bb015",
+    "freshness-receipt.json": "20ee9c7b911f865679f7c788cf8e380184cb5e3f2a0b25becdc40562695e996b",
+    "inventory.md": "b05e3aea23940042e1e7db792c0335377dadbaf4b9df6bda4e1b7d77e21a7018"
+  },
+  "backup": {
+    "schema_version": 1,
+    "generation_id": "availability-k08-retained-v1-20261031",
+    "manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+    "archive_sha256": "1889fcc9aaf704930caee81ea856c05cd82b87f6608c8c9cd58a3e3ada23c0e8",
+    "archive_bytes": 63805709,
+    "files": 724,
+    "data_bytes": 402948225,
+    "captured_at": "2026-10-31T09:50:31.300764+00:00",
+    "workflow_run_id": "41190106961",
+    "workflow_sha": "89fb25d2cc2528b14d314e9024a7adaea79eef4a",
+    "r2_writes": 0,
+    "production_pointer_unchanged": true
+  },
+  "restore": {
+    "generation_id": "availability-k08-retained-v1-20261031",
+    "files": 724,
+    "data_bytes": 402948225,
+    "manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+    "archive_sha256": "1889fcc9aaf704930caee81ea856c05cd82b87f6608c8c9cd58a3e3ada23c0e8",
+    "restored_at": "2026-10-31T09:51:25.713138+00:00",
+    "r2_credentials_used": false,
+    "production_writes": 0
+  },
+  "freshness": {
+    "state": "not_requested",
+    "candidate": null,
+    "production_writes": 0,
+    "reason": "Owner direction: laptop acquisition only; no cloud API investigation or refresh"
+  },
+  "inventory": {
+    "json_asset_id": 694991990,
+    "json_sha256": "4f3340d5f3db7fb930114d3de476d0fe19ce74756ffc23c36eee395257ff3fe8",
+    "json_size_bytes": 67627735,
+    "markdown_asset_id": 694991988,
+    "markdown_sha256": "b05e3aea23940042e1e7db792c0335377dadbaf4b9df6bda4e1b7d77e21a7018"
+  }
+}

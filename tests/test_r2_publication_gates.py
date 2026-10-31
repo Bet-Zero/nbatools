@@ -420,6 +420,7 @@ def test_postpublication_verifies_bytes_and_final_pointer(tmp_path, monkeypatch,
         "post",
         lambda *a, **k: SimpleNamespace(
             status_code=200,
+            headers={},
             json=lambda: {
                 "result_status": "ok",
                 "result": {"sections": {"summary": [{"games": 1}]}},
