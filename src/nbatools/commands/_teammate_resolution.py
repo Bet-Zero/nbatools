@@ -168,7 +168,7 @@ _PAIR_PARTICIPATION = re.compile(
 )
 
 
-class AvailabilityPair(NamedTuple):
+class AvailabilityClause(NamedTuple):
     mode: str
     players: str
     start: int
@@ -179,7 +179,40 @@ class AvailabilityPair(NamedTuple):
         return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
 
 
-def requested_availability_pair(text: str) -> AvailabilityPair | None:
+def requested_scalar_absence(text: str) -> AvailabilityClause | None:
+    """One explicit WITH-name-nonparticipation clause, before name resolution.
+
+    WITH introduces the condition; OUT/NOT PLAYING/DNP/SITTING supplies its
+    polarity. Preserve the whole span so presence readers cannot reinterpret it.
+    Medical causes, unspecified missingness and additional people stay unread.
+    """
+    name = r"((?:(?!\b(?:and|or|with|without|when|while)\b)[\w .'\-])+?)"
+    pattern = (
+        rf"\b(?:with|w/)\s+{name}\s+(?:(?:is|was|are|were)\s+)?"
+        r"(?:out|not\s+playing|did\s+not\s+play|dnp|sitting)\b"
+    )
+    matches = list(re.finditer(pattern, text))
+    if len(matches) != 1:
+        return None
+    match = matches[0]
+    fragment = match.group(1).strip()
+    if re.search(r"\d|\b(?:not|unless)\s*$", fragment) or re.search(
+        r"\b(?:not|unless)\s*$", text[: match.start()]
+    ):
+        return None
+    return AvailabilityClause("without", fragment, match.start(), match.end())
+
+
+def exact_condition_name(fragment: str, resolved: str) -> bool:
+    """A resolved identity must consume the name, not ignore unrelated words."""
+    from nbatools.commands._matchup_utils import _is_exact_player_reference_phrase
+
+    return _only_the_name(fragment, resolved) or _is_exact_player_reference_phrase(
+        fragment, resolved
+    )
+
+
+def requested_availability_pair(text: str) -> AvailabilityClause | None:
     """Preserve a raw name-list condition BEFORE any scalar name resolution.
 
     This reads scope only. Returned names are unresolved and must never be
@@ -194,7 +227,7 @@ def requested_availability_pair(text: str) -> AvailabilityPair | None:
         suffix = _PAIR_PARTICIPATION.search(fragment)
         absent = match.group(1) != "with"
         if suffix:
-            absent = suffix.group("state") not in ("playing", "played")
+            absent = absent or suffix.group("state") not in ("playing", "played")
             fragment = fragment[: suffix.start()]
         parts = [part.strip(" .") for part in fragment.split(" and ")]
         if len(parts) >= 2 and all(
@@ -204,13 +237,13 @@ def requested_availability_pair(text: str) -> AvailabilityPair | None:
             and not _tail_is_read_scope(" " + part, 0)
             for part in parts
         ):
-            return AvailabilityPair(
+            return AvailabilityClause(
                 "without" if absent else "with", fragment, match.start(), match.end()
             )
     return None
 
 
-def played_matchup_pair(text: str) -> AvailabilityPair | None:
+def played_matchup_pair(text: str) -> AvailabilityClause | None:
     """Read exactly two whole-game played predicates, preserving their full span.
 
     An explicit matchup consumer qualifies each player's own/opposing side and
@@ -257,7 +290,7 @@ def played_matchup_pair(text: str) -> AvailabilityPair | None:
             names.append(resolved)
         if len(names) == 2 and names[0] != names[1]:
             qualified.append(
-                AvailabilityPair("with", " and ".join(names), match.start(), match.end())
+                AvailabilityClause("with", " and ".join(names), match.start(), match.end())
             )
     # Overlapping readings must agree on the complete consumed predicate.
     return qualified[0] if len(set(qualified)) == 1 else None
@@ -283,7 +316,7 @@ def availability_pair(
     end_season: str | None,
     season_type: str,
     season_list: list[str] | None = None,
-) -> AvailabilityPair | None:
+) -> AvailabilityClause | None:
     """A qualified two-teammate condition and its complete source span."""
     from nbatools.commands._matchup_utils import (
         _joins_second_player,
@@ -310,9 +343,12 @@ def availability_pair(
     if suffix:
         state = suffix.group("state")
         suffix_mode = "with" if state in ("playing", "played") else "without"
-        if mode == "without" and suffix_mode == "with":
+        if mode == "without" and state == "played":
             return None
-        mode = suffix_mode
+        # "without A and B playing" keeps WITHOUT's negative polarity;
+        # PLAYING completes the participation clause, not a second condition.
+        if mode != "without":
+            mode = suffix_mode
         fragment = fragment[: suffix.start()]
     parts = [part.strip(" .") for part in fragment.split(" and ")]
     if len(parts) != 2:
@@ -368,4 +404,4 @@ def availability_pair(
         names.append(name)
     if names[0] == names[1]:
         return None
-    return AvailabilityPair(mode, " and ".join(names), m.start(), m.end())
+    return AvailabilityClause(mode, " and ".join(names), m.start(), m.end())

@@ -17370,3 +17370,44 @@ cases:
     - path: result.metadata.with_player
       equals: Darius Miller and Patric Young
     review_notes: Both players explicitly DNP on NOP in the existing qualified source; neither absence proves injury or membership in another game.
+
+  - id: k08_scalar_absence_single_polarity
+    query: Lakers record with LeBron James out from 2025-10-24 to 2025-10-27 in 2025-26
+    category: participation
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 121
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: The three already-published official reports explicitly list LeBron DNP. WITH introduces the absence condition and cannot also impose played. No new data or season-wide coverage is claimed.
+  - id: k08_bounded_pair_gerund_absence
+    query: Austin Reaves games with at least 40 points without LeBron and Luka playing from 2025-10-24 to 2025-10-27 in 2025-26
+    category: participation
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [finder]
+    hard_assertions:
+    - path: result.metadata.player
+      equals: Austin Reaves
+    - path: result.metadata.without_player
+      equals: LeBron James and Luka Doncic
+    - path: result.sections.finder.0.game_id
+      equals: 22500113
+    - path: result.sections.finder.0.pts
+      equals: 51
+    - path: result.sections.finder.1.game_id
+      equals: 22500122
+    - path: result.sections.finder.1.pts
+      equals: 41
+    review_notes: Existing independently checked PDF states and Reaves point rows select only October26/27. The primary-player bound and complete negative pair must survive duplicate interpretation guards.

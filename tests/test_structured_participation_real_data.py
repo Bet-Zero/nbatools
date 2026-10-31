@@ -538,3 +538,50 @@ def test_deployed_source_only_presence_on_published_snapshot():
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(json.dumps(receipt, indent=2, default=str) + "\n")
     print(json.dumps(receipt, default=str))
+
+
+def test_published_absence_clauses_preserve_subject_bound_and_pair():
+    """Reuse accepted original-row arithmetic, exercising the repaired interpreter."""
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from nbatools.commands._participation_observations import load_observations
+
+    observed = load_observations(["2025-26"], "Regular Season")
+    games = {22500019, 22500113, 22500122}
+    lebron = observed.loc[observed.game_id.isin(games) & observed.player_id.eq(2544)]
+    assert set(lebron.game_id) == games
+    assert (
+        lebron.team_id.eq(1610612747).all() and lebron.participation_state.eq("did_not_play").all()
+    )
+    scope = "from 2025-10-24 to 2025-10-27 in 2025-26"
+    for predicate in ["with LeBron James out", "with LeBron not playing", "with LeBron sitting"]:
+        response = TestClient(app).post(
+            "/query", json={"query": f"Lakers record {predicate} {scope}"}
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["result_status"] == "ok", payload
+        sections = payload["result"]["sections"]
+        assert {int(r["game_id"]) for r in sections["game_log"]} == games
+        row = sections["summary"][0]
+        assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (3, 2, 1, 121)
+        assert payload["result"]["metadata"]["without_player"] == "LeBron James"
+        assert payload["result"]["metadata"]["with_player"] is None
+    result = execute_natural_query(
+        f"Austin Reaves games with at least 40 points without LeBron and Luka playing {scope}"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert [
+        (int(r["game_id"]), r["pts"]) for r in result.result.to_dict()["sections"]["finder"]
+    ] == [(22500113, 51), (22500122, 41)]
+    source_only = execute_natural_query(
+        "Anthony Davis games with at least 20 points with Patric Young out on October 28 2014 in 2014-15"
+    )
+    assert source_only.result_status == "ok", source_only.metadata
+    assert [
+        (int(r["game_id"]), r["pts"]) for r in source_only.result.to_dict()["sections"]["finder"]
+    ] == [(21400001, 26)]
+    # Complete-season DNP still cannot be manufactured from the remaining gaps.
+    unknown = execute_natural_query("Lakers record with LeBron James out in 2025-26")
+    assert unknown.result_status != "ok"

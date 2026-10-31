@@ -155,6 +155,67 @@ def test_team_record_with_scope_after_the_name(sparse_root):
     assert (row["wins"], row["losses"]) == _team_record(bos)
 
 
+@pytest.mark.parametrize("subject", ["Lakers record", "LeBron James stats"])
+@pytest.mark.parametrize(
+    "condition",
+    ["with Davis out", "with Anthony Davis out", "with Davis not playing", "with Davis sitting"],
+)
+def test_scalar_absence_clause_has_one_polarity(sparse_root, subject, condition):
+    root, out = sparse_root
+    is_player = subject.startswith("LeBron")
+    rows = pd.read_csv(root / PLAYERS if is_player else root / TEAMS)
+    own = rows.player_name.eq("LeBron James") if is_player else rows.team_abbr.eq("LAL")
+    expected = rows.loc[own & rows.game_id.isin(out["Anthony Davis"])]
+    result = execute_natural_query(f"{subject} {condition} this season")
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["without_player"] == "Anthony Davis"
+    assert result.metadata["with_player"] is None
+    sections = result.result.to_dict()["sections"]
+    assert {int(row["game_id"]) for row in sections["game_log"]} == set(expected.game_id)
+    summary = sections["summary"][0]
+    assert (summary["games"], summary["wins"], summary["losses"]) == (
+        len(expected),
+        *_team_record(expected),
+    )
+    assert summary["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+
+
+@pytest.mark.parametrize(
+    "condition", ["without Davis and Reaves", "without Davis and Reaves playing"]
+)
+def test_pair_after_own_bound_is_not_read_as_extra_presence(sparse_root, condition):
+    root, out = sparse_root
+    rows = pd.read_csv(root / PLAYERS)
+    expected = rows.loc[
+        rows.player_name.eq("LeBron James")
+        & rows.pts.ge(20)
+        & rows.game_id.isin(out["Anthony Davis"] & out["Austin Reaves"])
+    ]
+    assert not expected.empty
+    result = execute_natural_query(f"LeBron James games with 20 points {condition}")
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["without_player"] == "Anthony Davis and Austin Reaves"
+    assert result.metadata["with_player"] is None
+    assert {
+        (int(row["game_id"]), row["pts"]) for row in result.result.to_dict()["sections"]["finder"]
+    } == set(zip(expected.game_id, expected.pts))
+
+
+@pytest.mark.parametrize(
+    "condition",
+    [
+        "with Unknown Davis out",
+        "with Davis out and Missing Player playing",
+        "with Davis injured",
+        "with Davis missing",
+        "with Davis out or Reaves out",
+        "without Davis and Reaves played",
+    ],
+)
+def test_consumed_absence_does_not_erase_unread_meaning(sparse_root, condition):
+    assert execute_natural_query(f"LeBron James stats {condition}").result_status != "ok"
+
+
 @pytest.mark.parametrize(
     ("query", "keep"),
     [
