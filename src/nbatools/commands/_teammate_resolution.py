@@ -222,7 +222,12 @@ def availability_pair(
     season_type: str,
 ) -> AvailabilityPair | None:
     """A qualified two-teammate condition and its complete source span."""
-    from nbatools.commands._matchup_utils import detect_player
+    from nbatools.commands._matchup_utils import (
+        _joins_second_player,
+        detect_player,
+        detect_unresolved_availability_player,
+    )
+    from nbatools.commands._participation_observations import resolve_observed_name
 
     if team is None and player is None:
         return None
@@ -249,14 +254,40 @@ def availability_pair(
     parts = [part.strip(" .") for part in fragment.split(" and ")]
     if len(parts) != 2:
         return None
-    if any(other is not m and detect_player(other.group(2)) for other in matches):
+    if _joins_second_player(text, m):
+        return None
+    if any(
+        other is not m
+        and (
+            detect_player(other.group(2))
+            or detect_unresolved_availability_player(
+                other.group(), mode="with" if other.group(1) == "with" else "without"
+            )
+        )
+        for other in matches
+    ):
         # A separate named presence/absence clause cannot be erased by the pair.
         return None
-    side = _same_side_rows(team, player, season, start_season, end_season, season_type)
-    if side is None:
-        return None
+    side = None
     names = []
     for part in parts:
+        if mode == "without":
+            from nbatools.commands._parse_helpers import default_season_for_context
+
+            seasons = (
+                resolve_seasons(season, start_season, end_season)
+                if season or (start_season and end_season)
+                else [default_season_for_context(season_type)]
+            )
+            observed = resolve_observed_name(part, seasons, season_type)
+            if observed.confidence != "none":
+                if not observed.is_confident:
+                    return None
+                # Exact listed identity is enough to read a condition, not to
+                # prove absence/tenure. The consumer still qualifies both
+                # predicates on every original candidate game and actual side.
+                names.append(observed.resolved)
+                continue
         name = detect_player(part) or resolve_teammate(
             part,
             team=team,
@@ -266,6 +297,10 @@ def availability_pair(
             end_season=end_season,
             season_type=season_type,
         )
+        if side is None:
+            side = _same_side_rows(team, player, season, start_season, end_season, season_type)
+        if side is None:
+            return None
         if not name or not _only_the_name(part, name) or select_player_rows(side, name).empty:
             return None
         names.append(name)
