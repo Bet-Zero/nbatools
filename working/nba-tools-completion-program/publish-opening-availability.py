@@ -41,6 +41,7 @@ def main(
     *,
     inventory_path: Path | None = None,
     default_generation: str = "availability-opening-631b259a-20261017",
+    append_only_paths: tuple[str, ...] = (),
 ) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -111,10 +112,31 @@ def main(
         raise ValueError(
             "Active generation changed: revalidate overlay against the new base before publication"
         )
+    append_bindings = inventory.get("append_only", {})
+    if set(append_bindings) != set(append_only_paths):
+        raise ValueError("Append policy differs from the fixed publisher entry point")
+    if append_only_paths:
+        sys.path.insert(0, str(code_root))
+        from tools.availability_overlay import verify_append
+
+        overlay_paths = {item["path"] for item in items}
+        if not set(append_only_paths) <= overlay_paths:
+            raise ValueError("Append policy has no matching overlay file")
+        for relative in append_only_paths:
+            verify_append(
+                relative,
+                (data / relative).read_bytes(),
+                (args.artifact_dir / relative).read_bytes(),
+                append_bindings[relative],
+            )
     (args.work_dir / "base-manifest.json").write_text(json.dumps(base.manifest, indent=2) + "\n")
     for item in items:
         source, destination = args.artifact_dir / item["path"], data / item["path"]
-        if destination.exists() and destination.read_bytes() != source.read_bytes():
+        if (
+            destination.exists()
+            and destination.read_bytes() != source.read_bytes()
+            and item["path"] not in append_only_paths
+        ):
             raise ValueError(
                 "Overlay would overwrite existing data; review a combined dataset first"
             )

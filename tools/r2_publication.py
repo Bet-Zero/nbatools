@@ -305,6 +305,8 @@ def prepare(name, publisher, work, *, expected=None):
         client=None, bucket_name=None, env=None, env_file=None
     )
     pointer, _, base_hash = verify_pointer_manifest(client, bucket, inventory["base_generation"])
+    if inventory.get("base_manifest_sha256") not in (None, base_hash):
+        raise ValueError("Base manifest differs from the reviewed package")
     subprocess.run(
         [
             sys.executable,
