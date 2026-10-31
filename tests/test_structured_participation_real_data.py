@@ -387,3 +387,66 @@ def test_source_only_inactive_name_preserves_subject_and_answers(tmp_path, monke
     wider = execute_natural_query("Pelicans record without Patric Young in 2014-15")
     assert wider.result_status == "no_result"
     reset_data_source_cache()
+
+
+@pytest.mark.parametrize("names", ["Patric Young", "Darius Miller and Patric Young"])
+def test_published_source_only_presence_count_is_verified_zero(names):
+    """Existing qualified 2014 report: both DNP; Davis played and scored 26."""
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from nbatools.commands._participation_observations import load_observations
+    from tools.raw_query_answer_qa import run_case
+
+    rows = load_observations(["2014-15"], "Regular Season")
+    listed = rows.loc[rows.game_id.eq(21400001)]
+    for pid, name in [(203121, "Darius Miller"), (203942, "Patric Young")]:
+        row = listed.loc[listed.player_id.eq(pid)].iloc[0]
+        assert (
+            row.player_name,
+            int(row.team_id),
+            str(row.game_date)[:10],
+            row.participation_state,
+        ) == (name, 1610612740, "2014-10-28", "did_not_play")
+    players = data_read_csv("data/raw/player_game_stats/2014-15_regular_season.csv")
+    assert not players.player_id.eq(203942).any()
+    davis = players.loc[players.game_id.eq(21400001) & players.player_id.eq(203076)].iloc[0]
+    assert (int(davis.team_id), davis.pts) == (1610612740, 26)
+    scope = "in 2014-15 on October 28 2014"
+    queries = [
+        f"How many Anthony Davis games with at least 20 points with {names} {scope}",
+        f"With {names}, how many Anthony Davis games with at least 20 points {scope}",
+    ]
+    for query in queries:
+        response = TestClient(app).post("/query", json={"query": query})
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["result_status"] == "ok", payload
+        assert payload["route"] == "player_game_finder"
+        assert payload["result"]["sections"]["count"] == [{"count": 0}]
+        assert payload["result"]["metadata"]["player"] == "Anthony Davis"
+        assert payload["result"]["metadata"]["with_player"] == names
+        checked = run_case(
+            dict(
+                id="k08_source_presence_zero",
+                query=query,
+                category="participation",
+                priority="p1",
+                expected_status="ok",
+                expected_route="player_game_finder",
+                hard_assertions=[dict(path="result.sections.count.0.count", equals=0)],
+            ),
+            top_rows=5,
+        )
+        assert checked["expectation_results"]["fail_count"] == 0, checked
+        assert names in str(checked["query_output_snapshot"])
+    # An actual nonempty counterpart prevents acceptance by always returning zero.
+    absence = execute_natural_query(
+        f"Anthony Davis games with at least 20 points without {names} {scope}"
+    )
+    assert absence.result_status == "ok", absence.metadata
+    assert [
+        (int(r["game_id"]), r["pts"]) for r in absence.result.to_dict()["sections"]["finder"]
+    ] == [(21400001, 26)]
+    unknown = execute_natural_query(f"How many Anthony Davis games with {names} in 2014-15")
+    assert unknown.result_status == "no_result", unknown.metadata

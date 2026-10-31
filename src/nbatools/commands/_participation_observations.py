@@ -126,6 +126,7 @@ def filter_played(
     season_type: str,
     *,
     opponent_context: bool = False,
+    allow_appearance_omission: bool = False,
 ) -> pd.DataFrame:
     """Select positive participation with qualified same-game side ownership."""
     return _filter_observed(
@@ -135,6 +136,7 @@ def filter_played(
         season_type,
         opponent_context=opponent_context,
         state="played",
+        allow_appearance_omission=allow_appearance_omission,
     )
 
 
@@ -146,6 +148,7 @@ def _filter_observed(
     *,
     opponent_context: bool,
     state: str,
+    allow_appearance_omission: bool = False,
 ) -> pd.DataFrame:
     """Require every named predicate to be known across the original sample."""
     if candidates.empty:
@@ -163,6 +166,7 @@ def _filter_observed(
         appearances = load_player_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
         appearances = pd.DataFrame()
+    appearance_ids = set()
     if {"game_id", "team_id", "player_id", "player_name", "game_date", "minutes"}.issubset(
         appearances.columns
     ):
@@ -170,6 +174,7 @@ def _filter_observed(
         for col in _KEYS:
             played[col] = _ids(played[col])
         played["participation_state"] = "played"
+        appearance_ids = set(played.player_id)
         if played.duplicated(["game_id", "player_id"]).any():
             raise ValueError("Duplicate positive participation observations")
         shared = observations.merge(played, on=["game_id", "player_id"], suffixes=("", "_played"))
@@ -229,6 +234,11 @@ def _filter_observed(
                     if pd.Timestamp(other.game_date).date() == date:
                         states.append(False)
                         continue
+                if allow_appearance_omission and player_id in appearance_ids:
+                    # Preserve existing appearance-based played filtering where
+                    # no same-game source fact exists. This is not DNP proof.
+                    states.append(False)
+                    continue
                 raise ValueError(f"Incomplete game-day participation coverage for {name}")
             row = lookup.loc[(game, team_id)]
             if pd.Timestamp(row.game_date).date() != date or row.participation_state == "unknown":

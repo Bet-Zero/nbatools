@@ -2634,15 +2634,26 @@ def filter_with_player(
         from nbatools.commands._participation_observations import filter_played
 
         return filter_played(df, with_player, seasons, season_type, opponent_context=True)
-    if " and " in with_player:
-        # "with LeBron James and Anthony Davis": the games both played.
-        for name in with_player.split(" and "):
-            df = filter_with_player(df, name, seasons, season_type, team, strict_team_match)
-        return df
     player_df = load_player_games_for_seasons(seasons, season_type)
     if "minutes" not in player_df.columns:
         raise ValueError("Played participation requires canonical minutes")
     played = player_df.loc[pd.to_numeric(player_df.minutes, errors="coerce").gt(0)]
+    from nbatools.commands._participation_observations import filter_played, load_observations
+    from nbatools.commands._player_identity import select_player_rows
+
+    observed = load_observations(seasons, season_type)
+    for name in with_player.split(" and "):
+        listed = select_player_rows(observed, name)
+        if not listed.empty:
+            # Merge exact-game source facts with positive appearances before
+            # testing any sibling predicate. Source unknown never means zero.
+            return filter_played(
+                df, with_player, seasons, season_type, allow_appearance_omission=True
+            )
+    if " and " in with_player:
+        for name in with_player.split(" and "):
+            df = filter_with_player(df, name, seasons, season_type, team, strict_team_match)
+        return df
     p_rows = player_game_ids(played, with_player, team=team)
 
     if p_rows.empty:

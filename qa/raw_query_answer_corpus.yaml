@@ -17339,3 +17339,34 @@ cases:
       N1 is a separate missing-source control, not a completed statistical feature.
       Actual rendering/freshness and declared performance are independently gated; actual
       Vercel cold proof remains unestablished.
+
+  - id: k08_source_only_presence_zero
+    query: How many Anthony Davis games with at least 20 points with Patric Young in 2014-15 on October 28 2014
+    category: participation
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [count]
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 0
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.with_player
+      equals: Patric Young
+    review_notes: Qualified retained 2014-10-28 report lists Young DNP on NOP; Davis played 26 points. Exact-game zero is distinct from unknown season-wide membership/coverage.
+  - id: k08_source_only_pair_presence_zero
+    query: With Darius Miller and Patric Young, how many Anthony Davis games with at least 20 points in 2014-15 on October 28 2014
+    category: participation
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [count]
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 0
+    - path: result.metadata.player
+      equals: Anthony Davis
+    - path: result.metadata.with_player
+      equals: Darius Miller and Patric Young
+    review_notes: Both players explicitly DNP on NOP in the existing qualified source; neither absence proves injury or membership in another game.
