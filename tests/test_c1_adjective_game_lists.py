@@ -277,7 +277,7 @@ def test_team_stat_bound_and_later_presence_both_select_the_sample(tmp_path, mon
             len(expected),
             int(expected.wl.eq("W").sum()),
             int(expected.wl.eq("L").sum()),
-            round(expected.pts.mean(), 1),
+            round(expected.pts.mean(), 3),
         )
         assert result.metadata["with_player"] == "LeBron James"
     finally:
