@@ -3490,6 +3490,7 @@ def _build_parse_state(query: str) -> dict:
                 start_season=start_season,
                 end_season=end_season,
                 season_type=season_type,
+                season_list=season_list,
             )
             if pair:
                 with_player = pair.players if pair.mode == "with" else None
@@ -4279,6 +4280,7 @@ def _route_parsed_query(parsed: dict) -> dict:
                 start_season=start_season,
                 end_season=end_season,
                 season_type=season_type,
+                season_list=parsed.get("season_list"),
             )
         )
     if generic_boundary_note and not dedicated_availability_boundary:
@@ -6352,6 +6354,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             start_season=start_season,
             end_season=end_season,
             season_type=season_type,
+            season_list=parsed.get("season_list"),
         )
         if pair:
             # "Lakers record with LeBron and Davis": the games both played.
@@ -6841,6 +6844,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             start_season=route_kwargs.get("start_season"),
             end_season=route_kwargs.get("end_season"),
             season_type=route_kwargs.get("season_type") or "Regular Season",
+            season_list=parsed.get("season_list"),
         )
         if pair:
             route_kwargs.update(with_player=None, without_player=None)

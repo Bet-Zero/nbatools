@@ -282,6 +282,7 @@ def availability_pair(
     start_season: str | None,
     end_season: str | None,
     season_type: str,
+    season_list: list[str] | None = None,
 ) -> AvailabilityPair | None:
     """A qualified two-teammate condition and its complete source span."""
     from nbatools.commands._matchup_utils import (
@@ -335,7 +336,7 @@ def availability_pair(
     for part in parts:
         from nbatools.commands._parse_helpers import default_season_for_context
 
-        seasons = (
+        seasons = season_list or (
             resolve_seasons(season, start_season, end_season)
             if season or (start_season and end_season)
             else [default_season_for_context(season_type)]
