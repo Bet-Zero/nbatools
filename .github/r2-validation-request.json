@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "0d79209682c3e305df820c78f34d5aafe4a6a913",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_structured_participation_real_data.py::test_deployed_source_only_presence_on_published_snapshot"
+  ],
+  "raw_qa_cases": []
+}
