@@ -4402,7 +4402,14 @@ def build_period_filter_note(
 
 def detect_on_off(text: str) -> dict | None:
     """Detect single-player on/off phrasing."""
-    from nbatools.commands._teammate_resolution import _only_the_name
+    from nbatools.commands._teammate_resolution import _only_the_name, requested_scalar_absence
+
+    # An explicit WITH-name-SITTING clause describes whole-game absence.
+    # Bare "Davis sitting" and explicit court/on-off requests keep their
+    # existing on-court meaning; no participation fact can answer those.
+    scalar_absence = requested_scalar_absence(text)
+    if scalar_absence and not re.search(r"\b(?:court|floor|on\s*(?:/|-|\s)\s*off)\b", text):
+        text = scalar_absence.mask_clause(text)
 
     player_fragment = r"[\w .&'\-]+?"
     court_states = list(re.finditer(r"\b(on|off)\s+(?:the\s+)?(?:court|floor)\b", text))

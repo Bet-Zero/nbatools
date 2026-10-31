@@ -394,9 +394,11 @@ from nbatools.commands._playoff_record_route_utils import (
 )
 from nbatools.commands._teammate_resolution import (
     availability_pair,
+    exact_condition_name,
     name_before_scope,
     played_matchup_pair,
     requested_availability_pair,
+    requested_scalar_absence,
     resolve_teammate,
     shares_side,
 )
@@ -3393,14 +3395,28 @@ def _build_parse_state(query: str) -> dict:
             # The WITH joining two comparison operands is not an availability
             # predicate. Only this fully consumed subject span is masked.
             presence_q = subject_q[:start] + " " * (end - start) + subject_q[end:]
-        with_player, q_without_presence = detect_with_player(
-            presence_q, resolve_name=resolve_condition_name
-        )
         raw_pair = requested_availability_pair(presence_q)
+        raw_scalar = requested_scalar_absence(presence_q) if not raw_pair else None
+        presence_remainder = raw_scalar.mask_clause(presence_q) if raw_scalar else presence_q
+        with_player, q_without_presence = detect_with_player(
+            presence_remainder, resolve_name=resolve_condition_name
+        )
         if raw_pair:
             # Preserve the complete requested list before scalar resolution.
             with_player = without_player = None
             q_without_presence = q_without_absence = raw_pair.mask_clause(presence_q)
+        elif raw_scalar:
+            q_without_absence = raw_scalar.mask_clause(presence_q)
+            # The condition cannot become the primary subject. Resolve bare
+            # surnames in the remaining subject's existing teammate context.
+            primary = detect_player_resolved(q_without_absence)
+            player = primary.resolved if primary.is_confident else None
+            candidate = resolve_condition_name(raw_scalar.players)
+            without_player = (
+                candidate
+                if candidate and exact_condition_name(raw_scalar.players, candidate)
+                else None
+            )
         else:
             without_player, q_without_absence = detect_without_player(
                 presence_q, resolve_name=resolve_condition_name
@@ -3410,7 +3426,7 @@ def _build_parse_state(query: str) -> dict:
             if raw_pair and raw_pair.mode == "with"
             else (
                 detect_unresolved_availability_player(
-                    q_without_presence if with_player else presence_q,
+                    q_without_presence if with_player else presence_remainder,
                     mode="with",
                     resolve_name=resolve_condition_name,
                 )
@@ -3419,6 +3435,8 @@ def _build_parse_state(query: str) -> dict:
         unresolved_without_player = (
             raw_pair.players
             if raw_pair and raw_pair.mode == "without"
+            else raw_scalar.players
+            if raw_scalar and without_player is None
             else (
                 detect_unresolved_availability_player(
                     presence_q, mode="without", resolve_name=resolve_condition_name
@@ -3427,6 +3445,17 @@ def _build_parse_state(query: str) -> dict:
                 else None
             )
         )
+        if raw_scalar:
+            # A complete scalar clause cannot erase a separate absence
+            # request. The current scalar consumer has no second slot; keep
+            # that requested name visible to the unresolved-clause guard.
+            extra_absence = detect_without_player(
+                presence_remainder, resolve_name=resolve_condition_name
+            )[0] or detect_unresolved_availability_player(
+                presence_remainder, mode="without", resolve_name=resolve_condition_name
+            )
+            if extra_absence:
+                unresolved_without_player = raw_scalar.players + " and " + extra_absence
         if with_player and (not player or player.upper() == with_player.upper()):
             player_without_presence = detect_player_resolved(q_without_presence)
             if player_without_presence.is_confident:
@@ -3438,7 +3467,8 @@ def _build_parse_state(query: str) -> dict:
         if observed_condition and (with_player or without_player):
             # Initial subject detection can see an unrelated indexed surname
             # inside a source-only condition. Re-read only the actual subject.
-            _, primary_q = detect_with_player(presence_q, resolve_name=resolve_condition_name)
+            primary_q = raw_scalar.mask_clause(presence_q) if raw_scalar else presence_q
+            _, primary_q = detect_with_player(primary_q, resolve_name=resolve_condition_name)
             _, primary_q = detect_without_player(primary_q, resolve_name=resolve_condition_name)
             primary = detect_player_resolved(primary_q)
             player = primary.resolved if primary.is_confident else None
@@ -3465,7 +3495,7 @@ def _build_parse_state(query: str) -> dict:
         trailing = re.search(
             r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last|since"
             r"|in|vs\.?|versus|against|at|on|from|during)\b)",
-            q,
+            (raw_pair or raw_scalar).mask_clause(q) if raw_pair or raw_scalar else q,
         )
         if trailing and not with_player and (team or player):
             # "LeBron games with 30 points and Davis": the bound, then the teammate.
@@ -6871,10 +6901,13 @@ def _route_parsed_query(parsed: dict) -> dict:
             route_kwargs["with_player"] = with_player
         else:
             route_kwargs["unsupported_filters"] = ["with_player"]
+    applied_clause = applied_pair or (
+        requested_scalar_absence(q) if route_kwargs.get("without_player") else None
+    )
     trailing = re.search(
         r"\bwith\s+\d[^,]*?\s+(?:and|with)\s+([a-z][a-z'\-]+)(?=\s*$|[?.!,;:]|\s+(?:this|last"
         r"|since|in|vs\.?|versus|against|at|on|from|during)\b)",
-        q,
+        applied_clause.mask_clause(q) if applied_clause else q,
     )
     if (
         route in ("player_game_summary", "player_game_finder")
@@ -6895,7 +6928,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         or route == "team_record"
         and (applied_pair or route_kwargs.get("with_player") or route_kwargs.get("without_player"))
     ) and names_other_player_availability(
-        applied_pair.mask_clause(q) if applied_pair else q,
+        applied_clause.mask_clause(q) if applied_clause else q,
         route_kwargs.get("player"),
         (route_kwargs.get("without_player"), route_kwargs.get("with_player")),
         also=(route_kwargs.get("opponent_player"),),
@@ -7180,7 +7213,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         )
     if not route_kwargs.get("unsupported_filters") and (
         boundary_note := _unsupported_boundary_note(
-            applied_pair.mask_clause(q) if applied_pair else q,
+            applied_clause.mask_clause(q) if applied_clause else q,
             route,
             route_kwargs,
             requested_stat=stat,
@@ -11321,8 +11354,16 @@ def _finalize_route(parsed: dict) -> dict:
         ]
         return out
     route = out.get("route")
+    condition_q = parsed["normalized_query"]
+    scalar_absence = requested_scalar_absence(condition_q)
     if any(
-        presence_names_player_condition(parsed["normalized_query"], name)
+        presence_names_player_condition(
+            condition_q,
+            name,
+            absence_span=(scalar_absence.start, scalar_absence.end)
+            if scalar_absence and name == kwargs.get("without_player")
+            else None,
+        )
         for name in (
             parsed.get("with_player"),
             parsed.get("without_player"),
