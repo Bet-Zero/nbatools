@@ -275,3 +275,70 @@ def test_structured_import_does_not_replace_existing_qualified_pdf(tmp_path):
             retrieved_at="2026-10-27T16:45:00+00:00",
         )
     assert target.read_bytes() == before
+
+
+def test_source_only_inactive_name_preserves_subject_and_answers(tmp_path, monkeypatch):
+    """Summary V2 lists Young; the qualified game has no Young appearance."""
+    root, rows = stage(tmp_path, "2014-15", 21400001)
+    young = rows.loc[rows.player_id.eq(203942)].iloc[0]
+    assert (young.player_name, young.team_id, young.participation_state) == (
+        "Patric Young",
+        1610612740,
+        "did_not_play",
+    )
+    players = pd.read_csv(root / "raw/player_game_stats/2014-15_regular_season.csv")
+    assert not players.player_id.eq(203942).any()
+    monkeypatch.setenv("DATA_SOURCE", "local")
+    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(tmp_path))
+    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+    reset_data_source_cache()
+    scope = "in 2014-15 from 2014-10-28 to 2014-10-28"
+    for clause in [
+        "without Patric Young",
+        "while Patric Young did not play",
+        "when Patric Young was out",
+    ]:
+        result = execute_natural_query(f"Pelicans record {clause} {scope}")
+        assert result.result_status == "ok", result.metadata
+        sections = result.result.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert (summary["games"], summary["wins"], summary["losses"], summary["pts_avg"]) == (
+            1,
+            1,
+            0,
+            101,
+        )
+        assert [int(r["game_id"]) for r in sections["game_log"]] == [21400001]
+        assert sections["game_log"][0]["opponent_pts"] == 84
+    from fastapi.testclient import TestClient
+
+    from nbatools.api import app
+    from tools.raw_query_answer_qa import run_case
+
+    # Actual API plus the existing answer/snapshot checker on the same stage.
+    query = f"Without Patric Young, Anthony Davis games with at least 20 points {scope}"
+    response = TestClient(app).post("/query", json={"query": query})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["result_status"] == "ok", payload
+    sections = payload["result"]["sections"]
+    actual = sections.get("finder", sections.get("game_log"))
+    assert [(int(r["game_id"]), r["player_name"], r["pts"]) for r in actual] == [
+        (21400001, "Anthony Davis", 26)
+    ]
+    checked = run_case(
+        dict(
+            id="k08_source_only_young",
+            query=query,
+            category="participation",
+            priority="p1",
+            expected_status="ok",
+        ),
+        top_rows=5,
+    )
+    assert checked["result_status"] == "ok", checked
+    assert checked["expectation_results"]["fail_count"] == 0, checked
+    assert "Patric Young" in str(checked["query_output_snapshot"])
+    wider = execute_natural_query("Pelicans record without Patric Young in 2014-15")
+    assert wider.result_status == "no_result"
+    reset_data_source_cache()

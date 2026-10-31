@@ -406,6 +406,13 @@ Common combinations:
 - opponent team filters
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
+- exact full names listed only in qualified participation observations can identify
+  a single absence condition, while the team/player being asked about remains
+  the primary subject. Retained unpublished 2014 staging supports `Pelicans record
+  without Patric Young in 2014-15 from 2014-10-28 to 2014-10-28` (1–0, 101 PPG)
+  and Anthony Davis's 26-point game under that condition. This adds no production
+  coverage or season-wide absence claim; source-only pairs and teammate-presence
+  association remain separate limits.
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - explicit-matchup two-player played conjunctions for team records: `Lakers record against Celtics with Jayson Tatum playing while Austin Reaves plays in 2023-24`; AND/shared-playing and comma forms preserve both predicates. Each player may be on the subject or opponent team, independently qualified by the same game's team/date identity. Every original candidate game needs qualified evidence for both players, including a genuine empty answer. A missing observation is unavailable, not proof of DNP or nonmembership. Player-owned stat/status clauses, mixed polarity and broader boolean compositions remain separate unfinished requirements.
 - explicit last-N played-pair team records distinguish original and qualifying samples: `Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony Davis plays in 2023-24` selects the original meeting first, then qualifies both players; `among` and `of` window forms are equivalent; singular `within their last game` / `among their last meeting` means one original meeting, as does the explicit `in their last 1 original game`. `in their last 1 qualifying game` qualifies both players before selecting the most recent matching meeting. This bounded slice requires one explicit season, a whole-game matchup and exactly two resolved played predicates. Opponent/venue/date context chooses the candidate games before either selection. Other consumers/compositions remain unfinished. Bare new separate-predicate last-N requests retain their containment; default native cooperative and legacy structured window behavior remain cohort-first.

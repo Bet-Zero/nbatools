@@ -3365,21 +3365,50 @@ def _build_parse_state(query: str) -> dict:
 
     # Detect game-absence only when the query is not an on/off-court request.
     if on_off_request is None:
+        from nbatools.commands._participation_observations import resolve_observed_name
+        from nbatools.commands._seasons import resolve_seasons
+
+        observed_condition = False
+        condition_names = {}
+
+        def resolve_condition_name(phrase):
+            nonlocal observed_condition
+            if phrase not in condition_names:
+                seasons = season_list or (
+                    resolve_seasons(season, start_season, end_season)
+                    if season or (start_season and end_season)
+                    else [default_season_for_context(season_type)]
+                )
+                condition_names[phrase] = resolve_observed_name(phrase, seasons, season_type)
+            observed = condition_names[phrase]
+            if observed.confidence != "none":
+                observed_condition = True
+                return observed.resolved if observed.is_confident else None
+            return detect_player(phrase)
+
         presence_q = subject_q
         if comparison_scope and not comparison_scope["unsupported"]:
             start, end = comparison_scope["subject_span"]
             # The WITH joining two comparison operands is not an availability
             # predicate. Only this fully consumed subject span is masked.
             presence_q = subject_q[:start] + " " * (end - start) + subject_q[end:]
-        with_player, q_without_presence = detect_with_player(presence_q)
-        without_player, q_without_absence = detect_without_player(presence_q)
+        with_player, q_without_presence = detect_with_player(
+            presence_q, resolve_name=resolve_condition_name
+        )
+        without_player, q_without_absence = detect_without_player(
+            presence_q, resolve_name=resolve_condition_name
+        )
         unresolved_with_player = (
-            detect_unresolved_availability_player(presence_q, mode="with")
+            detect_unresolved_availability_player(
+                presence_q, mode="with", resolve_name=resolve_condition_name
+            )
             if with_player is None
             else None
         )
         unresolved_without_player = (
-            detect_unresolved_availability_player(presence_q, mode="without")
+            detect_unresolved_availability_player(
+                presence_q, mode="without", resolve_name=resolve_condition_name
+            )
             if without_player is None
             else None
         )
@@ -3391,6 +3420,18 @@ def _build_parse_state(query: str) -> dict:
             player_without_absence = detect_player_resolved(q_without_absence)
             if player_without_absence.is_confident:
                 player = player_without_absence.resolved
+        if observed_condition and (with_player or without_player):
+            # Initial subject detection can see an unrelated indexed surname
+            # inside a source-only condition. Re-read only the actual subject.
+            _, primary_q = detect_with_player(presence_q, resolve_name=resolve_condition_name)
+            _, primary_q = detect_without_player(primary_q, resolve_name=resolve_condition_name)
+            primary = detect_player_resolved(primary_q)
+            player = primary.resolved if primary.is_confident else None
+            entity_ambiguity = (
+                dict(type="player", input=q, candidates=primary.candidates, source=primary.source)
+                if primary.is_ambiguous
+                else None
+            )
         if bool(unresolved_with_player) != bool(unresolved_without_player):
             # "Lakers record without Davis": the one Davis on the team.
             teammate = resolve_teammate(

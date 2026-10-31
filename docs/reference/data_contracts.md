@@ -482,6 +482,15 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   helpers. A season-wide query still needs known predicates across every candidate
   game. Same-game opposite-team association can disprove same-team absence;
   unlisted players and unrelated same-date games cannot establish nonmembership.
+- **Conditional identity lookup:** an exact full name in qualified listed-player
+  observations can resolve a whole-game participation condition even when that
+  player has no appearance rows (for example, a listed inactive). Lookup uses the
+  requested seasons/type and rejects conflicting name/ID mappings. It does not
+  extend the primary-player, surname or first-name indexes. The primary subject
+  is read separately from the consumed condition; execution still requires the
+  appropriate state/date/side for every candidate game. Single-name absence
+  conditions use this bridge; source-only pairs and appearance-backed teammate
+  presence consumers retain their separate support limits.
 - **States:** `played` requires positive game minutes,
   `did_not_play` requires an explicit upstream
   DNP/DND/Inactive/Not-With-Team report and zero or missing minutes, and
