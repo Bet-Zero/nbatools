@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "3e4da7b4059e7b39fe573f91fd99764d68045cd3",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_structured_participation_real_data.py::test_source_only_inactive_name_preserves_subject_and_answers",
+    "tests/test_structured_participation_real_data.py::test_targeted_pdf_fallback_and_date_bounded_missed_counts"
+  ],
+  "raw_qa_cases": []
+}
