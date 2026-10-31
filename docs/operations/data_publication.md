@@ -74,6 +74,33 @@ A receipt saying `publication_started_outcome_unknown` or
 and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
+## Already-published generation: read-only recovery
+
+Run41184300649 activated `availability-k08-retained-v1-20261031` successfully;
+its historical receipt is `published_verification_failed`, after all724objects
+and production readiness passed. This is **not** an instruction to publish again
+or roll back. Preserve that receipt and the previous generation.
+
+The focused13-query replay reproduced HTTP429 `rate_limited` at check11, the
+LeBron missed-count query for October24and27,2025, after ten correct answers.
+The public quota remains10queries/60seconds. The verifier honors a strict integer
+`Retry-After` of1..60 once per check, retaining every attempt and still requiring
+all registered numeric/route/identity/population assertions. Other HTTP failures
+and semantic contradictions remain failures. The original generic failure did
+not retain its HTTP response; the reproduction is identified separately.
+
+`tools.recover_k08_publication` is a fixed read-only recovery for that original
+run, successful protected write job and reviewed publication-artifact digest.
+It authenticates the original approval/package, preserves original identity,
+and records a separate recovery workflow identity. It shares only the read-only
+byte/pointer/readiness/API verifier; it cannot prepare, publish or roll back.
+Use its explicit cloud recovery test through the existing reviewed R2 validation
+request route. After verification passes, use the existing exact-generation
+cloud-backup request/retention/secret-free restore route. Preserve a durable
+recovery receipt alongside the original failed publication receipt. Success
+requires all13answers and backup/restore evidence; a diagnostic failure is never
+acceptance. No production writer credentials or new protected approval are needed.
+
 ## Publication startup failure before any jobs
 
 [Run41181464506](https://github.com/Bet-Zero/nbatools/actions/runs/41181464506)

@@ -1,0 +1,99 @@
+{
+  "original_publication_run": 41184300649,
+  "original_response_retained": false,
+  "historical_runtime_logs": "access_denied_403",
+  "focused_reproduction": {
+    "run_id": 41187789878,
+    "artifact_id": 13038120579,
+    "artifact_zip_sha256": "7b6fc35535984b4f026f7090105c428f21c018c0b35f62306cc9a46ce98ba490",
+    "summary": {
+      "candidate_sha": "dbc5b3f8be27bdda2a59904ab296b300918aadb9",
+      "generation": "availability-k08-retained-v1-20261031",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/test_publication_recovery_real_data.py::test_diagnose_published_live_queries"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 0,
+      "skipped": 0,
+      "failed": 1,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 1,
+      "conclusion": "failure",
+      "problems": [
+        "pytest did not succeed (exit=1)",
+        "Every selected required test must execute and pass",
+        "Required tests contain skips, failures, errors, or expected failures"
+      ]
+    },
+    "successful_checks": [
+      {
+        "index": 1,
+        "query": "Lakers record without LeBron James on October 21 2025",
+        "http_status": 200
+      },
+      {
+        "index": 2,
+        "query": "Warriors record without Moses Moody on October 21 2025",
+        "http_status": 200
+      },
+      {
+        "index": 3,
+        "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+        "http_status": 200
+      },
+      {
+        "index": 4,
+        "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+        "http_status": 200
+      },
+      {
+        "index": 5,
+        "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+        "http_status": 200
+      },
+      {
+        "index": 6,
+        "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+        "http_status": 200
+      },
+      {
+        "index": 7,
+        "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+        "http_status": 200
+      },
+      {
+        "index": 8,
+        "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+        "http_status": 200
+      },
+      {
+        "index": 9,
+        "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+        "http_status": 200
+      },
+      {
+        "index": 10,
+        "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+        "http_status": 200
+      }
+    ],
+    "failure": {
+      "index": 11,
+      "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+      "status": 429,
+      "headers": {
+        "Content-Type": "application/json",
+        "Retry-After": "47",
+        "X-Request-Id": "req_233d9f9ebfc04dcb8d15ebc319526a12",
+        "X-Vercel-Id": "cle1::iad1::767tl-1793438090365-84c1796280ab"
+      },
+      "body": "{\"ok\":false,\"error\":\"rate_limited\",\"detail\":\"Query request limit exceeded. Retry after the indicated delay.\",\"request_id\":\"req_233d9f9ebfc04dcb8d15ebc319526a12\"}"
+    }
+  },
+  "classification": "verification_client_exceeded_unchanged_10_query_per_60_second_admission_limit",
+  "production_writes": 0
+}

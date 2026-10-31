@@ -434,6 +434,68 @@ def verify(name, publisher, work, published_path):
     ):
         raise ValueError("Publication receipt does not bind this workflow/package")
     publication = publisher_modules(publisher)
+    return verify_published_snapshot(package, inventory, publication, work, receipt)
+
+
+def check_live_answers(package, receipt):
+    """Keep every check mandatory while honoring the public rate-limit contract."""
+    if not package["deployed_checks"]:
+        raise ValueError("Publication requires registered deployed checks")
+    answers = receipt["deployed_answers"] = []
+    attempts = receipt["deployed_query_attempts"] = []
+    for index, case in enumerate(package["deployed_checks"], 1):
+        for attempt in (1, 2):
+            record = dict(index=index, query=case["query"], attempt=attempt)
+            attempts.append(record)
+            try:
+                response = requests.post(
+                    "https://nbatools.vercel.app/query", json={"query": case["query"]}, timeout=30
+                )
+            except requests.RequestException as exc:
+                record["error_type"] = type(exc).__name__
+                raise ValueError(
+                    f"Deployed query {index} transport failed: {case['query']}"
+                ) from exc
+            record["status"] = response.status_code
+            record["headers"] = {
+                key: response.headers[key]
+                for key in ("Retry-After", "X-Request-Id", "X-Vercel-Id")
+                if key in response.headers
+            }
+            if response.status_code != 200:
+                record["body"] = response.text[:8192]
+                try:
+                    error = response.json()
+                except ValueError:
+                    error = {}
+                delay = response.headers.get("Retry-After", "")
+                if (
+                    attempt == 1
+                    and response.status_code == 429
+                    and isinstance(error, dict)
+                    and error.get("error") == "rate_limited"
+                    and re.fullmatch(r"[0-9]{1,2}", delay)
+                    and 1 <= int(delay) <= 60
+                ):
+                    record["retry_after_seconds"] = int(delay)
+                    time.sleep(int(delay))
+                    continue
+                raise ValueError(
+                    f"Deployed query {index} HTTP {response.status_code}: {case['query']}"
+                )
+            try:
+                answers.append(verify_answer(case, response.json()))
+            except Exception:
+                record["body"] = response.text[:8192]
+                raise
+            break
+    if len(answers) != len(package["deployed_checks"]):
+        raise ValueError("Every registered deployed answer must pass")
+    return answers
+
+
+def verify_published_snapshot(package, inventory, publication, work, receipt):
+    """Read-only core shared by same-run verification and authenticated recovery."""
     client, bucket = publication._resolve_r2_target(
         client=None, bucket_name=None, env=None, env_file=None
     )
@@ -461,6 +523,7 @@ def verify(name, publisher, work, published_path):
         after, _, _ = verify_pointer_manifest(client, bucket, package["generation_id"])
         if after != pointer:
             raise ValueError("Active pointer moved during verification")
+        receipt.update(verified_objects=checked, verified_pointer=pointer)
         base_url = "https://nbatools.vercel.app"
         readiness = None
         for attempt in range(10):
@@ -477,13 +540,8 @@ def verify(name, publisher, work, published_path):
                 time.sleep(15)
         if readiness is None:
             raise ValueError("Deployed readiness did not adopt the verified generation")
-        answers = []
-        for case in package["deployed_checks"]:
-            response = requests.post(base_url + "/query", json={"query": case["query"]}, timeout=30)
-            if response.status_code != 200:
-                raise ValueError("Deployed publication query did not succeed")
-            answer = response.json()
-            answers.append(verify_answer(case, answer))
+        receipt["deployed_readiness"] = readiness
+        answers = check_live_answers(package, receipt)
         final_pointer, _, final_hash = verify_pointer_manifest(
             client, bucket, package["generation_id"]
         )
