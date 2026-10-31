@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "a0e037409bbc289091ac58f12811648a5343c4ef",
+  "generation": "availability-opening-s4-v1-20261017",
+  "tests": [
+    "tests/test_structured_participation_real_data.py::test_source_only_inactive_name_preserves_subject_and_answers",
+    "tests/test_structured_participation_real_data.py::test_retained_structured_game_and_answers",
+    "tests/test_structured_participation_real_data.py::test_historical_pair_bound_and_same_game_other_team",
+    "tests/test_structured_participation_real_data.py::test_targeted_pdf_fallback_and_date_bounded_missed_counts"
+  ],
+  "raw_qa_cases": []
+}
