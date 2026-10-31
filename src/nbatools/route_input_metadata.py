@@ -371,7 +371,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         description="Return team game rows matching stat and context filters.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
         + ("stat", "min_value", "max_value", "conditions", "limit", "sort_by", "ascending")
-        + ("series_situation",),
+        + ("series_situation", "game_dates"),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "sort_by": SORT_BY_VALUES},
         examples=(
             {"team": "BOS", "season": "2025-26", "home_only": True, "wins_only": True},

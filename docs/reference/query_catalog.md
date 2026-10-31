@@ -415,6 +415,15 @@ Common combinations:
   association remain separate limits.
 - with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - explicit-matchup two-player played conjunctions for team records: `Lakers record against Celtics with Jayson Tatum playing while Austin Reaves plays in 2023-24`; AND/shared-playing and comma forms preserve both predicates. Each player may be on the subject or opponent team, independently qualified by the same game's team/date identity. Every original candidate game needs qualified evidence for both players, including a genuine empty answer. A missing observation is unavailable, not proof of DNP or nonmembership. Player-owned stat/status clauses, mixed polarity and broader boolean compositions remain separate unfinished requirements.
+- missed-game counts accept separate complete dates joined by AND or commas:
+  `how many games did LeBron miss on October 24 and October 27 in 2025-26`.
+  The candidate sample includes only the named dates before participation is
+  qualified; intervening days are excluded and duplicate dates count once.
+  The answer and Dates badge retain that set. The shared `game_finder` engine
+  also accepts structured `game_dates` as a nonempty list of ISO dates. All
+  selected games still need qualified participation; OR/compressed-date wording
+  and dated membership remain separate limits. The two-game LeBron example is
+  verified only on the retained unpublished PDF stage, not new production data.
 - explicit last-N played-pair team records distinguish original and qualifying samples: `Lakers record against Celtics within their last 1 game with Jayson Tatum playing while Anthony Davis plays in 2023-24` selects the original meeting first, then qualifies both players; `among` and `of` window forms are equivalent; singular `within their last game` / `among their last meeting` means one original meeting, as does the explicit `in their last 1 original game`. `in their last 1 qualifying game` qualifies both players before selecting the most recent matching meeting. This bounded slice requires one explicit season, a whole-game matchup and exactly two resolved played predicates. Opponent/venue/date context chooses the candidate games before either selection. Other consumers/compositions remain unfinished. Bare new separate-predicate last-N requests retain their containment; default native cooperative and legacy structured window behavior remain cohort-first.
 - home / away
 - wins / losses

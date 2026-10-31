@@ -117,10 +117,7 @@ def test_calendar_mask_keeps_unrelated_stat_clause():
 @pytest.mark.parametrize(
     "dates",
     [
-        "on 2025-10-24 and 2025-10-27",
-        "on October 24 and October 27",
         "on October 24 or October 27",
-        "on 2025-10-24, 2025-10-27",
         "from October 24 - October 27",
     ],
 )
@@ -137,3 +134,55 @@ def test_calendar_mask_does_not_own_and_without_between():
 
     assert "and" in strip_explicit_calendar_date_clauses("on October 24 and October 27")
     assert "and" not in strip_explicit_calendar_date_clauses("between October 24 and October 27")
+
+
+@pytest.mark.parametrize(
+    "dates",
+    [
+        "on 2025-10-24 and 2025-10-27",
+        "on October 24 and October 27",
+        "on 2025-10-24, 2025-10-27",
+        "on October 27, October 24 and October 27",
+        "on October 24 and October 27,",
+    ],
+)
+def test_explicit_date_set_is_read_once_and_not_as_continuous_range(dates):
+    query = f"how many games did LeBron miss {dates} in 2025-26"
+    parsed = parse_query(query)
+    assert parsed["route_kwargs"]["game_dates"] == ["2025-10-24", "2025-10-27"]
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    assert result.result.to_dict()["sections"]["count"][0]["count"] == 0
+    assert "on 2025-10-24, 2025-10-27" in result.metadata["answer_phrase"]
+    assert "from 2025-10-24 to" not in result.metadata["answer_phrase"]
+    badges = result.metadata["applied_filters"]
+    assert {"label": "Dates", "value": "2025-10-24, 2025-10-27", "kind": "date"} in badges
+    assert all(f["label"] != "Date range" for f in badges)
+
+
+@pytest.mark.parametrize(
+    "tail",
+    [
+        "before October",
+        "after November",
+        "in November",
+        "from January to March",
+        "since yesterday",
+        "and scored 30 points",
+        "vs winning teams",
+        "if LeBron plays",
+        "by season",
+    ],
+)
+def test_date_set_never_overwrites_another_calendar_or_stat_clause(tail):
+    query = f"how many games did LeBron miss on 2025-10-24 and 2025-10-27 {tail} in 2025-26"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata
+    assert "count" not in result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("suffix", ["foo", "stfoo", "-foo"])
+def test_partial_date_token_is_not_a_complete_date_set(suffix):
+    query = f"how many games did LeBron miss on 2025-10-24 and 2025-10-27{suffix} in 2025-26"
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result", result.metadata

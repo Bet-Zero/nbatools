@@ -11047,11 +11047,29 @@ def _missed_games(parsed: dict) -> dict | None:
         # "how many games did the Lakers win when LeBron missed": not his count.
         return None
     rest = shape.group("rest")
-    if parsed.get("start_date") or parsed.get("end_date"):
+    from nbatools.commands._date_utils import MONTH_NAME_TO_NUM, read_explicit_date_list
+    from nbatools.commands._matchup_utils import _tail_is_read_scope
+
+    date_list = read_explicit_date_list(rest, parsed.get("season"))
+    unread_date_scope = False
+    if date_list:
+        game_dates, rest = date_list
+        # This bounded reader owns the whole date set. Do not override another
+        # calendar window (including a month the general scope reader knows).
+        unread_date_scope = bool(
+            not _tail_is_read_scope(" " + rest.strip(" ,;:.?!\t\n"), 0)
+            or any(word.strip(".") in MONTH_NAME_TO_NUM for word in rest.split())
+            or parsed.get("opponent_quality")
+            or parsed.get("split_intent")
+            or re.search(r"\b(?:if|by)\b", rest)
+        )
+    else:
+        game_dates = None
+    if not date_list and (parsed.get("start_date") or parsed.get("end_date")):
         rest = strip_explicit_calendar_date_clauses(rest)
     rest = _MISSED_SEASON_WORDS.sub(" ", _SEASON_SPAN.sub(" ", rest))
-    if _MISSED_NOT_A_COUNT.search(rest):
-        if parsed.get("start_date") or parsed.get("end_date"):
+    if unread_date_scope or _MISSED_NOT_A_COUNT.search(rest):
+        if date_list or parsed.get("start_date") or parsed.get("end_date"):
             refused = _single_season_refusal(parsed)
             refused["route_kwargs"]["unsupported_filters"] = ["missed_games_extra_clause"]
             refused["notes"] = [
@@ -11112,6 +11130,8 @@ def _missed_games(parsed: dict) -> dict | None:
         "sort_by": "game_date",
         "limit": 100000,
     }
+    if game_dates:
+        kwargs.update(game_dates=game_dates, start_date=None, end_date=None)
     out = dict(parsed)
     out.update(
         route="game_finder",
@@ -11130,6 +11150,8 @@ def _missed_games(parsed: dict) -> dict | None:
     )
     for key in ("season", "start_season", "end_season"):
         out[key] = kwargs[key]
+    if game_dates:
+        out.update(game_dates=game_dates, start_date=None, end_date=None)
     out["confidence"] = compute_parse_confidence(out)
     out["alternates"] = generate_alternates(out)
     return out

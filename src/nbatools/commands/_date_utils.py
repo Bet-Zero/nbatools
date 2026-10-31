@@ -306,6 +306,28 @@ def strip_explicit_calendar_date_clauses(text: str) -> str:
     return re.sub(rf"\b{_date_token_pattern()}(?!\d)", " ", text, count=1, flags=re.IGNORECASE)
 
 
+def read_explicit_date_list(text: str, season: str | None) -> tuple[list[str], str] | None:
+    """Read an ON list of complete dates; keep every other clause for checking.
+
+    AND/comma lists name a set of days, never the intervening continuous range.
+    OR remains with the existing Boolean reader. A repeated day is counted once.
+    """
+    token = _date_token_pattern()
+    match = re.search(
+        rf"\bon\s+{token}(?:\s*(?:,\s*(?:and\s+)?|\band\s+)(?:on\s+)?{token})+(?![\w-])",
+        text,
+    )
+    if not match:
+        return None
+    dates = [
+        _parse_date_token(m.group(), season)
+        for m in re.finditer(rf"\b{token}(?!\d)", match.group())
+    ]
+    if any(day is None for day in dates):
+        return None
+    return sorted(set(dates)), text[: match.start()] + " " + text[match.end() :]
+
+
 def invalid_explicit_date(text: str) -> str | None:
     """Return a named calendar date that does not exist, such as "2025-02-30".
 
