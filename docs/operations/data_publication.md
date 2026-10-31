@@ -74,6 +74,26 @@ A receipt saying `publication_started_outcome_unknown` or
 and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
+## Publication startup failure before any jobs
+
+[Run41181464506](https://github.com/Bet-Zero/nbatools/actions/runs/41181464506)
+used the correct main/package/publish inputs but was rejected before creating any
+jobs. GitHub's annotation identified a nested token-permission conflict: the
+mixed validation workflow contains release-writing inventory/backup jobs, which
+cannot be nested under a read-only caller even when their job conditions are false.
+Preparation and verification therefore call the dedicated
+`r2-publication-readonly.yml`; its single moved job keeps the same R2 validation
+environment, named read-only secrets, immutable package checks, artifacts and
+shared lock. The backup call keeps its existing explicit GitHub release permission.
+The protected writer and owner approval remain separate and unchanged.
+
+After a startup repair merges and post-merge CI passes, use **Run workflow** for a
+fresh run on **main** with package **retained-k08-availability-v1**, mode **publish**.
+Do not rerun the failed run: reruns retain its original workflow revision. Review
+the newly prepared approval tuple, then approve the existing `r2-publication`
+environment. A zero-job startup failure publishes nothing; success still requires
+the protected write, live verification and durable publication receipt.
+
 ## First successful production publication — 2026-10-18
 
 **SETUP PROVEN END-TO-END.** The owner explicitly authorized the reviewed package `opening-s4-availability-v1` and separately approved the protected `r2-publication` deployment. [Production run 39102232398](https://github.com/Bet-Zero/nbatools/actions/runs/39102232398) completed **SUCCESS** across preparation, write, read-only verification and durable receipt. The canonical [GitHub Release](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-39102232398) holds `receipt.json` with `publication_state=published_and_verified`.

@@ -182,13 +182,14 @@ def test_every_job_declares_the_environment_holding_the_credential() -> None:
         )
 
 
-def test_exactly_one_workflow_reads_the_r2_credential() -> None:
-    """The data workflow alone consumes credentials; its caller may only forward.
+def test_only_the_partitioned_r2_workflows_read_the_credential() -> None:
+    """Validation and the extracted publication job consume; the caller forwards.
 
     An earlier duplicate data workflow accidentally expected *repository* secrets
     instead of the environment secrets. The production-publication caller now
     passes three named read-only secrets across workflow_call, but it must never
-    become a second job executing R2 data reads or pass those secrets elsewhere.
+    execute R2 data reads or pass those secrets elsewhere. The publication reader
+    is moved out of the validation graph so its callers can remain read-only.
     """
     readers = sorted(
         path.name
@@ -196,8 +197,9 @@ def test_exactly_one_workflow_reads_the_r2_credential() -> None:
         if any(secret in path.read_text(encoding="utf-8") for secret in SECRET_SOURCES.values())
     )
     caller_name = "r2-data-publication.yml"
-    assert readers == sorted([WORKFLOW.name, caller_name]), (
-        "only the single data workflow and its narrow caller may refer to R2 "
+    publication_reader = "r2-publication-readonly.yml"
+    assert readers == sorted([WORKFLOW.name, caller_name, publication_reader]), (
+        "only the two partitioned data readers and their narrow caller may refer to R2 "
         f"read-only secret names, found {readers}"
     )
 
@@ -205,12 +207,28 @@ def test_exactly_one_workflow_reads_the_r2_credential() -> None:
     expected = {name: "${{ secrets." + name + " }}" for name in SECRET_SOURCES.values()}
     for name, job in caller["jobs"].items():
         if name in {"prepare", "verify", "backup"}:
-            assert job["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+            filename = WORKFLOW.name if name == "backup" else publication_reader
+            assert job["uses"] == "./.github/workflows/" + filename
             assert job["secrets"] == expected
         else:
             assert not any(secret in str(job) for secret in SECRET_SOURCES.values()), (
                 f"unexpected R2 read-secret reference in publication job {name}"
             )
+    publication = yaml.load((WORKFLOWS / publication_reader).read_text(), Loader=yaml.BaseLoader)
+    assert set(publication["on"]) == {"workflow_call"}
+    assert set(publication["jobs"]) == {"publication-readonly"}
+    assert "publication-readonly" not in _jobs()
+    job = publication["jobs"]["publication-readonly"]
+    assert job["environment"] == ENVIRONMENT
+    assert job["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "R2_ACCOUNT_ID": "${{ secrets.R2_VALIDATION_ACCOUNT_ID }}",
+        "R2_ACCESS_KEY_ID": "${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}",
+        "R2_SECRET_ACCESS_KEY": "${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}",
+        "PACKAGE": "${{ inputs.publication_package }}",
+        "MODE": "${{ inputs.publication_mode }}",
+    }
+    assert publication["env"] == _workflow()["env"]
 
 
 # ── The credential check cannot leak ──────────────────────────────────
@@ -605,7 +623,10 @@ def test_gate_selection_only_uses_validated_outputs() -> None:
 
 def test_publication_reuse_has_separate_fixed_package_validation():
     """Publication compares an approved base/target; it does not use query preflight."""
-    job = _job("publication-readonly")
+    publication = yaml.load(
+        (WORKFLOWS / "r2-publication-readonly.yml").read_text(), Loader=yaml.BaseLoader
+    )
+    job = publication["jobs"]["publication-readonly"]
     assert job["environment"] == ENVIRONMENT
     assert "inputs.publication_package != ''" in job["if"]
     assert "github.ref == 'refs/heads/main'" in job["if"]

@@ -190,7 +190,7 @@ def test_publisher_workflow_is_manual_and_credentials_are_job_and_step_scoped():
 def test_reusable_publication_only_receives_named_readonly_r2_secrets():
     """Required environment secrets must be explicitly passed across workflow_call."""
     caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
-    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-real-data-validation.yml").read_text())
+    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-publication-readonly.yml").read_text())
     expected = {
         name: "${{ secrets." + name + " }}"
         for name in (
@@ -202,7 +202,10 @@ def test_reusable_publication_only_receives_named_readonly_r2_secrets():
     jobs = caller["jobs"]
     for name in ("prepare", "verify", "backup"):
         assert jobs[name]["secrets"] == expected
-        assert jobs[name]["uses"] == "./.github/workflows/r2-real-data-validation.yml"
+        filename = (
+            "r2-real-data-validation.yml" if name == "backup" else "r2-publication-readonly.yml"
+        )
+        assert jobs[name]["uses"] == "./.github/workflows/" + filename
     # No broad repository-secret inheritance or write-credential propagation.
     assert (
         "secrets: inherit" not in (ROOT / ".github/workflows/r2-data-publication.yml").read_text()
@@ -211,6 +214,48 @@ def test_reusable_publication_only_receives_named_readonly_r2_secrets():
     call = reusable.get("on", reusable.get(True))["workflow_call"]
     assert call["secrets"] == {name: {"required": True} for name in expected}
     assert reusable["jobs"]["publication-readonly"]["environment"] == "r2-validation"
+    assert set(reusable["jobs"]) == {"publication-readonly"}
+    assert set(reusable.get("on", reusable.get(True))) == {"workflow_call"}
+    # The moved job remains the sole definition, with the same shared lock.
+    validation = yaml.safe_load(
+        (ROOT / ".github/workflows/r2-real-data-validation.yml").read_text()
+    )
+    assert "publication-readonly" not in validation["jobs"]
+    assert reusable["concurrency"] == {
+        "group": "r2-real-data-validation",
+        "cancel-in-progress": False,
+    }
+
+
+def assert_nested_permissions_fit(granted, reusable):
+    """GitHub validates every nested job before evaluating any job's `if`."""
+    levels = {"none": 0, "read": 1, "write": 2}
+    for name, job in reusable["jobs"].items():
+        requested = job.get("permissions", reusable.get("permissions", {}))
+        for scope, level in requested.items():
+            assert levels[level] <= levels[granted.get(scope, "none")], (name, scope, level)
+
+
+@pytest.mark.parametrize("name", ["prepare", "verify", "backup"])
+def test_all_reusable_jobs_fit_the_callers_permission_ceiling(name):
+    caller = yaml.safe_load((ROOT / ".github/workflows/r2-data-publication.yml").read_text())
+    job = caller["jobs"][name]
+    granted = job.get("permissions", caller["permissions"])
+    reusable = yaml.safe_load((ROOT / job["uses"].removeprefix("./")).read_text())
+    assert_nested_permissions_fit(granted, reusable)
+    if name != "backup":
+        assert granted == {"contents": "read", "actions": "read"}
+        assert "R2_PUBLICATION" not in json.dumps(reusable)
+
+
+def test_even_a_skipped_release_job_invalidates_a_readonly_call():
+    reusable = yaml.safe_load((ROOT / ".github/workflows/r2-publication-readonly.yml").read_text())
+    reusable["jobs"]["unused-release"] = {
+        "if": False,
+        "permissions": {"contents": "write"},
+    }
+    with pytest.raises(AssertionError, match="unused-release"):
+        assert_nested_permissions_fit({"contents": "read", "actions": "read"}, reusable)
 
 
 def test_backup_only_follows_approved_published_and_verified_generation():

@@ -51,7 +51,7 @@ jobs:
 
   prepare:
     needs: resolve
-    uses: ./.github/workflows/r2-real-data-validation.yml
+    uses: ./.github/workflows/r2-publication-readonly.yml
     with:
       publication_package: ${{ inputs.package }}
       publication_mode: prepare
@@ -113,7 +113,7 @@ jobs:
   verify:
     needs: [resolve, publish]
     if: inputs.mode == 'publish' && needs.publish.result == 'success'
-    uses: ./.github/workflows/r2-real-data-validation.yml
+    uses: ./.github/workflows/r2-publication-readonly.yml
     with:
       publication_package: ${{ inputs.package }}
       publication_mode: verify
