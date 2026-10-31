@@ -33,15 +33,18 @@ full manifest SHA256 and storage projection before approving the dedicated
 that exact snapshot before invoking the existing immutable publisher. There is no
 arbitrary artifact, commit, shell-command or expected-base input.
 
-### Retained K08 package — preparation only
+### Retained K08 package — published and verified
 
 [PR551](https://github.com/Bet-Zero/nbatools/pull/551) passed complete read-only
 preparation in [run41178844607](https://github.com/Bet-Zero/nbatools/actions/runs/41178844607):
 724objects,402,948,225bytes, manifest `de83522f…`, all13APIanswers and
 byte-exact63,805,709byte backup/restore within the unchanged bounds. Compact
 [acceptance receipt](https://github.com/Bet-Zero/nbatools/pull/551#issuecomment-6540420485)
-retains the full approval tuple and answers. Production is unchanged;
-publication has not been authorized.
+retains the original preparation tuple and answers. The owner subsequently
+published this exact package in run41184300649. Read-only recovery41189755604
+verified all724published objects/readiness/13liveanswers; backup41190106961
+completed durable retention and separate secret-free restore. See the recovery
+section below; do not publish this generation again.
 
 `retained-k08-availability-v1` prepares six already-qualified games: the retained
 1997 Nets/Indiana, 2004 Detroit/Houston and 2014 New Orleans/Orlando structured
@@ -75,6 +78,20 @@ and retained prior generation before any recovery; no automatic pruning or
 rollback is authorized by this workflow.
 
 ## Already-published generation: read-only recovery
+
+**Completed:** [recovery41189755604](https://github.com/Bet-Zero/nbatools/actions/runs/41189755604)
+passed all724published object bytes, production readiness and all13registered live
+API answers. All requests returned HTTP200 on their first attempt with seven-second
+spacing. [Backup41190106961](https://github.com/Bet-Zero/nbatools/actions/runs/41190106961)
+then passed export, durable retention, separate secret-free restore and receipt
+retention. The [permanent backup release](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-41190106961)
+binds724files/402,948,225bytes and a63,805,709byte archive, SHA256
+`1889fcc9aaf704930caee81ea856c05cd82b87f6608c8c9cd58a3e3ada23c0e8`.
+The [PR553 recovery/backup receipts](https://github.com/Bet-Zero/nbatools/pull/553)
+preserve all answers, manifests, workflow identities and original protected
+approval. The historical failed receipt remains unchanged; recovered verification
+is complete. Normal K08 development can resume. No publication/pointer change,
+rollback, new credential or fresh NBA acquisition occurred during recovery.
 
 Run41184300649 activated `availability-k08-retained-v1-20261031` successfully;
 its historical receipt is `published_verification_failed`, after all724objects

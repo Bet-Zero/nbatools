@@ -1,0 +1,4622 @@
+{
+  "publication_state": "published_and_verified",
+  "original_failed_receipt": "https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-41184300649",
+  "recovery_run_id": 41189755604,
+  "recovery_request_sha": "e9c2bd7c31d97ace817a359f106c3c2cba6f74e6",
+  "reviewed_parent": "f4207a903bbcc98e722f61cdb6a550d419a4ac6f",
+  "evidence_artifact_id": 13038496925,
+  "evidence_zip_sha256": "9759616cb21ef4aa8338c0f47342b881baeb22d05a26cd7c404b5ed8e74755b9",
+  "required_summary": {
+    "candidate_sha": "e9c2bd7c31d97ace817a359f106c3c2cba6f74e6",
+    "generation": "availability-k08-retained-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_publication_recovery_real_data.py::test_recover_published_k08_generation"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "receipt": {
+    "artifact_id": 13034300567,
+    "artifact_zip_sha256": "8d5b7caa6403e6b02aa3ab6ddc89e3d0977bb978b0d8dab4c2851a71e9c7d875",
+    "base_generation": "availability-opening-s4-v1-20261017",
+    "base_manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+    "base_pointer": {
+      "generation_id": "availability-opening-s4-v1-20261017",
+      "manifest_sha256": "5497832bca4567734386e26367798c60fd6e3685a0c93cd561227a5e5d833f52",
+      "previous_generation_id": "queue-d-production-0574735-20260716",
+      "published_at": "2026-10-18T06:15:50+00:00",
+      "schema_version": 1
+    },
+    "budget": {
+      "conservative_projected_bytes": 1570563435,
+      "current_bytes": 1157615210,
+      "limit_bytes": 10000000000
+    },
+    "deployed_answers": [
+      {
+        "query": "Lakers record without LeBron James on October 21 2025",
+        "summary": {
+          "ast_avg": 23.0,
+          "blk_avg": 2.0,
+          "efg_pct_avg": 0.597,
+          "fg3m_avg": 8.0,
+          "games": 1,
+          "losses": 1,
+          "plus_minus_avg": -10.0,
+          "pts_avg": 109.0,
+          "reb_avg": 39.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Regular Season",
+          "stl_avg": 7.0,
+          "team_name": "Los Angeles Lakers",
+          "tov_avg": 19.0,
+          "ts_pct_avg": 0.61,
+          "win_pct": 0.0,
+          "wins": 0
+        }
+      },
+      {
+        "query": "Warriors record without Moses Moody on October 21 2025",
+        "summary": {
+          "ast_avg": 29.0,
+          "blk_avg": 4.0,
+          "efg_pct_avg": 0.596,
+          "fg3m_avg": 17.0,
+          "games": 1,
+          "losses": 0,
+          "plus_minus_avg": 10.0,
+          "pts_avg": 119.0,
+          "reb_avg": 40.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Regular Season",
+          "stl_avg": 10.0,
+          "team_name": "Golden State Warriors",
+          "tov_avg": 18.0,
+          "ts_pct_avg": 0.656,
+          "win_pct": 1.0,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+        "summary": {
+          "ast_avg": 30.5,
+          "blk_avg": 9.5,
+          "efg_pct_avg": 0.54,
+          "fg3m_avg": 14.5,
+          "games": 2,
+          "losses": 1,
+          "plus_minus_avg": 1.0,
+          "pts_avg": 115.5,
+          "reb_avg": 49.0,
+          "season_end": "2023-24",
+          "season_start": "2023-24",
+          "season_type": "Regular Season",
+          "stl_avg": 6.0,
+          "team_name": "Boston Celtics",
+          "tov_avg": 11.5,
+          "ts_pct_avg": 0.568,
+          "win_pct": 0.5,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+        "summary": {
+          "ast_avg": 30.0,
+          "blk_avg": 5.0,
+          "efg_pct_avg": 0.629,
+          "fg3m_avg": 19.0,
+          "games": 2,
+          "losses": 0,
+          "plus_minus_avg": 21.5,
+          "pts_avg": 118.5,
+          "reb_avg": 44.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Regular Season",
+          "stl_avg": 7.5,
+          "team_name": "Boston Celtics",
+          "tov_avg": 14.0,
+          "ts_pct_avg": 0.653,
+          "win_pct": 1.0,
+          "wins": 2
+        }
+      },
+      {
+        "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+        "summary": {
+          "ast_avg": 4.5,
+          "ast_pct_avg": 20.749,
+          "ast_sum": 9.0,
+          "blk_avg": 0.0,
+          "blk_sum": 0.0,
+          "dreb_avg": 3.5,
+          "dreb_sum": 7.0,
+          "efg_pct_avg": 0.397,
+          "fg3_pct_avg": 0.125,
+          "fg3a_avg": 4.0,
+          "fg3a_sum": 8.0,
+          "fg3m_avg": 0.5,
+          "fg3m_sum": 1.0,
+          "fg_pct_avg": 0.379,
+          "fga_avg": 14.5,
+          "fga_sum": 29.0,
+          "fgm_avg": 5.5,
+          "fgm_sum": 11.0,
+          "ft_pct_avg": 0.571,
+          "fta_avg": 3.5,
+          "fta_sum": 7.0,
+          "ftm_avg": 2.0,
+          "ftm_sum": 4.0,
+          "games": 2,
+          "losses": 1,
+          "minutes_avg": 30.0,
+          "minutes_sum": 60.0,
+          "oreb_avg": 3.0,
+          "oreb_sum": 6.0,
+          "pf_avg": 4.0,
+          "pf_sum": 8.0,
+          "player_name": "Jaylen Brown",
+          "plus_minus_avg": -5.5,
+          "plus_minus_sum": -11.0,
+          "pts_avg": 13.5,
+          "pts_sum": 27.0,
+          "reb_avg": 6.5,
+          "reb_pct_avg": 10.777,
+          "reb_sum": 13.0,
+          "season_end": "2023-24",
+          "season_start": "2023-24",
+          "season_type": "Regular Season",
+          "stl_avg": 2.0,
+          "stl_sum": 4.0,
+          "tov_avg": 2.5,
+          "tov_pct_avg": 13.484,
+          "tov_sum": 5.0,
+          "ts_pct_avg": 0.421,
+          "usg_pct_avg": 26.205,
+          "win_pct": 0.5,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+        "summary": {
+          "ast_avg": 7.5,
+          "ast_pct_avg": 34.907,
+          "ast_sum": 15.0,
+          "blk_avg": 0.0,
+          "blk_sum": 0.0,
+          "dreb_avg": 7.5,
+          "dreb_sum": 15.0,
+          "efg_pct_avg": 0.46,
+          "fg3_pct_avg": 0.375,
+          "fg3a_avg": 8.0,
+          "fg3a_sum": 16.0,
+          "fg3m_avg": 3.0,
+          "fg3m_sum": 6.0,
+          "fg_pct_avg": 0.4,
+          "fga_avg": 25.0,
+          "fga_sum": 50.0,
+          "fgm_avg": 10.0,
+          "fgm_sum": 20.0,
+          "ft_pct_avg": 0.762,
+          "fta_avg": 10.5,
+          "fta_sum": 21.0,
+          "ftm_avg": 8.0,
+          "ftm_sum": 16.0,
+          "games": 2,
+          "losses": 0,
+          "minutes_avg": 35.0,
+          "minutes_sum": 70.0,
+          "oreb_avg": 0.5,
+          "oreb_sum": 1.0,
+          "pf_avg": 3.0,
+          "pf_sum": 6.0,
+          "player_name": "Jaylen Brown",
+          "plus_minus_avg": 15.0,
+          "plus_minus_sum": 30.0,
+          "pts_avg": 31.0,
+          "pts_sum": 62.0,
+          "reb_avg": 8.0,
+          "reb_pct_avg": 13.489,
+          "reb_sum": 16.0,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Regular Season",
+          "stl_avg": 2.0,
+          "stl_sum": 4.0,
+          "tov_avg": 4.0,
+          "tov_pct_avg": 11.898,
+          "tov_sum": 8.0,
+          "ts_pct_avg": 0.523,
+          "usg_pct_avg": 43.829,
+          "win_pct": 1.0,
+          "wins": 2
+        }
+      },
+      {
+        "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+        "summary": {
+          "ast_avg": 14.0,
+          "blk_avg": 2.0,
+          "efg_pct_avg": 0.354,
+          "fg3m_avg": 0.0,
+          "games": 1,
+          "losses": 0,
+          "plus_minus_avg": 2.0,
+          "pts_avg": 97.0,
+          "reb_avg": 51.0,
+          "season_end": "1997-98",
+          "season_start": "1997-98",
+          "season_type": "Regular Season",
+          "stl_avg": 11.0,
+          "team_name": "New Jersey Nets",
+          "tov_avg": 7.0,
+          "ts_pct_avg": 0.429,
+          "win_pct": 1.0,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+        "summary": {
+          "ast_avg": 20.0,
+          "blk_avg": 5.0,
+          "efg_pct_avg": 0.486,
+          "fg3m_avg": 6.0,
+          "games": 1,
+          "losses": 0,
+          "plus_minus_avg": 8.0,
+          "pts_avg": 87.0,
+          "reb_avg": 42.0,
+          "season_end": "2004-05",
+          "season_start": "2004-05",
+          "season_type": "Regular Season",
+          "stl_avg": 9.0,
+          "team_name": "Detroit Pistons",
+          "tov_avg": 12.0,
+          "ts_pct_avg": 0.524,
+          "win_pct": 1.0,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+        "summary": {
+          "ast_avg": 20.0,
+          "blk_avg": 17.0,
+          "efg_pct_avg": 0.426,
+          "fg3m_avg": 4.0,
+          "games": 1,
+          "losses": 0,
+          "plus_minus_avg": 17.0,
+          "pts_avg": 101.0,
+          "reb_avg": 62.0,
+          "season_end": "2014-15",
+          "season_start": "2014-15",
+          "season_type": "Regular Season",
+          "stl_avg": 10.0,
+          "team_name": "New Orleans Pelicans",
+          "tov_avg": 9.0,
+          "ts_pct_avg": 0.441,
+          "win_pct": 1.0,
+          "wins": 1
+        }
+      },
+      {
+        "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+        "summary": {
+          "ast_avg": 25.0,
+          "blk_avg": 3.667,
+          "efg_pct_avg": 0.568,
+          "fg3m_avg": 9.0,
+          "games": 3,
+          "losses": 1,
+          "plus_minus_avg": 3.667,
+          "pts_avg": 121.0,
+          "reb_avg": 42.333,
+          "season_end": "2025-26",
+          "season_start": "2025-26",
+          "season_type": "Regular Season",
+          "stl_avg": 8.667,
+          "team_name": "Los Angeles Lakers",
+          "tov_avg": 16.667,
+          "ts_pct_avg": 0.631,
+          "win_pct": 0.667,
+          "wins": 2
+        }
+      },
+      {
+        "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+        "sections": {
+          "count": [
+            {
+              "count": 2
+            }
+          ],
+          "finder": [
+            {
+              "ast": 23,
+              "blk": 5,
+              "dreb": 30,
+              "efg_pct": 0.5058139534883721,
+              "fg3_pct": 0.259,
+              "fg3a": 27,
+              "fg3m": 7,
+              "fg_pct": 0.465,
+              "fga": 86,
+              "fgm": 40,
+              "ft_pct": 0.808,
+              "fta": 26,
+              "ftm": 21,
+              "game_date": "2025-10-27 00:00:00",
+              "game_id": 22500122,
+              "is_away": 0,
+              "is_home": 1,
+              "opponent_team_abbr": "POR",
+              "opponent_team_name": "Portland Trail Blazers",
+              "oreb": 12,
+              "plus_minus": -14,
+              "pts": 108,
+              "rank": 1,
+              "reb": 42,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "stl": 11,
+              "team_abbr": "LAL",
+              "team_name": "Los Angeles Lakers",
+              "tov": 23,
+              "ts_pct": 0.5541871921182266,
+              "wl": "L"
+            },
+            {
+              "ast": 26,
+              "blk": 3,
+              "dreb": 31,
+              "efg_pct": 0.6710526315789473,
+              "fg3_pct": 0.414,
+              "fg3a": 29,
+              "fg3m": 12,
+              "fg_pct": 0.592,
+              "fga": 76,
+              "fgm": 45,
+              "ft_pct": 0.813,
+              "fta": 32,
+              "ftm": 26,
+              "game_date": "2025-10-24 00:00:00",
+              "game_id": 22500019,
+              "is_away": 0,
+              "is_home": 1,
+              "opponent_team_abbr": "MIN",
+              "opponent_team_name": "Minnesota Timberwolves",
+              "oreb": 7,
+              "plus_minus": 18,
+              "pts": 128,
+              "rank": 2,
+              "reb": 38,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "stl": 6,
+              "team_abbr": "LAL",
+              "team_name": "Los Angeles Lakers",
+              "tov": 10,
+              "ts_pct": 0.7104795737122558,
+              "wl": "W"
+            }
+          ]
+        }
+      },
+      {
+        "query": "Without Darius Miller and Patric Young, Anthony Davis games with at least 20 points in 2014-15 from 2014-10-28 to 2014-10-28",
+        "sections": {
+          "finder": [
+            {
+              "ast": 2,
+              "ast_pct": 0.109,
+              "blk": 9,
+              "efg_pct": 0.45454545454545453,
+              "fg3_pct": null,
+              "fg3a": 0,
+              "fg3m": 0,
+              "fg_pct": 0.455,
+              "fga": 22,
+              "fgm": 10,
+              "ft_pct": 0.667,
+              "fta": 9,
+              "ftm": 6,
+              "game_date": "2014-10-28 00:00:00",
+              "game_id": 21400001,
+              "is_away": 0,
+              "is_home": 1,
+              "minutes": 36,
+              "opponent_team_abbr": "ORL",
+              "opponent_team_name": "Orlando Magic",
+              "player_id": 203076,
+              "player_name": "Anthony Davis",
+              "plus_minus": 19,
+              "pts": 26,
+              "rank": 1,
+              "reb": 17,
+              "reb_pct": 0.144,
+              "season": "2014-15",
+              "season_type": "Regular Season",
+              "stl": 3,
+              "team_abbr": "NOP",
+              "team_name": "New Orleans Pelicans",
+              "tov": 0,
+              "tov_pct": 0.0,
+              "ts_pct": 0.5007704160246533,
+              "usg_pct": 0.272,
+              "wl": "W"
+            }
+          ]
+        }
+      },
+      {
+        "query": "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26",
+        "sections": {
+          "finder": [
+            {
+              "ast": 9,
+              "ast_pct": 0.237,
+              "blk": 0,
+              "efg_pct": 0.6818181818181818,
+              "fg3_pct": 0.6,
+              "fg3a": 10,
+              "fg3m": 6,
+              "fg_pct": 0.545,
+              "fga": 22,
+              "fgm": 12,
+              "ft_pct": 0.955,
+              "fta": 22,
+              "ftm": 21,
+              "game_date": "2025-10-26 00:00:00",
+              "game_id": 22500113,
+              "is_away": 1,
+              "is_home": 0,
+              "minutes": 39,
+              "opponent_team_abbr": "SAC",
+              "opponent_team_name": "Sacramento Kings",
+              "player_id": 1630559,
+              "player_name": "Austin Reaves",
+              "plus_minus": 22,
+              "pts": 51,
+              "rank": 1,
+              "reb": 11,
+              "reb_pct": 0.071,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "stl": 2,
+              "team_abbr": "LAL",
+              "team_name": "Los Angeles Lakers",
+              "tov": 2,
+              "tov_pct": 5.938242280285036,
+              "ts_pct": 0.8049242424242424,
+              "usg_pct": 0.258,
+              "wl": "W"
+            },
+            {
+              "ast": 5,
+              "ast_pct": 0.237,
+              "blk": 0,
+              "efg_pct": 0.6590909090909091,
+              "fg3_pct": 0.375,
+              "fg3a": 8,
+              "fg3m": 3,
+              "fg_pct": 0.591,
+              "fga": 22,
+              "fgm": 13,
+              "ft_pct": 0.857,
+              "fta": 14,
+              "ftm": 12,
+              "game_date": "2025-10-27 00:00:00",
+              "game_id": 22500122,
+              "is_away": 0,
+              "is_home": 1,
+              "minutes": 39,
+              "opponent_team_abbr": "POR",
+              "opponent_team_name": "Portland Trail Blazers",
+              "player_id": 1630559,
+              "player_name": "Austin Reaves",
+              "plus_minus": 0,
+              "pts": 41,
+              "rank": 2,
+              "reb": 4,
+              "reb_pct": 0.071,
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "stl": 3,
+              "team_abbr": "LAL",
+              "team_name": "Los Angeles Lakers",
+              "tov": 8,
+              "tov_pct": 22.123893805309734,
+              "ts_pct": 0.7279829545454546,
+              "usg_pct": 0.258,
+              "wl": "L"
+            }
+          ]
+        }
+      }
+    ],
+    "deployed_query_attempts": [
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_d3fd69eb23f44269bea5116c0e8b8e23",
+          "X-Vercel-Id": "iad1::iad1::pmfld-1793439900167-e30cdf276608"
+        },
+        "index": 1,
+        "query": "Lakers record without LeBron James on October 21 2025",
+        "started_after_seconds": 0.0,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_4c5c7b81ea89427c893eb9cf59eb7387",
+          "X-Vercel-Id": "iad1::iad1::h2hdh-1793439907936-a6977b5bd594"
+        },
+        "index": 2,
+        "query": "Warriors record without Moses Moody on October 21 2025",
+        "started_after_seconds": 7.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_c45d353e0cb74197a71cf34dbc7113b2",
+          "X-Vercel-Id": "iad1::iad1::vjrz8-1793439914821-43c095dd6637"
+        },
+        "index": 3,
+        "pacing_seconds": 6.565389119999992,
+        "query": "Celtics record vs Lakers with Jayson Tatum in 2023-24",
+        "started_after_seconds": 14.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_ded5b9cf4d384aafa02c928975ecfdc2",
+          "X-Vercel-Id": "iad1::iad1::29zdg-1793439921873-1bc18d74cdc9"
+        },
+        "index": 4,
+        "pacing_seconds": 6.036240993000007,
+        "query": "Celtics record vs Lakers without Jayson Tatum in 2025-26",
+        "started_after_seconds": 21.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_bc22d0e55617461f95cab7c7ba6586db",
+          "X-Vercel-Id": "iad1::iad1::qhtmt-1793439928871-955fdcca9e91"
+        },
+        "index": 5,
+        "pacing_seconds": 6.6051775270000235,
+        "query": "Jaylen Brown averages vs Lakers with Jayson Tatum in 2023-24",
+        "started_after_seconds": 28.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_7843372c4e9b4b5e80e7d7e328e40b40",
+          "X-Vercel-Id": "iad1::iad1::2jlzr-1793439935802-ab14dbfe202c"
+        },
+        "index": 6,
+        "pacing_seconds": 5.986269891000006,
+        "query": "Jaylen Brown averages vs Lakers without Jayson Tatum in 2025-26",
+        "started_after_seconds": 35.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_29be39b951544dc09d3e77d96bc000f7",
+          "X-Vercel-Id": "iad1::iad1::wwwks-1793439942818-8bd0a5e53078"
+        },
+        "index": 7,
+        "pacing_seconds": 6.6019997930000045,
+        "query": "Nets record without Kerry Kittles and Keith Van Horn in 1997-98 from 1997-10-31 to 1997-10-31",
+        "started_after_seconds": 42.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_9dfcdd9ba26847faa1e0bc7122e54f6f",
+          "X-Vercel-Id": "iad1::iad1::sbrsc-1793439949820-fd9e604107bb"
+        },
+        "index": 8,
+        "pacing_seconds": 5.871571541000009,
+        "query": "Pistons record without Darko Milicic in 2004-05 from 2004-11-02 to 2004-11-02",
+        "started_after_seconds": 49.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_b36312d974d343a39e7de87800140958",
+          "X-Vercel-Id": "iad1::iad1::gqqmk-1793439956820-9d6aeed90bed"
+        },
+        "index": 9,
+        "pacing_seconds": 6.008903129000004,
+        "query": "Pelicans record without Darius Miller and Patric Young in 2014-15 from 2014-10-28 to 2014-10-28",
+        "started_after_seconds": 56.705,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_e16cfeb5adf74161a422fb53a035343a",
+          "X-Vercel-Id": "iad1::iad1::ckkzq-1793439963804-daf52845f8e4"
+        },
+        "index": 10,
+        "pacing_seconds": 6.001882377999976,
+        "query": "Lakers record without LeBron James from 2025-10-24 to 2025-10-27 in 2025-26",
+        "started_after_seconds": 63.706,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_c4d566cc61cc4dd19996e3fd4dbe0c4e",
+          "X-Vercel-Id": "iad1::iad1::h4vsz-1793439970802-1a3ac0b1957b"
+        },
+        "index": 11,
+        "pacing_seconds": 6.691895937999988,
+        "query": "how many games did LeBron James miss on October 24 and October 27 in 2025-26",
+        "started_after_seconds": 70.706,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_735f0c4c02684cd386fab781fffd522f",
+          "X-Vercel-Id": "iad1::iad1::868r5-1793439977864-46cf28b6283f"
+        },
+        "index": 12,
+        "pacing_seconds": 6.720676196999989,
+        "query": "Without Darius Miller and Patric Young, Anthony Davis games with at least 20 points in 2014-15 from 2014-10-28 to 2014-10-28",
+        "started_after_seconds": 77.706,
+        "status": 200
+      },
+      {
+        "attempt": 1,
+        "headers": {
+          "X-Request-Id": "req_52e9f88a624c4c9ba287b1703cae978e",
+          "X-Vercel-Id": "iad1::iad1::fzws4-1793439984866-4a51a182702f"
+        },
+        "index": 13,
+        "pacing_seconds": 6.4585198320000075,
+        "query": "Austin Reaves games with at least 40 points without LeBron James and Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26",
+        "started_after_seconds": 84.706,
+        "status": 200
+      }
+    ],
+    "deployed_readiness": {
+      "active_generation": "availability-k08-retained-v1-20261031",
+      "blockers": [],
+      "checked_at": "2026-10-31T09:44:55Z",
+      "exception": {
+        "applied": false,
+        "created_at": null,
+        "error": null,
+        "expires_at": null,
+        "owner": "John Matthew, project owner",
+        "reason": null
+      },
+      "immutable_generation": true,
+      "max_active_lag_hours": 24,
+      "ready": true,
+      "release_exception_owner": "John Matthew, project owner",
+      "season": "2025-26",
+      "season_state": "offseason",
+      "slices": [
+        {
+          "current_through": "2026-04-12",
+          "errors": [],
+          "expected_current_through": "2026-04-12",
+          "generation_id": "f49e2864076b4bdf8743a7a4da2e3962",
+          "postseason_complete": false,
+          "schedule_complete": true,
+          "season": "2025-26",
+          "season_type": "Regular Season",
+          "trusted": true,
+          "validation_state": "passed"
+        },
+        {
+          "current_through": "2026-06-13",
+          "errors": [],
+          "expected_current_through": "2026-06-13",
+          "generation_id": "5cb10d4b44754ebd9300d99007e44179",
+          "postseason_complete": true,
+          "schedule_complete": true,
+          "season": "2025-26",
+          "season_type": "Playoffs",
+          "trusted": true,
+          "validation_state": "passed"
+        }
+      ],
+      "status": "ready"
+    },
+    "environment_audit": {
+      "branches": {
+        "branch_policies": [
+          {
+            "id": 63438690,
+            "name": "main",
+            "node_id": "MDE2OkdhdGVCcmFuY2hQb2xpY3k2MzQzODY5MA==",
+            "type": "branch"
+          }
+        ],
+        "total_count": 1
+      },
+      "configuration": {
+        "can_admins_bypass": false,
+        "created_at": "2026-10-18T05:31:23Z",
+        "deployment_branch_policy": {
+          "custom_branch_policies": true,
+          "protected_branches": false
+        },
+        "html_url": "https://github.com/Bet-Zero/nbatools/deployments/activity_log?environments_filter=r2-publication",
+        "id": 24614443886,
+        "name": "r2-publication",
+        "node_id": "EN_kwDOR-2s-M8AAAAFuyKbbg",
+        "protection_rules": [
+          {
+            "id": 69193515,
+            "node_id": "GA_kwDOR-2s-M4EH88r",
+            "prevent_self_review": false,
+            "reviewers": [
+              {
+                "reviewer": {
+                  "avatar_url": "https://avatars.githubusercontent.com/u/205859440?v=4",
+                  "events_url": "https://api.github.com/users/Bet-Zero/events{/privacy}",
+                  "followers_url": "https://api.github.com/users/Bet-Zero/followers",
+                  "following_url": "https://api.github.com/users/Bet-Zero/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/Bet-Zero/gists{/gist_id}",
+                  "gravatar_id": "",
+                  "html_url": "https://github.com/Bet-Zero",
+                  "id": 205859440,
+                  "login": "Bet-Zero",
+                  "node_id": "U_kgDODEUqcA",
+                  "organizations_url": "https://api.github.com/users/Bet-Zero/orgs",
+                  "received_events_url": "https://api.github.com/users/Bet-Zero/received_events",
+                  "repos_url": "https://api.github.com/users/Bet-Zero/repos",
+                  "site_admin": false,
+                  "starred_url": "https://api.github.com/users/Bet-Zero/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/Bet-Zero/subscriptions",
+                  "type": "User",
+                  "url": "https://api.github.com/users/Bet-Zero",
+                  "user_view_type": "public"
+                },
+                "type": "User"
+              }
+            ],
+            "type": "required_reviewers"
+          },
+          {
+            "id": 69193532,
+            "node_id": "GA_kwDOR-2s-M4EH888",
+            "type": "branch_policy"
+          }
+        ],
+        "updated_at": "2026-10-18T05:35:46Z",
+        "url": "https://api.github.com/repos/Bet-Zero/nbatools/environments/r2-publication"
+      },
+      "environment": "r2-publication",
+      "environments": [
+        {
+          "can_admins_bypass": true,
+          "deployment_branch_policy": null,
+          "id": 13992844085,
+          "name": "copilot",
+          "protection_rules": []
+        },
+        {
+          "can_admins_bypass": true,
+          "deployment_branch_policy": null,
+          "id": 14834657009,
+          "name": "Preview",
+          "protection_rules": []
+        },
+        {
+          "can_admins_bypass": true,
+          "deployment_branch_policy": null,
+          "id": 14834065991,
+          "name": "Production",
+          "protection_rules": []
+        },
+        {
+          "can_admins_bypass": false,
+          "deployment_branch_policy": {
+            "custom_branch_policies": true,
+            "protected_branches": false
+          },
+          "id": 24614443886,
+          "name": "r2-publication",
+          "protection_rules": [
+            {
+              "id": 69193515,
+              "node_id": "GA_kwDOR-2s-M4EH88r",
+              "prevent_self_review": false,
+              "reviewers": [
+                {
+                  "reviewer": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/205859440?v=4",
+                    "events_url": "https://api.github.com/users/Bet-Zero/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/Bet-Zero/followers",
+                    "following_url": "https://api.github.com/users/Bet-Zero/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/Bet-Zero/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/Bet-Zero",
+                    "id": 205859440,
+                    "login": "Bet-Zero",
+                    "node_id": "U_kgDODEUqcA",
+                    "organizations_url": "https://api.github.com/users/Bet-Zero/orgs",
+                    "received_events_url": "https://api.github.com/users/Bet-Zero/received_events",
+                    "repos_url": "https://api.github.com/users/Bet-Zero/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/Bet-Zero/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/Bet-Zero/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/Bet-Zero",
+                    "user_view_type": "public"
+                  },
+                  "type": "User"
+                }
+              ],
+              "type": "required_reviewers"
+            },
+            {
+              "id": 69193532,
+              "node_id": "GA_kwDOR-2s-M4EH888",
+              "type": "branch_policy"
+            }
+          ]
+        },
+        {
+          "can_admins_bypass": true,
+          "deployment_branch_policy": null,
+          "id": 23273460136,
+          "name": "r2-validation",
+          "protection_rules": []
+        }
+      ],
+      "publication_ready": true
+    },
+    "file_count": 724,
+    "generation_id": "availability-k08-retained-v1-20261031",
+    "inventory_sha256": "4b89b9d16af98d99f5d307d2f99ffca4826c4c08430c723c2ee02bebab2ba8a8",
+    "owner_approval": [
+      {
+        "comment": "",
+        "environments": [
+          {
+            "can_admins_bypass": false,
+            "created_at": "2026-10-18T05:31:23Z",
+            "html_url": "https://github.com/Bet-Zero/nbatools/deployments/activity_log?environments_filter=r2-publication",
+            "id": 24614443886,
+            "name": "r2-publication",
+            "node_id": "EN_kwDOR-2s-M8AAAAFuyKbbg",
+            "updated_at": "2026-10-18T05:35:46Z",
+            "url": "https://api.github.com/repos/Bet-Zero/nbatools/environments/r2-publication"
+          }
+        ],
+        "state": "approved",
+        "user": {
+          "avatar_url": "https://avatars.githubusercontent.com/u/205859440?v=4",
+          "events_url": "https://api.github.com/users/Bet-Zero/events{/privacy}",
+          "followers_url": "https://api.github.com/users/Bet-Zero/followers",
+          "following_url": "https://api.github.com/users/Bet-Zero/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Bet-Zero/gists{/gist_id}",
+          "gravatar_id": "",
+          "html_url": "https://github.com/Bet-Zero",
+          "id": 205859440,
+          "login": "Bet-Zero",
+          "node_id": "U_kgDODEUqcA",
+          "organizations_url": "https://api.github.com/users/Bet-Zero/orgs",
+          "received_events_url": "https://api.github.com/users/Bet-Zero/received_events",
+          "repos_url": "https://api.github.com/users/Bet-Zero/repos",
+          "site_admin": false,
+          "starred_url": "https://api.github.com/users/Bet-Zero/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Bet-Zero/subscriptions",
+          "type": "User",
+          "url": "https://api.github.com/users/Bet-Zero",
+          "user_view_type": "public"
+        }
+      }
+    ],
+    "package": "retained-k08-availability-v1",
+    "prepared_manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+    "publication": {
+      "action": "publish",
+      "file_count": 724,
+      "generation_id": "availability-k08-retained-v1-20261031",
+      "manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+      "pointer": "metadata/active_generation.json",
+      "previous_generation_id": "availability-opening-s4-v1-20261017",
+      "target": "r2",
+      "total_bytes": 402948225
+    },
+    "publication_state": "published_and_verified",
+    "publisher_sha": "105ebda9077cc84b6da0c83bf4a2b0288b0fc94f",
+    "recovery": {
+      "production_writes": 0,
+      "source_artifact_id": 13036273532,
+      "source_artifact_zip_sha256": "860b07cb6eb10398d9419771ee6c0faaaa05594ad4a642b1e4726461d96b5575",
+      "source_run_id": 41184300649,
+      "workflow_run_id": "41189755604",
+      "workflow_sha": "e9c2bd7c31d97ace817a359f106c3c2cba6f74e6"
+    },
+    "registry_sha256": "03b9bd2bbe3026b0766812c9d7d5abf5314359294614807c010eb15b00d0b38e",
+    "required_source_gate": {
+      "candidate_sha": "81d50904ae96b0fa8b4f9f221c394f374f011433",
+      "conclusion": "success",
+      "errors": 0,
+      "executed": 1,
+      "failed": 0,
+      "generation": "availability-opening-s4-v1-20261017",
+      "passed": 1,
+      "problems": [],
+      "pytest_exit": 0,
+      "required_selection": [
+        "tests/test_retained_k08_package_real_data.py::test_build_retained_six_game_overlay"
+      ],
+      "required_test_limit": 100,
+      "scope": "targeted",
+      "selected": 1,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "schema_version": 1,
+    "script_sha256": "377d83c1d6f7bdb133fe6b4d664433ba5759405010e02743a1657a480303e97f",
+    "source_run_id": 41178351369,
+    "total_bytes": 402948225,
+    "verified_objects": [
+      {
+        "path": "metadata/backfill_manifest.csv",
+        "sha256": "3a34f1564be6b6f7a348bc828d8f614324f48842d020343a480d8031ee8679b8",
+        "size_bytes": 2701
+      },
+      {
+        "path": "metadata/dataset_manifests/2024-25_regular_season.json",
+        "sha256": "c1e924395a4dafa73fc5b25a3e8fdd8957bc4076494a822a11efc0d323bda767",
+        "size_bytes": 123316
+      },
+      {
+        "path": "metadata/dataset_manifests/2025-26_playoffs.json",
+        "sha256": "e9f441f5e56d879f98e7f1896abbbd973b27bd707c29a11703d5fd0278852b7c",
+        "size_bytes": 35639
+      },
+      {
+        "path": "metadata/dataset_manifests/2025-26_regular_season.json",
+        "sha256": "84cb341e27809c541dfe35e4e464a522b52f29968bc58e3797009a935cbb6710",
+        "size_bytes": 114877
+      },
+      {
+        "path": "metadata/last_refresh.json",
+        "sha256": "3d50b9f93f64c24d3f3fc85834b9d0ca0ccd55b44377174bfa97a3cb17374eec",
+        "size_bytes": 77
+      },
+      {
+        "path": "metadata/player_names.csv",
+        "sha256": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+        "size_bytes": 500982
+      },
+      {
+        "path": "processed/game_features/1996-97_playoffs.csv",
+        "sha256": "2a1833010346b84dc01eba857131d6a25849d892cdb8217aaa27384d136654c6",
+        "size_bytes": 16090
+      },
+      {
+        "path": "processed/game_features/1996-97_regular_season.csv",
+        "sha256": "6e5fc39571f0a1ab89f1e7e49b3ac7e333d868f09556c35b0fe76c31b4803f20",
+        "size_bytes": 289916
+      },
+      {
+        "path": "processed/game_features/1997-98_playoffs.csv",
+        "sha256": "3ddbd309d4d00cc4b4bc8bc32e2e5ac6446e73827c302d9f356ae09801d4c78f",
+        "size_bytes": 15963
+      },
+      {
+        "path": "processed/game_features/1997-98_regular_season.csv",
+        "sha256": "0e7e2553e4724522f7d2fb94e5c6e4a4f92b6656673cd0c06a4bbe93b8974bfa",
+        "size_bytes": 286926
+      },
+      {
+        "path": "processed/game_features/1998-99_playoffs.csv",
+        "sha256": "d326e01a227a5b0c71cdaec2cb41fb873b3a66cd0ce9153b49496e71e44e5184",
+        "size_bytes": 14606
+      },
+      {
+        "path": "processed/game_features/1998-99_regular_season.csv",
+        "sha256": "73d7377ca436fc2e12295bbca2e799389943e98467b362e9db2727458af8a435",
+        "size_bytes": 174501
+      },
+      {
+        "path": "processed/game_features/1999-00_playoffs.csv",
+        "sha256": "1c73322925caecf1823afbbd169604940f2cd3e9e40a4874b309b3684a1d1c22",
+        "size_bytes": 16531
+      },
+      {
+        "path": "processed/game_features/1999-00_regular_season.csv",
+        "sha256": "62e7210e49c1d975ec510c240eda335565c8e43af77e26a3554c5c60b7ff0a1d",
+        "size_bytes": 288443
+      },
+      {
+        "path": "processed/game_features/2000-01_playoffs.csv",
+        "sha256": "2489cd10df5c146f5ce269bd95c3889d7fefbee66bc926a38d8c751132bb1543",
+        "size_bytes": 15950
+      },
+      {
+        "path": "processed/game_features/2000-01_regular_season.csv",
+        "sha256": "79c291b25ba581d2a1abc69d1059611181f1498b01c1b35166ec8cbe49495d41",
+        "size_bytes": 288236
+      },
+      {
+        "path": "processed/game_features/2001-02_playoffs.csv",
+        "sha256": "41ce52829d12727cb9b935099d9869523b95914d8f24727ac7242a01bae85816",
+        "size_bytes": 15800
+      },
+      {
+        "path": "processed/game_features/2001-02_regular_season.csv",
+        "sha256": "327f0edfa951cc13a9808577aca7411bc1c75d7930bb21bd8b12b12939b3ed50",
+        "size_bytes": 287927
+      },
+      {
+        "path": "processed/game_features/2002-03_playoffs.csv",
+        "sha256": "cb30aa014ba25c9da5f09939048d88088c842d20129d9160f313b92390093cb3",
+        "size_bytes": 19603
+      },
+      {
+        "path": "processed/game_features/2002-03_regular_season.csv",
+        "sha256": "34a451f490ece6ed9a92115848ecb011a747fc61e71b3b9f83ea3f4cee453322",
+        "size_bytes": 287242
+      },
+      {
+        "path": "processed/game_features/2003-04_playoffs.csv",
+        "sha256": "70284617990ad3a0d605237950b1b0cb17fe691cc5a8f60ba6a4244c02ba09e1",
+        "size_bytes": 18505
+      },
+      {
+        "path": "processed/game_features/2003-04_regular_season.csv",
+        "sha256": "9f75e684a1d5e9b95cd426d37466c9e5fd739b1142971d2670fb367d923557aa",
+        "size_bytes": 287646
+      },
+      {
+        "path": "processed/game_features/2004-05_playoffs.csv",
+        "sha256": "9dff2a4472b8bb9ea45b5104223c6d32cb60174bf91c8f24bc8a1e36f99331ff",
+        "size_bytes": 19027
+      },
+      {
+        "path": "processed/game_features/2004-05_regular_season.csv",
+        "sha256": "7ac9dbf7859f2a658ac8209c8610c7f85201bc448f5e1d8f7c48ac576e5f123e",
+        "size_bytes": 297017
+      },
+      {
+        "path": "processed/game_features/2005-06_playoffs.csv",
+        "sha256": "512e5fc851bfc6932491f058afa52775dc3eb92e686e31586d534bebd05731fa",
+        "size_bytes": 19977
+      },
+      {
+        "path": "processed/game_features/2005-06_regular_season.csv",
+        "sha256": "fbbbb90cef1d51d08d484e1bfb287e021be1b9c6d33048e7db9c65c1b3bcb90c",
+        "size_bytes": 297157
+      },
+      {
+        "path": "processed/game_features/2006-07_playoffs.csv",
+        "sha256": "ebbd6bc52b68e41591cd037f21a3e1cb08d726a71d875cf2178b8f9201c6a624",
+        "size_bytes": 17755
+      },
+      {
+        "path": "processed/game_features/2006-07_regular_season.csv",
+        "sha256": "9bdfe806c4b33bd8c2d4a195ef5395edb56d038619f8522fa7d576ae9e158693",
+        "size_bytes": 298286
+      },
+      {
+        "path": "processed/game_features/2007-08_playoffs.csv",
+        "sha256": "be7853bf9aa5388bfb79fb993b909bacfc4181753d2a0e028f9800d9b9468178",
+        "size_bytes": 19459
+      },
+      {
+        "path": "processed/game_features/2007-08_regular_season.csv",
+        "sha256": "05a5d58d237373136857d44d408163937612aa7ff56c9f331155dbb76cdb2e42",
+        "size_bytes": 298261
+      },
+      {
+        "path": "processed/game_features/2008-09_playoffs.csv",
+        "sha256": "e2d58ee7a6d14a669a238a4fbef2d134d67fd46941c4137484eb8c67834d0dbb",
+        "size_bytes": 19091
+      },
+      {
+        "path": "processed/game_features/2008-09_regular_season.csv",
+        "sha256": "6556252d00e90159074eb4e1cec47a3caf42efeb6ef2f91e1c8d9a2c0a2075ad",
+        "size_bytes": 297781
+      },
+      {
+        "path": "processed/game_features/2009-10_playoffs.csv",
+        "sha256": "de5b79359918c3c0a9daf5d70bde4058ef2a444c95693606f97e579bd4eb2eaf",
+        "size_bytes": 18516
+      },
+      {
+        "path": "processed/game_features/2009-10_regular_season.csv",
+        "sha256": "f72ec1dfb17fc3160bf88f6b34ab5e6fd66848f80aa66095c25b531f76bbed7e",
+        "size_bytes": 299058
+      },
+      {
+        "path": "processed/game_features/2010-11_playoffs.csv",
+        "sha256": "220b7430297816905eb3885f845bf3f3cfb82caee83843e3ae971c48d050076b",
+        "size_bytes": 18094
+      },
+      {
+        "path": "processed/game_features/2010-11_regular_season.csv",
+        "sha256": "e38c129dc7493069005602873929fd35bd691bf3fedbf3abb4cffa18805791b4",
+        "size_bytes": 298292
+      },
+      {
+        "path": "processed/game_features/2011-12_playoffs.csv",
+        "sha256": "3308bbe8412150d3865e70e23bd63844e4bd127c48c0cc444e069a2fa1b88499",
+        "size_bytes": 18966
+      },
+      {
+        "path": "processed/game_features/2011-12_regular_season.csv",
+        "sha256": "5b84ee8983aa14d8ce12cc57d1b96bef37226fce4b007820035fbffa1b3a6eaf",
+        "size_bytes": 239200
+      },
+      {
+        "path": "processed/game_features/2012-13_playoffs.csv",
+        "sha256": "4a4f33a1578ec019c9467dd6e750beac3a8a2a0497162fd0e0cf1123b78a015b",
+        "size_bytes": 18968
+      },
+      {
+        "path": "processed/game_features/2012-13_regular_season.csv",
+        "sha256": "e413f98c3f302a4154c03e1c8252597bcac8696e4fc49ba497028106611818eb",
+        "size_bytes": 299494
+      },
+      {
+        "path": "processed/game_features/2013-14_playoffs.csv",
+        "sha256": "73c1955ad78b896b5a5a252ed4013aebf6bbe22d130337a13812fa1e0005e615",
+        "size_bytes": 19944
+      },
+      {
+        "path": "processed/game_features/2013-14_regular_season.csv",
+        "sha256": "087c77a3e5f9f0e398caa4133c8a98560b1e60715545fe87e2ceeb70d2b22366",
+        "size_bytes": 299735
+      },
+      {
+        "path": "processed/game_features/2014-15_playoffs.csv",
+        "sha256": "1ef5888b04c46d9eb1e308d3697d7cf609107c391c51584ae5f4893d97e6bb60",
+        "size_bytes": 18296
+      },
+      {
+        "path": "processed/game_features/2014-15_regular_season.csv",
+        "sha256": "fed64fcf784e6c0588eff619df320a29504bd688db3d9adf6006be6665ad6173",
+        "size_bytes": 300139
+      },
+      {
+        "path": "processed/game_features/2015-16_playoffs.csv",
+        "sha256": "6661ea52502b6ea2a6bbca39a74c93aefb52ac9f9db058a704bcd138cd318745",
+        "size_bytes": 19363
+      },
+      {
+        "path": "processed/game_features/2015-16_regular_season.csv",
+        "sha256": "f2c5e25ee654430314b373f9ca2c6014136e4de4df8d461f9485155cf681a71f",
+        "size_bytes": 300390
+      },
+      {
+        "path": "processed/game_features/2016-17_playoffs.csv",
+        "sha256": "b403c7791d99cc8c11ef0df94a1d412a4e9d64024c2f9b040acaf9df6810dceb",
+        "size_bytes": 17789
+      },
+      {
+        "path": "processed/game_features/2016-17_regular_season.csv",
+        "sha256": "29a4663575b5096b719ca3b8ef6be040dc7eae7fa224e754663f15a83da7cefd",
+        "size_bytes": 301390
+      },
+      {
+        "path": "processed/game_features/2017-18_playoffs.csv",
+        "sha256": "d7cd8cd749e881082270eb1d1b17f654f6d5745aca01a4c5c9f4d32cc58917f1",
+        "size_bytes": 18652
+      },
+      {
+        "path": "processed/game_features/2017-18_regular_season.csv",
+        "sha256": "b070d7dfeec06dbd28dcd30a67addf26aab85165dd12bdde5b18b859f70c9cd5",
+        "size_bytes": 301800
+      },
+      {
+        "path": "processed/game_features/2018-19_playoffs.csv",
+        "sha256": "34ef4ba02145ffcbac2f880bc126faaa7ac7b2778794b87efcc504440df62a85",
+        "size_bytes": 18571
+      },
+      {
+        "path": "processed/game_features/2018-19_regular_season.csv",
+        "sha256": "837336e49ed0d3d46545fe9dbc3be7a0d0e215c38355eef7b7c07b940dd83bb8",
+        "size_bytes": 302330
+      },
+      {
+        "path": "processed/game_features/2019-20_playoffs.csv",
+        "sha256": "63562acbc08da7bd802b600e54a73ae86a6e4cc2c2d80dbe989d5728339c62c2",
+        "size_bytes": 19071
+      },
+      {
+        "path": "processed/game_features/2019-20_regular_season.csv",
+        "sha256": "a89468faadaf9f0ac6a1e0a0fca6eeecf80ae067631bd0e0529c67c809d26e1b",
+        "size_bytes": 259751
+      },
+      {
+        "path": "processed/game_features/2020-21_playoffs.csv",
+        "sha256": "78ef65c6cf8e48bd5eff543de66eb2f4e905518e8b4f397ab8e13d9c8346a8db",
+        "size_bytes": 19224
+      },
+      {
+        "path": "processed/game_features/2020-21_regular_season.csv",
+        "sha256": "10455e446eb7e33ed1994a5385e608fb491f033b1c2422f6a85ae9e2ad3d62a7",
+        "size_bytes": 265238
+      },
+      {
+        "path": "processed/game_features/2021-22_playoffs.csv",
+        "sha256": "b41cfd3bc862f1fcba6eb3e752fc15e1a4472bc0bfa0ab54df42ee77769783fc",
+        "size_bytes": 19713
+      },
+      {
+        "path": "processed/game_features/2021-22_regular_season.csv",
+        "sha256": "3826f6b57083aec41015a88f29b1038eb04ea0ff47f725901975b971bc7d78f4",
+        "size_bytes": 302515
+      },
+      {
+        "path": "processed/game_features/2022-23_playoffs.csv",
+        "sha256": "96b1b3b54a092547ef36a5552bdb38203ab863deb17e0f1a1b84220c7a22bd40",
+        "size_bytes": 18891
+      },
+      {
+        "path": "processed/game_features/2022-23_regular_season.csv",
+        "sha256": "38328e90f591e31733935b3d77047a60bdff7f1ecaa4d6c5d5226b61c1f3499f",
+        "size_bytes": 303065
+      },
+      {
+        "path": "processed/game_features/2023-24_playoffs.csv",
+        "sha256": "4d72e17b9e2caa12a4fa0a36a5f03f952546dd31fb8ceb267392b38d9203d51c",
+        "size_bytes": 18574
+      },
+      {
+        "path": "processed/game_features/2023-24_regular_season.csv",
+        "sha256": "23c64253d30bb6e8049c065ef2cdb9cec2b5a549910ccb127247221675a2a64d",
+        "size_bytes": 303887
+      },
+      {
+        "path": "processed/game_features/2024-25_playoffs.csv",
+        "sha256": "01f51e27aab9a31bc9974a7e4ec26df4703c2487acfa1756c2c4bb435fcfdd5e",
+        "size_bytes": 18971
+      },
+      {
+        "path": "processed/game_features/2024-25_regular_season.csv",
+        "sha256": "c17eaa73e5638129ef26467bfbdf42b0bca3afe877f6427de0cfd03f52f1bd8e",
+        "size_bytes": 312447
+      },
+      {
+        "path": "processed/game_features/2025-26_playoffs.csv",
+        "sha256": "5742044f9cbf2fe0463a21917687be8397bd7d8bc4b2aec4fdce0bd64907889d",
+        "size_bytes": 19242
+      },
+      {
+        "path": "processed/game_features/2025-26_regular_season.csv",
+        "sha256": "413e6ade05d6baa0b5a80e42289530dab83c0b9083ab229d5e4ce12cb74feb40",
+        "size_bytes": 311692
+      },
+      {
+        "path": "processed/league_season_stats/1996-97_playoffs.csv",
+        "sha256": "27ed1c38f9cf6ae6f8abb75c131c1fb5c8ff41c941ca0feee006b984dd26f40a",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/1996-97_regular_season.csv",
+        "sha256": "1d6032e2af3e9f16522cfd02d524bcaca7f83d2aa531db2a6b32eb57f26bde41",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/1997-98_playoffs.csv",
+        "sha256": "46e98fe2f61b86604670ae17f9874d7308446d6b4f81306be157769ad2e92130",
+        "size_bytes": 209
+      },
+      {
+        "path": "processed/league_season_stats/1997-98_regular_season.csv",
+        "sha256": "f9194e9bd59aeb7f88ee87fc832254787a3a94c4fd22d939aeda6efce96a67e3",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/1998-99_playoffs.csv",
+        "sha256": "4de017caa4a52f48afe3fcd5b44a02c467703efe19b38834c9182ae758ac0200",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/1998-99_regular_season.csv",
+        "sha256": "37919e205d5f4ddcccb98f5d2b4a40adbb19ef0f281fe9285442093b5124a3e6",
+        "size_bytes": 217
+      },
+      {
+        "path": "processed/league_season_stats/1999-00_playoffs.csv",
+        "sha256": "ad06f79e925a4f482bb12a4fa932910426578ac082da52af0bd50fdd5a1309ea",
+        "size_bytes": 186
+      },
+      {
+        "path": "processed/league_season_stats/1999-00_regular_season.csv",
+        "sha256": "d75c8b215ce42ee1cde06a90510c3f2c8ba02a23779ef77850278be58d54fe89",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2000-01_playoffs.csv",
+        "sha256": "3765a81cebf7e3a61de920992ea30e8607624c73538b285314a2cda2e502ef61",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2000-01_regular_season.csv",
+        "sha256": "991fbdac22b3142ddfd658e5c909f4a527d1272213941e44110b8d29f1fd75f6",
+        "size_bytes": 217
+      },
+      {
+        "path": "processed/league_season_stats/2001-02_playoffs.csv",
+        "sha256": "872b7146bde7db5e0ee4a9a589e183534087531d46f5bbdcce672839b86dbe36",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2001-02_regular_season.csv",
+        "sha256": "d00914ce3ba3e610cdd36c731ffd8efe6c694256ca3635d035440ce0b07d236b",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2002-03_playoffs.csv",
+        "sha256": "9ed279969d7f9489985f97175ed255b9f4c0d0c7e21cd2913d166875bd51c33a",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2002-03_regular_season.csv",
+        "sha256": "7dce88c6e87d361d8c0e55d7eedbfaa542b2d7c415cc5887ca1800ff32b0d62c",
+        "size_bytes": 215
+      },
+      {
+        "path": "processed/league_season_stats/2003-04_playoffs.csv",
+        "sha256": "1f648b14983b6a952ef977f099d0caa033c52a39f0796b51a9c87f79f0ca80b0",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2003-04_regular_season.csv",
+        "sha256": "d0106b42ddaafda2e8d0fbcd2337fa454a4f4290878d425ddf23ba5acb656053",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2004-05_playoffs.csv",
+        "sha256": "5f76388666104b8d54d78d87d9560049d3b95b1cb2cc9e47e1c62565faed983d",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2004-05_regular_season.csv",
+        "sha256": "0323ac95ff84a71f32303ae87cbea81d32fa52b36811c1448155d64287360268",
+        "size_bytes": 220
+      },
+      {
+        "path": "processed/league_season_stats/2005-06_playoffs.csv",
+        "sha256": "2d68f84feb854320c860c43d8841314a0b503e7125f6c6f7597e8c648c3e1136",
+        "size_bytes": 209
+      },
+      {
+        "path": "processed/league_season_stats/2005-06_regular_season.csv",
+        "sha256": "ca9f85962f965390202db45f1f16dca8824196e0b85d271dcf822bc14afe74ab",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2006-07_playoffs.csv",
+        "sha256": "23d39a467b0d78bdb22b0cc7d6cb656665db9cdde4bec583974fa2cd5b5c0ae4",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2006-07_regular_season.csv",
+        "sha256": "6cd1ae7a7545ecae1299da04b43b1991417876409e027b7940092f07b5d4bdac",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2007-08_playoffs.csv",
+        "sha256": "7729d5a506f5068bb33f8e63c290925f563d9e94e8a62e5ccd168830291e1950",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2007-08_regular_season.csv",
+        "sha256": "ad3b0fce02cc0df7e0f8130d7f69fa164b9e770e877bf513ab496f63b48d73c1",
+        "size_bytes": 217
+      },
+      {
+        "path": "processed/league_season_stats/2008-09_playoffs.csv",
+        "sha256": "231d396cac625d4ddb96996cbdb6e209650989c640c581c3d4f9561524d8baa0",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2008-09_regular_season.csv",
+        "sha256": "53e808213561ea4f41872eec226c135915496afa2db6b994e2654b829219378d",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2009-10_playoffs.csv",
+        "sha256": "5a45b963ddd6e089e8d543a9fbf1346346fcfb31898cdcdc95f0408f54e0370b",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2009-10_regular_season.csv",
+        "sha256": "bddd2a178ba5bf529b8cfe05875e76140baed9dda9970a1b2774c9af0e1244fe",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2010-11_playoffs.csv",
+        "sha256": "2e7269ff13b79f349bd505baf9ab5158f6f1ac66a2df2542837fe8ce30dbfbd8",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2010-11_regular_season.csv",
+        "sha256": "a11187277a7a75a6d50a396be6e7ee3fe6feabcca54294a0866fd91b968e6daf",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2011-12_playoffs.csv",
+        "sha256": "c34a64bb3a381ed87b8f22c87a6d2c10a47ce58b1669f37f16f09e4a1d3de09c",
+        "size_bytes": 197
+      },
+      {
+        "path": "processed/league_season_stats/2011-12_regular_season.csv",
+        "sha256": "b6b076309610046e580cad327bc7e50bec12e1a88b9006db568fd8de40d4c48e",
+        "size_bytes": 216
+      },
+      {
+        "path": "processed/league_season_stats/2012-13_playoffs.csv",
+        "sha256": "b855184750fc442a377ec80742a40bc6f0ec3295dd506fb7d2d26d5606d440f7",
+        "size_bytes": 196
+      },
+      {
+        "path": "processed/league_season_stats/2012-13_regular_season.csv",
+        "sha256": "fcc86666dbfae144b5d5b251e3de729fa6a84342ceeb472e778b8fae8f944248",
+        "size_bytes": 217
+      },
+      {
+        "path": "processed/league_season_stats/2013-14_playoffs.csv",
+        "sha256": "dd484a156a7a3a96e630568a897558a361a03e681f67619e063b151359204787",
+        "size_bytes": 208
+      },
+      {
+        "path": "processed/league_season_stats/2013-14_regular_season.csv",
+        "sha256": "cd672a0c96f9073949cb7158075c2ff6cd9dab97df76829132116076b4893028",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2014-15_playoffs.csv",
+        "sha256": "a3b727fcf8a2dcd0e1b9f8af5b2e7142ea116ff002a73c564000a17e8473f9b3",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2014-15_regular_season.csv",
+        "sha256": "21e36a499a79c4c39921a1231b9b0755b7e39e9c863f7d30638d9729d6617796",
+        "size_bytes": 220
+      },
+      {
+        "path": "processed/league_season_stats/2015-16_playoffs.csv",
+        "sha256": "8dadee4945dd3d508d0f431f0a6c18af202064820e8c27de0d7fcaaa80566be2",
+        "size_bytes": 210
+      },
+      {
+        "path": "processed/league_season_stats/2015-16_regular_season.csv",
+        "sha256": "0ee18e73776e47eda21fbe7a3995be1241cc5413d4fad4b6631bd8817751e368",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2016-17_playoffs.csv",
+        "sha256": "202371d79a659fa1fe6d3f9b4e909f37c633ab2f001d27832e133b91cf5d2ed7",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/2016-17_regular_season.csv",
+        "sha256": "69c17401a225af5204d3542a6788537f37237ff5e801832eb4c351876c4fc08b",
+        "size_bytes": 220
+      },
+      {
+        "path": "processed/league_season_stats/2017-18_playoffs.csv",
+        "sha256": "454873104b5ba2a02c2201c1a352472e5874ca3fbf0d4573241303eb47fab045",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/2017-18_regular_season.csv",
+        "sha256": "ca1254aa5ee0dcf002c171ff959ab393fde4319d24b2cbc07e727e4288f6da1a",
+        "size_bytes": 221
+      },
+      {
+        "path": "processed/league_season_stats/2018-19_playoffs.csv",
+        "sha256": "1a6620a3d5256647799026689666197840ddfd3aa6f7fdfbf8bdb62678fdd5bd",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2018-19_regular_season.csv",
+        "sha256": "c3c704ccb1d4616219e26c9f9729bfba6a20e7531d8122b26c6eac8b80e99ffd",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2019-20_playoffs.csv",
+        "sha256": "e29f5513a4de955356408aa8707c62d1689c18ba4ed468180516609ab178b8fb",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/2019-20_regular_season.csv",
+        "sha256": "4272322e549ac0b8b5364a2168204bd0d017652b5aa08e7c78078c0b6fea3a1e",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2020-21_playoffs.csv",
+        "sha256": "ea40dcb9abdb38d025e0aa0242de58ba2b22fd875420bb98a9ef2eb76e4423ed",
+        "size_bytes": 197
+      },
+      {
+        "path": "processed/league_season_stats/2020-21_regular_season.csv",
+        "sha256": "9c1164e5f20ad40ad2b2fecbb914ee2d411efdb550c528aceb9f17018dd9137a",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2021-22_playoffs.csv",
+        "sha256": "034955b932fe9b903a83efd67ddc0b6464d22cfc74e4e926422d8c9a8732fcdd",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2021-22_regular_season.csv",
+        "sha256": "6d20c9bc9e518f2a77bda5c7612f3289f4a6daac42cf5713500c96885b9b1fe9",
+        "size_bytes": 207
+      },
+      {
+        "path": "processed/league_season_stats/2022-23_playoffs.csv",
+        "sha256": "ad65852b770a3a86db07216a6fc99d368b3a47487486a6a1ef4af8ab8a202145",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2022-23_regular_season.csv",
+        "sha256": "414108bc1e73967d5137ba42c2f55898d350742833f1e45220c67ec110dade86",
+        "size_bytes": 219
+      },
+      {
+        "path": "processed/league_season_stats/2023-24_playoffs.csv",
+        "sha256": "3b07c6bf2f7657ac17e173e492c796744a9d0e886d22541b52a399efcf2569c7",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/2023-24_regular_season.csv",
+        "sha256": "98f6323cfd71a7bfadf71d3238d4ec89b2d71ed23740896332f99a41825f1d75",
+        "size_bytes": 218
+      },
+      {
+        "path": "processed/league_season_stats/2024-25_playoffs.csv",
+        "sha256": "0fd6774d1083e4f8b39f644db0e07ef4901b804aebfc7ed869dae7ca6c034013",
+        "size_bytes": 211
+      },
+      {
+        "path": "processed/league_season_stats/2024-25_regular_season.csv",
+        "sha256": "92b6577d60677b762162bb497978b13b775d0ca8f1ae00173fe221db20fba352",
+        "size_bytes": 221
+      },
+      {
+        "path": "processed/league_season_stats/2025-26_playoffs.csv",
+        "sha256": "089202aca2096eda94b4f973f4c876406e8e2a4db88cbda7eb12d63287f96d5f",
+        "size_bytes": 212
+      },
+      {
+        "path": "processed/league_season_stats/2025-26_regular_season.csv",
+        "sha256": "4b85f8d6d617b50ab9fdf885521353c68b80e9c5948f5238a2724472e80b87b7",
+        "size_bytes": 221
+      },
+      {
+        "path": "processed/player_game_features/1996-97_playoffs.csv",
+        "sha256": "f3ab9d251b28bbb35ca889da099188747f6b6c19a57e23e384c4eca4cf824e2e",
+        "size_bytes": 168461
+      },
+      {
+        "path": "processed/player_game_features/1996-97_regular_season.csv",
+        "sha256": "256ffd24c818bba185e358bd4956e242c46c9dd6dd5deff76a61782594055c50",
+        "size_bytes": 2981201
+      },
+      {
+        "path": "processed/player_game_features/1997-98_playoffs.csv",
+        "sha256": "10c743f41966977bdab31a382c150deb5eb3652027b195944dc03aca42cfd5df",
+        "size_bytes": 171408
+      },
+      {
+        "path": "processed/player_game_features/1997-98_regular_season.csv",
+        "sha256": "16f963b0dcb61fb7524f1a5d7325e8cf0e26e753f648ad04c3ca3a749cbb3e22",
+        "size_bytes": 2995615
+      },
+      {
+        "path": "processed/player_game_features/1998-99_playoffs.csv",
+        "sha256": "712779cb02bc5de185ea7784e977273fe86f857711270efed4b9e6a933c341b2",
+        "size_bytes": 161418
+      },
+      {
+        "path": "processed/player_game_features/1998-99_regular_season.csv",
+        "sha256": "4893c3341c0015b1f103b4eb65f1c68916c488a7b9855ee00f7804ed0924f25a",
+        "size_bytes": 1868156
+      },
+      {
+        "path": "processed/player_game_features/1999-00_playoffs.csv",
+        "sha256": "898c301d3196b34200646ea889cd8d79b134ccff484efb6e648b26d9217ef891",
+        "size_bytes": 178324
+      },
+      {
+        "path": "processed/player_game_features/1999-00_regular_season.csv",
+        "sha256": "ff2efe0c4dc2d155cd28287d1141f1b785eda17fa1a97b7a3e7bd6c53d586105",
+        "size_bytes": 3043143
+      },
+      {
+        "path": "processed/player_game_features/2000-01_playoffs.csv",
+        "sha256": "76fb0acfa7e50dab62667e01c681120a87f64930c1ababc4865f25ba75545c24",
+        "size_bytes": 167160
+      },
+      {
+        "path": "processed/player_game_features/2000-01_regular_season.csv",
+        "sha256": "af0b49c4920ccaaa979f671b9f30f2b8c1c23afcd743540d519ce11e23a4e331",
+        "size_bytes": 3004803
+      },
+      {
+        "path": "processed/player_game_features/2001-02_playoffs.csv",
+        "sha256": "c83c9b48a6b334e6cb7f60e213bf26f7002184482c27a222b58b8e4eda37ee50",
+        "size_bytes": 165775
+      },
+      {
+        "path": "processed/player_game_features/2001-02_regular_season.csv",
+        "sha256": "66e882bb9148188cffd0d64690a55f7578eec7056f215280b8170387d68d33a4",
+        "size_bytes": 3003404
+      },
+      {
+        "path": "processed/player_game_features/2002-03_playoffs.csv",
+        "sha256": "04f0b08daf54ef31992b0f0d0a2ca19fd7fec7916277c077c59b6846ea203116",
+        "size_bytes": 216338
+      },
+      {
+        "path": "processed/player_game_features/2002-03_regular_season.csv",
+        "sha256": "b16f5060ee3113033c8ea656e81a81dd615ebebc2c6304a281f3fb58af5dda65",
+        "size_bytes": 3010209
+      },
+      {
+        "path": "processed/player_game_features/2003-04_playoffs.csv",
+        "sha256": "a2155fb055738c0729bee791b440d68bd242d2ab3724cee127c3be69dd45d15e",
+        "size_bytes": 201609
+      },
+      {
+        "path": "processed/player_game_features/2003-04_regular_season.csv",
+        "sha256": "f250ba69752dd9998088d77a237d0f0e0f0802da5a268deae0260c4abafe7f2d",
+        "size_bytes": 3003932
+      },
+      {
+        "path": "processed/player_game_features/2004-05_playoffs.csv",
+        "sha256": "954a589f67b39582d6b5cdbd4ac327180f9998bcda6c09b81cbafbf5a750ef6d",
+        "size_bytes": 202317
+      },
+      {
+        "path": "processed/player_game_features/2004-05_regular_season.csv",
+        "sha256": "8d4962c23d63c9df02b023ef1ae72d715067fbeafc4f222fb1a42807180f0caa",
+        "size_bytes": 3141702
+      },
+      {
+        "path": "processed/player_game_features/2005-06_playoffs.csv",
+        "sha256": "28c1a8a8bdab53708a9b4f78bf3893c1987f9eb51d5b851409cbfccd4bbe6280",
+        "size_bytes": 210525
+      },
+      {
+        "path": "processed/player_game_features/2005-06_regular_season.csv",
+        "sha256": "8682954f229f47777654053fd41fc5a118d9d15cb7b9707319cba956d3107601",
+        "size_bytes": 3140501
+      },
+      {
+        "path": "processed/player_game_features/2006-07_playoffs.csv",
+        "sha256": "48874324d9b8b9f57f821f59515ef02bd224c66ac23ea21be21a8b439d67ba47",
+        "size_bytes": 191101
+      },
+      {
+        "path": "processed/player_game_features/2006-07_regular_season.csv",
+        "sha256": "24200dd3e9438c22d190d17545da536dd427729cea4d5ee42af1621663227f03",
+        "size_bytes": 3177672
+      },
+      {
+        "path": "processed/player_game_features/2007-08_playoffs.csv",
+        "sha256": "b197d22e14d84d2d1c5f3e86d600ffda7ccbfad691681a39d9dea9a7531d988e",
+        "size_bytes": 216166
+      },
+      {
+        "path": "processed/player_game_features/2007-08_regular_season.csv",
+        "sha256": "44f8e7ab4dc5c172884963ed05e9a2ba7216af09dc5ed298b3e8ee2d98626dfb",
+        "size_bytes": 3168653
+      },
+      {
+        "path": "processed/player_game_features/2008-09_playoffs.csv",
+        "sha256": "193505752b8a3b909cdb180b7bc923663423b847045b1cf9c7db0db35b2a6b11",
+        "size_bytes": 214147
+      },
+      {
+        "path": "processed/player_game_features/2008-09_regular_season.csv",
+        "sha256": "27c06fd1e626a3bfc0b76ed154d7d6d2f5a06663346436a3879bf81206e93904",
+        "size_bytes": 3140671
+      },
+      {
+        "path": "processed/player_game_features/2009-10_playoffs.csv",
+        "sha256": "ae98bb3953db452b9569d56b9d08a2e910ccf919bcce1e3eeb69df65499ed5f9",
+        "size_bytes": 206441
+      },
+      {
+        "path": "processed/player_game_features/2009-10_regular_season.csv",
+        "sha256": "f71397d3e0f9877f71935fe4adea5f62a710e9373f95986ee6ae3f1956d60d68",
+        "size_bytes": 3178058
+      },
+      {
+        "path": "processed/player_game_features/2010-11_playoffs.csv",
+        "sha256": "98e11ddf66255021153c5d9f97fab0ec8917a67713ca538bb49493a2aa405f3e",
+        "size_bytes": 199041
+      },
+      {
+        "path": "processed/player_game_features/2010-11_regular_season.csv",
+        "sha256": "58aab557633ea83b5e60a8b29d3704953341b5874796dce62375ffa4ace7455a",
+        "size_bytes": 3213565
+      },
+      {
+        "path": "processed/player_game_features/2011-12_playoffs.csv",
+        "sha256": "3b2ee740511e541f5023e31c211b3fe59e2d959dd159662ac54907db7563c8dd",
+        "size_bytes": 216844
+      },
+      {
+        "path": "processed/player_game_features/2011-12_regular_season.csv",
+        "sha256": "496a26d14849e7fe132676aef56dab1053e339e95a83cd8ece9f0159e2bb1263",
+        "size_bytes": 2660273
+      },
+      {
+        "path": "processed/player_game_features/2012-13_playoffs.csv",
+        "sha256": "71af2e79c18d2a9c2003ca23a7b106651862302d092aeed9724e20cd94cccec7",
+        "size_bytes": 219931
+      },
+      {
+        "path": "processed/player_game_features/2012-13_regular_season.csv",
+        "sha256": "1db1d1431d8cc5b29e80fbc83769acf251230ebb4baa32b09485d255b8721e1a",
+        "size_bytes": 3309563
+      },
+      {
+        "path": "processed/player_game_features/2013-14_playoffs.csv",
+        "sha256": "cac62113c766fc5278608015231eaf641a50f4d8912b0a43b4e7559720b0aeed",
+        "size_bytes": 236469
+      },
+      {
+        "path": "processed/player_game_features/2013-14_regular_season.csv",
+        "sha256": "ba78e36e866cb49a01cf9ab2e9f3f55b39a2f3d9e869ef71e1af60e5382e52c3",
+        "size_bytes": 3305675
+      },
+      {
+        "path": "processed/player_game_features/2014-15_playoffs.csv",
+        "sha256": "89133e2064fb5a2b5ff2d8865fe7005f752ce4272f34102b4aa0559e0cdbdfb7",
+        "size_bytes": 206240
+      },
+      {
+        "path": "processed/player_game_features/2014-15_regular_season.csv",
+        "sha256": "a7494e56054984ad517ac1e7ff5a94627b82ff384a1ae1dd5356ca3821bb81e2",
+        "size_bytes": 3355280
+      },
+      {
+        "path": "processed/player_game_features/2015-16_playoffs.csv",
+        "sha256": "6833e3cdb3b1fa565cc4ba4d2a66a3a88c767e100bb456d27b95387af3da5eda",
+        "size_bytes": 237790
+      },
+      {
+        "path": "processed/player_game_features/2015-16_regular_season.csv",
+        "sha256": "05775d521e22eceffc417e386550bfcafa099ddc4455b759a4f9df64c9d96270",
+        "size_bytes": 3380064
+      },
+      {
+        "path": "processed/player_game_features/2016-17_playoffs.csv",
+        "sha256": "0419e6a25b28245c3ddac12008bcef96bd0588e8ff10baaa016cc3fa3656fd23",
+        "size_bytes": 217987
+      },
+      {
+        "path": "processed/player_game_features/2016-17_regular_season.csv",
+        "sha256": "9ee02386afee5c4079ddfa0714106fc9bc4f59430f75b6aaba4c40faf8c51e87",
+        "size_bytes": 3405750
+      },
+      {
+        "path": "processed/player_game_features/2017-18_playoffs.csv",
+        "sha256": "d18f5cfb15b668d31c93a18b81c24e1779bc79010a150a3897ff552d1f00a07a",
+        "size_bytes": 218692
+      },
+      {
+        "path": "processed/player_game_features/2017-18_regular_season.csv",
+        "sha256": "b93a2be8e943c63fabafaf172194e12724679aac171d111974de55cc61757f2a",
+        "size_bytes": 3417927
+      },
+      {
+        "path": "processed/player_game_features/2018-19_playoffs.csv",
+        "sha256": "e894702dfef4d1261a53e0481694caea9b46dabe0434dedf74697ae51528abae",
+        "size_bytes": 222516
+      },
+      {
+        "path": "processed/player_game_features/2018-19_regular_season.csv",
+        "sha256": "e47529c69d7fe1d94f3583f59c23bfc96237afe10a0fd8995f63fe00032cf4e4",
+        "size_bytes": 3430048
+      },
+      {
+        "path": "processed/player_game_features/2019-20_playoffs.csv",
+        "sha256": "3129a0237c48ba8c234afb73c099f85439759ebb8d9e0f6c725266fe05b07d01",
+        "size_bytes": 215008
+      },
+      {
+        "path": "processed/player_game_features/2019-20_regular_season.csv",
+        "sha256": "e315ca22e35351d583b35a55b065f6f349db80d548ae2c3afef7cc469ac36967",
+        "size_bytes": 2955121
+      },
+      {
+        "path": "processed/player_game_features/2020-21_playoffs.csv",
+        "sha256": "4a99208e6022f259b85dff79274e0670ea8c0ecce2c3d5de5557f3e24ad2e4e2",
+        "size_bytes": 234747
+      },
+      {
+        "path": "processed/player_game_features/2020-21_regular_season.csv",
+        "sha256": "02b4c90692eaa956c443b9735100f4e09bdad23396cf3655e6dc06dcddeaf22b",
+        "size_bytes": 3041177
+      },
+      {
+        "path": "processed/player_game_features/2021-22_playoffs.csv",
+        "sha256": "53e944d5b54c35565b9dcd4d8ae745706af915ca957b9184a00d982bb1bb8204",
+        "size_bytes": 241425
+      },
+      {
+        "path": "processed/player_game_features/2021-22_regular_season.csv",
+        "sha256": "b31893d0c378da115670203d66459daec5d02bdfa5494c8a216b4b3183fd6208",
+        "size_bytes": 3433782
+      },
+      {
+        "path": "processed/player_game_features/2022-23_playoffs.csv",
+        "sha256": "85c51aea7fb10516f7f05a46fc3901a2651f7e3effcbc649cd61c8ddda16b6f4",
+        "size_bytes": 219356
+      },
+      {
+        "path": "processed/player_game_features/2022-23_regular_season.csv",
+        "sha256": "c81fd853db77cdc1552ab777de8e77116d3c916d66278d3c729f25344b7b5305",
+        "size_bytes": 3419520
+      },
+      {
+        "path": "processed/player_game_features/2023-24_playoffs.csv",
+        "sha256": "ff809924b7523a489f8b347b0157cf738cdb3061fc354fee0bdacee8e8df9cbd",
+        "size_bytes": 213566
+      },
+      {
+        "path": "processed/player_game_features/2023-24_regular_season.csv",
+        "sha256": "dca78f16980e06ff8110b0bc1f792be4c07cde0ee304def1b2b318fb77a90f70",
+        "size_bytes": 3489525
+      },
+      {
+        "path": "processed/player_game_features/2024-25_playoffs.csv",
+        "sha256": "2d4e7f1a965cc3bc8ff7fab718d6927c4d7a7487e08abdbd1ccce170bbe66703",
+        "size_bytes": 228712
+      },
+      {
+        "path": "processed/player_game_features/2024-25_regular_season.csv",
+        "sha256": "34d8c252b471565ba9eb250f2aa165b01f8bd540ae062dcbfba26a0b1be0c1f8",
+        "size_bytes": 3479900
+      },
+      {
+        "path": "processed/player_game_features/2025-26_playoffs.csv",
+        "sha256": "438cde8b25ea9efd0f268645756af545302793ec1e21066251a20bfb522cda53",
+        "size_bytes": 243873
+      },
+      {
+        "path": "processed/player_game_features/2025-26_regular_season.csv",
+        "sha256": "9eac836fa02de6689637cbd4ad3e00f619e573234d7ca59002cc3561e128162c",
+        "size_bytes": 3526745
+      },
+      {
+        "path": "processed/schedule_context_features/2024-25_playoffs.csv",
+        "sha256": "eed8b69a0002ce81abed124a5a50950f868c7ab823e1c56a28de51ecc62da94f",
+        "size_bytes": 27215
+      },
+      {
+        "path": "processed/schedule_context_features/2024-25_regular_season.csv",
+        "sha256": "b5bfa2e1491e4c41095eae477f790cc4b9bd3adf9aae427f98a87f3ac2f36130",
+        "size_bytes": 410862
+      },
+      {
+        "path": "processed/schedule_context_features/2025-26_playoffs.csv",
+        "sha256": "dfeae5b3c25fd12ffb52fc3ec7c6c5527d29c6a2382d22a5ca2ff2ca4699118c",
+        "size_bytes": 27338
+      },
+      {
+        "path": "processed/schedule_context_features/2025-26_regular_season.csv",
+        "sha256": "83693b10d13acb0ffcd543e0d5adb3d6fef9a37131e9ee6564c97771acb95532",
+        "size_bytes": 406312
+      },
+      {
+        "path": "processed/team_game_features/1996-97_playoffs.csv",
+        "sha256": "3e70c7b067da6e73b1556db28044e1ca3def8f6630b0318480bcce0cee3e3ed5",
+        "size_bytes": 17310
+      },
+      {
+        "path": "processed/team_game_features/1996-97_regular_season.csv",
+        "sha256": "08e8abbba34d68093437b9495e451e47a685a04776d68aec6fdc3020736c3a20",
+        "size_bytes": 294193
+      },
+      {
+        "path": "processed/team_game_features/1997-98_playoffs.csv",
+        "sha256": "a5d6326131ae2d8f35ca76ec5a6a33bf8c1e1731349c68786ae6b413c1855b8b",
+        "size_bytes": 17109
+      },
+      {
+        "path": "processed/team_game_features/1997-98_regular_season.csv",
+        "sha256": "9c7621677115a4c6a21aa662e3eeeb3b7cab806735e5294c26adbba2b1fbd768",
+        "size_bytes": 293038
+      },
+      {
+        "path": "processed/team_game_features/1998-99_playoffs.csv",
+        "sha256": "dec037c9ebc29c3e1fe97b405001da87506b7d74941cbcd38fd8f1d17883d6ab",
+        "size_bytes": 15799
+      },
+      {
+        "path": "processed/team_game_features/1998-99_regular_season.csv",
+        "sha256": "c16bf1762c9d5c7d0683d2c55657cfaf02568af6fbd449efdaec1d32d569db68",
+        "size_bytes": 179111
+      },
+      {
+        "path": "processed/team_game_features/1999-00_playoffs.csv",
+        "sha256": "ae1d6feae23adcb619b0b04b3e4afb26d0c5483019a72e414524a755fd7996ef",
+        "size_bytes": 17847
+      },
+      {
+        "path": "processed/team_game_features/1999-00_regular_season.csv",
+        "sha256": "a243f2f1be965bde6d1456f5eee8afc26534029b2e1acaeb71ba497c97ac9c6f",
+        "size_bytes": 294640
+      },
+      {
+        "path": "processed/team_game_features/2000-01_playoffs.csv",
+        "sha256": "e1b9c84753df3ba516d2bdc99e1cea9338156ae990fb10804f276278840b020f",
+        "size_bytes": 17220
+      },
+      {
+        "path": "processed/team_game_features/2000-01_regular_season.csv",
+        "sha256": "d4ba7a2c3f0c510b30b40c7691af72e93f2e96d82bff543920bc3b7e11ab7139",
+        "size_bytes": 292989
+      },
+      {
+        "path": "processed/team_game_features/2001-02_playoffs.csv",
+        "sha256": "09ca27850fe17ade351c901766e4da090a24b220ae7e341e5c910c3a10e168ed",
+        "size_bytes": 17204
+      },
+      {
+        "path": "processed/team_game_features/2001-02_regular_season.csv",
+        "sha256": "f656525c76c275721efcc61783b32d7d4b2bbe23b8023c17a9e309e29c33dff1",
+        "size_bytes": 293166
+      },
+      {
+        "path": "processed/team_game_features/2002-03_playoffs.csv",
+        "sha256": "3a964d6bb93095b0947ce92e5b89b61dff23d696bedee28e9d55cce0bb20f55e",
+        "size_bytes": 21206
+      },
+      {
+        "path": "processed/team_game_features/2002-03_regular_season.csv",
+        "sha256": "d8bfbb03f128d299198e52c6b050e956a438237f39040da544549c318e3b02de",
+        "size_bytes": 292597
+      },
+      {
+        "path": "processed/team_game_features/2003-04_playoffs.csv",
+        "sha256": "7a9962b4ca6bd5333302195b7644a8bef0f9783cc1fe33a17ea653bdd0bdf15d",
+        "size_bytes": 19848
+      },
+      {
+        "path": "processed/team_game_features/2003-04_regular_season.csv",
+        "sha256": "618c7abb273f58134315f13f36135d41d7b747bd3befd80550705affc6ccb581",
+        "size_bytes": 293152
+      },
+      {
+        "path": "processed/team_game_features/2004-05_playoffs.csv",
+        "sha256": "32298676af4dc2fd966d6bb569fbe9ce83b2d7db8cd1726a8b71e76126c8e7b6",
+        "size_bytes": 20450
+      },
+      {
+        "path": "processed/team_game_features/2004-05_regular_season.csv",
+        "sha256": "e2427960516f882b62c0340ab046f8050ddd5fa0c6c0375034df2531cc3f9cc2",
+        "size_bytes": 304110
+      },
+      {
+        "path": "processed/team_game_features/2005-06_playoffs.csv",
+        "sha256": "3ade2d95aeac3111a1436f559d0a74fe8c2fc73556b7d3e2670be1f8d1577748",
+        "size_bytes": 21726
+      },
+      {
+        "path": "processed/team_game_features/2005-06_regular_season.csv",
+        "sha256": "dd9076ea58b2df78c4f9cb7504c721da3d1ed2343f88cb018b90ef830d1c800a",
+        "size_bytes": 303947
+      },
+      {
+        "path": "processed/team_game_features/2006-07_playoffs.csv",
+        "sha256": "20114714738a7d814a0ae9d0f7c8f0a64a4e8818aa45efeae732c1575319971d",
+        "size_bytes": 19007
+      },
+      {
+        "path": "processed/team_game_features/2006-07_regular_season.csv",
+        "sha256": "f97d227e40673b248f4a382b5d604b1300f7ed50b57bb065813989101d1029e7",
+        "size_bytes": 304259
+      },
+      {
+        "path": "processed/team_game_features/2007-08_playoffs.csv",
+        "sha256": "2185300c9479a8a6ef9f0d3b0aed2783a87f5c2739224c1406b799e3a5066715",
+        "size_bytes": 20836
+      },
+      {
+        "path": "processed/team_game_features/2007-08_regular_season.csv",
+        "sha256": "609c7363ccca53ae92eaa888ba6aed4510f2cf37781bccf86b8b1977e5a2700d",
+        "size_bytes": 305698
+      },
+      {
+        "path": "processed/team_game_features/2008-09_playoffs.csv",
+        "sha256": "db7360e7e7c0fe370ed437c4dd7ec1d06c7ef43d87aaac9ac4c5b6a8617c2ede",
+        "size_bytes": 20553
+      },
+      {
+        "path": "processed/team_game_features/2008-09_regular_season.csv",
+        "sha256": "bf846f136df56e6fce590b5e49cdfa19b72d840f3142d3d893249f631ca254f6",
+        "size_bytes": 304659
+      },
+      {
+        "path": "processed/team_game_features/2009-10_playoffs.csv",
+        "sha256": "509864e07d568da2177945951c0184ac256083fe352614c2312d2998a6137779",
+        "size_bytes": 19861
+      },
+      {
+        "path": "processed/team_game_features/2009-10_regular_season.csv",
+        "sha256": "ead4b8faf85917cbf753d864a8e6bd2681f1b8e4c4d837a31b63af5d22cf3a8b",
+        "size_bytes": 305544
+      },
+      {
+        "path": "processed/team_game_features/2010-11_playoffs.csv",
+        "sha256": "1483a815efff0508a77a82bf6526a1fa07404e8ce9e51773105cd560db69a375",
+        "size_bytes": 19574
+      },
+      {
+        "path": "processed/team_game_features/2010-11_regular_season.csv",
+        "sha256": "8c2881ae986fc8b502d9b56062f96d3e981e6cf31e46639e237a4bcb534637a5",
+        "size_bytes": 304592
+      },
+      {
+        "path": "processed/team_game_features/2011-12_playoffs.csv",
+        "sha256": "a471b25672c412077f29f665a30971dcc8adf47eabeba92ba8bf5d567bb403f2",
+        "size_bytes": 20310
+      },
+      {
+        "path": "processed/team_game_features/2011-12_regular_season.csv",
+        "sha256": "f8abed7e7003d7b90e0d507d526d568da861a9e8357a8a79ccd54ccaa06a730d",
+        "size_bytes": 244860
+      },
+      {
+        "path": "processed/team_game_features/2012-13_playoffs.csv",
+        "sha256": "3ae0e75ae5495479fea99c32add27b48c281c4c22379f8e8ec0640b422d01d80",
+        "size_bytes": 20392
+      },
+      {
+        "path": "processed/team_game_features/2012-13_regular_season.csv",
+        "sha256": "cffcbfa9ea80259b5529d3077e36b3105b9822031eaefe7e089b4b587eb617e3",
+        "size_bytes": 304190
+      },
+      {
+        "path": "processed/team_game_features/2013-14_playoffs.csv",
+        "sha256": "03e42ad61dd9551e29501bc05583c1180ef6e22d5d6d7b57d8bbfa11c358a8b7",
+        "size_bytes": 21361
+      },
+      {
+        "path": "processed/team_game_features/2013-14_regular_season.csv",
+        "sha256": "36bc0584e9f0776c4bf7ab84d91b2785cfb0f930ad7c6655384f9f49b664aa81",
+        "size_bytes": 304699
+      },
+      {
+        "path": "processed/team_game_features/2014-15_playoffs.csv",
+        "sha256": "f2554cb110f2ba87dffcdb844b1ce7c4abecf8c8168dedfb7179edcddf77f014",
+        "size_bytes": 19799
+      },
+      {
+        "path": "processed/team_game_features/2014-15_regular_season.csv",
+        "sha256": "ac01822d4d70ff0f2e41624c625bb238a8e9fa9e32b7ccaee7b713a7689fd7f6",
+        "size_bytes": 305060
+      },
+      {
+        "path": "processed/team_game_features/2015-16_playoffs.csv",
+        "sha256": "464f881be134c5548d9eaf1e6307485045d06821997492fd76cc9bf47e5a82db",
+        "size_bytes": 20956
+      },
+      {
+        "path": "processed/team_game_features/2015-16_regular_season.csv",
+        "sha256": "59ba68ba1dede7c4688b16ca68cc80863a68a19ea213bacfec3c1954ad63252e",
+        "size_bytes": 306097
+      },
+      {
+        "path": "processed/team_game_features/2016-17_playoffs.csv",
+        "sha256": "d7850a2137a2da6689112a3148f52ca8a2042b6abb4726ffafb7d9c2fc96e213",
+        "size_bytes": 19172
+      },
+      {
+        "path": "processed/team_game_features/2016-17_regular_season.csv",
+        "sha256": "ea3d922b596de8e6844f026594482e5741018fb7fc4e5a105513c9d5cfc6e737",
+        "size_bytes": 306987
+      },
+      {
+        "path": "processed/team_game_features/2017-18_playoffs.csv",
+        "sha256": "215903bd471052e7cb1a5d9b11462cb317c6e4dc44ce6ebd3c702cb8d5059852",
+        "size_bytes": 20097
+      },
+      {
+        "path": "processed/team_game_features/2017-18_regular_season.csv",
+        "sha256": "f5171c469177e3c7f0d3d4591d33e69d0b8f48c06f527638776dc907a38ab5d7",
+        "size_bytes": 307104
+      },
+      {
+        "path": "processed/team_game_features/2018-19_playoffs.csv",
+        "sha256": "06653f32171db090a2ae8fcf08907e2d24ec4a09dbe0195ffd3d4271cfd93c82",
+        "size_bytes": 20082
+      },
+      {
+        "path": "processed/team_game_features/2018-19_regular_season.csv",
+        "sha256": "c95d7edc4844b0b785d0f359036f8891bf2b596488775e16942b872ea7e98399",
+        "size_bytes": 307501
+      },
+      {
+        "path": "processed/team_game_features/2019-20_playoffs.csv",
+        "sha256": "d65d4fa85f488d15ad77364200a092569103c123933cb1a4417e2d82c22d6b55",
+        "size_bytes": 20452
+      },
+      {
+        "path": "processed/team_game_features/2019-20_regular_season.csv",
+        "sha256": "5bd50376062d2815b21f1f46b6500191a6b2126948750a22bf646243288b2d11",
+        "size_bytes": 265279
+      },
+      {
+        "path": "processed/team_game_features/2020-21_playoffs.csv",
+        "sha256": "18416d83eb1c81a63551c5010ada70b0e99f234587c688c4c0143cee8edcf52d",
+        "size_bytes": 20887
+      },
+      {
+        "path": "processed/team_game_features/2020-21_regular_season.csv",
+        "sha256": "2fec001c97bf2f6a61799f5c442c04e717bd9e51ad4c656c61a36e6ab5dbdb60",
+        "size_bytes": 271206
+      },
+      {
+        "path": "processed/team_game_features/2021-22_playoffs.csv",
+        "sha256": "856872f91ec887758833d2868486b3dbd6121d49450955412b64d98f83fb00c3",
+        "size_bytes": 21207
+      },
+      {
+        "path": "processed/team_game_features/2021-22_regular_season.csv",
+        "sha256": "1d1ae78b349588874394011ef84910f3232e06981b915dbf728ed90dde30e2a6",
+        "size_bytes": 307863
+      },
+      {
+        "path": "processed/team_game_features/2022-23_playoffs.csv",
+        "sha256": "11f16c5a731684bd367a261f36d8664b988d03bcdc1d7fed55ebbe2373c52c7d",
+        "size_bytes": 20418
+      },
+      {
+        "path": "processed/team_game_features/2022-23_regular_season.csv",
+        "sha256": "24f7c24fb3204188ff29ac82039f6b30e5bc59dd81f2ff03fa09ebb3fa93455a",
+        "size_bytes": 309021
+      },
+      {
+        "path": "processed/team_game_features/2023-24_playoffs.csv",
+        "sha256": "613c46e4cc521f4a0a2ec47ef6317a0e7500935ce07a5de585b0e0c64f8fa293",
+        "size_bytes": 20001
+      },
+      {
+        "path": "processed/team_game_features/2023-24_regular_season.csv",
+        "sha256": "0c8ecc9388d469d48d0a2b986b1663337ae82e2301c15c0e0801233a872183f0",
+        "size_bytes": 308467
+      },
+      {
+        "path": "processed/team_game_features/2024-25_playoffs.csv",
+        "sha256": "1f364044e8f10f742a4d12948f0d5995303248eb728e762a24a1ac6d1e173890",
+        "size_bytes": 20503
+      },
+      {
+        "path": "processed/team_game_features/2024-25_regular_season.csv",
+        "sha256": "7cc0c894042b3977faef5a8d73fb037430b87b3007c0efdc4d65a8a3c6f3b9e1",
+        "size_bytes": 313393
+      },
+      {
+        "path": "processed/team_game_features/2025-26_playoffs.csv",
+        "sha256": "1df99718d36fc66d1dfc8b522c1744bf2823eb8c133ee3dbb49480cbdeaf9c14",
+        "size_bytes": 21048
+      },
+      {
+        "path": "processed/team_game_features/2025-26_regular_season.csv",
+        "sha256": "739567a93a1817b88cafe823c0382feceeba4ae45609d8ec681e13f5d39de9d1",
+        "size_bytes": 313592
+      },
+      {
+        "path": "raw/games/1996-97_playoffs.csv",
+        "sha256": "5d38b32a405fd4239ef3bef1297ca462677f000b05cae8bf0e63588e8058e642",
+        "size_bytes": 8680
+      },
+      {
+        "path": "raw/games/1996-97_regular_season.csv",
+        "sha256": "8a2ec994e06decce6e5729aa06ce4d5af6bfd6622083a22a82aaf1e477836559",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/1997-98_playoffs.csv",
+        "sha256": "5b775e9276e289b72b090143074d48028a400cac67ca3d525520ab0a64a57ca5",
+        "size_bytes": 8666
+      },
+      {
+        "path": "raw/games/1997-98_regular_season.csv",
+        "sha256": "e332faae6ee2443eb280fa677d1c6b3fc8e8d6da06585e31cb91ff967678e9f3",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/1998-99_playoffs.csv",
+        "sha256": "a77ce62597d7e57c19f2f2e9650ac71e51bc3a73d0a4411b86ae585662c6d786",
+        "size_bytes": 8167
+      },
+      {
+        "path": "raw/games/1998-99_regular_season.csv",
+        "sha256": "7cda3260d409cf0cc076ae175b25d3ca70d803db1bc51e101f441e1ddc6dbb77",
+        "size_bytes": 92321
+      },
+      {
+        "path": "raw/games/1999-00_playoffs.csv",
+        "sha256": "de0a79bd2f208503d5f5edde220148aebc159e232e58b48e39f4f68b7c5bded9",
+        "size_bytes": 9291
+      },
+      {
+        "path": "raw/games/1999-00_regular_season.csv",
+        "sha256": "520dc979f096eb1bad4d42cea6b6ef929b3a964225b137f4122708a7fbfaed5d",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/2000-01_playoffs.csv",
+        "sha256": "3aec1935fd0c137e6031ea6fe25b568db34dbd8e01ebedd1c3a470e4c0d13aad",
+        "size_bytes": 8856
+      },
+      {
+        "path": "raw/games/2000-01_regular_season.csv",
+        "sha256": "d3ee02f637116838295c1e77716b10c85b5287622057a12c363f9adbbde59403",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/2001-02_playoffs.csv",
+        "sha256": "02bf10b9b8adc008a2ab2f5e3739844843369dbd3aea034ae281da4453f0ea3a",
+        "size_bytes": 8838
+      },
+      {
+        "path": "raw/games/2001-02_regular_season.csv",
+        "sha256": "31a33aad06735e0c7318a38a3c474a3cb48901718b1b8c41f8012cce2a853e13",
+        "size_bytes": 151085
+      },
+      {
+        "path": "raw/games/2002-03_playoffs.csv",
+        "sha256": "3f0d16ab6afaf210b74d43df9ca61e6e45cf5ab874f3fc093b180be187a3ee33",
+        "size_bytes": 10907
+      },
+      {
+        "path": "raw/games/2002-03_regular_season.csv",
+        "sha256": "f97c0671bf21f12401550d5a015270811014f6de27ff5a789715e624037151b7",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/2003-04_playoffs.csv",
+        "sha256": "b0688d91140fc26573927a77b0156c2dd1ccda43063ecd6e5c63a951f425ed71",
+        "size_bytes": 10179
+      },
+      {
+        "path": "raw/games/2003-04_regular_season.csv",
+        "sha256": "49d7bb17160f8477bc5c215d2aff1af76950f28003817be3a17a004c1da5e674",
+        "size_bytes": 151249
+      },
+      {
+        "path": "raw/games/2004-05_playoffs.csv",
+        "sha256": "88678c2da5fef49eb430f26a3624198a50b2a1b9d6d6033f21d15f41117bfaf0",
+        "size_bytes": 10246
+      },
+      {
+        "path": "raw/games/2004-05_regular_season.csv",
+        "sha256": "4a0ab5bb84699d6c397c558bd02da8760656cd784681e7ff512c4bcf746e2896",
+        "size_bytes": 156538
+      },
+      {
+        "path": "raw/games/2005-06_playoffs.csv",
+        "sha256": "19f12168a7edba1f7417b2b6971a7b8db885cf28eb89cffdbe3eda43a8c94f21",
+        "size_bytes": 10853
+      },
+      {
+        "path": "raw/games/2005-06_regular_season.csv",
+        "sha256": "5cd97f175753c9d6457b08c07c6f72ac890aa49014d522a9327f6bc5535b9d6f",
+        "size_bytes": 157686
+      },
+      {
+        "path": "raw/games/2006-07_playoffs.csv",
+        "sha256": "b55b31ca0ed226db36b1329f1936654ed5b6adae7511a9300a13b6506c676e6a",
+        "size_bytes": 9678
+      },
+      {
+        "path": "raw/games/2006-07_regular_season.csv",
+        "sha256": "e4103f9b816ffda8d7b4a766b28a2f105dfb062ded467ca9e6c528765aa5528a",
+        "size_bytes": 157686
+      },
+      {
+        "path": "raw/games/2007-08_playoffs.csv",
+        "sha256": "697583fbb3da2c1b9ab258f3ec7829bd8ae176c6ccf1ce9ced3e59c1f30f371a",
+        "size_bytes": 10567
+      },
+      {
+        "path": "raw/games/2007-08_regular_season.csv",
+        "sha256": "97e7f34f280cb44d60f292a4c648774d14b8446684df09d2871b52d6502e593f",
+        "size_bytes": 156538
+      },
+      {
+        "path": "raw/games/2008-09_playoffs.csv",
+        "sha256": "77db22de77e54d85fbd91c9c162a787ea0b4af3569a043e433f4ce16dd5eeb05",
+        "size_bytes": 10407
+      },
+      {
+        "path": "raw/games/2008-09_regular_season.csv",
+        "sha256": "4712061709fc7d102b4211fee357e75a7b24c03a416a1895d8fa9ccbf959c9ee",
+        "size_bytes": 156702
+      },
+      {
+        "path": "raw/games/2009-10_playoffs.csv",
+        "sha256": "5fa93105fc815c25f33104f19a5d5c620438e4dff0bd0524e994c73e61b6821e",
+        "size_bytes": 10006
+      },
+      {
+        "path": "raw/games/2009-10_regular_season.csv",
+        "sha256": "91e3e604e35776064798939921f5bcd85fe6264dabb0100df3bd371462ce5993",
+        "size_bytes": 156702
+      },
+      {
+        "path": "raw/games/2010-11_playoffs.csv",
+        "sha256": "f13bee7e6f88e304ed7192f3ebccf649f6afa6bb9a3305f4274daa4d4e043683",
+        "size_bytes": 9965
+      },
+      {
+        "path": "raw/games/2010-11_regular_season.csv",
+        "sha256": "dc4f5e927c949767d8bdfc09a48b6d2500c236817c5a1d3be7af6b3a9ed011ef",
+        "size_bytes": 156702
+      },
+      {
+        "path": "raw/games/2011-12_playoffs.csv",
+        "sha256": "d7acfeff5fa5990323e4333216c06ecbe4246476b63b458ebe6c01d51aecd6db",
+        "size_bytes": 10327
+      },
+      {
+        "path": "raw/games/2011-12_regular_season.csv",
+        "sha256": "757c62e290e5910bcbb048db7a4bf6879af25c5afe2e44834e0865f6ae72efd2",
+        "size_bytes": 126174
+      },
+      {
+        "path": "raw/games/2012-13_playoffs.csv",
+        "sha256": "3d15e977815806aa57145765f69428e554282eb6a1b2ec1ddf8fcccb57cb72b6",
+        "size_bytes": 10417
+      },
+      {
+        "path": "raw/games/2012-13_regular_season.csv",
+        "sha256": "85115ee1545a6c3b50c5f93e084eaf4908cfdcf0e68dc159c1687ab14c4da18d",
+        "size_bytes": 156415
+      },
+      {
+        "path": "raw/games/2013-14_playoffs.csv",
+        "sha256": "e30fa20cd40901a17f2dd792629734177ab4370692d29c258da538089bfb2ea7",
+        "size_bytes": 11076
+      },
+      {
+        "path": "raw/games/2013-14_regular_season.csv",
+        "sha256": "b77c86177e2b523a4c96817f5e1e7837f00359a2548cf5baab60ecaa725ef0c4",
+        "size_bytes": 156620
+      },
+      {
+        "path": "raw/games/2014-15_playoffs.csv",
+        "sha256": "2906b60fb5d426e2795dea00d216bb91abaac499a327419558214b94220d5d2e",
+        "size_bytes": 10215
+      },
+      {
+        "path": "raw/games/2014-15_regular_season.csv",
+        "sha256": "716e7288045ef1c7b982ee9d13e0bc22571dd97578a3257fc8a94f9bcd27897f",
+        "size_bytes": 156620
+      },
+      {
+        "path": "raw/games/2015-16_playoffs.csv",
+        "sha256": "054991553dd741f73274909dcaa3098e8bc2b4306f571cb74027f33e64d15284",
+        "size_bytes": 10813
+      },
+      {
+        "path": "raw/games/2015-16_regular_season.csv",
+        "sha256": "cb662a6de2f3760c0c52e83c38fdd2852d9238106a8231e936d447ddd621b889",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2016-17_playoffs.csv",
+        "sha256": "a83205e15361523f2a9d10e9ad2cc9c2fcf6d07f9092ca8ca56e5049ae15254a",
+        "size_bytes": 9822
+      },
+      {
+        "path": "raw/games/2016-17_regular_season.csv",
+        "sha256": "beabf5ec3b5e6a268decc7bb0984e02a1e434f689c39dc17f1896800e89ed30d",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2017-18_playoffs.csv",
+        "sha256": "592bc3cfe422b6a53ec5a990a8e20067deb987e830b189b5bbb0b3b86837325a",
+        "size_bytes": 10303
+      },
+      {
+        "path": "raw/games/2017-18_regular_season.csv",
+        "sha256": "b5718704325ee61f2e938e797148f701fdab068c0b51cd7219311c8995a2ccfc",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2018-19_playoffs.csv",
+        "sha256": "8ddf8ae1b0eb3307e72e161ecc17173109e649f5f8facdae0cf2c0415e19f9d9",
+        "size_bytes": 10227
+      },
+      {
+        "path": "raw/games/2018-19_regular_season.csv",
+        "sha256": "56cb70f482e43493d4c1c104ad7b64d0f2871d2e12dc3e1dd59e527d88a05176",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2019-20_playoffs.csv",
+        "sha256": "70cece3d9b31af2dfeeaa27e22558a25fce72c9d99574d8f52396585a462fccb",
+        "size_bytes": 10024
+      },
+      {
+        "path": "raw/games/2019-20_regular_season.csv",
+        "sha256": "46f1d0f7c82836e0aa721f5bc02d7dbf60232038a2b755091f4184c8a41c3571",
+        "size_bytes": 134166
+      },
+      {
+        "path": "raw/games/2020-21_playoffs.csv",
+        "sha256": "e2953a34bef78159ba13dcafd3d1b70cc2298a6ac7fad7efe57def7b40b4cfb0",
+        "size_bytes": 10186
+      },
+      {
+        "path": "raw/games/2020-21_regular_season.csv",
+        "sha256": "d23f02a21dee102693d837e4a7bc10219984c14166ebbdcfae0271cd672b7f72",
+        "size_bytes": 136902
+      },
+      {
+        "path": "raw/games/2021-22_playoffs.csv",
+        "sha256": "56674da18a823c114487b4331f7abaf73dbdbbc8ea1e10bcee09847d50c2bc98",
+        "size_bytes": 10659
+      },
+      {
+        "path": "raw/games/2021-22_regular_season.csv",
+        "sha256": "7ebd7814f76d1864f61b083abd4b53258865a1a5393e52b4b2ceedb976dceb72",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2022-23_playoffs.csv",
+        "sha256": "1b8cc9503faa8a6c068ed6879cc07c6928b69d37b2747ad9c7c0e866ddec2235",
+        "size_bytes": 10247
+      },
+      {
+        "path": "raw/games/2022-23_regular_season.csv",
+        "sha256": "a532d58cf1c14188063a332c96d76d27ddce6dc4c962c06616de2f341434598c",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2023-24_playoffs.csv",
+        "sha256": "5aacea355477f88a35c09a83dde47023cb4aa06e81b22c509faa9c1e4943c24d",
+        "size_bytes": 10176
+      },
+      {
+        "path": "raw/games/2023-24_regular_season.csv",
+        "sha256": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+        "size_bytes": 155882
+      },
+      {
+        "path": "raw/games/2024-25_playoffs.csv",
+        "sha256": "87b0b359d5269b9fc88ac38936a5aba4cb3c209a587a47d65fb506063bc50528",
+        "size_bytes": 10510
+      },
+      {
+        "path": "raw/games/2024-25_regular_season.csv",
+        "sha256": "14d7deee5a5fa39e0bc42e769dd0412ade69b9e02af207b3fa2f103be5851df3",
+        "size_bytes": 283092
+      },
+      {
+        "path": "raw/games/2025-26_playoffs.csv",
+        "sha256": "ef43d8aca81734c638a34aac7a68885dc7de151f6825bf8c11878138d067bd89",
+        "size_bytes": 19847
+      },
+      {
+        "path": "raw/games/2025-26_regular_season.csv",
+        "sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+        "size_bytes": 283089
+      },
+      {
+        "path": "raw/player_game_availability/1997-98_regular_season.csv",
+        "sha256": "6374c8986f76832b57979e0a91c0f26d000507f737d5c4bb62c0a8e4fc9acf74",
+        "size_bytes": 6760
+      },
+      {
+        "path": "raw/player_game_availability/1997-98_regular_season.imports.json",
+        "sha256": "f4afddf0ee325b172c9410e094184a163ce1981b442ac2397be30118bf2bc500",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2004-05_regular_season.csv",
+        "sha256": "ffda740f1d5c399ec46ecf1c7e5c7db0488e71db3b8fb23fe0dbce7fa30c6120",
+        "size_bytes": 6514
+      },
+      {
+        "path": "raw/player_game_availability/2004-05_regular_season.imports.json",
+        "sha256": "03ff7d97e990d2fd0bb200176847f9e5ae8fe8e976a7089598f3903892d15691",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2014-15_regular_season.csv",
+        "sha256": "758de65697f70501b50193cdfad8a7ba00f9221c13a07546f7119bd9bdc31845",
+        "size_bytes": 8567
+      },
+      {
+        "path": "raw/player_game_availability/2014-15_regular_season.imports.json",
+        "sha256": "bd28cb0e0b8d3ebe3f19ecdaea8abc5a4557a62c56ac25fa8b94710aa38df998",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2023-24_regular_season.csv",
+        "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+        "size_bytes": 16721
+      },
+      {
+        "path": "raw/player_game_availability/2023-24_regular_season.imports.json",
+        "sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085",
+        "size_bytes": 225
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.csv",
+        "sha256": "712ba97422973c5f99efd9709bef654619443090f1a509bba9f13747df2913ac",
+        "size_bytes": 52301
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+        "sha256": "6bb5408413374bd7292b26e9f8e2daa299e526536c2ed3a5cdd8f450435bd702",
+        "size_bytes": 673
+      },
+      {
+        "path": "raw/player_game_availability_sources/15dded8143b56e729b8e12d220c440999939bbf3098123f70a69d98350b2693b.structured.json",
+        "sha256": "15dded8143b56e729b8e12d220c440999939bbf3098123f70a69d98350b2693b",
+        "size_bytes": 1117
+      },
+      {
+        "path": "raw/player_game_availability_sources/17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec.pdf",
+        "sha256": "17fa1bc44b172df7afcf2154a64fb39c6d1f26986941a8bf03b82d0fd553f1ec",
+        "size_bytes": 27392
+      },
+      {
+        "path": "raw/player_game_availability_sources/20231225_BOSLAL.json",
+        "sha256": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20240201_LALBOS.json",
+        "sha256": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251021_GSWLAL.json",
+        "sha256": "abdff18f62b628aa701cc21baf4654b763908836f84749fec6de5bda331ff47b",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251024_MINLAL.json",
+        "sha256": "4abc7b29e60e55b382d0c7e8a5025c68b50597a1bac209e2ef2f5c70c58aec06",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251026_LALSAC.json",
+        "sha256": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251027_PORLAL.json",
+        "sha256": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20251205_LALBOS.json",
+        "sha256": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/20260222_BOSLAL.json",
+        "sha256": "eff3ce4c22e39bb2b6873657653885b5168f48eb84ffdc807c2f60145516f6ee",
+        "size_bytes": 312
+      },
+      {
+        "path": "raw/player_game_availability_sources/231a7a6005ccd3e41ba1a7b6aa5e2cbda747935337c72714754ef08702901a4b.json",
+        "sha256": "231a7a6005ccd3e41ba1a7b6aa5e2cbda747935337c72714754ef08702901a4b",
+        "size_bytes": 3117
+      },
+      {
+        "path": "raw/player_game_availability_sources/4dd48718f89a906b05385ebb81034e719f33c1470fffcbfb1a7e28582686eade.json",
+        "sha256": "4dd48718f89a906b05385ebb81034e719f33c1470fffcbfb1a7e28582686eade",
+        "size_bytes": 17636
+      },
+      {
+        "path": "raw/player_game_availability_sources/4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf",
+        "sha256": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06",
+        "size_bytes": 26990
+      },
+      {
+        "path": "raw/player_game_availability_sources/5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf",
+        "sha256": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5",
+        "size_bytes": 27688
+      },
+      {
+        "path": "raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf",
+        "sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+        "size_bytes": 27308
+      },
+      {
+        "path": "raw/player_game_availability_sources/91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306.pdf",
+        "sha256": "91205f2e28bf0f3b9537b4c07d7c1e20eb4fe3f8beba5907e176f08c1a5a3306",
+        "size_bytes": 27147
+      },
+      {
+        "path": "raw/player_game_availability_sources/95bf8000ad6def3f80693562039efcecaeec30c3c8dfdbb8931e0b7d0971a441.structured.json",
+        "sha256": "95bf8000ad6def3f80693562039efcecaeec30c3c8dfdbb8931e0b7d0971a441",
+        "size_bytes": 1117
+      },
+      {
+        "path": "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf",
+        "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+        "size_bytes": 26828
+      },
+      {
+        "path": "raw/player_game_availability_sources/9cfc818a3f68d226a9011c97ce89effeaffcdc0203535b591f0cdd3ee34b8aef.json",
+        "sha256": "9cfc818a3f68d226a9011c97ce89effeaffcdc0203535b591f0cdd3ee34b8aef",
+        "size_bytes": 19610
+      },
+      {
+        "path": "raw/player_game_availability_sources/b7dee482d517bfed0499e99cbd2cecb6ae7e0e33d8f1b48b2c099e90e898e743.json",
+        "sha256": "b7dee482d517bfed0499e99cbd2cecb6ae7e0e33d8f1b48b2c099e90e898e743",
+        "size_bytes": 18279
+      },
+      {
+        "path": "raw/player_game_availability_sources/c03a5b3b01837b37e41950065a51838a20e5ea0b190deb72108866218f49e7c8.json",
+        "sha256": "c03a5b3b01837b37e41950065a51838a20e5ea0b190deb72108866218f49e7c8",
+        "size_bytes": 3391
+      },
+      {
+        "path": "raw/player_game_availability_sources/c16c8276c24ff114364d2efc060e2024ad2aaaa01729129226be27f65259a468.json",
+        "sha256": "c16c8276c24ff114364d2efc060e2024ad2aaaa01729129226be27f65259a468",
+        "size_bytes": 3080
+      },
+      {
+        "path": "raw/player_game_availability_sources/d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf.pdf",
+        "sha256": "d23a0c6c0cdf78ad1ef0b49a0d731608b0ddd8cc648ff46b3fe3760811dba6cf",
+        "size_bytes": 26763
+      },
+      {
+        "path": "raw/player_game_availability_sources/d7e3a9004a6c54e1abf59daedfaca6e0e69bd994155591807b7ab35ded1d3981.structured.json",
+        "sha256": "d7e3a9004a6c54e1abf59daedfaca6e0e69bd994155591807b7ab35ded1d3981",
+        "size_bytes": 1117
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.identity.json",
+        "sha256": "e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59",
+        "size_bytes": 222
+      },
+      {
+        "path": "raw/player_game_availability_sources/e941a81eeac7f4a1189cb0e78dba68516989ea4026e51db9b69348928c06bb59.receipt.json",
+        "sha256": "7a9ca50e1d195be87ad979b75211b0a19ca8aa2a3419fc7be6755d37a1816eea",
+        "size_bytes": 300
+      },
+      {
+        "path": "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf",
+        "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+        "size_bytes": 26371
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.profile.html",
+        "sha256": "fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a",
+        "size_bytes": 336723
+      },
+      {
+        "path": "raw/player_game_availability_sources/fceb92126f773aa44f30c4204dd035c390051ad18e85447a801430408714389a.receipt.json",
+        "sha256": "3638d89a47c60e8886d0aaafd535465b94b595dff5976079f2fd463ea583db39",
+        "size_bytes": 298
+      },
+      {
+        "path": "raw/player_game_period_stats/2024-25_playoffs.csv",
+        "sha256": "0d637e22acf3ca195b55431887e37788c23f2635c732eeb21162edd15b8abef4",
+        "size_bytes": 3326045
+      },
+      {
+        "path": "raw/player_game_period_stats/2024-25_regular_season.csv",
+        "sha256": "af43eec60e3abfeefaede95a91ef9e95d3f11ad642e65258529870ca6983e697",
+        "size_bytes": 43786635
+      },
+      {
+        "path": "raw/player_game_period_stats/2025-26_playoffs.csv",
+        "sha256": "dbcae6e8b9cac07e07d9da3b959e480daf14dcf5268c688f01c8eb608c213620",
+        "size_bytes": 3150382
+      },
+      {
+        "path": "raw/player_game_period_stats/2025-26_regular_season.csv",
+        "sha256": "eb57689a417ecbf8db3acc334662362ba26fcdfc7542a89cacf512ac5a7d3e91",
+        "size_bytes": 44478439
+      },
+      {
+        "path": "raw/player_game_starter_roles/2024-25_playoffs.csv",
+        "sha256": "b0d6cf8e94e61c6e5b47fe58013e2b226855ebde8cfbab5321c261418b000136",
+        "size_bytes": 252472
+      },
+      {
+        "path": "raw/player_game_starter_roles/2024-25_regular_season.csv",
+        "sha256": "7a51da41ddcb12c2e8cb1fd64c07b965aa9be129e0e43218bcb0208ebcda6b86",
+        "size_bytes": 2908865
+      },
+      {
+        "path": "raw/player_game_starter_roles/2025-26_playoffs.csv",
+        "sha256": "210f97a47808a511a9d5495d416087ffa00664621be586f2bfecf82cc021b265",
+        "size_bytes": 201148
+      },
+      {
+        "path": "raw/player_game_starter_roles/2025-26_regular_season.csv",
+        "sha256": "baacf987ed5cdd0501ab99f066db966983c2a50d758ac4c2930937117a0c558c",
+        "size_bytes": 2947886
+      },
+      {
+        "path": "raw/player_game_stats/1996-97_playoffs.csv",
+        "sha256": "b3b5cdede242aeae9b5ce9b85a6b7e68c4fb21727545f40320a4228b6eeb440b",
+        "size_bytes": 243249
+      },
+      {
+        "path": "raw/player_game_stats/1996-97_regular_season.csv",
+        "sha256": "00f6a5dc8e7479a917b4a5308509ba622647583b824aa4be5b3e21024611996b",
+        "size_bytes": 4326898
+      },
+      {
+        "path": "raw/player_game_stats/1997-98_playoffs.csv",
+        "sha256": "c6b4a6e21e848e486f8903a771436a6d6672ad7b9c157bf44202ebbad0fd1cb5",
+        "size_bytes": 246345
+      },
+      {
+        "path": "raw/player_game_stats/1997-98_regular_season.csv",
+        "sha256": "e583fde4c2fe95994ecd4aca81739051268cc40e536cad7adba67ad753bb8349",
+        "size_bytes": 4367809
+      },
+      {
+        "path": "raw/player_game_stats/1998-99_playoffs.csv",
+        "sha256": "df7a9e99c9faf28fd0d26ef42a5525b0c279f2701d1a983b8128749764783598",
+        "size_bytes": 234105
+      },
+      {
+        "path": "raw/player_game_stats/1998-99_regular_season.csv",
+        "sha256": "c48f3e69e00196bdbab975a0a68fadbcdadbde82bd816ae48c5c644b826dd747",
+        "size_bytes": 2715540
+      },
+      {
+        "path": "raw/player_game_stats/1999-00_playoffs.csv",
+        "sha256": "ac00b417d768e0362ab78ef1782a3efdab24ffea3ade8a112914edcd87a9e5ca",
+        "size_bytes": 259095
+      },
+      {
+        "path": "raw/player_game_stats/1999-00_regular_season.csv",
+        "sha256": "5990edf5686c2cf2e5b8f92c20f7ea5a88a308c9ae2ba39666a290c7c3cf9a87",
+        "size_bytes": 4429091
+      },
+      {
+        "path": "raw/player_game_stats/2000-01_playoffs.csv",
+        "sha256": "944d3673e881ac0dfb02aa2ddff126634a7f6fde301cd4f039e746826023a3fc",
+        "size_bytes": 245690
+      },
+      {
+        "path": "raw/player_game_stats/2000-01_regular_season.csv",
+        "sha256": "2623c5bc577bc8139088aa506a77dae94b0527d4bde060964d737e34e7d5a151",
+        "size_bytes": 4374777
+      },
+      {
+        "path": "raw/player_game_stats/2001-02_playoffs.csv",
+        "sha256": "985cb78ed9706d5468f5be9ded4720ccc0dc2901712f17f0fcdbdf4b3259c250",
+        "size_bytes": 242407
+      },
+      {
+        "path": "raw/player_game_stats/2001-02_regular_season.csv",
+        "sha256": "54cd78100a56040a9a836adbeae80e4adc0c23479846e4db9fc7e8a1413bb52a",
+        "size_bytes": 4365852
+      },
+      {
+        "path": "raw/player_game_stats/2002-03_playoffs.csv",
+        "sha256": "057f16e2b450cb9df5004eecf0fc18be9c9e1d5145fcf858f30d408053c43bd6",
+        "size_bytes": 312431
+      },
+      {
+        "path": "raw/player_game_stats/2002-03_regular_season.csv",
+        "sha256": "57053cd14499e091a1d3b59a6ebf8c623794f9076931150007781bc91dc73233",
+        "size_bytes": 4375495
+      },
+      {
+        "path": "raw/player_game_stats/2003-04_playoffs.csv",
+        "sha256": "7aaf2fccbb084ee7b6c70664feaf90c4ae2d163b97c2e00393c7a27a2102837b",
+        "size_bytes": 292553
+      },
+      {
+        "path": "raw/player_game_stats/2003-04_regular_season.csv",
+        "sha256": "30573c23dda21e1c0042ceb1d787608d2955dae39aff79eaa8f0c47e8eb93752",
+        "size_bytes": 4366926
+      },
+      {
+        "path": "raw/player_game_stats/2004-05_playoffs.csv",
+        "sha256": "2756b62a89922b1b4b1d023f8f253ac5ae4abe2766578151674e5e24b8ebf4f1",
+        "size_bytes": 288834
+      },
+      {
+        "path": "raw/player_game_stats/2004-05_regular_season.csv",
+        "sha256": "eed3bff6a1826ff7e292b89244ebe25f8baa6dec3803bd81e653dc1d55e6eef1",
+        "size_bytes": 4564971
+      },
+      {
+        "path": "raw/player_game_stats/2005-06_playoffs.csv",
+        "sha256": "c08a9342d436c33795a9abfcfa01b08abce67cc75f372f560a2780d155bd1ffc",
+        "size_bytes": 301996
+      },
+      {
+        "path": "raw/player_game_stats/2005-06_regular_season.csv",
+        "sha256": "aac1f923c179883d66e0c7c9d31efe56280d620ef44ac94a47d74fb3f4207a85",
+        "size_bytes": 4589711
+      },
+      {
+        "path": "raw/player_game_stats/2006-07_playoffs.csv",
+        "sha256": "23ca228d31ad7df5ac30b6b2b12b53689024dbf200fe5810436ea8ed8044c0a5",
+        "size_bytes": 274959
+      },
+      {
+        "path": "raw/player_game_stats/2006-07_regular_season.csv",
+        "sha256": "395740b9a2fa5d4b4eb4d6952b0c5dbc20b14f89a08faea66def7b3416e24f72",
+        "size_bytes": 4629021
+      },
+      {
+        "path": "raw/player_game_stats/2007-08_playoffs.csv",
+        "sha256": "76f83b266c2dffd20d14b981f0b346c4edda6c28e66e29af576005993fb57363",
+        "size_bytes": 310950
+      },
+      {
+        "path": "raw/player_game_stats/2007-08_regular_season.csv",
+        "sha256": "2f26ecdedf08b0d5d97c681a8a60e3f4614292e1018bac3db224e0d6dfe14a79",
+        "size_bytes": 4576043
+      },
+      {
+        "path": "raw/player_game_stats/2008-09_playoffs.csv",
+        "sha256": "e1a6b142107e7009e2faf6052eb9b54c797a12ebc327070511dcad883fbe55b1",
+        "size_bytes": 306250
+      },
+      {
+        "path": "raw/player_game_stats/2008-09_regular_season.csv",
+        "sha256": "82bd4ec95ea5d1912c67e34bc523e52bb186e29f7f6b8b50a053280094202f8a",
+        "size_bytes": 4537009
+      },
+      {
+        "path": "raw/player_game_stats/2009-10_playoffs.csv",
+        "sha256": "0d7f106fdf83367311b7339bf24eb53151df7d631cade623857bbcc28c085575",
+        "size_bytes": 294338
+      },
+      {
+        "path": "raw/player_game_stats/2009-10_regular_season.csv",
+        "sha256": "8d8d8bf547ea77972bc04aebfb8445b1185920d9c0166470f2ddc6f07240780d",
+        "size_bytes": 4578785
+      },
+      {
+        "path": "raw/player_game_stats/2010-11_playoffs.csv",
+        "sha256": "2ec1b8bb5e4016c0c15e5897052f78b9b8442f9b87f0de19fa82209e16d15aa8",
+        "size_bytes": 285570
+      },
+      {
+        "path": "raw/player_game_stats/2010-11_regular_season.csv",
+        "sha256": "f177b9029aaeea09fb7054b71fcb22616d949a57a4b7c9a0f7df9c3fcf5579e7",
+        "size_bytes": 4640767
+      },
+      {
+        "path": "raw/player_game_stats/2011-12_playoffs.csv",
+        "sha256": "aede5a4f7e56e38cdc92c41153bf3100976eca34a2720ae21df41c1903463b5a",
+        "size_bytes": 307866
+      },
+      {
+        "path": "raw/player_game_stats/2011-12_regular_season.csv",
+        "sha256": "42a4085d3739d5057a16b67a6b11b1d6bb95df8d1473c76ee3526e55d3e1ef4a",
+        "size_bytes": 3830787
+      },
+      {
+        "path": "raw/player_game_stats/2012-13_playoffs.csv",
+        "sha256": "b61d0defd05812e64284136b564a5d6094dadde09c7e0c2aade9ef9edbc2999c",
+        "size_bytes": 314445
+      },
+      {
+        "path": "raw/player_game_stats/2012-13_regular_season.csv",
+        "sha256": "0bfbfb5893b1af3de4592aca7a5262c7970a42d334997b5a339ce16fcfb9b7f8",
+        "size_bytes": 4759863
+      },
+      {
+        "path": "raw/player_game_stats/2013-14_playoffs.csv",
+        "sha256": "10ed4a3a2a32c6ee7e26a6e6b59ee2ad419c20e6a2e622539910a6a8c4842302",
+        "size_bytes": 340956
+      },
+      {
+        "path": "raw/player_game_stats/2013-14_regular_season.csv",
+        "sha256": "17235bb83628c672fcedfc67b152b17284191271ac2476c4b5e40f4e26628fd4",
+        "size_bytes": 4749241
+      },
+      {
+        "path": "raw/player_game_stats/2014-15_playoffs.csv",
+        "sha256": "34730990455d036d3d49bca79ed4c1b27c50a205372e300ea5035f2fc6a03533",
+        "size_bytes": 299620
+      },
+      {
+        "path": "raw/player_game_stats/2014-15_regular_season.csv",
+        "sha256": "34a5d03cbeaf45e3104e87a96a8ab92990076628098f10df11cccfed9c1ba21a",
+        "size_bytes": 4817411
+      },
+      {
+        "path": "raw/player_game_stats/2015-16_playoffs.csv",
+        "sha256": "41b825f8fd7fa5334b93dbfad8afa91d81ee529bdbafa3a303146267a2c75018",
+        "size_bytes": 344246
+      },
+      {
+        "path": "raw/player_game_stats/2015-16_regular_season.csv",
+        "sha256": "c652b3d40815b6b9282eb383f256eefa5ff5f704d3731c590aea620e95d2a3fa",
+        "size_bytes": 4832480
+      },
+      {
+        "path": "raw/player_game_stats/2016-17_playoffs.csv",
+        "sha256": "b1942a939a388c11a1450722aeb8ee734c65883f5ab61576ee6b78bb16c11bdb",
+        "size_bytes": 312325
+      },
+      {
+        "path": "raw/player_game_stats/2016-17_regular_season.csv",
+        "sha256": "a57f30cc321a68a2934d31ada53735d40a6075b1a6b943972628df16842b589f",
+        "size_bytes": 4859782
+      },
+      {
+        "path": "raw/player_game_stats/2017-18_playoffs.csv",
+        "sha256": "9e30d5fa99fd63067f866584e41a82c7c14e435c7fb7c7176ecb739056f498ba",
+        "size_bytes": 313295
+      },
+      {
+        "path": "raw/player_game_stats/2017-18_regular_season.csv",
+        "sha256": "4cbd0a80a95f4ad4a68f52417a1aa82e53923ebba1dd998bcdcbd870adc4097e",
+        "size_bytes": 4857421
+      },
+      {
+        "path": "raw/player_game_stats/2018-19_playoffs.csv",
+        "sha256": "438849c4b1a7fc9f8ee33d909f7b16e421598e1cd3f2423892a0178933bb6cb3",
+        "size_bytes": 319044
+      },
+      {
+        "path": "raw/player_game_stats/2018-19_regular_season.csv",
+        "sha256": "46503a334a1db19e7def9148962c11c1243ccf9744d14d153531b2b9dc7419ce",
+        "size_bytes": 4872571
+      },
+      {
+        "path": "raw/player_game_stats/2019-20_playoffs.csv",
+        "sha256": "f1b6e62478a1e05bde1def68f05b6048545ceeebaa374211190f8014963ab522",
+        "size_bytes": 301582
+      },
+      {
+        "path": "raw/player_game_stats/2019-20_regular_season.csv",
+        "sha256": "2384e04ee6b08a1df999193e216c0f83d2a90b1e9067b9440acc9530e344e240",
+        "size_bytes": 4186109
+      },
+      {
+        "path": "raw/player_game_stats/2020-21_playoffs.csv",
+        "sha256": "26a45d2355a96501767ab93464bd97146d488b7e96c352caa6cd6647aa53b2fc",
+        "size_bytes": 328729
+      },
+      {
+        "path": "raw/player_game_stats/2020-21_regular_season.csv",
+        "sha256": "b5b2f663d03d17fc92731901ffa968e3d92c9f10944019b63f02ad261d671091",
+        "size_bytes": 4307040
+      },
+      {
+        "path": "raw/player_game_stats/2021-22_playoffs.csv",
+        "sha256": "d702a11476ec9df09aef1954ac5fc07b6c208608516fde09a537d5023f7353af",
+        "size_bytes": 339841
+      },
+      {
+        "path": "raw/player_game_stats/2021-22_regular_season.csv",
+        "sha256": "4be7012392c9bbc31237a2ce26acde9d13b86f8a21143ff86b1d04bcd87acdca",
+        "size_bytes": 4870890
+      },
+      {
+        "path": "raw/player_game_stats/2022-23_playoffs.csv",
+        "sha256": "373f2a93584c9347a013a2179fe66e8f1b54ff0ed9a00ec26a4dfe2761cf1e91",
+        "size_bytes": 309749
+      },
+      {
+        "path": "raw/player_game_stats/2022-23_regular_season.csv",
+        "sha256": "8fa4aaf0c498653075db4eac586efdb8fc978d40a54a1fb5dfff549d20ba48e5",
+        "size_bytes": 4845861
+      },
+      {
+        "path": "raw/player_game_stats/2023-24_playoffs.csv",
+        "sha256": "614ca65b9313456e299f5a0e8dfb3a8f9f38900d51ba2c653563244fedf9545e",
+        "size_bytes": 305551
+      },
+      {
+        "path": "raw/player_game_stats/2023-24_regular_season.csv",
+        "sha256": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+        "size_bytes": 4939911
+      },
+      {
+        "path": "raw/player_game_stats/2024-25_playoffs.csv",
+        "sha256": "0cba0495d031850fd2d39b45f1278aecb2f5a89dbd7f2d50d0bb4181d254e8ac",
+        "size_bytes": 329971
+      },
+      {
+        "path": "raw/player_game_stats/2024-25_regular_season.csv",
+        "sha256": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+        "size_bytes": 4926374
+      },
+      {
+        "path": "raw/player_game_stats/2025-26_playoffs.csv",
+        "sha256": "b01d5bfb6a458509fe46ab54ea6490889a9148e7a5e4641bb4824f1d18b2714f",
+        "size_bytes": 351991
+      },
+      {
+        "path": "raw/player_game_stats/2025-26_regular_season.csv",
+        "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+        "size_bytes": 4993942
+      },
+      {
+        "path": "raw/player_season_advanced/1996-97_playoffs.csv",
+        "sha256": "599e139876d5a94c691e1ad794aa0ac84e14e3aa481e94417b937ff5c3b8ccb5",
+        "size_bytes": 22700
+      },
+      {
+        "path": "raw/player_season_advanced/1996-97_regular_season.csv",
+        "sha256": "105fd637465eca0acb21b7f340e9f6770fee9ec571287a0fae1bf18e1fc99c2f",
+        "size_bytes": 56381
+      },
+      {
+        "path": "raw/player_season_advanced/1997-98_playoffs.csv",
+        "sha256": "9545a487e8af00492ee7e719ccc2135800aa769c1c27db2ec15f7a3c797dca29",
+        "size_bytes": 22803
+      },
+      {
+        "path": "raw/player_season_advanced/1997-98_regular_season.csv",
+        "sha256": "a8c79ccd88cf6be2c2e8f7e55cde22601c968a9a20440669b465b4e80b700eb2",
+        "size_bytes": 56043
+      },
+      {
+        "path": "raw/player_season_advanced/1998-99_playoffs.csv",
+        "sha256": "3fb504d2c342b8abce258fbc3bb778ad8700a564de5851078e80789c084f570e",
+        "size_bytes": 22674
+      },
+      {
+        "path": "raw/player_season_advanced/1998-99_regular_season.csv",
+        "sha256": "4d292ed7011bb7a9c2da38f24f7a49f343bd71f0b5734edce52bd4bc2a934ebc",
+        "size_bytes": 55897
+      },
+      {
+        "path": "raw/player_season_advanced/1999-00_playoffs.csv",
+        "sha256": "6521a18937e23251e7b478ae26cfdc0d9c0188851c04448d175b2d78463c8b4a",
+        "size_bytes": 21790
+      },
+      {
+        "path": "raw/player_season_advanced/1999-00_regular_season.csv",
+        "sha256": "b1734b7f678f2963ac327b3c0235ea58aadde2b41a6d3f0e39149e3d2744533f",
+        "size_bytes": 56121
+      },
+      {
+        "path": "raw/player_season_advanced/2000-01_playoffs.csv",
+        "sha256": "462fb8540cc298b1d51731d2c3598a604e820d8bc32d4f2cc7369c60233923bc",
+        "size_bytes": 22927
+      },
+      {
+        "path": "raw/player_season_advanced/2000-01_regular_season.csv",
+        "sha256": "70470fa525b59480ae865d3e2cb34658d1f928ba03fc55813b0cb5ebb1af5c95",
+        "size_bytes": 56380
+      },
+      {
+        "path": "raw/player_season_advanced/2001-02_playoffs.csv",
+        "sha256": "ab97a683766a23cc78f29e81ea74a3a7b17ac4685b599d9aaafe538cf1c274fb",
+        "size_bytes": 22420
+      },
+      {
+        "path": "raw/player_season_advanced/2001-02_regular_season.csv",
+        "sha256": "38c0da901ea020a3903255fa5d625bddb0815ea34f3906c60716ef7630e21134",
+        "size_bytes": 56501
+      },
+      {
+        "path": "raw/player_season_advanced/2002-03_playoffs.csv",
+        "sha256": "78960451261ff3c3205acf60d5fa645852c59a90345d6356514d917d8aea5929",
+        "size_bytes": 22799
+      },
+      {
+        "path": "raw/player_season_advanced/2002-03_regular_season.csv",
+        "sha256": "870ef4ea67f3fe4a9574d65f8ded6789bd383b3cb2ff6147352ccd388faa1913",
+        "size_bytes": 54912
+      },
+      {
+        "path": "raw/player_season_advanced/2003-04_playoffs.csv",
+        "sha256": "cbd99295202cf3953b5dc336aa2070ec6ed69474a6d27b5f6d6c94a177ec2d71",
+        "size_bytes": 22829
+      },
+      {
+        "path": "raw/player_season_advanced/2003-04_regular_season.csv",
+        "sha256": "75365423ecc3a5f38ea04c5eaf985db6375d1712b13fee5019cd558b20f904fe",
+        "size_bytes": 56638
+      },
+      {
+        "path": "raw/player_season_advanced/2004-05_playoffs.csv",
+        "sha256": "95f9a30aa756816b088e5f77568d5ee34588c8209e197f11c98a833d2a3bfe72",
+        "size_bytes": 22938
+      },
+      {
+        "path": "raw/player_season_advanced/2004-05_regular_season.csv",
+        "sha256": "a7a1b7024a7bd4dd5328d54f8f45c164ef35c3027c95315ed44eeac4414ee2d2",
+        "size_bytes": 59699
+      },
+      {
+        "path": "raw/player_season_advanced/2005-06_playoffs.csv",
+        "sha256": "b1ebb669cdc07d7ad135a4156145a1e8331f2c089593728a088b90d3dd743c11",
+        "size_bytes": 23695
+      },
+      {
+        "path": "raw/player_season_advanced/2005-06_regular_season.csv",
+        "sha256": "ab2c0bae9d61310d68803b668f0b90c62f37cb030537094b28f7f67b95d76d38",
+        "size_bytes": 59092
+      },
+      {
+        "path": "raw/player_season_advanced/2006-07_playoffs.csv",
+        "sha256": "8f83c06b67383f15a6e6e74b68583d7b6bc8a7ff55b82333b746f4bdbc36f809",
+        "size_bytes": 23243
+      },
+      {
+        "path": "raw/player_season_advanced/2006-07_regular_season.csv",
+        "sha256": "ae9cfebc81c296ba2b408c081c5c8e7355dc37809ca08eb5ac295a7e7fa1cbe7",
+        "size_bytes": 59316
+      },
+      {
+        "path": "raw/player_season_advanced/2007-08_playoffs.csv",
+        "sha256": "66c35e176a64d5d336a0f10adb9298ed7d654f3c9d85fcdbb77a4226807fb9aa",
+        "size_bytes": 24488
+      },
+      {
+        "path": "raw/player_season_advanced/2007-08_regular_season.csv",
+        "sha256": "d1013965a009d37ab5be51c8842a99e5ced17855f46ededb68c8cc90ae75ff05",
+        "size_bytes": 58449
+      },
+      {
+        "path": "raw/player_season_advanced/2008-09_playoffs.csv",
+        "sha256": "424ac11d2b8cd48ed092e7d9d4b9ccc9851ba2356690d904325c15d33caab879",
+        "size_bytes": 24287
+      },
+      {
+        "path": "raw/player_season_advanced/2008-09_regular_season.csv",
+        "sha256": "bba95274c92c94b1f439a64728af202b904eeca46c40c8e48da22cea8aad1896",
+        "size_bytes": 57791
+      },
+      {
+        "path": "raw/player_season_advanced/2009-10_playoffs.csv",
+        "sha256": "3881d50ac74048e527b4ff7526b6add78dda4a20550f05ba34282cba13ee8745",
+        "size_bytes": 24317
+      },
+      {
+        "path": "raw/player_season_advanced/2009-10_regular_season.csv",
+        "sha256": "22c9f94e59dfc73b30ac50ad42f40f9e77e4807d28736d9488af373378c33ab7",
+        "size_bytes": 57474
+      },
+      {
+        "path": "raw/player_season_advanced/2010-11_playoffs.csv",
+        "sha256": "811b4c3e33e3eb836545a01f96b6e19db5061864981780ce5f259b2b5ee3f96c",
+        "size_bytes": 23644
+      },
+      {
+        "path": "raw/player_season_advanced/2010-11_regular_season.csv",
+        "sha256": "3aa9d5ed3718a90e8a624fbb5e603629a90a66347a37d1886c7ff8a532a4c4f2",
+        "size_bytes": 58824
+      },
+      {
+        "path": "raw/player_season_advanced/2011-12_playoffs.csv",
+        "sha256": "5e571da3b9f38af14fe5c199a34dc49e8debe6d4d482cb8b2925ce86362e2893",
+        "size_bytes": 24903
+      },
+      {
+        "path": "raw/player_season_advanced/2011-12_regular_season.csv",
+        "sha256": "6760e8bfb07d0179118c57bc26d0d7f851b5ea0fd04e6a2a9085579760ded172",
+        "size_bytes": 62193
+      },
+      {
+        "path": "raw/player_season_advanced/2012-13_playoffs.csv",
+        "sha256": "da2d52f466a51abba0824b133d1b02afd1c70d0073d39ad3a3d52d943c2d2d4a",
+        "size_bytes": 25561
+      },
+      {
+        "path": "raw/player_season_advanced/2012-13_regular_season.csv",
+        "sha256": "33192b1b423d70b1af26c631ca8edadbabbd8b1e407eca649a689816e0ded9b8",
+        "size_bytes": 61164
+      },
+      {
+        "path": "raw/player_season_advanced/2013-14_playoffs.csv",
+        "sha256": "398d863bf44ac70b7b748cf4fd250de9c05b1638c8050917f2ff6e3ae8512edb",
+        "size_bytes": 25058
+      },
+      {
+        "path": "raw/player_season_advanced/2013-14_regular_season.csv",
+        "sha256": "d49d880632c9111862b16a50c253999518edd230a6bef29449284e3d3c0505e8",
+        "size_bytes": 62880
+      },
+      {
+        "path": "raw/player_season_advanced/2014-15_playoffs.csv",
+        "sha256": "b824385fceea1d714a9d6f462ffd93a132d1089d15328711331c2695f4aca0cc",
+        "size_bytes": 25456
+      },
+      {
+        "path": "raw/player_season_advanced/2014-15_regular_season.csv",
+        "sha256": "159eb789042cac9d0e7ed8bc74769e9e6b9faa4acb4dd94c21234baa320bcdf2",
+        "size_bytes": 64325
+      },
+      {
+        "path": "raw/player_season_advanced/2015-16_playoffs.csv",
+        "sha256": "78a9e8bbc64f2717b0acdb1a476efb45148b8cd3cc19459db4876d8354a87250",
+        "size_bytes": 26538
+      },
+      {
+        "path": "raw/player_season_advanced/2015-16_regular_season.csv",
+        "sha256": "7cc44674b33aebe9d201b8d82cb012c2992a4e1ab1e49e797fa9ec1a1fc17bd8",
+        "size_bytes": 62469
+      },
+      {
+        "path": "raw/player_season_advanced/2016-17_playoffs.csv",
+        "sha256": "edc93322efd820a3068119c7a4f91f6aec23ab698cd78eb417acca86f4be4638",
+        "size_bytes": 26649
+      },
+      {
+        "path": "raw/player_season_advanced/2016-17_regular_season.csv",
+        "sha256": "bad09d8b81a3e46da255b429e3edf3ce9b529f264e99a5d7ca5352e3f8b255ba",
+        "size_bytes": 64021
+      },
+      {
+        "path": "raw/player_season_advanced/2017-18_playoffs.csv",
+        "sha256": "c87c65d399624041fda2338cef2840a835d8254b205b4152ee49e705c7532909",
+        "size_bytes": 26096
+      },
+      {
+        "path": "raw/player_season_advanced/2017-18_regular_season.csv",
+        "sha256": "9c4bfd1aaa49b48d44e2a50820f8a00f51470f750b33a04099af2f890a18ac37",
+        "size_bytes": 71078
+      },
+      {
+        "path": "raw/player_season_advanced/2018-19_playoffs.csv",
+        "sha256": "0b83f56ca1463d43624097901c99788ae744b8604efce6f95c0edf5c6f022ede",
+        "size_bytes": 26451
+      },
+      {
+        "path": "raw/player_season_advanced/2018-19_regular_season.csv",
+        "sha256": "e729d79c462a35a349665072f3ee3fb467b1bd075ba6fc96e2dff744f1d789d9",
+        "size_bytes": 69976
+      },
+      {
+        "path": "raw/player_season_advanced/2019-20_playoffs.csv",
+        "sha256": "3bb1d3cc4d482c363c97620446ac135b921df01a17484e2a2995030b06c56a47",
+        "size_bytes": 27019
+      },
+      {
+        "path": "raw/player_season_advanced/2019-20_regular_season.csv",
+        "sha256": "ea7c86bb213bdddd822a7052cab6a74c536894f99f62e05ecc9e155f3fc1553f",
+        "size_bytes": 70016
+      },
+      {
+        "path": "raw/player_season_advanced/2020-21_playoffs.csv",
+        "sha256": "f4e86ed0a1413709fa6c6b87474b38d3a37f7d2f8ac397bf42e17fd1a662d6d7",
+        "size_bytes": 29761
+      },
+      {
+        "path": "raw/player_season_advanced/2020-21_regular_season.csv",
+        "sha256": "86d1c73219b0c2e9d5c488f1fd3ccb1e5074fad8c5fc345cd7305d9e3bc35d47",
+        "size_bytes": 71544
+      },
+      {
+        "path": "raw/player_season_advanced/2021-22_playoffs.csv",
+        "sha256": "fbd8138fbcb05cc3c999df5f932ded08ba81a549994dd9e0cf741f18ca487016",
+        "size_bytes": 27255
+      },
+      {
+        "path": "raw/player_season_advanced/2021-22_regular_season.csv",
+        "sha256": "7c6ccfe90aac4eef39e8a9aeb35e1be664f1eec9d31f2d90a4021182caf0bab3",
+        "size_bytes": 79857
+      },
+      {
+        "path": "raw/player_season_advanced/2022-23_playoffs.csv",
+        "sha256": "618cb14ca10c1717678a3fd6c61aa1244f48c6ccc8defba9a28d731106638bae",
+        "size_bytes": 27116
+      },
+      {
+        "path": "raw/player_season_advanced/2022-23_regular_season.csv",
+        "sha256": "6e36cab66c52fc34bfda729595720f835c83452cde84c9854fc8f8bf078bd38f",
+        "size_bytes": 71446
+      },
+      {
+        "path": "raw/player_season_advanced/2023-24_playoffs.csv",
+        "sha256": "da543d062a123dd13b4376226e7af25f3a41694f82b131bb9d00ced98f724ac1",
+        "size_bytes": 26802
+      },
+      {
+        "path": "raw/player_season_advanced/2023-24_regular_season.csv",
+        "sha256": "467319eed482c5be6c4a7dffe56600a803198d6b72760e4a9b4adab355cf1896",
+        "size_bytes": 75876
+      },
+      {
+        "path": "raw/player_season_advanced/2024-25_playoffs.csv",
+        "sha256": "6de50e9537eb7d6c890a676ff9de62f29eaf7d44fc6b29eaa03704f53dd49a17",
+        "size_bytes": 27528
+      },
+      {
+        "path": "raw/player_season_advanced/2024-25_regular_season.csv",
+        "sha256": "25c0b3d008e1b6c590f9f613af2ee829c52a38852ff2c80d504e20e2b6bdda99",
+        "size_bytes": 75501
+      },
+      {
+        "path": "raw/player_season_advanced/2025-26_playoffs.csv",
+        "sha256": "c6ee2208f4db9dfcfe1b27c81ff6d2940342d98bff6a454f0f6d40a54b54e865",
+        "size_bytes": 28849
+      },
+      {
+        "path": "raw/player_season_advanced/2025-26_regular_season.csv",
+        "sha256": "1e29ed4a194079a6e0f3dfca0744fe4b754d2d9e338ea7de624aaae44fce9217",
+        "size_bytes": 77371
+      },
+      {
+        "path": "raw/rosters/1996-97.csv",
+        "sha256": "3c4977a2c3e9f9679c06e0de68b9b2fc29209f027c408384b61da260358147fe",
+        "size_bytes": 28572
+      },
+      {
+        "path": "raw/rosters/1997-98.csv",
+        "sha256": "cad6b054a1e07822249a32ad2dfed02429688b31b2b2b6c30506d9a2758af0e2",
+        "size_bytes": 28443
+      },
+      {
+        "path": "raw/rosters/1998-99.csv",
+        "sha256": "9baf1e358222481a0a16c3571b0d6f833bfc9f8846192514f9059edaa0541da2",
+        "size_bytes": 28083
+      },
+      {
+        "path": "raw/rosters/1999-00.csv",
+        "sha256": "444770645b3f9d4689db2255126a5e556238a1b5a6e09cc9174cfb860b26ce1a",
+        "size_bytes": 27858
+      },
+      {
+        "path": "raw/rosters/2000-01.csv",
+        "sha256": "57545f0ce5c7b5ad0de72f28dfb92735d059fc9078cff7474b055601f73fa2b1",
+        "size_bytes": 28721
+      },
+      {
+        "path": "raw/rosters/2001-02.csv",
+        "sha256": "33d4d997c996eb4f15385c670a37c86be5a9212823cbc1e8d8c73ca08ee107fb",
+        "size_bytes": 30006
+      },
+      {
+        "path": "raw/rosters/2002-03.csv",
+        "sha256": "0a073413f319ce8ced360195e21000525a4f49f1ea6df636e5bd389243be5592",
+        "size_bytes": 38040
+      },
+      {
+        "path": "raw/rosters/2003-04.csv",
+        "sha256": "ec938f24b77fdf3918e0561018e074edd250901f6a6e52311d404eda66bc73f4",
+        "size_bytes": 33994
+      },
+      {
+        "path": "raw/rosters/2004-05.csv",
+        "sha256": "b597c0ce420dbc42fa0c173a640446e6157ac3474193eec54928effdf9779ce4",
+        "size_bytes": 30925
+      },
+      {
+        "path": "raw/rosters/2005-06.csv",
+        "sha256": "599f38705e2a61570bbb4eab636f461a65e3d556747fc5cf57c4b9892f813417",
+        "size_bytes": 33906
+      },
+      {
+        "path": "raw/rosters/2006-07.csv",
+        "sha256": "bacb311e01ada3dd6790d8858ade075460d9f8e7389e235ff8124ed62a6f9742",
+        "size_bytes": 35952
+      },
+      {
+        "path": "raw/rosters/2007-08.csv",
+        "sha256": "96d0a85405643a5e5cbf5bccf3c2b5fb0c6de687adabe330a6255dbee5b56262",
+        "size_bytes": 35443
+      },
+      {
+        "path": "raw/rosters/2008-09.csv",
+        "sha256": "6c29d101890c65d745eb40f1685c668c8b823b74a39c0ff832ca5f95a0e4527f",
+        "size_bytes": 35940
+      },
+      {
+        "path": "raw/rosters/2009-10.csv",
+        "sha256": "c86efe4e067a0184cd7eeebe084ba28e0106904290300faf24c330d8c63652e7",
+        "size_bytes": 35779
+      },
+      {
+        "path": "raw/rosters/2010-11.csv",
+        "sha256": "73d220475665cb5e0f07635a2dbd872a1daabf13c3e2cfb601429faf5ecfb2c2",
+        "size_bytes": 36207
+      },
+      {
+        "path": "raw/rosters/2011-12.csv",
+        "sha256": "3b4df237ee4ef33f7852bf7b5fedad53b9ca6b339f5bfe8fe8d9d67d2ebb1a41",
+        "size_bytes": 36745
+      },
+      {
+        "path": "raw/rosters/2012-13.csv",
+        "sha256": "17a2187334914878fa5f529dff43793fea9e899673b3e8b9ae92c1dfe356ba73",
+        "size_bytes": 37217
+      },
+      {
+        "path": "raw/rosters/2013-14.csv",
+        "sha256": "df986e489fcbd368874b1deb83cad3787f4bae2b5bd40213a50ec007a269efb4",
+        "size_bytes": 37387
+      },
+      {
+        "path": "raw/rosters/2014-15.csv",
+        "sha256": "fea8fd54aa273d3f9b909f617b2aedb146f880f3779b22f4d84cf01d5c3c50aa",
+        "size_bytes": 37547
+      },
+      {
+        "path": "raw/rosters/2015-16.csv",
+        "sha256": "0e12797d3f24bbb54f94715f07d11f3d5926feb30a0092dcb3184805a7c89209",
+        "size_bytes": 37779
+      },
+      {
+        "path": "raw/rosters/2016-17.csv",
+        "sha256": "6bf1f15c463f169ed1c0880677f36646663c508225cc0aff8170725677d0e5f6",
+        "size_bytes": 37783
+      },
+      {
+        "path": "raw/rosters/2017-18.csv",
+        "sha256": "9af7a96ac026390c421381f5eb25e62c3165d849ec23b0c5f3535b7c92e74765",
+        "size_bytes": 42215
+      },
+      {
+        "path": "raw/rosters/2018-19.csv",
+        "sha256": "6087b7f0b8be0d88c74bd6c83e0fd04713de43b50f20a64fda6aebb0ce1226bc",
+        "size_bytes": 41860
+      },
+      {
+        "path": "raw/rosters/2019-20.csv",
+        "sha256": "a83dafb8a171b3c2ea83c722840d38f3c6c089623068130c272369ff097be002",
+        "size_bytes": 43167
+      },
+      {
+        "path": "raw/rosters/2020-21.csv",
+        "sha256": "7b99c75c286eddfb975047b7d7efec3bd065595fc4caa1088c8636fac14b8e88",
+        "size_bytes": 42494
+      },
+      {
+        "path": "raw/rosters/2021-22.csv",
+        "sha256": "3bae408ba0cfe2391b099dfe9802b7597fc0bb982ec5457f1001c270ffb2388d",
+        "size_bytes": 42753
+      },
+      {
+        "path": "raw/rosters/2022-23.csv",
+        "sha256": "bc2e37e4e49451f362a0a5b6e15a0b819a98d411b612be03c5a84dfaf18d841a",
+        "size_bytes": 42770
+      },
+      {
+        "path": "raw/rosters/2023-24.csv",
+        "sha256": "03d546b63345c29490994df09e81b45b8792400825c35ddd71f4147b74eeab78",
+        "size_bytes": 44881
+      },
+      {
+        "path": "raw/rosters/2024-25.csv",
+        "sha256": "545834d18a20a1035d70a46a47c68a90ef9b3da1ea7d50c7340d9e727d9c8358",
+        "size_bytes": 46139
+      },
+      {
+        "path": "raw/rosters/2025-26.csv",
+        "sha256": "31e9a1e1660e5177df7c9f8daca12d85989149930ac83485456d19e220c54930",
+        "size_bytes": 45721
+      },
+      {
+        "path": "raw/schedule/1996-97_playoffs.csv",
+        "sha256": "875f45d4f29d89e46dc2844bd9d4c89804f02bc77afa48cd0b41af986789345b",
+        "size_bytes": 8025
+      },
+      {
+        "path": "raw/schedule/1996-97_regular_season.csv",
+        "sha256": "b3a4c756571d6450493198e9bd96b1ad0bf37affdb0a6e15b128fa5c65f45cb6",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/1997-98_playoffs.csv",
+        "sha256": "b6aa38958bdbc6795a213db574279f773fc562576183e02df4205ff63d2c912e",
+        "size_bytes": 8019
+      },
+      {
+        "path": "raw/schedule/1997-98_regular_season.csv",
+        "sha256": "aa11895aba32b57b9890570cf7025444ab5a3452248e7fd203f292e8b03ab022",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/1998-99_playoffs.csv",
+        "sha256": "b389c0f3c04eada6387475c6e5ce2b8ac98144ff4d8b321f9f754c9dfe117f68",
+        "size_bytes": 7560
+      },
+      {
+        "path": "raw/schedule/1998-99_regular_season.csv",
+        "sha256": "a67b48d99401a3d7b628debe10cad3c59d54e0b07f287ab6302fa682d19ce89a",
+        "size_bytes": 86442
+      },
+      {
+        "path": "raw/schedule/1999-00_playoffs.csv",
+        "sha256": "b62029612e327fa4c6f0dd6482f796d49d48de653d1ffe0443478e7680910fd1",
+        "size_bytes": 8612
+      },
+      {
+        "path": "raw/schedule/1999-00_regular_season.csv",
+        "sha256": "fac0385168b599d6e2d60d8cfdce0c2e9f6e89b3bae7ed4770959ca0c19cc5b6",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/2000-01_playoffs.csv",
+        "sha256": "5def59494aa13d1a2e8f61c404dd679af72c3056d1a17136d3d38d02ed765eaa",
+        "size_bytes": 8209
+      },
+      {
+        "path": "raw/schedule/2000-01_regular_season.csv",
+        "sha256": "0313992cb32f226db08db013682ca84015226e3be489c88e071cd381740c645c",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/2001-02_playoffs.csv",
+        "sha256": "ecaeeec41283255b56f001e4487f64bb5d6489e26132b16c55cc4f4f3693a329",
+        "size_bytes": 8191
+      },
+      {
+        "path": "raw/schedule/2001-02_regular_season.csv",
+        "sha256": "2a6b2b250fa6b2d706c5ab88ab38f70bd8697b366c8161138a5aeef95aa7508e",
+        "size_bytes": 141494
+      },
+      {
+        "path": "raw/schedule/2002-03_playoffs.csv",
+        "sha256": "8df25c69f230a0ce03593a91f3d67554c04a38221498f8777edfcf50443f8e2d",
+        "size_bytes": 10124
+      },
+      {
+        "path": "raw/schedule/2002-03_regular_season.csv",
+        "sha256": "ad3580b3f028ebee683ee882bb35aaac015fc3237ec7f2c0bcbf747029aec2b1",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/2003-04_playoffs.csv",
+        "sha256": "baef488f5ab93e66bee03d895296a79fa37b9d1a6b334d4b9e4d67b1c53d523a",
+        "size_bytes": 9444
+      },
+      {
+        "path": "raw/schedule/2003-04_regular_season.csv",
+        "sha256": "760af421a613fd212f7b34c38188e9d149de010f8502ffe148a30eac5a6c208e",
+        "size_bytes": 141658
+      },
+      {
+        "path": "raw/schedule/2004-05_playoffs.csv",
+        "sha256": "1811310bc792a07e36ce9b648b5e2ff4fdc580ec21197421471be1b5bdfbe397",
+        "size_bytes": 9495
+      },
+      {
+        "path": "raw/schedule/2004-05_regular_season.csv",
+        "sha256": "cb5e7d1935db48546bd785512978c1f03db7560f70884d4b1848b9bc5b0a4257",
+        "size_bytes": 146619
+      },
+      {
+        "path": "raw/schedule/2005-06_playoffs.csv",
+        "sha256": "5655b465345afadf87e8cd8ca2355f5f3b3f82efec3882a0933a7c90b4865818",
+        "size_bytes": 10062
+      },
+      {
+        "path": "raw/schedule/2005-06_regular_season.csv",
+        "sha256": "c9cbeb8a7db0025e43c8dfe36257ea2b8fc5c3c94163ce5e309ca11081c2606e",
+        "size_bytes": 147767
+      },
+      {
+        "path": "raw/schedule/2006-07_playoffs.csv",
+        "sha256": "1c454af04b5edb0fdb40c24ccfab14a1a294ef131e9587a26aa6a2236cbbc44d",
+        "size_bytes": 8967
+      },
+      {
+        "path": "raw/schedule/2006-07_regular_season.csv",
+        "sha256": "864e446b7db730b991d35a22b6e74976ffe7ad4fcaaad4cc58bcfd54a2091ba2",
+        "size_bytes": 147767
+      },
+      {
+        "path": "raw/schedule/2007-08_playoffs.csv",
+        "sha256": "b0606539d6ec1bb85be140fbeeb60686200b32fc48974cb0b8ee7e9cf805117b",
+        "size_bytes": 9800
+      },
+      {
+        "path": "raw/schedule/2007-08_regular_season.csv",
+        "sha256": "33d29d06717b90d0692bd8b8081472e9c6b16e7d9ce06e1738dc066e61fddf83",
+        "size_bytes": 146619
+      },
+      {
+        "path": "raw/schedule/2008-09_playoffs.csv",
+        "sha256": "01b58a29ae12f897840d3160edc722c637e775ccc793872e270219eda190da99",
+        "size_bytes": 9648
+      },
+      {
+        "path": "raw/schedule/2008-09_regular_season.csv",
+        "sha256": "42ac7d3c187c7e5ccef67e16b43259ad249821f6432099d801f2c9a109935c84",
+        "size_bytes": 146783
+      },
+      {
+        "path": "raw/schedule/2009-10_playoffs.csv",
+        "sha256": "46691713a2ac4e55e77aa07b8130ac47fcd51fe24614f78894037c58f2e5a9ab",
+        "size_bytes": 9271
+      },
+      {
+        "path": "raw/schedule/2009-10_regular_season.csv",
+        "sha256": "22babea476abd5cf1d4c19f9fbaa9bb2311e2e63050226de614d95745918277c",
+        "size_bytes": 146783
+      },
+      {
+        "path": "raw/schedule/2010-11_playoffs.csv",
+        "sha256": "a82dcae631173454ed9a2c21506f1483a6ca86a17ed02a103acdbb5d94fd86b6",
+        "size_bytes": 9238
+      },
+      {
+        "path": "raw/schedule/2010-11_regular_season.csv",
+        "sha256": "433bca108d72ca6d86e2444fd4bae610e5862f8044072d7dd5595df37579fb94",
+        "size_bytes": 146783
+      },
+      {
+        "path": "raw/schedule/2011-12_playoffs.csv",
+        "sha256": "f3ee87ed9ede6731694b4f4b79eb22980b518572c87a7191b2bb9bb9afdb6225",
+        "size_bytes": 9576
+      },
+      {
+        "path": "raw/schedule/2011-12_regular_season.csv",
+        "sha256": "6b5c650639ec9baa77006d72126265260cf6d0639e1d8dd90c93e3f37fcdee85",
+        "size_bytes": 118175
+      },
+      {
+        "path": "raw/schedule/2012-13_playoffs.csv",
+        "sha256": "9a26f7057f32824a089efaa2c07258b60f6159f9f43606b63eb48a106d8f9ac0",
+        "size_bytes": 9658
+      },
+      {
+        "path": "raw/schedule/2012-13_regular_season.csv",
+        "sha256": "96f35107bb9b4951ec36a6d2450b9f863aa4aaf49b1727dbfd1e984721735282",
+        "size_bytes": 146504
+      },
+      {
+        "path": "raw/schedule/2013-14_playoffs.csv",
+        "sha256": "35a03206e7077cf4db086b8db95ee2f14cdb524f7265d0f00b08fc8eb40103f4",
+        "size_bytes": 10285
+      },
+      {
+        "path": "raw/schedule/2013-14_regular_season.csv",
+        "sha256": "2ee266f66a5e5c07429b22fe4b536724ba7e94c50305caf7ebb6564097fca868",
+        "size_bytes": 146701
+      },
+      {
+        "path": "raw/schedule/2014-15_playoffs.csv",
+        "sha256": "e5a91eb35ff2087f80928af885cd6e9c2c6c8dbc695c81a0287d758b1a47784c",
+        "size_bytes": 9488
+      },
+      {
+        "path": "raw/schedule/2014-15_regular_season.csv",
+        "sha256": "bcad3d507140ac09574a4b64e9376bd7fba0938c2022c61b25939f3998ed90ee",
+        "size_bytes": 146701
+      },
+      {
+        "path": "raw/schedule/2015-16_playoffs.csv",
+        "sha256": "57a0fadb78560f83eddbf44a893794d5125f738525620361329cf3158120a487",
+        "size_bytes": 10046
+      },
+      {
+        "path": "raw/schedule/2015-16_regular_season.csv",
+        "sha256": "467b992310863e7af92cb0e58b3b6a9eb9588651c499c178e5700507fefba53a",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2016-17_playoffs.csv",
+        "sha256": "69f93a0a24dd1b675147df6167191e65173617fe8849e04611967891d29deea0",
+        "size_bytes": 9111
+      },
+      {
+        "path": "raw/schedule/2016-17_regular_season.csv",
+        "sha256": "b7d486b8a6fe996fe8e0980aa68837e5db14dc8d41697238fa1f2ad488e179ba",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2017-18_playoffs.csv",
+        "sha256": "df489f8869afdb58994b0546b4fa61c707faf5c23f3670837b4819cf9cba27ee",
+        "size_bytes": 9568
+      },
+      {
+        "path": "raw/schedule/2017-18_regular_season.csv",
+        "sha256": "4a9ca4df612138332852970aa3de7e45abbbd527cea98d7e4e66d699381abd9f",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2018-19_playoffs.csv",
+        "sha256": "a9ecc34dd456235521fe71039534aeae5980148599463bfee598d4279d7f9aff",
+        "size_bytes": 9492
+      },
+      {
+        "path": "raw/schedule/2018-19_regular_season.csv",
+        "sha256": "558e954497f3a37f6d48ffd9dd074eb34bbcca7fcb70702649170df42323a0d3",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2019-20_playoffs.csv",
+        "sha256": "abd1efd7f2b88b4a70ef9d505cab3c55417eb813903c6184765deda010591014",
+        "size_bytes": 9281
+      },
+      {
+        "path": "raw/schedule/2019-20_regular_season.csv",
+        "sha256": "fd8136c334f2bf1d821b772cacff7668d93b26507a7f874179f1a2778914bd32",
+        "size_bytes": 125615
+      },
+      {
+        "path": "raw/schedule/2020-21_playoffs.csv",
+        "sha256": "291dd2d21e5fecace0dbfa84e99b5732ccd04ce15716f615471d9ca1795bdcaf",
+        "size_bytes": 9427
+      },
+      {
+        "path": "raw/schedule/2020-21_regular_season.csv",
+        "sha256": "fe1968ae886c01a7f6b213ee14f357d1fbddeb7081f8f1a0b2dbf94701df2d71",
+        "size_bytes": 128183
+      },
+      {
+        "path": "raw/schedule/2021-22_playoffs.csv",
+        "sha256": "5f6d2db83c24faafc64b9e64bd6212fc9dac94768dcc7714c07a783dc729f3c9",
+        "size_bytes": 9884
+      },
+      {
+        "path": "raw/schedule/2021-22_regular_season.csv",
+        "sha256": "6500712400ac5c66e800737f1cc9968b50631953e4695a3fd381e2e08cf747b5",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2022-23_playoffs.csv",
+        "sha256": "565097d9be2bf0af33cd9f675e9d4e79a74b75bd32ca5f520a96750b40d35f18",
+        "size_bytes": 9496
+      },
+      {
+        "path": "raw/schedule/2022-23_regular_season.csv",
+        "sha256": "0c2dabb5e173644f93a4d8bcdf4b4aa7ba175c101e1f346b37c358f9ea35108f",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2023-24_playoffs.csv",
+        "sha256": "6de2ebdc877a9d4e15e6b64e0daf841bb209bfae8b131c03edfe3f7084d7a4df",
+        "size_bytes": 9441
+      },
+      {
+        "path": "raw/schedule/2023-24_regular_season.csv",
+        "sha256": "dd4a73411f67860c4e52a345695eee04023ef62e7bf2026eff0ebd2d88abd05c",
+        "size_bytes": 145963
+      },
+      {
+        "path": "raw/schedule/2024-25_playoffs.csv",
+        "sha256": "1217cd310e1a37fa88ba0aa114393c0368532f2e7d34538d0493d3f784f7c1b6",
+        "size_bytes": 9759
+      },
+      {
+        "path": "raw/schedule/2024-25_regular_season.csv",
+        "sha256": "c2ae44b28bf881f6b6ef497742589faf26926171e1bf6b7774b5b4b4b637a2eb",
+        "size_bytes": 273173
+      },
+      {
+        "path": "raw/schedule/2025-26_playoffs.csv",
+        "sha256": "1c7b4d1e8bb36da426ec6e1bfeb64cc8374c04a850e317fa40dbca06399c43f3",
+        "size_bytes": 19088
+      },
+      {
+        "path": "raw/schedule/2025-26_regular_season.csv",
+        "sha256": "bf0588428a9d01f0ba6fb20d941e2afbcd57e515870b8795d6d4b129187f5314",
+        "size_bytes": 273170
+      },
+      {
+        "path": "raw/standings_snapshots/1996-97_regular_season.csv",
+        "sha256": "2fc57aa8ffca93bd1a4b6796b2c6771cfb04604cb1791eaff1aefdf72ef8c63c",
+        "size_bytes": 2182
+      },
+      {
+        "path": "raw/standings_snapshots/1997-98_regular_season.csv",
+        "sha256": "7957a06807be67af71aa11e0bf7783a2b4fe6c5b2d0c6a4e6dd6a90afc4918fe",
+        "size_bytes": 2176
+      },
+      {
+        "path": "raw/standings_snapshots/1998-99_regular_season.csv",
+        "sha256": "03543082cfc2420321d20d11c064950beb13b04dd9b4ace7411b4a20ce7b52df",
+        "size_bytes": 2141
+      },
+      {
+        "path": "raw/standings_snapshots/1999-00_regular_season.csv",
+        "sha256": "2898f1533233567bccefe70888f1c465b3642ea67db2508ae98396a433924b5c",
+        "size_bytes": 2176
+      },
+      {
+        "path": "raw/standings_snapshots/2000-01_regular_season.csv",
+        "sha256": "bdb33952b878b3f4291bf1904aa6e74b2475a32bb5f409b948cb946bcc4a67ba",
+        "size_bytes": 2171
+      },
+      {
+        "path": "raw/standings_snapshots/2001-02_regular_season.csv",
+        "sha256": "92cf11736ed6a20fb8fb94922ac21bdd2432bbd903cf63c6802912cd4bdd7efa",
+        "size_bytes": 2261
+      },
+      {
+        "path": "raw/standings_snapshots/2002-03_regular_season.csv",
+        "sha256": "56c0ef1524808d554aebd10f8cea242678be26f4bb7fe9e74a779318266e8023",
+        "size_bytes": 2260
+      },
+      {
+        "path": "raw/standings_snapshots/2003-04_regular_season.csv",
+        "sha256": "31103d3218f42807f50ebd65e17a60d779ff87cb8a4fb60ca482d94454f9050e",
+        "size_bytes": 2261
+      },
+      {
+        "path": "raw/standings_snapshots/2004-05_regular_season.csv",
+        "sha256": "ef6da0e9f497a176ca0d65a0733858c03f292274f45e1b55cafdbcc4132444d3",
+        "size_bytes": 2341
+      },
+      {
+        "path": "raw/standings_snapshots/2005-06_regular_season.csv",
+        "sha256": "f25907829dec72a66bf3ef4d5446fa5916cb45a72dda0d41aea8613fe3692a44",
+        "size_bytes": 2338
+      },
+      {
+        "path": "raw/standings_snapshots/2006-07_regular_season.csv",
+        "sha256": "608fabd53f9c140d6208f4e86ef7f89dd41dc9e263aad3e001c966357f82f1ce",
+        "size_bytes": 2336
+      },
+      {
+        "path": "raw/standings_snapshots/2007-08_regular_season.csv",
+        "sha256": "f3fa463ee9e417d3039bb9af14a20b59b4ddb2411726797243ee7c8dfa146d07",
+        "size_bytes": 2331
+      },
+      {
+        "path": "raw/standings_snapshots/2008-09_regular_season.csv",
+        "sha256": "6a62cd5778d51ba86144ac0c6af0d64427d106186b333fea0b4e2d40ebf2ef49",
+        "size_bytes": 2339
+      },
+      {
+        "path": "raw/standings_snapshots/2009-10_regular_season.csv",
+        "sha256": "194891783d1cead6735d38c81c3dedd2e058e6508ed0922fff189eccca3a432d",
+        "size_bytes": 2332
+      },
+      {
+        "path": "raw/standings_snapshots/2010-11_regular_season.csv",
+        "sha256": "9dfd2dad6178c31d7b21804b0031d178984c95eb7fa08a6e9d5e94b19f20e603",
+        "size_bytes": 2340
+      },
+      {
+        "path": "raw/standings_snapshots/2011-12_regular_season.csv",
+        "sha256": "1df2511219ed1468a74e2fa7e271d5841652069cf306599b0e55a6d29dd0348f",
+        "size_bytes": 2341
+      },
+      {
+        "path": "raw/standings_snapshots/2012-13_regular_season.csv",
+        "sha256": "89235b6aec498c04699939fd686de6444e0688fb9b54dac0020b591fa1ed64dd",
+        "size_bytes": 2344
+      },
+      {
+        "path": "raw/standings_snapshots/2013-14_regular_season.csv",
+        "sha256": "63fd76cd2687dd1f6aabfa2ef91efb57c1375cc8b3b49ffea1a8eaf72964f0e2",
+        "size_bytes": 2339
+      },
+      {
+        "path": "raw/standings_snapshots/2014-15_regular_season.csv",
+        "sha256": "e7dc341033acb1f54536c6c8323f9979a74039f8c09d07f558253d8f0e12eafc",
+        "size_bytes": 2344
+      },
+      {
+        "path": "raw/standings_snapshots/2015-16_regular_season.csv",
+        "sha256": "5f505f6274f5bb3e4d1760ef086a55aa338af9019ab2e020e10591fdc0928aac",
+        "size_bytes": 2336
+      },
+      {
+        "path": "raw/standings_snapshots/2016-17_regular_season.csv",
+        "sha256": "a1315987de8f71a3ea08ceb11543c67c12eee4638bbde615605c5d7ae21c41c6",
+        "size_bytes": 2338
+      },
+      {
+        "path": "raw/standings_snapshots/2017-18_regular_season.csv",
+        "sha256": "f9f720e9292cf89d934716da34611a632a707faf0ff58a46f4c7b5d163ba05a7",
+        "size_bytes": 2344
+      },
+      {
+        "path": "raw/standings_snapshots/2018-19_regular_season.csv",
+        "sha256": "b9b620fb29211f3b9966f21a6f322b47b67b9a26064c18608081559987096cce",
+        "size_bytes": 2337
+      },
+      {
+        "path": "raw/standings_snapshots/2019-20_regular_season.csv",
+        "sha256": "656f0848b1484a20f10134e783b6e95e9fb05b74104365268b56fb7e23dff70b",
+        "size_bytes": 2341
+      },
+      {
+        "path": "raw/standings_snapshots/2020-21_regular_season.csv",
+        "sha256": "c9dc64ba98e120139b9a81256c184580b81a9129996d807dcb6904cfbc356853",
+        "size_bytes": 2339
+      },
+      {
+        "path": "raw/standings_snapshots/2021-22_regular_season.csv",
+        "sha256": "0bce7e5d9c2bc905666c81103c5835ea8203ff327cee5e5d8bbe59afc3bd5049",
+        "size_bytes": 2341
+      },
+      {
+        "path": "raw/standings_snapshots/2022-23_regular_season.csv",
+        "sha256": "445410967ec3ad3599e3e3fb03015bb9f4bcec36b1e7d6ff1595d273da594caa",
+        "size_bytes": 2337
+      },
+      {
+        "path": "raw/standings_snapshots/2023-24_regular_season.csv",
+        "sha256": "c551ae81943a8a5775e293b121fd8b1137db52d5f26886099c410b0216a5418e",
+        "size_bytes": 2337
+      },
+      {
+        "path": "raw/standings_snapshots/2024-25_regular_season.csv",
+        "sha256": "409308a36a5c26a0b2dd99db91adb7bbb8baa0bb4c6feafa4fda64f8b090eb83",
+        "size_bytes": 2340
+      },
+      {
+        "path": "raw/standings_snapshots/2025-26_regular_season.csv",
+        "sha256": "895c6fb07151c95d6f73cdf9b6b0c65bc580c550ebaae4504faf8dfc2f0f1f80",
+        "size_bytes": 2345
+      },
+      {
+        "path": "raw/team_game_period_stats/2024-25_playoffs.csv",
+        "sha256": "072008b1d2cdfea7f301c17e9d40e72aac60dee8deb694ba618bac3555bbd9b4",
+        "size_bytes": 272252
+      },
+      {
+        "path": "raw/team_game_period_stats/2024-25_regular_season.csv",
+        "sha256": "9662a7d605de6bd30983d99511c5cc1caf7c88b19c0802a9e97331fb1451ba4b",
+        "size_bytes": 3318620
+      },
+      {
+        "path": "raw/team_game_period_stats/2025-26_playoffs.csv",
+        "sha256": "530d4803080b1f10f2f7e9abceccbf36983783a6b15f8e128782060671988807",
+        "size_bytes": 226548
+      },
+      {
+        "path": "raw/team_game_period_stats/2025-26_regular_season.csv",
+        "sha256": "b746f7b040a8d376acecf3f6ba2ce39ee820b0da6b38a99f6085a06ae9abc40a",
+        "size_bytes": 3323442
+      },
+      {
+        "path": "raw/team_game_stats/1996-97_playoffs.csv",
+        "sha256": "4d2d6651f56ec9a56ed5e65138b0cfe4d94f98ec24aa888713b37a917881d569",
+        "size_bytes": 25224
+      },
+      {
+        "path": "raw/team_game_stats/1996-97_regular_season.csv",
+        "sha256": "453250d161899111ef5492bd0d3988899c57307e50f773d3a90e1012ac7e7ad2",
+        "size_bytes": 436876
+      },
+      {
+        "path": "raw/team_game_stats/1997-98_playoffs.csv",
+        "sha256": "a4ea86853f74ecdd872b0b373544a4cffed281f97e15b2fdacd91545a643fff1",
+        "size_bytes": 25018
+      },
+      {
+        "path": "raw/team_game_stats/1997-98_regular_season.csv",
+        "sha256": "842f3018277601282f6a840efd7b3aca3d0ee0a77b5e578f0aa975f6baafd637",
+        "size_bytes": 435861
+      },
+      {
+        "path": "raw/team_game_stats/1998-99_playoffs.csv",
+        "sha256": "fc6ae60f13393e0dcce6d3ab4c8f6bf618db99ff7adc3643510c5f846f70de29",
+        "size_bytes": 23457
+      },
+      {
+        "path": "raw/team_game_stats/1998-99_regular_season.csv",
+        "sha256": "734c128057a2ac88713a42aa091cd80c6e18744a4fc7ab2763755b691aac55a2",
+        "size_bytes": 265726
+      },
+      {
+        "path": "raw/team_game_stats/1999-00_playoffs.csv",
+        "sha256": "2d24bc28ad522bff3864904268a1b1bfbea79edede87d6718e8eb3dd348842ce",
+        "size_bytes": 26728
+      },
+      {
+        "path": "raw/team_game_stats/1999-00_regular_season.csv",
+        "sha256": "510da2c5d4c6a1a33fcf0818a1942905bbab24c1a39b5d4736ee12c35061a109",
+        "size_bytes": 436138
+      },
+      {
+        "path": "raw/team_game_stats/2000-01_playoffs.csv",
+        "sha256": "05723b7b6c36ae1306a35fa3296702d0ab22ade68106baefc4bdb8ebdcf18e65",
+        "size_bytes": 25456
+      },
+      {
+        "path": "raw/team_game_stats/2000-01_regular_season.csv",
+        "sha256": "d0f3c981998c8d2e036d9b903b289e3dfa5e9056b23c19d5f9268a5ab61659aa",
+        "size_bytes": 435742
+      },
+      {
+        "path": "raw/team_game_stats/2001-02_playoffs.csv",
+        "sha256": "b10263bff44cd825c0dc7bec2c423b5a343cec4468d152d45127c1510607ae9e",
+        "size_bytes": 25411
+      },
+      {
+        "path": "raw/team_game_stats/2001-02_regular_season.csv",
+        "sha256": "cedf88f547d75252a7021391e30dc7baa59c83df895b062a4ca1a8b2b1694d30",
+        "size_bytes": 435450
+      },
+      {
+        "path": "raw/team_game_stats/2002-03_playoffs.csv",
+        "sha256": "56053a6638c23f4be3c5babaa68a3169a19a224a460d7143c9dc6f8ca9073d0b",
+        "size_bytes": 31483
+      },
+      {
+        "path": "raw/team_game_stats/2002-03_regular_season.csv",
+        "sha256": "d5a30eae7bba95bea0eb58c78e51c148582b3fbeb678cfd0a995a7caf815a302",
+        "size_bytes": 435823
+      },
+      {
+        "path": "raw/team_game_stats/2003-04_playoffs.csv",
+        "sha256": "42a6f24becc6ebc91cd5d534e99eeebca895b4a2bb291e867696a715e49e57c9",
+        "size_bytes": 29298
+      },
+      {
+        "path": "raw/team_game_stats/2003-04_regular_season.csv",
+        "sha256": "3b080c9be786d83219baa548eda8f6663d856a07ed2d332aa3835e033fd782c6",
+        "size_bytes": 435850
+      },
+      {
+        "path": "raw/team_game_stats/2004-05_playoffs.csv",
+        "sha256": "30d143565a406e0ebc93bf400f1817a1183a9925fd75870ce5abac12adfff1c5",
+        "size_bytes": 29730
+      },
+      {
+        "path": "raw/team_game_stats/2004-05_regular_season.csv",
+        "sha256": "843c480d452be2a6c030a8349809801779623e638bf591a5e5030e3e8b38000e",
+        "size_bytes": 451352
+      },
+      {
+        "path": "raw/team_game_stats/2005-06_playoffs.csv",
+        "sha256": "207ec0460211d52ad358291f5f788bf00eb711ca5ed72d95babfa8df6103fae1",
+        "size_bytes": 31452
+      },
+      {
+        "path": "raw/team_game_stats/2005-06_regular_season.csv",
+        "sha256": "73e0f9e8f2dadf3f211511c5fb10fe4b86cc4ae97d039561a55692d5b56c3829",
+        "size_bytes": 453408
+      },
+      {
+        "path": "raw/team_game_stats/2006-07_playoffs.csv",
+        "sha256": "ed05d2045c74d45b9c7a96400d973ada3fe5acff8cb1261d9a675e687fb72de5",
+        "size_bytes": 28022
+      },
+      {
+        "path": "raw/team_game_stats/2006-07_regular_season.csv",
+        "sha256": "d546d0d2a1d45d45682366d1fed74fe485862e4dafa0df0e87d4006def5de6f3",
+        "size_bytes": 453671
+      },
+      {
+        "path": "raw/team_game_stats/2007-08_playoffs.csv",
+        "sha256": "3119cb0832f734f430f213568bc1f710a36259c2f9fa7dba7dc82572a2e55d6e",
+        "size_bytes": 30578
+      },
+      {
+        "path": "raw/team_game_stats/2007-08_regular_season.csv",
+        "sha256": "64e96058bb2caac7447fa9e00cebeee29c5cd3530755cb3273353c7b6e772b13",
+        "size_bytes": 451831
+      },
+      {
+        "path": "raw/team_game_stats/2008-09_playoffs.csv",
+        "sha256": "f41415b63aab3c9109c8400919b7e5a8b9444b79d9e9cfbd7f3e9ffd6f5f3f8b",
+        "size_bytes": 30136
+      },
+      {
+        "path": "raw/team_game_stats/2008-09_regular_season.csv",
+        "sha256": "46c4d740dc05fdb5744b2dcccb3bf661c31dd6ec3d6c87d0b617c10aac9019f0",
+        "size_bytes": 452090
+      },
+      {
+        "path": "raw/team_game_stats/2009-10_playoffs.csv",
+        "sha256": "f72961176a167542b3175218263886c412a84ec4a39606bd0ae9b8c9bdfc52c0",
+        "size_bytes": 29031
+      },
+      {
+        "path": "raw/team_game_stats/2009-10_regular_season.csv",
+        "sha256": "fe01cb04769af34f02044efda539fde45e2b3ac70dc5e49c37f1889ae161c166",
+        "size_bytes": 452036
+      },
+      {
+        "path": "raw/team_game_stats/2010-11_playoffs.csv",
+        "sha256": "66a6e7ba2de83e0272936829afedd3d5833e98ce63adc116c0c7fd9dc703d5ec",
+        "size_bytes": 28758
+      },
+      {
+        "path": "raw/team_game_stats/2010-11_regular_season.csv",
+        "sha256": "aa3ad3fc7e6cb6af2e4710319a336fbcddafe49113ee654c3fbb96e4cf1243a6",
+        "size_bytes": 451883
+      },
+      {
+        "path": "raw/team_game_stats/2011-12_playoffs.csv",
+        "sha256": "a44f16d68cb85dae5b30cf66346f4ca415fbd4ec6baa307cc5fd018ba98bdaba",
+        "size_bytes": 29820
+      },
+      {
+        "path": "raw/team_game_stats/2011-12_regular_season.csv",
+        "sha256": "6c9e7eaea283486088e5b74551ee51694db993af0c2d20a008859bfe93ffb8ba",
+        "size_bytes": 363686
+      },
+      {
+        "path": "raw/team_game_stats/2012-13_playoffs.csv",
+        "sha256": "6e58d2d2fcb3477ea00c1502fd5cde0451350b83241d6966bf599080fbe98494",
+        "size_bytes": 30133
+      },
+      {
+        "path": "raw/team_game_stats/2012-13_regular_season.csv",
+        "sha256": "48cf332f3691415ad3073672a4dfd38232f8f85ec3e73602eb7625d0d21acb54",
+        "size_bytes": 451592
+      },
+      {
+        "path": "raw/team_game_stats/2013-14_playoffs.csv",
+        "sha256": "e0dafcd231bca29902d326091d257afe64dc4bd524b359311917698ff7798d84",
+        "size_bytes": 31947
+      },
+      {
+        "path": "raw/team_game_stats/2013-14_regular_season.csv",
+        "sha256": "517ce8504224cfc93ae2b6eabbb58868f641a150d4c5f0b252d6ec3f9b7c78b4",
+        "size_bytes": 452469
+      },
+      {
+        "path": "raw/team_game_stats/2014-15_playoffs.csv",
+        "sha256": "7365205e05d5e620867d1c351eb29ae718ce28f32e9f1c37134de53046b5f9f7",
+        "size_bytes": 29394
+      },
+      {
+        "path": "raw/team_game_stats/2014-15_regular_season.csv",
+        "sha256": "a2c50107633e4ff941c2748a707aa4766a29d5ef746c25fad79f6e7413e6d553",
+        "size_bytes": 452482
+      },
+      {
+        "path": "raw/team_game_stats/2015-16_playoffs.csv",
+        "sha256": "92f5d29db557b6aa36d4b4f53cea8a805674c4ec99879a7c9ddc97fecbe1bf83",
+        "size_bytes": 31160
+      },
+      {
+        "path": "raw/team_game_stats/2015-16_regular_season.csv",
+        "sha256": "20e646c772224739dc1ed475a714ef7a39be9b5a0278690cc38285edd5801415",
+        "size_bytes": 451229
+      },
+      {
+        "path": "raw/team_game_stats/2016-17_playoffs.csv",
+        "sha256": "b5efe3e626b7e54c87f66d6cf1cf062665f78d8c470fa3de86c000011f92b55e",
+        "size_bytes": 28435
+      },
+      {
+        "path": "raw/team_game_stats/2016-17_regular_season.csv",
+        "sha256": "e1c9ecd0b6b0423effdb1b4c7c16ae4acf85447f07272dd13e773474b5b57f77",
+        "size_bytes": 451745
+      },
+      {
+        "path": "raw/team_game_stats/2017-18_playoffs.csv",
+        "sha256": "a931812b8bdc142fd85e81c796555f90c155e34cf3165d80a87b4ccc1d48d610",
+        "size_bytes": 29691
+      },
+      {
+        "path": "raw/team_game_stats/2017-18_regular_season.csv",
+        "sha256": "8c48c0dcc8b28065babe8764f2e25c239e01298abaf9e2ca641571d684621a4a",
+        "size_bytes": 451866
+      },
+      {
+        "path": "raw/team_game_stats/2018-19_playoffs.csv",
+        "sha256": "0a5b9406e53d4c2ef15ef1b8b46f3978742b9839ed92a7bdd7b0ef4c6a5e2041",
+        "size_bytes": 29609
+      },
+      {
+        "path": "raw/team_game_stats/2018-19_regular_season.csv",
+        "sha256": "23cc511475a78c59d038dff83b987fb30c9434fb4ffb640b408df6a75dea1539",
+        "size_bytes": 452854
+      },
+      {
+        "path": "raw/team_game_stats/2019-20_playoffs.csv",
+        "sha256": "c8e480b4c67845b3ac43dc8f061f3df9b4a8b697bb4266d74a06be270bad639a",
+        "size_bytes": 29335
+      },
+      {
+        "path": "raw/team_game_stats/2019-20_regular_season.csv",
+        "sha256": "fe6a2af36229b667cf8f6752472ce21f7c45e2e129a6357266c7cd6c2bb7cca3",
+        "size_bytes": 390006
+      },
+      {
+        "path": "raw/team_game_stats/2020-21_playoffs.csv",
+        "sha256": "fc80a2c8c0a98903a4854bcd96d6cbbe79da8b6f23afaef14a76099312df6a3c",
+        "size_bytes": 29870
+      },
+      {
+        "path": "raw/team_game_stats/2020-21_regular_season.csv",
+        "sha256": "f7993692780b4aa69b362918eda1ce157ebcb4b86de2d1047c7a77aae8986adf",
+        "size_bytes": 397841
+      },
+      {
+        "path": "raw/team_game_stats/2021-22_playoffs.csv",
+        "sha256": "d7179c44e2f31009013816eacfe7d1ea3d60c8bb504ebc665ca2cc3ee465f18c",
+        "size_bytes": 30995
+      },
+      {
+        "path": "raw/team_game_stats/2021-22_regular_season.csv",
+        "sha256": "537f9324caac89eaf58bb8fe6b4d05123f5960f4c31983a69d0615da61889a23",
+        "size_bytes": 452996
+      },
+      {
+        "path": "raw/team_game_stats/2022-23_playoffs.csv",
+        "sha256": "04c1374f4092cb6b36961bdd2e8f40a0c05e03329f058152f990df715029e751",
+        "size_bytes": 29858
+      },
+      {
+        "path": "raw/team_game_stats/2022-23_regular_season.csv",
+        "sha256": "471b1465e8a1ce1b8dc933538da94693cb0aa546c7a4cab577ce98a4c6e88752",
+        "size_bytes": 453253
+      },
+      {
+        "path": "raw/team_game_stats/2023-24_playoffs.csv",
+        "sha256": "e66c01fcc09b6f6d0faf83babfc4d1f72e8d2526a86f0e1e8d2b20dfac72f3fd",
+        "size_bytes": 29468
+      },
+      {
+        "path": "raw/team_game_stats/2023-24_regular_season.csv",
+        "sha256": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+        "size_bytes": 453325
+      },
+      {
+        "path": "raw/team_game_stats/2024-25_playoffs.csv",
+        "sha256": "5ec01d73231eaea3376f83e3fbcdbf7c846fbe729f0e280178357774beaabe14",
+        "size_bytes": 30427
+      },
+      {
+        "path": "raw/team_game_stats/2024-25_regular_season.csv",
+        "sha256": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+        "size_bytes": 453925
+      },
+      {
+        "path": "raw/team_game_stats/2025-26_playoffs.csv",
+        "sha256": "95c6d776b7e6f92885bbb8b17b57a50eb56801338482c06cf96962f8d8a7dbc2",
+        "size_bytes": 30622
+      },
+      {
+        "path": "raw/team_game_stats/2025-26_regular_season.csv",
+        "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+        "size_bytes": 449374
+      },
+      {
+        "path": "raw/team_season_advanced/1996-97_playoffs.csv",
+        "sha256": "1905467ab2253591c60055167ddc1888b0ae6e2f65e398cee93af8a3b716755e",
+        "size_bytes": 1343
+      },
+      {
+        "path": "raw/team_season_advanced/1996-97_regular_season.csv",
+        "sha256": "4f69e44c99ec67c5e1142db6395456b4b1f6efafd82315cca21d72fb0d33619b",
+        "size_bytes": 2621
+      },
+      {
+        "path": "raw/team_season_advanced/1997-98_playoffs.csv",
+        "sha256": "9a63c11e2f6e9696cebf6ca98142975e7815a3805c2dfbccebe795f761fb8d0c",
+        "size_bytes": 1341
+      },
+      {
+        "path": "raw/team_season_advanced/1997-98_regular_season.csv",
+        "sha256": "6eb17759d61d14104ea1984068d4eb811787ec0fc5c22b5fb17178058b639fac",
+        "size_bytes": 2606
+      },
+      {
+        "path": "raw/team_season_advanced/1998-99_playoffs.csv",
+        "sha256": "2737476dce7579dffab754e8b6a14500881753525322d04f0a22fb2ad8174271",
+        "size_bytes": 1336
+      },
+      {
+        "path": "raw/team_season_advanced/1998-99_regular_season.csv",
+        "sha256": "a5dea5fb75250de15ea1de7a50a0a5a6ca3668be2436b2880c96e12917eff6d5",
+        "size_bytes": 2566
+      },
+      {
+        "path": "raw/team_season_advanced/1999-00_playoffs.csv",
+        "sha256": "174902652a3e14feb10e0b9cafa1af91b6f70fcbec1687d69d455ee3e489144c",
+        "size_bytes": 1334
+      },
+      {
+        "path": "raw/team_season_advanced/1999-00_regular_season.csv",
+        "sha256": "f8f11e18e816fe37e851f6dc501f2ae843ea09edcf83ca28891529b25f4573f2",
+        "size_bytes": 2608
+      },
+      {
+        "path": "raw/team_season_advanced/2000-01_playoffs.csv",
+        "sha256": "161b2e6f8a90edaa44f0e806aa967e06bb49396d986cb366cf42b4ad43f7aae9",
+        "size_bytes": 1342
+      },
+      {
+        "path": "raw/team_season_advanced/2000-01_regular_season.csv",
+        "sha256": "7216b49f89e4a60c5f792961fed27892d1f0311cfa709c95db9e152f43d54a12",
+        "size_bytes": 2600
+      },
+      {
+        "path": "raw/team_season_advanced/2001-02_playoffs.csv",
+        "sha256": "46526879cff6f5e12dcceb2e23a1d55bac5e36ddd049028eb92f0aa44e31838b",
+        "size_bytes": 1336
+      },
+      {
+        "path": "raw/team_season_advanced/2001-02_regular_season.csv",
+        "sha256": "3a9ce5266e765d049ca24d671bf9e3d3e8cc7848438573ffa91bb9b848cadcb4",
+        "size_bytes": 2610
+      },
+      {
+        "path": "raw/team_season_advanced/2002-03_playoffs.csv",
+        "sha256": "9c0d506730bbae63b1ac1316fecfec98bdd1ff39c9dbef1021497fa35831d81e",
+        "size_bytes": 1352
+      },
+      {
+        "path": "raw/team_season_advanced/2002-03_regular_season.csv",
+        "sha256": "c7c9fa81329e3cbede8339f84292f8fb84c7c264ebd87f473c5bfe23d8f94461",
+        "size_bytes": 2611
+      },
+      {
+        "path": "raw/team_season_advanced/2003-04_playoffs.csv",
+        "sha256": "8f7f2bb5aafb385b2c9e163f02c8ae309e2f31ba051a6da0d1dda32a7c499211",
+        "size_bytes": 1333
+      },
+      {
+        "path": "raw/team_season_advanced/2003-04_regular_season.csv",
+        "sha256": "c15482bf95a155cf47b010cfda80c3087e00296d57609e3369e5a8c76beccc80",
+        "size_bytes": 2601
+      },
+      {
+        "path": "raw/team_season_advanced/2004-05_playoffs.csv",
+        "sha256": "1e96cd9d8756c1cc596e20d734ba189c719b8c458593c5d50dde416823f1bfd3",
+        "size_bytes": 1350
+      },
+      {
+        "path": "raw/team_season_advanced/2004-05_regular_season.csv",
+        "sha256": "d86995c120250e6dc589d4e2a1657d8903d6e47a32c925e7364a3da8227eb196",
+        "size_bytes": 2702
+      },
+      {
+        "path": "raw/team_season_advanced/2005-06_playoffs.csv",
+        "sha256": "6d084b304f7881b140154eba2a6829cd9c80cd0bcb8a02ddaa98aa4c3f0e4757",
+        "size_bytes": 1360
+      },
+      {
+        "path": "raw/team_season_advanced/2005-06_regular_season.csv",
+        "sha256": "5efc088ab76d24aad0bd82c3d4b80db0ec74ac0c03ae3298e993245ccbc05b92",
+        "size_bytes": 2701
+      },
+      {
+        "path": "raw/team_season_advanced/2006-07_playoffs.csv",
+        "sha256": "412e256b314fce347d808127728e1e3c546040ff99e4c0a971a79a795dd90bec",
+        "size_bytes": 1343
+      },
+      {
+        "path": "raw/team_season_advanced/2006-07_regular_season.csv",
+        "sha256": "8bbd3bdd7e596a031e657ea9452ab1d3edba9f1a52ffb3baf1242d6b4d1e1383",
+        "size_bytes": 2706
+      },
+      {
+        "path": "raw/team_season_advanced/2007-08_playoffs.csv",
+        "sha256": "32c1e6627db298d6ef3cf09e5e7215743b01fde61553ba9e5bdc77a8a0ae0946",
+        "size_bytes": 1360
+      },
+      {
+        "path": "raw/team_season_advanced/2007-08_regular_season.csv",
+        "sha256": "7cf4639da3b9c947aa3ba70181900ffb6e94b7d6ec1e5c3c5295d32fbcfb150a",
+        "size_bytes": 2702
+      },
+      {
+        "path": "raw/team_season_advanced/2008-09_playoffs.csv",
+        "sha256": "e8f72a45317cec8d26bd9da88365f4d62421f1cbe5dd351a43c15df24cf0898f",
+        "size_bytes": 1358
+      },
+      {
+        "path": "raw/team_season_advanced/2008-09_regular_season.csv",
+        "sha256": "1455b448ea7a13a2d84887034bf2cd0592ef09326e349151e82fb3b4877fa0af",
+        "size_bytes": 2701
+      },
+      {
+        "path": "raw/team_season_advanced/2009-10_playoffs.csv",
+        "sha256": "26be1073f61861912e8f81d7981c37140f3e975550af30241a09c0405cfad4c8",
+        "size_bytes": 1359
+      },
+      {
+        "path": "raw/team_season_advanced/2009-10_regular_season.csv",
+        "sha256": "78c3bde622730af221fb985a381c7b02fcb2012585b473f914f04208d1053438",
+        "size_bytes": 2701
+      },
+      {
+        "path": "raw/team_season_advanced/2010-11_playoffs.csv",
+        "sha256": "0cfa1874993820b92d4d72849dd7d6e525862eba7df639177f4482a937f384c5",
+        "size_bytes": 1350
+      },
+      {
+        "path": "raw/team_season_advanced/2010-11_regular_season.csv",
+        "sha256": "3061448c5a3960abd88ef58994919a21bd8c445702a957cd9ce19d858a5450bf",
+        "size_bytes": 2702
+      },
+      {
+        "path": "raw/team_season_advanced/2011-12_playoffs.csv",
+        "sha256": "36ea5f56353f8ed0a336487fa4bead45ead37dcadd24b824ff8a9cb9f7f973f8",
+        "size_bytes": 1352
+      },
+      {
+        "path": "raw/team_season_advanced/2011-12_regular_season.csv",
+        "sha256": "1a0c824e0761f101dba46c066c03e557d58e6bff265e3573196138796701f15e",
+        "size_bytes": 2700
+      },
+      {
+        "path": "raw/team_season_advanced/2012-13_playoffs.csv",
+        "sha256": "d1155ae7911aa7f3ce3614ce174ebb6103d251e34755e911defdee6d944060c4",
+        "size_bytes": 1355
+      },
+      {
+        "path": "raw/team_season_advanced/2012-13_regular_season.csv",
+        "sha256": "e5abed4b269a7ad57c840102f50e152a98745b73e3b1c3c2092409f31c32f7ff",
+        "size_bytes": 2708
+      },
+      {
+        "path": "raw/team_season_advanced/2013-14_playoffs.csv",
+        "sha256": "153a834caf2880476ea8650bda14465923c6a59663d4b10ffa8eadf45433dd0d",
+        "size_bytes": 1369
+      },
+      {
+        "path": "raw/team_season_advanced/2013-14_regular_season.csv",
+        "sha256": "1659e25c4bc04c68e1a9a33d3fbfd26ee28a378f53b1df7b39578d6851b73033",
+        "size_bytes": 2707
+      },
+      {
+        "path": "raw/team_season_advanced/2014-15_playoffs.csv",
+        "sha256": "5cd7cfa12c828884fd3f578a35a6f11965fba24a15b03568367487c2726d1164",
+        "size_bytes": 1349
+      },
+      {
+        "path": "raw/team_season_advanced/2014-15_regular_season.csv",
+        "sha256": "b2ebac883c939033927e423b3b56269efc65ac6889e301f377b482a29ecc7f87",
+        "size_bytes": 2698
+      },
+      {
+        "path": "raw/team_season_advanced/2015-16_playoffs.csv",
+        "sha256": "e58488c5d80b492bea1158facc8876a393588122354720671b1fc9bde7d5eb6f",
+        "size_bytes": 1353
+      },
+      {
+        "path": "raw/team_season_advanced/2015-16_regular_season.csv",
+        "sha256": "70e0b6308a093585d8a0163f96a3a8478791689fc0c40ba8945e6de30ee6d1fc",
+        "size_bytes": 2707
+      },
+      {
+        "path": "raw/team_season_advanced/2016-17_playoffs.csv",
+        "sha256": "22459255ee1ac2f1e89a30d376dd8cf77575d43a4586cea919f2b45a612fce80",
+        "size_bytes": 1362
+      },
+      {
+        "path": "raw/team_season_advanced/2016-17_regular_season.csv",
+        "sha256": "3d03be1ad1873df9e2c878ae71e50d272060dc316a8715e1583910a920bff2cb",
+        "size_bytes": 2711
+      },
+      {
+        "path": "raw/team_season_advanced/2017-18_playoffs.csv",
+        "sha256": "1f3ab3f8866af4663a672f630eef3310f2cfaefa58fe188c16b73d0e38d91afa",
+        "size_bytes": 1363
+      },
+      {
+        "path": "raw/team_season_advanced/2017-18_regular_season.csv",
+        "sha256": "79c533bbee586b4dc6b070d56022e25f0c4afe6ddc8193aaa540e1169256d0d3",
+        "size_bytes": 2711
+      },
+      {
+        "path": "raw/team_season_advanced/2018-19_playoffs.csv",
+        "sha256": "331c54520685b113c06e9fcdaef2abed30f5fc3692925157ff87489345f54453",
+        "size_bytes": 1356
+      },
+      {
+        "path": "raw/team_season_advanced/2018-19_regular_season.csv",
+        "sha256": "7b2a0ec76507950d18e8b5dcebe6c70adcdedc6e6e26b5f9ef58f8e10ec4765b",
+        "size_bytes": 2726
+      },
+      {
+        "path": "raw/team_season_advanced/2019-20_playoffs.csv",
+        "sha256": "dcd813398eb52067ede4012266ebb80d70ba666a26dd35a945a34730117e0956",
+        "size_bytes": 1364
+      },
+      {
+        "path": "raw/team_season_advanced/2019-20_regular_season.csv",
+        "sha256": "da3b337ecc112bfa0121f10e7aa7b712e503df53a07bca1c21200420652c278a",
+        "size_bytes": 2726
+      },
+      {
+        "path": "raw/team_season_advanced/2020-21_playoffs.csv",
+        "sha256": "c1dc58b4eb9bd6f2da82d78029e4a51fb8b13545e16a6a97d9fc4fda6023101c",
+        "size_bytes": 1364
+      },
+      {
+        "path": "raw/team_season_advanced/2020-21_regular_season.csv",
+        "sha256": "2557640ddfbd5c4586daf54f8c3fe3a159511a00943f630706b7280d06ec6d86",
+        "size_bytes": 2722
+      },
+      {
+        "path": "raw/team_season_advanced/2021-22_playoffs.csv",
+        "sha256": "95bd6dd544163ec64e87765bf45d9f2a7c887682baaf86b17f4cf19e2b459477",
+        "size_bytes": 1356
+      },
+      {
+        "path": "raw/team_season_advanced/2021-22_regular_season.csv",
+        "sha256": "8823f41af4e9e4052929927e36217ca758a902dd5f77be4d85733aace4d35846",
+        "size_bytes": 2714
+      },
+      {
+        "path": "raw/team_season_advanced/2022-23_playoffs.csv",
+        "sha256": "019724f1a28a1c89a0592df596c42f0fd640def38009a5a4167eb37fed3482db",
+        "size_bytes": 1362
+      },
+      {
+        "path": "raw/team_season_advanced/2022-23_regular_season.csv",
+        "sha256": "3aada10a27ce823ce62221a70b9d846c36cc19ac3c3e605ba03355e73992bc3e",
+        "size_bytes": 2717
+      },
+      {
+        "path": "raw/team_season_advanced/2023-24_playoffs.csv",
+        "sha256": "30a13d3f691b5981bf79e62c6612e3da49344c52955455a91b2ff69525caa2b7",
+        "size_bytes": 1356
+      },
+      {
+        "path": "raw/team_season_advanced/2023-24_regular_season.csv",
+        "sha256": "f58bdba058250f1e12848d63873d77811d40937c13f3bff0bfd43866f8e8e20f",
+        "size_bytes": 2712
+      },
+      {
+        "path": "raw/team_season_advanced/2024-25_playoffs.csv",
+        "sha256": "f3f763e8714eb6df1b22f5346dfe8ea42717fd244015ea2af9b610bc71015a01",
+        "size_bytes": 1360
+      },
+      {
+        "path": "raw/team_season_advanced/2024-25_regular_season.csv",
+        "sha256": "89f170cd740b4af6b0ade5f5f9851d1fb9271b2d391f27ff503442e657ca5045",
+        "size_bytes": 2719
+      },
+      {
+        "path": "raw/team_season_advanced/2025-26_playoffs.csv",
+        "sha256": "83c8c293139b60b39190e4068b16375e3b51f7768524ef4bdd4a09fba61cd642",
+        "size_bytes": 1367
+      },
+      {
+        "path": "raw/team_season_advanced/2025-26_regular_season.csv",
+        "sha256": "d11413c85311a106a6e3b2b02b4adebb5736b79c01ecb89ef40cbf6d44df16c7",
+        "size_bytes": 2727
+      },
+      {
+        "path": "raw/teams/team_conference_membership.csv",
+        "sha256": "7e9ed6d7d4528121124acbbc968d72e1b6ceb6214e83d0f1c92d109f0ae75d06",
+        "size_bytes": 4999
+      },
+      {
+        "path": "raw/teams/team_history_reference.csv",
+        "sha256": "68c1df20009faccf1e3d6be425cec7860d1651f08b4c04c10eaff65506edfad4",
+        "size_bytes": 3228
+      },
+      {
+        "path": "raw/teams/teams_reference.csv",
+        "sha256": "62bec1340fcba3587b5763d2eae681bcb11b27c8808a943f2047af22992d3649",
+        "size_bytes": 157
+      }
+    ],
+    "verified_pointer": {
+      "generation_id": "availability-k08-retained-v1-20261031",
+      "manifest_sha256": "de83522f37f6bd7f26b51c1bf869deb05bbe242d3249d685997a979c050d16a9",
+      "previous_generation_id": "availability-opening-s4-v1-20261017",
+      "published_at": "2026-10-31T08:34:39+00:00",
+      "schema_version": 1
+    },
+    "workflow_run_id": "41184300649",
+    "workflow_sha": "6f98dfa7e3965d9e95e1e87f639ce394e58e6393"
+  }
+}
