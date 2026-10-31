@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 
 import pandas as pd
@@ -66,7 +67,7 @@ def test_authorized_sources_qualify_full_observed_season_and_home_counts(tmp_pat
         for kind in ("games", "team_game_stats", "player_game_stats")
     }
     work = tmp_path / "stage"
-    destination = Path(os.environ.get("NBATOOLS_ACQUISITION_OUTPUT", tmp_path)) / "lebron17-overlay"
+    destination = tmp_path / "lebron17-overlay"
     validation = build_stage(
         REQUEST, SOURCES, work, destination, candidate_sha=os.environ["VALIDATION_SHA"]
     )
@@ -160,5 +161,14 @@ def test_authorized_sources_qualify_full_observed_season_and_home_counts(tmp_pat
         (destination / "consumer-acceptance.json").write_text(
             json.dumps(receipt, indent=2, default=str) + "\n"
         )
+        if output := os.environ.get("NBATOOLS_ACQUISITION_OUTPUT"):
+            # The existing protected publisher consumes acquired_data/raw/... .
+            # Export only after every consumer assertion passes, preserving the
+            # original overlay bytes and excluding the test-only local manifest.
+            export = Path(output)
+            export.mkdir(parents=True, exist_ok=True)
+            if any(export.iterdir()):
+                raise ValueError("Publication transport requires a new empty export directory")
+            shutil.copytree(destination, export, dirs_exist_ok=True)
     finally:
         reset_data_source_cache()
