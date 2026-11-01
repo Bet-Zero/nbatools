@@ -1,0 +1,800 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS actual isolated BOS canonical staging/runtime output, not production or LAL composition",
+  "code_revision": "570b3be34dd3d5eadb5d95a916e30d8cda6abf3d",
+  "code_tree": "a691c6598fcf860625460f6c33a764f380791ca0",
+  "run_id": 41277575827,
+  "request_revision": "b328c91d2ab8ee34d326b640b7af25bf9cbd5a7a",
+  "artifact_id": 13071916852,
+  "artifact_sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692",
+  "artifact_size_bytes": 717387,
+  "strict_summary": {
+    "candidate_sha": "b328c91d2ab8ee34d326b640b7af25bf9cbd5a7a",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_bos_participation_stage_real_data.py::test_retained_boston_sources_close_both_populations_and_mixed_records"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "overlay": {
+    "files": 198,
+    "all_exact_paths_sha256_sizes_verified": true,
+    "source_originals": 124,
+    "structured_packets": 62,
+    "official_report_pdf_and_receipts": 10,
+    "append_files": 2,
+    "legacy_test_manifest_exported": false,
+    "raw_overlay_sha256": "ac2a14a3858b49ff556551db6aee211e4f3222627b42d033a467d4118837999f"
+  },
+  "append": {
+    "rows": 2202,
+    "structured_rows": 2117,
+    "pdf_boston_rows": 85,
+    "current_season_rows": 3006,
+    "projected_all_season_rows": 3152,
+    "new_game_imports": 67,
+    "total_current_season_imports": 90,
+    "old804_cells_all_fields_equal": true,
+    "old23_import_entries_equal": true,
+    "all67_new_game_import_digests_recomputed": true,
+    "all2202_new_row_states_dates_clocks_authority_matched_independent_originals": true,
+    "base_core_and_source_authority_unchanged": true,
+    "other146_rows": "Preserved by changed-only overlay path disjointness; accepted146other-season rows reused, not a new history scan.",
+    "other_season_paths_unchanged": [
+      {
+        "path": "raw/player_game_availability/1997-98_regular_season.csv",
+        "sha256": "6374c8986f76832b57979e0a91c0f26d000507f737d5c4bb62c0a8e4fc9acf74",
+        "size_bytes": 6760
+      },
+      {
+        "path": "raw/player_game_availability/1997-98_regular_season.imports.json",
+        "sha256": "f4afddf0ee325b172c9410e094184a163ce1981b442ac2397be30118bf2bc500",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2004-05_regular_season.csv",
+        "sha256": "ffda740f1d5c399ec46ecf1c7e5c7db0488e71db3b8fb23fe0dbce7fa30c6120",
+        "size_bytes": 6514
+      },
+      {
+        "path": "raw/player_game_availability/2004-05_regular_season.imports.json",
+        "sha256": "03ff7d97e990d2fd0bb200176847f9e5ae8fe8e976a7089598f3903892d15691",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2014-15_regular_season.csv",
+        "sha256": "758de65697f70501b50193cdfad8a7ba00f9221c13a07546f7119bd9bdc31845",
+        "size_bytes": 8567
+      },
+      {
+        "path": "raw/player_game_availability/2014-15_regular_season.imports.json",
+        "sha256": "bd28cb0e0b8d3ebe3f19ecdaea8abc5a4557a62c56ac25fa8b94710aa38df998",
+        "size_bytes": 117
+      },
+      {
+        "path": "raw/player_game_availability/2023-24_regular_season.csv",
+        "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+        "size_bytes": 16721
+      },
+      {
+        "path": "raw/player_game_availability/2023-24_regular_season.imports.json",
+        "sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085",
+        "size_bytes": 225
+      }
+    ]
+  },
+  "structured_game_bindings": [
+    {
+      "game_id": "0022500017",
+      "packet_sha256": "9e2d5fbc0cba3a452c98e0d3f19aa220f8fe46d13bb778e45769ccb6a0815f86",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500018",
+      "packet_sha256": "5e2b0cfd3b6d09073b0f5b70ccffd66ba5d41ebd2a43099dc414ba91e42289be",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500021",
+      "packet_sha256": "a922b09a637d637b2c2ebbb2a831673076c8e7b508c4117a33ab51696cdd4a13",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500028",
+      "packet_sha256": "f18d10fb27e864222b7db1154b3dc6b0921294c397a950ad447844a2f554d916",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500049",
+      "packet_sha256": "479def67c69f10aa52d96659561336b2cbef8dd4593ba9662ad6753e388f0054",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500060",
+      "packet_sha256": "dfd773d75256a7403e584ed5bbe859c35312849f5ba1e790ab0a0aafc7d5d94b",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500083",
+      "packet_sha256": "5c8f956e9e74a18d811ac0bc189d2cee72b1c754edc34921a85961bf02cad356",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500106",
+      "packet_sha256": "cbb78b1c283ef9a8ee67331fe0fd8ef72a660811eab8be177047c61113f28716",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500117",
+      "packet_sha256": "7e5f6f8853bd346d2c149bb11f7c33b46cabc1c28ea3baaf6715cc5df801fab7",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500128",
+      "packet_sha256": "cd849f436b8b5169fd2e1a0b46fd53cfa3874a985d58c27830971f4d4aae8de9",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500146",
+      "packet_sha256": "fac7a1a5ea4688cd4301d1dd89baccece1e1f622747f5397c0445496aa212432",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500158",
+      "packet_sha256": "dcf809e7d7da68d8c2d6d94e9d8871ff9760ac0a6f42c8b883ec8c01b4b4a4ea",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500174",
+      "packet_sha256": "3acc451e1f4845e0f87dcc93d01b78aa55eb6958c80b372f8218635809901012",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500193",
+      "packet_sha256": "10229f992b87d955681afbf123e1338756d00e484e85cea1aba77fdfe49533b3",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500209",
+      "packet_sha256": "a420877ed77e9e5511772141f9a399b171369efbffee0d1d2772e08c6cfc6d8f",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500216",
+      "packet_sha256": "36b355e2a0e0e6956d52deeb1443aac510ddb5cf72f929bc94fdb104641ea3f8",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500233",
+      "packet_sha256": "3eda9556c4e0eadbf51fcc0fbee3803c76b5c336e7c2db4f1901f3ad188b6364",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500277",
+      "packet_sha256": "aef02e6defd499431634a83197777577574ab1b507a1961fae74fb343f2ab85c",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500293",
+      "packet_sha256": "89a57e6bf5ea74a4c2be1e3320f08d2a05cac53aa4bb8f58d8796bbacfe87916",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500302",
+      "packet_sha256": "52bfd42f998512ca5178f66d7e5b051fe234ed6ba16d3c1103ea2e279e32f1ce",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500320",
+      "packet_sha256": "e55a40fc83fc4fa74e84eb05a87eb34f23b3315b3e1825130184b30de6fdaa16",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500334",
+      "packet_sha256": "199149bb869cfada4e5afa7c97e975b6286b44ec93fe8c25880cd59870e0e989",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500358",
+      "packet_sha256": "188d69bd67d2085d9ed9903b0555f04e4c9b17229c022bf283397ae68c588460",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500381",
+      "packet_sha256": "0745f1a9471d55d25328725a3fd74ec8e58b332eee543086d8e7acb0dfb4a44c",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500388",
+      "packet_sha256": "6f6e87a547c6cfe83fa4f535be70d75ad30ef1078e820b6c05ffa0b8402289b3",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500403",
+      "packet_sha256": "49a9198024a66ed628ed70f5e06ece39f513adffe9e2f68600962110b09ee161",
+      "rows": 36
+    },
+    {
+      "game_id": "0022500426",
+      "packet_sha256": "b17f28b7d7216cf023ed67c583b5d6483ec9c0819c7bcd16b2a9d4a4f7843dab",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500444",
+      "packet_sha256": "dc0242265c83643a8deaaf9a3f3168783c4582bc08dd3126060576be3163493b",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500459",
+      "packet_sha256": "ce85bcc3f5eb3f255797dbbf2a2d1aaadbbefd670f9a2875b11d2d7549370683",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500474",
+      "packet_sha256": "00c2562fb4a1c8c0f461e284bf8d1c36383c7f789d58f955e8081cc1e7ae3645",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500493",
+      "packet_sha256": "440ac9807ea38f6691e503255075e95319ed824b5cb08be01c973e2b45e2d4fb",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500503",
+      "packet_sha256": "94561f11dd0185ea171888f4d7f480067464d9cb76f8b5eb488bb39889cfb938",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500520",
+      "packet_sha256": "23c34c73abfe5545ce81123ad43a0392c39075cda42cb6fb268f64b3751a2f9c",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500532",
+      "packet_sha256": "75903d00a7a1ca41cebeebc7c2853a235709bc18388b9ba3a17d5da131fddfd3",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500545",
+      "packet_sha256": "6fd1d076c8abcd50caf0c0d6a18d3b21925fd16ae5f9b3f5e91d44ea0a016646",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500559",
+      "packet_sha256": "03e99d86092b4eb26d72fb3e9963e19946d2a913370296850c09ad76754a029f",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500594",
+      "packet_sha256": "301846773cd7ac8d4f9be33fbabaa27942d3602e866b4432bc32c5a165d3c8a0",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500621",
+      "packet_sha256": "d398079232ffa830e9dcf916eb83809816849fa34836ce364b5f7b68140a2307",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500637",
+      "packet_sha256": "82c15297d97feea05ae4651e3ecac32e1d30fffcdbf8ae815138483407fbba4e",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500647",
+      "packet_sha256": "e0ab8f40f92edf6115a4d0e72b7f3a261784eadfe34eac2ff8682d0d117d12e3",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500673",
+      "packet_sha256": "431757be270ed86cd2909491f093b240383e3166129bc4a0c113cc07927368ee",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500689",
+      "packet_sha256": "4ad2603183a17d24bc8189831544962c03489d4779b8e5d8cc080548102ac513",
+      "rows": 35
+    },
+    {
+      "game_id": "0022500728",
+      "packet_sha256": "adeafd3a395d5ec706dcdb655622c331b3c54abc00c7e7bbd1b847ccf90b048e",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500741",
+      "packet_sha256": "c0d7e46478c7a577dab0fe40913dd38a4eba6bbd68237faf38a1892700a46bab",
+      "rows": 32
+    },
+    {
+      "game_id": "0022500757",
+      "packet_sha256": "23664dc36e8bcaa890d8e9a5b3fcced33149bea929fceebde4bf73b6d94eabe1",
+      "rows": 32
+    },
+    {
+      "game_id": "0022500778",
+      "packet_sha256": "02a6010a4028eaf2c363b91c1d7ed87f11366aa1e2078abb366eae360f7335a2",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500799",
+      "packet_sha256": "1fabdbc6f8bed9c338b88269ceb8d3e042aece2ffd2d9ee328699e869c24b930",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500839",
+      "packet_sha256": "4a563c8944dc5cdf7933c4e19bdb00916113779499800791c25c524cbfe70a4e",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500847",
+      "packet_sha256": "d9e89a42f74022ed00518e08202bb9e3187f4e16034abf0cf41d18a472771fbc",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500859",
+      "packet_sha256": "21fd06f4ae3f5df712aa3bafa0de11673cc9e9e907c6f6129bf469ed610da04e",
+      "rows": 34
+    },
+    {
+      "game_id": "0022500874",
+      "packet_sha256": "c6b94a7a650f32f1dce378e7fb77a1000ffb24a96793d2e1d3d8b09065fb892c",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500880",
+      "packet_sha256": "b957c872509a694afe9e64179c2a180f63dd00a1b1490b02090b0d7b263df145",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500894",
+      "packet_sha256": "7fcd838d20319d10dd94f634111f21515a11d34324cebfc49b2e9d3df282322f",
+      "rows": 33
+    },
+    {
+      "game_id": "0022500959",
+      "packet_sha256": "8e5ec5fa94b04c75ee46685126e64fca9adb6db39f22d1f80ee34fcb2a8d5ff5",
+      "rows": 33
+    },
+    {
+      "game_id": "0022501067",
+      "packet_sha256": "9df6c88a8facd3bb0e237f1e1eebe5191f51aafe73e5c8bbfc47e19a2941be3b",
+      "rows": 34
+    },
+    {
+      "game_id": "0022501085",
+      "packet_sha256": "89afae4fd9400dd59b1d1bd5ed444b91d6e2603712975e52fd099c96eef05741",
+      "rows": 34
+    },
+    {
+      "game_id": "0022501092",
+      "packet_sha256": "3c56524f58b47a841f21c8080f9bc12077ee5659b33eb5f363383e4612430a40",
+      "rows": 34
+    },
+    {
+      "game_id": "0022501168",
+      "packet_sha256": "e2234ec32f4867efde768e592e4c4ed233a73bf763a4353b74b12ab55e5bece8",
+      "rows": 33
+    },
+    {
+      "game_id": "0022501174",
+      "packet_sha256": "c04f648a713fe44b86d29b01df2a4f6b11eb3bb87b8aa9d90f6751672065c246",
+      "rows": 33
+    },
+    {
+      "game_id": "0022501186",
+      "packet_sha256": "91d9c60e425051871c562f4d1a0488f7a645c83c4df0f389e01b1dc84e4f554d",
+      "rows": 33
+    },
+    {
+      "game_id": "0022501206",
+      "packet_sha256": "cc6e82dff2e6e791dca4864c99499645f1b947ca72e9ed25e25a7118314d7bf3",
+      "rows": 35
+    },
+    {
+      "game_id": "0022501222",
+      "packet_sha256": "fecd351e3b151da43ee487984d4b446522bdafcea0ea7d9441048604d19347c2",
+      "rows": 35
+    }
+  ],
+  "pdf_bindings": [
+    {
+      "game_id": "0022500250",
+      "pdf_sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119",
+      "source_receipt_sha256": "7745df5f66c49a56be8fc71a3a1b22f62f122450619ea8431e61cc64780ae61f",
+      "rows": 17,
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500580",
+      "pdf_sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c",
+      "source_receipt_sha256": "51756de78bfd746ec6885a2d6ab880853a86933267d43e60929c8555f0f270b1",
+      "rows": 17,
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500660",
+      "pdf_sha256": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8",
+      "source_receipt_sha256": "57bfc57c384bb0075019ccf5b3258ecb8bd611920f475358434073391b3e69b9",
+      "rows": 17,
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500721",
+      "pdf_sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706",
+      "source_receipt_sha256": "aeffe1a39b2e101a276ff21f12bec9900490e8ac6a8d51d46d2e59042ccfed1d",
+      "rows": 17,
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500702",
+      "pdf_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+      "source_receipt_sha256": "1bce94ac67a17baa5ff99873040ad60f5bd289d530ded4a42bd73a48feba6ea7",
+      "rows": 17,
+      "imported_team_ids": [
+        1610612738
+      ]
+    }
+  ],
+  "quarantined_originals": {
+    "boxscoretraditionalv3_0022500250.json": "5a648c0da12c1e4beddc8e81426eef9f1d5b5afb3525143750b68f159d583534",
+    "boxscoretraditionalv3_0022500580.json": "2f6ccaea2950cfeb51cf1df48cba5fc37d145613202ff1d7cf49e57b0f9ec8b1",
+    "boxscoretraditionalv3_0022500660.json": "feedb4bdb79a544ba85fdf3443c124da802d7c1a4f5c0bbfeefffd0d83a575d3",
+    "boxscoretraditionalv3_0022500721.json": "a384c565e370a1a385240820991f6922ac0ed0cd7d11582ef6444ae272542971",
+    "boxscoresummaryv3_0022500250.json": "2dd8d624549058d5c2d18ac0faf2a3f0103ba3259d02d7bf0f05793c8de2ec4b",
+    "boxscoresummaryv3_0022500580.json": "b465db509b5759d51bde40b0d7221fb0322f8015afb27844ec059805c8d24663",
+    "boxscoresummaryv3_0022500660.json": "8d48e8c12db62bdcd1d8261f9feb8bfc79f8031142101c28382408631e447c57",
+    "boxscoresummaryv3_0022500721.json": "618bfe41eb76883cac4920296b17c312068d160685135e95897ed47be490afdd"
+  },
+  "target_coverage": {
+    "exact_target_keys": 75,
+    "all164_player_game_states_dates_sides_compared": true,
+    "tatum": {
+      "played": 16,
+      "did_not_play": 66,
+      "unknown": 0,
+      "home_dnp": 32
+    },
+    "brown": {
+      "played": 71,
+      "did_not_play": 11,
+      "unknown": 0,
+      "home_dnp": 3
+    }
+  },
+  "answers": [
+    {
+      "query": "Celtics record without Jayson Tatum and with Jaylen Brown in 2025-26",
+      "game_ids": [
+        22500017,
+        22500018,
+        22500021,
+        22500028,
+        22500049,
+        22500060,
+        22500083,
+        22500106,
+        22500117,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500193,
+        22500209,
+        22500216,
+        22500233,
+        22500250,
+        22500277,
+        22500293,
+        22500302,
+        22500320,
+        22500338,
+        22500358,
+        22500381,
+        22500403,
+        22500426,
+        22500444,
+        22500459,
+        22500474,
+        22500493,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500580,
+        22500594,
+        22500621,
+        22500637,
+        22500647,
+        22500660,
+        22500673,
+        22500702,
+        22500721,
+        22500741,
+        22500757,
+        22500778,
+        22500799,
+        22500823,
+        22500847,
+        22500859,
+        22500874,
+        22500894,
+        22500959,
+        22501092,
+        22501174,
+        22501206,
+        22501222
+      ],
+      "points": 6659,
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 58,
+        "wins": 36,
+        "losses": 22,
+        "win_pct": 0.621,
+        "pts_avg": 114.81,
+        "reb_avg": 45.448,
+        "ast_avg": 24.172,
+        "fg3m_avg": 15.517,
+        "stl_avg": 7.31,
+        "blk_avg": 5.379,
+        "tov_avg": 11.741,
+        "plus_minus_avg": 5.621,
+        "efg_pct_avg": 0.552,
+        "ts_pct_avg": 0.582
+      },
+      "missed_ids": [
+        22500017,
+        22500018,
+        22500021,
+        22500028,
+        22500049,
+        22500060,
+        22500083,
+        22500106,
+        22500117,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500193,
+        22500209,
+        22500216,
+        22500233,
+        22500250,
+        22500277,
+        22500293,
+        22500302,
+        22500320,
+        22500334,
+        22500338,
+        22500358,
+        22500381,
+        22500388,
+        22500403,
+        22500426,
+        22500444,
+        22500459,
+        22500474,
+        22500493,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500559,
+        22500580,
+        22500594,
+        22500621,
+        22500637,
+        22500647,
+        22500660,
+        22500673,
+        22500689,
+        22500702,
+        22500721,
+        22500728,
+        22500741,
+        22500757,
+        22500778,
+        22500799,
+        22500823,
+        22500839,
+        22500847,
+        22500859,
+        22500874,
+        22500880,
+        22500894,
+        22500959,
+        22501092,
+        22501174,
+        22501186,
+        22501206,
+        22501222
+      ],
+      "home_missed_ids": [
+        22500049,
+        22500060,
+        22500083,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500216,
+        22500233,
+        22500277,
+        22500320,
+        22500338,
+        22500381,
+        22500403,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500621,
+        22500660,
+        22500673,
+        22500689,
+        22500702,
+        22500741,
+        22500757,
+        22500778,
+        22500859,
+        22500874,
+        22500894,
+        22501174,
+        22501186,
+        22501222
+      ]
+    },
+    {
+      "query": "Celtics record without Jaylen Brown and with Jayson Tatum in 2025-26",
+      "game_ids": [
+        22501067,
+        22501085,
+        22501168
+      ],
+      "points": 329,
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 3,
+        "wins": 2,
+        "losses": 1,
+        "win_pct": 0.667,
+        "pts_avg": 109.667,
+        "reb_avg": 44.333,
+        "ast_avg": 24.0,
+        "fg3m_avg": 14.667,
+        "stl_avg": 3.333,
+        "blk_avg": 2.667,
+        "tov_avg": 10.0,
+        "plus_minus_avg": 5.333,
+        "efg_pct_avg": 0.565,
+        "ts_pct_avg": 0.599
+      },
+      "missed_ids": [
+        22500334,
+        22500388,
+        22500559,
+        22500689,
+        22500728,
+        22500839,
+        22500880,
+        22501067,
+        22501085,
+        22501168,
+        22501186
+      ],
+      "home_missed_ids": [
+        22500689,
+        22501067,
+        22501186
+      ]
+    },
+    {
+      "query": "Celtics record without Jayson Tatum and Jaylen Brown in 2025-26",
+      "game_ids": [
+        22500334,
+        22500388,
+        22500559,
+        22500689,
+        22500728,
+        22500839,
+        22500880,
+        22501186
+      ],
+      "points": 898,
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 8,
+        "wins": 7,
+        "losses": 1,
+        "win_pct": 0.875,
+        "pts_avg": 112.25,
+        "reb_avg": 51.125,
+        "ast_avg": 26.125,
+        "fg3m_avg": 16.25,
+        "stl_avg": 8.0,
+        "blk_avg": 5.375,
+        "tov_avg": 10.625,
+        "plus_minus_avg": 18.375,
+        "efg_pct_avg": 0.538,
+        "ts_pct_avg": 0.565
+      }
+    },
+    {
+      "query": "Celtics record without Jayson Tatum and Jaylen Brown, when the Celtics score at least 100 points in 2025-26",
+      "game_ids": [
+        22500334,
+        22500388,
+        22500689,
+        22500728,
+        22500880,
+        22501186
+      ],
+      "points": 705,
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 6,
+        "wins": 6,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 117.5,
+        "reb_avg": 50.333,
+        "ast_avg": 27.167,
+        "fg3m_avg": 18.0,
+        "stl_avg": 8.5,
+        "blk_avg": 5.833,
+        "tov_avg": 10.833,
+        "plus_minus_avg": 22.167,
+        "efg_pct_avg": 0.555,
+        "ts_pct_avg": 0.583
+      }
+    }
+  ],
+  "consumer_evidence": {
+    "natural_and_structured_queries_executed": true,
+    "local_api_posts": 3,
+    "separate_api_response_bodies_exported": false,
+    "api_and_mil_atomic_failure_evidence": "Strict selected test passed three localAPI result assertions; unscoped old0702 report raised expected two-candidate ValueError and both CSV/import bytes remained equal. These are gate execution evidence; artifact stores four answer summaries and exactIDs, not separateAPI bodies or exception traceback."
+  },
+  "original_source_false_proof_preserved": "779f582675bfd16aaf3ba94d07cf47f1cb6da5dcb42d7c78c45846b0403c4f70",
+  "pdf_source_true_proof": "387e619548ad9c25ea2af24c9cadc738c6f2a7c86fb7c36129da561a6f828ee7",
+  "source_calls_by_checker": 0,
+  "prior_LAL_stage_composed": false,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

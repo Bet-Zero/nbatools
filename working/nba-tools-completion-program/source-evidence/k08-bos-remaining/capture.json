@@ -1,0 +1,15 @@
+{
+  "classification": "byte_authenticated_retained_originals_not_source_or_participation_acceptance",
+  "collection_request_sha256": "208e8322177998d8aa857410cbd0bf18e918127b9ffa5a7dd9eea1fce542ec9c",
+  "sources_manifest_sha256": "ce64da81d87aa6d4e90447e69d40a429fde24ebcc4dd504c4099209a5dbc8ae5",
+  "source_files": 132,
+  "total_source_bytes": 2509872,
+  "source_reader_invocations": 132,
+  "attempts_per_file": 1,
+  "failed_local_encoding_writes": 4,
+  "cached_responses_replayed_without_additional_source_reads": 4,
+  "nba_source_capture_times_known": false,
+  "source_scope_qualified": false,
+  "stage_accepted": false,
+  "production_writes": 0
+}

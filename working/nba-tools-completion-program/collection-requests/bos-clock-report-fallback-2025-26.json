@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "status": "bounded_source_requirement_not_publication_approval",
+  "authorization": "Owner standing bounded public NBA collection/staging through existing approved reader/tools/credentials/cost limits; production publication separately restricted",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "target_team_id": 1610612738,
+  "source_qualification_sha256": "779f582675bfd16aaf3ba94d07cf47f1cb6da5dcb42d7c78c45846b0403c4f70",
+  "reason": "Four literal :60 clocks block full2255-row structured append. Preserve original132 files and false proof; no carry/normalization. Newer7aTraditional2026tree is identicalf6df, so no corrected-body refetch.",
+  "games": [
+    {
+      "game_id": "0022500250",
+      "game_date": "2025-11-18",
+      "away_abbr": "BOS",
+      "home_abbr": "BKN",
+      "opponent_team_id": 1610612751,
+      "away_points": 113,
+      "home_points": 99,
+      "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf",
+      "imported_team_ids": [
+        1610612738
+      ],
+      "required_target_player_ids": [
+        1628369
+      ]
+    },
+    {
+      "game_id": "0022500580",
+      "game_date": "2026-01-15",
+      "away_abbr": "BOS",
+      "home_abbr": "MIA",
+      "opponent_team_id": 1610612748,
+      "away_points": 119,
+      "home_points": 114,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf",
+      "imported_team_ids": [
+        1610612738
+      ],
+      "required_target_player_ids": [
+        1628369
+      ]
+    },
+    {
+      "game_id": "0022500660",
+      "game_date": "2026-01-26",
+      "away_abbr": "POR",
+      "home_abbr": "BOS",
+      "opponent_team_id": 1610612757,
+      "away_points": 94,
+      "home_points": 102,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260126/20260126_PORBOS.pdf",
+      "imported_team_ids": [
+        1610612738
+      ],
+      "required_target_player_ids": [
+        1628369
+      ]
+    },
+    {
+      "game_id": "0022500721",
+      "game_date": "2026-02-03",
+      "away_abbr": "BOS",
+      "home_abbr": "DAL",
+      "opponent_team_id": 1610612742,
+      "away_points": 110,
+      "home_points": 100,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf",
+      "imported_team_ids": [
+        1610612738
+      ],
+      "required_target_player_ids": [
+        1628369
+      ]
+    }
+  ],
+  "limits": {
+    "source_files": 4,
+    "reader_invocations": 4,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "aggregate_max_bytes": 6000000,
+    "metered_overage_usd": 0
+  },
+  "reuse_existing_report": {
+    "game_id": "0022500702",
+    "pdf_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+    "scope": "17 already-qualified BOS-only rows; do not refetch; MIL ambiguity excluded"
+  },
+  "proposed_stage": "62 valid structured groups2117rows/70targets plus four newly qualified cachedBOS-onlyPDFs and existing0702BOS-onlyPDF. Derive actual new rows from valid frames; preserve804priorcells/23imports146otherrows/core and prior LAL1070 accepted evidence. Validate all75auditedkeys/full82populations/numeric/API questions in isolation, no full-slice or production claim.",
+  "not_authorized": [
+    "production publication or active pointer change",
+    "new credentials/costs/services/permissions",
+    "substantial bulk backfills or automatic refresh",
+    "destructive changes or weakened safeguards"
+  ]
+}

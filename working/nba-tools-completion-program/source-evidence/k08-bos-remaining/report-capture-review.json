@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS bounded four-report source capture only; actual source capture/participation/clock/stage acceptance pending",
+  "reviewed_revision": "15462a36f48ad724de857bbabafc7b09c26a91ab",
+  "equivalent_local_revision": "921ad4f7c75d58c330c952bfb01af2644d51bb6c",
+  "tree": "1855151b31d98f5310231312657b0c467a7fde31",
+  "file_hashes": {
+    "tests/cloud_bos_clock_reports_capture_real_data.py": "607575ec4e65d4db7273dd22de8c77d0a1733c53e231d99d7c1a0acd0ac040be",
+    "working/nba-tools-completion-program/collection-requests/bos-clock-report-fallback-2025-26.json": "7558eda7a1659fe1c39b9c61608c343a7869219be44cbfece4c000895f197105"
+  },
+  "preserved_blocked_qualification_sha256": "779f582675bfd16aaf3ba94d07cf47f1cb6da5dcb42d7c78c45846b0403c4f70",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "case_games": [
+    "0022500250",
+    "0022500580",
+    "0022500660",
+    "0022500721"
+  ],
+  "scope": {
+    "required_selector": "tests/cloud_bos_clock_reports_capture_real_data.py::test_capture_four_official_bos_reports_without_clock_waiver",
+    "canonical_dates_sides_scores_urls_verified_before_first_fetch": true,
+    "existing_reader_only": true,
+    "reader_invocations": 4,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "aggregate_max_bytes": 6000000,
+    "new_headers_or_bypass": false,
+    "source_identity_or_cdns_called": false,
+    "game0702_refetched": false
+  },
+  "offline_controls": [
+    {
+      "control": "success",
+      "reader_invocations": 4,
+      "successful_captures": 4,
+      "failures": 0,
+      "final_gate": "passed",
+      "all_four_case_receipts_persisted": true
+    },
+    {
+      "control": "wrong_date",
+      "reader_invocations": 4,
+      "successful_captures": 3,
+      "failures": 1,
+      "final_gate": "failed",
+      "all_four_case_receipts_persisted": true
+    },
+    {
+      "control": "wrong_side",
+      "reader_invocations": 4,
+      "successful_captures": 3,
+      "failures": 1,
+      "final_gate": "failed",
+      "all_four_case_receipts_persisted": true
+    },
+    {
+      "control": "wrong_score",
+      "reader_invocations": 4,
+      "successful_captures": 3,
+      "failures": 1,
+      "final_gate": "failed",
+      "all_four_case_receipts_persisted": true
+    },
+    {
+      "control": "one_http_failure",
+      "reader_invocations": 4,
+      "successful_captures": 3,
+      "failures": 1,
+      "final_gate": "failed",
+      "all_four_case_receipts_persisted": true
+    },
+    {
+      "control": "canonical_precheck_failure",
+      "reader_invocations": 0,
+      "gate": "failed_before_fetch"
+    }
+  ],
+  "control_limit": "Network transport and archive bytes mocked; real date/section/team/score parsers and capture control flow exercised. No source qualification inferred from synthetic PDF bytes.",
+  "actual_source_calls_by_checker": 0,
+  "clock_waiver": false,
+  "participation_qualified": false,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

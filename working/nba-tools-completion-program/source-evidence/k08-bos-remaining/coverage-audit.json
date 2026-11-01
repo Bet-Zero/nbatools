@@ -1,0 +1,2975 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "classification": "accepted_read_only_observed_population_audit_not_complete_absence_or_publication",
+  "code": {
+    "remote_revision": "8341b461a763936fdda5197e63b538c3ca3a989f",
+    "tree": "7a35a395d9a9bb84280c3cba16c090e02dfa9923",
+    "request_revision": "63858eead7199beb8e6f6c32e2564a5df854a617"
+  },
+  "execution": {
+    "run_id": 41275465135,
+    "artifact_id": 13071322236,
+    "artifact_sha256": "a7bd0c019daba938ac60fce80ced7b57953709b59f2ffc87fb910951e5f1401f",
+    "artifact_size_bytes": 14877,
+    "summary": {
+      "candidate_sha": "63858eead7199beb8e6f6c32e2564a5df854a617",
+      "generation": "availability-lebron-season-v1-20261031",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/cloud_bos_participation_coverage_real_data.py::test_current_tatum_brown_exact_observed_population_and_missing_keys"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 0,
+      "conclusion": "success",
+      "problems": []
+    }
+  },
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_bindings": {
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "classification": "read_only_observed_population_audit_not_complete_absence_or_publication",
+    "availability_rows_in_requested_season": 804,
+    "source_files": [
+      {
+        "path": "raw/games/2025-26_regular_season.csv",
+        "sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+        "size_bytes": 283089
+      },
+      {
+        "path": "raw/player_game_availability/2025-26_regular_season.csv",
+        "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+        "size_bytes": 223000
+      },
+      {
+        "path": "raw/player_game_stats/2025-26_regular_season.csv",
+        "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+        "size_bytes": 4993942
+      },
+      {
+        "path": "raw/team_game_stats/2025-26_regular_season.csv",
+        "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+        "size_bytes": 449374
+      }
+    ],
+    "subset_hashes": {
+      "target-player-rows.csv": "ea05217de147d44712c270bbf2d0d426e6c9cb8dff6ffba2bbc06d0a504d99a4",
+      "target-ledger-rows.csv": "15f0e8891a86ff78abc3e27fe9b6e9ef796529c48f357326ddd87c40be3ec700",
+      "team82.csv": "ac550ef7a470ca315857d0a38e54f84ec1f9449cd4615f4bd2f6553d776d4f9e"
+    },
+    "missing_keys": [
+      {
+        "game_id": "0022500083",
+        "game_date": "2025-10-22",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500018",
+        "game_date": "2025-10-24",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500106",
+        "game_date": "2025-10-26",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500117",
+        "game_date": "2025-10-27",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500128",
+        "game_date": "2025-10-29",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500021",
+        "game_date": "2025-10-31",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500146",
+        "game_date": "2025-11-01",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500158",
+        "game_date": "2025-11-03",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500174",
+        "game_date": "2025-11-05",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500028",
+        "game_date": "2025-11-07",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500193",
+        "game_date": "2025-11-09",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500209",
+        "game_date": "2025-11-11",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500216",
+        "game_date": "2025-11-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500233",
+        "game_date": "2025-11-16",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500250",
+        "game_date": "2025-11-18",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500049",
+        "game_date": "2025-11-21",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500277",
+        "game_date": "2025-11-23",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500060",
+        "game_date": "2025-11-26",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500293",
+        "game_date": "2025-11-29",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500302",
+        "game_date": "2025-11-30",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500320",
+        "game_date": "2025-12-02",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500334",
+        "game_date": "2025-12-04",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500358",
+        "game_date": "2025-12-07",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022501206",
+        "game_date": "2025-12-11",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022501222",
+        "game_date": "2025-12-15",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500381",
+        "game_date": "2025-12-19",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500388",
+        "game_date": "2025-12-20",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500403",
+        "game_date": "2025-12-22",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500426",
+        "game_date": "2025-12-26",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500444",
+        "game_date": "2025-12-28",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500459",
+        "game_date": "2025-12-30",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500474",
+        "game_date": "2026-01-01",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500493",
+        "game_date": "2026-01-03",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500503",
+        "game_date": "2026-01-05",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500520",
+        "game_date": "2026-01-07",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500532",
+        "game_date": "2026-01-09",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500545",
+        "game_date": "2026-01-10",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500559",
+        "game_date": "2026-01-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500580",
+        "game_date": "2026-01-15",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500594",
+        "game_date": "2026-01-17",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500017",
+        "game_date": "2026-01-19",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500621",
+        "game_date": "2026-01-21",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500637",
+        "game_date": "2026-01-23",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500647",
+        "game_date": "2026-01-24",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500660",
+        "game_date": "2026-01-26",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500673",
+        "game_date": "2026-01-28",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500689",
+        "game_date": "2026-01-30",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500702",
+        "game_date": "2026-02-01",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500721",
+        "game_date": "2026-02-03",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500728",
+        "game_date": "2026-02-04",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500741",
+        "game_date": "2026-02-06",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500757",
+        "game_date": "2026-02-08",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500778",
+        "game_date": "2026-02-11",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500799",
+        "game_date": "2026-02-19",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500839",
+        "game_date": "2026-02-24",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500847",
+        "game_date": "2026-02-25",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500859",
+        "game_date": "2026-02-27",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500874",
+        "game_date": "2026-03-01",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500880",
+        "game_date": "2026-03-02",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500894",
+        "game_date": "2026-03-04",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500959",
+        "game_date": "2026-03-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022501092",
+        "game_date": "2026-03-30",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022501174",
+        "game_date": "2026-04-10",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022501186",
+        "game_date": "2026-04-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022500334",
+        "game_date": "2025-12-04",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500388",
+        "game_date": "2025-12-20",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500559",
+        "game_date": "2026-01-12",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500689",
+        "game_date": "2026-01-30",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500728",
+        "game_date": "2026-02-04",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500839",
+        "game_date": "2026-02-24",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022500880",
+        "game_date": "2026-03-02",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022501067",
+        "game_date": "2026-03-27",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022501085",
+        "game_date": "2026-03-29",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022501168",
+        "game_date": "2026-04-09",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      },
+      {
+        "game_id": "0022501186",
+        "game_date": "2026-04-12",
+        "team_id": 1610612738,
+        "player_id": 1627759
+      }
+    ],
+    "production_writes": 0
+  },
+  "subset_rows": {
+    "teams": 82,
+    "positive": 87,
+    "ledger": 4
+  },
+  "independent_review": {
+    "all_player_game_states_dates_and_sides_compared": 164,
+    "all_report_source_hashes_match_authenticated_manifest": true,
+    "four_full_source_bindings_match_manifest": true,
+    "full_source_bytes_rechecked_locally": false,
+    "full_source_bytes_execution_gate_checked": true,
+    "subset_hashes_verified": true,
+    "current_ledger_rows": 804,
+    "accepted_all_season_ledger_rows": 950
+  },
+  "counts": {
+    "1628369": {
+      "played": 16,
+      "did_not_play": 2,
+      "same_game_other_side": 0,
+      "unknown": 64
+    },
+    "1627759": {
+      "played": 71,
+      "did_not_play": 0,
+      "same_game_other_side": 0,
+      "unknown": 11
+    }
+  },
+  "projections": [
+    {
+      "game_id": "0022500083",
+      "game_date": "2025-10-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500018",
+      "game_date": "2025-10-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500106",
+      "game_date": "2025-10-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500117",
+      "game_date": "2025-10-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612740,
+      "opponent_team_abbr": "NOP",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500128",
+      "game_date": "2025-10-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500021",
+      "game_date": "2025-10-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500146",
+      "game_date": "2025-11-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612745,
+      "opponent_team_abbr": "HOU",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500158",
+      "game_date": "2025-11-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612762,
+      "opponent_team_abbr": "UTA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500174",
+      "game_date": "2025-11-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500028",
+      "game_date": "2025-11-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500193",
+      "game_date": "2025-11-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500209",
+      "game_date": "2025-11-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500216",
+      "game_date": "2025-11-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612763,
+      "opponent_team_abbr": "MEM",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500233",
+      "game_date": "2025-11-16",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612746,
+      "opponent_team_abbr": "LAC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500250",
+      "game_date": "2025-11-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500049",
+      "game_date": "2025-11-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500277",
+      "game_date": "2025-11-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500060",
+      "game_date": "2025-11-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500293",
+      "game_date": "2025-11-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612750,
+      "opponent_team_abbr": "MIN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500302",
+      "game_date": "2025-11-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500320",
+      "game_date": "2025-12-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500334",
+      "game_date": "2025-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "opponent_team_id": 1610612747,
+      "opponent_team_abbr": "LAL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500358",
+      "game_date": "2025-12-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501206",
+      "game_date": "2025-12-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501222",
+      "game_date": "2025-12-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500381",
+      "game_date": "2025-12-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500388",
+      "game_date": "2025-12-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500403",
+      "game_date": "2025-12-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500426",
+      "game_date": "2025-12-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500444",
+      "game_date": "2025-12-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612757,
+      "opponent_team_abbr": "POR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500459",
+      "game_date": "2025-12-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612762,
+      "opponent_team_abbr": "UTA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500474",
+      "game_date": "2026-01-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612758,
+      "opponent_team_abbr": "SAC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500493",
+      "game_date": "2026-01-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612746,
+      "opponent_team_abbr": "LAC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500503",
+      "game_date": "2026-01-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500520",
+      "game_date": "2026-01-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612743,
+      "opponent_team_abbr": "DEN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500532",
+      "game_date": "2026-01-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500545",
+      "game_date": "2026-01-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612759,
+      "opponent_team_abbr": "SAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500559",
+      "game_date": "2026-01-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500580",
+      "game_date": "2026-01-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500594",
+      "game_date": "2026-01-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500017",
+      "game_date": "2026-01-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500621",
+      "game_date": "2026-01-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500637",
+      "game_date": "2026-01-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500647",
+      "game_date": "2026-01-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500660",
+      "game_date": "2026-01-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612757,
+      "opponent_team_abbr": "POR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500673",
+      "game_date": "2026-01-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500689",
+      "game_date": "2026-01-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612758,
+      "opponent_team_abbr": "SAC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500702",
+      "game_date": "2026-02-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500721",
+      "game_date": "2026-02-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612742,
+      "opponent_team_abbr": "DAL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500728",
+      "game_date": "2026-02-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612745,
+      "opponent_team_abbr": "HOU",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500741",
+      "game_date": "2026-02-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500757",
+      "game_date": "2026-02-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500778",
+      "game_date": "2026-02-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500799",
+      "game_date": "2026-02-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612744,
+      "opponent_team_abbr": "GSW",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500823",
+      "game_date": "2026-02-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "did_not_play",
+      "opponent_team_id": 1610612747,
+      "opponent_team_abbr": "LAL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500839",
+      "game_date": "2026-02-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612756,
+      "opponent_team_abbr": "PHX",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500847",
+      "game_date": "2026-02-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612743,
+      "opponent_team_abbr": "DEN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500859",
+      "game_date": "2026-02-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500874",
+      "game_date": "2026-03-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500880",
+      "game_date": "2026-03-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500894",
+      "game_date": "2026-03-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500908",
+      "game_date": "2026-03-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612742,
+      "opponent_team_abbr": "DAL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500942",
+      "game_date": "2026-03-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612759,
+      "opponent_team_abbr": "SAS",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500959",
+      "game_date": "2026-03-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612760,
+      "opponent_team_abbr": "OKC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500971",
+      "game_date": "2026-03-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500986",
+      "game_date": "2026-03-16",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612756,
+      "opponent_team_abbr": "PHX",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500999",
+      "game_date": "2026-03-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612744,
+      "opponent_team_abbr": "GSW",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501019",
+      "game_date": "2026-03-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612763,
+      "opponent_team_abbr": "MEM",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501035",
+      "game_date": "2026-03-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612750,
+      "opponent_team_abbr": "MIN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501054",
+      "game_date": "2026-03-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612760,
+      "opponent_team_abbr": "OKC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501067",
+      "game_date": "2026-03-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501085",
+      "game_date": "2026-03-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501092",
+      "game_date": "2026-03-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501106",
+      "game_date": "2026-04-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501126",
+      "game_date": "2026-04-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501132",
+      "game_date": "2026-04-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501149",
+      "game_date": "2026-04-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501168",
+      "game_date": "2026-04-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501174",
+      "game_date": "2026-04-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612740,
+      "opponent_team_abbr": "NOP",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501186",
+      "game_date": "2026-04-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500083",
+      "game_date": "2025-10-22",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500018",
+      "game_date": "2025-10-24",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500106",
+      "game_date": "2025-10-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500117",
+      "game_date": "2025-10-27",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612740,
+      "opponent_team_abbr": "NOP",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500128",
+      "game_date": "2025-10-29",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500021",
+      "game_date": "2025-10-31",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500146",
+      "game_date": "2025-11-01",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612745,
+      "opponent_team_abbr": "HOU",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500158",
+      "game_date": "2025-11-03",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612762,
+      "opponent_team_abbr": "UTA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500174",
+      "game_date": "2025-11-05",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500028",
+      "game_date": "2025-11-07",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500193",
+      "game_date": "2025-11-09",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500209",
+      "game_date": "2025-11-11",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500216",
+      "game_date": "2025-11-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612763,
+      "opponent_team_abbr": "MEM",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500233",
+      "game_date": "2025-11-16",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612746,
+      "opponent_team_abbr": "LAC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500250",
+      "game_date": "2025-11-18",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500049",
+      "game_date": "2025-11-21",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500277",
+      "game_date": "2025-11-23",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500060",
+      "game_date": "2025-11-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500293",
+      "game_date": "2025-11-29",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612750,
+      "opponent_team_abbr": "MIN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500302",
+      "game_date": "2025-11-30",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500320",
+      "game_date": "2025-12-02",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500334",
+      "game_date": "2025-12-04",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612747,
+      "opponent_team_abbr": "LAL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500358",
+      "game_date": "2025-12-07",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501206",
+      "game_date": "2025-12-11",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501222",
+      "game_date": "2025-12-15",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500381",
+      "game_date": "2025-12-19",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500388",
+      "game_date": "2025-12-20",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500403",
+      "game_date": "2025-12-22",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500426",
+      "game_date": "2025-12-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500444",
+      "game_date": "2025-12-28",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612757,
+      "opponent_team_abbr": "POR",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500459",
+      "game_date": "2025-12-30",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612762,
+      "opponent_team_abbr": "UTA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500474",
+      "game_date": "2026-01-01",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612758,
+      "opponent_team_abbr": "SAC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500493",
+      "game_date": "2026-01-03",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612746,
+      "opponent_team_abbr": "LAC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500503",
+      "game_date": "2026-01-05",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500520",
+      "game_date": "2026-01-07",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612743,
+      "opponent_team_abbr": "DEN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500532",
+      "game_date": "2026-01-09",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500545",
+      "game_date": "2026-01-10",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612759,
+      "opponent_team_abbr": "SAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500559",
+      "game_date": "2026-01-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500580",
+      "game_date": "2026-01-15",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500594",
+      "game_date": "2026-01-17",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500017",
+      "game_date": "2026-01-19",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612765,
+      "opponent_team_abbr": "DET",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500621",
+      "game_date": "2026-01-21",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612754,
+      "opponent_team_abbr": "IND",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500637",
+      "game_date": "2026-01-23",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500647",
+      "game_date": "2026-01-24",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500660",
+      "game_date": "2026-01-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612757,
+      "opponent_team_abbr": "POR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500673",
+      "game_date": "2026-01-28",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500689",
+      "game_date": "2026-01-30",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612758,
+      "opponent_team_abbr": "SAC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500702",
+      "game_date": "2026-02-01",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500721",
+      "game_date": "2026-02-03",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612742,
+      "opponent_team_abbr": "DAL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500728",
+      "game_date": "2026-02-04",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612745,
+      "opponent_team_abbr": "HOU",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500741",
+      "game_date": "2026-02-06",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500757",
+      "game_date": "2026-02-08",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500778",
+      "game_date": "2026-02-11",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612741,
+      "opponent_team_abbr": "CHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500799",
+      "game_date": "2026-02-19",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612744,
+      "opponent_team_abbr": "GSW",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500823",
+      "game_date": "2026-02-22",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612747,
+      "opponent_team_abbr": "LAL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500839",
+      "game_date": "2026-02-24",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612756,
+      "opponent_team_abbr": "PHX",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500847",
+      "game_date": "2026-02-25",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612743,
+      "opponent_team_abbr": "DEN",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500859",
+      "game_date": "2026-02-27",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612751,
+      "opponent_team_abbr": "BKN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500874",
+      "game_date": "2026-03-01",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612755,
+      "opponent_team_abbr": "PHI",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500880",
+      "game_date": "2026-03-02",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500894",
+      "game_date": "2026-03-04",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500908",
+      "game_date": "2026-03-06",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612742,
+      "opponent_team_abbr": "DAL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500921",
+      "game_date": "2026-03-08",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612739,
+      "opponent_team_abbr": "CLE",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500942",
+      "game_date": "2026-03-10",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612759,
+      "opponent_team_abbr": "SAS",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500959",
+      "game_date": "2026-03-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612760,
+      "opponent_team_abbr": "OKC",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022500971",
+      "game_date": "2026-03-14",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612764,
+      "opponent_team_abbr": "WAS",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500986",
+      "game_date": "2026-03-16",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612756,
+      "opponent_team_abbr": "PHX",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022500999",
+      "game_date": "2026-03-18",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612744,
+      "opponent_team_abbr": "GSW",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501019",
+      "game_date": "2026-03-20",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612763,
+      "opponent_team_abbr": "MEM",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501035",
+      "game_date": "2026-03-22",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612750,
+      "opponent_team_abbr": "MIN",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501054",
+      "game_date": "2026-03-25",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612760,
+      "opponent_team_abbr": "OKC",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501067",
+      "game_date": "2026-03-27",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501085",
+      "game_date": "2026-03-29",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501092",
+      "game_date": "2026-03-30",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612737,
+      "opponent_team_abbr": "ATL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501106",
+      "game_date": "2026-04-01",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612748,
+      "opponent_team_abbr": "MIA",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501126",
+      "game_date": "2026-04-03",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612749,
+      "opponent_team_abbr": "MIL",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501132",
+      "game_date": "2026-04-05",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612761,
+      "opponent_team_abbr": "TOR",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501149",
+      "game_date": "2026-04-07",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612766,
+      "opponent_team_abbr": "CHA",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501168",
+      "game_date": "2026-04-09",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612752,
+      "opponent_team_abbr": "NYK",
+      "is_home": 0
+    },
+    {
+      "game_id": "0022501174",
+      "game_date": "2026-04-10",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "played",
+      "opponent_team_id": 1610612740,
+      "opponent_team_abbr": "NOP",
+      "is_home": 1
+    },
+    {
+      "game_id": "0022501186",
+      "game_date": "2026-04-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "state": "unknown",
+      "opponent_team_id": 1610612753,
+      "opponent_team_abbr": "ORL",
+      "is_home": 1
+    }
+  ],
+  "known_dnp_games": {
+    "1628369": [
+      "0022500338",
+      "0022500823"
+    ],
+    "1627759": []
+  },
+  "smallest_collection_dependency": {
+    "unknown_target_keys": 75,
+    "unknown_unique_games": 67,
+    "overlap_games": 8,
+    "retained_structured_unknown_pairs": {},
+    "reuse_existing_report": {
+      "game_id": "0022500702",
+      "player_id": 1628369,
+      "game_date": "2026-02-01",
+      "state": "did_not_play",
+      "team_id": 1610612738,
+      "pdf_path": "working/nba-tools-completion-program/source-evidence/tatum-20260201/acquired_data/raw/player_game_availability_sources/e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9.pdf",
+      "pdf_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+      "staged_boston_rows": 17,
+      "scope": "Boston only; MIL ambiguity is retained and must not be imported",
+      "production_imported": false
+    },
+    "new_target_keys": 74,
+    "new_unique_games": 66,
+    "new_structured_originals_if_all_indexed": 132,
+    "required_endpoints": [
+      "BoxScoreTraditionalV3",
+      "BoxScoreSummaryV3"
+    ],
+    "new_requirements": [
+      {
+        "game_id": "0022500083",
+        "game_date": "2025-10-22",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612755,
+        "opponent_team_abbr": "PHI",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500018",
+        "game_date": "2025-10-24",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612752,
+        "opponent_team_abbr": "NYK",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500106",
+        "game_date": "2025-10-26",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612765,
+        "opponent_team_abbr": "DET",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500117",
+        "game_date": "2025-10-27",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612740,
+        "opponent_team_abbr": "NOP",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500128",
+        "game_date": "2025-10-29",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612739,
+        "opponent_team_abbr": "CLE",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500021",
+        "game_date": "2025-10-31",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612755,
+        "opponent_team_abbr": "PHI",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500146",
+        "game_date": "2025-11-01",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612745,
+        "opponent_team_abbr": "HOU",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500158",
+        "game_date": "2025-11-03",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612762,
+        "opponent_team_abbr": "UTA",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500174",
+        "game_date": "2025-11-05",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500028",
+        "game_date": "2025-11-07",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612753,
+        "opponent_team_abbr": "ORL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500193",
+        "game_date": "2025-11-09",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612753,
+        "opponent_team_abbr": "ORL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500209",
+        "game_date": "2025-11-11",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612755,
+        "opponent_team_abbr": "PHI",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500216",
+        "game_date": "2025-11-12",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612763,
+        "opponent_team_abbr": "MEM",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500233",
+        "game_date": "2025-11-16",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612746,
+        "opponent_team_abbr": "LAC",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500250",
+        "game_date": "2025-11-18",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612751,
+        "opponent_team_abbr": "BKN",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500049",
+        "game_date": "2025-11-21",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612751,
+        "opponent_team_abbr": "BKN",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500277",
+        "game_date": "2025-11-23",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612753,
+        "opponent_team_abbr": "ORL",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500060",
+        "game_date": "2025-11-26",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612765,
+        "opponent_team_abbr": "DET",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500293",
+        "game_date": "2025-11-29",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612750,
+        "opponent_team_abbr": "MIN",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500302",
+        "game_date": "2025-11-30",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612739,
+        "opponent_team_abbr": "CLE",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500320",
+        "game_date": "2025-12-02",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612752,
+        "opponent_team_abbr": "NYK",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500334",
+        "game_date": "2025-12-04",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500358",
+        "game_date": "2025-12-07",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612761,
+        "opponent_team_abbr": "TOR",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501206",
+        "game_date": "2025-12-11",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612749,
+        "opponent_team_abbr": "MIL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501222",
+        "game_date": "2025-12-15",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612765,
+        "opponent_team_abbr": "DET",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500381",
+        "game_date": "2025-12-19",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612748,
+        "opponent_team_abbr": "MIA",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500388",
+        "game_date": "2025-12-20",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612761,
+        "opponent_team_abbr": "TOR",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500403",
+        "game_date": "2025-12-22",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612754,
+        "opponent_team_abbr": "IND",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500426",
+        "game_date": "2025-12-26",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612754,
+        "opponent_team_abbr": "IND",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500444",
+        "game_date": "2025-12-28",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612757,
+        "opponent_team_abbr": "POR",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500459",
+        "game_date": "2025-12-30",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612762,
+        "opponent_team_abbr": "UTA",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500474",
+        "game_date": "2026-01-01",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612758,
+        "opponent_team_abbr": "SAC",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500493",
+        "game_date": "2026-01-03",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612746,
+        "opponent_team_abbr": "LAC",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500503",
+        "game_date": "2026-01-05",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612741,
+        "opponent_team_abbr": "CHI",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500520",
+        "game_date": "2026-01-07",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612743,
+        "opponent_team_abbr": "DEN",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500532",
+        "game_date": "2026-01-09",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612761,
+        "opponent_team_abbr": "TOR",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500545",
+        "game_date": "2026-01-10",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612759,
+        "opponent_team_abbr": "SAS",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500559",
+        "game_date": "2026-01-12",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612754,
+        "opponent_team_abbr": "IND",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500580",
+        "game_date": "2026-01-15",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612748,
+        "opponent_team_abbr": "MIA",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500594",
+        "game_date": "2026-01-17",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612737,
+        "opponent_team_abbr": "ATL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500017",
+        "game_date": "2026-01-19",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612765,
+        "opponent_team_abbr": "DET",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500621",
+        "game_date": "2026-01-21",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612754,
+        "opponent_team_abbr": "IND",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500637",
+        "game_date": "2026-01-23",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612751,
+        "opponent_team_abbr": "BKN",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500647",
+        "game_date": "2026-01-24",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612741,
+        "opponent_team_abbr": "CHI",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500660",
+        "game_date": "2026-01-26",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612757,
+        "opponent_team_abbr": "POR",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500673",
+        "game_date": "2026-01-28",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612737,
+        "opponent_team_abbr": "ATL",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500689",
+        "game_date": "2026-01-30",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612758,
+        "opponent_team_abbr": "SAC",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500721",
+        "game_date": "2026-02-03",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612742,
+        "opponent_team_abbr": "DAL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500728",
+        "game_date": "2026-02-04",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612745,
+        "opponent_team_abbr": "HOU",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500741",
+        "game_date": "2026-02-06",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612748,
+        "opponent_team_abbr": "MIA",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500757",
+        "game_date": "2026-02-08",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612752,
+        "opponent_team_abbr": "NYK",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500778",
+        "game_date": "2026-02-11",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612741,
+        "opponent_team_abbr": "CHI",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500799",
+        "game_date": "2026-02-19",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612744,
+        "opponent_team_abbr": "GSW",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500839",
+        "game_date": "2026-02-24",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612756,
+        "opponent_team_abbr": "PHX",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500847",
+        "game_date": "2026-02-25",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612743,
+        "opponent_team_abbr": "DEN",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500859",
+        "game_date": "2026-02-27",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612751,
+        "opponent_team_abbr": "BKN",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500874",
+        "game_date": "2026-03-01",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612755,
+        "opponent_team_abbr": "PHI",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500880",
+        "game_date": "2026-03-02",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612749,
+        "opponent_team_abbr": "MIL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500894",
+        "game_date": "2026-03-04",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612766,
+        "opponent_team_abbr": "CHA",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500959",
+        "game_date": "2026-03-12",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612760,
+        "opponent_team_abbr": "OKC",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501092",
+        "game_date": "2026-03-30",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612737,
+        "opponent_team_abbr": "ATL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501174",
+        "game_date": "2026-04-10",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612740,
+        "opponent_team_abbr": "NOP",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022501186",
+        "game_date": "2026-04-12",
+        "team_id": 1610612738,
+        "player_id": 1628369,
+        "state": "unknown",
+        "opponent_team_id": 1610612753,
+        "opponent_team_abbr": "ORL",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500334",
+        "game_date": "2025-12-04",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612764,
+        "opponent_team_abbr": "WAS",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500388",
+        "game_date": "2025-12-20",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612761,
+        "opponent_team_abbr": "TOR",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500559",
+        "game_date": "2026-01-12",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612754,
+        "opponent_team_abbr": "IND",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500689",
+        "game_date": "2026-01-30",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612758,
+        "opponent_team_abbr": "SAC",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022500728",
+        "game_date": "2026-02-04",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612745,
+        "opponent_team_abbr": "HOU",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500839",
+        "game_date": "2026-02-24",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612756,
+        "opponent_team_abbr": "PHX",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022500880",
+        "game_date": "2026-03-02",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612749,
+        "opponent_team_abbr": "MIL",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501067",
+        "game_date": "2026-03-27",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612737,
+        "opponent_team_abbr": "ATL",
+        "is_home": 1
+      },
+      {
+        "game_id": "0022501085",
+        "game_date": "2026-03-29",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612766,
+        "opponent_team_abbr": "CHA",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501168",
+        "game_date": "2026-04-09",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612752,
+        "opponent_team_abbr": "NYK",
+        "is_home": 0
+      },
+      {
+        "game_id": "0022501186",
+        "game_date": "2026-04-12",
+        "team_id": 1610612738,
+        "player_id": 1627759,
+        "state": "unknown",
+        "opponent_team_id": 1610612753,
+        "opponent_team_abbr": "ORL",
+        "is_home": 1
+      }
+    ],
+    "qualification": "Metadata/index presence and source transport do not establish state; qualify exact target, game/date/side, scores, clocks, conflicts before staging. Neither unknown nor zero minutes alone is DNP."
+  },
+  "missed_totals": null,
+  "production_writes": 0,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "approval": "PASS actual audit execution and exact missing-key/source-minimization evidence; data qualification/staging remains unfinished"
+}

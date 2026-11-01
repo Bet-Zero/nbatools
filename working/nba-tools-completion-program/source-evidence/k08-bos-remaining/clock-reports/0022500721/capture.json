@@ -1,0 +1,18 @@
+{
+  "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+  "game_id": "0022500721",
+  "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf",
+  "source_reader_invocations": 1,
+  "participation_qualified": false,
+  "clock_qualified": false,
+  "full_slice_accepted": false,
+  "production_writes": 0,
+  "capture_complete": true,
+  "source_receipt": {
+    "raw_file": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706.pdf",
+    "retrieved_at": "2026-11-01T05:26:20.092633+00:00",
+    "sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706",
+    "size_bytes": 27385,
+    "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf"
+  }
+}
