@@ -29,6 +29,20 @@ AVAILABILITY_COLUMNS = [
     "player_name",
     "participation_state",
 ]
+AVAILABILITY_GUARD_ERRORS = {
+    "Incomplete player-game participation evidence schema",
+    "Invalid identity in player-game participation evidence",
+    "Duplicate player-game participation observations",
+    "Player-game participation scope mismatch",
+    "Invalid player-game participation state",
+    "Player-game participation lacks retained qualified source evidence",
+}
+PARTICIPATION_FILTER_GUARD_ERRORS = {
+    "Participation requires game, date and explicit team identity",
+    "Duplicate positive participation observations",
+    "Contradictory positive and report participation observations",
+    "Opposing participation requires explicit opponent identity",
+}
 
 
 def _raw_population(catalog, teams, season, team_id):
@@ -95,6 +109,131 @@ def _raw_states(teams, players, availability, team_id, people):
                         state = "same_game_other_side"
             result[pid][gid] = state
     return result
+
+
+def _capture_scope(
+    path, *, build, states, dates, team_id, player_id, source_view, source_files, absent
+):
+    """Persist raw observations separately from production qualification, even on failure."""
+    record = dict(
+        classification="read_only_input_audit_not_feature_acceptance",
+        source_view=source_view,
+        source_files=source_files,
+        manifest_absent_optional_paths=absent,
+        raw_projection=dict(
+            qualification="unqualified_row_facts_only_not_DNP_or_membership_proof",
+            counts=dict(Counter(states.values())),
+            games=[
+                dict(
+                    game_id=f"{gid:010d}",
+                    game_date=dates[gid],
+                    team_id=team_id,
+                    player_id=player_id,
+                    raw_row_state=state,
+                )
+                for gid, state in sorted(states.items())
+            ],
+        ),
+        runtime_report=None,
+        runtime_exception=None,
+        audit_comparison_exception=None,
+        disposition="in_progress",
+        qualified_counts=None,
+        complete_requested_population=False,
+        missed_games=None,
+        capability_complete=False,
+        requirement_closures=0,
+        collection_candidate_keys=[],
+    )
+
+    def persist():
+        path.write_text(json.dumps(record, indent=2) + "\n")
+
+    persist()  # Raw facts and all checked dependencies survive a global loader failure.
+    try:
+        try:
+            report = build()
+        except Exception as exc:
+            record["runtime_exception"] = dict(type=type(exc).__name__, message=str(exc))
+            if isinstance(exc, ValueError) and str(exc) in AVAILABILITY_GUARD_ERRORS:
+                record["disposition"] = "existing_evidence_repair"
+                return record
+            record["disposition"] = "unexpected_runtime_failure"
+            raise
+        record["runtime_report"] = report
+        persist()  # Keep the unchanged runtime outcome before any oracle assertions.
+        errors = [
+            row["qualification_error"] for row in report["games"] if "qualification_error" in row
+        ]
+        name = report["player_name"]
+        missing_error = f"Incomplete game-day participation coverage for {name}"
+        known_errors = (
+            AVAILABILITY_GUARD_ERRORS
+            | PARTICIPATION_FILTER_GUARD_ERRORS
+            | {
+                missing_error,
+                f"Unavailable or ambiguous participation identity for {name}",
+                f"Ambiguous team ownership for {name}'s participation",
+                f"Unqualified game-day participation for {name}",
+            }
+        )
+        unexpected = sorted(set(errors) - known_errors)
+        if unexpected:
+            failure = ValueError(f"Unexpected participation qualification errors: {unexpected}")
+            record["unexpected_qualification_errors"] = unexpected
+            record["qualification_exception"] = dict(
+                type=type(failure).__name__, message=str(failure)
+            )
+            record["disposition"] = "unexpected_runtime_qualification_failure"
+            raise failure
+        abnormal = [error for error in errors if error != missing_error]
+        if abnormal:
+            record["disposition"] = "existing_evidence_repair"
+            record["existing_evidence_errors"] = sorted(set(abnormal))
+            return record
+        assert report["observed_team_games"] == report["requested_games"] == len(states)
+        assert len(report["games"]) == len(states)
+        assert report["counts"] == {
+            state: Counter(states.values())[state]
+            for state in ("played", "did_not_play", "same_game_other_side", "unknown")
+        }
+        assert {int(row["game_id"]): row["state"] for row in report["games"]} == states
+        assert all(
+            row["game_date"] == dates[int(row["game_id"])]
+            and row["team_id"] == team_id
+            and row["player_id"] == player_id
+            for row in report["games"]
+        )
+        missing = [
+            dict(game_id=f"{gid:010d}", game_date=dates[gid], team_id=team_id, player_id=player_id)
+            for gid, state in sorted(states.items())
+            if state == "unknown"
+        ]
+        assert sorted(report["missing_keys"], key=lambda row: row["game_id"]) == missing
+        assert report["complete_requested_population"] == (not missing)
+        assert report["missed_games"] == (None if missing else report["counts"]["did_not_play"])
+        checked = {item["path"]: item["sha256"] for item in source_files}
+        assert all(checked.get(p) == h for p, h in report["source_hashes"].items())
+        record.update(
+            disposition="qualified_incomplete_missing_evidence"
+            if missing
+            else "qualified_complete_observed_population",
+            qualified_counts=report["counts"],
+            complete_requested_population=not missing,
+            missed_games=report["missed_games"],
+            collection_candidate_keys=missing,
+        )
+        return record
+    except Exception as exc:
+        if (
+            record["runtime_exception"] is None
+            and record["disposition"] != "unexpected_runtime_qualification_failure"
+        ):
+            record["audit_comparison_exception"] = dict(type=type(exc).__name__, message=str(exc))
+            record["disposition"] = "audit_oracle_mismatch_requires_investigation"
+        raise
+    finally:
+        persist()
 
 
 def test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit():
@@ -174,6 +313,15 @@ def test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit():
             else pd.DataFrame(columns=AVAILABILITY_COLUMNS)
         )
         verified("raw/player_season_advanced/" + suffix, optional=True)
+        (output / f"{season}-checked-dependencies.json").write_text(
+            json.dumps(
+                dict(source_files=list(checked.values()), manifest_absent_optional_paths=absent),
+                indent=2,
+            )
+            + "\n"
+        )
+        if availability_raw is not None:
+            (output / f"{season}-availability-original.csv").write_bytes(availability_raw)
         teams = _raw_population(frames["games"], frames["team_game_stats"], season, team_id)
         players = (
             frames["player_game_stats"]
@@ -197,50 +345,35 @@ def test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit():
             ("target-ledger-rows", listed),
         ):
             rows.to_csv(output / f"{prefix}-{name}.csv", index=False)
+        dates = {
+            int(row.game_id): pd.Timestamp(row.game_date).strftime("%Y-%m-%d")
+            for row in teams.itertuples()
+        }
         for pid in people:
-            report = build_report(
-                generation=GENERATION,
-                manifest_sha256=MANIFEST,
-                season=season,
+            audit = _capture_scope(
+                output / f"{season}-{pid}-coverage.json",
+                build=lambda pid=pid, season=season, team_id=team_id: build_report(
+                    generation=GENERATION,
+                    manifest_sha256=MANIFEST,
+                    season=season,
+                    team_id=team_id,
+                    player_id=pid,
+                ),
+                states=expected[pid],
+                dates=dates,
                 team_id=team_id,
                 player_id=pid,
+                source_view=dict(
+                    generation=GENERATION,
+                    manifest_sha256=MANIFEST,
+                    season=season,
+                    team_id=team_id,
+                    player_id=pid,
+                ),
+                source_files=sorted(checked.values(), key=lambda row: row["path"]),
+                absent=sorted(set(absent)),
             )
-            assert report["observed_team_games"] == report["requested_games"] == 82
-            assert report["counts"] == {
-                state: Counter(expected[pid].values())[state]
-                for state in ("played", "did_not_play", "same_game_other_side", "unknown")
-            }
-            assert {int(row["game_id"]): row["state"] for row in report["games"]} == expected[pid]
-            dates = {
-                int(row.game_id): pd.Timestamp(row.game_date).strftime("%Y-%m-%d")
-                for row in teams.itertuples()
-            }
-            assert all(
-                row["game_date"] == dates[int(row["game_id"])]
-                and row["team_id"] == team_id
-                and row["player_id"] == pid
-                for row in report["games"]
-            )
-            assert sorted(report["missing_keys"], key=lambda row: row["game_id"]) == [
-                dict(game_id=f"{gid:010d}", game_date=dates[gid], team_id=team_id, player_id=pid)
-                for gid, state in sorted(expected[pid].items())
-                if state == "unknown"
-            ]
-            if report["missing_keys"]:
-                assert (
-                    report["missed_games"] is None and not report["complete_requested_population"]
-                )
-            else:
-                assert report["complete_requested_population"]
-                assert report["missed_games"] == report["counts"]["did_not_play"]
-            assert all(
-                path in checked and checked[path]["sha256"] == digest
-                for path, digest in report["source_hashes"].items()
-            )
-            (output / f"{season}-{pid}-coverage.json").write_text(
-                json.dumps(report, indent=2) + "\n"
-            )
-            reports.append(report)
+            reports.append(audit)
     receipt = dict(
         classification="read_only_current_input_audit_not_DNP_inference_collection_or_publication",
         generation=GENERATION,
@@ -266,7 +399,15 @@ def test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit():
         subset_sha256={
             p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in output.glob("*.csv")
         },
-        missing_keys=[key for report in reports for key in report["missing_keys"]],
+        collection_candidate_keys=[
+            key for report in reports for key in report["collection_candidate_keys"]
+        ],
+        scope_dispositions=[
+            dict(path=p.name, disposition=json.loads(p.read_bytes())["disposition"])
+            for p in output.glob("*-coverage.json")
+        ],
+        capability_complete=False,
+        requirement_closures=0,
         collection_requirement="Inspect qualification errors and reuse accepted evidence before proposing only exact unresolved keys; unknown is not DNP.",
         production_writes=0,
         nba_source_requests=0,
