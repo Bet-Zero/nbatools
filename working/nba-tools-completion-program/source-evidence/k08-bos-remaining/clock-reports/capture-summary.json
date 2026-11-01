@@ -1,0 +1,87 @@
+{
+  "classification": "four_bounded_captures_not_source_or_stage_acceptance",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "collection_request_sha256": "7558eda7a1659fe1c39b9c61608c343a7869219be44cbfece4c000895f197105",
+  "preserved_blocked_source_qualification_sha256": "779f582675bfd16aaf3ba94d07cf47f1cb6da5dcb42d7c78c45846b0403c4f70",
+  "source_reader_invocations": 4,
+  "attempts_per_file": 1,
+  "pdf_bytes_retained": 108799,
+  "capture_receipts": [
+    {
+      "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+      "game_id": "0022500250",
+      "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf",
+      "source_reader_invocations": 1,
+      "participation_qualified": false,
+      "clock_qualified": false,
+      "full_slice_accepted": false,
+      "production_writes": 0,
+      "capture_complete": true,
+      "source_receipt": {
+        "raw_file": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119.pdf",
+        "retrieved_at": "2026-11-01T05:26:18.159140+00:00",
+        "sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119",
+        "size_bytes": 27011,
+        "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf"
+      }
+    },
+    {
+      "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+      "game_id": "0022500580",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf",
+      "source_reader_invocations": 1,
+      "participation_qualified": false,
+      "clock_qualified": false,
+      "full_slice_accepted": false,
+      "production_writes": 0,
+      "capture_complete": true,
+      "source_receipt": {
+        "raw_file": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c.pdf",
+        "retrieved_at": "2026-11-01T05:26:18.779776+00:00",
+        "sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c",
+        "size_bytes": 26697,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf"
+      }
+    },
+    {
+      "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+      "game_id": "0022500660",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260126/20260126_PORBOS.pdf",
+      "source_reader_invocations": 1,
+      "participation_qualified": false,
+      "clock_qualified": false,
+      "full_slice_accepted": false,
+      "production_writes": 0,
+      "capture_complete": true,
+      "source_receipt": {
+        "raw_file": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8.pdf",
+        "retrieved_at": "2026-11-01T05:26:19.259290+00:00",
+        "sha256": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8",
+        "size_bytes": 27706,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260126/20260126_PORBOS.pdf"
+      }
+    },
+    {
+      "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+      "game_id": "0022500721",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf",
+      "source_reader_invocations": 1,
+      "participation_qualified": false,
+      "clock_qualified": false,
+      "full_slice_accepted": false,
+      "production_writes": 0,
+      "capture_complete": true,
+      "source_receipt": {
+        "raw_file": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706.pdf",
+        "retrieved_at": "2026-11-01T05:26:20.092633+00:00",
+        "sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706",
+        "size_bytes": 27385,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf"
+      }
+    }
+  ],
+  "failures": [],
+  "stage_accepted": false,
+  "production_writes": 0
+}

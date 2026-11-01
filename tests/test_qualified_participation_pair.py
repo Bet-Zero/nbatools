@@ -402,9 +402,13 @@ def test_mixed_original_window_never_falls_back_to_older_qualifying_game(qualifi
         f"Lakers record vs Celtics {window} without LeBron James and with Anthony Davis in {SEASON}"
     )
     assert result.result_status == "no_result", result.metadata
-    assert result.result_reason == "filter_not_supported"
+    assert result.result_reason == "no_match"
     assert result.metadata["last_n_scope"] == "original_window"
-    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert not result.metadata["unsupported_filters"]
+    assert any(
+        "before checking participation" in item["value"]
+        for item in result.metadata["applied_filters"]
+    )
     assert not result.result.to_dict()["sections"]
 
 

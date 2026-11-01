@@ -1,0 +1,18 @@
+{
+  "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+  "game_id": "0022500580",
+  "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf",
+  "source_reader_invocations": 1,
+  "participation_qualified": false,
+  "clock_qualified": false,
+  "full_slice_accepted": false,
+  "production_writes": 0,
+  "capture_complete": true,
+  "source_receipt": {
+    "raw_file": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c.pdf",
+    "retrieved_at": "2026-11-01T05:26:18.779776+00:00",
+    "sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c",
+    "size_bytes": 26697,
+    "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "classification": "read_only_existing_published_population_original_window_acceptance",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_files": [
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "size_bytes": 223000
+    },
+    {
+      "path": "raw/player_game_stats/2025-26_regular_season.csv",
+      "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "size_bytes": 4993942
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "size_bytes": 449374
+    }
+  ],
+  "absence_population": 82,
+  "luka_role": "positive_appearances_only_no_complete_DNP_claim",
+  "answers": [
+    {
+      "query": "Lakers record within their last 20 games without LeBron James and with Luka Doncic in 2025-26",
+      "original_window_game_ids": [
+        22500914,
+        22500922,
+        22500946,
+        22500960,
+        22500974,
+        22500989,
+        22501007,
+        22501010,
+        22501024,
+        22501038,
+        22501052,
+        22501075,
+        22501098,
+        22501103,
+        22501116,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ],
+      "selected_game_ids": [
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 3,
+      "wins": 3,
+      "losses": 0,
+      "points": 358
+    },
+    {
+      "query": "Lakers record within their last 20 games without LeBron James and with Luka Doncic in 2025-26 where the Lakers scored at least 120 points",
+      "original_window_game_ids": [
+        22500914,
+        22500922,
+        22500946,
+        22500960,
+        22500974,
+        22500989,
+        22501007,
+        22501010,
+        22501024,
+        22501038,
+        22501052,
+        22501075,
+        22501098,
+        22501103,
+        22501116,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ],
+      "selected_game_ids": [
+        22500914,
+        22500946
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "points": 248
+    },
+    {
+      "query": "Lakers record within their last 10 games without LeBron James and with Luka Doncic in 2025-26",
+      "original_window_game_ids": [
+        22501052,
+        22501075,
+        22501098,
+        22501103,
+        22501116,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ],
+      "selected_game_ids": [],
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    }
+  ],
+  "registered_raw_qa_cases": [
+    "k08_original_mixed_record",
+    "k08_original_mixed_team_bound",
+    "k08_original_mixed_qualified_empty"
+  ],
+  "subset_sha256": {
+    "actor-positive-rows.csv": "02ff0c24b87041d56b943347964c011ea5cd9be16f10eafe6a501207d79a75fe",
+    "team82.csv": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436",
+    "lebron-explicit-dnp.csv": "053816c277c4057644ae04d4e41f842d1718a64933dfd877cf6ce86fe211d81e"
+  },
+  "production_writes": 0,
+  "raw_qa_executed": 3,
+  "raw_qa_passed": 3
+}

@@ -17461,3 +17461,81 @@ cases:
     - path: result.metadata.without_player
       equals: LeBron James
     review_notes: The same accepted source states explicitly show Reaves playing and LeBron DNP in all three games. Clause order and WITH-name-OUT keep independent polarity; original candidate absence coverage is required before the played sibling filter.
+
+  - id: k08_original_mixed_record
+    query: Lakers record within their last 20 games without LeBron James and with Luka Doncic in 2025-26
+    category: participation
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    expected_row_counts:
+      summary: 1
+      game_log: 3
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.wins
+      equals: 3
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 119.333
+    - path: result.sections.game_log.0.game_id
+      equals: 22500914
+    - path: result.sections.game_log.1.game_id
+      equals: 22500922
+    - path: result.sections.game_log.2.game_id
+      equals: 22500946
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.last_n_scope
+      equals: original_window
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: Immutable published 82-game LeBron participation and positive 64 Luka appearances select only March 6/8/10 inside the original last 20 LAL games. Independent raw team totals are3–0 / 358 points; qualifying-first would select 15 games / 11–4 / 1736 points. No complete Luka DNP claim.
+
+  - id: k08_original_mixed_team_bound
+    query: Lakers record without LeBron James and with Luka Doncic within their last 20 games in 2025-26 where the Lakers scored at least 120 points
+    category: participation
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    expected_row_counts:
+      summary: 1
+      game_log: 2
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 2
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 124
+    - path: result.sections.game_log.0.game_id
+      equals: 22500914
+    - path: result.sections.game_log.1.game_id
+      equals: 22500946
+    - path: result.metadata.last_n_scope
+      equals: original_window
+    review_notes: The same original 20-game population is qualified before either participation intersection or the explicit team-owned 120-point condition. March 8 (LAL 110) is excluded; March 6/10 total 248 points. The bound does not belong to Luka or LeBron.
+
+  - id: k08_original_mixed_qualified_empty
+    query: Lakers record among their last 10 games without LeBron James and with Luka Doncic in 2025-26
+    category: participation
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: no_match
+    expected_sections: []
+    hard_assertions:
+    - path: result.metadata.last_n_scope
+      equals: original_window
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: All original last 10 LAL games have known LeBron participation. None satisfiesLeBron DNP + Luka played. This is a qualified empty sample, not missing data and not the older latest 10 matching games.

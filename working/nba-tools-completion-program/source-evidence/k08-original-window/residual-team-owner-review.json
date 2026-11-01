@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "classification": "independent_delta_review_remaining_blocker_before_required_R2",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "author_commit": "a5f4ed9468cfa98e58756f538f078025749c0556",
+  "author_tree": "3c8f4af2ad2b95f085f8f50ea298394e36cf413f",
+  "integrated_remote_commit": "c276f6db2453461d7663f40f6752ca7dddb4ca4b",
+  "integrated_local_commit": "49c04072dfaf7131e33e6f8be5defc4fb3a93e8f",
+  "integrated_tree": "1727ecb5022489937c271ede48a64b4d256da138",
+  "review_conclusion": "BLOCKED; initial three cases fixed but team-qualified player owner still dropped",
+  "focused_pytest": {
+    "passed": 149,
+    "skipped": 0,
+    "files": [
+      "tests/test_original_window_mixed_participation.py",
+      "tests/test_participation_status_boundaries.py",
+      "tests/test_qualified_scalar_played.py"
+    ]
+  },
+  "resolved_initial_examples": [
+    "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Davis scores 30 points",
+    "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and he scores 30 points",
+    "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Blorg scores 30 points"
+  ],
+  "additional_unsupported_controls_passed": [
+    "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Davis has at least 10 rebounds",
+    "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and he makes at least 15 threes"
+  ],
+  "coupled_team_positive_controls": [
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and they grabbed at least 10 rebounds",
+      "actual_game_ids": [
+        16
+      ]
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and grabbed at least 10 rebounds",
+      "actual_game_ids": [
+        16
+      ]
+    }
+  ],
+  "blocking_cases": [
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and the Lakers' Anthony Davis scores 30 points",
+      "actual_status": "ok",
+      "actual_game_ids": [
+        16
+      ],
+      "team_points": 89,
+      "Anthony_Davis_points": 26,
+      "requested_actor_points_min": 30,
+      "actor_condition_satisfied": false,
+      "expected": "Unsupported actor-stat condition preserved; must not answer team80-only"
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Anthony Davis of the Lakers scores 30 points",
+      "actual_status": "ok",
+      "actual_game_ids": [
+        16
+      ],
+      "team_points": 89,
+      "Anthony_Davis_points": 26,
+      "requested_actor_points_min": 30,
+      "actor_condition_satisfied": false,
+      "expected": "Unsupported actor-stat condition preserved; must not answer team80-only"
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Davis from the Lakers scores 30 points",
+      "actual_status": "ok",
+      "actual_game_ids": [
+        16
+      ],
+      "team_points": 89,
+      "Anthony_Davis_points": 26,
+      "requested_actor_points_min": 30,
+      "actor_condition_satisfied": false,
+      "expected": "Unsupported actor-stat condition preserved; must not answer team80-only"
+    }
+  ],
+  "root_cause": "Residual owner guard treats any detect_team_in_text(subject) match as a team-subject exemption, including player names qualified by team; limited name-prefix lengths compound the dropped-owner case.",
+  "recommended_boundary": "Only an explicitly claimed exact team subject exempts its condition. A residual explicit numerical subject must remain owned or unsupported even when its phrase mentions a team. Subjectless inherited team verbs can remain supported.",
+  "prior_semantic_review_reused": "26df177focused plus independent original/qualifying source arithmetic and selected-vs-outside unknown controls remain applicable where unchanged.",
+  "required_actual_selector": "tests/test_original_window_mixed_participation_real_data.py::test_original_mixed_windows_keep_raw_population_and_execute_registered_cases",
+  "required_actual_scope": "Unchanged775/3073; one required pytest,3innerRawQA/3localAPI hits; no NBA/source fetch or publication.",
+  "actual_R2_approved": false,
+  "production_writes": 0,
+  "nba_source_requests": 0
+}

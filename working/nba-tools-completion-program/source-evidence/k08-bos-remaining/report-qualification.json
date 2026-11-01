@@ -1,0 +1,941 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "classification": "official_pdf_boston_only_source_qualification_not_canonical_staging_or_publication",
+  "approval": "PASS four original reports and68 Boston-only source rows for isolated staging; pinned canonical stage gate still required",
+  "pdf_source_qualification_passed": true,
+  "run_id": 41276813243,
+  "artifact_id": 13070813849,
+  "artifact_sha256": "8c087670e01b77ccf2ca4e325707afd4181286f449ba0c291dd6eb8e63a90cb0",
+  "artifact_size_bytes": 105446,
+  "strict_execution_summary": {
+    "candidate_sha": "7ae519a9d1ef3439fc27ce5e552c766910cb48ec",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_bos_clock_reports_capture_real_data.py::test_capture_four_official_bos_reports_without_clock_waiver"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "code_revision": "15462a36f48ad724de857bbabafc7b09c26a91ab",
+  "source_request_sha256": "7558eda7a1659fe1c39b9c61608c343a7869219be44cbfece4c000895f197105",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "reports": [
+    {
+      "game_id": "0022500250",
+      "game_date": "2025-11-18",
+      "away_abbr": "BOS",
+      "home_abbr": "BKN",
+      "away_points": 113,
+      "home_points": 99,
+      "pdf_sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119",
+      "pdf_size_bytes": 27011,
+      "source_receipt_sha256": "7745df5f66c49a56be8fc71a3a1b22f62f122450619ea8431e61cc64780ae61f",
+      "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf",
+      "retrieved_at": "2026-11-01T05:26:18.159140+00:00",
+      "method": "Original single-page PDF rendered with Poppler and visually reviewed; independent pdftotext and manual Boston name/clock/point/status transcription, without shared report parser",
+      "all_side_player_clock_and_points_checks": [
+        {
+          "side": "visitor",
+          "played": 11,
+          "points": 113,
+          "team_seconds": 14400,
+          "player_seconds": 14403,
+          "display_residual_seconds": 3
+        },
+        {
+          "side": "home",
+          "played": 12,
+          "points": 99,
+          "team_seconds": 14400,
+          "player_seconds": 14400,
+          "display_residual_seconds": 0
+        }
+      ],
+      "qualified_boston_rows": [
+        {
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "pdf_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_clock": "32:00",
+          "source_seconds": 1920,
+          "points": 29,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1641775,
+          "player_name": "Jordan Walsh",
+          "pdf_name": "Jordan Walsh",
+          "participation_state": "played",
+          "source_clock": "11:13",
+          "source_seconds": 673,
+          "points": 4,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629674,
+          "player_name": "Neemias Queta",
+          "pdf_name": "Neemias Queta",
+          "participation_state": "played",
+          "source_clock": "22:51",
+          "source_seconds": 1371,
+          "points": 6,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628401,
+          "player_name": "Derrick White",
+          "pdf_name": "Derrick White",
+          "participation_state": "played",
+          "source_clock": "32:47",
+          "source_seconds": 1967,
+          "points": 15,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630202,
+          "player_name": "Payton Pritchard",
+          "pdf_name": "Payton Pritchard",
+          "participation_state": "played",
+          "source_clock": "35:15",
+          "source_seconds": 2115,
+          "points": 22,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629014,
+          "player_name": "Anfernee Simons",
+          "pdf_name": "Anfernee Simons",
+          "participation_state": "played",
+          "source_clock": "26:09",
+          "source_seconds": 1569,
+          "points": 11,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630568,
+          "player_name": "Luka Garza",
+          "pdf_name": "Luka Garza",
+          "participation_state": "played",
+          "source_clock": "20:23",
+          "source_seconds": 1223,
+          "points": 5,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630573,
+          "player_name": "Sam Hauser",
+          "pdf_name": "Sam Hauser",
+          "participation_state": "played",
+          "source_clock": "22:01",
+          "source_seconds": 1321,
+          "points": 8,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1631169,
+          "player_name": "Josh Minott",
+          "pdf_name": "Josh Minott",
+          "participation_state": "played",
+          "source_clock": "19:15",
+          "source_seconds": 1155,
+          "points": 10,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1631248,
+          "player_name": "Baylor Scheierman",
+          "pdf_name": "Baylor Scheierman",
+          "participation_state": "played",
+          "source_clock": "13:22",
+          "source_seconds": 802,
+          "points": 3,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630214,
+          "player_name": "Xavier Tillman",
+          "pdf_name": "Xavier Tillman",
+          "participation_state": "played",
+          "source_clock": "04:47",
+          "source_seconds": 287,
+          "points": 0,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628449,
+          "player_name": "Chris Boucher",
+          "pdf_name": "Chris Boucher",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1642864,
+          "player_name": "Hugo Gonz\u00e1lez",
+          "pdf_name": "Hugo Gonzalez",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631199,
+          "player_name": "Ron Harper Jr.",
+          "pdf_name": "Ron Harper Jr.",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1642917,
+          "player_name": "Max Shulga",
+          "pdf_name": "Max Shulga",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - G League - Two-Way",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1628369,
+          "player_name": "Jayson Tatum",
+          "pdf_name": "Jayson Tatum",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1642873,
+          "player_name": "Amari Williams",
+          "pdf_name": "Amari Williams",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - G League - Two-Way",
+          "source_listing": "inactive"
+        }
+      ],
+      "states": {
+        "played": 11,
+        "did_not_play": 6
+      },
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500580",
+      "game_date": "2026-01-15",
+      "away_abbr": "BOS",
+      "home_abbr": "MIA",
+      "away_points": 119,
+      "home_points": 114,
+      "pdf_sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c",
+      "pdf_size_bytes": 26697,
+      "source_receipt_sha256": "51756de78bfd746ec6885a2d6ab880853a86933267d43e60929c8555f0f270b1",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260115/20260115_BOSMIA.pdf",
+      "retrieved_at": "2026-11-01T05:26:18.779776+00:00",
+      "method": "Original single-page PDF rendered with Poppler and visually reviewed; independent pdftotext and manual Boston name/clock/point/status transcription, without shared report parser",
+      "all_side_player_clock_and_points_checks": [
+        {
+          "side": "visitor",
+          "played": 10,
+          "points": 119,
+          "team_seconds": 14400,
+          "player_seconds": 14400,
+          "display_residual_seconds": 0
+        },
+        {
+          "side": "home",
+          "played": 10,
+          "points": 114,
+          "team_seconds": 14400,
+          "player_seconds": 14401,
+          "display_residual_seconds": 1
+        }
+      ],
+      "qualified_boston_rows": [
+        {
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "pdf_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_clock": "30:14",
+          "source_seconds": 1814,
+          "points": 27,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630573,
+          "player_name": "Sam Hauser",
+          "pdf_name": "Sam Hauser",
+          "participation_state": "played",
+          "source_clock": "29:14",
+          "source_seconds": 1754,
+          "points": 17,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629674,
+          "player_name": "Neemias Queta",
+          "pdf_name": "Neemias Queta",
+          "participation_state": "played",
+          "source_clock": "19:45",
+          "source_seconds": 1185,
+          "points": 9,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628401,
+          "player_name": "Derrick White",
+          "pdf_name": "Derrick White",
+          "participation_state": "played",
+          "source_clock": "36:09",
+          "source_seconds": 2169,
+          "points": 8,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630202,
+          "player_name": "Payton Pritchard",
+          "pdf_name": "Payton Pritchard",
+          "participation_state": "played",
+          "source_clock": "24:01",
+          "source_seconds": 1441,
+          "points": 2,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629014,
+          "player_name": "Anfernee Simons",
+          "pdf_name": "Anfernee Simons",
+          "participation_state": "played",
+          "source_clock": "34:19",
+          "source_seconds": 2059,
+          "points": 39,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1641775,
+          "player_name": "Jordan Walsh",
+          "pdf_name": "Jordan Walsh",
+          "participation_state": "played",
+          "source_clock": "19:49",
+          "source_seconds": 1189,
+          "points": 4,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630568,
+          "player_name": "Luka Garza",
+          "pdf_name": "Luka Garza",
+          "participation_state": "played",
+          "source_clock": "28:00",
+          "source_seconds": 1680,
+          "points": 11,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1642864,
+          "player_name": "Hugo Gonz\u00e1lez",
+          "pdf_name": "Hugo Gonzalez",
+          "participation_state": "played",
+          "source_clock": "13:31",
+          "source_seconds": 811,
+          "points": 2,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1631248,
+          "player_name": "Baylor Scheierman",
+          "pdf_name": "Baylor Scheierman",
+          "participation_state": "played",
+          "source_clock": "04:58",
+          "source_seconds": 298,
+          "points": 0,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628449,
+          "player_name": "Chris Boucher",
+          "pdf_name": "Chris Boucher",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631199,
+          "player_name": "Ron Harper Jr.",
+          "pdf_name": "Ron Harper Jr.",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1642917,
+          "player_name": "Max Shulga",
+          "pdf_name": "Max Shulga",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1630214,
+          "player_name": "Xavier Tillman",
+          "pdf_name": "Xavier Tillman",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1642873,
+          "player_name": "Amari Williams",
+          "pdf_name": "Amari Williams",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631169,
+          "player_name": "Josh Minott",
+          "pdf_name": "Josh Minott",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Left Ankle; Sprain",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1628369,
+          "player_name": "Jayson Tatum",
+          "pdf_name": "Jayson Tatum",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+          "source_listing": "inactive"
+        }
+      ],
+      "states": {
+        "played": 10,
+        "did_not_play": 7
+      },
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500660",
+      "game_date": "2026-01-26",
+      "away_abbr": "POR",
+      "home_abbr": "BOS",
+      "away_points": 94,
+      "home_points": 102,
+      "pdf_sha256": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8",
+      "pdf_size_bytes": 27706,
+      "source_receipt_sha256": "57bfc57c384bb0075019ccf5b3258ecb8bd611920f475358434073391b3e69b9",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260126/20260126_PORBOS.pdf",
+      "retrieved_at": "2026-11-01T05:26:19.259290+00:00",
+      "method": "Original single-page PDF rendered with Poppler and visually reviewed; independent pdftotext and manual Boston name/clock/point/status transcription, without shared report parser",
+      "all_side_player_clock_and_points_checks": [
+        {
+          "side": "visitor",
+          "played": 10,
+          "points": 94,
+          "team_seconds": 14400,
+          "player_seconds": 14401,
+          "display_residual_seconds": 1
+        },
+        {
+          "side": "home",
+          "played": 10,
+          "points": 102,
+          "team_seconds": 14400,
+          "player_seconds": 14402,
+          "display_residual_seconds": 2
+        }
+      ],
+      "qualified_boston_rows": [
+        {
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "pdf_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_clock": "36:13",
+          "source_seconds": 2173,
+          "points": 20,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630573,
+          "player_name": "Sam Hauser",
+          "pdf_name": "Sam Hauser",
+          "participation_state": "played",
+          "source_clock": "29:40",
+          "source_seconds": 1780,
+          "points": 11,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629674,
+          "player_name": "Neemias Queta",
+          "pdf_name": "Neemias Queta",
+          "participation_state": "played",
+          "source_clock": "22:07",
+          "source_seconds": 1327,
+          "points": 4,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630202,
+          "player_name": "Payton Pritchard",
+          "pdf_name": "Payton Pritchard",
+          "participation_state": "played",
+          "source_clock": "34:44",
+          "source_seconds": 2084,
+          "points": 23,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628401,
+          "player_name": "Derrick White",
+          "pdf_name": "Derrick White",
+          "participation_state": "played",
+          "source_clock": "34:28",
+          "source_seconds": 2068,
+          "points": 18,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1642873,
+          "player_name": "Amari Williams",
+          "pdf_name": "Amari Williams",
+          "participation_state": "played",
+          "source_clock": "25:53",
+          "source_seconds": 1553,
+          "points": 9,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1642864,
+          "player_name": "Hugo Gonz\u00e1lez",
+          "pdf_name": "Hugo Gonzalez",
+          "participation_state": "played",
+          "source_clock": "14:13",
+          "source_seconds": 853,
+          "points": 2,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629014,
+          "player_name": "Anfernee Simons",
+          "pdf_name": "Anfernee Simons",
+          "participation_state": "played",
+          "source_clock": "26:25",
+          "source_seconds": 1585,
+          "points": 12,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1631248,
+          "player_name": "Baylor Scheierman",
+          "pdf_name": "Baylor Scheierman",
+          "participation_state": "played",
+          "source_clock": "13:00",
+          "source_seconds": 780,
+          "points": 2,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1641775,
+          "player_name": "Jordan Walsh",
+          "pdf_name": "Jordan Walsh",
+          "participation_state": "played",
+          "source_clock": "03:19",
+          "source_seconds": 199,
+          "points": 1,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628449,
+          "player_name": "Chris Boucher",
+          "pdf_name": "Chris Boucher",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "NWT - Not With Team - Illness; Non-Covid",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631169,
+          "player_name": "Josh Minott",
+          "pdf_name": "Josh Minott",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1630214,
+          "player_name": "Xavier Tillman",
+          "pdf_name": "Xavier Tillman",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1630568,
+          "player_name": "Luka Garza",
+          "pdf_name": "Luka Garza",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Illness; Non-Covid",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1631199,
+          "player_name": "Ron Harper Jr.",
+          "pdf_name": "Ron Harper Jr.",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - ",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1642917,
+          "player_name": "Max Shulga",
+          "pdf_name": "Max Shulga",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - ",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1628369,
+          "player_name": "Jayson Tatum",
+          "pdf_name": "Jayson Tatum",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+          "source_listing": "inactive"
+        }
+      ],
+      "states": {
+        "played": 10,
+        "did_not_play": 7
+      },
+      "imported_team_ids": [
+        1610612738
+      ]
+    },
+    {
+      "game_id": "0022500721",
+      "game_date": "2026-02-03",
+      "away_abbr": "BOS",
+      "home_abbr": "DAL",
+      "away_points": 110,
+      "home_points": 100,
+      "pdf_sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706",
+      "pdf_size_bytes": 27385,
+      "source_receipt_sha256": "aeffe1a39b2e101a276ff21f12bec9900490e8ac6a8d51d46d2e59042ccfed1d",
+      "source_url": "https://statsdmz.nba.com/pdfs/20260203/20260203_BOSDAL.pdf",
+      "retrieved_at": "2026-11-01T05:26:20.092633+00:00",
+      "method": "Original single-page PDF rendered with Poppler and visually reviewed; independent pdftotext and manual Boston name/clock/point/status transcription, without shared report parser",
+      "all_side_player_clock_and_points_checks": [
+        {
+          "side": "visitor",
+          "played": 9,
+          "points": 110,
+          "team_seconds": 14400,
+          "player_seconds": 14400,
+          "display_residual_seconds": 0
+        },
+        {
+          "side": "home",
+          "played": 11,
+          "points": 100,
+          "team_seconds": 14400,
+          "player_seconds": 14401,
+          "display_residual_seconds": 1
+        }
+      ],
+      "qualified_boston_rows": [
+        {
+          "player_id": 1627759,
+          "player_name": "Jaylen Brown",
+          "pdf_name": "Jaylen Brown",
+          "participation_state": "played",
+          "source_clock": "37:23",
+          "source_seconds": 2243,
+          "points": 33,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630573,
+          "player_name": "Sam Hauser",
+          "pdf_name": "Sam Hauser",
+          "participation_state": "played",
+          "source_clock": "26:07",
+          "source_seconds": 1567,
+          "points": 11,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1629674,
+          "player_name": "Neemias Queta",
+          "pdf_name": "Neemias Queta",
+          "participation_state": "played",
+          "source_clock": "28:00",
+          "source_seconds": 1680,
+          "points": 8,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1631248,
+          "player_name": "Baylor Scheierman",
+          "pdf_name": "Baylor Scheierman",
+          "participation_state": "played",
+          "source_clock": "28:19",
+          "source_seconds": 1699,
+          "points": 3,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628401,
+          "player_name": "Derrick White",
+          "pdf_name": "Derrick White",
+          "participation_state": "played",
+          "source_clock": "38:28",
+          "source_seconds": 2308,
+          "points": 11,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630202,
+          "player_name": "Payton Pritchard",
+          "pdf_name": "Payton Pritchard",
+          "participation_state": "played",
+          "source_clock": "34:31",
+          "source_seconds": 2071,
+          "points": 26,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1641775,
+          "player_name": "Jordan Walsh",
+          "pdf_name": "Jordan Walsh",
+          "participation_state": "played",
+          "source_clock": "10:30",
+          "source_seconds": 630,
+          "points": 0,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1642864,
+          "player_name": "Hugo Gonz\u00e1lez",
+          "pdf_name": "Hugo Gonzalez",
+          "participation_state": "played",
+          "source_clock": "16:42",
+          "source_seconds": 1002,
+          "points": 2,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1630568,
+          "player_name": "Luka Garza",
+          "pdf_name": "Luka Garza",
+          "participation_state": "played",
+          "source_clock": "20:00",
+          "source_seconds": 1200,
+          "points": 16,
+          "source_comment": ""
+        },
+        {
+          "player_id": 1628449,
+          "player_name": "Chris Boucher",
+          "pdf_name": "Chris Boucher",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "NWT - Personal",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631169,
+          "player_name": "Josh Minott",
+          "pdf_name": "Josh Minott",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1629014,
+          "player_name": "Anfernee Simons",
+          "pdf_name": "Anfernee Simons",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "NWT - Personal",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1630214,
+          "player_name": "Xavier Tillman",
+          "pdf_name": "Xavier Tillman",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "DNP - Coach's Decision",
+          "source_listing": "dnp"
+        },
+        {
+          "player_id": 1631199,
+          "player_name": "Ron Harper Jr.",
+          "pdf_name": "Ron Harper Jr.",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - G League - Two-Way",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1642917,
+          "player_name": "Max Shulga",
+          "pdf_name": "Max Shulga",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - G League - Two-Way",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1628369,
+          "player_name": "Jayson Tatum",
+          "pdf_name": "Jayson Tatum",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - Injury/Illness - Right Achilles; Repair",
+          "source_listing": "inactive"
+        },
+        {
+          "player_id": 1642873,
+          "player_name": "Amari Williams",
+          "pdf_name": "Amari Williams",
+          "participation_state": "did_not_play",
+          "source_clock": null,
+          "points": null,
+          "source_comment": "INACTIVE - G League - Two-Way",
+          "source_listing": "inactive"
+        }
+      ],
+      "states": {
+        "played": 9,
+        "did_not_play": 8
+      },
+      "imported_team_ids": [
+        1610612738
+      ]
+    }
+  ],
+  "independently_literal_pdf_clocks": [
+    {
+      "game_id": "0022500250",
+      "player_id": 1627759,
+      "invalid_json_literal": "31:60",
+      "official_pdf_literal": "32:00",
+      "pdf_sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119",
+      "basis": "Literal independent PDF table, not numerical carry"
+    },
+    {
+      "game_id": "0022500580",
+      "player_id": 1630568,
+      "invalid_json_literal": "27:60",
+      "official_pdf_literal": "28:00",
+      "pdf_sha256": "cf219a4a6188e2f0e012a95c3e1dc84384c3096b41e31756af0775c466dd5b8c",
+      "basis": "Literal independent PDF table, not numerical carry"
+    },
+    {
+      "game_id": "0022500660",
+      "player_id": 1631248,
+      "invalid_json_literal": "12:60",
+      "official_pdf_literal": "13:00",
+      "pdf_sha256": "db4896995ea797ccc565319409fa80d91ac26b233e9fb26bcdd31e8c1e06b2c8",
+      "basis": "Literal independent PDF table, not numerical carry"
+    },
+    {
+      "game_id": "0022500721",
+      "player_id": 1629674,
+      "invalid_json_literal": "27:60",
+      "official_pdf_literal": "28:00",
+      "pdf_sha256": "a9074ede36f2b4f8f6eef4078891831b4dbb8ca5357f26a28e03a8d94fc90706",
+      "basis": "Literal independent PDF table, not numerical carry"
+    }
+  ],
+  "identity_binding": "All68 exact Boston IDs/names agree independently accepted0702Boston17 identity references and each exact-game retained Summary row. Accent folding only. Another game is a name/ID reference, not membership evidence.",
+  "clock_caveat": "Printed player-clock aggregate residuals are preserved per side:0250BOS+3sec;0580MIA+1sec;0660POR+1sec/BOS+2sec;0721DAL+1sec; other sides0. No exact240:00 player aggregate claim or carry correction. Every literal PDF player clock has seconds0..59. No rounded canonical minutes used to replace PDF values.",
+  "old_structured_false_proof_preserved": {
+    "sha256": "779f582675bfd16aaf3ba94d07cf47f1cb6da5dcb42d7c78c45846b0403c4f70",
+    "qualification_passed": false,
+    "bad_json_groups_imported": false
+  },
+  "reuse_existing0702": {
+    "refetch": false,
+    "qualified_boston_rows": 17,
+    "mil_imported": false
+  },
+  "proposed_append_only_composition": {
+    "valid_structured_groups": 62,
+    "valid_structured_rows": 2117,
+    "new_pdf_boston_rows": 68,
+    "reused0702_boston_rows": 17,
+    "projected_append_rows": 2202,
+    "qualification": "Source composition only; actual canonical/stage preservation and all75target/full82consumer checks pending"
+  },
+  "source_requests_by_checker": 0,
+  "licensing": "Original official NBA report footer: Copyright2025-2026 NBA Properties INC. All Rights Reserved; archive CC BY attribution does not replace PDF copyright.",
+  "full_slice_accepted": false,
+  "staging_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

@@ -1,0 +1,18 @@
+{
+  "classification": "official_report_capture_not_player_clock_or_import_acceptance",
+  "game_id": "0022500250",
+  "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf",
+  "source_reader_invocations": 1,
+  "participation_qualified": false,
+  "clock_qualified": false,
+  "full_slice_accepted": false,
+  "production_writes": 0,
+  "capture_complete": true,
+  "source_receipt": {
+    "raw_file": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119.pdf",
+    "retrieved_at": "2026-11-01T05:26:18.159140+00:00",
+    "sha256": "55540ca9eafe35e53fa22820e45e2c5f3c0f0e009ea719d9a281c739c82bc119",
+    "size_bytes": 27011,
+    "source_url": "https://statsdmz.nba.com/pdfs/20251118/20251118_BOSBKN.pdf"
+  }
+}
