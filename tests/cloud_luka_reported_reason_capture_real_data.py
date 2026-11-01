@@ -45,7 +45,7 @@ def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def _prepare():
+def _prepare(*, all_cases=False):
     raw = REQUEST.read_bytes()
     assert _sha(raw) == REQUEST_SHA
     request = json.loads(raw)
@@ -131,16 +131,22 @@ def _prepare():
             == f"{report.SOURCE_ROOT}/{stamp}/{stamp}_{away.team_abbr}{home.team_abbr}.pdf"
         )
         prepared[case["game_id"]] = dict(case, away_name=away.team_name, home_name=home.team_name)
-    return prepared[REPRESENTATIVE]
+    return prepared if all_cases else prepared[REPRESENTATIVE]
 
 
-def _capture_one(case, cache):
+def _capture_one(
+    case,
+    cache,
+    *,
+    request_sha=REQUEST_SHA,
+    classification="representative_source_envelope_capture_not_reported_reason_acceptance",
+):
     cache.mkdir(parents=True, exist_ok=False)
     receipt = dict(
-        classification="representative_source_envelope_capture_not_reported_reason_acceptance",
+        classification=classification,
         base_generation=BASE,
         base_manifest_sha256=MANIFEST,
-        collection_request_sha256=REQUEST_SHA,
+        collection_request_sha256=request_sha,
         reason_coverage_audit_sha256=AUDIT_SHA,
         game_id=case["game_id"],
         game_date=case["game_date"],
