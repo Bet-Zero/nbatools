@@ -1,0 +1,17 @@
+{
+  "classification": "local_encoder_handoff_diagnosis_recovered_from_same_reader_responses",
+  "files": [
+    "boxscoresummaryv3_0022500017.json",
+    "boxscoresummaryv3_0022500018.json",
+    "boxscoresummaryv3_0022500021.json",
+    "boxscoresummaryv3_0022500028.json"
+  ],
+  "failed_local_write_invocations": 4,
+  "originals_retained_before_fix": 0,
+  "cause": "Caller passed the UTF8 encoder result object rather than its encoded field to the existing base64 decoder; strict decoding rejected before any file write.",
+  "diagnosis": "Own-text UTF8/base64 round trip verified correct encoded-field extraction; replayed the same four stored reader responses.",
+  "additional_source_reader_invocations": 0,
+  "source_reader_attempts_per_file": 1,
+  "hash_size_or_integrity_guards_weakened": false,
+  "production_writes": 0
+}
