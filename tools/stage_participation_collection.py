@@ -15,6 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._player_identity import player_name_key
 from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
 from nbatools.commands.pipeline.structured_participation import ARCHIVE, stage_structured_game
 from nbatools.data_source import data_generation_context, data_glob, data_path
@@ -55,18 +56,25 @@ def build_stage(
     ):
         raise ValueError("Invalid collection request scope/candidate")
     requirements = request["requirements"]
-    if not requirements or len({row["game_id"] for row in requirements}) != len(requirements):
-        raise ValueError("Missing or duplicate requested games")
+    if not isinstance(requirements, list) or not requirements:
+        raise ValueError("Missing requested targets")
     revision = provenance["revision"]
-    if provenance.get("repository") != "sportsdataverse/hoopR-nba-stats-raw" or not re.fullmatch(
-        r"[a-f0-9]{40}", revision
+    if (
+        provenance.get("repository") != "sportsdataverse/hoopR-nba-stats-raw"
+        or not re.fullmatch(r"[a-f0-9]{40}", revision)
+        or request.get("revision", revision) != revision
+        or request.get("repository", provenance["repository"]) != provenance["repository"]
     ):
         raise ValueError("Unrecognized retained archive identity")
+    source_index = request.get("source_files")
+    if source_index is not None and not isinstance(source_index, dict):
+        raise ValueError("Expected filename-keyed original source metadata")
     inputs = {
         "request": _sha(request_path.read_bytes()),
         "sources.json": _sha((source_directory / "sources.json").read_bytes()),
     }
     qualified = []
+    groups = {}
     expected_names = set()
     for requirement in requirements:
         gid = requirement["game_id"]
@@ -81,6 +89,16 @@ def build_stage(
             or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", requirement["game_date"])
         ):
             raise ValueError("Invalid requested game/player/team/date key")
+        if (
+            "prior_state" in requirement
+            and requirement["prior_state"] != "unknown"
+            or "player_name" in requirement
+            and (
+                not isinstance(requirement["player_name"], str)
+                or not requirement["player_name"].strip()
+            )
+        ):
+            raise ValueError("Invalid requested prior state/player name")
         proposed = requirement["proposed_sources"]
         endpoints = {row["endpoint"] for row in proposed}
         summary = endpoints - {"boxscoretraditionalv3"}
@@ -91,6 +109,17 @@ def build_stage(
             or not summary <= {"boxscoresummaryv2", "boxscoresummaryv3"}
         ):
             raise ValueError("Each game requires one traditional and one summary source")
+        if gid in groups:
+            previous = groups[gid][0]
+            if any(row["player_id"] == requirement["player_id"] for row in groups[gid]):
+                raise ValueError("Duplicate or conflicting requested game/player target")
+            if requirement["game_date"] != previous["game_date"] or {
+                row["endpoint"]: row for row in proposed
+            } != {row["endpoint"]: row for row in previous["proposed_sources"]}:
+                raise ValueError("Same-game targets disagree on date/original source pair")
+            groups[gid].append(requirement)
+            continue
+        groups[gid] = [requirement]
         paths, captures = {}, []
         for item in proposed:
             endpoint = item["endpoint"]
@@ -112,18 +141,42 @@ def build_stage(
                 or _sha(raw) != record["sha256"]
                 or len(raw) != record["size_bytes"]
                 or blob != record["git_blob_sha"]
+                or "git_blob_sha" in item
+                and blob != item["git_blob_sha"]
+                or "size_bytes" in item
+                and len(raw) != item["size_bytes"]
             ):
                 raise ValueError("Retained original bytes/provenance differ from request")
+            if source_index is not None:
+                expected = source_index.get(filename, {})
+                if (
+                    any(
+                        expected.get(key) != value
+                        for key, value in dict(
+                            endpoint=endpoint,
+                            game_id=gid,
+                            revision=revision,
+                            url=expected_url,
+                            git_blob_sha=blob,
+                            size_bytes=len(raw),
+                        ).items()
+                    )
+                    or "source_tree_sha" in expected
+                    and not re.fullmatch(r"[a-f0-9]{40}", expected["source_tree_sha"])
+                ):
+                    raise ValueError("Original differs from pinned source metadata")
             inputs[filename], paths[endpoint] = _sha(raw), path
             captured = datetime.fromisoformat(record["retrieved_at"])
             if captured.tzinfo is None:
                 raise ValueError("Retained capture time requires timezone")
             captures.append(captured)
         qualified.append(
-            (requirement, paths, int(next(iter(summary))[-1]), max(captures).isoformat())
+            (groups[gid], paths, int(next(iter(summary))[-1]), max(captures).isoformat())
         )
     if (
         set(provenance["files"]) != expected_names
+        or source_index is not None
+        and set(source_index) != expected_names
         or {path.name for path in (source_directory / "sources").iterdir()} != expected_names
     ):
         raise ValueError("Retained source set differs from exact requested collection")
@@ -191,41 +244,45 @@ def build_stage(
         for relative in sorted(listed):
             copy(relative)
         existing = pd.read_csv(root / csv)
-        game_ids = [row["game_id"] for row in requirements]
+        game_ids = list(groups)
         if set(map(int, game_ids)) & set(pd.to_numeric(existing.game_id)):
             raise ValueError("Collection would replace existing qualified game evidence")
         added, targets = 0, []
-        for requirement, paths, version, captured in qualified:
+        for requested_targets, paths, version, captured in qualified:
             rows = stage_structured_game(
                 root,
                 season=season,
                 season_type=kind,
-                game_id=int(requirement["game_id"]),
+                game_id=int(requested_targets[0]["game_id"]),
                 traditional=paths["boxscoretraditionalv3"],
                 summary=paths[f"boxscoresummaryv{version}"],
                 summary_version=version,
                 revision=revision,
                 retrieved_at=captured,
             )
-            target = rows.loc[
-                rows.team_id.eq(requirement["team_id"])
-                & rows.player_id.eq(requirement["player_id"])
-            ]
-            if (
-                len(target) != 1
-                or target.game_date.item() != requirement["game_date"]
-                or target.participation_state.item() not in {"played", "did_not_play"}
-            ):
-                raise ValueError("Requested target lacks qualified exact-game participation")
-            targets.append(
-                {
-                    **{
-                        key: requirement[key]
-                        for key in ["game_id", "game_date", "team_id", "player_id"]
-                    },
-                    "state": target.participation_state.item(),
-                }
-            )
+            for requirement in requested_targets:
+                target = rows.loc[
+                    rows.team_id.eq(requirement["team_id"])
+                    & rows.player_id.eq(requirement["player_id"])
+                ]
+                if (
+                    len(target) != 1
+                    or target.game_date.item() != requirement["game_date"]
+                    or target.participation_state.item() not in {"played", "did_not_play"}
+                    or "player_name" in requirement
+                    and player_name_key(target.player_name.item())
+                    != player_name_key(requirement["player_name"])
+                ):
+                    raise ValueError("Requested target lacks qualified exact-game participation")
+                targets.append(
+                    {
+                        **{
+                            key: requirement[key]
+                            for key in ["game_id", "game_date", "team_id", "player_id"]
+                        },
+                        "state": target.participation_state.item(),
+                    }
+                )
             added += len(rows)
         append = {
             csv: binding(baseline[csv], game_ids, added_records=added),
@@ -260,6 +317,8 @@ def build_stage(
             base_file_hashes={path: _sha(raw) for path, raw in baseline.items()},
             append_only=append,
             qualified_targets=targets,
+            requested_target_count=len(requirements),
+            requested_game_count=len(groups),
             overlay_files=files,
         )
         (output / "validation.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")

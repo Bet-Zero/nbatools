@@ -138,6 +138,24 @@ def test_complete_requested_slice_uses_explicit_dnp_and_positive_play(snapshot):
     assert result["missing_keys"] == []
 
 
+@pytest.mark.parametrize("spelling", ["LéBron James", "Other James"])
+def test_report_identity_uses_runtime_normalization_but_preserves_conflicts(snapshot, spelling):
+    root, _, _ = snapshot
+    path = root / "raw/player_game_availability" / SUFFIX
+    rows = pd.read_csv(path)
+    rows.loc[0, "player_name"] = spelling
+    rows.to_csv(path, index=False)
+    if spelling == "Other James":
+        with pytest.raises(ValueError, match="conflicting name identity"):
+            report(snapshot)
+    else:
+        result = report(snapshot)
+        assert result["counts"] == dict(
+            played=60, did_not_play=5, same_game_other_side=0, unknown=17
+        )
+        assert result["missed_games"] is None and len(result["missing_keys"]) == 17
+
+
 def test_same_game_opposite_side_is_nonmembership_not_absence(snapshot):
     root, games, _ = snapshot
     path = root / "raw/player_game_availability" / SUFFIX

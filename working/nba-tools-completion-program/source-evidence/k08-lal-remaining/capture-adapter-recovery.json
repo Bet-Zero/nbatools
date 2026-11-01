@@ -1,0 +1,33 @@
+{
+  "classification": "capture_adapter_failure_not_source_unavailability",
+  "previous_request_sha256": "d8788e08054180dd5a64e74520697d19095e113470f610b41650680f39477c4e",
+  "failed_reader_invocations": 4,
+  "retained_originals": 0,
+  "diagnosis": "Existing GitHub fetch returns decoded UTF-8 original content for blob URLs; the adapter incorrectly expected Git-blob envelope fields. Confirmed using our own code file, not another NBA source.",
+  "files": [
+    {
+      "file": "boxscoretraditionalv3_0022500336.json",
+      "git_blob_sha": "4b9b2bc9c685b75b0f4f38d7431750be2add58f6",
+      "error": "Error: Blob metadata mismatch"
+    },
+    {
+      "file": "boxscoretraditionalv3_0022500379.json",
+      "git_blob_sha": "48b792483ab2884b3e76fe7a12449829ddf3f027",
+      "error": "Error: Blob metadata mismatch"
+    },
+    {
+      "file": "boxscoretraditionalv3_0022500395.json",
+      "git_blob_sha": "12cd5438524342e3f3165c2bb7fa44d68fc83fec",
+      "error": "Error: Blob metadata mismatch"
+    },
+    {
+      "file": "boxscoretraditionalv3_0022500418.json",
+      "git_blob_sha": "fae79f0d517d226e329194e6658f2ca297871479",
+      "error": "Error: Blob metadata mismatch"
+    }
+  ],
+  "non_nba_adapter_diagnostic_calls": 2,
+  "recovery_scope": "One additional reader invocation for these exact four files; other58files retain one invocation. Verify original UTF-8 bytes by expected Gitblob/SHA256/length before retention; no other limits or source/game/actor scope changed.",
+  "production_writes": 0,
+  "confirmed_original_bytes": "Both own-repository Python4092-byte and JSON4314-byte originals round-trip through correctedUTF8 encoder to their exact Gitblob hashes; JSON also matches independentSHA256."
+}

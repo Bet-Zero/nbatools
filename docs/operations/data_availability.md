@@ -264,3 +264,28 @@ This completes minimum data-availability setup for cloud development under the
 owner's acquisition-laptop architecture. No commercial key, new service, or cloud
 NBA API route is required. Normal development was explicitly resumed by the owner on October 18. A future missing-data request still requires acquisition; its new
 production generation still requires the existing separate approval.
+
+### Luka and Reaves participation staging, November 1
+
+The retained development overlay closes both Lakers 2025–26 observed regular-season
+populations: Luka Dončić 64 played/18 explicit nonparticipants (9 home), Austin
+Reaves 51/31 (13 home), each 82 known games and zero unknowns. It answers Lakers
+records with LeBron playing while Luka did not play (7–4, 116.818 PPG), or Reaves
+did not play (15–10, 116.720 PPG), through natural, structured and local API routes.
+These are staged results; production still uses the existing 775-object generation.
+
+The generic stager authenticates a single Traditional/Summary pair per game and
+qualifies every requested player, including shared-game targets. Thirty retained
+pairs contribute 1,053 rows. The February 1 official NBA gamebook contributes
+17 Lakers rows through the existing cached, team-scoped importer. Two archive
+originals for that game remain quarantined because a `28:60` clock fails validation;
+the independent gamebook literally reports `29:00`. No clock is silently repaired.
+The combined 1,070-row append preserves all 804 prior current-season cells, 146
+other-season rows and existing core files. The 94-file overlay exports no test
+inventory or claim of full season-pipeline qualification.
+
+[Required staging acceptance](https://github.com/Bet-Zero/nbatools/pull/564)
+binds run 41273502501, one selected/executed/passed required test and zero skips.
+Its original ZIP, source bytes, failed archive qualification and independent
+checks are retained beside the receipt. Production publication needs separate
+approval; this overlay does not supply missing 2026–27 season data or restore readiness.

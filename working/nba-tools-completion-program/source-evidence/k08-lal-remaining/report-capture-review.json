@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "classification": "independent_single_source_capture_review_not_execution_or_qualification",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "reviewed_remote_commit": "c151b4951faf34c2ecfe190b9ac15b6313c22b1d",
+  "equivalent_local_commit": "df6684d5843537433ce6d6432252c13bfff8368d",
+  "reviewed_tree": "096cb164cb147627b854f2957a7e7dcc6f7e2e18",
+  "request_commit": "e87fe12f2e82f210f08eb8212eb4ccef7852729a",
+  "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_LALNYK.pdf",
+  "game_id": "0022500708",
+  "game_date": "2026-02-01",
+  "visitor": {
+    "team_id": 1610612747,
+    "team": "LAL",
+    "points": 100
+  },
+  "home": {
+    "team_id": 1610612752,
+    "team": "NYK",
+    "points": 112
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "file_hashes": {
+    "tests/cloud_lal_report_fallback_capture_real_data.py": "1965d6f950ebdfe174b2b4867f7530cae264f81c0359362e95dd25468ed5e6aa",
+    "working/nba-tools-completion-program/collection-requests/lal-0708-report-fallback-2025-26.json": "02d25ca44dd35508d10f8b0659f24774715d9219723299f22fa761b054bd94bc",
+    "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/source-qualification.json": "3e9e67621d8b0b29c08d678d8f8735a539b520a44abaa2c9b32ad0867de4901e"
+  },
+  "reviewed_limits": {
+    "reader_invocations": 1,
+    "timeout_seconds": 20,
+    "source_max_bytes": 1500000,
+    "existing_reader_and_headers": true,
+    "retries": 0,
+    "other_source_endpoints": 0,
+    "production_writes": 0
+  },
+  "offline_controls": [
+    {
+      "case": "success_retains_original_and_false_qualification_flags",
+      "passed": true,
+      "external_requests": 0
+    },
+    {
+      "case": "wrong_score_rejects_and_persists_failed_capture",
+      "passed": true,
+      "external_requests": 0
+    },
+    {
+      "case": "wrong_date_rejects_and_persists_failed_capture",
+      "passed": true,
+      "external_requests": 0
+    },
+    {
+      "case": "http403_rejects_and_persists_failed_capture",
+      "passed": true,
+      "external_requests": 0
+    }
+  ],
+  "approval": "PASS for bounded one-report capture through existing approved route under standing authority",
+  "required_after_capture": "Independently qualify original PDF game/date/sides/scores/LAL identities/clock and explicit Reaves nonparticipation before hybrid staging.",
+  "existing_invalid_0708_structured_originals": "Retained unchanged and unimported; 28:60 rejection preserved.",
+  "capture_executed_by_reviewer": false,
+  "participation_qualification": false,
+  "clock_qualification": false,
+  "hybrid_staging_accepted": false,
+  "production_publication_authorized": false
+}

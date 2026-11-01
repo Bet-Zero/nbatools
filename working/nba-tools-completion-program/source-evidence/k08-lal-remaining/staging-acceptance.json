@@ -1,0 +1,214 @@
+{
+  "classification": "qualified_development_staging_only_no_publication",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "full_required_slice_accepted": false,
+  "production_writes": 0,
+  "reviewed_code": "7c1248688250f01a68430280d0cc216e2b6d41e9",
+  "reviewed_tree": "d2e615e7a92f17f3b2b230a421e2b6ca48f19355",
+  "request_commit": "e828d1bcdf4adeccb2dcd53b444f8a1e51418142",
+  "run": 41273502501,
+  "required": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "artifact": {
+    "id": 13070238187,
+    "size_bytes": 336808,
+    "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+    "retained_file": "staged-acceptance-source.zip",
+    "original_receipt_member": "acquired_data/lal-participation-acceptance/receipt.json",
+    "original_receipt_sha256": "a4ed3338bcf2b29c5fc154eccbcfcd70a7d9fa0c20ff8b1e2070cabd8c86a774"
+  },
+  "strategy": "30_structured_games_plus_one_LAL_only_official_report",
+  "append_rows": 1070,
+  "current_season_rows": 1874,
+  "all_season_rows": 2020,
+  "original_804_cells_preserved": true,
+  "other_146_rows_preserved": true,
+  "overlay_raw_files": 94,
+  "quarantined_originals": {
+    "boxscoretraditionalv3_0022500708.json": "7155de36497b0b766de78444b8df084f4dbc43859b18b7a9d59460710fa3f22c",
+    "boxscoresummaryv3_0022500708.json": "a124b61f753a1d4ef0180cba3e31c87e791cfe3566e95c2b3e937edcfff24500"
+  },
+  "append_only": {
+    "raw/player_game_availability/2025-26_regular_season.csv": {
+      "base_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "base_size_bytes": 223000,
+      "added_game_ids": [
+        "0022500336",
+        "0022500379",
+        "0022500395",
+        "0022500418",
+        "0022500446",
+        "0022500460",
+        "0022500485",
+        "0022500501",
+        "0022500514",
+        "0022500541",
+        "0022500562",
+        "0022500569",
+        "0022500586",
+        "0022500601",
+        "0022500607",
+        "0022500617",
+        "0022500633",
+        "0022500648",
+        "0022500661",
+        "0022500671",
+        "0022500688",
+        "0022500708",
+        "0022500753",
+        "0022500769",
+        "0022500791",
+        "0022501098",
+        "0022501140",
+        "0022501170",
+        "0022501185",
+        "0022501198",
+        "0022501228"
+      ],
+      "added_records": 1070
+    },
+    "raw/player_game_availability/2025-26_regular_season.imports.json": {
+      "base_sha256": "f34b9a1b97cf71fb69ce389bc67fe7ea1bd33550eaee000199b34e82d3969adf",
+      "base_size_bytes": 2645,
+      "added_game_ids": [
+        "0022500336",
+        "0022500379",
+        "0022500395",
+        "0022500418",
+        "0022500446",
+        "0022500460",
+        "0022500485",
+        "0022500501",
+        "0022500514",
+        "0022500541",
+        "0022500562",
+        "0022500569",
+        "0022500586",
+        "0022500601",
+        "0022500607",
+        "0022500617",
+        "0022500633",
+        "0022500648",
+        "0022500661",
+        "0022500671",
+        "0022500688",
+        "0022500708",
+        "0022500753",
+        "0022500769",
+        "0022500791",
+        "0022501098",
+        "0022501140",
+        "0022501170",
+        "0022501185",
+        "0022501198",
+        "0022501228"
+      ],
+      "added_records": 31
+    }
+  },
+  "coverage": {
+    "1629029": {
+      "player_name": "Luka Don\u010di\u0107",
+      "requested_games": 82,
+      "observed_team_games": 82,
+      "counts": {
+        "played": 64,
+        "did_not_play": 18,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true,
+      "missed_games": 18,
+      "missing_keys": []
+    },
+    "1630559": {
+      "player_name": "Austin Reaves",
+      "requested_games": 82,
+      "observed_team_games": 82,
+      "counts": {
+        "played": 51,
+        "did_not_play": 31,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true,
+      "missed_games": 31,
+      "missing_keys": []
+    }
+  },
+  "home_absences": {
+    "1629029": 9,
+    "1630559": 13
+  },
+  "answers": [
+    {
+      "query": "Lakers record without Luka Doncic and with LeBron James in 2025-26",
+      "game_ids": [
+        22500336,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500791,
+        22501098,
+        22501140,
+        22501170,
+        22501185,
+        22501198
+      ],
+      "points": 1285,
+      "summary": {
+        "games": 11,
+        "wins": 7,
+        "losses": 4,
+        "pts_avg": 116.818
+      }
+    },
+    {
+      "query": "Lakers record without Austin Reaves and with LeBron James in 2025-26",
+      "game_ids": [
+        22500379,
+        22500395,
+        22500446,
+        22500460,
+        22500485,
+        22500501,
+        22500514,
+        22500541,
+        22500562,
+        22500569,
+        22500586,
+        22500601,
+        22500607,
+        22500617,
+        22500633,
+        22500648,
+        22500661,
+        22500671,
+        22500688,
+        22500708,
+        22501140,
+        22501170,
+        22501185,
+        22501198,
+        22501228
+      ],
+      "points": 2918,
+      "summary": {
+        "games": 25,
+        "wins": 15,
+        "losses": 10,
+        "pts_avg": 116.72
+      }
+    }
+  ],
+  "independent_review": "stage-acceptance-review.json",
+  "publication_approved": false
+}

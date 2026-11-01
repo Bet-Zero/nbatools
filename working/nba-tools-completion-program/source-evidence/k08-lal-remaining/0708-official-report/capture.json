@@ -1,0 +1,27 @@
+{
+  "classification": "one_official_report_capture_not_participation_or_clock_acceptance",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "game_id": 22500708,
+  "game_date": "2026-02-01",
+  "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_LALNYK.pdf",
+  "source_reader_invocations": 1,
+  "source_byte_limit": 1500000,
+  "source_timeout_seconds": 20,
+  "scope": "one official0708FinalBox; existing reader/headers; no other endpoint",
+  "imported_team_scope": [
+    1610612747
+  ],
+  "participation_qualification": false,
+  "clock_qualification": false,
+  "full_slice_accepted": false,
+  "production_writes": 0,
+  "capture_complete": true,
+  "source_receipt": {
+    "raw_file": "19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa.pdf",
+    "retrieved_at": "2026-11-01T04:29:03.941654+00:00",
+    "sha256": "19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa",
+    "size_bytes": 27371,
+    "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_LALNYK.pdf"
+  }
+}

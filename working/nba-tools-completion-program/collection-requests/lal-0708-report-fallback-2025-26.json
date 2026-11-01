@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "collection_requirement_not_publication_approval",
+  "authorization": "Standing2026-11-01 bounded public NBA source collection/staging; existing official report reader/read-onlyActionsroute; no publication/newcredentials/cost/permission",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "game_id": "0022500708",
+  "game_date": "2026-02-01",
+  "target_team_id": 1610612747,
+  "target_player_id": 1630559,
+  "opponent_team_id": 1610612752,
+  "canonical_points": {
+    "LAL": 100,
+    "NYK": 112
+  },
+  "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_LALNYK.pdf",
+  "source_kind": "official_NBA_Final_Box_scorer_report",
+  "reason": "PinnedTraditionalRui1629060clock28:60 remains invalid and blocks fullgame import. All targetstates remain separatelyexplicit; no normalization or clock waiver is permitted.",
+  "newer_revision_metadata": {
+    "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+    "traditional_2026_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071",
+    "identical_to_original_2e44_tree": true,
+    "bad_body_refetched": false
+  },
+  "limits": {
+    "source_files": 1,
+    "reader_invocations": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "metered_overage_usd": 0
+  },
+  "qualification": "Retain bytes/checksum/UTC receipt, then independently qualify date/sides/scores/LALidentities/clock and explicitReavesDND. Capture alone is not import or fullslice acceptance.",
+  "proposed_stage": "30validstructuredgroups35targets plus retained0708officialPDF importedLALonly via existingcached-reportproducer. Bothinvalid0708JSONs preservedunimported. Preserveall804priorcells/146otherseasonrows, validatecombinedsource/importauthority and exact82state/numeric/APIquestions. Publication separatelyapprovedonly."
+}
