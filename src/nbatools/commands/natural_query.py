@@ -4320,10 +4320,9 @@ def _route_parsed_query(parsed: dict) -> dict:
     )
 
     explicit_qualifying_pair_window = explicit_qualifying_participation_window(q)
+    original_pair_window = _original_participation_window(q)
     explicit_original_pair_marker = bool(
-        _original_participation_window(q)
-        or re.search(r"\blast\b", q)
-        and re.search(r"\boriginal\b", q)
+        original_pair_window or re.search(r"\blast\b", q) and re.search(r"\boriginal\b", q)
     )
     played_pair = (
         played_matchup_pair(q)
@@ -6443,6 +6442,11 @@ def _route_parsed_query(parsed: dict) -> dict:
                 season_list=parsed.get("season_list"),
             )
         )
+        if explicit_original_pair_marker and not pair:
+            # An unsupported conjunction/disjunction still owns its requested
+            # original population; OR execution must not reparse a cohort-first
+            # branch after losing this scope.
+            parsed["last_n_scope"] = route_kwargs["last_n_scope"] = "original_window"
         if pair:
             # "Lakers record with LeBron and Davis": the games both played.
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
@@ -6457,8 +6461,11 @@ def _route_parsed_query(parsed: dict) -> dict:
                 # The named players are predicates of the explicit team record.
                 parsed.update(player=None, with_player=pair.players, without_player=None)
             notes.pop()
+            original_mixed_window = bool(mixed and explicit_original_pair_marker)
+            if original_mixed_window:
+                parsed["last_n_scope"] = route_kwargs["last_n_scope"] = "original_window"
             if (
-                played_pair
+                (played_pair or original_mixed_window)
                 and (
                     last_n is not None
                     or explicit_qualifying_pair_window
@@ -6476,11 +6483,13 @@ def _route_parsed_query(parsed: dict) -> dict:
                         explicit_original_pair_marker
                         and parsed.get("last_n_scope") != "original_window"
                     )
+                    or (original_mixed_window and not original_pair_window)
                     or parsed.get("season_defaulted")
                     or not season
                     or start_season
                     or end_season
                     or not isinstance(opponent, str)
+                    and not (mixed and opponent is None)
                     or quarter is not None
                     or half is not None
                     or wins_only
@@ -6492,16 +6501,10 @@ def _route_parsed_query(parsed: dict) -> dict:
                     or one_possession
                     or nationally_televised
                 )
-            ) or (mixed and explicit_original_pair_marker):
-                # Temporal played-pair promotion is bounded to an explicit
-                # single-season, whole-game matchup. Do not drop another
-                # requested context while opening this positive slice.
+            ):
+                # Temporal promotion preserves the explicit single-season,
+                # whole-game sample and every requested context.
                 route_kwargs["unsupported_filters"] = ["multi_player_availability"]
-                if mixed:
-                    # Preserve the requested population even while this
-                    # composition remains unsupported; qualifying games are
-                    # a different sample from these original last-N games.
-                    parsed["last_n_scope"] = route_kwargs["last_n_scope"] = "original_window"
                 notes.append("Temporal participation composition is not yet supported")
     elif (
         team

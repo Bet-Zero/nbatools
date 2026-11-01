@@ -201,7 +201,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
     A AND WITH B, or WITH A OUT AND B PLAYING. OR and extra actors stay unread.
     """
     from nbatools.commands._matchup_utils import detect_team_in_text
-    from nbatools.commands._parse_helpers import detect_stat
+    from nbatools.commands._parse_helpers import _original_participation_window, detect_stat
 
     if re.search(r"\bor\b", text):
         return None
@@ -210,10 +210,13 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
         r"|sitting|sits?|sat|playing|plays?|played)"
     )
     state_end = re.compile(rf"\s+({state})$")
+    window = _original_participation_window(text)
+    window_stop = rf"|\s+{re.escape(window.group(0))}" if window else ""
     stop = (
         r"(?=\s+(?:and|while|when|but|record|games?|this|last|in|for|since|vs\.?"
         r"|versus|against|at|on|from|during|over|before|after|through|until|home|away)\b"
-        r"|[?!,;:]|$)"
+        + window_stop
+        + r"|[?!,;:]|$)"
     )
     patterns = [
         rf"\b(with|without|w/o|w/)\s+([\w .'\-]+?){stop}",
@@ -248,6 +251,14 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
         return None
     conjunction = AvailabilityConjunction(tuple(clauses))
     remainder = conjunction.mask_clause(text)
+    if window:
+        # Reuse the existing temporal span, without consuming it as an actor
+        # name or treating arbitrary WITHIN/AMONG/OF tails as understood scope.
+        remainder = (
+            remainder[: window.start()]
+            + " " * (window.end() - window.start())
+            + remainder[window.end() :]
+        )
     for tail in re.split(r"\b(?:and|while|when|but)\b|[,;]", remainder)[1:]:
         tail = tail.strip()
         # Date/opponent/schedule scope belongs to the existing scope readers;

@@ -279,7 +279,7 @@ def build_team_record_result(
     keeps the team's N most recent games after every other filter, the same
     selection the team and player summaries make; the selected games are
     returned in ``game_log``. Explicit ``original_window`` instead selects a
-    full-game matchup window before qualifying both played predicates; all
+    full-game window before qualifying the participation predicates; all
     legacy scope values keep availability as cohort context.
     """
     from nbatools.commands.data_utils import validate_last_n_scope
@@ -311,7 +311,12 @@ def build_team_record_result(
             reason="filter_not_supported",
             notes=["Mixed participation requires two distinct scalar whole-game predicates"],
         )
-    names = re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
+    mixed_participation = bool(with_player and without_player)
+    names = (
+        [with_player, without_player]
+        if mixed_participation
+        else re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
+    )
     resolved_names = [resolve_player(name).resolved for name in names] if original_window else []
     if original_window and (
         last_n is None
@@ -319,15 +324,16 @@ def build_team_record_result(
         or team not in ALL_TEAM_ABBRS
         or start_season
         or end_season
-        or not isinstance(opponent, str)
-        or opponent not in ALL_TEAM_ABBRS
+        or (
+            not (mixed_participation and opponent is None)
+            and (not isinstance(opponent, str) or opponent not in ALL_TEAM_ABBRS)
+        )
         or opponent == team
         or not with_player
         or len(names) != 2
         or not all(resolved_names)
         or len(set(resolved_names)) != 2
         or bool(player_ids_for_name(resolved_names[0]) & player_ids_for_name(resolved_names[1]))
-        or without_player
         or quarter is not None
         or half is not None
         or wins_only
@@ -343,8 +349,8 @@ def build_team_record_result(
             query_class="summary",
             reason="filter_not_supported",
             notes=[
-                "Original participation windows require a full-game, single-season team matchup "
-                "and exactly two played predicates"
+                "Original participation windows require a full-game, single-season team sample "
+                "with two distinct played predicates or one played and one absent predicate"
             ],
         )
     if home_only and away_only:
@@ -486,7 +492,7 @@ def build_team_record_result(
             start_date=start_date,
             end_date=end_date,
         )
-        if without_player and not sample.empty:
+        if without_player and not sample.empty and not original_window:
             sample = filter_without_player(
                 sample,
                 without_player,
@@ -524,6 +530,16 @@ def build_team_record_result(
         # complete original window before a false sibling predicate can hide
         # missing evidence; older out-of-window rows are not required.
         df = apply_last_n_sample(sample, last_n, window_game_ids)
+        if without_player and not df.empty:
+            df = filter_without_player(
+                df,
+                without_player,
+                seasons,
+                season_type,
+                team=team,
+                strict_team_match=True,
+                opponent=opponent,
+            )
         if not df.empty:
             df = filter_with_player(
                 df,
@@ -535,9 +551,10 @@ def build_team_record_result(
                 opponent=opponent,
             )
         qualified_window_games = len(df)
+        predicates = "participation" if mixed_participation else "both played"
         notes.append(
             f"Original window selected {len(window_game_ids)} game(s) "
-            "before testing both played predicates"
+            f"before testing {predicates} predicates"
         )
 
     df = _apply_game_filters(
@@ -572,7 +589,7 @@ def build_team_record_result(
 
     # Absence must be known across the original scoped candidates. A played
     # sibling that is false cannot conceal an unknown nonparticipation state.
-    if without_player and not df.empty:
+    if without_player and not df.empty and not original_window:
         df = filter_without_player(
             df,
             without_player,
@@ -703,7 +720,9 @@ def build_team_record_result(
         if original_window:
             caveats.append(
                 f"last {last_n} original {noun} "
-                f"(selected {played}; both played in {qualified_window_games})"
+                f"(selected {played}; "
+                + ("participation matched in " if mixed_participation else "both played in ")
+                + f"{qualified_window_games})"
             )
         else:
             caveats.append(f"last {last_n} {noun} (played {played})")
