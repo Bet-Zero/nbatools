@@ -1,0 +1,3066 @@
+{
+  "schema_version": 1,
+  "status": "collection_requirement_not_publication_approval",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "dataset": "raw/player_game_availability",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "scope": "74 unresolved Tatum/Brown exact player-game keys across66 observed BOS regular-season games; reuse existing qualified Boston-only0702PDF for the75th audited key. Unknown is not DNP; no career/tenure or injury-cause claim.",
+  "authorization": {
+    "decision_date": "2026-11-01",
+    "basis": "Owner standing authorization for routine bounded public NBA collection and staging through existing approved sources/tools/credentials/cost limits",
+    "collection_and_staging_authorized": true,
+    "production_publication_authorized": false,
+    "new_credentials_costs_permissions_or_bulk_history_authorized": false
+  },
+  "baseline_facts": {
+    "observed_final_team_games": 82,
+    "tatum": {
+      "played": 16,
+      "explicit_did_not_play": 2,
+      "unknown": 64
+    },
+    "brown": {
+      "played": 71,
+      "explicit_did_not_play": 0,
+      "unknown": 11
+    },
+    "availability_current_season_rows": 804,
+    "availability_all_season_rows": 950
+  },
+  "audit": {
+    "run_id": 41275465135,
+    "reviewed_code_sha": "8341b461a763936fdda5197e63b538c3ca3a989f",
+    "artifact_id": 13071322236,
+    "artifact_sha256": "a7bd0c019daba938ac60fce80ced7b57953709b59f2ffc87fb910951e5f1401f",
+    "independent_review_sha256": "5b080bacd8c2c79a745a2d42c150f1fe990f33b3affe714f5977e01c02ca2e4a",
+    "all164_states_and_exact_missing_keys_independently_checked": true
+  },
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+  "remaining_unknown_target_count": 74,
+  "unique_requested_games": 66,
+  "shared_target_games": [
+    "0022500334",
+    "0022500388",
+    "0022500559",
+    "0022500689",
+    "0022500728",
+    "0022500839",
+    "0022500880",
+    "0022501186"
+  ],
+  "source_metadata": {
+    "classification": "two previously qualified pinned untruncated2026 indexes;132 required leaves newlychecked, bodyquality unqualified",
+    "source_file_count": 132,
+    "total_source_bytes": 2509872,
+    "largest_source_bytes": 23760,
+    "already_retained_structured_game_intersection": [],
+    "source_bodies_acquired": 0
+  },
+  "requirements": [
+    {
+      "game_id": "0022500334",
+      "game_date": "2025-12-04",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500334.json",
+          "git_blob_sha": "dfce2c374d67aff2dbe56b2c386fea3b2ac58f9f",
+          "size_bytes": 19697
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500334.json",
+          "git_blob_sha": "d33853c37cea8697f48cf13a77b3fea93e189528",
+          "size_bytes": 16107
+        }
+      ]
+    },
+    {
+      "game_id": "0022500388",
+      "game_date": "2025-12-20",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500388.json",
+          "git_blob_sha": "9f2530104f214ce79523a8c4d394a637b2304f73",
+          "size_bytes": 19068
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500388.json",
+          "git_blob_sha": "652060c6ca91ab0df7670725e1338c118bd90529",
+          "size_bytes": 16300
+        }
+      ]
+    },
+    {
+      "game_id": "0022500559",
+      "game_date": "2026-01-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500559.json",
+          "git_blob_sha": "4023219ffb5f02935e293042e80b941c9a7fe447",
+          "size_bytes": 20954
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500559.json",
+          "git_blob_sha": "099ab5515cf5167fac02fa87407b5cb41485bdd9",
+          "size_bytes": 21487
+        }
+      ]
+    },
+    {
+      "game_id": "0022500689",
+      "game_date": "2026-01-30",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500689.json",
+          "git_blob_sha": "e34d95bbba3bcda6092aaa5c1c19512d0aff926f",
+          "size_bytes": 20983
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500689.json",
+          "git_blob_sha": "74e0bdf6ec2dfd6df3ed2fa0543cece72fecbd93",
+          "size_bytes": 16214
+        }
+      ]
+    },
+    {
+      "game_id": "0022500728",
+      "game_date": "2026-02-04",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500728.json",
+          "git_blob_sha": "5035fb723925cf072b1eab8abcda3cf2f776a499",
+          "size_bytes": 19598
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500728.json",
+          "git_blob_sha": "4199255f9b5b0f0c6947d6ed17b0f7696a1874ce",
+          "size_bytes": 15761
+        }
+      ]
+    },
+    {
+      "game_id": "0022500839",
+      "game_date": "2026-02-24",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500839.json",
+          "git_blob_sha": "8699217a4a446de368ffb5196f2509139f0faa32",
+          "size_bytes": 18977
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500839.json",
+          "git_blob_sha": "d5597748828343e5db2596ccc6a7b68fab6f08c5",
+          "size_bytes": 15753
+        }
+      ]
+    },
+    {
+      "game_id": "0022500880",
+      "game_date": "2026-03-02",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500880.json",
+          "git_blob_sha": "20bdc1d6c4b867fd2dc51d171d29bbd76850ecc1",
+          "size_bytes": 20906
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500880.json",
+          "git_blob_sha": "77f1326fd158a7a2f7bcd96f6164fadb5834be90",
+          "size_bytes": 21198
+        }
+      ]
+    },
+    {
+      "game_id": "0022501067",
+      "game_date": "2026-03-27",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501067.json",
+          "git_blob_sha": "cac47e0b49ea5d448966df828bf008ce4a43ac71",
+          "size_bytes": 20401
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501067.json",
+          "git_blob_sha": "aa5604ae878140becb7c0cf4640e699f72f0a267",
+          "size_bytes": 17505
+        }
+      ]
+    },
+    {
+      "game_id": "0022501085",
+      "game_date": "2026-03-29",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501085.json",
+          "git_blob_sha": "77c67c46c8d8986f6d4ead746971dfbb0de229aa",
+          "size_bytes": 19590
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501085.json",
+          "git_blob_sha": "85e4558c6722098eba595fc254715eac05c0f458",
+          "size_bytes": 16290
+        }
+      ]
+    },
+    {
+      "game_id": "0022501168",
+      "game_date": "2026-04-09",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501168.json",
+          "git_blob_sha": "fe156d36596f7faacf1f7501470a25d648231ecb",
+          "size_bytes": 21729
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501168.json",
+          "git_blob_sha": "be68b24ea481f8855a31924b3e63447afef0e583",
+          "size_bytes": 23760
+        }
+      ]
+    },
+    {
+      "game_id": "0022501186",
+      "game_date": "2026-04-12",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501186.json",
+          "git_blob_sha": "c5aee5d45b5aa42a449b16dc11278981b8f33288",
+          "size_bytes": 21026
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501186.json",
+          "git_blob_sha": "2492d2749c89605530bfbbe16609808b6be69724",
+          "size_bytes": 21112
+        }
+      ]
+    },
+    {
+      "game_id": "0022500083",
+      "game_date": "2025-10-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500083.json",
+          "git_blob_sha": "cf83f8eaf9c1ad4e440adf579b9e6e7c8fea166f",
+          "size_bytes": 20298
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500083.json",
+          "git_blob_sha": "0f80dd48017b428bf8801d2cd67fb990babf9a2b",
+          "size_bytes": 15994
+        }
+      ]
+    },
+    {
+      "game_id": "0022500018",
+      "game_date": "2025-10-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500018.json",
+          "git_blob_sha": "0ea16367647f94aa02e2d46cf864bb931a48949f",
+          "size_bytes": 19690
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500018.json",
+          "git_blob_sha": "5f467a78f48728cf593dd31589c25c6d1368f2ac",
+          "size_bytes": 21989
+        }
+      ]
+    },
+    {
+      "game_id": "0022500106",
+      "game_date": "2025-10-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500106.json",
+          "git_blob_sha": "e60e3d708acc21f4108427e5133538347632fe41",
+          "size_bytes": 20323
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500106.json",
+          "git_blob_sha": "7c4a78f8f04ce50992801df8eb027cbc497dff49",
+          "size_bytes": 17591
+        }
+      ]
+    },
+    {
+      "game_id": "0022500117",
+      "game_date": "2025-10-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500117.json",
+          "git_blob_sha": "41e141d670a80ee5e760f4331ea32d0adef00f39",
+          "size_bytes": 20259
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500117.json",
+          "git_blob_sha": "e6e2a77d21cfd646d3e2137fd15edaaf65c1f46b",
+          "size_bytes": 15735
+        }
+      ]
+    },
+    {
+      "game_id": "0022500128",
+      "game_date": "2025-10-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500128.json",
+          "git_blob_sha": "2612dd5935b7f5a81e47385efcf59dc26747bebd",
+          "size_bytes": 19000
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500128.json",
+          "git_blob_sha": "c5282fdcef3da207a71cc5ada585a35e05ce87a4",
+          "size_bytes": 20325
+        }
+      ]
+    },
+    {
+      "game_id": "0022500021",
+      "game_date": "2025-10-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500021.json",
+          "git_blob_sha": "205f8843a83c1fd3e23c37dc74ec2648b6c3f28a",
+          "size_bytes": 19666
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500021.json",
+          "git_blob_sha": "3fd3655d819a44889db5ea9902fc831dc1f19198",
+          "size_bytes": 21988
+        }
+      ]
+    },
+    {
+      "game_id": "0022500146",
+      "game_date": "2025-11-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500146.json",
+          "git_blob_sha": "8673b8356d4e7e57872ad9f064464c05db7b7b56",
+          "size_bytes": 20848
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500146.json",
+          "git_blob_sha": "85a0cddf47967359c7beafe46ed8d45302fd0e6c",
+          "size_bytes": 16799
+        }
+      ]
+    },
+    {
+      "game_id": "0022500158",
+      "game_date": "2025-11-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500158.json",
+          "git_blob_sha": "0d720baeea3b91c0fe07d97402389e09ff788dbe",
+          "size_bytes": 20362
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500158.json",
+          "git_blob_sha": "4577cb5e907c1995ffd1ab79af9b6bbd16d9dd78",
+          "size_bytes": 15486
+        }
+      ]
+    },
+    {
+      "game_id": "0022500174",
+      "game_date": "2025-11-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500174.json",
+          "git_blob_sha": "79965c82eb52aece4eb0c2eb6d95da34cae21109",
+          "size_bytes": 20911
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500174.json",
+          "git_blob_sha": "4b9f593f855c654d5d19548d6f5304049b2f4bfc",
+          "size_bytes": 15720
+        }
+      ]
+    },
+    {
+      "game_id": "0022500028",
+      "game_date": "2025-11-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500028.json",
+          "git_blob_sha": "ba0057aa3fb766fd2049088d25d0a0ffe553d867",
+          "size_bytes": 19681
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500028.json",
+          "git_blob_sha": "d74778819ac6c1d26f9f6a8bfdafa9c2f75ca296",
+          "size_bytes": 15388
+        }
+      ]
+    },
+    {
+      "game_id": "0022500193",
+      "game_date": "2025-11-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500193.json",
+          "git_blob_sha": "538a17c3c0208a541fdadb99be692e30f7277d0b",
+          "size_bytes": 19671
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500193.json",
+          "git_blob_sha": "4f31143e3c8f630d745b1938e093f3f038a6dc74",
+          "size_bytes": 16135
+        }
+      ]
+    },
+    {
+      "game_id": "0022500209",
+      "game_date": "2025-11-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500209.json",
+          "git_blob_sha": "a3de9d151043c9a038163fdaba928a0ef0e9a031",
+          "size_bytes": 19687
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500209.json",
+          "git_blob_sha": "ffacfa63571813c791fa441b2bae28d58bb51aaf",
+          "size_bytes": 21354
+        }
+      ]
+    },
+    {
+      "game_id": "0022500216",
+      "game_date": "2025-11-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500216.json",
+          "git_blob_sha": "4eac51eca7c0991f10998704b535ec21e4d6e210",
+          "size_bytes": 19681
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500216.json",
+          "git_blob_sha": "00facc8c1ca77e42c61fcbe8f0d9aa8a91f268be",
+          "size_bytes": 15601
+        }
+      ]
+    },
+    {
+      "game_id": "0022500233",
+      "game_date": "2025-11-16",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500233.json",
+          "git_blob_sha": "29c36dfff1c2055d978c86e37c9be17d61b001f9",
+          "size_bytes": 20370
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500233.json",
+          "git_blob_sha": "85e06c4ef651f6f56c3f1de527dc307edbaebd46",
+          "size_bytes": 18975
+        }
+      ]
+    },
+    {
+      "game_id": "0022500250",
+      "game_date": "2025-11-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500250.json",
+          "git_blob_sha": "6fdfec296ec8fff8eb299d6e099aed6604ea5520",
+          "size_bytes": 19655
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500250.json",
+          "git_blob_sha": "e305fae3d1c9569742bbbdc529261a4acfeb759e",
+          "size_bytes": 15762
+        }
+      ]
+    },
+    {
+      "game_id": "0022500049",
+      "game_date": "2025-11-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500049.json",
+          "git_blob_sha": "1c7979e900385d7c231f45a312b935dafbc99bb9",
+          "size_bytes": 19061
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500049.json",
+          "git_blob_sha": "72cf5c5d8aae6aadf955a45845837c3378ea990e",
+          "size_bytes": 15373
+        }
+      ]
+    },
+    {
+      "game_id": "0022500277",
+      "game_date": "2025-11-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500277.json",
+          "git_blob_sha": "7452b61a88fd8768e460ae21528f7e1962af031b",
+          "size_bytes": 19665
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500277.json",
+          "git_blob_sha": "c0e19c3773590079ca740796fb79e939912972a4",
+          "size_bytes": 16184
+        }
+      ]
+    },
+    {
+      "game_id": "0022500060",
+      "game_date": "2025-11-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500060.json",
+          "git_blob_sha": "85294286ad609a30237f6f914f2b09591027bee1",
+          "size_bytes": 19675
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500060.json",
+          "git_blob_sha": "7b949ded430e148a7cb674b7d70e92e3598f57dd",
+          "size_bytes": 20788
+        }
+      ]
+    },
+    {
+      "game_id": "0022500293",
+      "game_date": "2025-11-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500293.json",
+          "git_blob_sha": "05b2277d32dce05430b04381d2ca6cbb9a32377d",
+          "size_bytes": 21654
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500293.json",
+          "git_blob_sha": "5407e0e53a799e70e9dc351ebcffc2d5de38a6f5",
+          "size_bytes": 21687
+        }
+      ]
+    },
+    {
+      "game_id": "0022500302",
+      "game_date": "2025-11-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500302.json",
+          "git_blob_sha": "1faea354bdaa22ed909f1c2897c2f0ef4560adf0",
+          "size_bytes": 19701
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500302.json",
+          "git_blob_sha": "7f287697541e7322c20fea9e2f66d658af4d01ee",
+          "size_bytes": 17939
+        }
+      ]
+    },
+    {
+      "game_id": "0022500320",
+      "game_date": "2025-12-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500320.json",
+          "git_blob_sha": "40802c0b3e1b2a6c76c0020bed24b4690c309ef0",
+          "size_bytes": 19716
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500320.json",
+          "git_blob_sha": "494d0c18a3e3758e9dbcb63e6993351a56efc51e",
+          "size_bytes": 22281
+        }
+      ]
+    },
+    {
+      "game_id": "0022500334",
+      "game_date": "2025-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500334.json",
+          "git_blob_sha": "dfce2c374d67aff2dbe56b2c386fea3b2ac58f9f",
+          "size_bytes": 19697
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500334.json",
+          "git_blob_sha": "d33853c37cea8697f48cf13a77b3fea93e189528",
+          "size_bytes": 16107
+        }
+      ]
+    },
+    {
+      "game_id": "0022500358",
+      "game_date": "2025-12-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500358.json",
+          "git_blob_sha": "0015bcfd899dc4325791d2d41af40415c3576ec1",
+          "size_bytes": 20980
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500358.json",
+          "git_blob_sha": "79378e82a6c3b841932116d560a46f200218e4db",
+          "size_bytes": 18710
+        }
+      ]
+    },
+    {
+      "game_id": "0022501206",
+      "game_date": "2025-12-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501206.json",
+          "git_blob_sha": "76cb2731eee1b48cb1e74b55a22847d741b8d0a6",
+          "size_bytes": 19655
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501206.json",
+          "git_blob_sha": "9b321d8a615f4ee01d76e6556aad133366802e25",
+          "size_bytes": 17694
+        }
+      ]
+    },
+    {
+      "game_id": "0022501222",
+      "game_date": "2025-12-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501222.json",
+          "git_blob_sha": "7798091fb22c63c4f987775e1c5fc0f8c96e77a1",
+          "size_bytes": 20960
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501222.json",
+          "git_blob_sha": "a433264df89cb57d0d29221b33b6ce026d6be054",
+          "size_bytes": 19769
+        }
+      ]
+    },
+    {
+      "game_id": "0022500381",
+      "game_date": "2025-12-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500381.json",
+          "git_blob_sha": "961cc8bf59c79a43bf9a54bad77430d171395107",
+          "size_bytes": 19739
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500381.json",
+          "git_blob_sha": "8e813a0c0d7a65f334798e2b11391e6e13ac3755",
+          "size_bytes": 16241
+        }
+      ]
+    },
+    {
+      "game_id": "0022500388",
+      "game_date": "2025-12-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500388.json",
+          "git_blob_sha": "9f2530104f214ce79523a8c4d394a637b2304f73",
+          "size_bytes": 19068
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500388.json",
+          "git_blob_sha": "652060c6ca91ab0df7670725e1338c118bd90529",
+          "size_bytes": 16300
+        }
+      ]
+    },
+    {
+      "game_id": "0022500403",
+      "game_date": "2025-12-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500403.json",
+          "git_blob_sha": "f52201a0b46f4e7169c8991f04d225501c8c58b0",
+          "size_bytes": 21572
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500403.json",
+          "git_blob_sha": "9515e4d9b4e190da37129e27ea2776f7fa822a13",
+          "size_bytes": 16172
+        }
+      ]
+    },
+    {
+      "game_id": "0022500426",
+      "game_date": "2025-12-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500426.json",
+          "git_blob_sha": "8f8dcc4d5565adfb169b12973b0d386efe10cfae",
+          "size_bytes": 19651
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500426.json",
+          "git_blob_sha": "569055dbff71c58f9cd18b68942510fd3c051f0a",
+          "size_bytes": 15348
+        }
+      ]
+    },
+    {
+      "game_id": "0022500444",
+      "game_date": "2025-12-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500444.json",
+          "git_blob_sha": "8dbb37b3ed4f000b269696872740daa54b0feec8",
+          "size_bytes": 20965
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500444.json",
+          "git_blob_sha": "f7298ef1965699d19c53c9f739fddf8384d6b7e5",
+          "size_bytes": 18028
+        }
+      ]
+    },
+    {
+      "game_id": "0022500459",
+      "game_date": "2025-12-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500459.json",
+          "git_blob_sha": "3bf21c54e8ea9c97eaf7412fc3404141750f960b",
+          "size_bytes": 19123
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500459.json",
+          "git_blob_sha": "beef475ea958f5a472d5a59ea05b9d96c3341d89",
+          "size_bytes": 15662
+        }
+      ]
+    },
+    {
+      "game_id": "0022500474",
+      "game_date": "2026-01-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500474.json",
+          "git_blob_sha": "fd51b2513e896eb67d8213bcd03d49ba582894f5",
+          "size_bytes": 19749
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500474.json",
+          "git_blob_sha": "7a46fe2374252f3b1104445e08fa5ffbc640d2df",
+          "size_bytes": 16337
+        }
+      ]
+    },
+    {
+      "game_id": "0022500493",
+      "game_date": "2026-01-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500493.json",
+          "git_blob_sha": "754a63450bcfee958b3290710d4cefa889bdbed1",
+          "size_bytes": 19639
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500493.json",
+          "git_blob_sha": "c65532242e507d5bdb750b48af9a17193cc712b3",
+          "size_bytes": 18603
+        }
+      ]
+    },
+    {
+      "game_id": "0022500503",
+      "game_date": "2026-01-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500503.json",
+          "git_blob_sha": "1629e08945618d65c51d068a7a376e8a28660e0c",
+          "size_bytes": 20311
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500503.json",
+          "git_blob_sha": "7097174b6bd8116ec493e9a12c183f02e8a76858",
+          "size_bytes": 16090
+        }
+      ]
+    },
+    {
+      "game_id": "0022500520",
+      "game_date": "2026-01-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500520.json",
+          "git_blob_sha": "1be38e14c7ad82dedf83e49f3be5fef62edd60d7",
+          "size_bytes": 19058
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500520.json",
+          "git_blob_sha": "490f8ac3aa3219a89349c13041db9a06613e390c",
+          "size_bytes": 20651
+        }
+      ]
+    },
+    {
+      "game_id": "0022500532",
+      "game_date": "2026-01-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500532.json",
+          "git_blob_sha": "8c8b23d66e4ce9cbe02558b35a9bc59df466da6a",
+          "size_bytes": 19707
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500532.json",
+          "git_blob_sha": "f70abbb1cce408f9725697371d36754ebe332e0e",
+          "size_bytes": 16296
+        }
+      ]
+    },
+    {
+      "game_id": "0022500545",
+      "game_date": "2026-01-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500545.json",
+          "git_blob_sha": "c027bf5307bbc8cfedbacc5990590a4fa89f066c",
+          "size_bytes": 21022
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500545.json",
+          "git_blob_sha": "321fbc82415139b6523ecac6eb25a823ec723931",
+          "size_bytes": 18056
+        }
+      ]
+    },
+    {
+      "game_id": "0022500559",
+      "game_date": "2026-01-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500559.json",
+          "git_blob_sha": "4023219ffb5f02935e293042e80b941c9a7fe447",
+          "size_bytes": 20954
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500559.json",
+          "git_blob_sha": "099ab5515cf5167fac02fa87407b5cb41485bdd9",
+          "size_bytes": 21487
+        }
+      ]
+    },
+    {
+      "game_id": "0022500580",
+      "game_date": "2026-01-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500580.json",
+          "git_blob_sha": "b02573df5d61d17078b72b2a6b9157500533c76f",
+          "size_bytes": 21018
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500580.json",
+          "git_blob_sha": "e4992be40f92f200885e174e09bd4497733e0f9b",
+          "size_bytes": 15781
+        }
+      ]
+    },
+    {
+      "game_id": "0022500594",
+      "game_date": "2026-01-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500594.json",
+          "git_blob_sha": "aed3523fee312dd734ea56bd6a8edfffd0094ee7",
+          "size_bytes": 19056
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500594.json",
+          "git_blob_sha": "94771ef26e1638a03051677f887607aef751c01e",
+          "size_bytes": 16323
+        }
+      ]
+    },
+    {
+      "game_id": "0022500017",
+      "game_date": "2026-01-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500017.json",
+          "git_blob_sha": "2f482eb31e742ae6f73489a875fc5e1d23373b00",
+          "size_bytes": 20954
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500017.json",
+          "git_blob_sha": "e321e567e8050ccee360d042888eb3491232aea4",
+          "size_bytes": 22571
+        }
+      ]
+    },
+    {
+      "game_id": "0022500621",
+      "game_date": "2026-01-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500621.json",
+          "git_blob_sha": "8414000b43ee319321e44f7ada0e12058f85b006",
+          "size_bytes": 20257
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500621.json",
+          "git_blob_sha": "b085ce3ce680ecd9367e4cdcfb369892f67d1b73",
+          "size_bytes": 16142
+        }
+      ]
+    },
+    {
+      "game_id": "0022500637",
+      "game_date": "2026-01-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500637.json",
+          "git_blob_sha": "0c805d11040725b4e4ab25c2da9f494c5ab20abb",
+          "size_bytes": 20333
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500637.json",
+          "git_blob_sha": "2111f640c4ccbd975f7461aac00bd035ab1d53ac",
+          "size_bytes": 15938
+        }
+      ]
+    },
+    {
+      "game_id": "0022500647",
+      "game_date": "2026-01-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500647.json",
+          "git_blob_sha": "4dad89c26cb75d0f7acb06c850534610719205c6",
+          "size_bytes": 20355
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500647.json",
+          "git_blob_sha": "57e1bbde8232d22ce127148bb51a55dfc3b4f07b",
+          "size_bytes": 16863
+        }
+      ]
+    },
+    {
+      "game_id": "0022500660",
+      "game_date": "2026-01-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500660.json",
+          "git_blob_sha": "fd246581bf084b592c2e49b9413022d41a1c98ea",
+          "size_bytes": 20984
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500660.json",
+          "git_blob_sha": "0388ff13aa60adc9305ae2968f8f64b1388cfd04",
+          "size_bytes": 19053
+        }
+      ]
+    },
+    {
+      "game_id": "0022500673",
+      "game_date": "2026-01-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500673.json",
+          "git_blob_sha": "372674a419af79580c17dc45348f243265c9fca4",
+          "size_bytes": 19110
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500673.json",
+          "git_blob_sha": "75f6826f10e5f40d89a9aa7c1f044c6ff7fdd6a0",
+          "size_bytes": 16154
+        }
+      ]
+    },
+    {
+      "game_id": "0022500689",
+      "game_date": "2026-01-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500689.json",
+          "git_blob_sha": "e34d95bbba3bcda6092aaa5c1c19512d0aff926f",
+          "size_bytes": 20983
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500689.json",
+          "git_blob_sha": "74e0bdf6ec2dfd6df3ed2fa0543cece72fecbd93",
+          "size_bytes": 16214
+        }
+      ]
+    },
+    {
+      "game_id": "0022500721",
+      "game_date": "2026-02-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500721.json",
+          "git_blob_sha": "fc8a8a68f9c09c4373b6812ee6c0d0a121ff708e",
+          "size_bytes": 19013
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500721.json",
+          "git_blob_sha": "f6fc7356af1fcf5715b5b3f3af690a7e582dfb44",
+          "size_bytes": 20993
+        }
+      ]
+    },
+    {
+      "game_id": "0022500728",
+      "game_date": "2026-02-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500728.json",
+          "git_blob_sha": "5035fb723925cf072b1eab8abcda3cf2f776a499",
+          "size_bytes": 19598
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500728.json",
+          "git_blob_sha": "4199255f9b5b0f0c6947d6ed17b0f7696a1874ce",
+          "size_bytes": 15761
+        }
+      ]
+    },
+    {
+      "game_id": "0022500741",
+      "game_date": "2026-02-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500741.json",
+          "git_blob_sha": "bf4b6facbaba646d0c3c8a6ad95e940a6c6f71a1",
+          "size_bytes": 19130
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500741.json",
+          "git_blob_sha": "e7d400cdd1e6660c2f00da313a5a2e9c454083d0",
+          "size_bytes": 16078
+        }
+      ]
+    },
+    {
+      "game_id": "0022500757",
+      "game_date": "2026-02-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500757.json",
+          "git_blob_sha": "2a13b4100ac4dd5ee4e02a6b87a08e1c913f8ddf",
+          "size_bytes": 19687
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500757.json",
+          "git_blob_sha": "28024bab024c138802ec7fa904c2ebb730044c21",
+          "size_bytes": 21693
+        }
+      ]
+    },
+    {
+      "game_id": "0022500778",
+      "game_date": "2026-02-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500778.json",
+          "git_blob_sha": "2c5a42a99e4440d1832a44d3a52d89a108f56572",
+          "size_bytes": 18434
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500778.json",
+          "git_blob_sha": "91e23bc4fd5fccbb28a33dd5e20ff8c5d99cb2e3",
+          "size_bytes": 15607
+        }
+      ]
+    },
+    {
+      "game_id": "0022500799",
+      "game_date": "2026-02-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500799.json",
+          "git_blob_sha": "e200cd8eb755156676e6b8a7b80985401b25cba8",
+          "size_bytes": 20393
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500799.json",
+          "git_blob_sha": "dc26838aa5b16191752ba114df5967677ff3bf81",
+          "size_bytes": 23385
+        }
+      ]
+    },
+    {
+      "game_id": "0022500839",
+      "game_date": "2026-02-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500839.json",
+          "git_blob_sha": "8699217a4a446de368ffb5196f2509139f0faa32",
+          "size_bytes": 18977
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500839.json",
+          "git_blob_sha": "d5597748828343e5db2596ccc6a7b68fab6f08c5",
+          "size_bytes": 15753
+        }
+      ]
+    },
+    {
+      "game_id": "0022500847",
+      "game_date": "2026-02-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500847.json",
+          "git_blob_sha": "3cf92087b6a84db89400fd40d52161a99d7d4c64",
+          "size_bytes": 19079
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500847.json",
+          "git_blob_sha": "ad40d9f90f630863843dfc6fbce1f8982a010df8",
+          "size_bytes": 21674
+        }
+      ]
+    },
+    {
+      "game_id": "0022500859",
+      "game_date": "2026-02-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500859.json",
+          "git_blob_sha": "0b5a1c168cdcfea67b367f8f5dcb61f364e0fc6c",
+          "size_bytes": 20233
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500859.json",
+          "git_blob_sha": "48cd6c58630fea61cd0bb8ece0e5b016224f0aa7",
+          "size_bytes": 15849
+        }
+      ]
+    },
+    {
+      "game_id": "0022500874",
+      "game_date": "2026-03-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500874.json",
+          "git_blob_sha": "aee09601a6b9d8a77e4c4f783f32cded1c54b097",
+          "size_bytes": 19128
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500874.json",
+          "git_blob_sha": "7667990096e7e78f615c854353dc06580bdd0494",
+          "size_bytes": 21614
+        }
+      ]
+    },
+    {
+      "game_id": "0022500880",
+      "game_date": "2026-03-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500880.json",
+          "git_blob_sha": "20bdc1d6c4b867fd2dc51d171d29bbd76850ecc1",
+          "size_bytes": 20906
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500880.json",
+          "git_blob_sha": "77f1326fd158a7a2f7bcd96f6164fadb5834be90",
+          "size_bytes": 21198
+        }
+      ]
+    },
+    {
+      "game_id": "0022500894",
+      "game_date": "2026-03-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500894.json",
+          "git_blob_sha": "7b2947d51c88ad294e96749a511096a3daf11ea0",
+          "size_bytes": 19026
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500894.json",
+          "git_blob_sha": "20df487a3e324161af1d85e728d6b6d5753eef0e",
+          "size_bytes": 15966
+        }
+      ]
+    },
+    {
+      "game_id": "0022500959",
+      "game_date": "2026-03-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500959.json",
+          "git_blob_sha": "102faacbcbdffd4a1f38618c72e77664ec938de7",
+          "size_bytes": 18465
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500959.json",
+          "git_blob_sha": "1c2baa4eea02a3c611142b4813d8abaa2e4c47cd",
+          "size_bytes": 22907
+        }
+      ]
+    },
+    {
+      "game_id": "0022501092",
+      "game_date": "2026-03-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501092.json",
+          "git_blob_sha": "15efa12e3409aea57a9f5aa2a683004f08297a90",
+          "size_bytes": 21004
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501092.json",
+          "git_blob_sha": "c1e8ad33a55c04668614660d834f5bfef706ed85",
+          "size_bytes": 16175
+        }
+      ]
+    },
+    {
+      "game_id": "0022501174",
+      "game_date": "2026-04-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501174.json",
+          "git_blob_sha": "921779f1e52f118d13afcb372907c19cf408a5ec",
+          "size_bytes": 19078
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501174.json",
+          "git_blob_sha": "2aef5fffa35926ae0c18f2082bbc7da85e866367",
+          "size_bytes": 15497
+        }
+      ]
+    },
+    {
+      "game_id": "0022501186",
+      "game_date": "2026-04-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501186.json",
+          "git_blob_sha": "c5aee5d45b5aa42a449b16dc11278981b8f33288",
+          "size_bytes": 21026
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501186.json",
+          "git_blob_sha": "2492d2749c89605530bfbbe16609808b6be69724",
+          "size_bytes": 21112
+        }
+      ]
+    }
+  ],
+  "source_files": {
+    "boxscoretraditionalv3_0022500017.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500017",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500017.json",
+      "git_blob_sha": "2f482eb31e742ae6f73489a875fc5e1d23373b00",
+      "size_bytes": 20954,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500018.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500018",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500018.json",
+      "git_blob_sha": "0ea16367647f94aa02e2d46cf864bb931a48949f",
+      "size_bytes": 19690,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500021.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500021",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500021.json",
+      "git_blob_sha": "205f8843a83c1fd3e23c37dc74ec2648b6c3f28a",
+      "size_bytes": 19666,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500028.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500028",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500028.json",
+      "git_blob_sha": "ba0057aa3fb766fd2049088d25d0a0ffe553d867",
+      "size_bytes": 19681,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500049.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500049",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500049.json",
+      "git_blob_sha": "1c7979e900385d7c231f45a312b935dafbc99bb9",
+      "size_bytes": 19061,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500060.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500060",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500060.json",
+      "git_blob_sha": "85294286ad609a30237f6f914f2b09591027bee1",
+      "size_bytes": 19675,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500083.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500083",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500083.json",
+      "git_blob_sha": "cf83f8eaf9c1ad4e440adf579b9e6e7c8fea166f",
+      "size_bytes": 20298,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500106.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500106",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500106.json",
+      "git_blob_sha": "e60e3d708acc21f4108427e5133538347632fe41",
+      "size_bytes": 20323,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500117.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500117",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500117.json",
+      "git_blob_sha": "41e141d670a80ee5e760f4331ea32d0adef00f39",
+      "size_bytes": 20259,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500128.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500128",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500128.json",
+      "git_blob_sha": "2612dd5935b7f5a81e47385efcf59dc26747bebd",
+      "size_bytes": 19000,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500146.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500146",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500146.json",
+      "git_blob_sha": "8673b8356d4e7e57872ad9f064464c05db7b7b56",
+      "size_bytes": 20848,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500158.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500158",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500158.json",
+      "git_blob_sha": "0d720baeea3b91c0fe07d97402389e09ff788dbe",
+      "size_bytes": 20362,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500174.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500174",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500174.json",
+      "git_blob_sha": "79965c82eb52aece4eb0c2eb6d95da34cae21109",
+      "size_bytes": 20911,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500193.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500193",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500193.json",
+      "git_blob_sha": "538a17c3c0208a541fdadb99be692e30f7277d0b",
+      "size_bytes": 19671,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500209.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500209",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500209.json",
+      "git_blob_sha": "a3de9d151043c9a038163fdaba928a0ef0e9a031",
+      "size_bytes": 19687,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500216.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500216",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500216.json",
+      "git_blob_sha": "4eac51eca7c0991f10998704b535ec21e4d6e210",
+      "size_bytes": 19681,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500233.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500233",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500233.json",
+      "git_blob_sha": "29c36dfff1c2055d978c86e37c9be17d61b001f9",
+      "size_bytes": 20370,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500250.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500250",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500250.json",
+      "git_blob_sha": "6fdfec296ec8fff8eb299d6e099aed6604ea5520",
+      "size_bytes": 19655,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500277.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500277",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500277.json",
+      "git_blob_sha": "7452b61a88fd8768e460ae21528f7e1962af031b",
+      "size_bytes": 19665,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500293.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500293",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500293.json",
+      "git_blob_sha": "05b2277d32dce05430b04381d2ca6cbb9a32377d",
+      "size_bytes": 21654,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500302.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500302",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500302.json",
+      "git_blob_sha": "1faea354bdaa22ed909f1c2897c2f0ef4560adf0",
+      "size_bytes": 19701,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500320.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500320",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500320.json",
+      "git_blob_sha": "40802c0b3e1b2a6c76c0020bed24b4690c309ef0",
+      "size_bytes": 19716,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500334.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500334",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500334.json",
+      "git_blob_sha": "dfce2c374d67aff2dbe56b2c386fea3b2ac58f9f",
+      "size_bytes": 19697,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500358.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500358",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500358.json",
+      "git_blob_sha": "0015bcfd899dc4325791d2d41af40415c3576ec1",
+      "size_bytes": 20980,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500381.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500381",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500381.json",
+      "git_blob_sha": "961cc8bf59c79a43bf9a54bad77430d171395107",
+      "size_bytes": 19739,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500388.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500388",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500388.json",
+      "git_blob_sha": "9f2530104f214ce79523a8c4d394a637b2304f73",
+      "size_bytes": 19068,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500403.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500403",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500403.json",
+      "git_blob_sha": "f52201a0b46f4e7169c8991f04d225501c8c58b0",
+      "size_bytes": 21572,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500426.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500426",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500426.json",
+      "git_blob_sha": "8f8dcc4d5565adfb169b12973b0d386efe10cfae",
+      "size_bytes": 19651,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500444.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500444",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500444.json",
+      "git_blob_sha": "8dbb37b3ed4f000b269696872740daa54b0feec8",
+      "size_bytes": 20965,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500459.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500459",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500459.json",
+      "git_blob_sha": "3bf21c54e8ea9c97eaf7412fc3404141750f960b",
+      "size_bytes": 19123,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500474.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500474",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500474.json",
+      "git_blob_sha": "fd51b2513e896eb67d8213bcd03d49ba582894f5",
+      "size_bytes": 19749,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500493.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500493",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500493.json",
+      "git_blob_sha": "754a63450bcfee958b3290710d4cefa889bdbed1",
+      "size_bytes": 19639,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500503.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500503",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500503.json",
+      "git_blob_sha": "1629e08945618d65c51d068a7a376e8a28660e0c",
+      "size_bytes": 20311,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500520.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500520",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500520.json",
+      "git_blob_sha": "1be38e14c7ad82dedf83e49f3be5fef62edd60d7",
+      "size_bytes": 19058,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500532.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500532",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500532.json",
+      "git_blob_sha": "8c8b23d66e4ce9cbe02558b35a9bc59df466da6a",
+      "size_bytes": 19707,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500545.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500545",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500545.json",
+      "git_blob_sha": "c027bf5307bbc8cfedbacc5990590a4fa89f066c",
+      "size_bytes": 21022,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500559.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500559",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500559.json",
+      "git_blob_sha": "4023219ffb5f02935e293042e80b941c9a7fe447",
+      "size_bytes": 20954,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500580.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500580",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500580.json",
+      "git_blob_sha": "b02573df5d61d17078b72b2a6b9157500533c76f",
+      "size_bytes": 21018,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500594.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500594",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500594.json",
+      "git_blob_sha": "aed3523fee312dd734ea56bd6a8edfffd0094ee7",
+      "size_bytes": 19056,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500621.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500621",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500621.json",
+      "git_blob_sha": "8414000b43ee319321e44f7ada0e12058f85b006",
+      "size_bytes": 20257,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500637.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500637",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500637.json",
+      "git_blob_sha": "0c805d11040725b4e4ab25c2da9f494c5ab20abb",
+      "size_bytes": 20333,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500647.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500647",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500647.json",
+      "git_blob_sha": "4dad89c26cb75d0f7acb06c850534610719205c6",
+      "size_bytes": 20355,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500660.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500660",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500660.json",
+      "git_blob_sha": "fd246581bf084b592c2e49b9413022d41a1c98ea",
+      "size_bytes": 20984,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500673.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500673",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500673.json",
+      "git_blob_sha": "372674a419af79580c17dc45348f243265c9fca4",
+      "size_bytes": 19110,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500689.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500689",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500689.json",
+      "git_blob_sha": "e34d95bbba3bcda6092aaa5c1c19512d0aff926f",
+      "size_bytes": 20983,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500721.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500721",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500721.json",
+      "git_blob_sha": "fc8a8a68f9c09c4373b6812ee6c0d0a121ff708e",
+      "size_bytes": 19013,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500728.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500728",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500728.json",
+      "git_blob_sha": "5035fb723925cf072b1eab8abcda3cf2f776a499",
+      "size_bytes": 19598,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500741.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500741",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500741.json",
+      "git_blob_sha": "bf4b6facbaba646d0c3c8a6ad95e940a6c6f71a1",
+      "size_bytes": 19130,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500757.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500757",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500757.json",
+      "git_blob_sha": "2a13b4100ac4dd5ee4e02a6b87a08e1c913f8ddf",
+      "size_bytes": 19687,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500778.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500778",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500778.json",
+      "git_blob_sha": "2c5a42a99e4440d1832a44d3a52d89a108f56572",
+      "size_bytes": 18434,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500799.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500799",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500799.json",
+      "git_blob_sha": "e200cd8eb755156676e6b8a7b80985401b25cba8",
+      "size_bytes": 20393,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500839.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500839",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500839.json",
+      "git_blob_sha": "8699217a4a446de368ffb5196f2509139f0faa32",
+      "size_bytes": 18977,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500847.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500847",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500847.json",
+      "git_blob_sha": "3cf92087b6a84db89400fd40d52161a99d7d4c64",
+      "size_bytes": 19079,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500859.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500859",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500859.json",
+      "git_blob_sha": "0b5a1c168cdcfea67b367f8f5dcb61f364e0fc6c",
+      "size_bytes": 20233,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500874.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500874",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500874.json",
+      "git_blob_sha": "aee09601a6b9d8a77e4c4f783f32cded1c54b097",
+      "size_bytes": 19128,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500880.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500880",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500880.json",
+      "git_blob_sha": "20bdc1d6c4b867fd2dc51d171d29bbd76850ecc1",
+      "size_bytes": 20906,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500894.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500894",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500894.json",
+      "git_blob_sha": "7b2947d51c88ad294e96749a511096a3daf11ea0",
+      "size_bytes": 19026,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022500959.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022500959",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500959.json",
+      "git_blob_sha": "102faacbcbdffd4a1f38618c72e77664ec938de7",
+      "size_bytes": 18465,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501067.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501067",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501067.json",
+      "git_blob_sha": "cac47e0b49ea5d448966df828bf008ce4a43ac71",
+      "size_bytes": 20401,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501085.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501085",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501085.json",
+      "git_blob_sha": "77c67c46c8d8986f6d4ead746971dfbb0de229aa",
+      "size_bytes": 19590,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501092.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501092",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501092.json",
+      "git_blob_sha": "15efa12e3409aea57a9f5aa2a683004f08297a90",
+      "size_bytes": 21004,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501168.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501168",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501168.json",
+      "git_blob_sha": "fe156d36596f7faacf1f7501470a25d648231ecb",
+      "size_bytes": 21729,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501174.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501174",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501174.json",
+      "git_blob_sha": "921779f1e52f118d13afcb372907c19cf408a5ec",
+      "size_bytes": 19078,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501186.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501186",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501186.json",
+      "git_blob_sha": "c5aee5d45b5aa42a449b16dc11278981b8f33288",
+      "size_bytes": 21026,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501206.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501206",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501206.json",
+      "git_blob_sha": "76cb2731eee1b48cb1e74b55a22847d741b8d0a6",
+      "size_bytes": 19655,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoretraditionalv3_0022501222.json": {
+      "endpoint": "boxscoretraditionalv3",
+      "game_id": "0022501222",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501222.json",
+      "git_blob_sha": "7798091fb22c63c4f987775e1c5fc0f8c96e77a1",
+      "size_bytes": 20960,
+      "source_tree_sha": "f6df88871cf37d32111c8783a8fe741fe8dfa071"
+    },
+    "boxscoresummaryv3_0022500017.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500017",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500017.json",
+      "git_blob_sha": "e321e567e8050ccee360d042888eb3491232aea4",
+      "size_bytes": 22571,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500018.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500018",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500018.json",
+      "git_blob_sha": "5f467a78f48728cf593dd31589c25c6d1368f2ac",
+      "size_bytes": 21989,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500021.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500021",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500021.json",
+      "git_blob_sha": "3fd3655d819a44889db5ea9902fc831dc1f19198",
+      "size_bytes": 21988,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500028.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500028",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500028.json",
+      "git_blob_sha": "d74778819ac6c1d26f9f6a8bfdafa9c2f75ca296",
+      "size_bytes": 15388,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500049.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500049",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500049.json",
+      "git_blob_sha": "72cf5c5d8aae6aadf955a45845837c3378ea990e",
+      "size_bytes": 15373,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500060.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500060",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500060.json",
+      "git_blob_sha": "7b949ded430e148a7cb674b7d70e92e3598f57dd",
+      "size_bytes": 20788,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500083.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500083",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500083.json",
+      "git_blob_sha": "0f80dd48017b428bf8801d2cd67fb990babf9a2b",
+      "size_bytes": 15994,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500106.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500106",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500106.json",
+      "git_blob_sha": "7c4a78f8f04ce50992801df8eb027cbc497dff49",
+      "size_bytes": 17591,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500117.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500117",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500117.json",
+      "git_blob_sha": "e6e2a77d21cfd646d3e2137fd15edaaf65c1f46b",
+      "size_bytes": 15735,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500128.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500128",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500128.json",
+      "git_blob_sha": "c5282fdcef3da207a71cc5ada585a35e05ce87a4",
+      "size_bytes": 20325,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500146.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500146",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500146.json",
+      "git_blob_sha": "85a0cddf47967359c7beafe46ed8d45302fd0e6c",
+      "size_bytes": 16799,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500158.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500158",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500158.json",
+      "git_blob_sha": "4577cb5e907c1995ffd1ab79af9b6bbd16d9dd78",
+      "size_bytes": 15486,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500174.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500174",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500174.json",
+      "git_blob_sha": "4b9f593f855c654d5d19548d6f5304049b2f4bfc",
+      "size_bytes": 15720,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500193.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500193",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500193.json",
+      "git_blob_sha": "4f31143e3c8f630d745b1938e093f3f038a6dc74",
+      "size_bytes": 16135,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500209.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500209",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500209.json",
+      "git_blob_sha": "ffacfa63571813c791fa441b2bae28d58bb51aaf",
+      "size_bytes": 21354,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500216.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500216",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500216.json",
+      "git_blob_sha": "00facc8c1ca77e42c61fcbe8f0d9aa8a91f268be",
+      "size_bytes": 15601,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500233.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500233",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500233.json",
+      "git_blob_sha": "85e06c4ef651f6f56c3f1de527dc307edbaebd46",
+      "size_bytes": 18975,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500250.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500250",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500250.json",
+      "git_blob_sha": "e305fae3d1c9569742bbbdc529261a4acfeb759e",
+      "size_bytes": 15762,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500277.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500277",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500277.json",
+      "git_blob_sha": "c0e19c3773590079ca740796fb79e939912972a4",
+      "size_bytes": 16184,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500293.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500293",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500293.json",
+      "git_blob_sha": "5407e0e53a799e70e9dc351ebcffc2d5de38a6f5",
+      "size_bytes": 21687,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500302.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500302",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500302.json",
+      "git_blob_sha": "7f287697541e7322c20fea9e2f66d658af4d01ee",
+      "size_bytes": 17939,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500320.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500320",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500320.json",
+      "git_blob_sha": "494d0c18a3e3758e9dbcb63e6993351a56efc51e",
+      "size_bytes": 22281,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500334.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500334",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500334.json",
+      "git_blob_sha": "d33853c37cea8697f48cf13a77b3fea93e189528",
+      "size_bytes": 16107,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500358.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500358",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500358.json",
+      "git_blob_sha": "79378e82a6c3b841932116d560a46f200218e4db",
+      "size_bytes": 18710,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500381.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500381",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500381.json",
+      "git_blob_sha": "8e813a0c0d7a65f334798e2b11391e6e13ac3755",
+      "size_bytes": 16241,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500388.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500388",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500388.json",
+      "git_blob_sha": "652060c6ca91ab0df7670725e1338c118bd90529",
+      "size_bytes": 16300,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500403.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500403",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500403.json",
+      "git_blob_sha": "9515e4d9b4e190da37129e27ea2776f7fa822a13",
+      "size_bytes": 16172,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500426.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500426",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500426.json",
+      "git_blob_sha": "569055dbff71c58f9cd18b68942510fd3c051f0a",
+      "size_bytes": 15348,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500444.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500444",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500444.json",
+      "git_blob_sha": "f7298ef1965699d19c53c9f739fddf8384d6b7e5",
+      "size_bytes": 18028,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500459.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500459",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500459.json",
+      "git_blob_sha": "beef475ea958f5a472d5a59ea05b9d96c3341d89",
+      "size_bytes": 15662,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500474.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500474",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500474.json",
+      "git_blob_sha": "7a46fe2374252f3b1104445e08fa5ffbc640d2df",
+      "size_bytes": 16337,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500493.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500493",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500493.json",
+      "git_blob_sha": "c65532242e507d5bdb750b48af9a17193cc712b3",
+      "size_bytes": 18603,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500503.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500503",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500503.json",
+      "git_blob_sha": "7097174b6bd8116ec493e9a12c183f02e8a76858",
+      "size_bytes": 16090,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500520.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500520",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500520.json",
+      "git_blob_sha": "490f8ac3aa3219a89349c13041db9a06613e390c",
+      "size_bytes": 20651,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500532.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500532",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500532.json",
+      "git_blob_sha": "f70abbb1cce408f9725697371d36754ebe332e0e",
+      "size_bytes": 16296,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500545.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500545",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500545.json",
+      "git_blob_sha": "321fbc82415139b6523ecac6eb25a823ec723931",
+      "size_bytes": 18056,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500559.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500559",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500559.json",
+      "git_blob_sha": "099ab5515cf5167fac02fa87407b5cb41485bdd9",
+      "size_bytes": 21487,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500580.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500580",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500580.json",
+      "git_blob_sha": "e4992be40f92f200885e174e09bd4497733e0f9b",
+      "size_bytes": 15781,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500594.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500594",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500594.json",
+      "git_blob_sha": "94771ef26e1638a03051677f887607aef751c01e",
+      "size_bytes": 16323,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500621.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500621",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500621.json",
+      "git_blob_sha": "b085ce3ce680ecd9367e4cdcfb369892f67d1b73",
+      "size_bytes": 16142,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500637.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500637",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500637.json",
+      "git_blob_sha": "2111f640c4ccbd975f7461aac00bd035ab1d53ac",
+      "size_bytes": 15938,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500647.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500647",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500647.json",
+      "git_blob_sha": "57e1bbde8232d22ce127148bb51a55dfc3b4f07b",
+      "size_bytes": 16863,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500660.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500660",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500660.json",
+      "git_blob_sha": "0388ff13aa60adc9305ae2968f8f64b1388cfd04",
+      "size_bytes": 19053,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500673.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500673",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500673.json",
+      "git_blob_sha": "75f6826f10e5f40d89a9aa7c1f044c6ff7fdd6a0",
+      "size_bytes": 16154,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500689.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500689",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500689.json",
+      "git_blob_sha": "74e0bdf6ec2dfd6df3ed2fa0543cece72fecbd93",
+      "size_bytes": 16214,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500721.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500721",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500721.json",
+      "git_blob_sha": "f6fc7356af1fcf5715b5b3f3af690a7e582dfb44",
+      "size_bytes": 20993,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500728.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500728",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500728.json",
+      "git_blob_sha": "4199255f9b5b0f0c6947d6ed17b0f7696a1874ce",
+      "size_bytes": 15761,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500741.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500741",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500741.json",
+      "git_blob_sha": "e7d400cdd1e6660c2f00da313a5a2e9c454083d0",
+      "size_bytes": 16078,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500757.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500757",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500757.json",
+      "git_blob_sha": "28024bab024c138802ec7fa904c2ebb730044c21",
+      "size_bytes": 21693,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500778.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500778",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500778.json",
+      "git_blob_sha": "91e23bc4fd5fccbb28a33dd5e20ff8c5d99cb2e3",
+      "size_bytes": 15607,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500799.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500799",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500799.json",
+      "git_blob_sha": "dc26838aa5b16191752ba114df5967677ff3bf81",
+      "size_bytes": 23385,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500839.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500839",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500839.json",
+      "git_blob_sha": "d5597748828343e5db2596ccc6a7b68fab6f08c5",
+      "size_bytes": 15753,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500847.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500847",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500847.json",
+      "git_blob_sha": "ad40d9f90f630863843dfc6fbce1f8982a010df8",
+      "size_bytes": 21674,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500859.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500859",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500859.json",
+      "git_blob_sha": "48cd6c58630fea61cd0bb8ece0e5b016224f0aa7",
+      "size_bytes": 15849,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500874.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500874",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500874.json",
+      "git_blob_sha": "7667990096e7e78f615c854353dc06580bdd0494",
+      "size_bytes": 21614,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500880.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500880",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500880.json",
+      "git_blob_sha": "77f1326fd158a7a2f7bcd96f6164fadb5834be90",
+      "size_bytes": 21198,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500894.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500894",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500894.json",
+      "git_blob_sha": "20df487a3e324161af1d85e728d6b6d5753eef0e",
+      "size_bytes": 15966,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022500959.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022500959",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500959.json",
+      "git_blob_sha": "1c2baa4eea02a3c611142b4813d8abaa2e4c47cd",
+      "size_bytes": 22907,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501067.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501067",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501067.json",
+      "git_blob_sha": "aa5604ae878140becb7c0cf4640e699f72f0a267",
+      "size_bytes": 17505,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501085.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501085",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501085.json",
+      "git_blob_sha": "85e4558c6722098eba595fc254715eac05c0f458",
+      "size_bytes": 16290,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501092.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501092",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501092.json",
+      "git_blob_sha": "c1e8ad33a55c04668614660d834f5bfef706ed85",
+      "size_bytes": 16175,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501168.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501168",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501168.json",
+      "git_blob_sha": "be68b24ea481f8855a31924b3e63447afef0e583",
+      "size_bytes": 23760,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501174.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501174",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501174.json",
+      "git_blob_sha": "2aef5fffa35926ae0c18f2082bbc7da85e866367",
+      "size_bytes": 15497,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501186.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501186",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501186.json",
+      "git_blob_sha": "2492d2749c89605530bfbbe16609808b6be69724",
+      "size_bytes": 21112,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501206.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501206",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501206.json",
+      "git_blob_sha": "9b321d8a615f4ee01d76e6556aad133366802e25",
+      "size_bytes": 17694,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    },
+    "boxscoresummaryv3_0022501222.json": {
+      "endpoint": "boxscoresummaryv3",
+      "game_id": "0022501222",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501222.json",
+      "git_blob_sha": "a433264df89cb57d0d29221b33b6ce026d6be054",
+      "size_bytes": 19769,
+      "source_tree_sha": "e1a6b135b48c16fe3892d34630eb6b2942c96d74"
+    }
+  },
+  "limits": {
+    "max_source_body_bytes": 2000000,
+    "collection_zip_bytes": 20000000,
+    "collection_expanded_bytes": 100000000,
+    "collection_max_files": 2000,
+    "attempts_per_file": 1,
+    "metered_overage_usd": 0,
+    "maximum_total_source_reader_calls": 132
+  },
+  "acceptance": [
+    "Retain byte-identical originals, immutable source revision, Gitblob and SHA256 hashes, URLs, UTC retrieval times and explicit unknown original capture times.",
+    "Verify exact game/date/team/opponent/score and named-player identity against the pinned canonical population before accepting participation.",
+    "Parse each unique Traditional/Summary pair once and qualify all74 requested scalar targets; eight shared games require both targets. Reuse qualified0702Boston-only PDF as the75th audited key without a new source request; preserve MIL exclusion.",
+    "Absence requires explicit same-game association and nonparticipation evidence. Missing rows, zero minutes, empty inactive arrays and roster snapshots are not substitutes.",
+    "Preserve all prior804 current-season cells/source authority and146 other-season rows; qualified append-only staging does not publish or activate data.",
+    "Re-run exact coverage and positive natural/structured/API questions in isolated staging; do not fabricate complete manifests or weaken required data/clock/membership/readiness/publication gates.",
+    "Preserve accepted unpublished LAL1070-row stage/evidence. Separate overlays remain unpublished; any eventual combined package must revalidate both append authorities without dropping prior accepted rows."
+  ],
+  "not_authorized": [
+    "production publication or active pointer change",
+    "substantial bulk backfills, including multi-season league history, or unattended refresh",
+    "new costs, credentials, services or expanded permissions",
+    "destructive operations or weakened safeguards"
+  ],
+  "reuse_existing_evidence": {
+    "game_id": "0022500702",
+    "game_date": "2026-02-01",
+    "team_id": 1610612738,
+    "player_id": 1628369,
+    "scope": "Boston only; MIL ambiguity remains excluded; no refetch",
+    "pdf_path": "working/nba-tools-completion-program/source-evidence/tatum-20260201/acquired_data/raw/player_game_availability_sources/e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9.pdf",
+    "pdf_sha256": "e88c222a9fa1f6a31e77d43fcfa990a28ff38e3a21592c7a1f5b6bc20c42cff9",
+    "already_qualified_boston_rows": 17,
+    "production_imported": false
+  }
+}

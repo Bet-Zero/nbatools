@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "classification": "independent_bounded_BOS_coverage_audit_preexecution_review",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "reviewed_local_commit": "e6dab5b9755ac42e429bcf12cb84b2e146d86f97",
+  "reviewed_remote_commit": "8341b461a763936fdda5197e63b538c3ca3a989f",
+  "reviewed_tree": "7a35a395d9a9bb84280c3cba16c090e02dfa9923",
+  "selector_file_sha256": "a5f342686d18dab0f777639e186763d34571f2f20e50165e493da32b83a8c6fd",
+  "requested_execution_commit": "63858eead7199beb8e6f6c32e2564a5df854a617",
+  "selector": "tests/cloud_bos_participation_coverage_real_data.py::test_current_tatum_brown_exact_observed_population_and_missing_keys",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "scope": "Observe82BOSgames forTatum1628369 andBrown1627759 without assuming counts.4rawfileSHA/sizebindings+targetsubsets; current804ledgerrows vsprioraccepted950allseason.",
+  "independent_offline_controls": [
+    "positive played",
+    "explicitDNP",
+    "exact-game opposite-side association",
+    "missingrow unknown",
+    "zero-only appearance unknown",
+    "Brown independent target state scope",
+    "wrongdate rejected",
+    "wrongside rejected",
+    "conflictingstate rejected",
+    "both-side association rejected"
+  ],
+  "approval": "PASS for one bounded read-only audit; actual counts/artifact acceptance pending",
+  "unknown_rules": "Any unknown keeps missed_games=None and requested_population incomplete; missingkeys exact; no row omission/zero DNP inference",
+  "NBA_source_requests": 0,
+  "public_query_requests": 0,
+  "production_writes": 0
+}
