@@ -47,7 +47,7 @@
     {
       "name": "starter roles",
       "status": "SOURCE PROJECTION ACCEPTED for81 games/1829 positive player-game keys/810 explicit starters, five per side. 0144 literal official POS fills19 keys; no external role source dependency remains for this81-game population.",
-      "independent_review": "0144-independent-role-review.json; source-qualification-independent-review.json"
+      "independent_review": "0144-independent-role-review.json; role-roster-actual-source-review.json"
     },
     {
       "name": "proper roster snapshot",
@@ -100,7 +100,7 @@
     "new_primary_count_conflicts": {
       "cells": 83,
       "games": 18,
-      "basis": "comparisonwithORIGINALplayerlog, notyetdeduplicatedagainstaccepted16cellcorrectionledger",
+      "basis": "Comparison with ORIGINAL primary, now independently partitioned against exact accepted primary/staged bytes:7 already accepted and76 unresolved.",
       "status": "Partitioned against exact retained primary/staged bytes; no stage rerun or new count correction.",
       "already_accepted_integer_cells": 7,
       "remaining_unresolved_cells": 76,
@@ -128,8 +128,10 @@
     "clock_admission_repair": {
       "scope": "offline season_rollover_core_bridge only; tolerant period parser replaced by strict literal admission using existing availability parser and colon/ISO guards",
       "reproduction": "Four malformed cases were silently admitted before repair; nonsense failed only later denominator check. New10:60 case also protected.",
-      "focused_checks": "45 affected bridge/collector controls passed;8 selected updated malformed/valid-precision cases passed after adding numeric/ISO/subsecond controls. Required final-head CI and independent delta review pending.",
-      "existing_stage_reuse": "Review must establish original three Traditional source clocks remain valid; do not claim old staging ran on new head."
+      "focused_checks": "45 affected bridge/report controls passed before final case extension; final repaired malformed/valid clock class13 selected passed,31 deselected; independent checker also executed13 selected against final bytes.",
+      "existing_stage_reuse": "Independent checker inspected all86 source clock cells in original three accepted Traditional bodies (29/31/26, including4emptyDNP): old/new parsing is identical. Prior1253 observations/16-cell stage evidence reused, not rerun.",
+      "independent_review": "APPROVED final exact executable bytes; clock-admission-independent-review.json SHA3ff55f8e5206cc553838aada602156c39ca78f4738e4d1d10572975e2aa3af5d. Initial mixed-case bypass review retained separately;13 focused and11 unfamiliar independent controls passed.",
+      "final_ci": "pending"
     }
   },
   "hosting": {
@@ -167,7 +169,7 @@
   "0144_work_with_existing_resources": {
     "request": "working/nba-tools-completion-program/collection-requests/rollover-0144-starter-report-2026-27.json",
     "status": "CAPTUREandliteralPOSSOURCEQUALIFICATIONPASSED",
-    "scope": "one20s/1.5MBfixedstatsdmzread; actualliteralpositionqualificationlater; notpartofthe78filereadercap",
+    "scope": "One20s/1.5MBfixedstatsdmzread; literalPOS subsequently independently source-qualified; separate from the78archive-reader cap.",
     "run_id": 41296814558,
     "request_sha": "a29e4d995a7a4d16b6859980a6a75417de172e62",
     "artifact_sha256": "b176ba8e37f5b893dacc6609758d58d0e363a9bb738fdae91b66199a0b856503",
@@ -185,6 +187,6 @@
     "source_starter_position": "",
     "rule": "No11:00carry; whole-bodyclock/coreacceptancefalse. Independentrolemarkerprojection remainsdistinct; preserveprimaryclockandquarantine invalidsourceclock."
   },
-  "reassessed_at": "2026-11-01T10:41:00Z",
+  "reassessed_at": "2026-11-01T10:39:29Z",
   "stop_condition": "Active readiness qualification, not operational completion. Period source access remains genuinely external; K08 follow-on stays paused during current PR."
 }

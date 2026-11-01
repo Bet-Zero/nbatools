@@ -343,7 +343,10 @@ def test_zero_score_overtime_cannot_extend_summary_final_period():
         run(data, traditional=False)
 
 
-@pytest.mark.parametrize("literal", ["10:60", "41:60", "42:-1", "PT41M60S", "nonsense"])
+@pytest.mark.parametrize(
+    "literal",
+    ["10:60", "41:60", "42:-1", "PT41M60S", "pt41m60s", "Pt41M60S", "pT41m60s", "nonsense"],
+)
 def test_malformed_player_clock_cannot_be_promoted_by_corroboration(literal):
     data = fixture()
     data[3]["homeTeam"]["players"][0]["statistics"]["minutes"] = literal
@@ -360,7 +363,9 @@ def test_malformed_team_clock_cannot_be_carried_to_a_valid_denominator():
         run(data, pbp=False)
 
 
-@pytest.mark.parametrize("clocks", [(42, 38), ("PT42M00S", "PT38M00S"), ("42:00.5", "37:59.5")])
+@pytest.mark.parametrize(
+    "clocks", [(42, 38), ("PT42M00S", "PT38M00S"), ("pt42m00s", "Pt38M00S"), ("42:00.5", "37:59.5")]
+)
 def test_valid_literal_clock_precision_still_corroborates(clocks):
     data = fixture()
     for player, clock in zip(data[3]["homeTeam"]["players"], clocks):

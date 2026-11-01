@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "classification": "independent_initial_clock_admission_review_BLOCKED",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_commit": "2c54a68679680b97cb3f423740c534ae55b42fc3",
+  "tree": "1a89db685a1d123061491e47ffb7b33aa325b809",
+  "code_sha256": "593a4874568098d7ad2f241947cb8a567745bc0123699a1beeee718b085a315c",
+  "finding": "Case-sensitive PT guard bypassed by case-insensitive reused _minutes parser.",
+  "controlled_actual": [
+    {
+      "source_literal": "pt41m60s",
+      "actual_result": "accepted",
+      "promoted_MIN": 42.0,
+      "expected": "ValueError: seconds60 is invalid"
+    },
+    {
+      "source_literal": "Pt41M60S",
+      "actual_result": "accepted",
+      "promoted_MIN": 42.0,
+      "expected": "ValueError: seconds60 is invalid"
+    },
+    {
+      "source_literal": "pT41m60s",
+      "actual_result": "accepted",
+      "promoted_MIN": 42.0,
+      "expected": "ValueError: seconds60 is invalid"
+    }
+  ],
+  "approval": "BLOCKED; original frozen review remains literal.",
+  "new_source_calls": 0
+}

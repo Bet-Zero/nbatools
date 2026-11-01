@@ -64,8 +64,8 @@ def _literal_minutes(value):
         text = value.strip()
         if ":" in text and re.fullmatch(r"\d+:[0-5]\d(?:\.\d+)?", text) is None:
             raise ValueError("Invalid Traditional box-score duration")
-        if text.startswith("PT"):
-            match = re.fullmatch(r"PT(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?", text)
+        if text.upper().startswith("PT"):
+            match = re.fullmatch(r"PT(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?", text.upper())
             if match is None or not any(match.groups()) or float(match[2] or 0) >= 60:
                 raise ValueError("Invalid Traditional box-score duration")
     parsed = _minutes(value)
