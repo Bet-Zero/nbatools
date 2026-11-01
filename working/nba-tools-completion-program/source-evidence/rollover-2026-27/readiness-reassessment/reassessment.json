@@ -40,32 +40,31 @@
   "blocking_inputs": [
     {
       "name": "parameterized period Traditional+Advanced",
-      "status": "missing qualified source; cloud timedout, CDN403, archived period zero/unparameterized; unchanged retries excluded",
-      "minimal_external_input": "existing two-request Q1 laptop helper collection.zip for0022600001, even on failure; original Trad+Advanced bodies prove source access/scope before any wider batch",
-      "next": "qualify originals in cloud; only then pin due-population windows; no period bulk launch now"
+      "status": "Genuine external source-access dependency; cloud Q1 timeout, CDN403 and zero/unparameterized archive period bodies retained. No unchanged retries.",
+      "minimal_external_input": "Existing two-request Q1 laptop helper collection.zip, even on failure; game0022600001 Traditional+Advanced. No new approval/credentials/cost.",
+      "next": "Qualify originals first; then recompute exact due IDs and fix a bounded window plan. No wider period batch launched."
     },
     {
       "name": "starter roles",
-      "status": "3retained Trad sources supply76positive keys/30starters/6sides; partial proof pending independent review",
-      "available_archive_work": {
-        "new_whole_traditional_files": 77,
-        "missing_required_game_id": "0022600144",
-        "excluded_outside_regular_final_scope": "0062600001"
-      },
-      "external_remainder": "0144wholeTraditional is not indexed; retainedSummary has no position/starter. Do not infer from player order/PBP."
+      "status": "SOURCE PROJECTION ACCEPTED for81 games/1829 positive player-game keys/810 explicit starters, five per side. 0144 literal official POS fills19 keys; no external role source dependency remains for this81-game population.",
+      "independent_review": "0144-independent-role-review.json; source-qualification-independent-review.json"
     },
     {
       "name": "proper roster snapshot",
-      "status": "30immutable metadata files exist; one LAL representative planned before any29-file expansion; source bodies not yet qualified",
-      "representative_team_id": 1610612747
+      "status": "SOURCE PROJECTION ACCEPTED:30 teams/525 unique players/all432 observed player-team keys; exact NBA capture-as-of and dated tenure remain unqualified.",
+      "independent_review": "roster-30-independent-actual-review.json"
+    },
+    {
+      "name": "basic statistics and source revision basis",
+      "status": "83 original differences partition into7 already accepted integer fixes and76 unresolved cells across16 games. Preserve original counts and conflict ledger until field-level source/envelope/arithmetic qualification. Granularity alone is not source authority. Invalid0096 Jamal Cain10:60 is quarantined; no carry."
     },
     {
       "name": "advanced snapshot basis",
-      "status": "four corrected players' computedTS contradict retained original snapshot; preserve raworiginals and discrepancy proof. Source basis/USG qualification remains open; no value rewrite to hide it."
+      "status": "Four corrected-player TS% values contradict retained season snapshot; last modified source commit predates pinned7a. Preserve originals/USG and mismatch evidence; no blind snapshot rewrite."
     },
     {
       "name": "processed outputs and fresh due coverage",
-      "status": "use existing builders after qualified prerequisites; full11+5 and fresh due-ID validation required before publication"
+      "status": "Existing builders await qualified inputs. Full11raw/5processed validation, freshness and exact24-hour due IDs remain mandatory. Separate production publication approval then live acceptance and new-generation backup."
     }
   ],
   "work_now": {
@@ -80,12 +79,14 @@
     "captured_source_bytes": 1828123,
     "capture_failures": 0,
     "role_candidate": {
-      "games": 80,
-      "positive_role_rows": 1810,
-      "explicit_starter_rows": 800,
-      "missing_game_id": "0022600144",
-      "missing_positive_role_keys": 19,
-      "independent_80game_output_review": "pending"
+      "games": 81,
+      "positive_role_rows": 1829,
+      "explicit_starter_rows": 810,
+      "missing_game_id": null,
+      "missing_positive_role_keys": 0,
+      "independent_80game_output_review": "accepted29d7df9b",
+      "team_games": 162,
+      "independent_81game_output_review": "acceptedsourceprojection0c293f24; nofullsnapshot"
     },
     "roster_representative": {
       "team_id": 1610612747,
@@ -93,14 +94,42 @@
       "observed_player_keys": 14,
       "season_parameter": "2026",
       "normalized_season": "2026-27",
-      "independent_class_review": "pending",
-      "remaining_teams": 29
+      "independent_class_review": "accepted29d7df9b",
+      "remaining_teams": 0
     },
     "new_primary_count_conflicts": {
       "cells": 83,
       "games": 18,
       "basis": "comparisonwithORIGINALplayerlog, notyetdeduplicatedagainstaccepted16cellcorrectionledger",
-      "status": "retained; no blind count rewrite or full-core acceptance"
+      "status": "Partitioned against exact retained primary/staged bytes; no stage rerun or new count correction.",
+      "already_accepted_integer_cells": 7,
+      "remaining_unresolved_cells": 76,
+      "remaining_games": 16,
+      "partition_review": "remaining-count-conflict-assessment.json"
+    },
+    "remaining_roster_request": {
+      "path": "working/nba-tools-completion-program/collection-requests/season-rollover-remaining-rosters-2026-27.json",
+      "sha256": "49123353bde8931228d360234c7e79b81e07efb89eda9ab321c0174aec944187",
+      "calls": 29,
+      "bytes": 134321,
+      "status": "29 original bodies captured once,134321bytes,0failures/retries; independently actual-qualified0cd01c8c"
+    },
+    "all_roster_projection": {
+      "teams": 30,
+      "players": 525,
+      "observed_player_team_keys": 432,
+      "missing_observed_keys": 0,
+      "independent_review_sha256": "0cd01c8cb8611d3768ae8c8866fe32c2a6a78ffcee5995a66c7362aa0c00c285",
+      "nba_capture_asof": null,
+      "dated_membership_qualified": false
+    },
+    "total_new_archive_bodies": 107,
+    "total_new_archive_body_bytes": 1962444,
+    "clock_admission_repair": {
+      "scope": "offline season_rollover_core_bridge only; tolerant period parser replaced by strict literal admission using existing availability parser and colon/ISO guards",
+      "reproduction": "Four malformed cases were silently admitted before repair; nonsense failed only later denominator check. New10:60 case also protected.",
+      "focused_checks": "45 affected bridge/collector controls passed;8 selected updated malformed/valid-precision cases passed after adding numeric/ISO/subsecond controls. Required final-head CI and independent delta review pending.",
+      "existing_stage_reuse": "Review must establish original three Traditional source clocks remain valid; do not claim old staging ran on new head."
     }
   },
   "hosting": {
@@ -137,7 +166,25 @@
   },
   "0144_work_with_existing_resources": {
     "request": "working/nba-tools-completion-program/collection-requests/rollover-0144-starter-report-2026-27.json",
-    "status": "oneofficialFinalBoxPDFcaptureindependentlyapproved716b54ed; noHTTPexecutedyet",
-    "scope": "one20s/1.5MBfixedstatsdmzread; actualliteralpositionqualificationlater; notpartofthe78filereadercap"
-  }
+    "status": "CAPTUREandliteralPOSSOURCEQUALIFICATIONPASSED",
+    "scope": "one20s/1.5MBfixedstatsdmzread; actualliteralpositionqualificationlater; notpartofthe78filereadercap",
+    "run_id": 41296814558,
+    "request_sha": "a29e4d995a7a4d16b6859980a6a75417de172e62",
+    "artifact_sha256": "b176ba8e37f5b893dacc6609758d58d0e363a9bb738fdae91b66199a0b856503",
+    "pdf_sha256": "ca587ec0f6bd4dd63defe37deca2c87613a31d443aaa2a46bd3da41aaa756985",
+    "role_rows": 19,
+    "starters": 10,
+    "independent_role_review_sha256": "0c293f24ef6df972d00db247544f9d3aa4105626187549e7b1d950e311c71b42",
+    "genuine_external_role_dependency": false
+  },
+  "newly_discovered_literal_clock_defect": {
+    "game_id": "0022600096",
+    "player_id": 1631288,
+    "name": "Jamal Cain",
+    "minutes_literal": "10:60",
+    "source_starter_position": "",
+    "rule": "No11:00carry; whole-bodyclock/coreacceptancefalse. Independentrolemarkerprojection remainsdistinct; preserveprimaryclockandquarantine invalidsourceclock."
+  },
+  "reassessed_at": "2026-11-01T10:41:00Z",
+  "stop_condition": "Active readiness qualification, not operational completion. Period source access remains genuinely external; K08 follow-on stays paused during current PR."
 }

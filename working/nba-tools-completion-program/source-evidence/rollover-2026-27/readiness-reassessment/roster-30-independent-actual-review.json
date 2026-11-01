@@ -1,0 +1,537 @@
+{
+  "schema_version": 1,
+  "classification": "independent_actual30_team_roster_source_projection_not_dated_tenure_or_readiness",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "approved_scope_commit": "19cc3dda12b7d20fafdaa103df2cf5737870af74",
+  "request_sha256": "49123353bde8931228d360234c7e79b81e07efb89eda9ab321c0174aec944187",
+  "metadata_sha256": "f22e7490f26522f01192355ee8de4ff5c709a2a17dbf0c0ff1f2b0eccc6506ef",
+  "remaining_source_manifest_sha256": "a1996882d4dd6b122e95869c28453dfde4889619fbdf6165a95ddb31f34a9f41",
+  "root_qualification_sha256": "dd8c9ce6bf94781034742a6e9822547503eff35c81bc4c1e0c24ea915b1e8dd0",
+  "csv_sha256": "6a4f136a4488a8be5ae49117160c5bc21c5ea43b3b1f3082b872153e099ef8c8",
+  "source_integrity": {
+    "new_files": 29,
+    "new_bytes": 134321,
+    "recorded_reader_calls": 29,
+    "attempts_per_file": 1,
+    "cached_LAL_reused": true,
+    "all_request_metadata_git_sha_size_sha256_urls_utc_verified": true
+  },
+  "projection": {
+    "teams": 30,
+    "rows": 525,
+    "unique_player_ids": 525,
+    "unique_team_player_season_stint_keys": 525,
+    "observed_positive_player_team_keys": 432,
+    "covered_observed_positive_player_team_keys": 432,
+    "missing_observed_positive_keys": [],
+    "name_variants": [
+      {
+        "player_id": 1642881,
+        "team_id": 1610612749,
+        "source_roster_name": "Bogoljub Markovi\u0107",
+        "primary_name": "Bogoljub Markovic",
+        "classification": "normalized_equivalent"
+      }
+    ],
+    "all_actual_source_and_row_TeamID_League00_Season2026_verified": true,
+    "normalized_season": "2026-27",
+    "unchanged_normalizer_exact_csv_replay": true
+  },
+  "source_bindings": [
+    {
+      "team_id": 1610612737,
+      "sha256": "04bb354a10b3eb0ce44d3bf0743e6d119bec6467dd4adcac88821f442d7ee00d",
+      "size_bytes": 5103,
+      "git_blob_sha": "133f3289a60cdf4571f47e84cb046900ffc3a300",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612738,
+      "sha256": "00a10015237f4b0934d6bc4a114d3b1f62827efabb3ee985b72273ad8e08f8f1",
+      "size_bytes": 4220,
+      "git_blob_sha": "849abc561f8be24a4606c0979b9fc202a3c5eb5c",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612739,
+      "sha256": "275ab8d472b3e2fb6106373ff271b3f7ab2d622af0409e69d1a1cedcea968ba6",
+      "size_bytes": 4422,
+      "git_blob_sha": "26e8b44c620f1c71a2c75ba936967da37b49895a",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612740,
+      "sha256": "935a326658a0f369670ab9e737785dc71f8e8812a908ef51b1f228932c5e2d70",
+      "size_bytes": 4528,
+      "git_blob_sha": "40e0776ec5e0d829baa9dd6627fac1530c1e711c",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612741,
+      "sha256": "472d08a3aefba3a1a0a5dd8647493d4b64ef97763d42271ee7b3ab937b7bff28",
+      "size_bytes": 4396,
+      "git_blob_sha": "1ebe73c262943d372c8edb444ee0ccadc9f00f10",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612742,
+      "sha256": "062fe033a9c42d3906eb06b2e5fad04dd9502a52b870ad5a6404190dddf54a36",
+      "size_bytes": 4908,
+      "git_blob_sha": "c123c4cade7cc164046646ba63384b002893ea78",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612743,
+      "sha256": "d9a7c7216502c9604ea11ca8cef3350930a11795ab32a29f2f88eeebf546debc",
+      "size_bytes": 4241,
+      "git_blob_sha": "bd2edf8db6562a7f2e586ec41bd35aef061a8cbc",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612744,
+      "sha256": "904f3e9bdaee0cddaa485a50abfcb7108c2b7c49ce73e33102f96e9bd79ce9ad",
+      "size_bytes": 4798,
+      "git_blob_sha": "bf7687788bc68144892b865d751f0945f990c102",
+      "retrieved_at": "2026-11-01T10:29:30.417Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612745,
+      "sha256": "cc7bced6d701f8a2a5cc83a84da816d3a05ed4759f70824237f4fe8ce4e52934",
+      "size_bytes": 4546,
+      "git_blob_sha": "59d92fe86e49fb021e2d615e5d47b36908199b72",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612746,
+      "sha256": "c86edf233e8073967f9220577528fd7fcba1b27cc2a5b4f2e5c94b84e6455801",
+      "size_bytes": 4948,
+      "git_blob_sha": "f1c5de4c01ed6704a7454953e9bb596cbcd5fc76",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612747,
+      "sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+      "size_bytes": 4621,
+      "git_blob_sha": "8c7ceed497cf73edef73712ab233e5df8ea6d6c5",
+      "retrieved_at": "2026-11-01T10:06:57.658Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612748,
+      "sha256": "2d73895321e0b188f5bf031f1c9af6552fcf24a4ab01dfde45facb2ddec05b5d",
+      "size_bytes": 4472,
+      "git_blob_sha": "f93499d56268d2808e862b5a61cdebeadbfef107",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612749,
+      "sha256": "473175216c50090aa57c4118e47e3e285e376621f9938fd5eeac5bac2cecf294",
+      "size_bytes": 4888,
+      "git_blob_sha": "600c365a456be5b7056591e9407437a8fd07575b",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612750,
+      "sha256": "bfb564c68c0431cc6cb9274c14687fa5f8ad9844b46e1803ac2eab64c655d3f8",
+      "size_bytes": 4354,
+      "git_blob_sha": "d09c42e99630d06e90cb937729e77292f1cdf99b",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612751,
+      "sha256": "6adc5916fe766e3040b920d3338733b64c8fc2ce0b3d4ce55f71e22df35cadcb",
+      "size_bytes": 4848,
+      "git_blob_sha": "8bbc1024d64ccd430b66643e3c209158ee0f488c",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612752,
+      "sha256": "20412cec36fe013fa7f620d0e4dfff75ef1543a663a3e7532644c0e653f34e46",
+      "size_bytes": 4664,
+      "git_blob_sha": "ce3e340353d242e826847d7d3cb80d2e37d10fe7",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612753,
+      "sha256": "46105d2cdba3c222b2c053a73140cabb590638509dc7ad52d9765a2dc63a3537",
+      "size_bytes": 4881,
+      "git_blob_sha": "017afc8c3840b2dd63203451c772d87529e8e600",
+      "retrieved_at": "2026-11-01T10:29:31.087Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612754,
+      "sha256": "1fb3a65e772a57904e28e9a97ae176df222f915efe15a7073232af4af3e88831",
+      "size_bytes": 4493,
+      "git_blob_sha": "59d5b3567536605cf61cb45d86e17e390d9b6550",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612755,
+      "sha256": "bb0a04706ca40ae2250f5d9595381099a2c335d84720a4b6a818a40ea18510ad",
+      "size_bytes": 4274,
+      "git_blob_sha": "95df9b1cfe72925b9a55478871c0a8cca36ad3f3",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612756,
+      "sha256": "738d6cffaeca58fd72c590d53a9cc50f2a797d7eecd4a871bf3f71e52ae4aca8",
+      "size_bytes": 4467,
+      "git_blob_sha": "68772c9a40bcc756a7a3a0a0979065c972b23b15",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612757,
+      "sha256": "98d7441f3670df848ba205dc7fa9231074aa96426d82b1b777daf2d7c5e694a3",
+      "size_bytes": 4559,
+      "git_blob_sha": "ae9d94a78593e4e8d834659244ead995a9f725ce",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612758,
+      "sha256": "9d4fa4d7cdd1c09636bd41cf5913505f7d2f1e995adbe05c6932672eeac40016",
+      "size_bytes": 4778,
+      "git_blob_sha": "b6311d94af7e1bef970baec2f8be0b4a20448a63",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612759,
+      "sha256": "c811c71b876401332897779ce0493fd788f384b3c7104234973f74a85d8d79c4",
+      "size_bytes": 4279,
+      "git_blob_sha": "740122f02397a9079242c869281601fc8686548f",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612760,
+      "sha256": "c7ac45e4905c9eb959d1a0548f8fe5a4048d64fd6b7ae1cefb73118937069d87",
+      "size_bytes": 4672,
+      "git_blob_sha": "2dce875027588f135b173d2b73db6550b8f62274",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612761,
+      "sha256": "6720f59cf9fcd941f0b86b5bf75e9f7c1d3bc1e9212d7ec67d5fa5c81f5d44ad",
+      "size_bytes": 4429,
+      "git_blob_sha": "79dd7fd0342d3e92979f1290e1d10b4d3eca1fe0",
+      "retrieved_at": "2026-11-01T10:29:31.553Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612762,
+      "sha256": "5a29a04c8368b4d5b582040acd45fbc239332f12c69249a167d878e67c381809",
+      "size_bytes": 4568,
+      "git_blob_sha": "c15876d5bbd5c3ee99c754c759988d8228f63294",
+      "retrieved_at": "2026-11-01T10:29:32.106Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612763,
+      "sha256": "cf6df11ec4042a49dbca3668e36cdeebad2c30c8985a28f0f4e0b10541b1779e",
+      "size_bytes": 4594,
+      "git_blob_sha": "2112735bd42fff8890d920b01058aef9d9be2349",
+      "retrieved_at": "2026-11-01T10:29:32.106Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612764,
+      "sha256": "e7a41710a5f4e595433712c4d707ca447334983d76eb6300041e267fb8781c83",
+      "size_bytes": 4695,
+      "git_blob_sha": "b4ad218809be9292159cf83c619f70762530d419",
+      "retrieved_at": "2026-11-01T10:29:32.106Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612765,
+      "sha256": "20954a9e26ad8c5f84ce8074b24cd39348c9ef0e6514c18c443fc7e720df7140",
+      "size_bytes": 5391,
+      "git_blob_sha": "091a3bbde3ea3aa6c1da0e91dce8d18671777bef",
+      "retrieved_at": "2026-11-01T10:29:32.106Z",
+      "original_nba_capture_time": null
+    },
+    {
+      "team_id": 1610612766,
+      "sha256": "fbd0f56751b8339dbd0f1c1bb0de663a7fefd660fc3381993683ebb2a63bb102",
+      "size_bytes": 4905,
+      "git_blob_sha": "dd6864c325c40bc1443f111cabd32108eba688bc",
+      "retrieved_at": "2026-11-01T10:29:32.106Z",
+      "original_nba_capture_time": null
+    }
+  ],
+  "per_team": [
+    {
+      "team_id": 1610612737,
+      "team_abbr": "ATL",
+      "source_sha256": "04bb354a10b3eb0ce44d3bf0743e6d119bec6467dd4adcac88821f442d7ee00d",
+      "source_rows": 18,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612738,
+      "team_abbr": "BOS",
+      "source_sha256": "00a10015237f4b0934d6bc4a114d3b1f62827efabb3ee985b72273ad8e08f8f1",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612739,
+      "team_abbr": "CLE",
+      "source_sha256": "275ab8d472b3e2fb6106373ff271b3f7ab2d622af0409e69d1a1cedcea968ba6",
+      "source_rows": 17,
+      "observed_positive_player_ids": 11,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612740,
+      "team_abbr": "NOP",
+      "source_sha256": "935a326658a0f369670ab9e737785dc71f8e8812a908ef51b1f228932c5e2d70",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612741,
+      "team_abbr": "CHI",
+      "source_sha256": "472d08a3aefba3a1a0a5dd8647493d4b64ef97763d42271ee7b3ab937b7bff28",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612742,
+      "team_abbr": "DAL",
+      "source_sha256": "062fe033a9c42d3906eb06b2e5fad04dd9502a52b870ad5a6404190dddf54a36",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612743,
+      "team_abbr": "DEN",
+      "source_sha256": "d9a7c7216502c9604ea11ca8cef3350930a11795ab32a29f2f88eeebf546debc",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612744,
+      "team_abbr": "GSW",
+      "source_sha256": "904f3e9bdaee0cddaa485a50abfcb7108c2b7c49ce73e33102f96e9bd79ce9ad",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612745,
+      "team_abbr": "HOU",
+      "source_sha256": "cc7bced6d701f8a2a5cc83a84da816d3a05ed4759f70824237f4fe8ce4e52934",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612746,
+      "team_abbr": "LAC",
+      "source_sha256": "c86edf233e8073967f9220577528fd7fcba1b27cc2a5b4f2e5c94b84e6455801",
+      "source_rows": 19,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612747,
+      "team_abbr": "LAL",
+      "source_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612748,
+      "team_abbr": "MIA",
+      "source_sha256": "2d73895321e0b188f5bf031f1c9af6552fcf24a4ab01dfde45facb2ddec05b5d",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612749,
+      "team_abbr": "MIL",
+      "source_sha256": "473175216c50090aa57c4118e47e3e285e376621f9938fd5eeac5bac2cecf294",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612750,
+      "team_abbr": "MIN",
+      "source_sha256": "bfb564c68c0431cc6cb9274c14687fa5f8ad9844b46e1803ac2eab64c655d3f8",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612751,
+      "team_abbr": "BKN",
+      "source_sha256": "6adc5916fe766e3040b920d3338733b64c8fc2ce0b3d4ce55f71e22df35cadcb",
+      "source_rows": 18,
+      "observed_positive_player_ids": 16,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612752,
+      "team_abbr": "NYK",
+      "source_sha256": "20412cec36fe013fa7f620d0e4dfff75ef1543a663a3e7532644c0e653f34e46",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612753,
+      "team_abbr": "ORL",
+      "source_sha256": "46105d2cdba3c222b2c053a73140cabb590638509dc7ad52d9765a2dc63a3537",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612754,
+      "team_abbr": "IND",
+      "source_sha256": "1fb3a65e772a57904e28e9a97ae176df222f915efe15a7073232af4af3e88831",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612755,
+      "team_abbr": "PHI",
+      "source_sha256": "bb0a04706ca40ae2250f5d9595381099a2c335d84720a4b6a818a40ea18510ad",
+      "source_rows": 17,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612756,
+      "team_abbr": "PHX",
+      "source_sha256": "738d6cffaeca58fd72c590d53a9cc50f2a797d7eecd4a871bf3f71e52ae4aca8",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612757,
+      "team_abbr": "POR",
+      "source_sha256": "98d7441f3670df848ba205dc7fa9231074aa96426d82b1b777daf2d7c5e694a3",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612758,
+      "team_abbr": "SAC",
+      "source_sha256": "9d4fa4d7cdd1c09636bd41cf5913505f7d2f1e995adbe05c6932672eeac40016",
+      "source_rows": 17,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612759,
+      "team_abbr": "SAS",
+      "source_sha256": "c811c71b876401332897779ce0493fd788f384b3c7104234973f74a85d8d79c4",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612760,
+      "team_abbr": "OKC",
+      "source_sha256": "c7ac45e4905c9eb959d1a0548f8fe5a4048d64fd6b7ae1cefb73118937069d87",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612761,
+      "team_abbr": "TOR",
+      "source_sha256": "6720f59cf9fcd941f0b86b5bf75e9f7c1d3bc1e9212d7ec67d5fa5c81f5d44ad",
+      "source_rows": 16,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612762,
+      "team_abbr": "UTA",
+      "source_sha256": "5a29a04c8368b4d5b582040acd45fbc239332f12c69249a167d878e67c381809",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612763,
+      "team_abbr": "MEM",
+      "source_sha256": "cf6df11ec4042a49dbca3668e36cdeebad2c30c8985a28f0f4e0b10541b1779e",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612764,
+      "team_abbr": "WAS",
+      "source_sha256": "e7a41710a5f4e595433712c4d707ca447334983d76eb6300041e267fb8781c83",
+      "source_rows": 18,
+      "observed_positive_player_ids": 16,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612765,
+      "team_abbr": "DET",
+      "source_sha256": "20954a9e26ad8c5f84ce8074b24cd39348c9ef0e6514c18c443fc7e720df7140",
+      "source_rows": 20,
+      "observed_positive_player_ids": 17,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612766,
+      "team_abbr": "CHA",
+      "source_sha256": "fbd0f56751b8339dbd0f1c1bb0de663a7fefd660fc3381993683ebb2a63bb102",
+      "source_rows": 18,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    }
+  ],
+  "source_projection_accepted": true,
+  "full_slice_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0,
+  "limitations": [
+    "Each roster body is an explicit season-scoped observation, not dated tenure or proof that an unlisted player was a nonmember.",
+    "Source capture time unavailable; retrieval/Git revision does not establish exact NBA as-of freshness.",
+    "525 roster-listed players includes93 without observed positive game keys; these observations do not establish played/DNP status.",
+    "Roster completeness and source projection here do not waive canonical jointvalidation, due-ID, period, season-rate or count-consistency requirements."
+  ]
+}

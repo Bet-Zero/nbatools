@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "classification": "bounded_remaining_roster_capture_after_representative_not_publication",
+  "season": "2026-27",
+  "source_season_start_year": "2026",
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "metadata_binding": {
+    "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/roster-2027-contents-response.json",
+    "sha256": "f22e7490f26522f01192355ee8de4ff5c709a2a17dbf0c0ff1f2b0eccc6506ef",
+    "entries": 30
+  },
+  "representative": {
+    "team_id": 1610612747,
+    "original_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/sources/commonteamroster_1610612747.json",
+    "original_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+    "independent_review_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/role-roster-actual-source-review.json",
+    "independent_review_sha256": "29d7df9b0fa2dc976e48364524c73bdf000b353f8971b39edf72af079a98d0c3",
+    "do_not_refetch": true
+  },
+  "limits": {
+    "source_files": 29,
+    "reader_calls": 29,
+    "attempts_per_file": 1,
+    "total_original_bytes": 134321,
+    "largest_original_bytes": 5391,
+    "max_body_bytes": 2000000,
+    "metered_overage_usd": 0
+  },
+  "source_files": {
+    "commonteamroster_1610612737.json": {
+      "team_id": 1610612737,
+      "path": "nba_stats/json/commonteamroster/2027/1610612737.json",
+      "git_blob_sha": "133f3289a60cdf4571f47e84cb046900ffc3a300",
+      "size_bytes": 5103,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612737.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/133f3289a60cdf4571f47e84cb046900ffc3a300"
+    },
+    "commonteamroster_1610612738.json": {
+      "team_id": 1610612738,
+      "path": "nba_stats/json/commonteamroster/2027/1610612738.json",
+      "git_blob_sha": "849abc561f8be24a4606c0979b9fc202a3c5eb5c",
+      "size_bytes": 4220,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612738.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/849abc561f8be24a4606c0979b9fc202a3c5eb5c"
+    },
+    "commonteamroster_1610612739.json": {
+      "team_id": 1610612739,
+      "path": "nba_stats/json/commonteamroster/2027/1610612739.json",
+      "git_blob_sha": "26e8b44c620f1c71a2c75ba936967da37b49895a",
+      "size_bytes": 4422,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612739.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/26e8b44c620f1c71a2c75ba936967da37b49895a"
+    },
+    "commonteamroster_1610612740.json": {
+      "team_id": 1610612740,
+      "path": "nba_stats/json/commonteamroster/2027/1610612740.json",
+      "git_blob_sha": "40e0776ec5e0d829baa9dd6627fac1530c1e711c",
+      "size_bytes": 4528,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612740.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/40e0776ec5e0d829baa9dd6627fac1530c1e711c"
+    },
+    "commonteamroster_1610612741.json": {
+      "team_id": 1610612741,
+      "path": "nba_stats/json/commonteamroster/2027/1610612741.json",
+      "git_blob_sha": "1ebe73c262943d372c8edb444ee0ccadc9f00f10",
+      "size_bytes": 4396,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612741.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/1ebe73c262943d372c8edb444ee0ccadc9f00f10"
+    },
+    "commonteamroster_1610612742.json": {
+      "team_id": 1610612742,
+      "path": "nba_stats/json/commonteamroster/2027/1610612742.json",
+      "git_blob_sha": "c123c4cade7cc164046646ba63384b002893ea78",
+      "size_bytes": 4908,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612742.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c123c4cade7cc164046646ba63384b002893ea78"
+    },
+    "commonteamroster_1610612743.json": {
+      "team_id": 1610612743,
+      "path": "nba_stats/json/commonteamroster/2027/1610612743.json",
+      "git_blob_sha": "bd2edf8db6562a7f2e586ec41bd35aef061a8cbc",
+      "size_bytes": 4241,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612743.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/bd2edf8db6562a7f2e586ec41bd35aef061a8cbc"
+    },
+    "commonteamroster_1610612744.json": {
+      "team_id": 1610612744,
+      "path": "nba_stats/json/commonteamroster/2027/1610612744.json",
+      "git_blob_sha": "bf7687788bc68144892b865d751f0945f990c102",
+      "size_bytes": 4798,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612744.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/bf7687788bc68144892b865d751f0945f990c102"
+    },
+    "commonteamroster_1610612745.json": {
+      "team_id": 1610612745,
+      "path": "nba_stats/json/commonteamroster/2027/1610612745.json",
+      "git_blob_sha": "59d92fe86e49fb021e2d615e5d47b36908199b72",
+      "size_bytes": 4546,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612745.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/59d92fe86e49fb021e2d615e5d47b36908199b72"
+    },
+    "commonteamroster_1610612746.json": {
+      "team_id": 1610612746,
+      "path": "nba_stats/json/commonteamroster/2027/1610612746.json",
+      "git_blob_sha": "f1c5de4c01ed6704a7454953e9bb596cbcd5fc76",
+      "size_bytes": 4948,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612746.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f1c5de4c01ed6704a7454953e9bb596cbcd5fc76"
+    },
+    "commonteamroster_1610612748.json": {
+      "team_id": 1610612748,
+      "path": "nba_stats/json/commonteamroster/2027/1610612748.json",
+      "git_blob_sha": "f93499d56268d2808e862b5a61cdebeadbfef107",
+      "size_bytes": 4472,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612748.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f93499d56268d2808e862b5a61cdebeadbfef107"
+    },
+    "commonteamroster_1610612749.json": {
+      "team_id": 1610612749,
+      "path": "nba_stats/json/commonteamroster/2027/1610612749.json",
+      "git_blob_sha": "600c365a456be5b7056591e9407437a8fd07575b",
+      "size_bytes": 4888,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612749.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/600c365a456be5b7056591e9407437a8fd07575b"
+    },
+    "commonteamroster_1610612750.json": {
+      "team_id": 1610612750,
+      "path": "nba_stats/json/commonteamroster/2027/1610612750.json",
+      "git_blob_sha": "d09c42e99630d06e90cb937729e77292f1cdf99b",
+      "size_bytes": 4354,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612750.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/d09c42e99630d06e90cb937729e77292f1cdf99b"
+    },
+    "commonteamroster_1610612751.json": {
+      "team_id": 1610612751,
+      "path": "nba_stats/json/commonteamroster/2027/1610612751.json",
+      "git_blob_sha": "8bbc1024d64ccd430b66643e3c209158ee0f488c",
+      "size_bytes": 4848,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612751.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/8bbc1024d64ccd430b66643e3c209158ee0f488c"
+    },
+    "commonteamroster_1610612752.json": {
+      "team_id": 1610612752,
+      "path": "nba_stats/json/commonteamroster/2027/1610612752.json",
+      "git_blob_sha": "ce3e340353d242e826847d7d3cb80d2e37d10fe7",
+      "size_bytes": 4664,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612752.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/ce3e340353d242e826847d7d3cb80d2e37d10fe7"
+    },
+    "commonteamroster_1610612753.json": {
+      "team_id": 1610612753,
+      "path": "nba_stats/json/commonteamroster/2027/1610612753.json",
+      "git_blob_sha": "017afc8c3840b2dd63203451c772d87529e8e600",
+      "size_bytes": 4881,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612753.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/017afc8c3840b2dd63203451c772d87529e8e600"
+    },
+    "commonteamroster_1610612754.json": {
+      "team_id": 1610612754,
+      "path": "nba_stats/json/commonteamroster/2027/1610612754.json",
+      "git_blob_sha": "59d5b3567536605cf61cb45d86e17e390d9b6550",
+      "size_bytes": 4493,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612754.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/59d5b3567536605cf61cb45d86e17e390d9b6550"
+    },
+    "commonteamroster_1610612755.json": {
+      "team_id": 1610612755,
+      "path": "nba_stats/json/commonteamroster/2027/1610612755.json",
+      "git_blob_sha": "95df9b1cfe72925b9a55478871c0a8cca36ad3f3",
+      "size_bytes": 4274,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612755.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/95df9b1cfe72925b9a55478871c0a8cca36ad3f3"
+    },
+    "commonteamroster_1610612756.json": {
+      "team_id": 1610612756,
+      "path": "nba_stats/json/commonteamroster/2027/1610612756.json",
+      "git_blob_sha": "68772c9a40bcc756a7a3a0a0979065c972b23b15",
+      "size_bytes": 4467,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612756.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/68772c9a40bcc756a7a3a0a0979065c972b23b15"
+    },
+    "commonteamroster_1610612757.json": {
+      "team_id": 1610612757,
+      "path": "nba_stats/json/commonteamroster/2027/1610612757.json",
+      "git_blob_sha": "ae9d94a78593e4e8d834659244ead995a9f725ce",
+      "size_bytes": 4559,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612757.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/ae9d94a78593e4e8d834659244ead995a9f725ce"
+    },
+    "commonteamroster_1610612758.json": {
+      "team_id": 1610612758,
+      "path": "nba_stats/json/commonteamroster/2027/1610612758.json",
+      "git_blob_sha": "b6311d94af7e1bef970baec2f8be0b4a20448a63",
+      "size_bytes": 4778,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612758.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b6311d94af7e1bef970baec2f8be0b4a20448a63"
+    },
+    "commonteamroster_1610612759.json": {
+      "team_id": 1610612759,
+      "path": "nba_stats/json/commonteamroster/2027/1610612759.json",
+      "git_blob_sha": "740122f02397a9079242c869281601fc8686548f",
+      "size_bytes": 4279,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612759.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/740122f02397a9079242c869281601fc8686548f"
+    },
+    "commonteamroster_1610612760.json": {
+      "team_id": 1610612760,
+      "path": "nba_stats/json/commonteamroster/2027/1610612760.json",
+      "git_blob_sha": "2dce875027588f135b173d2b73db6550b8f62274",
+      "size_bytes": 4672,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612760.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/2dce875027588f135b173d2b73db6550b8f62274"
+    },
+    "commonteamroster_1610612761.json": {
+      "team_id": 1610612761,
+      "path": "nba_stats/json/commonteamroster/2027/1610612761.json",
+      "git_blob_sha": "79dd7fd0342d3e92979f1290e1d10b4d3eca1fe0",
+      "size_bytes": 4429,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612761.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/79dd7fd0342d3e92979f1290e1d10b4d3eca1fe0"
+    },
+    "commonteamroster_1610612762.json": {
+      "team_id": 1610612762,
+      "path": "nba_stats/json/commonteamroster/2027/1610612762.json",
+      "git_blob_sha": "c15876d5bbd5c3ee99c754c759988d8228f63294",
+      "size_bytes": 4568,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612762.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c15876d5bbd5c3ee99c754c759988d8228f63294"
+    },
+    "commonteamroster_1610612763.json": {
+      "team_id": 1610612763,
+      "path": "nba_stats/json/commonteamroster/2027/1610612763.json",
+      "git_blob_sha": "2112735bd42fff8890d920b01058aef9d9be2349",
+      "size_bytes": 4594,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612763.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/2112735bd42fff8890d920b01058aef9d9be2349"
+    },
+    "commonteamroster_1610612764.json": {
+      "team_id": 1610612764,
+      "path": "nba_stats/json/commonteamroster/2027/1610612764.json",
+      "git_blob_sha": "b4ad218809be9292159cf83c619f70762530d419",
+      "size_bytes": 4695,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612764.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b4ad218809be9292159cf83c619f70762530d419"
+    },
+    "commonteamroster_1610612765.json": {
+      "team_id": 1610612765,
+      "path": "nba_stats/json/commonteamroster/2027/1610612765.json",
+      "git_blob_sha": "091a3bbde3ea3aa6c1da0e91dce8d18671777bef",
+      "size_bytes": 5391,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612765.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/091a3bbde3ea3aa6c1da0e91dce8d18671777bef"
+    },
+    "commonteamroster_1610612766.json": {
+      "team_id": 1610612766,
+      "path": "nba_stats/json/commonteamroster/2027/1610612766.json",
+      "git_blob_sha": "dd6864c325c40bc1443f111cabd32108eba688bc",
+      "size_bytes": 4905,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/commonteamroster/2027/1610612766.json",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/dd6864c325c40bc1443f111cabd32108eba688bc"
+    }
+  },
+  "qualification": [
+    "Verify exactmetadata/request/bodyhash/Gitblob/size beforeuse; retainoriginals/capturetimes; no retrywithoutchanged evidence.",
+    "Require eachactualTeamID/LeagueID00/Season2026 andallrowTeamID/SEASON2026; map explicitstart-year2026 to2026–27 using thissourcecontract.",
+    "Run unchangedroster normalizer; requireall30teamIDs,uniqueplayer/team/season/stintkeys, reportprimaryPGAcoverage/name discrepancies; do notinferdatedmembership/currentavailability.",
+    "OriginalNBAcapturetime remainsunknown; Gitretention/retrievalnotproofexactasoffreshness. Fullslice/source-as-ofacceptance stayspending.",
+    "No periodcollection, newcosts/credentials/provider/permission, snapshotflags/publication/pointer/readinesswaiver."
+  ],
+  "authority": "Ownerstandingboundedpubliccurrent-seasoncollection/staging; independentrepresentativeclassreviewaccepted; separatefixedscope reviewbeforethese29calls.",
+  "nba_source_body_calls_so_far": 0,
+  "production_writes": 0,
+  "full_slice_accepted": false
+}

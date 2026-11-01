@@ -1,0 +1,3424 @@
+{
+  "schema_version": 1,
+  "classification": "independent_retained_role_and_single_roster_source_review_not_full_core_stage_readiness_or_publication",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_local_commit": "b69d80d7628f3de4581763219d6f2498f62df753",
+  "equivalent_remote_commit": "dbfa51f8ba7c57275b5d99c2d214cdbfe3e7be64",
+  "tree": "6d941f7e80ea3249284e8fb9ec89d17562a1012c",
+  "source_manifest_sha256": "e5ece22f60bf71b0976c1447cf854a99c2e842b802f812b69cf1e964d1a2fc51",
+  "collection_request_sha256": "d06bb4f3db8a1347f756fe5286493e9fbe44115a1ef3f1211f5ae7c4b30a55b8",
+  "source_integrity": {
+    "files": 78,
+    "bytes": 1828123,
+    "reader_calls_recorded": 78,
+    "failures": [],
+    "all_exact_git_blob_sha_size_sha256_url_utc": true,
+    "original_nba_capture_time_unknown": true,
+    "all_78_exact_approved_metadata_leaf_mappings": true
+  },
+  "source_bindings": {
+    "boxscoretraditionalv3_0022600001.json": {
+      "sha256": "0176eee4400492fd3e488908d9bacd8d8e89ecce0a2373355ad960ec8ea429d1",
+      "size_bytes": 25500,
+      "git_blob_sha": "c901e42712e611c4b0b2e3950f21e23abc91c046",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600002.json": {
+      "sha256": "007d0cfb2a9d8fc49a0c4510ef077ce9e24396ab67d4bd82713d0e0eb047c410",
+      "size_bytes": 24875,
+      "git_blob_sha": "c6527b22b4a51b3060244c3799c33a21ca765b68",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600003.json": {
+      "sha256": "fa01f3e2534820e78a801a670d6a3290e68e790829723eddcaffedaeae689741",
+      "size_bytes": 24836,
+      "git_blob_sha": "97db4ee6d6dd732218d921983056568c1e629879",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600004.json": {
+      "sha256": "4c9d6fa6993f50e781314e3398e8b6598c725ccc8f6b70bd8d867af362854fe4",
+      "size_bytes": 24214,
+      "git_blob_sha": "3c2ae53bb0eacd248f824e6972b7450dd383ee3e",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600005.json": {
+      "sha256": "1a24ea75d7a7f55f99a5ab8c7a317587d3efa37a12e1a51afd6162caa5be1b23",
+      "size_bytes": 26183,
+      "git_blob_sha": "2b0ec68e0c6c9e386851f5c94b5eeef480d946f1",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600006.json": {
+      "sha256": "19c725fe87a98f1530e17c94dbe7a9ce7cd00fb3a63d3a4566559e5746f8a290",
+      "size_bytes": 24874,
+      "git_blob_sha": "b07f5491cb6c5a0761b1f8935c636079e42c66b2",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600007.json": {
+      "sha256": "67d44cac46a6e5f44251eecbe135786485364acabe53220dc57e9d2d26bf8c51",
+      "size_bytes": 24838,
+      "git_blob_sha": "c14dd65e1e45a4785742d159c6ac8b6e9664bb4d",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600008.json": {
+      "sha256": "82feb6b43b70d5c7eff334c6fdcd891d74abc74e566b20bf8de6e0ce09395a78",
+      "size_bytes": 24838,
+      "git_blob_sha": "afa1a1e177cef01891c5006adcd1c995b66e6af6",
+      "retrieved_at": "2026-11-01T10:06:52.827Z"
+    },
+    "boxscoretraditionalv3_0022600009.json": {
+      "sha256": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662",
+      "size_bytes": 25003,
+      "git_blob_sha": "7c06c170da5ebc6c4408182e5744d2c24bd29d67",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600015.json": {
+      "sha256": "608b84d4a54a1b8eb3f2d89ba99b1dc91a31035734f0d817ab571fa4748019be",
+      "size_bytes": 19617,
+      "git_blob_sha": "3685a789a8eec2ce73ad5cb1e9a2011b7b80f5e7",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600016.json": {
+      "sha256": "9d5c18ebc18783d16716d56137fd8f0ba42b1bf6475db568c19316d4fb02ac47",
+      "size_bytes": 21494,
+      "git_blob_sha": "9328e71c0bae77fe4e157863cdce3ef32637bd81",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600017.json": {
+      "sha256": "44f4da717f9f43ba6511caf85346400282f133950d3a413cf407c1717af781e6",
+      "size_bytes": 20860,
+      "git_blob_sha": "2d76452e6963314ae54b5f9193eb40632bd2cda7",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600018.json": {
+      "sha256": "a389103edde30e82feb1e8985b169d612ea4021844e774cf2afe2ed3e23d6188",
+      "size_bytes": 20970,
+      "git_blob_sha": "935cebd85844e2c6bd07ef47dee645f2b88db187",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600019.json": {
+      "sha256": "84b06865a48ec04181b4213f46e516b0fbf06243e53a9d9d38e0b63a55e8f78a",
+      "size_bytes": 19113,
+      "git_blob_sha": "1bd881c70cd40709324e22143aed772434fdb52d",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600020.json": {
+      "sha256": "d1fa29d7e4da7f2fece7fcd633cc6e5a57e4595d08ffc17b5dfcf719bfdf3206",
+      "size_bytes": 20298,
+      "git_blob_sha": "c25a990c4f355b6f64735a34074566f73ab307ac",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600021.json": {
+      "sha256": "3c7dad358bdb9389423f5e0ef5a343388ea5a6c288f6738a423c7cac9ab2d57e",
+      "size_bytes": 21044,
+      "git_blob_sha": "e01d9c1a797a2364a312466e6472310e0399db4a",
+      "retrieved_at": "2026-11-01T10:06:53.283Z"
+    },
+    "boxscoretraditionalv3_0022600022.json": {
+      "sha256": "094b9830d42e3f998d546b97bb363396995564a1116bdeee76fae36ea1c1ade5",
+      "size_bytes": 20233,
+      "git_blob_sha": "779c9132013cc33eff4c2368bc06f90551ecfe46",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600024.json": {
+      "sha256": "48f0c091b4a799c70f6b9e34d828556ff3ca85655bc44f2bd2931cebfe32ecea",
+      "size_bytes": 20344,
+      "git_blob_sha": "80a2abf628b768ac9d5aa070bf63232c35bb3184",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600085.json": {
+      "sha256": "1d40d0f0144ca0451bd27e58617c8adeeda1f963709df814ec04c20bceb23371",
+      "size_bytes": 25608,
+      "git_blob_sha": "76fed0e3cb5faa5c04ee896036013bf1cf9873fc",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600086.json": {
+      "sha256": "a917e64186e08584450f05520a4209b2b066a4284d1c13173a7fd54ddc6a6b6f",
+      "size_bytes": 26151,
+      "git_blob_sha": "6c4ce59ee8f809c60ac7f24c2065db2270fcba3f",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600087.json": {
+      "sha256": "9ea2c782b0eb1bf8600c88a7b367e3053b82d8b48320668b8847c97ededbdb30",
+      "size_bytes": 26194,
+      "git_blob_sha": "b4778a9d2c0d80649c9213867a32eb2307700aed",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600088.json": {
+      "sha256": "92323362714ffda18586611d025596690a7c6325a651d22ab2d9e90eed391435",
+      "size_bytes": 24094,
+      "git_blob_sha": "b00dd41e1a7b8eaf643bc3ecd6c89e968b1a5564",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600089.json": {
+      "sha256": "7bc05783cf3a7be334820903d0af7b436dc34eba67359ed8b2b9c06f30599819",
+      "size_bytes": 25535,
+      "git_blob_sha": "97c6ea6c0e03945f126c6b95a9cf904101110b09",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600090.json": {
+      "sha256": "82a70b351acf3150234f20d30a9981aaa0626792b208f00597e2f96b20775758",
+      "size_bytes": 25550,
+      "git_blob_sha": "5a60d1b062d21f177098a097f8ba9e1f1fac059e",
+      "retrieved_at": "2026-11-01T10:06:53.646Z"
+    },
+    "boxscoretraditionalv3_0022600091.json": {
+      "sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+      "size_bytes": 25527,
+      "git_blob_sha": "221e96738b616cb0b8e80181c0b530b95111ba89",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600092.json": {
+      "sha256": "6f3e306d36bee75ad5a55d7ed044145183094baa7c1c706f74f5551d74fe25f6",
+      "size_bytes": 24756,
+      "git_blob_sha": "2dc0c678cfcd7b463df91b9714640f8be8f81048",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600093.json": {
+      "sha256": "e94f5cd445bd000d2fdf6c72fbb15e65fa5761111ed5b2989e6d89947df8ad6e",
+      "size_bytes": 24819,
+      "git_blob_sha": "1f33ed0aec0b158f4e073b03ace3f68d85f0f755",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600094.json": {
+      "sha256": "9e63ff01f067bfc14f6041b8ad498d2e63592f8788d880cb15896ebb2181fd9b",
+      "size_bytes": 26149,
+      "git_blob_sha": "4cd5be00016b1e58e17e89273d62831dc04cb489",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600095.json": {
+      "sha256": "8edf5362df0e1ed29c2d34484a96424f0a08245af9f038ff4b7bba5654b9d8a2",
+      "size_bytes": 25465,
+      "git_blob_sha": "32cf52d1f2d57ab3be1bae1f94026fbffc9c8528",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600096.json": {
+      "sha256": "2e1f438de7e62dcf0fb967a066ca3db951da231623b4581bc2011bd7cee61941",
+      "size_bytes": 24166,
+      "git_blob_sha": "bbe1b8ca99cfb63b2f8ddec62bfe5f03944dfbbb",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600097.json": {
+      "sha256": "775e1b57135cc12f0ff07a2830a2e9d3fd3e2458cb40c9733115227a3e439b3c",
+      "size_bytes": 24753,
+      "git_blob_sha": "28f5503729cd6b3d7e263f149085bb50ea66ebf9",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600098.json": {
+      "sha256": "0ed003ccb1ba09207a01da597488c881b4f6b5e15571d1207a1d2f2ade9eeb2c",
+      "size_bytes": 25465,
+      "git_blob_sha": "27cbbc1224d9497ab4aaed01145c7a7a5043186d",
+      "retrieved_at": "2026-11-01T10:06:54.400Z"
+    },
+    "boxscoretraditionalv3_0022600099.json": {
+      "sha256": "a05974b0e503c4fe446dbf3458f706fac0f329b8b14fac7ec21ed2c1d3a4bfda",
+      "size_bytes": 25463,
+      "git_blob_sha": "80aa23558d7f8fbd63621e7d9c51772b836795b9",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600100.json": {
+      "sha256": "6d8256029e2ed0c9aa03b700fcd46a8a4995288a7960980c8e6ef530a7cb8516",
+      "size_bytes": 26175,
+      "git_blob_sha": "919b0b4e1574986d8eb465a82730759c345f0e4e",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600101.json": {
+      "sha256": "3b7a5cac078476a2e7e6e1e2728b5b5601f679050dcf05291368b229bbfe0660",
+      "size_bytes": 26159,
+      "git_blob_sha": "f65db94e399e0d92d8e4eaf64859e7c4e32a8345",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600102.json": {
+      "sha256": "4516505a63b6138e8ad3cf8fc1c94137565cbd1411dc30ee7d674b7b0697d081",
+      "size_bytes": 26256,
+      "git_blob_sha": "f5bab7aad3f4b6fcb04b85376dca90f3c4d0d35c",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600103.json": {
+      "sha256": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55",
+      "size_bytes": 24908,
+      "git_blob_sha": "6364b25f6017ff6f39b267e01758b0ad874db09d",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600104.json": {
+      "sha256": "a1ccf4a1a246d72e37b03bbbc9907071006c4917e75e6320c0cad1c8b82ca133",
+      "size_bytes": 25603,
+      "git_blob_sha": "3efd53a044eb56ddde9c969db7b190895d51bfc2",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600105.json": {
+      "sha256": "ad366e6477e3ebe59bc400dac280023fef29294c408cdf315107d68adbfe6006",
+      "size_bytes": 25490,
+      "git_blob_sha": "8d45eae424e7559921ac32650964c080788c49b4",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600106.json": {
+      "sha256": "410592ab8b8207e17183c7c2fd2734651f714ab94899d23b899ffbf5b474cb89",
+      "size_bytes": 25473,
+      "git_blob_sha": "4359d7c6ad16dcce78b0368298f36c5376ebc6c4",
+      "retrieved_at": "2026-11-01T10:06:55.054Z"
+    },
+    "boxscoretraditionalv3_0022600107.json": {
+      "sha256": "909833622d80c0ff8ca8a9680d1b4e2275681be095846461c0a1416ca59e6e87",
+      "size_bytes": 25592,
+      "git_blob_sha": "bda3a7338d62876cdf1fd72d2bdaea760fd7981f",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600108.json": {
+      "sha256": "b5973946c538cc4fa97d5fc48067d689927eb52c526e445eed0bfa2e6698ee75",
+      "size_bytes": 25472,
+      "git_blob_sha": "de52a61d1298e70b8ce377a571e24b1cc66438ae",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600109.json": {
+      "sha256": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a",
+      "size_bytes": 25553,
+      "git_blob_sha": "1dc2ad531cea53082d446043ccb2bf0679ed9739",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600110.json": {
+      "sha256": "412b9aacd194cb18dabf320be9169a9ca63c5c7a2931b20f55cdc0b3117b1481",
+      "size_bytes": 25545,
+      "git_blob_sha": "f6df6c86f72c03468ef3822c726335f35cb9f443",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600111.json": {
+      "sha256": "7309b2aadde1db8246f8c60b3561cadf9a8e8563cdb57655ea60e65e74cad498",
+      "size_bytes": 25503,
+      "git_blob_sha": "6fcb5cc845590575fe35e287190f408011891e8a",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600112.json": {
+      "sha256": "ea5454c07962acbbeff2a634ee7b06a3620785016093aaa7f871b74d680a1930",
+      "size_bytes": 26222,
+      "git_blob_sha": "2e166b0d29b0bf54cecfd75fc62e863ba39bb00a",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600113.json": {
+      "sha256": "be34b01abe53fa5a8ca5089ba07a3e9cdf7a14eb9f95b5591db29cebbd7d1f5d",
+      "size_bytes": 25413,
+      "git_blob_sha": "3167871ffbdc0f65e4f0f137c2f59afd50ab45a2",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600114.json": {
+      "sha256": "d31a7a176d0f448a1d4227315b91fbfe663584d13b7c2f6f75008cad0eaf0c76",
+      "size_bytes": 25527,
+      "git_blob_sha": "709faa4de6d05670d1692d0fdffeeef5249d496a",
+      "retrieved_at": "2026-11-01T10:06:55.422Z"
+    },
+    "boxscoretraditionalv3_0022600115.json": {
+      "sha256": "ebb15a8e9c262f2115a267a4423557cd735020297e017c475110f85df298fb0c",
+      "size_bytes": 23509,
+      "git_blob_sha": "ffbca86f402f8d5f03c8eb748b277482e4d8f52b",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600116.json": {
+      "sha256": "89eab2a45621fdec21149b453be4bf768ba88f6b0389ed38f4d0b9308227c4c7",
+      "size_bytes": 25531,
+      "git_blob_sha": "50e79fcf0f9737c87f8fc376bdb7987ea14ebb59",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600117.json": {
+      "sha256": "d5b62fec9669b76d15e25fe02f74562ceaa246e2928bc8207adafe1f590a49df",
+      "size_bytes": 25489,
+      "git_blob_sha": "9717a0c9bcfdca8280c30ef11c206724788f084c",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600118.json": {
+      "sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+      "size_bytes": 25511,
+      "git_blob_sha": "cb3b806b98c8fa052384c36e1565018ee6c007c8",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600119.json": {
+      "sha256": "6bb1aeaa8092e3cfc0163bd9a8359c438af97cf4fa8e2cc35f487cc4d5216ea1",
+      "size_bytes": 26199,
+      "git_blob_sha": "e2d31a63b23e566ce0626b1dc3e6800942dea6bd",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600120.json": {
+      "sha256": "4678b24c38719436f19fa44a63c81bfda2c041c25e60dca2bcfba4e24ebb8d97",
+      "size_bytes": 24267,
+      "git_blob_sha": "611c4d760f410fdbf60778b1b74f33818120762c",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600121.json": {
+      "sha256": "0767ec7ea8df3655619a33e63e8bbf7479da88b71838e7cc405782dd9a34cea6",
+      "size_bytes": 24735,
+      "git_blob_sha": "8e36feb81ecbda5aa84e993d4e8233ef43d238f6",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600122.json": {
+      "sha256": "b9eef8b709b61a8b16997881adc8008731c68ec1bd5af97f419f344037c6da55",
+      "size_bytes": 25655,
+      "git_blob_sha": "532150ee8cf0325b99a7fbc6364961bb2982dc0b",
+      "retrieved_at": "2026-11-01T10:06:56.084Z"
+    },
+    "boxscoretraditionalv3_0022600123.json": {
+      "sha256": "472306413feb0210e8f55481e3034c1d1330a97da7052147c81dec692afaf94a",
+      "size_bytes": 25441,
+      "git_blob_sha": "15758248799d0f336754e36c798896be976f082d",
+      "retrieved_at": "2026-11-01T10:06:56.478Z"
+    },
+    "boxscoretraditionalv3_0022600124.json": {
+      "sha256": "39b274b9d210523106ec9c2b879130f7c493812bb4f3bd67d0f415ed2acd8dfe",
+      "size_bytes": 24823,
+      "git_blob_sha": "2315db2cdeca6e03bb8076f36bc811c333063d9d",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600125.json": {
+      "sha256": "800d71d313843bb61bc2791577226febd394e57581cbd15f68796705ad5005d4",
+      "size_bytes": 25527,
+      "git_blob_sha": "4c44b5cc6b0409710b351f266d77f810c33d1575",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600126.json": {
+      "sha256": "c69de36377888353c3a0b85a1c0e5b55d41a2ea1e8f4e4244e8002dc080868d7",
+      "size_bytes": 26122,
+      "git_blob_sha": "082472ab5510bc74d95e12006c7fb81c6d02812f",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600127.json": {
+      "sha256": "80daf1b2e32a869dab980b4d4bf00854f38a6d60886f191820ed650b82442f31",
+      "size_bytes": 25421,
+      "git_blob_sha": "c76c942605cf2253c4fb471435288fd62d80614b",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600128.json": {
+      "sha256": "3fffb6fb1c07064b92a2ba7978bfc601a533bcd05cf18c9e3baab68ef6be0c86",
+      "size_bytes": 20313,
+      "git_blob_sha": "b1bb5ccb9b6c06565f67bbb226f71cdc51695793",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600129.json": {
+      "sha256": "fa8cd79638fae6a557b6164c4a09550bf7588c1228979199b0c4a8cec87ae1a5",
+      "size_bytes": 21488,
+      "git_blob_sha": "66e15b630a499344d04c6c0901defde99b37cef7",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600130.json": {
+      "sha256": "7fb2f6df8f31bfadf2e444ec84604880a9ce814666d6be89c67a6e950555fee9",
+      "size_bytes": 18386,
+      "git_blob_sha": "ea45b3bbaafb5c7fabf4215221d6124e954ded16",
+      "retrieved_at": "2026-11-01T10:06:56.479Z"
+    },
+    "boxscoretraditionalv3_0022600131.json": {
+      "sha256": "fea5f5e7d857e6163754c13a10177dd2a0946ad8a52b3e603c07eaa7f83e1463",
+      "size_bytes": 20450,
+      "git_blob_sha": "6bc9d6b163585be4e9ac773448be3af9ccbbf819",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600132.json": {
+      "sha256": "367f6ef884acc706f80560106d9e6cd65378a1862a180c0744735d9a67eaa56e",
+      "size_bytes": 20454,
+      "git_blob_sha": "65fa54a91e5e0f2175aeff0e6e16add62b2d50f4",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600133.json": {
+      "sha256": "bf7b98c698747dd77c6b9f39ca03f3de183f0e8d254485fabba85ce447c9b3f0",
+      "size_bytes": 20305,
+      "git_blob_sha": "8a89b0120e6603688c4354ad4f77bfe050244af3",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600134.json": {
+      "sha256": "2ae89670421b8e83f4a8ff2fa0888ebef14b019be9d084cd29cc8767f1382712",
+      "size_bytes": 20998,
+      "git_blob_sha": "fd3f7d72e22f34c6f2ab4c1fcacf25211a081583",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600135.json": {
+      "sha256": "c2f2ddfab87a261cfe30c3e4934af4d45f34550be79f44cf448a8ecfbbc82db6",
+      "size_bytes": 19027,
+      "git_blob_sha": "05d391797ee73958782fa22989f6b4fab4327d95",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600136.json": {
+      "sha256": "72c730cc8f264382cd90862050073977ac823fa19c707510668d214b5b20cd34",
+      "size_bytes": 19050,
+      "git_blob_sha": "aab367b2d765ee96c5834ce9c90a878c8d538afa",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600137.json": {
+      "sha256": "3e894bfba419facd0d8da4ff4ff58d4acaa66dc22bb597c3d6f4419773ed29e9",
+      "size_bytes": 21622,
+      "git_blob_sha": "7191c01a0506a1d688e46c5a11370189ac735991",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600139.json": {
+      "sha256": "73ba04fc6074f630da3a12e2f623a83a9573aa6fde583fa1b60a2caf1028f644",
+      "size_bytes": 20320,
+      "git_blob_sha": "038d9959ad726d9d6fc1297de70f5554b9f3226b",
+      "retrieved_at": "2026-11-01T10:06:57.116Z"
+    },
+    "boxscoretraditionalv3_0022600140.json": {
+      "sha256": "616a385fcd9772f4143f90a649fdb65c3b404ccdc8af4021e71eae59ab79e21b",
+      "size_bytes": 21012,
+      "git_blob_sha": "60868f3856a49dd2044d11f3801e19cd8f384ec0",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    },
+    "boxscoretraditionalv3_0022600141.json": {
+      "sha256": "8fa543732eb315ac71c2c9c49a794bf0e4e7dd172c9597671d3d4d4b68a5e8f1",
+      "size_bytes": 19090,
+      "git_blob_sha": "c36822b0c90a1abf27590c5ed9cc43a56d07e7c0",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    },
+    "boxscoretraditionalv3_0022600143.json": {
+      "sha256": "29c8aa6c9bd97f2c41319126beb74bb69ba9ed05177decdff15e8d35d47f9bb3",
+      "size_bytes": 19060,
+      "git_blob_sha": "8c8fe6b831ab3c5837f668c658c6ce1057e113a9",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    },
+    "boxscoretraditionalv3_0022600145.json": {
+      "sha256": "1e73d4458c5cda03e54aa33abbfd77fabf2ec34061049443d83c3c2924428bf6",
+      "size_bytes": 19104,
+      "git_blob_sha": "e05b07692abdbf455b21f9ea28ab4c0cd32eeb2f",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    },
+    "boxscoretraditionalv3_0022600146.json": {
+      "sha256": "ca05fbbf24936616c28b322b5ecf0882720a1797929f6de32723774f60568a23",
+      "size_bytes": 20873,
+      "git_blob_sha": "d5e0d95445028e50d3aac833ad67404d21dbb028",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    },
+    "commonteamroster_1610612747.json": {
+      "sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+      "size_bytes": 4621,
+      "git_blob_sha": "8c7ceed497cf73edef73712ab233e5df8ea6d6c5",
+      "retrieved_at": "2026-11-01T10:06:57.658Z"
+    }
+  },
+  "roles": {
+    "whole_traditional_games": 80,
+    "source_listed_rows": 2558,
+    "required_pga_keys": 1829,
+    "matched_role_rows": 1810,
+    "starters": 800,
+    "team_games": 160,
+    "all_team_games_exactly_five": true,
+    "all_nonblank_positions_literal_F_C_G": true,
+    "starter_positive_strict_clocks": true,
+    "literal_clock_issues": [
+      {
+        "game_id": "0022600096",
+        "player_id": 1631288,
+        "minutes_literal": "10:60",
+        "team_id": 1610612753,
+        "source_player": {
+          "personId": 1631288,
+          "firstName": "Jamal",
+          "familyName": "Cain",
+          "nameI": "J. Cain",
+          "playerSlug": "jamal-cain",
+          "position": "",
+          "comment": "",
+          "jerseyNum": "",
+          "statistics": {
+            "minutes": "10:60",
+            "fieldGoalsMade": 0,
+            "fieldGoalsAttempted": 4,
+            "fieldGoalsPercentage": 0.0,
+            "threePointersMade": 0,
+            "threePointersAttempted": 4,
+            "threePointersPercentage": 0.0,
+            "freeThrowsMade": 0,
+            "freeThrowsAttempted": 0,
+            "freeThrowsPercentage": 0.0,
+            "reboundsOffensive": 0,
+            "reboundsDefensive": 1,
+            "reboundsTotal": 1,
+            "assists": 0,
+            "steals": 0,
+            "blocks": 0,
+            "turnovers": 0,
+            "foulsPersonal": 1,
+            "points": 0,
+            "plusMinusPoints": -9.0
+          }
+        }
+      }
+    ],
+    "source_positive_keys_outside_primary": [],
+    "missing_keys": [
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 203468
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1629111
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1629638
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1629652
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1630168
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1630552
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1630598
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1630700
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612737,
+        "player_id": 1643412
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 201935
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1626209
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1628378
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1628386
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1630241
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1630596
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1631212
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1641854
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1642281
+      },
+      {
+        "game_id": "0022600144",
+        "team_id": 1610612739,
+        "player_id": 1642878
+      }
+    ],
+    "name_variants": [
+      {
+        "game_id": "0022600091",
+        "player_id": 1630619,
+        "source_name": "Moussa Cisse",
+        "primary_name": "Moussa Ciss\u00e9",
+        "classification": "normalized_equivalent"
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1642905,
+        "source_name": "Hansen Yang",
+        "primary_name": "Yang Hansen",
+        "classification": "same_tokens_different_order"
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1642881,
+        "source_name": "Bogoljub Markovi\u0107",
+        "primary_name": "Bogoljub Markovic",
+        "classification": "normalized_equivalent"
+      },
+      {
+        "game_id": "0022600146",
+        "player_id": 1642905,
+        "source_name": "Hansen Yang",
+        "primary_name": "Yang Hansen",
+        "classification": "same_tokens_different_order"
+      }
+    ],
+    "token_order_name_policy": "Only two observed same explicit personID/same-game team keys with identical normalized name tokens; raw source first/family literal preserved. No general alias or name-only join admitted.",
+    "csv_sha256": "0ba87ed220913411aa8f8984bd015a817993f208c0e30547a1278ec358af1d8a",
+    "exact_unchanged_normalizer_csv_replay": true,
+    "facts": [
+      {
+        "game_id": "0022600001",
+        "game_date": "2026-10-20",
+        "team_id": 1610612738,
+        "source_sha256": "0176eee4400492fd3e488908d9bacd8d8e89ecce0a2373355ad960ec8ea429d1",
+        "starter_player_ids": [
+          1628369,
+          202331,
+          1629011,
+          1628401,
+          1641775
+        ]
+      },
+      {
+        "game_id": "0022600001",
+        "game_date": "2026-10-20",
+        "team_id": 1610612765,
+        "source_sha256": "0176eee4400492fd3e488908d9bacd8d8e89ecce0a2373355ad960ec8ea429d1",
+        "starter_player_ids": [
+          1641709,
+          1628381,
+          1631105,
+          1629130,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600002",
+        "game_date": "2026-10-20",
+        "team_id": 1610612755,
+        "source_sha256": "007d0cfb2a9d8fc49a0c4510ef077ce9e24396ab67d4bd82713d0e0eb047c410",
+        "starter_player_ids": [
+          1627759,
+          2544,
+          203954,
+          1642845,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600002",
+        "game_date": "2026-10-20",
+        "team_id": 1610612752,
+        "source_sha256": "007d0cfb2a9d8fc49a0c4510ef077ce9e24396ab67d4bd82713d0e0eb047c410",
+        "starter_player_ids": [
+          1628384,
+          1628404,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600003",
+        "game_date": "2026-10-20",
+        "team_id": 1610612760,
+        "source_sha256": "fa01f3e2534820e78a801a670d6a3290e68e790829723eddcaffedaeae689741",
+        "starter_player_ids": [
+          1631114,
+          1631096,
+          1628392,
+          1641717,
+          1628983
+        ]
+      },
+      {
+        "game_id": "0022600003",
+        "game_date": "2026-10-20",
+        "team_id": 1610612759,
+        "source_sha256": "fa01f3e2534820e78a801a670d6a3290e68e790829723eddcaffedaeae689741",
+        "starter_player_ids": [
+          1642264,
+          1630170,
+          1641705,
+          1642844,
+          1628368
+        ]
+      },
+      {
+        "game_id": "0022600004",
+        "game_date": "2026-10-21",
+        "team_id": 1610612750,
+        "source_sha256": "4c9d6fa6993f50e781314e3398e8b6598c725ccc8f6b70bd8d867af362854fe4",
+        "starter_player_ids": [
+          1630183,
+          1630228,
+          203497,
+          1630162,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600004",
+        "game_date": "2026-10-21",
+        "team_id": 1610612748,
+        "source_sha256": "4c9d6fa6993f50e781314e3398e8b6598c725ccc8f6b70bd8d867af362854fe4",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600005",
+        "game_date": "2026-10-21",
+        "team_id": 1610612744,
+        "source_sha256": "1a24ea75d7a7f55f99a5ab8c7a317587d3efa37a12e1a51afd6162caa5be1b23",
+        "starter_player_ids": [
+          1630611,
+          1642865,
+          203110,
+          1629001,
+          201939
+        ]
+      },
+      {
+        "game_id": "0022600005",
+        "game_date": "2026-10-21",
+        "team_id": 1610612747,
+        "source_sha256": "1a24ea75d7a7f55f99a5ab8c7a317587d3efa37a12e1a51afd6162caa5be1b23",
+        "starter_player_ids": [
+          1629680,
+          1630533,
+          1631117,
+          1630559,
+          1629029
+        ]
+      },
+      {
+        "game_id": "0022600006",
+        "game_date": "2026-10-22",
+        "team_id": 1610612739,
+        "source_sha256": "19c725fe87a98f1530e17c94dbe7a9ce7cd00fb3a63d3a4566559e5746f8a290",
+        "starter_player_ids": [
+          1631212,
+          1630596,
+          1628386,
+          1628378,
+          201935
+        ]
+      },
+      {
+        "game_id": "0022600006",
+        "game_date": "2026-10-22",
+        "team_id": 1610612755,
+        "source_sha256": "19c725fe87a98f1530e17c94dbe7a9ce7cd00fb3a63d3a4566559e5746f8a290",
+        "starter_player_ids": [
+          1627759,
+          2544,
+          203954,
+          1642845,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600007",
+        "game_date": "2026-10-22",
+        "team_id": 1610612743,
+        "source_sha256": "67d44cac46a6e5f44251eecbe135786485364acabe53220dc57e9d2d26bf8c51",
+        "starter_player_ids": [
+          1629661,
+          203932,
+          203999,
+          1631128,
+          1627750
+        ]
+      },
+      {
+        "game_id": "0022600007",
+        "game_date": "2026-10-22",
+        "team_id": 1610612760,
+        "source_sha256": "67d44cac46a6e5f44251eecbe135786485364acabe53220dc57e9d2d26bf8c51",
+        "starter_player_ids": [
+          1631114,
+          1631096,
+          1628392,
+          1641717,
+          1628983
+        ]
+      },
+      {
+        "game_id": "0022600008",
+        "game_date": "2026-10-23",
+        "team_id": 1610612752,
+        "source_sha256": "82feb6b43b70d5c7eff334c6fdcd891d74abc74e566b20bf8de6e0ce09395a78",
+        "starter_player_ids": [
+          1628404,
+          1628384,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600008",
+        "game_date": "2026-10-23",
+        "team_id": 1610612738,
+        "source_sha256": "82feb6b43b70d5c7eff334c6fdcd891d74abc74e566b20bf8de6e0ce09395a78",
+        "starter_player_ids": [
+          202331,
+          1628369,
+          1629011,
+          1641775,
+          1628401
+        ]
+      },
+      {
+        "game_id": "0022600009",
+        "game_date": "2026-10-23",
+        "team_id": 1610612745,
+        "source_sha256": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662",
+        "starter_player_ids": [
+          201142,
+          1631095,
+          1630578,
+          1641708,
+          1627832
+        ]
+      },
+      {
+        "game_id": "0022600009",
+        "game_date": "2026-10-23",
+        "team_id": 1610612759,
+        "source_sha256": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662",
+        "starter_player_ids": [
+          1642264,
+          1630170,
+          1641705,
+          1642844,
+          1628368
+        ]
+      },
+      {
+        "game_id": "0022600015",
+        "game_date": "2026-10-30",
+        "team_id": 1610612766,
+        "source_sha256": "608b84d4a54a1b8eb3f2d89ba99b1dc91a31035734f0d817ab571fa4748019be",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600015",
+        "game_date": "2026-10-30",
+        "team_id": 1610612764,
+        "source_sha256": "608b84d4a54a1b8eb3f2d89ba99b1dc91a31035734f0d817ab571fa4748019be",
+        "starter_player_ids": [
+          1642273,
+          203076,
+          1642259,
+          1643407,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600016",
+        "game_date": "2026-10-30",
+        "team_id": 1610612741,
+        "source_sha256": "9d5c18ebc18783d16716d56137fd8f0ba42b1bf6475db568c19316d4fb02ac47",
+        "starter_player_ids": [
+          1641824,
+          1643410,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600016",
+        "game_date": "2026-10-30",
+        "team_id": 1610612738,
+        "source_sha256": "9d5c18ebc18783d16716d56137fd8f0ba42b1bf6475db568c19316d4fb02ac47",
+        "starter_player_ids": [
+          202331,
+          1628369,
+          1629011,
+          1641775,
+          1628401
+        ]
+      },
+      {
+        "game_id": "0022600017",
+        "game_date": "2026-10-30",
+        "team_id": 1610612765,
+        "source_sha256": "44f4da717f9f43ba6511caf85346400282f133950d3a413cf407c1717af781e6",
+        "starter_player_ids": [
+          1641709,
+          1628381,
+          1630194,
+          1629130,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600017",
+        "game_date": "2026-10-30",
+        "team_id": 1610612751,
+        "source_sha256": "44f4da717f9f43ba6511caf85346400282f133950d3a413cf407c1717af781e6",
+        "starter_player_ids": [
+          1629008,
+          203944,
+          1630549,
+          1643052,
+          1642849
+        ]
+      },
+      {
+        "game_id": "0022600018",
+        "game_date": "2026-10-30",
+        "team_id": 1610612752,
+        "source_sha256": "a389103edde30e82feb1e8985b169d612ea4021844e774cf2afe2ed3e23d6188",
+        "starter_player_ids": [
+          1628404,
+          1628384,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600018",
+        "game_date": "2026-10-30",
+        "team_id": 1610612755,
+        "source_sha256": "a389103edde30e82feb1e8985b169d612ea4021844e774cf2afe2ed3e23d6188",
+        "starter_player_ids": [
+          2544,
+          1629731,
+          203954,
+          1642845,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600019",
+        "game_date": "2026-10-30",
+        "team_id": 1610612753,
+        "source_sha256": "84b06865a48ec04181b4213f46e516b0fbf06243e53a9d9d38e0b63a55e8f78a",
+        "starter_player_ids": [
+          1641710,
+          1630532,
+          1628976,
+          1630217,
+          1642859
+        ]
+      },
+      {
+        "game_id": "0022600019",
+        "game_date": "2026-10-30",
+        "team_id": 1610612761,
+        "source_sha256": "84b06865a48ec04181b4213f46e516b0fbf06243e53a9d9d38e0b63a55e8f78a",
+        "starter_player_ids": [
+          1629628,
+          1630567,
+          1627751,
+          1642266,
+          1630193
+        ]
+      },
+      {
+        "game_id": "0022600020",
+        "game_date": "2026-10-30",
+        "team_id": 1610612754,
+        "source_sha256": "d1fa29d7e4da7f2fece7fcd633cc6e5a57e4595d08ffc17b5dfcf719bfdf3206",
+        "starter_player_ids": [
+          1626162,
+          1627783,
+          1630643,
+          1630174,
+          1629614
+        ]
+      },
+      {
+        "game_id": "0022600020",
+        "game_date": "2026-10-30",
+        "team_id": 1610612748,
+        "source_sha256": "d1fa29d7e4da7f2fece7fcd633cc6e5a57e4595d08ffc17b5dfcf719bfdf3206",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600021",
+        "game_date": "2026-10-30",
+        "team_id": 1610612745,
+        "source_sha256": "3c7dad358bdb9389423f5e0ef5a343388ea5a6c288f6738a423c7cac9ab2d57e",
+        "starter_player_ids": [
+          201142,
+          1631095,
+          203991,
+          1641708,
+          1627832
+        ]
+      },
+      {
+        "game_id": "0022600021",
+        "game_date": "2026-10-30",
+        "team_id": 1610612742,
+        "source_sha256": "3c7dad358bdb9389423f5e0ef5a343388ea5a6c288f6738a423c7cac9ab2d57e",
+        "starter_player_ids": [
+          1642843,
+          1629023,
+          1629655,
+          1631108,
+          202681
+        ]
+      },
+      {
+        "game_id": "0022600022",
+        "game_date": "2026-10-30",
+        "team_id": 1610612746,
+        "source_sha256": "094b9830d42e3f998d546b97bb363396995564a1116bdeee76fae36ea1c1ade5",
+        "starter_player_ids": [
+          1627884,
+          1629060,
+          1630543,
+          1627739,
+          1629636
+        ]
+      },
+      {
+        "game_id": "0022600022",
+        "game_date": "2026-10-30",
+        "team_id": 1610612750,
+        "source_sha256": "094b9830d42e3f998d546b97bb363396995564a1116bdeee76fae36ea1c1ade5",
+        "starter_player_ids": [
+          1630183,
+          1630228,
+          203497,
+          1630245,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600023",
+        "game_date": "2026-10-30",
+        "team_id": 1610612747,
+        "source_sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180",
+        "starter_player_ids": [
+          1629680,
+          1631222,
+          1631117,
+          1630559,
+          1629029
+        ]
+      },
+      {
+        "game_id": "0022600023",
+        "game_date": "2026-10-30",
+        "team_id": 1610612744,
+        "source_sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180",
+        "starter_player_ids": [
+          1630611,
+          1642865,
+          203110,
+          1641764,
+          201939
+        ]
+      },
+      {
+        "game_id": "0022600024",
+        "game_date": "2026-10-30",
+        "team_id": 1610612743,
+        "source_sha256": "48f0c091b4a799c70f6b9e34d828556ff3ca85655bc44f2bd2931cebfe32ecea",
+        "starter_player_ids": [
+          1629661,
+          203932,
+          203999,
+          1631128,
+          1627750
+        ]
+      },
+      {
+        "game_id": "0022600024",
+        "game_date": "2026-10-30",
+        "team_id": 1610612756,
+        "source_sha256": "48f0c091b4a799c70f6b9e34d828556ff3ca85655bc44f2bd2931cebfe32ecea",
+        "starter_player_ids": [
+          1628415,
+          1628970,
+          1642863,
+          1630224,
+          1626164
+        ]
+      },
+      {
+        "game_id": "0022600085",
+        "game_date": "2026-10-21",
+        "team_id": 1610612737,
+        "source_sha256": "1d40d0f0144ca0451bd27e58617c8adeeda1f963709df814ec04c20bceb23371",
+        "starter_player_ids": [
+          1630700,
+          1630552,
+          1630168,
+          1629638,
+          203468
+        ]
+      },
+      {
+        "game_id": "0022600085",
+        "game_date": "2026-10-21",
+        "team_id": 1610612753,
+        "source_sha256": "1d40d0f0144ca0451bd27e58617c8adeeda1f963709df814ec04c20bceb23371",
+        "starter_player_ids": [
+          1630532,
+          1631094,
+          1628976,
+          1630217,
+          1630591
+        ]
+      },
+      {
+        "game_id": "0022600086",
+        "game_date": "2026-10-21",
+        "team_id": 1610612749,
+        "source_sha256": "a917e64186e08584450f05520a4209b2b066a4284d1c13173a7fd54ddc6a6b6f",
+        "starter_player_ids": [
+          1631170,
+          1628398,
+          1626167,
+          1629639,
+          1631157
+        ]
+      },
+      {
+        "game_id": "0022600086",
+        "game_date": "2026-10-21",
+        "team_id": 1610612764,
+        "source_sha256": "a917e64186e08584450f05520a4209b2b066a4284d1c13173a7fd54ddc6a6b6f",
+        "starter_player_ids": [
+          1641731,
+          203076,
+          1642259,
+          1642273,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600087",
+        "game_date": "2026-10-21",
+        "team_id": 1610612766,
+        "source_sha256": "9ea2c782b0eb1bf8600c88a7b367e3053b82d8b48320668b8847c97ededbdb30",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600087",
+        "game_date": "2026-10-21",
+        "team_id": 1610612751,
+        "source_sha256": "9ea2c782b0eb1bf8600c88a7b367e3053b82d8b48320668b8847c97ededbdb30",
+        "starter_player_ids": [
+          1629008,
+          203944,
+          1630549,
+          1631165,
+          1642856
+        ]
+      },
+      {
+        "game_id": "0022600088",
+        "game_date": "2026-10-21",
+        "team_id": 1610612741,
+        "source_sha256": "92323362714ffda18586611d025596690a7c6325a651d22ab2d9e90eed391435",
+        "starter_player_ids": [
+          1641824,
+          1643410,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600088",
+        "game_date": "2026-10-21",
+        "team_id": 1610612761,
+        "source_sha256": "92323362714ffda18586611d025596690a7c6325a651d22ab2d9e90eed391435",
+        "starter_player_ids": [
+          202695,
+          1630567,
+          1627751,
+          1629628,
+          1630193
+        ]
+      },
+      {
+        "game_id": "0022600089",
+        "game_date": "2026-10-21",
+        "team_id": 1610612762,
+        "source_sha256": "7bc05783cf3a7be334820903d0af7b436dc34eba67359ed8b2b9c06f30599819",
+        "starter_player_ids": [
+          1628374,
+          1628991,
+          1629637,
+          1643408,
+          1641718
+        ]
+      },
+      {
+        "game_id": "0022600089",
+        "game_date": "2026-10-21",
+        "team_id": 1610612763,
+        "source_sha256": "7bc05783cf3a7be334820903d0af7b436dc34eba67359ed8b2b9c06f30599819",
+        "starter_player_ids": [
+          1642377,
+          1643409,
+          1641744,
+          1642907,
+          1629660
+        ]
+      },
+      {
+        "game_id": "0022600090",
+        "game_date": "2026-10-21",
+        "team_id": 1610612754,
+        "source_sha256": "82a70b351acf3150234f20d30a9981aaa0626792b208f00597e2f96b20775758",
+        "starter_player_ids": [
+          1626162,
+          1627783,
+          1627826,
+          1629614,
+          1630169
+        ]
+      },
+      {
+        "game_id": "0022600090",
+        "game_date": "2026-10-21",
+        "team_id": 1610612740,
+        "source_sha256": "82a70b351acf3150234f20d30a9981aaa0626792b208f00597e2f96b20775758",
+        "starter_player_ids": [
+          1630530,
+          1629627,
+          1642274,
+          1627749,
+          1642847
+        ]
+      },
+      {
+        "game_id": "0022600091",
+        "game_date": "2026-10-21",
+        "team_id": 1610612742,
+        "source_sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+        "starter_player_ids": [
+          1642843,
+          1629023,
+          1629655,
+          1631108,
+          202681
+        ]
+      },
+      {
+        "game_id": "0022600091",
+        "game_date": "2026-10-21",
+        "team_id": 1610612745,
+        "source_sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+        "starter_player_ids": [
+          201142,
+          1631095,
+          1630578,
+          1641708,
+          1627832
+        ]
+      },
+      {
+        "game_id": "0022600092",
+        "game_date": "2026-10-21",
+        "team_id": 1610612756,
+        "source_sha256": "6f3e306d36bee75ad5a55d7ed044145183094baa7c1c706f74f5551d74fe25f6",
+        "starter_player_ids": [
+          1628415,
+          1628970,
+          1642863,
+          1630224,
+          1626164
+        ]
+      },
+      {
+        "game_id": "0022600092",
+        "game_date": "2026-10-21",
+        "team_id": 1610612757,
+        "source_sha256": "6f3e306d36bee75ad5a55d7ed044145183094baa7c1c706f74f5551d74fe25f6",
+        "starter_player_ids": [
+          1630166,
+          1641739,
+          1642270,
+          203081,
+          1629630
+        ]
+      },
+      {
+        "game_id": "0022600093",
+        "game_date": "2026-10-21",
+        "team_id": 1610612758,
+        "source_sha256": "e94f5cd445bd000d2fdf6c72fbb15e65fa5761111ed5b2989e6d89947df8ad6e",
+        "starter_player_ids": [
+          1631099,
+          1629631,
+          1627734,
+          203897,
+          1643411
+        ]
+      },
+      {
+        "game_id": "0022600093",
+        "game_date": "2026-10-21",
+        "team_id": 1610612746,
+        "source_sha256": "e94f5cd445bd000d2fdf6c72fbb15e65fa5761111ed5b2989e6d89947df8ad6e",
+        "starter_player_ids": [
+          1627884,
+          1629060,
+          1630543,
+          1627739,
+          1629636
+        ]
+      },
+      {
+        "game_id": "0022600094",
+        "game_date": "2026-10-23",
+        "team_id": 1610612737,
+        "source_sha256": "9e63ff01f067bfc14f6041b8ad498d2e63592f8788d880cb15896ebb2181fd9b",
+        "starter_player_ids": [
+          1630700,
+          1630552,
+          1630168,
+          1629638,
+          203468
+        ]
+      },
+      {
+        "game_id": "0022600094",
+        "game_date": "2026-10-23",
+        "team_id": 1610612766,
+        "source_sha256": "9e63ff01f067bfc14f6041b8ad498d2e63592f8788d880cb15896ebb2181fd9b",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600095",
+        "game_date": "2026-10-23",
+        "team_id": 1610612742,
+        "source_sha256": "8edf5362df0e1ed29c2d34484a96424f0a08245af9f038ff4b7bba5654b9d8a2",
+        "starter_player_ids": [
+          1629023,
+          1642843,
+          1629655,
+          1631108,
+          202681
+        ]
+      },
+      {
+        "game_id": "0022600095",
+        "game_date": "2026-10-23",
+        "team_id": 1610612754,
+        "source_sha256": "8edf5362df0e1ed29c2d34484a96424f0a08245af9f038ff4b7bba5654b9d8a2",
+        "starter_player_ids": [
+          1641716,
+          1627783,
+          1627826,
+          1629614,
+          1630169
+        ]
+      },
+      {
+        "game_id": "0022600096",
+        "game_date": "2026-10-23",
+        "team_id": 1610612750,
+        "source_sha256": "2e1f438de7e62dcf0fb967a066ca3db951da231623b4581bc2011bd7cee61941",
+        "starter_player_ids": [
+          1630183,
+          1630228,
+          203497,
+          1630162,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600096",
+        "game_date": "2026-10-23",
+        "team_id": 1610612753,
+        "source_sha256": "2e1f438de7e62dcf0fb967a066ca3db951da231623b4581bc2011bd7cee61941",
+        "starter_player_ids": [
+          1630532,
+          1631094,
+          1628976,
+          1630217,
+          1630591
+        ]
+      },
+      {
+        "game_id": "0022600097",
+        "game_date": "2026-10-23",
+        "team_id": 1610612761,
+        "source_sha256": "775e1b57135cc12f0ff07a2830a2e9d3fd3e2458cb40c9733115227a3e439b3c",
+        "starter_player_ids": [
+          202695,
+          1630567,
+          1627751,
+          1629628,
+          1630193
+        ]
+      },
+      {
+        "game_id": "0022600097",
+        "game_date": "2026-10-23",
+        "team_id": 1610612764,
+        "source_sha256": "775e1b57135cc12f0ff07a2830a2e9d3fd3e2458cb40c9733115227a3e439b3c",
+        "starter_player_ids": [
+          1642273,
+          203076,
+          1642259,
+          1641731,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600098",
+        "game_date": "2026-10-23",
+        "team_id": 1610612765,
+        "source_sha256": "0ed003ccb1ba09207a01da597488c881b4f6b5e15571d1207a1d2f2ade9eeb2c",
+        "starter_player_ids": [
+          1641709,
+          1628381,
+          1631105,
+          1629130,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600098",
+        "game_date": "2026-10-23",
+        "team_id": 1610612748,
+        "source_sha256": "0ed003ccb1ba09207a01da597488c881b4f6b5e15571d1207a1d2f2ade9eeb2c",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600099",
+        "game_date": "2026-10-23",
+        "team_id": 1610612741,
+        "source_sha256": "a05974b0e503c4fe446dbf3458f706fac0f329b8b14fac7ec21ed2c1d3a4bfda",
+        "starter_player_ids": [
+          1641824,
+          1643410,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600099",
+        "game_date": "2026-10-23",
+        "team_id": 1610612749,
+        "source_sha256": "a05974b0e503c4fe446dbf3458f706fac0f329b8b14fac7ec21ed2c1d3a4bfda",
+        "starter_player_ids": [
+          1631170,
+          1628398,
+          1626167,
+          1629639,
+          1631157
+        ]
+      },
+      {
+        "game_id": "0022600100",
+        "game_date": "2026-10-23",
+        "team_id": 1610612740,
+        "source_sha256": "6d8256029e2ed0c9aa03b700fcd46a8a4995288a7960980c8e6ef530a7cb8516",
+        "starter_player_ids": [
+          1630530,
+          1629627,
+          1642274,
+          1627749,
+          1642847
+        ]
+      },
+      {
+        "game_id": "0022600100",
+        "game_date": "2026-10-23",
+        "team_id": 1610612762,
+        "source_sha256": "6d8256029e2ed0c9aa03b700fcd46a8a4995288a7960980c8e6ef530a7cb8516",
+        "starter_player_ids": [
+          1642846,
+          1628374,
+          1628991,
+          1643408,
+          1641718
+        ]
+      },
+      {
+        "game_id": "0022600101",
+        "game_date": "2026-10-23",
+        "team_id": 1610612763,
+        "source_sha256": "3b7a5cac078476a2e7e6e1e2728b5b5601f679050dcf05291368b229bbfe0660",
+        "starter_player_ids": [
+          1641713,
+          1643409,
+          1641744,
+          1642377,
+          1629660
+        ]
+      },
+      {
+        "game_id": "0022600101",
+        "game_date": "2026-10-23",
+        "team_id": 1610612744,
+        "source_sha256": "3b7a5cac078476a2e7e6e1e2728b5b5601f679050dcf05291368b229bbfe0660",
+        "starter_player_ids": [
+          1642865,
+          203110,
+          1643633,
+          1641764,
+          201939
+        ]
+      },
+      {
+        "game_id": "0022600102",
+        "game_date": "2026-10-23",
+        "team_id": 1610612746,
+        "source_sha256": "4516505a63b6138e8ad3cf8fc1c94137565cbd1411dc30ee7d674b7b0697d081",
+        "starter_player_ids": [
+          1627884,
+          1629060,
+          1630543,
+          1627739,
+          1629636
+        ]
+      },
+      {
+        "game_id": "0022600102",
+        "game_date": "2026-10-23",
+        "team_id": 1610612747,
+        "source_sha256": "4516505a63b6138e8ad3cf8fc1c94137565cbd1411dc30ee7d674b7b0697d081",
+        "starter_player_ids": [
+          1629680,
+          1630533,
+          1631117,
+          1630559,
+          1629029
+        ]
+      },
+      {
+        "game_id": "0022600103",
+        "game_date": "2026-10-23",
+        "team_id": 1610612757,
+        "source_sha256": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55",
+        "starter_player_ids": [
+          1630166,
+          1641739,
+          1642270,
+          203081,
+          1629630
+        ]
+      },
+      {
+        "game_id": "0022600103",
+        "game_date": "2026-10-23",
+        "team_id": 1610612758,
+        "source_sha256": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55",
+        "starter_player_ids": [
+          1629631,
+          1631099,
+          1627734,
+          203897,
+          1643411
+        ]
+      },
+      {
+        "game_id": "0022600104",
+        "game_date": "2026-10-24",
+        "team_id": 1610612748,
+        "source_sha256": "a1ccf4a1a246d72e37b03bbbc9907071006c4917e75e6320c0cad1c8b82ca133",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600104",
+        "game_date": "2026-10-24",
+        "team_id": 1610612766,
+        "source_sha256": "a1ccf4a1a246d72e37b03bbbc9907071006c4917e75e6320c0cad1c8b82ca133",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600105",
+        "game_date": "2026-10-24",
+        "team_id": 1610612751,
+        "source_sha256": "ad366e6477e3ebe59bc400dac280023fef29294c408cdf315107d68adbfe6006",
+        "starter_player_ids": [
+          1629008,
+          203944,
+          1630549,
+          1631165,
+          1642856
+        ]
+      },
+      {
+        "game_id": "0022600105",
+        "game_date": "2026-10-24",
+        "team_id": 1610612739,
+        "source_sha256": "ad366e6477e3ebe59bc400dac280023fef29294c408cdf315107d68adbfe6006",
+        "starter_player_ids": [
+          1631212,
+          1630596,
+          1628386,
+          1628378,
+          201935
+        ]
+      },
+      {
+        "game_id": "0022600106",
+        "game_date": "2026-10-24",
+        "team_id": 1610612749,
+        "source_sha256": "410592ab8b8207e17183c7c2fd2734651f714ab94899d23b899ffbf5b474cb89",
+        "starter_player_ids": [
+          1631170,
+          1628398,
+          1626167,
+          1629639,
+          1631157
+        ]
+      },
+      {
+        "game_id": "0022600106",
+        "game_date": "2026-10-24",
+        "team_id": 1610612755,
+        "source_sha256": "410592ab8b8207e17183c7c2fd2734651f714ab94899d23b899ffbf5b474cb89",
+        "starter_player_ids": [
+          1627759,
+          1629731,
+          203954,
+          1642845,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600107",
+        "game_date": "2026-10-24",
+        "team_id": 1610612745,
+        "source_sha256": "909833622d80c0ff8ca8a9680d1b4e2275681be095846461c0a1416ca59e6e87",
+        "starter_player_ids": [
+          201142,
+          1631095,
+          1630578,
+          1641708,
+          1642263
+        ]
+      },
+      {
+        "game_id": "0022600107",
+        "game_date": "2026-10-24",
+        "team_id": 1610612737,
+        "source_sha256": "909833622d80c0ff8ca8a9680d1b4e2275681be095846461c0a1416ca59e6e87",
+        "starter_player_ids": [
+          1630700,
+          1630552,
+          1630168,
+          1629638,
+          203468
+        ]
+      },
+      {
+        "game_id": "0022600108",
+        "game_date": "2026-10-24",
+        "team_id": 1610612764,
+        "source_sha256": "b5973946c538cc4fa97d5fc48067d689927eb52c526e445eed0bfa2e6698ee75",
+        "starter_player_ids": [
+          1641731,
+          203076,
+          1642259,
+          1642273,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600108",
+        "game_date": "2026-10-24",
+        "team_id": 1610612741,
+        "source_sha256": "b5973946c538cc4fa97d5fc48067d689927eb52c526e445eed0bfa2e6698ee75",
+        "starter_player_ids": [
+          1641824,
+          1643410,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600109",
+        "game_date": "2026-10-24",
+        "team_id": 1610612759,
+        "source_sha256": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a",
+        "starter_player_ids": [
+          1642264,
+          1630170,
+          1641705,
+          1642844,
+          1628368
+        ]
+      },
+      {
+        "game_id": "0022600109",
+        "game_date": "2026-10-24",
+        "team_id": 1610612742,
+        "source_sha256": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a",
+        "starter_player_ids": [
+          1642258,
+          1629023,
+          1629655,
+          1631108,
+          1630230
+        ]
+      },
+      {
+        "game_id": "0022600110",
+        "game_date": "2026-10-24",
+        "team_id": 1610612740,
+        "source_sha256": "412b9aacd194cb18dabf320be9169a9ca63c5c7a2931b20f55cdc0b3117b1481",
+        "starter_player_ids": [
+          1630530,
+          1629627,
+          201599,
+          1627749,
+          1642847
+        ]
+      },
+      {
+        "game_id": "0022600110",
+        "game_date": "2026-10-24",
+        "team_id": 1610612743,
+        "source_sha256": "412b9aacd194cb18dabf320be9169a9ca63c5c7a2931b20f55cdc0b3117b1481",
+        "starter_player_ids": [
+          1643624,
+          203932,
+          203999,
+          1631128,
+          1627750
+        ]
+      },
+      {
+        "game_id": "0022600111",
+        "game_date": "2026-10-24",
+        "team_id": 1610612744,
+        "source_sha256": "7309b2aadde1db8246f8c60b3561cadf9a8e8563cdb57655ea60e65e74cad498",
+        "starter_player_ids": [
+          1642865,
+          1630611,
+          1643633,
+          1642954,
+          1630314
+        ]
+      },
+      {
+        "game_id": "0022600111",
+        "game_date": "2026-10-24",
+        "team_id": 1610612756,
+        "source_sha256": "7309b2aadde1db8246f8c60b3561cadf9a8e8563cdb57655ea60e65e74cad498",
+        "starter_player_ids": [
+          1628415,
+          1628970,
+          1642863,
+          1630224,
+          1626164
+        ]
+      },
+      {
+        "game_id": "0022600112",
+        "game_date": "2026-10-25",
+        "team_id": 1610612747,
+        "source_sha256": "ea5454c07962acbbeff2a634ee7b06a3620785016093aaa7f871b74d680a1930",
+        "starter_player_ids": [
+          1629680,
+          1630533,
+          1631117,
+          1630559,
+          1629029
+        ]
+      },
+      {
+        "game_id": "0022600112",
+        "game_date": "2026-10-25",
+        "team_id": 1610612762,
+        "source_sha256": "ea5454c07962acbbeff2a634ee7b06a3620785016093aaa7f871b74d680a1930",
+        "starter_player_ids": [
+          1642846,
+          1628374,
+          1628991,
+          1643408,
+          1641718
+        ]
+      },
+      {
+        "game_id": "0022600113",
+        "game_date": "2026-10-25",
+        "team_id": 1610612754,
+        "source_sha256": "be34b01abe53fa5a8ca5089ba07a3e9cdf7a14eb9f95b5591db29cebbd7d1f5d",
+        "starter_player_ids": [
+          1630174,
+          1627783,
+          1627826,
+          1629614,
+          1630169
+        ]
+      },
+      {
+        "game_id": "0022600113",
+        "game_date": "2026-10-25",
+        "team_id": 1610612751,
+        "source_sha256": "be34b01abe53fa5a8ca5089ba07a3e9cdf7a14eb9f95b5591db29cebbd7d1f5d",
+        "starter_player_ids": [
+          1629008,
+          203944,
+          1630549,
+          1631165,
+          1642856
+        ]
+      },
+      {
+        "game_id": "0022600114",
+        "game_date": "2026-10-25",
+        "team_id": 1610612753,
+        "source_sha256": "d31a7a176d0f448a1d4227315b91fbfe663584d13b7c2f6f75008cad0eaf0c76",
+        "starter_player_ids": [
+          1630217,
+          1630532,
+          1628976,
+          1642859,
+          1630591
+        ]
+      },
+      {
+        "game_id": "0022600114",
+        "game_date": "2026-10-25",
+        "team_id": 1610612752,
+        "source_sha256": "d31a7a176d0f448a1d4227315b91fbfe663584d13b7c2f6f75008cad0eaf0c76",
+        "starter_player_ids": [
+          1628384,
+          1628404,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600115",
+        "game_date": "2026-10-25",
+        "team_id": 1610612761,
+        "source_sha256": "ebb15a8e9c262f2115a267a4423557cd735020297e017c475110f85df298fb0c",
+        "starter_player_ids": [
+          1629628,
+          1630567,
+          1627751,
+          1642266,
+          1630193
+        ]
+      },
+      {
+        "game_id": "0022600115",
+        "game_date": "2026-10-25",
+        "team_id": 1610612750,
+        "source_sha256": "ebb15a8e9c262f2115a267a4423557cd735020297e017c475110f85df298fb0c",
+        "starter_player_ids": [
+          1630183,
+          1630228,
+          203497,
+          1630162,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600116",
+        "game_date": "2026-10-25",
+        "team_id": 1610612746,
+        "source_sha256": "89eab2a45621fdec21149b453be4bf768ba88f6b0389ed38f4d0b9308227c4c7",
+        "starter_player_ids": [
+          1627884,
+          1629060,
+          1630543,
+          1627739,
+          1629636
+        ]
+      },
+      {
+        "game_id": "0022600116",
+        "game_date": "2026-10-25",
+        "team_id": 1610612760,
+        "source_sha256": "89eab2a45621fdec21149b453be4bf768ba88f6b0389ed38f4d0b9308227c4c7",
+        "starter_player_ids": [
+          1631114,
+          1631096,
+          1628392,
+          1641717,
+          1628983
+        ]
+      },
+      {
+        "game_id": "0022600117",
+        "game_date": "2026-10-25",
+        "team_id": 1610612765,
+        "source_sha256": "d5b62fec9669b76d15e25fe02f74562ceaa246e2928bc8207adafe1f590a49df",
+        "starter_player_ids": [
+          1629130,
+          1628381,
+          1630194,
+          1642450,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600117",
+        "game_date": "2026-10-25",
+        "team_id": 1610612755,
+        "source_sha256": "d5b62fec9669b76d15e25fe02f74562ceaa246e2928bc8207adafe1f590a49df",
+        "starter_player_ids": [
+          1627759,
+          1629731,
+          2544,
+          203484,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600118",
+        "game_date": "2026-10-25",
+        "team_id": 1610612763,
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "starter_player_ids": [
+          1642377,
+          1643409,
+          1630191,
+          1642907,
+          1629660
+        ]
+      },
+      {
+        "game_id": "0022600118",
+        "game_date": "2026-10-25",
+        "team_id": 1610612758,
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "starter_player_ids": [
+          1629631,
+          1630173,
+          1627734,
+          203897,
+          1643411
+        ]
+      },
+      {
+        "game_id": "0022600119",
+        "game_date": "2026-10-26",
+        "team_id": 1610612764,
+        "source_sha256": "6bb1aeaa8092e3cfc0163bd9a8359c438af97cf4fa8e2cc35f487cc4d5216ea1",
+        "starter_player_ids": [
+          1641731,
+          203076,
+          1642259,
+          1642273,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600119",
+        "game_date": "2026-10-26",
+        "team_id": 1610612766,
+        "source_sha256": "6bb1aeaa8092e3cfc0163bd9a8359c438af97cf4fa8e2cc35f487cc4d5216ea1",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600120",
+        "game_date": "2026-10-26",
+        "team_id": 1610612750,
+        "source_sha256": "4678b24c38719436f19fa44a63c81bfda2c041c25e60dca2bcfba4e24ebb8d97",
+        "starter_player_ids": [
+          1630228,
+          1630183,
+          203497,
+          1630162,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600120",
+        "game_date": "2026-10-26",
+        "team_id": 1610612739,
+        "source_sha256": "4678b24c38719436f19fa44a63c81bfda2c041c25e60dca2bcfba4e24ebb8d97",
+        "starter_player_ids": [
+          1631212,
+          1630596,
+          1628386,
+          1628378,
+          201935
+        ]
+      },
+      {
+        "game_id": "0022600121",
+        "game_date": "2026-10-26",
+        "team_id": 1610612741,
+        "source_sha256": "0767ec7ea8df3655619a33e63e8bbf7479da88b71838e7cc405782dd9a34cea6",
+        "starter_player_ids": [
+          1643410,
+          1641824,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600121",
+        "game_date": "2026-10-26",
+        "team_id": 1610612738,
+        "source_sha256": "0767ec7ea8df3655619a33e63e8bbf7479da88b71838e7cc405782dd9a34cea6",
+        "starter_player_ids": [
+          202331,
+          1628369,
+          1629011,
+          1641775,
+          1628401
+        ]
+      },
+      {
+        "game_id": "0022600122",
+        "game_date": "2026-10-26",
+        "team_id": 1610612742,
+        "source_sha256": "b9eef8b709b61a8b16997881adc8008731c68ec1bd5af97f419f344037c6da55",
+        "starter_player_ids": [
+          1642843,
+          1629023,
+          1629655,
+          1631108,
+          202681
+        ]
+      },
+      {
+        "game_id": "0022600122",
+        "game_date": "2026-10-26",
+        "team_id": 1610612748,
+        "source_sha256": "b9eef8b709b61a8b16997881adc8008731c68ec1bd5af97f419f344037c6da55",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600123",
+        "game_date": "2026-10-26",
+        "team_id": 1610612754,
+        "source_sha256": "472306413feb0210e8f55481e3034c1d1330a97da7052147c81dec692afaf94a",
+        "starter_player_ids": [
+          1630174,
+          1627783,
+          1630643,
+          1626162,
+          1630169
+        ]
+      },
+      {
+        "game_id": "0022600123",
+        "game_date": "2026-10-26",
+        "team_id": 1610612749,
+        "source_sha256": "472306413feb0210e8f55481e3034c1d1330a97da7052147c81dec692afaf94a",
+        "starter_player_ids": [
+          1631170,
+          1628398,
+          1626167,
+          1629639,
+          1631157
+        ]
+      },
+      {
+        "game_id": "0022600124",
+        "game_date": "2026-10-26",
+        "team_id": 1610612756,
+        "source_sha256": "39b274b9d210523106ec9c2b879130f7c493812bb4f3bd67d0f415ed2acd8dfe",
+        "starter_player_ids": [
+          1628415,
+          1628970,
+          1642863,
+          1630224,
+          1626164
+        ]
+      },
+      {
+        "game_id": "0022600124",
+        "game_date": "2026-10-26",
+        "team_id": 1610612760,
+        "source_sha256": "39b274b9d210523106ec9c2b879130f7c493812bb4f3bd67d0f415ed2acd8dfe",
+        "starter_player_ids": [
+          1642349,
+          1629026,
+          1628392,
+          1642272,
+          1628983
+        ]
+      },
+      {
+        "game_id": "0022600125",
+        "game_date": "2026-10-26",
+        "team_id": 1610612737,
+        "source_sha256": "800d71d313843bb61bc2791577226febd394e57581cbd15f68796705ad5005d4",
+        "starter_player_ids": [
+          1630700,
+          1630552,
+          1630168,
+          1629638,
+          203468
+        ]
+      },
+      {
+        "game_id": "0022600125",
+        "game_date": "2026-10-26",
+        "team_id": 1610612745,
+        "source_sha256": "800d71d313843bb61bc2791577226febd394e57581cbd15f68796705ad5005d4",
+        "starter_player_ids": [
+          201142,
+          1631095,
+          1630578,
+          1641708,
+          1627832
+        ]
+      },
+      {
+        "game_id": "0022600126",
+        "game_date": "2026-10-26",
+        "team_id": 1610612763,
+        "source_sha256": "c69de36377888353c3a0b85a1c0e5b55d41a2ea1e8f4e4244e8002dc080868d7",
+        "starter_player_ids": [
+          1642377,
+          1643409,
+          1641744,
+          1642907,
+          1629660
+        ]
+      },
+      {
+        "game_id": "0022600126",
+        "game_date": "2026-10-26",
+        "team_id": 1610612762,
+        "source_sha256": "c69de36377888353c3a0b85a1c0e5b55d41a2ea1e8f4e4244e8002dc080868d7",
+        "starter_player_ids": [
+          1642846,
+          1628374,
+          1628991,
+          1643408,
+          1641718
+        ]
+      },
+      {
+        "game_id": "0022600127",
+        "game_date": "2026-10-26",
+        "team_id": 1610612744,
+        "source_sha256": "80daf1b2e32a869dab980b4d4bf00854f38a6d60886f191820ed650b82442f31",
+        "starter_player_ids": [
+          1642865,
+          1630611,
+          203110,
+          1641764,
+          201939
+        ]
+      },
+      {
+        "game_id": "0022600127",
+        "game_date": "2026-10-26",
+        "team_id": 1610612743,
+        "source_sha256": "80daf1b2e32a869dab980b4d4bf00854f38a6d60886f191820ed650b82442f31",
+        "starter_player_ids": [
+          1643624,
+          203932,
+          203999,
+          1631128,
+          1627750
+        ]
+      },
+      {
+        "game_id": "0022600128",
+        "game_date": "2026-10-27",
+        "team_id": 1610612751,
+        "source_sha256": "3fffb6fb1c07064b92a2ba7978bfc601a533bcd05cf18c9e3baab68ef6be0c86",
+        "starter_player_ids": [
+          1629008,
+          203944,
+          1630549,
+          1642856,
+          1642849
+        ]
+      },
+      {
+        "game_id": "0022600128",
+        "game_date": "2026-10-27",
+        "team_id": 1610612738,
+        "source_sha256": "3fffb6fb1c07064b92a2ba7978bfc601a533bcd05cf18c9e3baab68ef6be0c86",
+        "starter_player_ids": [
+          202331,
+          1628369,
+          1629011,
+          1641775,
+          1628401
+        ]
+      },
+      {
+        "game_id": "0022600129",
+        "game_date": "2026-10-27",
+        "team_id": 1610612765,
+        "source_sha256": "fa8cd79638fae6a557b6164c4a09550bf7588c1228979199b0c4a8cec87ae1a5",
+        "starter_player_ids": [
+          1628381,
+          1641709,
+          1630194,
+          1629130,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600129",
+        "game_date": "2026-10-27",
+        "team_id": 1610612752,
+        "source_sha256": "fa8cd79638fae6a557b6164c4a09550bf7588c1228979199b0c4a8cec87ae1a5",
+        "starter_player_ids": [
+          1628384,
+          1628404,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600130",
+        "game_date": "2026-10-27",
+        "team_id": 1610612758,
+        "source_sha256": "7fb2f6df8f31bfadf2e444ec84604880a9ce814666d6be89c67a6e950555fee9",
+        "starter_player_ids": [
+          1629631,
+          1630173,
+          1627734,
+          203897,
+          1643411
+        ]
+      },
+      {
+        "game_id": "0022600130",
+        "game_date": "2026-10-27",
+        "team_id": 1610612759,
+        "source_sha256": "7fb2f6df8f31bfadf2e444ec84604880a9ce814666d6be89c67a6e950555fee9",
+        "starter_player_ids": [
+          1642264,
+          1630170,
+          1641705,
+          1642844,
+          1628368
+        ]
+      },
+      {
+        "game_id": "0022600131",
+        "game_date": "2026-10-27",
+        "team_id": 1610612757,
+        "source_sha256": "fea5f5e7d857e6163754c13a10177dd2a0946ad8a52b3e603c07eaa7f83e1463",
+        "starter_player_ids": [
+          1630166,
+          1641739,
+          1642270,
+          203081,
+          1629630
+        ]
+      },
+      {
+        "game_id": "0022600131",
+        "game_date": "2026-10-27",
+        "team_id": 1610612747,
+        "source_sha256": "fea5f5e7d857e6163754c13a10177dd2a0946ad8a52b3e603c07eaa7f83e1463",
+        "starter_player_ids": [
+          1629680,
+          1630533,
+          1631117,
+          1630559,
+          1629029
+        ]
+      },
+      {
+        "game_id": "0022600132",
+        "game_date": "2026-10-28",
+        "team_id": 1610612748,
+        "source_sha256": "367f6ef884acc706f80560106d9e6cd65378a1862a180c0744735d9a67eaa56e",
+        "starter_player_ids": [
+          203952,
+          203507,
+          1628389,
+          202691,
+          1630558
+        ]
+      },
+      {
+        "game_id": "0022600132",
+        "game_date": "2026-10-28",
+        "team_id": 1610612737,
+        "source_sha256": "367f6ef884acc706f80560106d9e6cd65378a1862a180c0744735d9a67eaa56e",
+        "starter_player_ids": [
+          1630700,
+          1630552,
+          1630168,
+          1629638,
+          203468
+        ]
+      },
+      {
+        "game_id": "0022600133",
+        "game_date": "2026-10-28",
+        "team_id": 1610612764,
+        "source_sha256": "bf7b98c698747dd77c6b9f39ca03f3de183f0e8d254485fabba85ce447c9b3f0",
+        "starter_player_ids": [
+          1642273,
+          203076,
+          1642259,
+          1643407,
+          1629027
+        ]
+      },
+      {
+        "game_id": "0022600133",
+        "game_date": "2026-10-28",
+        "team_id": 1610612739,
+        "source_sha256": "bf7b98c698747dd77c6b9f39ca03f3de183f0e8d254485fabba85ce447c9b3f0",
+        "starter_player_ids": [
+          1631212,
+          1630596,
+          1628386,
+          1628378,
+          201935
+        ]
+      },
+      {
+        "game_id": "0022600134",
+        "game_date": "2026-10-28",
+        "team_id": 1610612766,
+        "source_sha256": "2ae89670421b8e83f4a8ff2fa0888ebef14b019be9d084cd29cc8767f1382712",
+        "starter_player_ids": [
+          1642883,
+          1629675,
+          1631217,
+          1641706,
+          203471
+        ]
+      },
+      {
+        "game_id": "0022600134",
+        "game_date": "2026-10-28",
+        "team_id": 1610612765,
+        "source_sha256": "2ae89670421b8e83f4a8ff2fa0888ebef14b019be9d084cd29cc8767f1382712",
+        "starter_player_ids": [
+          1641709,
+          1628381,
+          1630194,
+          1629130,
+          1630595
+        ]
+      },
+      {
+        "game_id": "0022600135",
+        "game_date": "2026-10-28",
+        "team_id": 1610612755,
+        "source_sha256": "c2f2ddfab87a261cfe30c3e4934af4d45f34550be79f44cf448a8ecfbbc82db6",
+        "starter_player_ids": [
+          1627759,
+          2544,
+          203954,
+          1642845,
+          1630178
+        ]
+      },
+      {
+        "game_id": "0022600135",
+        "game_date": "2026-10-28",
+        "team_id": 1610612754,
+        "source_sha256": "c2f2ddfab87a261cfe30c3e4934af4d45f34550be79f44cf448a8ecfbbc82db6",
+        "starter_player_ids": [
+          1626162,
+          1627783,
+          1630643,
+          1630174,
+          1629614
+        ]
+      },
+      {
+        "game_id": "0022600136",
+        "game_date": "2026-10-28",
+        "team_id": 1610612753,
+        "source_sha256": "72c730cc8f264382cd90862050073977ac823fa19c707510668d214b5b20cd34",
+        "starter_player_ids": [
+          1641710,
+          1630532,
+          1628976,
+          1630217,
+          1642859
+        ]
+      },
+      {
+        "game_id": "0022600136",
+        "game_date": "2026-10-28",
+        "team_id": 1610612761,
+        "source_sha256": "72c730cc8f264382cd90862050073977ac823fa19c707510668d214b5b20cd34",
+        "starter_player_ids": [
+          1629628,
+          1630567,
+          1627751,
+          1642266,
+          1630193
+        ]
+      },
+      {
+        "game_id": "0022600137",
+        "game_date": "2026-10-28",
+        "team_id": 1610612752,
+        "source_sha256": "3e894bfba419facd0d8da4ff4ff58d4acaa66dc22bb597c3d6f4419773ed29e9",
+        "starter_player_ids": [
+          1628384,
+          1628404,
+          1626157,
+          1628969,
+          1628973
+        ]
+      },
+      {
+        "game_id": "0022600137",
+        "game_date": "2026-10-28",
+        "team_id": 1610612741,
+        "source_sha256": "3e894bfba419facd0d8da4ff4ff58d4acaa66dc22bb597c3d6f4419773ed29e9",
+        "starter_player_ids": [
+          1641824,
+          1643410,
+          1630188,
+          1626181,
+          1630581
+        ]
+      },
+      {
+        "game_id": "0022600138",
+        "game_date": "2026-10-28",
+        "team_id": 1610612745,
+        "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+        "starter_player_ids": [
+          201142,
+          1631106,
+          1631095,
+          1641708,
+          1627832
+        ]
+      },
+      {
+        "game_id": "0022600138",
+        "game_date": "2026-10-28",
+        "team_id": 1610612749,
+        "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+        "starter_player_ids": [
+          1631170,
+          1628398,
+          1626167,
+          1629639,
+          1631157
+        ]
+      },
+      {
+        "game_id": "0022600139",
+        "game_date": "2026-10-28",
+        "team_id": 1610612744,
+        "source_sha256": "73ba04fc6074f630da3a12e2f623a83a9573aa6fde583fa1b60a2caf1028f644",
+        "starter_player_ids": [
+          1642865,
+          1627777,
+          203110,
+          1641764,
+          201939
+        ]
+      },
+      {
+        "game_id": "0022600139",
+        "game_date": "2026-10-28",
+        "team_id": 1610612750,
+        "source_sha256": "73ba04fc6074f630da3a12e2f623a83a9573aa6fde583fa1b60a2caf1028f644",
+        "starter_player_ids": [
+          1630183,
+          1630228,
+          203497,
+          1630245,
+          1630163
+        ]
+      },
+      {
+        "game_id": "0022600140",
+        "game_date": "2026-10-28",
+        "team_id": 1610612743,
+        "source_sha256": "616a385fcd9772f4143f90a649fdb65c3b404ccdc8af4021e71eae59ab79e21b",
+        "starter_player_ids": [
+          1642350,
+          203932,
+          203999,
+          1631128,
+          1627750
+        ]
+      },
+      {
+        "game_id": "0022600140",
+        "game_date": "2026-10-28",
+        "team_id": 1610612740,
+        "source_sha256": "616a385fcd9772f4143f90a649fdb65c3b404ccdc8af4021e71eae59ab79e21b",
+        "starter_player_ids": [
+          1630530,
+          1629627,
+          201599,
+          1627749,
+          1642847
+        ]
+      },
+      {
+        "game_id": "0022600141",
+        "game_date": "2026-10-28",
+        "team_id": 1610612759,
+        "source_sha256": "8fa543732eb315ac71c2c9c49a794bf0e4e7dd172c9597671d3d4d4b68a5e8f1",
+        "starter_player_ids": [
+          1642264,
+          1630170,
+          1641705,
+          1642844,
+          1628368
+        ]
+      },
+      {
+        "game_id": "0022600141",
+        "game_date": "2026-10-28",
+        "team_id": 1610612762,
+        "source_sha256": "8fa543732eb315ac71c2c9c49a794bf0e4e7dd172c9597671d3d4d4b68a5e8f1",
+        "starter_player_ids": [
+          1630182,
+          1642846,
+          1629637,
+          1643408,
+          1641718
+        ]
+      },
+      {
+        "game_id": "0022600142",
+        "game_date": "2026-10-28",
+        "team_id": 1610612760,
+        "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+        "starter_player_ids": [
+          1642349,
+          1629026,
+          1628392,
+          1642272,
+          1628983
+        ]
+      },
+      {
+        "game_id": "0022600142",
+        "game_date": "2026-10-28",
+        "team_id": 1610612742,
+        "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+        "starter_player_ids": [
+          1642843,
+          1629023,
+          1629655,
+          1631108,
+          202681
+        ]
+      },
+      {
+        "game_id": "0022600143",
+        "game_date": "2026-10-28",
+        "team_id": 1610612747,
+        "source_sha256": "29c8aa6c9bd97f2c41319126beb74bb69ba9ed05177decdff15e8d35d47f9bb3",
+        "starter_player_ids": [
+          1629680,
+          1631222,
+          1631117,
+          1629656,
+          1630559
+        ]
+      },
+      {
+        "game_id": "0022600143",
+        "game_date": "2026-10-28",
+        "team_id": 1610612746,
+        "source_sha256": "29c8aa6c9bd97f2c41319126beb74bb69ba9ed05177decdff15e8d35d47f9bb3",
+        "starter_player_ids": [
+          1642920,
+          1627884,
+          1630543,
+          1627739,
+          1629636
+        ]
+      },
+      {
+        "game_id": "0022600145",
+        "game_date": "2026-10-29",
+        "team_id": 1610612758,
+        "source_sha256": "1e73d4458c5cda03e54aa33abbfd77fabf2ec34061049443d83c3c2924428bf6",
+        "starter_player_ids": [
+          1629631,
+          1630173,
+          1627734,
+          203897,
+          1643411
+        ]
+      },
+      {
+        "game_id": "0022600145",
+        "game_date": "2026-10-29",
+        "team_id": 1610612740,
+        "source_sha256": "1e73d4458c5cda03e54aa33abbfd77fabf2ec34061049443d83c3c2924428bf6",
+        "starter_player_ids": [
+          1630530,
+          1629627,
+          1631255,
+          1630529,
+          1642847
+        ]
+      },
+      {
+        "game_id": "0022600146",
+        "game_date": "2026-10-29",
+        "team_id": 1610612763,
+        "source_sha256": "ca05fbbf24936616c28b322b5ecf0882720a1797929f6de32723774f60568a23",
+        "starter_player_ids": [
+          1642377,
+          1643409,
+          1641744,
+          1642907,
+          1629660
+        ]
+      },
+      {
+        "game_id": "0022600146",
+        "game_date": "2026-10-29",
+        "team_id": 1610612757,
+        "source_sha256": "ca05fbbf24936616c28b322b5ecf0882720a1797929f6de32723774f60568a23",
+        "starter_player_ids": [
+          1630166,
+          1641739,
+          1642270,
+          203081,
+          1629630
+        ]
+      }
+    ]
+  },
+  "primary_count_comparison": {
+    "fields": [
+      "PTS",
+      "FGM",
+      "FGA",
+      "FG3M",
+      "FG3A",
+      "FTM",
+      "FTA",
+      "OREB",
+      "DREB",
+      "REB",
+      "AST",
+      "STL",
+      "BLK",
+      "TOV",
+      "PF"
+    ],
+    "basis": "ORIGINAL retained PlayerGameLogs values, not the corrected core ledger",
+    "conflict_count": 83,
+    "game_count": 18,
+    "conflicts": [
+      {
+        "game_id": "0022600007",
+        "player_id": 1643813,
+        "field": "AST",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1628963,
+        "field": "AST",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641747,
+        "field": "OREB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641747,
+        "field": "REB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1643624,
+        "field": "OREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1643624,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631114,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641717,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641717,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631119,
+        "field": "DREB",
+        "primary_value": 6.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631119,
+        "field": "REB",
+        "primary_value": 6.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1642349,
+        "field": "STL",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 201142,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 1631095,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 203500,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600085",
+        "player_id": 1628976,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600085",
+        "player_id": 1630217,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600087",
+        "player_id": 1630549,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600087",
+        "player_id": 1631165,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600088",
+        "player_id": 1626181,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600088",
+        "player_id": 1643591,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600091",
+        "player_id": 1630230,
+        "field": "FGA",
+        "primary_value": 14.0,
+        "traditional_value": 13
+      },
+      {
+        "game_id": "0022600091",
+        "player_id": 1630230,
+        "field": "FG3A",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1642346,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1642346,
+        "field": "REB",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1631123,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1631123,
+        "field": "REB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600094",
+        "player_id": 1630700,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600094",
+        "player_id": 203468,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600102",
+        "player_id": 1630543,
+        "field": "TOV",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600102",
+        "player_id": 1627739,
+        "field": "TOV",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1641739,
+        "field": "OREB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1641739,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1642270,
+        "field": "OREB",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1642270,
+        "field": "REB",
+        "primary_value": 11.0,
+        "traditional_value": 10
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 203897,
+        "field": "FG3A",
+        "primary_value": 10.0,
+        "traditional_value": 9
+      },
+      {
+        "game_id": "0022600104",
+        "player_id": 1631217,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600104",
+        "player_id": 203471,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600108",
+        "player_id": 203076,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600108",
+        "player_id": 1642273,
+        "field": "AST",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600109",
+        "player_id": 1642383,
+        "field": "FGA",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600117",
+        "player_id": 1630194,
+        "field": "BLK",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "OREB",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "DREB",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "REB",
+        "primary_value": 7.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "PTS",
+        "primary_value": 14.0,
+        "traditional_value": 16
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "FGM",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "FG3A",
+        "primary_value": 8.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630191,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "PTS",
+        "primary_value": 17.0,
+        "traditional_value": 15
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "FGM",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "FGA",
+        "primary_value": 13.0,
+        "traditional_value": 11
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629660,
+        "field": "AST",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642285,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "FGA",
+        "primary_value": 7.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "DREB",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "REB",
+        "primary_value": 6.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "BLK",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630590,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630590,
+        "field": "REB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629631,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629631,
+        "field": "REB",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1627734,
+        "field": "FGA",
+        "primary_value": 9.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1627734,
+        "field": "TOV",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203897,
+        "field": "TOV",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643567,
+        "field": "TOV",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1628370,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1628370,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1642855,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1643637,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1628369,
+        "field": "TOV",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1631248,
+        "field": "FGA",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1630568,
+        "field": "FGA",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 201144,
+        "field": "TOV",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1631131,
+        "field": "DREB",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1631131,
+        "field": "REB",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1631260,
+        "field": "FGA",
+        "primary_value": 6.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1643417,
+        "field": "FGA",
+        "primary_value": 7.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "PTS",
+        "primary_value": 8.0,
+        "traditional_value": 10
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "FGM",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "FGA",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      }
+    ],
+    "policy": "All literal mismatches retained; no automatic correction, no full-core acceptance. Reconcile against accepted correction ledger before deciding new source obligations."
+  },
+  "roster": {
+    "source": "commonteamroster_1610612747.json",
+    "source_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+    "parameters": {
+      "TeamID": 1610612747,
+      "LeagueID": "00",
+      "Season": "2026"
+    },
+    "rows": 18,
+    "source_season_start_year": "2026",
+    "normalized_season": "2026-27",
+    "observed_positive_LAL_players_covered": 14,
+    "exact_unchanged_normalizer_csv_replay": true,
+    "remaining_teams": 29,
+    "source_role": "One season roster observation; not dated membership intervals.",
+    "freshness": "Original NBA capture time unavailable. Retrieval/Git pin and season parameters do not establish an exact roster as-of instant, tenure or current complete league roster.",
+    "collection_judgment": "Representative schema and season mapping justify a separately fixed reviewed collection plan for the other29 existing indexed team bodies, followed by per-team schema/player-key/name/season checks. No automatic expansion or league readiness acceptance.",
+    "production_writes": 0
+  },
+  "full_core_accepted": false,
+  "stage_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0,
+  "retained_dependency_bindings": {
+    "stats-sources.zip": {
+      "sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+      "size_bytes": 256577
+    },
+    "schedule-capture.zip": {
+      "sha256": "67907bba9f2830b4099998ec6c89dd67f9ef8ab051afa4b003a80ae605fc768f",
+      "size_bytes": 347575
+    },
+    "stats-qualification.json": {
+      "sha256": "677aa8bc1ef9c6a0f7cb0cd635ae3f163cfb1359b232ea8fdc6a2ae39d7926f9",
+      "size_bytes": 7622
+    },
+    "staging-acceptance.json": {
+      "sha256": "47bca026228bf84691648b789dcfa114b6ffd405c952b31df60cf6396910e927",
+      "size_bytes": 3577
+    },
+    "readiness-reassessment/starter-role-80-game-qualification.json": {
+      "sha256": "d4e6e7487e74caad9799ab4ca4318896aabf909f3bf64d3ba293d9493292b88f",
+      "size_bytes": 65599
+    },
+    "readiness-reassessment/roster-representative-qualification.json": {
+      "sha256": "5ed0ebe9461bff7f6cf1d55361c07c4dddb386006b15424e1db1a13f54846280",
+      "size_bytes": 836
+    }
+  },
+  "producer_code_bindings": {
+    "src/nbatools/commands/pipeline/pull_player_game_starter_roles.py": "2403c697d4c5121826ae3ff5074084244857d19f96773925e7135c9281935d7e",
+    "src/nbatools/commands/pipeline/pull_rosters.py": "cfeda2040f3c213e847a8fc67ac27fe14a2a1105f2e7d7ce3463ef8e8b13302c",
+    "src/nbatools/commands/_player_identity.py": "da6b7f7398334fe934edca4efb39aa56788354466e2ff52d381658ff5fa1a60d"
+  },
+  "scope_conclusion": {
+    "source_integrity_accepted": true,
+    "eighty_game_role_field_projection_accepted": true,
+    "roster_schema_and_single_season_observation_accepted": true,
+    "all_clock_or_core_source_qualification_accepted": false,
+    "blocker": "Retained Traditional0022600096 player1631288 has literal10:60; preserve it as invalid. Role marker is blank and all actual starter clocks are valid. No numeric repair, full-body clock qualification or full-core acceptance implied.",
+    "next": "Qualify captured0144 report literalF/C/G positions separately; reconcile83count differences against accepted correction ledger; retain10:60 defect; independently review fixed29-roster collection scope before collection. Period/advanced/roster completeness and due-time recomputation remain required."
+  }
+}

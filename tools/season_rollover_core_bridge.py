@@ -6,13 +6,14 @@ import hashlib
 import io
 import json
 import math
+import re
 import zipfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
-from nbatools.commands.pipeline.pull_game_period_stats import _parse_minutes_value
 from nbatools.commands.pipeline.pull_play_by_play_events import parse_clock_seconds_remaining
+from nbatools.commands.pipeline.pull_player_game_availability import _minutes
 from nbatools.commands.pipeline.structured_participation import _table
 from tools.collect_season_rollover import BLOB, BYTES, REVISION, SEASON
 from tools.season_rollover_source_stats import qualify_frames, retained_stats_documents
@@ -55,6 +56,20 @@ def _integer(value):
     if not math.isfinite(number) or not number.is_integer() or number < 0:
         raise ValueError("Source count must be a nonnegative integer")
     return int(number)
+
+
+def _literal_minutes(value):
+    """Reject malformed source components before any denominator arithmetic."""
+    if isinstance(value, str):
+        text = value.strip()
+        if ":" in text and re.fullmatch(r"\d+:[0-5]\d(?:\.\d+)?", text) is None:
+            raise ValueError("Invalid Traditional box-score duration")
+        if text.startswith("PT"):
+            match = re.fullmatch(r"PT(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?", text)
+            if match is None or not any(match.groups()) or float(match[2] or 0) >= 60:
+                raise ValueError("Invalid Traditional box-score duration")
+    parsed = _minutes(value)
+    return 0.0 if parsed is None else parsed
 
 
 def _games(schedule, finder):
@@ -263,10 +278,8 @@ def bridge_players(primary, schedule, finder, traditional=(), pbp=()):
                 raise ValueError(
                     "Traditional player points do not reconcile to explicit final score"
                 )
-            team_minutes = _parse_minutes_value(team["statistics"]["minutes"])
-            player_minutes = [
-                _parse_minutes_value(p["statistics"]["minutes"]) for p in team["players"]
-            ]
+            team_minutes = _literal_minutes(team["statistics"]["minutes"])
+            player_minutes = [_literal_minutes(p["statistics"]["minutes"]) for p in team["players"]]
             if (
                 not math.isfinite(team_minutes)
                 or team_minutes < 240
@@ -274,7 +287,7 @@ def bridge_players(primary, schedule, finder, traditional=(), pbp=()):
             ):
                 raise ValueError("Traditional team/player clock denominators contradict")
             for person in team["players"]:
-                minutes = _parse_minutes_value(person["statistics"]["minutes"])
+                minutes = _literal_minutes(person["statistics"]["minutes"])
                 if minutes == 0:
                     continue
                 if minutes > team_minutes / 5:

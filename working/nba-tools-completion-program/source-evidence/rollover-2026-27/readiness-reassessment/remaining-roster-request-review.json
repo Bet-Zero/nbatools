@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "classification": "independent_fixed29_roster_collection_scope_review_not_source_or_readiness_acceptance",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_commit": "19cc3dda12b7d20fafdaa103df2cf5737870af74",
+  "reviewed_tree": "ac0a005103d4c5bfd142155a4a6b6ced646fe37a",
+  "collection_request_sha256": "49123353bde8931228d360234c7e79b81e07efb89eda9ab321c0174aec944187",
+  "original_metadata_sha256": "f22e7490f26522f01192355ee8de4ff5c709a2a17dbf0c0ff1f2b0eccc6506ef",
+  "representative_source_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+  "representative_independent_review_sha256": "29d7df9b0fa2dc976e48364524c73bdf000b353f8971b39edf72af079a98d0c3",
+  "checks": {
+    "all29_metadata_names_paths_urls_git_blob_sha_sizes_exact": true,
+    "exact30_metadata_team_population_minus_cached_LAL": true,
+    "no_existing_body_reacquisition": true,
+    "fixed_source_files": 29,
+    "fixed_reader_invocations": 29,
+    "attempts_per_file": 1,
+    "total_expected_source_bytes": 134321,
+    "largest_expected_source_bytes": 5391,
+    "max_body_bytes": 2000000,
+    "metered_overage_usd": 0
+  },
+  "approval": "PASS: fixed29 original source collection only using existing approved byte-preserving GitHub blob reader; one invocation per exact pinned body, with Gitblob/size/SHA256 integrity checks before retention/use. No retries, extra bodies or alternate source routes authorized by this review.",
+  "qualification_required": [
+    "Each original must establish CommonTeamRoster/actual TeamID/League00/Season2026 and all listed row TeamID/SEASON2026; source-start-year maps to2026\u201327 only.",
+    "Independently verify all30 distinct teams with cachedLAL reused; unique normalized team/player/season/stint keys and observed positive same-team IDs/names; discrepancies remain literal.",
+    "No absent row means nonmembership; no snapshot gives dated tenure or medical/availability status.",
+    "Original NBA capture time remains unknown; retrieval/Git retention do not prove exact as-of freshness. Fullsource/readiness acceptance remains pending."
+  ],
+  "scope_exclusions": [
+    "No period/stat bodies, new services/costs/credentials/permissions, production data writes/pointer changes, readiness waivers or snapshots marked passed.",
+    "No new NBA or metadata calls by checker; reused original30entry response."
+  ],
+  "source_collection_executed": false,
+  "source_qualification_accepted": false,
+  "full_slice_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

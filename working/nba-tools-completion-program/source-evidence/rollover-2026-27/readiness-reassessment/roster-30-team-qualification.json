@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "classification": "thirty_team_season_roster_source_projection_not_dated_membership_or_readiness_acceptance",
+  "source_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "new_reader_calls": 29,
+  "new_body_bytes": 134321,
+  "retained_representative_not_refetched": true,
+  "teams": 30,
+  "source_rows": 525,
+  "unique_player_ids": 525,
+  "observed_primary_unique_player_ids": 432,
+  "observed_primary_player_team_pairs": 432,
+  "covered_positive_player_team_pairs": 432,
+  "missing_positive_by_team": [],
+  "literal_name_variants": [
+    {
+      "player_id": 1642881,
+      "team_id": 1610612749,
+      "source_roster_name": "Bogoljub Markovi\u0107",
+      "primary_name": "Bogoljub Markovic",
+      "classification": "normalized_equivalent",
+      "identity_basis": "exactexplicitNBAplayerIDandsourceTeamID; noname-onlyjoin"
+    }
+  ],
+  "unresolved_name_variants": [],
+  "all_source_parameters_and_row_season_team_ids_verified": true,
+  "source_season_start_year": 2026,
+  "normalized_season": "2026-27",
+  "original_nba_capture_time": null,
+  "freshness_limit": "Gitretention/retrievalisnotoriginalNBAcaptureorqualifiedexactasof/tenure. Full-slicefreshnessremainsseparate.",
+  "csv_sha256": "6a4f136a4488a8be5ae49117160c5bc21c5ea43b3b1f3082b872153e099ef8c8",
+  "per_team": [
+    {
+      "team_id": 1610612737,
+      "team_abbr": "ATL",
+      "source_sha256": "04bb354a10b3eb0ce44d3bf0743e6d119bec6467dd4adcac88821f442d7ee00d",
+      "source_rows": 18,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612738,
+      "team_abbr": "BOS",
+      "source_sha256": "00a10015237f4b0934d6bc4a114d3b1f62827efabb3ee985b72273ad8e08f8f1",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612739,
+      "team_abbr": "CLE",
+      "source_sha256": "275ab8d472b3e2fb6106373ff271b3f7ab2d622af0409e69d1a1cedcea968ba6",
+      "source_rows": 17,
+      "observed_positive_player_ids": 11,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612740,
+      "team_abbr": "NOP",
+      "source_sha256": "935a326658a0f369670ab9e737785dc71f8e8812a908ef51b1f228932c5e2d70",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612741,
+      "team_abbr": "CHI",
+      "source_sha256": "472d08a3aefba3a1a0a5dd8647493d4b64ef97763d42271ee7b3ab937b7bff28",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612742,
+      "team_abbr": "DAL",
+      "source_sha256": "062fe033a9c42d3906eb06b2e5fad04dd9502a52b870ad5a6404190dddf54a36",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612743,
+      "team_abbr": "DEN",
+      "source_sha256": "d9a7c7216502c9604ea11ca8cef3350930a11795ab32a29f2f88eeebf546debc",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612744,
+      "team_abbr": "GSW",
+      "source_sha256": "904f3e9bdaee0cddaa485a50abfcb7108c2b7c49ce73e33102f96e9bd79ce9ad",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612745,
+      "team_abbr": "HOU",
+      "source_sha256": "cc7bced6d701f8a2a5cc83a84da816d3a05ed4759f70824237f4fe8ce4e52934",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612746,
+      "team_abbr": "LAC",
+      "source_sha256": "c86edf233e8073967f9220577528fd7fcba1b27cc2a5b4f2e5c94b84e6455801",
+      "source_rows": 19,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612747,
+      "team_abbr": "LAL",
+      "source_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612748,
+      "team_abbr": "MIA",
+      "source_sha256": "2d73895321e0b188f5bf031f1c9af6552fcf24a4ab01dfde45facb2ddec05b5d",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612749,
+      "team_abbr": "MIL",
+      "source_sha256": "473175216c50090aa57c4118e47e3e285e376621f9938fd5eeac5bac2cecf294",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612750,
+      "team_abbr": "MIN",
+      "source_sha256": "bfb564c68c0431cc6cb9274c14687fa5f8ad9844b46e1803ac2eab64c655d3f8",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612751,
+      "team_abbr": "BKN",
+      "source_sha256": "6adc5916fe766e3040b920d3338733b64c8fc2ce0b3d4ce55f71e22df35cadcb",
+      "source_rows": 18,
+      "observed_positive_player_ids": 16,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612752,
+      "team_abbr": "NYK",
+      "source_sha256": "20412cec36fe013fa7f620d0e4dfff75ef1543a663a3e7532644c0e653f34e46",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612753,
+      "team_abbr": "ORL",
+      "source_sha256": "46105d2cdba3c222b2c053a73140cabb590638509dc7ad52d9765a2dc63a3537",
+      "source_rows": 17,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612754,
+      "team_abbr": "IND",
+      "source_sha256": "1fb3a65e772a57904e28e9a97ae176df222f915efe15a7073232af4af3e88831",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612755,
+      "team_abbr": "PHI",
+      "source_sha256": "bb0a04706ca40ae2250f5d9595381099a2c335d84720a4b6a818a40ea18510ad",
+      "source_rows": 17,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612756,
+      "team_abbr": "PHX",
+      "source_sha256": "738d6cffaeca58fd72c590d53a9cc50f2a797d7eecd4a871bf3f71e52ae4aca8",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612757,
+      "team_abbr": "POR",
+      "source_sha256": "98d7441f3670df848ba205dc7fa9231074aa96426d82b1b777daf2d7c5e694a3",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612758,
+      "team_abbr": "SAC",
+      "source_sha256": "9d4fa4d7cdd1c09636bd41cf5913505f7d2f1e995adbe05c6932672eeac40016",
+      "source_rows": 17,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612759,
+      "team_abbr": "SAS",
+      "source_sha256": "c811c71b876401332897779ce0493fd788f384b3c7104234973f74a85d8d79c4",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612760,
+      "team_abbr": "OKC",
+      "source_sha256": "c7ac45e4905c9eb959d1a0548f8fe5a4048d64fd6b7ae1cefb73118937069d87",
+      "source_rows": 17,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612761,
+      "team_abbr": "TOR",
+      "source_sha256": "6720f59cf9fcd941f0b86b5bf75e9f7c1d3bc1e9212d7ec67d5fa5c81f5d44ad",
+      "source_rows": 16,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612762,
+      "team_abbr": "UTA",
+      "source_sha256": "5a29a04c8368b4d5b582040acd45fbc239332f12c69249a167d878e67c381809",
+      "source_rows": 18,
+      "observed_positive_player_ids": 14,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612763,
+      "team_abbr": "MEM",
+      "source_sha256": "cf6df11ec4042a49dbca3668e36cdeebad2c30c8985a28f0f4e0b10541b1779e",
+      "source_rows": 18,
+      "observed_positive_player_ids": 15,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612764,
+      "team_abbr": "WAS",
+      "source_sha256": "e7a41710a5f4e595433712c4d707ca447334983d76eb6300041e267fb8781c83",
+      "source_rows": 18,
+      "observed_positive_player_ids": 16,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612765,
+      "team_abbr": "DET",
+      "source_sha256": "20954a9e26ad8c5f84ce8074b24cd39348c9ef0e6514c18c443fc7e720df7140",
+      "source_rows": 20,
+      "observed_positive_player_ids": 17,
+      "missing_observed_positive_player_ids": []
+    },
+    {
+      "team_id": 1610612766,
+      "team_abbr": "CHA",
+      "source_sha256": "fbd0f56751b8339dbd0f1c1bb0de663a7fefd660fc3381993683ebb2a63bb102",
+      "source_rows": 18,
+      "observed_positive_player_ids": 13,
+      "missing_observed_positive_player_ids": []
+    }
+  ],
+  "production_writes": 0,
+  "full_slice_accepted": false,
+  "independent_source_review": "pending"
+}

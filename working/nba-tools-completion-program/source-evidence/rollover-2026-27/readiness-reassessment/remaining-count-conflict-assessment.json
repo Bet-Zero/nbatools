@@ -1,0 +1,874 @@
+{
+  "schema_version": 1,
+  "classification": "independent_retained_conflict_partition_and_next_step_assessment_not_numeric_source_promotion",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "accepted_baseline": {
+    "partial_staging_run": 41265760582,
+    "primary_table_sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061",
+    "staged_table_sha256": "d9d0b5795b676ad14085d765b19b03ce6c65de39be5ef53dc68a51a389c34ddd",
+    "retained_local_ledger_sha256": "b1d4361b264fb5ab3051d78670680bbf6b5f5112913bb81e4bc051de9f12ca1f",
+    "corroboration_observations": 1253,
+    "changed_cells": 16,
+    "change_types": {
+      "integer_counts": 10,
+      "minutes": 2,
+      "derived_percentages": 4
+    },
+    "binding": "Retained primary/staged exact bytes match durable accepted season-rate-consistency proof; no stage recomputation."
+  },
+  "original83": {
+    "count": 83,
+    "games": 18,
+    "fields": 15,
+    "basis": "ORIGINAL PlayerGameLogs counts against retained80Traditional bodies; excludes missing0144Traditional."
+  },
+  "already_accepted_overlap": {
+    "count": 7,
+    "conflicts": [
+      {
+        "game_id": "0022600138",
+        "player_id": 1631131,
+        "field": "DREB",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1631131,
+        "field": "REB",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1631260,
+        "field": "FGA",
+        "primary_value": 6.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600138",
+        "player_id": 1643417,
+        "field": "FGA",
+        "primary_value": 7.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "PTS",
+        "primary_value": 8.0,
+        "traditional_value": 10
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "FGM",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600142",
+        "player_id": 1628997,
+        "field": "FGA",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      }
+    ]
+  },
+  "remaining_literal_conflicts": {
+    "count": 76,
+    "games": 16,
+    "fields": {
+      "AST": 11,
+      "OREB": 5,
+      "REB": 13,
+      "STL": 15,
+      "DREB": 9,
+      "FGA": 7,
+      "FG3A": 3,
+      "TOV": 7,
+      "BLK": 2,
+      "PTS": 2,
+      "FGM": 2
+    },
+    "per_game": {
+      "0022600007": 12,
+      "0022600009": 3,
+      "0022600085": 2,
+      "0022600087": 2,
+      "0022600088": 2,
+      "0022600091": 2,
+      "0022600092": 4,
+      "0022600094": 2,
+      "0022600102": 2,
+      "0022600103": 5,
+      "0022600104": 2,
+      "0022600108": 2,
+      "0022600109": 1,
+      "0022600117": 1,
+      "0022600118": 28,
+      "0022600121": 6
+    },
+    "conflicts": [
+      {
+        "game_id": "0022600007",
+        "player_id": 1643813,
+        "field": "AST",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1628963,
+        "field": "AST",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641747,
+        "field": "OREB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641747,
+        "field": "REB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1643624,
+        "field": "OREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1643624,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631114,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641717,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1641717,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631119,
+        "field": "DREB",
+        "primary_value": 6.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1631119,
+        "field": "REB",
+        "primary_value": 6.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600007",
+        "player_id": 1642349,
+        "field": "STL",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 201142,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 1631095,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600009",
+        "player_id": 203500,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600085",
+        "player_id": 1628976,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600085",
+        "player_id": 1630217,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600087",
+        "player_id": 1630549,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600087",
+        "player_id": 1631165,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600088",
+        "player_id": 1626181,
+        "field": "STL",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600088",
+        "player_id": 1643591,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600091",
+        "player_id": 1630230,
+        "field": "FGA",
+        "primary_value": 14.0,
+        "traditional_value": 13
+      },
+      {
+        "game_id": "0022600091",
+        "player_id": 1630230,
+        "field": "FG3A",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1642346,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1642346,
+        "field": "REB",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1631123,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600092",
+        "player_id": 1631123,
+        "field": "REB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600094",
+        "player_id": 1630700,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600094",
+        "player_id": 203468,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600102",
+        "player_id": 1630543,
+        "field": "TOV",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600102",
+        "player_id": 1627739,
+        "field": "TOV",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1641739,
+        "field": "OREB",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1641739,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1642270,
+        "field": "OREB",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 1642270,
+        "field": "REB",
+        "primary_value": 11.0,
+        "traditional_value": 10
+      },
+      {
+        "game_id": "0022600103",
+        "player_id": 203897,
+        "field": "FG3A",
+        "primary_value": 10.0,
+        "traditional_value": 9
+      },
+      {
+        "game_id": "0022600104",
+        "player_id": 1631217,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600104",
+        "player_id": 203471,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600108",
+        "player_id": 203076,
+        "field": "AST",
+        "primary_value": 5.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600108",
+        "player_id": 1642273,
+        "field": "AST",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600109",
+        "player_id": 1642383,
+        "field": "FGA",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600117",
+        "player_id": 1630194,
+        "field": "BLK",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "OREB",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "DREB",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642377,
+        "field": "REB",
+        "primary_value": 7.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "PTS",
+        "primary_value": 14.0,
+        "traditional_value": 16
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "FGM",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643409,
+        "field": "FG3A",
+        "primary_value": 8.0,
+        "traditional_value": 7
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630191,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "PTS",
+        "primary_value": 17.0,
+        "traditional_value": 15
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "FGM",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "FGA",
+        "primary_value": 13.0,
+        "traditional_value": 11
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642907,
+        "field": "AST",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629660,
+        "field": "AST",
+        "primary_value": 7.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1642285,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "FGA",
+        "primary_value": 7.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "DREB",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "REB",
+        "primary_value": 6.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203924,
+        "field": "BLK",
+        "primary_value": 3.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630590,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1630590,
+        "field": "REB",
+        "primary_value": 1.0,
+        "traditional_value": 2
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629631,
+        "field": "DREB",
+        "primary_value": 2.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1629631,
+        "field": "REB",
+        "primary_value": 5.0,
+        "traditional_value": 6
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1627734,
+        "field": "FGA",
+        "primary_value": 9.0,
+        "traditional_value": 8
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1627734,
+        "field": "TOV",
+        "primary_value": 3.0,
+        "traditional_value": 4
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 203897,
+        "field": "TOV",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1643567,
+        "field": "TOV",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1628370,
+        "field": "DREB",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600118",
+        "player_id": 1628370,
+        "field": "REB",
+        "primary_value": 2.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1642855,
+        "field": "STL",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1643637,
+        "field": "STL",
+        "primary_value": 1.0,
+        "traditional_value": 0
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1628369,
+        "field": "TOV",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1631248,
+        "field": "FGA",
+        "primary_value": 4.0,
+        "traditional_value": 5
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 1630568,
+        "field": "FGA",
+        "primary_value": 4.0,
+        "traditional_value": 3
+      },
+      {
+        "game_id": "0022600121",
+        "player_id": 201144,
+        "field": "TOV",
+        "primary_value": 0.0,
+        "traditional_value": 1
+      }
+    ],
+    "qualified_new_corrections": false
+  },
+  "other_accepted_changes_not_in83": [
+    {
+      "game_id": "0022600142",
+      "game_date": "2026-10-28",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "field": "MIN",
+      "before": 26.56,
+      "after": 24.533333333333335,
+      "source_file": "representative-sources/traditional_0022600142.json",
+      "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+      "source_field": "minutes",
+      "statistical_basis": "explicit_Traditional_player_clock_in_minutes"
+    },
+    {
+      "game_id": "0022600142",
+      "game_date": "2026-10-28",
+      "team_id": 1610612742,
+      "player_id": 1628997,
+      "field": "MIN",
+      "before": 11.781666666666666,
+      "after": 13.816666666666666,
+      "source_file": "representative-sources/traditional_0022600142.json",
+      "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+      "source_field": "minutes",
+      "statistical_basis": "explicit_Traditional_player_clock_in_minutes"
+    },
+    {
+      "game_id": "0022600144",
+      "game_date": "2026-10-29",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "PTS",
+      "before": 16,
+      "after": 17,
+      "source_file": "game-0022600144/pbp.json",
+      "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "action_ids": [
+        44,
+        168,
+        213,
+        252,
+        299,
+        400,
+        419,
+        433
+      ],
+      "source_field": "complete_event_replay.PTS",
+      "summary_sha256": "b615d3325b83de2d013b88412727ccd2f451186d61275d6e5505baeb1c418e98",
+      "statistical_basis": "explicit_FT_actor_and_ordered_full_score_replay"
+    },
+    {
+      "game_id": "0022600144",
+      "game_date": "2026-10-29",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "FTM",
+      "before": 0,
+      "after": 1,
+      "source_file": "game-0022600144/pbp.json",
+      "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "action_ids": [
+        168
+      ],
+      "source_field": "complete_event_replay.FTM",
+      "summary_sha256": "b615d3325b83de2d013b88412727ccd2f451186d61275d6e5505baeb1c418e98",
+      "statistical_basis": "explicit_FT_actor_and_ordered_full_score_replay"
+    },
+    {
+      "game_id": "0022600144",
+      "game_date": "2026-10-29",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "FTA",
+      "before": 0,
+      "after": 1,
+      "source_file": "game-0022600144/pbp.json",
+      "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "action_ids": [
+        168
+      ],
+      "source_field": "complete_event_replay.FTA",
+      "summary_sha256": "b615d3325b83de2d013b88412727ccd2f451186d61275d6e5505baeb1c418e98",
+      "statistical_basis": "explicit_FT_actor_and_ordered_full_score_replay"
+    },
+    {
+      "game_id": "0022600142",
+      "player_id": 1628997,
+      "team_id": 1610612742,
+      "game_date": "2026-10-28",
+      "field": "FG_PCT",
+      "before": 0.6,
+      "after": 0.667,
+      "source_field": "FGM/FGA",
+      "source_file": "representative-sources/traditional_0022600142.json",
+      "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+      "evidence_inputs": [
+        {
+          "source_file": "representative-sources/traditional_0022600142.json",
+          "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+          "source_field": "fieldGoalsMade",
+          "field": "FGM"
+        },
+        {
+          "source_file": "representative-sources/traditional_0022600142.json",
+          "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+          "source_field": "fieldGoalsAttempted",
+          "field": "FGA"
+        }
+      ],
+      "statistical_basis": "ratio_of_corroborated_whole_game_counts"
+    },
+    {
+      "game_id": "0022600138",
+      "player_id": 1631260,
+      "team_id": 1610612749,
+      "game_date": "2026-10-28",
+      "field": "FG_PCT",
+      "before": 0.5,
+      "after": 0.6,
+      "source_field": "FGM/FGA",
+      "source_file": "representative-sources/traditional_0022600138.json",
+      "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+      "evidence_inputs": [
+        {
+          "source_file": "representative-sources/traditional_0022600138.json",
+          "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+          "source_field": "fieldGoalsMade",
+          "field": "FGM"
+        },
+        {
+          "source_file": "representative-sources/traditional_0022600138.json",
+          "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+          "source_field": "fieldGoalsAttempted",
+          "field": "FGA"
+        }
+      ],
+      "statistical_basis": "ratio_of_corroborated_whole_game_counts"
+    },
+    {
+      "game_id": "0022600138",
+      "player_id": 1643417,
+      "team_id": 1610612749,
+      "game_date": "2026-10-28",
+      "field": "FG_PCT",
+      "before": 0.286,
+      "after": 0.25,
+      "source_field": "FGM/FGA",
+      "source_file": "representative-sources/traditional_0022600138.json",
+      "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+      "evidence_inputs": [
+        {
+          "source_file": "representative-sources/traditional_0022600138.json",
+          "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+          "source_field": "fieldGoalsMade",
+          "field": "FGM"
+        },
+        {
+          "source_file": "representative-sources/traditional_0022600138.json",
+          "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+          "source_field": "fieldGoalsAttempted",
+          "field": "FGA"
+        }
+      ],
+      "statistical_basis": "ratio_of_corroborated_whole_game_counts"
+    },
+    {
+      "game_id": "0022600144",
+      "player_id": 1630552,
+      "team_id": 1610612737,
+      "game_date": "2026-10-29",
+      "field": "FT_PCT",
+      "before": 0.0,
+      "after": 1.0,
+      "source_field": "FTM/FTA",
+      "source_file": "game-0022600144/pbp.json",
+      "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "evidence_inputs": [
+        {
+          "source_file": "game-0022600144/pbp.json",
+          "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+          "source_field": "complete_event_replay.FTM",
+          "field": "FTM"
+        },
+        {
+          "source_file": "game-0022600144/pbp.json",
+          "source_sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+          "source_field": "complete_event_replay.FTA",
+          "field": "FTA"
+        }
+      ],
+      "statistical_basis": "ratio_of_corroborated_whole_game_counts"
+    }
+  ],
+  "invalid_new_clock": {
+    "game_id": "0022600096",
+    "player_id": 1631288,
+    "name": "Jamal Cain",
+    "minutes_literal": "10:60",
+    "starter_position_raw": "",
+    "source_role_field_independent": true,
+    "clock_accepted": false,
+    "policy": "Do not carry seconds or use the malformed literal as an independent MIN correction. Other source-role fields retain their separate evidence grain."
+  },
+  "smallest_technical_next_steps": [
+    "Repair strict literal clock admission in the existing offline corroboration bridge before adding any newly collected whole-game bodies; tolerant period parsers must not normalize malformed source literals.",
+    "Qualify retained whole-game observations at exact game/date/team/player keys and field level using existing bridge envelope/clock/shooting/final-score checks. Declare source authority/basis explicitly and preserve unresolved conflicts; finer granularity or matching team totals alone does not choose a winner.",
+    "Keep all76 remaining discrepancies as unresolved observations until that qualification executes. Reuse7 accepted overlaps and prior1253-observation evidence only where unchanged; do not queue83 new patches or refetch80 bodies.",
+    "Quarantine0096 invalid clock from numerical corroboration. A separately reviewed single official report is a minimal source fallback if a valid independent literal for that player/game is required; no blind11:00 carry or whole-game acceptance from its valid starter markers.",
+    "Canonical source-root staging, four corrected-count versus season-TS discrepancies, and due-ID recomputation remain necessary even with complete source-role and roster projections."
+  ],
+  "genuine_external_dependency": {
+    "period_source_access": "Correct supported Q1 Traditional+Advanced cloud route already timed out; official CDN0144 returned403; archived period variants are zero/unparameterized. Do not retry those diagnosed routes.",
+    "smallest_access_action": "Existing reviewed laptop helper produces the fixed0001 Q1 two-original collection.zip; return original bodies and diagnostics. It is a source-route representative, not permission or acceptance for all490 windows/980 slots.",
+    "counts_and_roles_are_not_period_facts": true,
+    "season_rate_conflicts": "Four source TS snapshots disagree with corrected counts; need a coherent source/as-of basis or an explicitly reviewed derived-rate contract while preserving source USG. No synthetic passed snapshot."
+  },
+  "source_calls_by_checker": 0,
+  "new_stage_execution": false,
+  "full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}
