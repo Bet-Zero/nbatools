@@ -70,6 +70,8 @@ class SliceEvidence:
     schedule_complete: bool
     postseason_complete: bool = False
     errors: tuple[str, ...] = ()
+    # None means exact due-game coverage was not established, not zero missing.
+    missing_due_game_ids: tuple[str, ...] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -83,6 +85,9 @@ class SliceEvidence:
             "schedule_complete": self.schedule_complete,
             "postseason_complete": self.postseason_complete,
             "errors": list(self.errors),
+            "missing_due_game_ids": (
+                None if self.missing_due_game_ids is None else list(self.missing_due_game_ids)
+            ),
         }
 
 
@@ -198,15 +203,20 @@ def evaluate_readiness(
 
     active_slice = playoffs if playoffs is not None and playoffs.trusted else regular
     if season_state is SeasonState.ACTIVE and active_slice.trusted:
-        if active_slice.expected_current_through is None:
+        if (
+            active_slice.expected_current_through is None
+            or active_slice.missing_due_game_ids is None
+        ):
             blockers.append(
                 ReadinessBlocker(
                     "active_schedule_coverage_unknown",
-                    "No trusted scheduled game old enough to evaluate the 24-hour lag budget.",
+                    "The trusted schedule cannot establish exact final-game coverage outside "
+                    "the 24-hour lag window.",
                 )
             )
         elif (
-            active_slice.current_through is None
+            bool(active_slice.missing_due_game_ids)
+            or active_slice.current_through is None
             or active_slice.current_through < active_slice.expected_current_through
         ):
             blockers.append(
@@ -215,7 +225,8 @@ def evaluate_readiness(
                     "Trusted game coverage is behind the latest scheduled game outside the "
                     "24-hour grace window "
                     f"(expected {active_slice.expected_current_through}, actual "
-                    f"{active_slice.current_through or 'unknown'}).",
+                    f"{active_slice.current_through or 'unknown'}; missing due game IDs "
+                    f"{list(active_slice.missing_due_game_ids or ())}).",
                 )
             )
 
@@ -376,6 +387,11 @@ def _collect_slice(
         schedule_complete=schedule_complete if trusted else False,
         postseason_complete=postseason_complete,
         errors=errors,
+        missing_due_game_ids=(
+            _missing_due_game_ids(schedule, games, checked_at, season, season_type)
+            if trusted
+            else None
+        ),
     )
 
 
@@ -458,6 +474,75 @@ def _expected_current_through(schedule: pd.DataFrame, checked_at: datetime) -> s
     if eligible.empty:
         return None
     return str(eligible.max().date())
+
+
+def _missing_due_game_ids(schedule, games, checked_at, season, season_type):
+    """Require each due scheduled ID as final; a later date cannot hide holes.
+
+    Malformed or contradictory identity/date evidence remains unknown, so an
+    active-lag exception cannot turn it into known complete coverage.
+    """
+    if (
+        schedule.empty
+        or not {"game_id", "game_date"}.issubset(schedule)
+        or not {"game_id", "game_date", "is_final"}.issubset(games)
+    ):
+        return None
+    prefix = ("004" if season_type == "Playoffs" else "002") + season[2:4]
+
+    def ids(frame):
+        values = pd.to_numeric(frame["game_id"], errors="coerce")
+        if not (values.notna() & values.gt(0) & values.mod(1).eq(0)).all():
+            return None
+        # Reject overlong values before integer conversion, including infinities.
+        if values.ge(10**10).any():
+            return None
+        keys = values.astype("int64").astype(str).str.zfill(10)
+        if keys.duplicated().any() or not keys.str.fullmatch(prefix + r"[0-9]{5}").all():
+            return None
+        return keys
+
+    scheduled_ids, game_ids = ids(schedule), ids(games)
+    scheduled_dates = pd.to_datetime(schedule["game_date"], errors="coerce", utc=True)
+    game_dates = pd.to_datetime(games["game_date"], errors="coerce", utc=True)
+    flags = pd.to_numeric(games["is_final"], errors="coerce")
+    if (
+        scheduled_ids is None
+        or game_ids is None
+        or scheduled_dates.isna().any()
+        or game_dates.isna().any()
+        or not flags.isin([0, 1]).all()
+    ):
+        return None
+    # Use the same conservative date fallback as expected_current_through.
+    timestamps = pd.to_datetime(schedule.get("game_datetime"), errors="coerce", utc=True)
+    if timestamps is not None:
+        # A valid instant cannot move a scheduled game to another basketball
+        # date and thereby hide it outside the due window. Legacy producers
+        # supply blanks; those retain the conservative date-only fallback.
+        known = timestamps.notna()
+        local_dates = timestamps.dt.tz_convert("America/New_York").dt.date
+        if (known & local_dates.ne(scheduled_dates.dt.date)).any():
+            return None
+    timestamps = scheduled_dates if timestamps is None else timestamps.fillna(scheduled_dates)
+    due = timestamps <= pd.Timestamp(checked_at - timedelta(hours=MAX_ACTIVE_LAG_HOURS))
+    observed = dict(zip(game_ids, zip(game_dates.dt.date, flags)))
+    scheduled = dict(zip(scheduled_ids, scheduled_dates.dt.date))
+    if not set(observed).issubset(scheduled) or any(
+        day != scheduled[key] for key, (day, _) in observed.items()
+    ):
+        return None
+    missing = []
+    for key, day in zip(scheduled_ids.loc[due], scheduled_dates.loc[due].dt.date):
+        if key not in observed:
+            missing.append(key)
+        else:
+            actual_day, final = observed[key]
+            if actual_day != day:
+                return None
+            if final != 1:
+                missing.append(key)
+    return tuple(sorted(missing))
 
 
 def _actual_current_through(games: pd.DataFrame) -> str | None:

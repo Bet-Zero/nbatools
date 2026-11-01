@@ -32,9 +32,26 @@ normalizers, and preserves582/30/30 canonical2025-26 rows with as-of date from t
 accepted completed-game capture. Independent W/L reconciliation covers all30teams;
 source team MIN is not used as player minutes-per-game. Source capture time remains
 unknown. The incomplete29team roster stays outside canonical rosters and does not
-establish historical membership. The official2026-27 schedule remains planning
+establish historical membership. That original2026-27 schedule capture remains planning
 source JSON: future/TBD rows never become Final in the completed-game contract.
 These inputs do not provide exact period/on-off data or full current freshness.
+
+Current-season retained-source staging (2026-27) is explicitly partial. The
+pinned schedule has 81 Final games and 1,125 future rows; future rows are schedule
+facts, never completed games. `tools/season_rollover_source_stats.py` authenticates
+the immutable original-body ZIP and statistical parameters. The singular GameLog
+file is team grain and cannot supply player rows. Proper plural PlayerGameLogs
+supplies 1,829 rows/432 players, with independently observed discrepancies.
+`tools/season_rollover_core_bridge.py` copies those rows and records every explicit
+Traditional count/clock or complete PBP scoring-actor observation in a field ledger.
+It preserves keys/names and untouched cells, recalculates affected percentages,
+and rejects conflicting observations. PBP fact replay does not accept the archive
+for canonical PBP ingestion. Corrected totals disagree with four retained season
+TS% values; snapshots remain inconsistent rather than silently rewritten. Partial
+team/player question checks do not establish the eleven-raw/five-processed
+publication contract, participation/tenure, roles, quarter windows or full-season
+completeness. Originals/failures/receipts are retained in the program's
+`source-evidence/rollover-2026-27` directory.
 
 The existing publication-derived `metadata/player_names.csv` has one distinct
 `(player_id, player_name, season)` row across both game season types, with
@@ -88,6 +105,49 @@ For each dataset, this document should define:
 - mixed-grain semantics (for example, game-level with stint-level or play-by-play-derived rows) must not be hidden inside legacy tables without an explicit approved contract
 
 ---
+
+## 0. Completed games and source-aware schedules
+
+`raw/games/{season}_{type}.csv` remains one row per completed game. A retained
+NBA ScheduleLeagueV2 body may separately produce
+`raw/schedule/{season}_regular_season.csv` with final, scheduled and in-progress
+rows. Future rows never become game/stat rows, player appearances or missed games.
+The legacy completed-only producer remains available; its exact schedule/game
+ID equality is unchanged unless the explicit official-source contract applies.
+
+`pull_schedule.run(..., official_original=raw_bytes)` uses the offline
+`official_schedule.normalize_official_schedule` adapter. It binds the original
+body SHA256 in `schedule_source_sha256`, validates season/league/game IDs,
+outer/inner dates, UTC instants, Eastern wall times, sides, codes and scores, and
+retains source status and nominal source sides. `gameDateTimeUTC` is the actual
+instant. The source's EST fields carry a literal Z while expressing Eastern
+wall time/date; interpret those fields in `America/New_York`, including DST.
+Unknown postponement/cancellation layouts are rejected for further qualification.
+
+Known neutral matchups retain participant IDs and source-designated sides/scores,
+with canonical home/away trust disabled; neutral does not mean a physical home
+court. Unresolved future matchups retain their original game IDs/status with
+unknown canonical participants. Played rows require two known distinct teams and
+valid non-tied final scores. Preseason and cup-final IDs stay outside the regular
+season; observed source rows do not prove independent full-season completeness.
+
+The explicit contract requires `schedule_source=nba_schedule_league_v2`, a single
+original-body hash and consistent source/normalized status. Validation compares
+**exactly** the source-final IDs against completed games and team stats, including
+dates, participants, venue roles and both scores. All final sides are required;
+future rows require no fabricated stats. Slice coverage records the final-game
+scope and the number of nonfinal schedule rows. A source tag/hash alone is not
+source qualification: retained-original replay and independent checking still
+precede any protected publication. All eleven required raw and five processed
+inputs remain required; a narrow test stage cannot write a passed full receipt.
+
+Active-season readiness additionally checks every scheduled ID outside the
+unchanged 24-hour lag window against a final catalog row. A later completed game
+cannot hide an earlier or same-date missing game. `missing_due_game_ids=null`
+means unestablished or contradictory identity/date coverage, not zero missing;
+`[]` means the checked due population is covered. Unknown coverage stays blocked
+and cannot be waived as known lag. The November 1 current-season deadline,
+24-hour limit, immutable-generation and dataset-trust checks remain unchanged.
 
 ## 1. `player_game_stats`
 

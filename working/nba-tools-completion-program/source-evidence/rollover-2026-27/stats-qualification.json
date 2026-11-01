@@ -1,0 +1,318 @@
+{
+  "classification": "partial_source_qualification_not_canonical_or_published",
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "schedule_sha256": "edf45e0c7f06ba0f5c842a333d054b617f23244443514fb4aa9771a6b32b75cf",
+  "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+  "final_game_ids": [
+    "0022600001",
+    "0022600002",
+    "0022600003",
+    "0022600004",
+    "0022600005",
+    "0022600006",
+    "0022600007",
+    "0022600008",
+    "0022600009",
+    "0022600015",
+    "0022600016",
+    "0022600017",
+    "0022600018",
+    "0022600019",
+    "0022600020",
+    "0022600021",
+    "0022600022",
+    "0022600023",
+    "0022600024",
+    "0022600085",
+    "0022600086",
+    "0022600087",
+    "0022600088",
+    "0022600089",
+    "0022600090",
+    "0022600091",
+    "0022600092",
+    "0022600093",
+    "0022600094",
+    "0022600095",
+    "0022600096",
+    "0022600097",
+    "0022600098",
+    "0022600099",
+    "0022600100",
+    "0022600101",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600105",
+    "0022600106",
+    "0022600107",
+    "0022600108",
+    "0022600109",
+    "0022600110",
+    "0022600111",
+    "0022600112",
+    "0022600113",
+    "0022600114",
+    "0022600115",
+    "0022600116",
+    "0022600117",
+    "0022600118",
+    "0022600119",
+    "0022600120",
+    "0022600121",
+    "0022600122",
+    "0022600123",
+    "0022600124",
+    "0022600125",
+    "0022600126",
+    "0022600127",
+    "0022600128",
+    "0022600129",
+    "0022600130",
+    "0022600131",
+    "0022600132",
+    "0022600133",
+    "0022600134",
+    "0022600135",
+    "0022600136",
+    "0022600137",
+    "0022600138",
+    "0022600139",
+    "0022600140",
+    "0022600141",
+    "0022600142",
+    "0022600143",
+    "0022600144",
+    "0022600145",
+    "0022600146"
+  ],
+  "team_game_rows": 162,
+  "player_game_rows": 1829,
+  "player_ids": 432,
+  "team_ids": 30,
+  "final_points_total": 18464,
+  "qualified_snapshot_rows": {
+    "player_season_advanced": 432,
+    "team_season_advanced": 30,
+    "standings_snapshots": 30
+  },
+  "observed_as_of_game_date": "2026-10-30",
+  "player_team_conflicts": [
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "field": "PTS",
+      "team": 120,
+      "player_sum": 118
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "field": "PTS",
+      "team": 114,
+      "player_sum": 113
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "field": "FGM",
+      "team": 46,
+      "player_sum": 45
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "field": "FGA",
+      "team": 97,
+      "player_sum": 96
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "field": "FTM",
+      "team": 13,
+      "player_sum": 12
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "field": "FTA",
+      "team": 18,
+      "player_sum": 17
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "field": "DREB",
+      "team": 36,
+      "player_sum": 35
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "field": "REB",
+      "team": 44,
+      "player_sum": 43
+    }
+  ],
+  "team_mode_gamelog_is_player_data": false,
+  "period_coverage": "not_established",
+  "canonical_core_accepted": false,
+  "production_writes": 0,
+  "representatives": {
+    "traditional_0022600023": {
+      "scope": "whole_game_sample_only",
+      "teams": [
+        {
+          "team_id": 1610612744,
+          "points": 112,
+          "team_clock": "240:00",
+          "turnovers": 15,
+          "summed_player_turnovers": 15,
+          "summed_player_points": 112,
+          "player_row_differences": []
+        },
+        {
+          "team_id": 1610612747,
+          "points": 95,
+          "team_clock": "240:00",
+          "turnovers": 20,
+          "summed_player_turnovers": 20,
+          "summed_player_points": 95,
+          "player_row_differences": []
+        }
+      ]
+    },
+    "traditional_0022600138": {
+      "scope": "whole_game_sample_only",
+      "teams": [
+        {
+          "team_id": 1610612749,
+          "points": 100,
+          "team_clock": "240:00",
+          "turnovers": 16,
+          "summed_player_turnovers": 16,
+          "summed_player_points": 100,
+          "player_row_differences": [
+            {
+              "player_id": 1631260,
+              "field": "FGA",
+              "player_game_logs": 6,
+              "traditional": 5
+            },
+            {
+              "player_id": 1643417,
+              "field": "FGA",
+              "player_game_logs": 7,
+              "traditional": 8
+            }
+          ]
+        },
+        {
+          "team_id": 1610612745,
+          "points": 132,
+          "team_clock": "240:00",
+          "turnovers": 14,
+          "summed_player_turnovers": 14,
+          "summed_player_points": 132,
+          "player_row_differences": [
+            {
+              "player_id": 1631131,
+              "field": "DREB",
+              "player_game_logs": 3,
+              "traditional": 4
+            },
+            {
+              "player_id": 1631131,
+              "field": "REB",
+              "player_game_logs": 4,
+              "traditional": 5
+            }
+          ]
+        }
+      ]
+    },
+    "traditional_0022600142": {
+      "scope": "whole_game_sample_only",
+      "teams": [
+        {
+          "team_id": 1610612742,
+          "points": 120,
+          "team_clock": "240:00",
+          "turnovers": 9,
+          "summed_player_turnovers": 9,
+          "summed_player_points": 120,
+          "player_row_differences": [
+            {
+              "player_id": 1628997,
+              "field": "PTS",
+              "player_game_logs": 8,
+              "traditional": 10
+            },
+            {
+              "player_id": 1628997,
+              "field": "FGM",
+              "player_game_logs": 3,
+              "traditional": 4
+            },
+            {
+              "player_id": 1628997,
+              "field": "FGA",
+              "player_game_logs": 5,
+              "traditional": 6
+            }
+          ]
+        },
+        {
+          "team_id": 1610612760,
+          "points": 96,
+          "team_clock": "240:00",
+          "turnovers": 13,
+          "summed_player_turnovers": 13,
+          "summed_player_points": 96,
+          "player_row_differences": []
+        }
+      ]
+    },
+    "period_0022600001": {
+      "scope": "unqualified_period_sample",
+      "quarter_team_points": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "all_zero": true,
+      "canonical_period_accepted": false,
+      "reason": "Quarter-labeled bodies do not establish correct period parameters or activity"
+    }
+  },
+  "source_team_difference_counts": {
+    "MIN": 93,
+    "TOV": 85
+  },
+  "normalized_snapshot_files": [
+    {
+      "file": "player_season_advanced.csv",
+      "size_bytes": 56476,
+      "sha256": "97dec82372aaf35c19997490be0e8f09834bfc2975266449cf022b8b10220232"
+    },
+    {
+      "file": "standings_snapshots.csv",
+      "size_bytes": 2668,
+      "sha256": "cbc1b0aad756d3a06cff5b36325b447bc9a1a3bfb89b848d46a6662bb86c4b00"
+    },
+    {
+      "file": "team_season_advanced.csv",
+      "size_bytes": 2603,
+      "sha256": "89f7dee4b6ed2ccc997488abe6dd376a08a5963e2cc6e185df14416c32defc78"
+    }
+  ],
+  "verification_scope": "Author offline original-byte replay and row arithmetic; independent review remains required. No new collector execution."
+}

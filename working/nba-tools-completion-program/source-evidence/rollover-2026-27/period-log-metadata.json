@@ -1,0 +1,287 @@
+{
+  "classification": "metadata_only_no_qualified_period_population",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "inspected_at": "2026-11-01T02:17:47Z",
+  "source_bodies_acquired": 0,
+  "production_writes": 0,
+  "paths": [
+    {
+      "path": "nba_stats/json/playergamelogs/2027",
+      "entries": [
+        {
+          "name": "playoffs_advanced_pergame.json",
+          "type": "file",
+          "sha": "882ab0b4287136cb2c89cd46d9ef4072098833f8",
+          "size": 1712
+        },
+        {
+          "name": "playoffs_advanced_totals.json",
+          "type": "file",
+          "sha": "f051a55b061836905bd0bde742228a4155c94109",
+          "size": 1711
+        },
+        {
+          "name": "playoffs_base_pergame.json",
+          "type": "file",
+          "sha": "6f4ed1574c73a789a6d2b3a2f5412c695e28066e",
+          "size": 1378
+        },
+        {
+          "name": "playoffs_base_totals.json",
+          "type": "file",
+          "sha": "7fb9563de44e165107b29d93f617eb83a5f684fe",
+          "size": 1377
+        },
+        {
+          "name": "playoffs_misc_pergame.json",
+          "type": "file",
+          "sha": "3f4cc0435edf088ef397d089328c70a6e5f51efe",
+          "size": 1187
+        },
+        {
+          "name": "playoffs_misc_totals.json",
+          "type": "file",
+          "sha": "f33fca5dd0fd999b36ec2c9eda7d99f953e68352",
+          "size": 1186
+        },
+        {
+          "name": "playoffs_scoring_pergame.json",
+          "type": "file",
+          "sha": "1cfb0a8d704905f0e7375e60ba2c7f6789983b8c",
+          "size": 1383
+        },
+        {
+          "name": "playoffs_scoring_totals.json",
+          "type": "file",
+          "sha": "7e6e2c51c8b3f55c0445f2ac1103cb937e0e1835",
+          "size": 1382
+        },
+        {
+          "name": "playoffs_usage_pergame.json",
+          "type": "file",
+          "sha": "956d9ede91139c8d5da29fa25e75a923fff17253",
+          "size": 1267
+        },
+        {
+          "name": "playoffs_usage_totals.json",
+          "type": "file",
+          "sha": "1b07c9d124ff388cda1e046fe4ab74cfbeb83f02",
+          "size": 1266
+        },
+        {
+          "name": "regular-season_advanced_pergame.json",
+          "type": "file",
+          "sha": "268563938012125f16d6f4e48b983d2bc6771344",
+          "size": 987835
+        },
+        {
+          "name": "regular-season_advanced_totals.json",
+          "type": "file",
+          "sha": "3e759703e2e7f7db1e94d194cfd72309acee51d9",
+          "size": 987834
+        },
+        {
+          "name": "regular-season_base_pergame.json",
+          "type": "file",
+          "sha": "7648a273752fcba10d411e5d217b3a40b57da937",
+          "size": 823833
+        },
+        {
+          "name": "regular-season_base_totals.json",
+          "type": "file",
+          "sha": "b5e01c585114f59dbf561f43c09d893dcf92fd93",
+          "size": 773235
+        },
+        {
+          "name": "regular-season_misc_pergame.json",
+          "type": "file",
+          "sha": "03be7ab9306c7497b2a8f91ea20d94d032eff67c",
+          "size": 582053
+        },
+        {
+          "name": "regular-season_misc_totals.json",
+          "type": "file",
+          "sha": "cbebd587231c4ba5219685425bcb1f85ed940117",
+          "size": 570200
+        },
+        {
+          "name": "regular-season_scoring_pergame.json",
+          "type": "file",
+          "sha": "f932d5925c9afbd8fdbd212fd3fb5b820491cd43",
+          "size": 680770
+        },
+        {
+          "name": "regular-season_scoring_totals.json",
+          "type": "file",
+          "sha": "2ba0873a2b9865a50bcb28745ce7b1042b07f764",
+          "size": 680769
+        },
+        {
+          "name": "regular-season_usage_pergame.json",
+          "type": "file",
+          "sha": "0e40d84393747eb2c8a34cfaff3d66d3c8627344",
+          "size": 708476
+        },
+        {
+          "name": "regular-season_usage_totals.json",
+          "type": "file",
+          "sha": "d7d3002cd81e19ed600053672b527b29a05c5a76",
+          "size": 708475
+        }
+      ],
+      "period_or_segment_entries": []
+    },
+    {
+      "path": "nba_stats/json/teamgamelogs/2027",
+      "entries": [
+        {
+          "name": "playoffs_advanced_pergame.json",
+          "type": "file",
+          "sha": "8d5078a73284cf873b7321e1d907cfb1ed703a43",
+          "size": 1178
+        },
+        {
+          "name": "playoffs_advanced_totals.json",
+          "type": "file",
+          "sha": "4f2573324a952a7bb831ca29d613d98943d88470",
+          "size": 1177
+        },
+        {
+          "name": "playoffs_base_pergame.json",
+          "type": "file",
+          "sha": "ed7c6abab19b41de92691848cae61d6083c4c0fd",
+          "size": 1143
+        },
+        {
+          "name": "playoffs_base_totals.json",
+          "type": "file",
+          "sha": "d5515b2826da93093dbe29722366851c43e1a49a",
+          "size": 1142
+        },
+        {
+          "name": "playoffs_four-factors_pergame.json",
+          "type": "file",
+          "sha": "3051708a5e6d7aa59e910737da9faf9ff3bcfb4d",
+          "size": 972
+        },
+        {
+          "name": "playoffs_four-factors_totals.json",
+          "type": "file",
+          "sha": "a325b2cfdeadbc75b3354e53a4474c944bbcee23",
+          "size": 971
+        },
+        {
+          "name": "playoffs_misc_pergame.json",
+          "type": "file",
+          "sha": "b99e5d5a37a1a8f7d301f70d8583b1acf9164754",
+          "size": 998
+        },
+        {
+          "name": "playoffs_misc_totals.json",
+          "type": "file",
+          "sha": "6eff1c1544abbcce078972ddc2b8d4aec4cebaa1",
+          "size": 997
+        },
+        {
+          "name": "playoffs_opponent_pergame.json",
+          "type": "file",
+          "sha": "8807ef4c01a459c888250c55092b4cb5215d3b26",
+          "size": 1307
+        },
+        {
+          "name": "playoffs_opponent_totals.json",
+          "type": "file",
+          "sha": "86a1d5c0e6a85ddc4f9896d394c1f1fc0a6bbb5f",
+          "size": 1306
+        },
+        {
+          "name": "playoffs_scoring_pergame.json",
+          "type": "file",
+          "sha": "c55056f45659e64ddc16ae4ae54792feeb2b8516",
+          "size": 1250
+        },
+        {
+          "name": "playoffs_scoring_totals.json",
+          "type": "file",
+          "sha": "2eb7bf8d3b91ec8e2a08ca6b76545599081d4690",
+          "size": 1249
+        },
+        {
+          "name": "regular-season_advanced_pergame.json",
+          "type": "file",
+          "sha": "8e4510ae9047b39910c73b32860bfcc7852e5f61",
+          "size": 53791
+        },
+        {
+          "name": "regular-season_advanced_totals.json",
+          "type": "file",
+          "sha": "ee1b3d50679d43276686686f7e9bdd290077d81b",
+          "size": 53790
+        },
+        {
+          "name": "regular-season_base_pergame.json",
+          "type": "file",
+          "sha": "0028e8e00a7606e2cea16839413d3c3c5f433488",
+          "size": 57781
+        },
+        {
+          "name": "regular-season_base_totals.json",
+          "type": "file",
+          "sha": "29d534bd5e571249ea694e495168139fead1b07a",
+          "size": 52596
+        },
+        {
+          "name": "regular-season_four-factors_pergame.json",
+          "type": "file",
+          "sha": "069944784f704724bfc8f7828f9a4b24a0fbea3f",
+          "size": 36800
+        },
+        {
+          "name": "regular-season_four-factors_totals.json",
+          "type": "file",
+          "sha": "41499cfa989aa6b870cf32f6772a0f32622d66d9",
+          "size": 36799
+        },
+        {
+          "name": "regular-season_misc_pergame.json",
+          "type": "file",
+          "sha": "25d8c17353f17c1c1e02d7664aa3aeaae16ec5e1",
+          "size": 35622
+        },
+        {
+          "name": "regular-season_misc_totals.json",
+          "type": "file",
+          "sha": "d1028f360419c01ec43df0eed2b665670fad861a",
+          "size": 35621
+        },
+        {
+          "name": "regular-season_opponent_pergame.json",
+          "type": "file",
+          "sha": "bd012fd306c693d0364edd59093548d9ef17285f",
+          "size": 57697
+        },
+        {
+          "name": "regular-season_opponent_totals.json",
+          "type": "file",
+          "sha": "6b4654f4f341985d9ff2007e67c7afc5aac71356",
+          "size": 57696
+        },
+        {
+          "name": "regular-season_scoring_pergame.json",
+          "type": "file",
+          "sha": "dcf9732a2028f8a75b71d5731af5312d8e77f7df",
+          "size": 49510
+        },
+        {
+          "name": "regular-season_scoring_totals.json",
+          "type": "file",
+          "sha": "4c197aff8a73b6a30cab7a45616a202986d974e9",
+          "size": 49509
+        }
+      ],
+      "period_or_segment_entries": []
+    }
+  ],
+  "conclusion": "No quarter/half/period/segment variants or subdirectories are indexed in these two current-season endpoint directories. Filenames alone do not qualify any body; no additional body was acquired. The already-retained Base/Totals PlayerGameLogs body is whole-game scope and cannot supply period rows."
+}

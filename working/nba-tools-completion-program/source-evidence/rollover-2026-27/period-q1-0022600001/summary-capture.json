@@ -1,0 +1,13 @@
+{
+  "path": "nba_stats/json/boxscoresummaryv3/2027/0022600001.json",
+  "git_blob_sha": "24338b6d94716df0cd3b5ab75e61dcc694c9b37b",
+  "size_bytes": 23591,
+  "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11/nba_stats/json/boxscoresummaryv3/2027/0022600001.json",
+  "retrieved_at": "2026-11-01T01:59:58Z",
+  "sha256": "7e61162d1ec001d5235a8dd2125a654dfad30887db90e0d0c58621859383cf5a",
+  "file": "summary.json",
+  "classification": "retained_official_archive_oracle_pending_independent_period_qualification",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "source_original_capture_time": "unverified; original metadata preserved",
+  "production_writes": 0
+}

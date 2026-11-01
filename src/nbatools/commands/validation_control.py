@@ -489,11 +489,34 @@ def apply_cross_dataset_coverage(
         else set()
     )
 
+    from nbatools.commands.pipeline.official_schedule import (
+        official_final_rows,
+        validate_schedule_game_coverage,
+        validate_schedule_team_coverage,
+    )
+
+    source_final = None
+    if available("schedule"):
+        try:
+            source_final = official_final_rows(frames["schedule"])
+            validate_schedule_team_coverage(frames["schedule"], team_frame)
+            if available("games"):
+                validate_schedule_game_coverage(frames["schedule"], frames["games"])
+        except ValueError as exc:
+            _fail(records["schedule"], str(exc))
     for name in ("games", "schedule"):
         if available(name):
+            observed = frames[name]
+            if name == "schedule" and source_final is not None:
+                observed = source_final
             _apply_expected_coverage(
-                records[name], _keys(frames[name], ("game_id",)), team_games, ("game_id",)
+                records[name], _keys(observed, ("game_id",)), team_games, ("game_id",)
             )
+            if name == "schedule" and source_final is not None:
+                records[name]["coverage"].update(
+                    scope="explicit_official_final_games",
+                    future_or_in_progress_games=len(frames[name]) - len(source_final),
+                )
     if available("player_game_stats"):
         _apply_expected_coverage(
             records["player_game_stats"],
