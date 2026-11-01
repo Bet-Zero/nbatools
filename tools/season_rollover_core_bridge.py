@@ -10,6 +10,7 @@ import re
 import zipfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 
 from nbatools.commands.pipeline.pull_play_by_play_events import parse_clock_seconds_remaining
@@ -70,6 +71,20 @@ def _literal_minutes(value):
                 raise ValueError("Invalid Traditional box-score duration")
     parsed = _minutes(value)
     return 0.0 if parsed is None else parsed
+
+
+def _literal_clock_seconds(value):
+    """Keep the source's seconds exact at the inclusive display-residual boundary."""
+    if not _literal_minutes(value):
+        return Fraction(0)
+    text = str(value).strip()
+    if ":" in text:
+        minutes, seconds = text.split(":")
+        return Fraction(minutes) * 60 + Fraction(seconds)
+    if text.upper().startswith("PT"):
+        match = re.fullmatch(r"PT(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?", text.upper())
+        return Fraction(match[1] or "0") * 60 + Fraction(match[2] or "0")
+    return Fraction(text) * 60
 
 
 def _games(schedule, finder):
@@ -234,7 +249,11 @@ def _traditional_teams(source, games):
         if (
             not math.isfinite(team_minutes)
             or team_minutes < 240
-            or not math.isclose(sum(player_minutes), team_minutes, abs_tol=2 / 60)
+            or abs(
+                sum(_literal_clock_seconds(p["statistics"]["minutes"]) for p in team["players"])
+                - _literal_clock_seconds(team["statistics"]["minutes"])
+            )
+            > 2
         ):
             raise ValueError("Traditional team/player clock denominators contradict")
         if any(minutes > team_minutes / 5 for minutes in player_minutes):

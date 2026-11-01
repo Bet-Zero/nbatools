@@ -51,7 +51,9 @@ and final scores, checks literal clocks/count arithmetic, and derives only affec
 ratios. Team rebounds come from team source fields, never inferred from player sums.
 Additional retained source bytes must be bound by the caller to the independently
 reviewed immutable manifest/request/revision; malformed supplementary bodies stay
-quarantined. PBP fact replay does not accept the archive for canonical PBP ingestion. The original narrow stage disagrees with four retained season TS% values; the
+quarantined. Clock denominator arithmetic uses exact literal seconds for the
+existing inclusive two-second display residual, consistently across Python versions.
+PBP fact replay does not accept the archive for canonical PBP ingestion. The original narrow stage disagrees with four retained season TS% values; the
 expanded candidate disagrees with twelve. Snapshots remain inconsistent rather
 than silently rewritten. Partial
 team/player question checks do not establish the eleven-raw/five-processed

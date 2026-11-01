@@ -121,3 +121,55 @@ def test_empty_source_selection_preserves_primary():
     result, ledger = bridge_teams(primary, schedule)
     pd.testing.assert_frame_equal(result, primary)
     assert ledger == []
+
+
+@pytest.mark.parametrize(
+    "overtime,reverse", [(False, False), (False, True), (True, False), (True, True)]
+)
+def test_exact_two_second_display_residual_is_inclusive_across_orders_and_overtime(
+    overtime, reverse
+):
+    data = team_fixture()
+    team = data[2]["homeTeam"]
+    clocks = [
+        "30:47",
+        "35:44",
+        "28:27",
+        "13:02",
+        "35:20",
+        "32:22",
+        "14:03",
+        "15:08",
+        "18:23",
+        "16:46",
+    ]
+    # These literal source clocks sum to240:02; five extra five-minute
+    # allocations make265:02 without exceeding any player's game duration.
+    if overtime:
+        clocks = [
+            f"{int(x.split(':')[0]) + (5 if i < 5 else 0)}:{x.split(':')[1]}"
+            for i, x in enumerate(clocks)
+        ]
+        team["statistics"]["minutes"] = "265:00"
+        data[1]["leagueSchedule"]["gameDates"][0]["games"][0]["period"] = 5
+        away = data[2]["awayTeam"]
+        away["statistics"]["minutes"] = "265:00"
+        for player in away["players"][:5]:
+            player["statistics"]["minutes"] = "45:00"
+    zero_player = copy.deepcopy(team["players"][-1])
+    while len(team["players"]) < len(clocks):
+        row = copy.deepcopy(zero_player)
+        row["personId"] = 100 + len(team["players"])
+        team["players"].append(row)
+    for player, clock in zip(team["players"], clocks, strict=True):
+        player["statistics"]["minutes"] = clock
+    if reverse:
+        team["players"].reverse()
+    original = data[0].copy(deep=True)
+    staged, _ = run(data)
+    pd.testing.assert_frame_equal(staged, original)
+    # Just beyond the same boundary still fails; noepsilon or wider tolerance.
+    person = team["players"][0]
+    person["statistics"]["minutes"] += ".001"
+    with pytest.raises(ValueError, match="denominators contradict"):
+        run(data)

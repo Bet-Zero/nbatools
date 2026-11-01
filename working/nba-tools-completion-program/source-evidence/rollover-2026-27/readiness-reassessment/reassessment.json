@@ -60,7 +60,8 @@
     },
     {
       "name": "advanced snapshot basis",
-      "status": "Expanded corrected core produces12 player TS% disagreements with retained season snapshot, superseding the prior four-player count for this wider candidate. Preserve raw originals/USG; no blind snapshot rewrite or full-slice acceptance."
+      "status": "Expanded corrected core produces12 player TS% disagreements with retained season snapshot, superseding the prior four-player count for this wider candidate. Preserve raw originals/USG; no blind snapshot rewrite or full-slice acceptance.",
+      "minimum_collection_requirement": "OnceanexistingNBAAPIroute isqualified, obtain fresh regular-season player andteam Advanced/PerGame snapshots constrained to the same verifiedgame-date population. Recompute population first; preserve every original and reject remaining basis conflicts. No unchangedcloud retry or current acquisition launched."
     },
     {
       "name": "processed outputs and fresh due coverage",
@@ -151,11 +152,16 @@
       ],
       "partial_preparation_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
       "local_execution": "Initial1skip and two incomplete local consumer executions retained. Both preparations complete/identical CSVs; no HTTP answers credited. TestClient/AnyIO portal hangs; separate AsyncHealth smoke also timedout. No API assertions removed.",
-      "required_gate": "One existing targeted hosted selector pending; needs_data restored because require_data_validation.py selects that marker. No full RawQA/sweep/775object scan.",
+      "required_gate": "Firsthosted41300081682 failed1/1/0skip at exact2secondboundary onCPython3.11 beforeconsumers. Failedreceipt retained. Exactrationalclockarithmetic repair awaitingindependentreview/freshsingle requiredselector; no tolerancewidening.",
       "readiness_accepted": false,
       "production_writes": 0,
       "final_code_review_sha256": "4ccef434377f68bf2b7dc4e2293050e693f29124c7a68592515b3d6d2a717a5b",
-      "rate_consistency_proof": "expanded-season-rate-consistency.json"
+      "rate_consistency_proof": "expanded-season-rate-consistency.json",
+      "clock_boundary_repair": {
+        "review_sha256": "f6052854e7e80799d9a5faad13ef3c5deac5f8084b95475ae08cf4942fdb3982",
+        "code_sha256": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
+        "meaning": "Exactrational source seconds for aggregateclockcomparison; inclusive2sec policy and allMINfloatobservations unchanged. 60affectedcontrols and4clarifiedOT/ordercontrols passed; independentboundary/mixedformat/actual0137controls accepted. Freshsinglehostedselector pending."
+      }
     }
   },
   "hosting": {
