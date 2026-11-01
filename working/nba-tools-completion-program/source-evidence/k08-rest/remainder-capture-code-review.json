@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS exactly13 fixed remaining source captures using existing official report reader; no reported-reason/clinical/feature or production acceptance",
+  "reviewed_revision": "87690c261496b1288fb4e81f1d65eecafa0ac706",
+  "equivalent_local_revision": "f709ac4454c0bfc1357bf5d791556e9935796cdf",
+  "tree": "61e5cf995e436af4d6c1f9cc3acab86675f76bfb",
+  "file_hashes": {
+    "tests/cloud_luka_reported_reason_capture_real_data.py": "a44b604fa9c9b0733cfac151ec811908d6d76c94412eef233eebc98f2ce129ff",
+    "tests/cloud_luka_reason_remaining_capture_real_data.py": "b5df4243f12a40e1941c02683e78fd4b1a2a3cc1a7dfd518fcedb060d24185bf",
+    "working/nba-tools-completion-program/collection-requests/luka-reported-reasons-remaining-2025-26.json": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1"
+  },
+  "representative_proof_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+  "representative_artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+  "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+  "representative_receipt_sha256": "b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486",
+  "scope": {
+    "selector": "tests/cloud_luka_reason_remaining_capture_real_data.py::test_capture_thirteen_remaining_luka_reason_gamebooks_only",
+    "game_ids": [
+      "0022500163",
+      "0022500336",
+      "0022500418",
+      "0022500601",
+      "0022500753",
+      "0022500769",
+      "0022500774",
+      "0022500791",
+      "0022501140",
+      "0022501155",
+      "0022501170",
+      "0022501185",
+      "0022501198"
+    ],
+    "never_refetch": [
+      "0022500136",
+      "0022500113",
+      "0022500122",
+      "0022500338",
+      "0022501098"
+    ],
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "new_reader_invocations": 13,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "new_pdf_bytes_limit": 19500000,
+    "reused_pdf_bytes": 26433,
+    "combined_actual_structural_max": 19526433,
+    "combined_approved_limit": 21000000,
+    "metered_overage_usd": 0
+  },
+  "reviewed_safeguards": {
+    "all14canonical_envelopes_preflight_before_any_newreader": true,
+    "exact13child_cases_equal_parent_minus_first": true,
+    "oldfirsttest_default_scope_preserved": true,
+    "representative_artifact_PDF_receipt_bytes_reused_unchanged": true,
+    "archive_bounded_returned_PDF_before_original_strict_content_guard": true,
+    "original_guard_always_called_and_restored_percase": true,
+    "oversized_body_diagnosed_without_oversized_retention": true,
+    "failed_cases_typed_and_all_retained_pdf_bytes_counted": true,
+    "other_fixed_cases_continue_once_then_batchfails_ifanyfailure": true,
+    "no_new_host_headers_bypass_creds_permissions": true,
+    "no_reason_clinical_participation_or_fullslice_promotion": true
+  },
+  "focused_tests": {
+    "command": "pytest -q tests/cloud_luka_reported_reason_capture_real_data.py tests/cloud_luka_reason_remaining_capture_real_data.py -k synthetic",
+    "passed": 5,
+    "skipped": 0
+  },
+  "independent_controls": [
+    {
+      "mode": "all13_success",
+      "reader_calls": 13,
+      "unique_reader_urls": 13,
+      "failures": 0,
+      "strict_batch_failed": false,
+      "all13ledgers_persisted": true,
+      "reused_original_bytes_unchanged": true,
+      "original_PDF_guard_restored": true
+    },
+    {
+      "mode": "one_HTTP403",
+      "reader_calls": 13,
+      "unique_reader_urls": 13,
+      "failures": 1,
+      "strict_batch_failed": true,
+      "all13ledgers_persisted": true,
+      "reused_original_bytes_unchanged": true,
+      "original_PDF_guard_restored": true
+    },
+    {
+      "mode": "oversized_returned_PDF",
+      "reader_calls": 1,
+      "bounded_read_size": 1500001,
+      "retained_bytes": 0,
+      "guard_rejected": true,
+      "typed_error_retained": true,
+      "original_PDF_guard_restored": true
+    },
+    {
+      "mode": "actual_retained_proof_ZIP_PDF_receipt_pin_reuse",
+      "cases": 13,
+      "canonical_preparer_allcases_called": true,
+      "network_calls": 0
+    }
+  ],
+  "control_limit": "Transport/canonical-preparer boundary mocked for offline tests; genuine NBA source collection and per-report identity/reason qualification remain pending. Actual retained representative/proof/ZIP/PDF/receipt pins were read and verified without network.",
+  "source_network_calls_by_checker": 0,
+  "actual_R2_source_capture_approved": true,
+  "actual_capture_execution_accepted": false,
+  "reported_reason_qualified": false,
+  "clinical_status_qualified": false,
+  "season_rest_total_qualified": false,
+  "feature_acceptance": false,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}
