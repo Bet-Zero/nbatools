@@ -1,0 +1,15 @@
+{
+  "classification": "byte_authenticated_originals_not_game_or_player_qualification",
+  "request_sha256": "34d95a99c630a1377d708f05eb76ae98b8b4edd31e048c3cf6b301ef0dc3b833",
+  "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+  "source_files": 62,
+  "source_bytes": 1216367,
+  "source_reader_invocations": 66,
+  "prior_adapter_failures": 4,
+  "non_nba_adapter_diagnostics": 2,
+  "one_original_write_per_file": true,
+  "original_nba_capture_time": "unknown",
+  "source_scope_qualified": false,
+  "production_writes": 0,
+  "pointer_changes": 0
+}

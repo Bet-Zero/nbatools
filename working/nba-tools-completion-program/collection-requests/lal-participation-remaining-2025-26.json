@@ -1483,7 +1483,18 @@
     "collection_expanded_bytes": 100000000,
     "collection_max_files": 2000,
     "attempts_per_file": 1,
-    "metered_overage_usd": 0
+    "metered_overage_usd": 0,
+    "decoder_recovery_exception": {
+      "source_files": [
+        "boxscoretraditionalv3_0022500336.json",
+        "boxscoretraditionalv3_0022500379.json",
+        "boxscoretraditionalv3_0022500395.json",
+        "boxscoretraditionalv3_0022500418.json"
+      ],
+      "additional_reader_attempts_per_named_file": 1,
+      "maximum_total_source_reader_calls": 66,
+      "reason": "First four reader responses were not retained because the capture adapter expected a Git-blob JSON envelope; the existing approved reader returns decoded UTF-8 original text. Confirmed on an NBA-Tools code blob before retrying. Only the decoder changes; source scope, hashes, size limits and qualification remain unchanged."
+    }
   },
   "acceptance": [
     "Retain byte-identical originals, immutable source revision, Gitblob and SHA256 hashes, URLs, UTC retrieval times and explicit unknown original capture times.",
