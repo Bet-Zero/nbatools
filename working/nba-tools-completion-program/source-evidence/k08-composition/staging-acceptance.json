@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "classification": "actual_combined_staging_acceptance_not_publication",
+  "run_id": 41292880962,
+  "request_sha": "26a243ee4285e88ccb61e5c727093ad71834efd0",
+  "reviewed_sha": "5058d81a6b3979671dc2515b8c5e81f6f2279cc4",
+  "reviewed_tree": "682aee95c386199f6af3849251613febe0046a76",
+  "required": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "original_artifact": {
+    "id": 13078276111,
+    "sha256": "4ce53f28bd44230138f000927d3ffa43dbe618759e265ce65e095b505ecb92cf",
+    "size_bytes": 1668648,
+    "receipt_member": "acquired_data/composed-participation-stage/acceptance.json",
+    "receipt_sha256": "39bcadde97e9941371648ef62c9dfb54399629256a7eec5e73fa880616037079"
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "overlay_paths": 407,
+  "source_root_validation": "passed",
+  "consumer_acceptance": "passed",
+  "state_maps": [
+    {
+      "season": "2025-26",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "requested_games": 82,
+      "counts": {
+        "played": 64,
+        "did_not_play": 18,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "requested_games": 82,
+      "counts": {
+        "played": 51,
+        "did_not_play": 31,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "requested_games": 82,
+      "counts": {
+        "played": 16,
+        "did_not_play": 66,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "requested_games": 82,
+      "counts": {
+        "played": 71,
+        "did_not_play": 11,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "requested_games": 82,
+      "counts": {
+        "played": 76,
+        "did_not_play": 6,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "requested_games": 82,
+      "counts": {
+        "played": 71,
+        "did_not_play": 11,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "requested_games": 82,
+      "counts": {
+        "played": 82,
+        "did_not_play": 0,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    },
+    {
+      "season": "2024-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "requested_games": 82,
+      "counts": {
+        "played": 72,
+        "did_not_play": 10,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "complete_requested_population": true
+    }
+  ],
+  "answer_checks": 21,
+  "api_checks": 3,
+  "composed_availability_rows": 5020,
+  "unchanged_other_season_rows": 78,
+  "projected_all_season_availability_rows": 5098,
+  "first_run": {
+    "id": 41292246166,
+    "conclusion": "failure",
+    "original_artifact_sha256": "d055bc88cbcdb6b7af15f645aa035273ffb2424af3f73ec7c9d719bd3ed6a349",
+    "consumer_acceptance": "pending; zero retained query outputs"
+  },
+  "independent_actual_review": {
+    "path": "composition-stage-acceptance-review.json",
+    "sha256": "618455506447a8def5e33b4f95207d0586894b283d50608bbb331868cf714eea",
+    "decision": "accepted_staging_only"
+  },
+  "nba_source_requests": 0,
+  "production_writes": 0,
+  "full_required_slice_accepted": false,
+  "publication_state": "staged_only_no_writes"
+}

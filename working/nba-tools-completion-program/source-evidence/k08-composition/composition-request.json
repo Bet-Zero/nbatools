@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "classification": "bounded_offline_accepted_overlay_composition_not_acquisition_or_publication",
+  "obligation_dependency": "K08 season-long participation questions need the independently accepted Lakers, Celtics and historical cohorts jointly usable. Last-file-wins would discard one2025cohort; exact-equality append composition is required before a coherent future publication package. This directly enables accepted original absence/mixed questions across these scopes without new collection.",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "inputs": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/staged-acceptance-source.zip",
+      "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-bos-remaining/staged-acceptance-source.zip",
+      "sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-direct-dependencies/staged-acceptance-source.zip",
+      "sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db"
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-rest/staging-acceptance-source.zip",
+      "sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e"
+    }
+  ],
+  "expected": {
+    "overlay_paths": 407,
+    "new_availability_rows": 4148,
+    "tables": {
+      "2023-24": {
+        "rows": 597,
+        "imports": 17
+      },
+      "2024-25": {
+        "rows": 347,
+        "imports": 10
+      },
+      "2025-26": {
+        "rows": 4076,
+        "imports": 121
+      }
+    },
+    "composed_availability_rows": 5020,
+    "unchanged_other_season_rows": 78,
+    "projected_all_season_rows": 5098,
+    "reason_observations": 18,
+    "complete_target_state_maps": 8,
+    "target_games_per_map": 82,
+    "consumer_answer_checks": 21,
+    "local_api_checks": 3
+  },
+  "acceptance": [
+    "Require same immutable BASE manifest and actual touched baseline bytes. No reconstructed CSV/JSON formatting masquerading as baseline.",
+    "Exact serialized-cell and full-import equality on overlap only; reject conflicting primary keys, one-player/two-side conflicts, path/body/metadata and source-authority collisions.",
+    "Deduplicate byte-identical94-path LAL dependency of accepted Rest stage; retain38new reason companion paths unchanged.",
+    "Truthful append/new-table absence bindings; preserve all old cells/whole import records and per-game digests.",
+    "One unchanged combined source-root publication validator and one combined consumer gate, reusing accepted source qualification and independently reviewed state/arithmetic oracles.",
+    "Keep local query inventory test-only and out of exported raw package; no new production generation/pointer or current-season completeness claim."
+  ],
+  "nba_source_requests": 0,
+  "production_writes": 0,
+  "new_credentials": false,
+  "paid_services": false,
+  "full_required_slice_accepted": false,
+  "production_publication_requires_separate_owner_approval": true
+}

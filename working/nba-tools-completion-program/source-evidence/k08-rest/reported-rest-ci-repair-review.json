@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; separate checker agent, no cross-model claim",
+  "approval": "PASS_CORRECTED_CI_DELTA_AND_REUSE_UNCHANGED_ACTUAL_GATE",
+  "reviewed_remote_revision": "8d9685f58c515add0cee09e377ebc005fb4c94fa",
+  "equivalent_local_revision": "c2e02f3c090698865b345ed757e386d662307a40",
+  "tree": "2464d633d582377466cbe627f56e9e7b9e39e028",
+  "isolated_frozen_checkout": "work/rest-ci-independent-review",
+  "previous_failed_CI": {
+    "run_id": 41290716432,
+    "retained_status": "failure",
+    "failures": 47,
+    "classification": "46 new raw-text-copy equivalence mismatches plus one genuine inherited team-gerund regression; final repair does not relabel this run."
+  },
+  "rejected_intermediate_candidate": {
+    "revision": "593d3b7bb0f2ca426ca3d13f2b30d5d7ff6baa84",
+    "tree": "abf39bf9d3ae534544737c9f727bc167bfe0b535",
+    "finding": "Unconditionally claiming an explicit team gerund hid a cross-grain team bound on a primary-player consumer. Authenticated-source Rest and true team points117 did not justify applying the80-point team threshold to Reaves own13 points.",
+    "literal_actual_case": {
+      "query": "Austin Reaves stats when Davis rests, scoring at least 80 points as a team vs Celtics in 2023-24",
+      "route": "player_game_finder",
+      "kwargs": {
+        "season": "2023-24",
+        "start_season": null,
+        "end_season": null,
+        "start_date": null,
+        "end_date": null,
+        "season_type": "Regular Season",
+        "player": "Austin Reaves",
+        "team": null,
+        "opponent": "BOS",
+        "opponent_player": null,
+        "without_player": "Anthony Davis",
+        "special_event": null,
+        "home_only": false,
+        "away_only": false,
+        "wins_only": false,
+        "losses_only": false,
+        "stat": "pts",
+        "min_value": 80.0,
+        "max_value": null,
+        "limit": 25,
+        "sort_by": "stat",
+        "ascending": false,
+        "last_n": null,
+        "without_player_reason": "reported_rest",
+        "back_to_back": false,
+        "rest_days": null,
+        "one_possession": false,
+        "nationally_televised": false,
+        "clutch": false,
+        "role": null,
+        "opponent_quality": null,
+        "quarter": null,
+        "half": null
+      },
+      "status": "no_result",
+      "reason": "no_match",
+      "independent_fixture": {
+        "game_id": 3,
+        "team_points": 117,
+        "player_points": 13
+      }
+    },
+    "independent_reproduction": "Reproduced as a failed discriminating assertion in a separate immutable593d checkout; no source calls."
+  },
+  "resolution": {
+    "equivalence_helper": "Only availability_condition_query raw spelling/coordinate text joins the existing surface-text exclusions. Route, semantic slots, without-player reason/polarity, numeric bounds and unsupported markers remain compared.",
+    "team_gerund_scope": "Only team_record/game_finder/game_summary consumers can claim a leading scoring + parsed bound + explicit as-a-team suffix. Only that exact predicate is masked, leaving subsequent actors/bounds unread. Player routes retain prior cross-grain containment.",
+    "fixed_literal_case": {
+      "query": "Austin Reaves stats when Davis rests, scoring at least 80 points as a team vs Celtics in 2023-24",
+      "route": "player_game_finder",
+      "kwargs": {
+        "season": "2023-24",
+        "start_season": null,
+        "end_season": null,
+        "start_date": null,
+        "end_date": null,
+        "season_type": "Regular Season",
+        "player": "Austin Reaves",
+        "team": null,
+        "opponent": "BOS",
+        "opponent_player": null,
+        "without_player": "Anthony Davis",
+        "special_event": null,
+        "home_only": false,
+        "away_only": false,
+        "wins_only": false,
+        "losses_only": false,
+        "stat": "pts",
+        "min_value": 80.0,
+        "max_value": null,
+        "limit": 25,
+        "sort_by": "stat",
+        "ascending": false,
+        "last_n": null,
+        "without_player_reason": "reported_rest",
+        "back_to_back": false,
+        "rest_days": null,
+        "one_possession": false,
+        "nationally_televised": false,
+        "clutch": false,
+        "role": null,
+        "opponent_quality": null,
+        "quarter": null,
+        "half": null,
+        "unsupported_filters": [
+          "teammate_stat_condition"
+        ]
+      },
+      "status": "no_result",
+      "reason": "filter_not_supported",
+      "independent_fixture": {
+        "game_id": 3,
+        "team_points": 117,
+        "player_points": 13
+      }
+    },
+    "team_record_discriminating_fixture": {
+      "game_id": 16,
+      "team_points": 89,
+      "wins": 0,
+      "losses": 1,
+      "at_least80": "One exact game16",
+      "at_least90": "Known empty/no_match"
+    },
+    "unfamiliar_controls": "Pronoun, team-qualified unindexed actor and resolved actor bounds following the team claim remain filter_not_supported; team sample80 vs120 still distinguishes117 points, while primary-player stats/assists keep cross-grain conditions unsupported."
+  },
+  "independent_checks": {
+    "passed": 21,
+    "skipped": 0,
+    "equivalence_meaning_mutation_controls": 6,
+    "cross_grain_literal_control": 1,
+    "unfamiliar_actor_and_team_player_scope_controls": 7,
+    "author_new_and_original_CI_regression_controls": 7,
+    "git_diff_check": "passed",
+    "worktree_clean": true,
+    "reviewer_test_contract_correction": "One draft test expected a finder section on a valid team summary. Corrected to read its actual game_log while retaining exact game IDs; final21-control run passes."
+  },
+  "changed_file_sha256": {
+    "src/nbatools/commands/_matchup_utils.py": "e4f644e98422110e6d85b0a231f2c7bb235011bcc82bcf70f9577d376b37fef0",
+    "src/nbatools/commands/natural_query.py": "e603968ce195e58f4887eae2d96e9a3e13e052073c98381c1eece542a21c4ab6",
+    "tests/_parser_equivalence.py": "511b30ea78b56c48ae4160268e62a5c9c19eeb784558fa50b023b4b0f78315b6",
+    "tests/test_reported_rest_consumers.py": "5f64c630f0ec5b043e0cf4523810dcd5dbc6934cc5499d3b563720787dc059b5"
+  },
+  "actual_gate_evidence_reuse": {
+    "accepted_run_id": 41289966416,
+    "request_revision": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+    "original_executed_code": "8730ee9f4ca53f364c529b27dbdfe4436d5052ca",
+    "review_sha256": "8fe9e1aceae8e62d521a6c38d62c10ed967758e82c27f4759e579db5b7ce0856",
+    "applicable": true,
+    "why": "Original sources, producer, companion schema/lineage, calculations, required test and12 actual query/3 API inputs are unchanged. None contains the newly recognized leading scoring-bound-as-a-team predicate. New consumer context does not alter player behavior, and the new team-claim branch does not apply to those inputs. Their validated132 raw overlay and real sparse17 unknown result therefore remain applicable.",
+    "new_stage_or_source_run_needed_for_this_delta": false,
+    "not_a_new_execution_claim": true
+  },
+  "remaining_limits": [
+    "Compressed at least80 bound parsing is a separately confirmed preexisting gap; this repair does not claim to fix it.",
+    "The literal unspaced date/season form `miss in2025-26` and bare `with PLAYER resting` wording remain separate unfinished interpretation work.",
+    "Player questions with an additional team-stat gerund remain contained, not implemented by applying team bounds to player rows.",
+    "Only source-reported Rest is qualified; clinical health and within-game on/off remain distinct.",
+    "Exact-head normal CI, normal merge/deployment and the independently reviewed bounded public regression remain pending.",
+    "Production data/reason companions remain unpublished; no publication authority is conferred."
+  ],
+  "source_calls": 0,
+  "production_writes": 0,
+  "unresolved_review_findings": []
+}
