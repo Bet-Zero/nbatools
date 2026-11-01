@@ -393,11 +393,14 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands._teammate_resolution import (
+    AvailabilityClause,
+    AvailabilityConjunction,
     availability_pair,
     exact_condition_name,
     name_before_scope,
     played_matchup_pair,
     requested_availability_pair,
+    requested_mixed_availability,
     requested_scalar_absence,
     resolve_teammate,
     shares_side,
@@ -3333,6 +3336,8 @@ def _build_parse_state(query: str) -> dict:
     without_player = None
     unresolved_with_player = None
     unresolved_without_player = None
+    mixed_availability = None
+    mixed_availability_requested = None
 
     team_resolution_confidence = "none"
 
@@ -3536,6 +3541,42 @@ def _build_parse_state(query: str) -> dict:
                     if primary.is_ambiguous
                     else None
                 )
+
+        mixed_availability_requested = requested_mixed_availability(presence_q)
+        if mixed_availability_requested:
+            resolved_clauses = []
+            for clause in mixed_availability_requested.clauses:
+                name = resolve_condition_name(clause.players)
+                if not name or not exact_condition_name(clause.players, name):
+                    name = resolve_teammate(
+                        clause.players,
+                        team=team,
+                        player=None,
+                        season=season,
+                        start_season=start_season,
+                        end_season=end_season,
+                        season_type=season_type,
+                    )
+                if clause.mode == "with":
+                    with_player, unresolved_with_player = name, None if name else clause.players
+                else:
+                    without_player, unresolved_without_player = (
+                        name,
+                        None if name else clause.players,
+                    )
+                if name:
+                    resolved_clauses.append(
+                        AvailabilityClause(clause.mode, name, clause.start, clause.end)
+                    )
+            primary = detect_player_resolved(mixed_availability_requested.mask_clause(presence_q))
+            player = primary.resolved if primary.is_confident else None
+            entity_ambiguity = (
+                dict(type="player", input=q, candidates=primary.candidates, source=primary.source)
+                if primary.is_ambiguous
+                else None
+            )
+            if len(resolved_clauses) == 2 and with_player != without_player:
+                mixed_availability = AvailabilityConjunction(tuple(resolved_clauses))
 
     wins_only, losses_only = detect_wins_losses(q)
     if team_streak_request and team_streak_request.get("special_condition") in ("wins", "losses"):
@@ -3896,6 +3937,8 @@ def _build_parse_state(query: str) -> dict:
         "without_player": without_player,
         "unresolved_with_player": unresolved_with_player,
         "unresolved_without_player": unresolved_without_player,
+        "mixed_availability": mixed_availability,
+        "mixed_availability_requested": mixed_availability_requested,
         "entity_ambiguity": entity_ambiguity,
         "team_resolution_confidence": team_resolution_confidence,
         "stat_resolution_confidence": stat_resolution_confidence,
@@ -4271,11 +4314,16 @@ def _route_parsed_query(parsed: dict) -> dict:
         max_value=max_value,
         occurrence_event=occurrence_event,
     )
-    from nbatools.commands._parse_helpers import explicit_qualifying_participation_window
+    from nbatools.commands._parse_helpers import (
+        _original_participation_window,
+        explicit_qualifying_participation_window,
+    )
 
     explicit_qualifying_pair_window = explicit_qualifying_participation_window(q)
     explicit_original_pair_marker = bool(
-        re.search(r"\blast\b", q) and re.search(r"\boriginal\b", q)
+        _original_participation_window(q)
+        or re.search(r"\blast\b", q)
+        and re.search(r"\boriginal\b", q)
     )
     played_pair = (
         played_matchup_pair(q)
@@ -6347,7 +6395,11 @@ def _route_parsed_query(parsed: dict) -> dict:
     elif (
         team
         and team_record_availability_intent
-        and (played_pair or _multi_player_availability_boundary(q))
+        and (
+            played_pair
+            or parsed.get("mixed_availability_requested")
+            or _multi_player_availability_boundary(q)
+        )
     ):
         # Preserve the team record and every availability predicate. Only a
         # complete pair reading can replace the default unsupported marker.
@@ -6376,20 +6428,30 @@ def _route_parsed_query(parsed: dict) -> dict:
             "end_date": end_date,
             "unsupported_filters": ["multi_player_availability"],
         }
-        pair = played_pair or availability_pair(
-            q,
-            team=team,
-            player=None,
-            season=season,
-            start_season=start_season,
-            end_season=end_season,
-            season_type=season_type,
-            season_list=parsed.get("season_list"),
+        mixed = parsed.get("mixed_availability") if not player else None
+        pair = (
+            mixed
+            or played_pair
+            or availability_pair(
+                q,
+                team=team,
+                player=None,
+                season=season,
+                start_season=start_season,
+                end_season=end_season,
+                season_type=season_type,
+                season_list=parsed.get("season_list"),
+            )
         )
         if pair:
             # "Lakers record with LeBron and Davis": the games both played.
             route_kwargs.update(with_player=None, without_player=None, unsupported_filters=[])
-            route_kwargs[f"{pair.mode}_player"] = pair.players
+            if mixed:
+                route_kwargs.update(
+                    with_player=mixed.name("with"), without_player=mixed.name("without")
+                )
+            else:
+                route_kwargs[f"{pair.mode}_player"] = pair.players
             applied_pair = pair
             if played_pair:
                 # The named players are predicates of the explicit team record.
@@ -6430,11 +6492,16 @@ def _route_parsed_query(parsed: dict) -> dict:
                     or one_possession
                     or nationally_televised
                 )
-            ):
+            ) or (mixed and explicit_original_pair_marker):
                 # Temporal played-pair promotion is bounded to an explicit
                 # single-season, whole-game matchup. Do not drop another
                 # requested context while opening this positive slice.
                 route_kwargs["unsupported_filters"] = ["multi_player_availability"]
+                if mixed:
+                    # Preserve the requested population even while this
+                    # composition remains unsupported; qualifying games are
+                    # a different sample from these original last-N games.
+                    parsed["last_n_scope"] = route_kwargs["last_n_scope"] = "original_window"
                 notes.append("Temporal participation composition is not yet supported")
     elif (
         team
@@ -11356,10 +11423,15 @@ def _finalize_route(parsed: dict) -> dict:
     route = out.get("route")
     condition_q = parsed["normalized_query"]
     scalar_absence = requested_scalar_absence(condition_q)
+    mixed = parsed.get("mixed_availability")
+    condition_spans = (
+        {clause.players: (clause.start, clause.end) for clause in mixed.clauses} if mixed else {}
+    )
     if any(
         presence_names_player_condition(
             condition_q,
             name,
+            condition_span=condition_spans.get(name),
             absence_span=(scalar_absence.start, scalar_absence.end)
             if scalar_absence and name == kwargs.get("without_player")
             else None,

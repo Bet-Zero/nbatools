@@ -78,7 +78,6 @@ def test_sits_is_absence(query):
 @pytest.mark.parametrize(
     "query",
     [
-        "Lakers record when LeBron James plays and Luka Doncic sits",
         "Lakers record in games LeBron James plays at least 35 minutes and Luka Doncic plays "
         "at least 35 minutes",
         # A second player the resolver can't name still isn't dropped.
@@ -97,6 +96,38 @@ def test_second_player_clause_refuses(query):
     result = _execute(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+def test_supported_mixed_clauses_have_a_qualified_empty_fixture_population():
+    import pandas as pd
+
+    from nbatools.data_source import data_read_csv
+
+    # Positive canonical appearances cover every candidate. That makes Luka's
+    # absence false in all games; missing rows are never used as DNP evidence.
+    teams = data_read_csv("data/raw/team_game_stats/2025-26_regular_season.csv")
+    candidates = teams.loc[teams.team_id.eq(1610612747)]
+    players = data_read_csv("data/raw/player_game_stats/2025-26_regular_season.csv")
+    own = players.loc[players.team_id.eq(1610612747) & pd.to_numeric(players.minutes).gt(0)]
+    games = set(candidates.game_id)
+    assert games and len(games) == len(candidates)
+    luka = own.loc[own.player_id.eq(1629029)]
+    lebron = own.loc[own.player_id.eq(2544)]
+    assert set(luka.game_id) == games
+    assert set(lebron.game_id).intersection(games)
+    assert not luka.duplicated(["game_id", "team_id", "player_id"]).any()
+    for row in luka.itertuples():
+        assert pd.Timestamp(row.game_date) == pd.Timestamp(
+            candidates.loc[candidates.game_id.eq(row.game_id), "game_date"].item()
+        )
+    result = _execute("Lakers record when LeBron James plays and Luka Doncic sits")
+    assert result.route == "team_record" and result.metadata["team"] == "LAL"
+    assert result.metadata["player"] is None
+    assert result.metadata["with_player"] == "LeBron James"
+    assert result.metadata["without_player"] == "Luka Dončić"
+    assert not result.metadata["unsupported_filters"]
+    assert result.result_status == "no_result" and result.result_reason == "no_match"
+    assert not result.result.to_dict()["sections"]
 
 
 def test_below_is_a_ceiling():

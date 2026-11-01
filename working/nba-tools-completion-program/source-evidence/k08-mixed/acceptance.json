@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "classification": "qualified_mixed_participation_runtime_and_local_api_acceptance_public_deployment_pending",
+  "reviewed_candidate_sha": "cab31bb5046f86488788f2d3cc9a0a31765d724c",
+  "reviewed_tree_sha": "7e2940a3198d7403d759a777ecb6d364f146a04f",
+  "author_frozen_sha": "1f7808a03f008f4a0bec4291e2e883222268edf7",
+  "independent_checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "review_comments": [
+    "https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6552653577",
+    "https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6552718824"
+  ],
+  "run_id": 41268130270,
+  "job_id": 124735263044,
+  "request_sha": "354cbd6e7aaa5e9585b69daa8130f3c9ef1f7b25",
+  "required_summary": {
+    "candidate_sha": "354cbd6e7aaa5e9585b69daa8130f3c9ef1f7b25",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_mixed_participation_real_data.py::test_qualified_season_mixed_team_record_and_api"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "artifact": {
+    "id": 13068188169,
+    "bytes": 27983,
+    "sha256": "dadb1d800ed51f8c1cf1aca25f24569140ba4ffafe75b2894a2698db511827cb"
+  },
+  "raw_qa": {
+    "execution": "actual fail-on-expectation-failure gate inside required pytest selector",
+    "cases": [
+      "k08_mixed_participation_bounded_record",
+      "k08_mixed_participation_out_order_variant"
+    ],
+    "executed": 2,
+    "passed": 2,
+    "expectation_checks_passed": 20,
+    "expectation_checks_failed": 0,
+    "human_review_status": "human_review_pending",
+    "manual_review_unreviewed": 2,
+    "outer_raw_qa_job": "not selected; inner execution verified from artifact"
+  },
+  "source_review": {
+    "receipt": "source-arithmetic.json",
+    "receipt_sha256": "369e7230b071b9330b7e1b9d9f3099bb18374a52484107cd2067c7ef67cffaf8",
+    "source_capture": "source-subsets-from-failed-run.zip",
+    "source_capture_sha256": "a0eef5dee7f0253ec4123474548d61fa2f80e822ef4a89aa6da03ea7a1fd67d0",
+    "all_five_csv_subsets_and_bindings_byte_identical_to_independently_verified_prior_attempt": true,
+    "absence_population": 82,
+    "lebron_played": 60,
+    "lebron_explicit_dnp": 22,
+    "lebron_unknown": 0,
+    "positive_only_sibling": true
+  },
+  "answers": [
+    {
+      "positive_player": "Luka Doncic",
+      "scope": "2025-26 observed82 LAL regular-season games",
+      "games": 15,
+      "wins": 11,
+      "losses": 4,
+      "points": 1736,
+      "ppg": 115.73333333333333
+    },
+    {
+      "positive_player": "Austin Reaves",
+      "scope": "2025-26 observed82 LAL regular-season games",
+      "games": 16,
+      "wins": 12,
+      "losses": 4,
+      "points": 1881,
+      "ppg": 117.5625
+    },
+    {
+      "positive_player": "Luka Doncic",
+      "scope": "2025-10-24 through2025-10-27",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 128,
+      "game_ids": [
+        22500019
+      ]
+    },
+    {
+      "positive_player": "Austin Reaves",
+      "scope": "2025-10-24 through2025-10-27",
+      "games": 3,
+      "wins": 2,
+      "losses": 1,
+      "points": 363,
+      "game_ids": [
+        22500019,
+        22500113,
+        22500122
+      ]
+    }
+  ],
+  "local_api_requests": 2,
+  "previous_failed_attempt": {
+    "run_id": 41267659415,
+    "request_sha": "60c8e33d02e2ea69ad888d46d1c7f06750c704d8",
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "cause": "new mixed reader overrode established shared WITHOUT A AND B PLAYING scope",
+    "expectation_changed": false,
+    "failure_receipt_replaced": false
+  },
+  "unfinished": [
+    "explicit original last-N mixed windows",
+    "attached participant-stat conditions",
+    "broader boolean OR or extra actors",
+    "mixed participation on other routes",
+    "historical complete participation and dated membership",
+    "2026-27 required role/period/roster/rate-basis qualification"
+  ],
+  "production": {
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "data_writes": 0,
+    "nba_source_requests": 0,
+    "publication_approval_requested": false,
+    "operational_acceptance_complete": false
+  }
+}

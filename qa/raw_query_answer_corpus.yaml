@@ -17412,3 +17412,52 @@ cases:
     - path: result.sections.finder.1.pts
       equals: 41
     review_notes: Existing independently checked PDF states and Reaves point rows select only October26/27. The primary-player bound and complete negative pair must survive duplicate interpretation guards.
+
+  - id: k08_mixed_participation_bounded_record
+    query: Lakers record without LeBron James and with Luka Doncic from 2025-10-24 to 2025-10-27 in 2025-26
+    category: participation
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 1
+    - path: result.sections.summary.0.wins
+      equals: 1
+    - path: result.sections.summary.0.losses
+      equals: 0
+    - path: result.sections.summary.0.pts_avg
+      equals: 128
+    - path: result.sections.game_log.0.game_id
+      equals: 22500019
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: Accepted independent three-PDF states qualify every LeBron absence before intersecting Luka's positive appearances. Only October24 qualifies; player conditions cannot become the record subject. No new data or complete Luka absence coverage is claimed.
+  - id: k08_mixed_participation_out_order_variant
+    query: Lakers record with Austin Reaves and with LeBron James out from 2025-10-24 to 2025-10-27 in 2025-26
+    category: participation
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_sections: [summary, game_log]
+    hard_assertions:
+    - path: result.sections.summary.0.games
+      equals: 3
+    - path: result.sections.summary.0.wins
+      equals: 2
+    - path: result.sections.summary.0.losses
+      equals: 1
+    - path: result.sections.summary.0.pts_avg
+      equals: 121
+    - path: result.metadata.player
+      equals: null
+    - path: result.metadata.with_player
+      equals: Austin Reaves
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: The same accepted source states explicitly show Reaves playing and LeBron DNP in all three games. Clause order and WITH-name-OUT keep independent polarity; original candidate absence coverage is required before the played sibling filter.
