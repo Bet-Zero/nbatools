@@ -10,13 +10,25 @@
     "season_type": "Regular Season",
     "capture": "one explicit timezone-qualified timestamp at authorized execution; record original source URLs/request parameters and byte hashes",
     "schedule": "complete published season schedule, including future/postponed/cancelled status as actually provided; no fabricated game IDs or expected totals",
-    "completed_core": "all observed final games at capture, with matching canonical games, reciprocal team-game stats and player-game stats; no other season backfill"
+    "completed_core": "All observed final games at capture, with matching canonical games, reciprocal team/player stats, starter roles and required period windows. Required current-season advanced, roster and standings inputs must also qualify. Only this season/type; no other-season backfill."
   },
   "required_datasets": [
-    "raw/schedule/2026-27_regular_season.csv",
     "raw/games/2026-27_regular_season.csv",
+    "raw/schedule/2026-27_regular_season.csv",
     "raw/team_game_stats/2026-27_regular_season.csv",
-    "raw/player_game_stats/2026-27_regular_season.csv"
+    "raw/player_game_stats/2026-27_regular_season.csv",
+    "raw/player_game_starter_roles/2026-27_regular_season.csv",
+    "raw/player_game_period_stats/2026-27_regular_season.csv",
+    "raw/team_game_period_stats/2026-27_regular_season.csv",
+    "raw/team_season_advanced/2026-27_regular_season.csv",
+    "raw/player_season_advanced/2026-27_regular_season.csv",
+    "raw/rosters/2026-27.csv",
+    "raw/standings_snapshots/2026-27_regular_season.csv",
+    "processed/team_game_features/2026-27_regular_season.csv",
+    "processed/game_features/2026-27_regular_season.csv",
+    "processed/schedule_context_features/2026-27_regular_season.csv",
+    "processed/player_game_features/2026-27_regular_season.csv",
+    "processed/league_season_stats/2026-27_regular_season.csv"
   ],
   "existing_pipeline_derivations": "After qualified future-schedule support: normal cloud processing and trusted per-slice manifest receipts (raw_complete/processed_complete/validation_state). Add only metadata/identity support actually required by validated inputs; never fabricate passed flags.",
   "acceptance": [
@@ -38,7 +50,65 @@
   "pipeline_prerequisite": {
     "status": "requires_qualified_source_adapter_and_validation_changes_before_publication",
     "existing_failure": "pull_schedule.fetch_schedule uses completed LeagueGameFinder rows and run labels allFinal; validate_raw.run requires schedule game IDs equal games IDs. A full future schedule cannot currently pass that representation.",
-    "required_behavior": "Qualify a retained authoritative future-schedule source. Keep final game/stat catalog identity and coverage checks strict, while accepting genuine scheduled/postponed rows without requiring nonexistent final stats. Do not convert an allFinal/truncated schedule into proof of active readiness.",
+    "required_behavior": "Qualify a retained authoritative future-schedule source. Keep final game/stat catalog identity and coverage checks strict, while accepting genuine scheduled/postponed rows without requiring nonexistent final stats. Do not convert an allFinal/truncated schedule into proof of active readiness. Independently verify every due schedule gameID is represented as final, not just the maximum final date; a later final game cannot hide an earlier missing game. Preserve required11raw+5processed DATASET_SPECS; four core CSVs alone cannot supply raw_complete/processed_complete.",
     "source_dependency": "No new schedule body has been acquired or schema qualified. Do not invent provider fields or promise existing pipeline support. Independently review and test the actual adapter and all affected consumers against retained originals before publication."
+  },
+  "raw_source_requirements": [
+    {
+      "dataset": "games",
+      "source_class": "league_game_log"
+    },
+    {
+      "dataset": "schedule",
+      "source_class": "league_schedule"
+    },
+    {
+      "dataset": "team_game_stats",
+      "source_class": "league_game_log"
+    },
+    {
+      "dataset": "player_game_stats",
+      "source_class": "league_game_log"
+    },
+    {
+      "dataset": "player_game_starter_roles",
+      "source_class": "boxscore_traditional_v3.position"
+    },
+    {
+      "dataset": "player_game_period_stats",
+      "source_class": "boxscore_traditional_v3+advanced_v3"
+    },
+    {
+      "dataset": "team_game_period_stats",
+      "source_class": "boxscore_traditional_v3"
+    },
+    {
+      "dataset": "team_season_advanced",
+      "source_class": "league_dash_team_stats"
+    },
+    {
+      "dataset": "player_season_advanced",
+      "source_class": "league_dash_player_stats"
+    },
+    {
+      "dataset": "rosters",
+      "source_class": "common_team_roster"
+    },
+    {
+      "dataset": "standings_snapshots",
+      "source_class": "league_standings"
+    }
+  ],
+  "processed_derivations": [
+    "team_game_features",
+    "game_features",
+    "schedule_context_features",
+    "player_game_features",
+    "league_season_stats"
+  ],
+  "existing_staging_limits": {
+    "evidence": "cloud-operations/season-inputs-runner-receipt.json; run39149759138",
+    "observed": "2026-27 planning schedule1206games/6unresolvedmatchups/0finals at2026-10-18, unknown originalcapturetime; not current or canonical. Other known archives returned unscoped/previous-season Finder rows.",
+    "rule": "Reuse qualified unchanged inputs where valid, but these existing planning/partial/unscoped responses cannot satisfy new-season readiness or replace current qualified originals."
   }
 }

@@ -50,14 +50,28 @@ current-season freshness. Keep readiness, monitoring, publication acceptance and
 answers and preserve an exact-generation backup without claiming operational
 readiness; it must retain the original failed receipt and distinct identities.
 
+Separate numeric audit [41260162003](https://github.com/Bet-Zero/nbatools/actions/runs/41260162003)
+passed all16liveAPIchecks with unchanged pacing and source/pointer binding. The
+new season answers are22missed/11home/LAL14–8/114.091PPG. Both readiness observations
+still returned503/new_season_not_loaded with no exception. This is accepted
+numeric evidence, **not** operational publication acceptance.
+
+Read-only backup [41259773052](https://github.com/Bet-Zero/nbatools/actions/runs/41259773052)
+and separate secret-free restore completed. The
+[permanent backup](https://github.com/Bet-Zero/nbatools/releases/tag/cloud-backup-41259773052)
+binds775files/403,814,381bytes,63,950,546bytearchive SHA256
+`7dcbf33f0ded6c5e046317afe0b811744b654e8b69efb63c96b1afe1e6ef9d01`.
+All bytes/currentpointer were checked without R2writes; inventories and restore
+receipts are retained. Backup success does not make current-season freshness pass.
+
 Restoring readiness needs qualified2026-27 schedule and completed core coverage,
-plus normal trusted processing and separately approved publication. The current
+plus all11requiredraw/5processed datasets, normal trusted processing, exactdue-gameID coverage within24hours, and separately approved publication. The current
 schedule pull mirrors only completed games and validation requires equality with
 the game catalog; qualified future-schedule support is a prerequisite, not a
 reason to truncate the schedule or accept one new game. No new NBA collection,
 production write, clock/deadline change or exception is authorized by diagnosis.
 See the main Resume checkpoint and [PR558 incident evidence](https://github.com/Bet-Zero/nbatools/pull/558)
-for current independent audit/backup status and the bounded collection requirement.
+for current evidence; [PR559](https://github.com/Bet-Zero/nbatools/pull/559) records the completed independent audit/backup and bounded collection requirement.
 
 ### Observed LeBron season package — preparation only
 
