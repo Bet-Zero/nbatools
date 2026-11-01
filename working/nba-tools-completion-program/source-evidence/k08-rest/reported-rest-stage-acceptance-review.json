@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; genuinely separate checker agent, no cross-model claim",
+  "approval": "PASS_ACTUAL_SOURCE_BOUND_STAGING_AND_CONSUMERS",
+  "run_id": 41289966416,
+  "request_revision": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+  "reviewed_code_revision": "8730ee9f4ca53f364c529b27dbdfe4436d5052ca",
+  "code_tree": "24293100d8b898fe1f3f4f9db28c90a52a3d0918",
+  "artifact_id": 13076752871,
+  "artifact": {
+    "sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e",
+    "size_bytes": 773368,
+    "members": 136,
+    "acceptance_member": "acquired_data/reported-rest-stage/acceptance.json",
+    "acceptance_sha256": "1de1ddcca1355bc8029fb8a0080d45ce5ec32b3a2e739786f712e81bb9a2583c",
+    "validation_member": "acquired_data/reported-rest-stage/validation.json",
+    "validation_sha256": "32da708aa9e7025fd17a06cdb4681b7747f51a52a876fab595f14ddd8c8488e3"
+  },
+  "strict_summary": {
+    "candidate_sha": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "base_file_count": 775,
+  "stage_preparation_accepted": true,
+  "consumer_acceptance": "passed",
+  "consumer_failure": null,
+  "output_preservation": {
+    "all132_raw_paths_sha_size_verified": true,
+    "all132_raw_files_byte_identical_to_prior_reviewed_failed_export": true,
+    "old94_seed_files_unchanged": true,
+    "new38_reason_companion_and_source_paths_only": true,
+    "reason_rows": 18,
+    "reason_lineage_records": 18,
+    "all_reason_states": "reported_other",
+    "all18_same_game_DNP_import_identity_and_row_digest_bindings_valid": true,
+    "exported_complete18_retained_original_missing_control_key": true,
+    "test_only_generation_inventory_exported": false,
+    "core_files_exported": false,
+    "stage_export_precedes_local_inventory_and_sparse_control": true,
+    "restore_scope": "Exported18 table+lineage verified unchanged. Harness finally restores complete CSV/imports in the local sandbox and rewrites only its test inventory; no production data is changed."
+  },
+  "complete_answers": [
+    {
+      "query": "Lakers record when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "team_record",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 82,
+        "qualified_nonparticipations": 18,
+        "reported_rest": 0,
+        "reported_other": 18,
+        "unknown": 0
+      }
+    },
+    {
+      "query": "LeBron James stats when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_summary",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 60,
+        "qualified_nonparticipations": 11,
+        "reported_rest": 0,
+        "reported_other": 11,
+        "unknown": 0
+      }
+    },
+    {
+      "query": "LeBron James 20 point games when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_finder",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 60,
+        "qualified_nonparticipations": 11,
+        "reported_rest": 0,
+        "reported_other": 11,
+        "unknown": 0
+      }
+    },
+    {
+      "command": "team_record",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "team_record",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 82,
+        "qualified_nonparticipations": 18,
+        "reported_rest": 0,
+        "reported_other": 18,
+        "unknown": 0
+      }
+    },
+    {
+      "command": "game_finder",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "game_finder",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 82,
+        "qualified_nonparticipations": 18,
+        "reported_rest": 0,
+        "reported_other": 18,
+        "unknown": 0
+      }
+    },
+    {
+      "command": "game_summary",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "game_summary",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 82,
+        "qualified_nonparticipations": 18,
+        "reported_rest": 0,
+        "reported_other": 18,
+        "unknown": 0
+      }
+    },
+    {
+      "command": "player_game_summary",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_summary",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 60,
+        "qualified_nonparticipations": 11,
+        "reported_rest": 0,
+        "reported_other": 11,
+        "unknown": 0
+      }
+    },
+    {
+      "command": "player_game_finder",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_finder",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 60,
+        "qualified_nonparticipations": 11,
+        "reported_rest": 0,
+        "reported_other": 11,
+        "unknown": 0
+      }
+    },
+    {
+      "query": "How many games did Luka Doncic rest in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 82,
+        "qualified_nonparticipations": 18,
+        "reported_rest": 0,
+        "reported_other": 18,
+        "unknown": 0
+      },
+      "count": 0
+    },
+    {
+      "query": "How many home games did Luka Doncic rest in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder",
+      "reported_reason_coverage": {
+        "basis": "officially reported Rest",
+        "complete": true,
+        "requested_games": 41,
+        "qualified_nonparticipations": 9,
+        "reported_rest": 0,
+        "reported_other": 9,
+        "unknown": 0
+      },
+      "count": 0
+    },
+    {
+      "query": "How many games did Luka Doncic miss in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder",
+      "count": 18
+    },
+    {
+      "query": "Lakers record without Luka Doncic in 2025-26",
+      "status": "ok",
+      "reason": null,
+      "route": "team_record",
+      "game_ids": [
+        22500113,
+        22500122,
+        22500136,
+        22500163,
+        22500336,
+        22500338,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500774,
+        22500791,
+        22501098,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ],
+      "summary": {
+        "team_name": "Los Angeles Lakers",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 18,
+        "wins": 10,
+        "losses": 8,
+        "win_pct": 0.556,
+        "pts_avg": 114.389,
+        "reb_avg": 39.389,
+        "ast_avg": 28.0,
+        "fg3m_avg": 10.667,
+        "stl_avg": 8.833,
+        "blk_avg": 4.278,
+        "tov_avg": 15.889,
+        "plus_minus_avg": -1.222,
+        "efg_pct_avg": 0.578,
+        "ts_pct_avg": 0.614
+      }
+    }
+  ],
+  "api_bodies": {
+    "checked": 3,
+    "all_http_status": 200,
+    "byte_equivalent_parsed_objects_to_first_reviewed_actual_bodies": true,
+    "queries": [
+      "Lakers record when Luka rests in 2025-26",
+      "How many games did Luka Doncic rest in 2025-26?",
+      "How many games did Luka Doncic miss in 2025-26?"
+    ],
+    "outcomes": [
+      "no_result/no_match",
+      "ok/count0 officially reported Rest",
+      "ok/count18 binary missed"
+    ]
+  },
+  "sparse_reason_actual_control": {
+    "removed_game_id": 22500113,
+    "valid_rows": 17,
+    "status": "no_result",
+    "reason": "no_data",
+    "coverage": {
+      "basis": "officially reported Rest",
+      "complete": false,
+      "requested_games": 82,
+      "qualified_nonparticipations": 18,
+      "reported_rest": 0,
+      "reported_other": 17,
+      "unknown": 1
+    },
+    "count_answer_emitted": false,
+    "rest_zero_asserted": false,
+    "exact_limitation_note": "Officially reported Rest coverage is incomplete; no Rest total is established. Unknown selected nonparticipations: 1."
+  },
+  "reused_independent_evidence": {
+    "source_qualification_sha256": "477e3284ecb87ba71718ad488749597d8628e6f0e2c7e1e6afd94da6ab7907b4",
+    "fact_journal_sha256": "9cc9a05a41d837e45654d4fdae880738da03d6cb882b37fc9ae8f715c12a0356",
+    "oracle_sha256": "31d85064bde4527840e28d3ca48f83e77871e0ae7f4fe548946bd1a82513085a",
+    "code_review_sha256": "ffa4a9c9f60afcbafe4f3c1be3a1d7c3ee9ed8f664287b520752ab72a203f513",
+    "prior_failed_output_review_sha256": "a6beee14e3b9c2bb1ed05d7cb25088932867f2dc12c6f55d812f6ebcbd64dcfb",
+    "independent_binary_record": {
+      "games": 18,
+      "wins": 10,
+      "losses": 8,
+      "pts_sum": 2059,
+      "game_ids": [
+        22500113,
+        22500122,
+        22500136,
+        22500163,
+        22500336,
+        22500338,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500774,
+        22500791,
+        22501098,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ]
+    },
+    "why_reuse_applies": "All132 raw files and all12 query/3 API parsed bodies are unchanged from the independently reviewed first actual export. Only the sparse-control dtype changed. No source body, semantic code or guard changes."
+  },
+  "first_execution_stays_failed": {
+    "run_id": 41289395213,
+    "artifact_sha256": "f2180fdf1b825155e7ddf688dbcd668d4760fa806dfc74a01003900078de3055",
+    "failure": "Numeric CSV round trip changed literal IDs; unchanged lineage guard correctly rejected it. This passing replay does not relabel the failed run."
+  },
+  "remaining_limits": [
+    "Accepted capability is officially source-reported Rest, not clinical truth, current health or physiological rest. The18 known DNP reasons are15 reported medical wordings,2 Personal,1 Suspension; no source explicitly reports Rest.",
+    "Controlled fixtures provide separately reviewed nonempty Rest positives; real NBA source sample correctly supports zero.",
+    "Explicit bench/on-court meaning is safely contained, not implemented as a legitimate within-game capability.",
+    "Staging is unpublished. Production775, pointer and existing new-season readiness blocker remain unchanged.",
+    "Normal exact-head CI/merge and applicable deployed verification remain separate gates. This review does not authorize production publication."
+  ],
+  "full_required_slice_accepted": false,
+  "production_publication_approved": false,
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0,
+  "unresolved_review_findings": []
+}
