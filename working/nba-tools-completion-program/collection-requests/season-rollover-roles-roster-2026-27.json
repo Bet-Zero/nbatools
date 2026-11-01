@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "classification": "bounded_readiness_collection_request_under_standing_authority_not_publication",
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "role_requirement": {
+    "observed_final_games": 81,
+    "existing_qualified_role_sample_games": 3,
+    "indexed_new_whole_traditional_files": 77,
+    "required_unindexed_games": [
+      "0022600144"
+    ],
+    "reason": "Official whole-game position fields directly support starter-role dataset; source fields for3retained games give five starters on each of6sides and76positive player keys. Remaining77 indexed originals can be collected independently of inaccessible period endpoints;0144remains externally missing, not silently omitted."
+  },
+  "roster_requirement": {
+    "representative_team_id": 1610612747,
+    "files": 1,
+    "reason": "Qualify one actual CommonTeamRoster response for exact team/season/row schema before any29-team expansion. A directory/year label or PlayerIndex snapshot is insufficient; no dated-membership inference."
+  },
+  "metadata_file": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/archive-role-roster-metadata.json",
+  "limits": {
+    "reader_calls": 78,
+    "attempts_per_file": 1,
+    "expected_total_bytes": 1828123,
+    "maximum_body_bytes": 2000000,
+    "maximum_total_bytes": 1828123,
+    "metered_overage_usd": 0
+  },
+  "stage_acceptance": [
+    "Retain byte-exact originals and metadata, check size/GitblobSHA1/SHA256 before use; no source retry without changed evidence.",
+    "For every collected Trad game, verify actual schedule final identities/date/sides and full positive player keys/names/stat counts; preserve any discrepancies instead of overwriting trusted data silently.",
+    "Normalize explicit position using unchanged starter-role producer; restrict to actual positive player keys and require exactlyfiveexplicitstarters per team. Retain gaps, reject duplicates or contradictions; do not infer lineup from Summary/PBP.",
+    "For one roster representative verify actual parameters/season/team/IDs/schema against accepted pipeline requirements; no all30claim or follow-up batch until qualification.",
+    "This is partial source/role work. Missing0144Trad, qualifiedperiods, fourTS/snapshotbasis conflicts and current due-ID/full11raw+5processed gates remain blockers.",
+    "No raw_complete,processed_complete,passedmanifest,productionwrite,readinesswaiver,newcost/credential/provider/permission or unattendedrefresh."
+  ],
+  "nba_source_body_calls_so_far": 0,
+  "production_writes": 0,
+  "metadata_sha256": "8a370fd813dd66bfcbe6df6662dcc1a44493b47e39ad4ee4a1110dc025531cf1",
+  "source_population_binding": {
+    "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/stats-qualification.json",
+    "sha256": "677aa8bc1ef9c6a0f7cb0cd635ae3f163cfb1359b232ea8fdc6a2ae39d7926f9",
+    "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033"
+  }
+}

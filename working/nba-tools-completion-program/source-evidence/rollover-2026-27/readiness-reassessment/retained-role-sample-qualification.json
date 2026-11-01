@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "classification": "partial_retained_starter_role_source_qualification_not_current_snapshot_acceptance",
+  "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+  "retained_game_ids": [
+    "0022600023",
+    "0022600138",
+    "0022600142"
+  ],
+  "source_listed_rows": 80,
+  "qualified_positive_role_rows": 76,
+  "team_games": 6,
+  "starter_rows": 30,
+  "all_six_team_games_have_exactly_five_explicit_starters": true,
+  "literal_name_variants": [
+    {
+      "game_id": 22600138,
+      "player_id": 1642881,
+      "source": "Bogoljub Markovi\u0107",
+      "player_log": "Bogoljub Markovic"
+    }
+  ],
+  "role_csv_sha256": "859dade3089d510feb945000d474972bc9e949e65250023d02c9f1d503b964f0",
+  "facts": [
+    {
+      "game_id": "0022600023",
+      "team_id": 1610612744,
+      "source_sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180",
+      "starter_player_ids": [
+        1630611,
+        1642865,
+        203110,
+        1641764,
+        201939
+      ],
+      "source_field": "boxScoreTraditional.homeTeam.players[].position"
+    },
+    {
+      "game_id": "0022600023",
+      "team_id": 1610612747,
+      "source_sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180",
+      "starter_player_ids": [
+        1629680,
+        1631222,
+        1631117,
+        1630559,
+        1629029
+      ],
+      "source_field": "boxScoreTraditional.awayTeam.players[].position"
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612749,
+      "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+      "starter_player_ids": [
+        1631170,
+        1628398,
+        1626167,
+        1629639,
+        1631157
+      ],
+      "source_field": "boxScoreTraditional.homeTeam.players[].position"
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "source_sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+      "starter_player_ids": [
+        201142,
+        1631106,
+        1631095,
+        1641708,
+        1627832
+      ],
+      "source_field": "boxScoreTraditional.awayTeam.players[].position"
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+      "starter_player_ids": [
+        1642843,
+        1629023,
+        1629655,
+        1631108,
+        202681
+      ],
+      "source_field": "boxScoreTraditional.homeTeam.players[].position"
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612760,
+      "source_sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+      "starter_player_ids": [
+        1642349,
+        1629026,
+        1628392,
+        1642272,
+        1628983
+      ],
+      "source_field": "boxScoreTraditional.awayTeam.players[].position"
+    }
+  ],
+  "remaining_game_count": 78,
+  "scope_limit": "Only three retained originals. No season-wide role, period, roster, snapshot or production readiness acceptance.",
+  "nba_source_requests": 0,
+  "production_writes": 0,
+  "player_keys_normalized_names_match_retained_player_log": true
+}

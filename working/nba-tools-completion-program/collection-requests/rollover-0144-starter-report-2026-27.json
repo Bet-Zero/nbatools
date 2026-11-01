@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "classification": "bounded_source_capture_plan_not_starter_role_qualification",
+  "purpose": "Qualify whether the missing 0022600144 Traditional starter positions can be recovered from literal official gamebook F/C/G markers; never infer starters from row order.",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "game": {
+    "game_id": "0022600144",
+    "game_date": "2026-10-29",
+    "away_team_id": 1610612739,
+    "away_abbr": "CLE",
+    "away_name": "Cleveland Cavaliers",
+    "away_points": 111,
+    "home_team_id": 1610612737,
+    "home_abbr": "ATL",
+    "home_name": "Atlanta Hawks",
+    "home_points": 114,
+    "source_url": "https://statsdmz.nba.com/pdfs/20261029/20261029_CLEATL.pdf"
+  },
+  "retained_identity_sources": {
+    "summary": {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/game-0022600144/summary.json",
+      "sha256": "b615d3325b83de2d013b88412727ccd2f451186d61275d6e5505baeb1c418e98",
+      "size_bytes": 18410
+    },
+    "pbp": {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/game-0022600144/pbp.json",
+      "sha256": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "size_bytes": 245445
+    },
+    "capture": {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/game-0022600144/capture.json",
+      "sha256": "c5eaab54bf914dec59536bee11940ca15c7665303a9fb410f2a672596a7a867a",
+      "size_bytes": 3420
+    },
+    "schedule_zip": {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/schedule-capture.zip",
+      "sha256": "67907bba9f2830b4099998ec6c89dd67f9ef8ab051afa4b003a80ae605fc768f",
+      "size_bytes": 347575
+    }
+  },
+  "schedule_original": {
+    "member": "acquired_data/rollover-2026-27-schedule/scheduleleaguev2-2027.json",
+    "sha256": "edf45e0c7f06ba0f5c842a333d054b617f23244443514fb4aa9771a6b32b75cf",
+    "size_bytes": 4379956
+  },
+  "limits": {
+    "source_files": 1,
+    "reader_invocations": 1,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "max_body_bytes": 1500000,
+    "aggregate_max_bytes": 1500000,
+    "redirects": 0,
+    "retries": 0,
+    "metered_overage_usd": 0
+  },
+  "authority": "Owner standing bounded public collection/staging authority; existing official report host, reader headers and read-only R2 execution route. Production publication remains separately authorized.",
+  "position_qualification_pending": true,
+  "full_slice_accepted": false,
+  "production_writes": 0
+}
