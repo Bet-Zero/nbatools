@@ -1,0 +1,648 @@
+{
+  "schema_version": 1,
+  "classification": "bounded_reported_reason_source_assessment_not_runtime_or_feature_acceptance",
+  "basis": "Accepted complete82-game Luka/LAL2025-26 participation stage, plus accepted published source comments and retained originals; no new acquisition.",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "team_id": 1610612747,
+  "player_id": 1629029,
+  "player_name": "Luka Doncic",
+  "participation_population": {
+    "observed_games": 82,
+    "played": 64,
+    "did_not_play": 18,
+    "unknown": 0,
+    "source": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/stage-acceptance-review.json",
+    "sha256": "8bc6e3f2f2082997e4ce704f613c84725025e29a32b55e4335d9b8ebf7a16055",
+    "publication_scope": "accepted staging; not production activation"
+  },
+  "source_proof": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/source-qualification.json",
+    "sha256": "3e9e67621d8b0b29c08d678d8f8735a539b520a44abaa2c9b32ad0867de4901e",
+    "original_full31_structured_import_qualified": false,
+    "note": "Original source proof remains blocked by unrelated Rui0708 invalid clock; accepted hybrid30structured+oneLAL-onlyPDF establishes participation."
+  },
+  "published_availability_binding": {
+    "path": "raw/player_game_availability/2025-26_regular_season.csv",
+    "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+    "size_bytes": 223000
+  },
+  "counts": {
+    "explicit_reported_rest": 0,
+    "source_stated_other_reason": 4,
+    "of_other_nonmedical": 2,
+    "of_other_reported_medical_wording": 2,
+    "reason_unknown": 14
+  },
+  "classification_limits": [
+    "Other means the source explicitly states a different reason, not inferred clinical truth. Medical wording is retained as reported; no automatic injury/health/active-status capability promotion.",
+    "INACTIVE, DNP, played, missing rows and lack of an explicit Rest statement cannot establish rest, health or a season-wide zero-rest answer.",
+    "The Personal fact reuses its accepted published qualified PDF-derived comment/source binding; its PDF text was not replayed in this assessment."
+  ],
+  "season_rest_total": null,
+  "season_rest_total_qualified": false,
+  "games": [
+    {
+      "game_id": "0022500113",
+      "game_date": "2025-10-26",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "participation_comment_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf",
+          "sha256": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06",
+          "size_bytes": 26990,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": true
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251026_LALSAC.json",
+          "sha256": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null
+    },
+    {
+      "game_id": "0022500122",
+      "game_date": "2025-10-27",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "participation_comment_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf",
+          "sha256": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5",
+          "size_bytes": 27688,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": true
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251027_PORLAL.json",
+          "sha256": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null
+    },
+    {
+      "game_id": "0022500136",
+      "game_date": "2025-10-29",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500136.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500136.json",
+          "sha256": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+          "size_bytes": 21310,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "de8e5100998df1ac653d56cf8a2449bc718bd3af"
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500163",
+      "game_date": "2025-11-03",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500163.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500163.json",
+          "sha256": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+          "size_bytes": 19442,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "747a4cc9e7de02942794d56754a2ca146f9510a0"
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500336.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500336.json",
+          "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+          "size_bytes": 18595,
+          "retrieved_at": "2026-11-01T04:06:48.143052+00:00",
+          "git_blob_sha": "f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_personal",
+      "reported_reason_literal": "INACTIVE - Personal",
+      "participation_comment_literal": "INACTIVE - Personal",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf",
+          "sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+          "size_bytes": 27308,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": false
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251205_LALBOS.json",
+          "sha256": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500418.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500418.json",
+          "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+          "size_bytes": 17380,
+          "retrieved_at": "2026-11-01T04:06:49.486854+00:00",
+          "git_blob_sha": "459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500601.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500601.json",
+          "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+          "size_bytes": 20283,
+          "retrieved_at": "2026-11-01T04:06:54.191043+00:00",
+          "git_blob_sha": "c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500753.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500753.json",
+          "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+          "size_bytes": 22652,
+          "retrieved_at": "2026-11-01T04:06:57.758370+00:00",
+          "git_blob_sha": "65f718c1235ea216b597a336084885888f582d95",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/65f718c1235ea216b597a336084885888f582d95",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500769.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500769.json",
+          "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+          "size_bytes": 23089,
+          "retrieved_at": "2026-11-01T04:06:58.080447+00:00",
+          "git_blob_sha": "e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500774",
+      "game_date": "2026-02-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500774.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500774.json",
+          "sha256": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+          "size_bytes": 20394,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "c2498494fc262145c04241db10604f2e786309ad"
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500791.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500791.json",
+          "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+          "size_bytes": 23396,
+          "retrieved_at": "2026-11-01T04:06:58.395951+00:00",
+          "git_blob_sha": "d0ec556d134686e37d241e12516c216d7e176fb0",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/d0ec556d134686e37d241e12516c216d7e176fb0",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022501098",
+      "game_date": "2026-03-30",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_suspension",
+      "reported_reason_literal": "NWT - League Suspension",
+      "participation_comment_literal": "NWT - League Suspension",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoretraditionalv3_0022501098.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501098.json",
+          "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40",
+          "size_bytes": 19678,
+          "retrieved_at": "2026-11-01T04:06:45.372639+00:00",
+          "git_blob_sha": "ad72d90e3f3739f1a6b23e79731875e5205d75d4",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/ad72d90e3f3739f1a6b23e79731875e5205d75d4",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501140.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501140.json",
+          "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+          "size_bytes": 21854,
+          "retrieved_at": "2026-11-01T04:06:59.465445+00:00",
+          "git_blob_sha": "f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022501155",
+      "game_date": "2026-04-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022501155.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501155.json",
+          "sha256": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+          "size_bytes": 18444,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "92476a815e4c81ef7cf0154e38763bf56042f5c7"
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501170.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501170.json",
+          "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+          "size_bytes": 24681,
+          "retrieved_at": "2026-11-01T04:06:59.789177+00:00",
+          "git_blob_sha": "70e2e6645400314560d145e354c18a7b9bed36cd",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/70e2e6645400314560d145e354c18a7b9bed36cd",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501185.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501185.json",
+          "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+          "size_bytes": 17351,
+          "retrieved_at": "2026-11-01T04:07:00.102131+00:00",
+          "git_blob_sha": "dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "unknown",
+      "reported_reason_class": "reason_unknown",
+      "reported_reason_literal": null,
+      "participation_comment_literal": "INACTIVE",
+      "reported_rest": null,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501198.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501198.json",
+          "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+          "size_bytes": 16887,
+          "retrieved_at": "2026-11-01T04:07:00.757216+00:00",
+          "git_blob_sha": "778c39342d105f05250ab31e519af7b8711db0df",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/778c39342d105f05250ab31e519af7b8711db0df",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": "SummaryV3 explicitly lists the same-game inactive identity but supplies no reason field; Traditional omission is not cause evidence."
+    }
+  ],
+  "minimum_remaining_reason_keys": [
+    {
+      "game_id": "0022500136",
+      "game_date": "2025-10-29",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500163",
+      "game_date": "2025-11-03",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500774",
+      "game_date": "2026-02-10",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022501155",
+      "game_date": "2026-04-07",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1629029
+    }
+  ],
+  "next_source_requirement": "One qualified explicit reported reason per14 unknown exact keys, via existing official scorer gamebooks; first0022500136 representative, remainder only after independent reason-format qualification. A reasonless PDF leaves the key unknown.",
+  "runtime_gap": "A distinct reported-reason predicate with known/other/unknown coverage semantics is unimplemented; existing participation guards must remain. No parser-only refusal completes the rest capability.",
+  "membership_comparison": "Dated membership still requires an explicit complete association/tenure basis; season snapshots and another game on the same date do not establish it. The14-key gamebook reason requirement uses an existing source class and is the smaller direct retained462 source objective.",
+  "new_source_requests": 0,
+  "production_writes": 0,
+  "feature_acceptance": false,
+  "requirement_closures": 0
+}
