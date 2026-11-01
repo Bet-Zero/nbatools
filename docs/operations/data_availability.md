@@ -289,3 +289,29 @@ binds run 41273502501, one selected/executed/passed required test and zero skips
 Its original ZIP, source bytes, failed archive qualification and independent
 checks are retained beside the receipt. Production publication needs separate
 approval; this overlay does not supply missing 2026–27 season data or restore readiness.
+
+### Boston participation staging, November 1
+
+The isolated Boston 2025–26 regular-season overlay qualifies all 82 observed games
+for Jayson Tatum (16 played, 66 explicit nonparticipants, 32 home absences) and
+Jaylen Brown (71 played, 11 explicit nonparticipants, 3 home absences). There are
+zero unknowns for either player in this stage. It answers Boston's record without
+Tatum while Brown played (36–22), the reverse (2–1), both did not play (7–1), and
+both did not play with Boston scoring at least 100 (6–0). Natural, structured and
+three local API assertions verify exact game IDs, counts, records and scoring.
+
+The 2,202-row append combines 2,117 rows from 62 valid structured games with
+85 Boston-only rows from five official reports. Four new reports supply literal
+valid clocks for games whose archive rows contain `:60`; the malformed originals
+and their failed qualification remain retained and quarantined. One previously
+qualified report is reused, with Milwaukee ambiguity excluded. Displayed clock
+sum discrepancies remain recorded; no precise timing or on-court coverage is
+promoted. Every prior 804 current-season row cell and 23 imports are preserved;
+other-season files and core data remain outside the overlay.
+
+[Source and required staging acceptance](https://github.com/Bet-Zero/nbatools/pulls?q=is%3Apr+head%3Acodex%2Fk08-bos-season-coverage)
+binds run 41277575827: one required test executed and passed, zero skips or errors,
+with independent source, PDF, arithmetic and complete overlay review. The stage
+is unpublished and does not compose the separate accepted Lakers overlay. Any
+combined publication still needs source/append validation and separate approval.
+It supplies no missing 2026–27 season data and does not restore readiness.
