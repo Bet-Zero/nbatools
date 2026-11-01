@@ -292,6 +292,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Summarize a filtered player game sample.",
         optional_kwargs=PLAYER_SAMPLE_FILTERS
+        + ("without_player_reason",)
         + (
             "special_event",
             "stat",
@@ -308,7 +309,11 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         )
         + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
-        allowed_values={"season_type": SEASON_TYPE_VALUES, "role": ("starter", "bench")},
+        allowed_values={
+            "without_player_reason": ("reported_rest",),
+            "season_type": SEASON_TYPE_VALUES,
+            "role": ("starter", "bench"),
+        },
         examples=(
             {"player": "Nikola Jokic", "season": "2025-26", "last_n": 10},
             {"player": "LeBron James", "season_type": "Playoffs", "stat": "pts"},
@@ -321,10 +326,14 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Summarize a filtered team game sample.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
+        + ("without_player_reason",)
         + ("stat", "min_value", "max_value", "opponent_quality", "with_player")
         + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality",),
-        allowed_values={"season_type": SEASON_TYPE_VALUES},
+        allowed_values={
+            "without_player_reason": ("reported_rest",),
+            "season_type": SEASON_TYPE_VALUES,
+        },
         examples=(
             {"team": "BOS", "season": "2025-26", "home_only": True},
             {"team": "LAL", "start_season": "2021-22", "end_season": "2023-24"},
@@ -336,6 +345,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Return player game rows matching stat and context filters.",
         optional_kwargs=PLAYER_SAMPLE_FILTERS
+        + ("without_player_reason",)
         + (
             "special_event",
             "stat",
@@ -354,6 +364,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         + ("series_situation", "position", "rookies_only"),
         dispatch_only_kwargs=("opponent_quality",),
         allowed_values={
+            "without_player_reason": ("reported_rest",),
             "season_type": SEASON_TYPE_VALUES,
             "sort_by": SORT_BY_VALUES,
             "role": ("starter", "bench"),
@@ -370,9 +381,14 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         implementation_function="build_result",
         description="Return team game rows matching stat and context filters.",
         optional_kwargs=TEAM_SAMPLE_FILTERS
+        + ("without_player_reason",)
         + ("stat", "min_value", "max_value", "conditions", "limit", "sort_by", "ascending")
         + ("series_situation", "game_dates"),
-        allowed_values={"season_type": SEASON_TYPE_VALUES, "sort_by": SORT_BY_VALUES},
+        allowed_values={
+            "without_player_reason": ("reported_rest",),
+            "season_type": SEASON_TYPE_VALUES,
+            "sort_by": SORT_BY_VALUES,
+        },
         examples=(
             {"team": "BOS", "season": "2025-26", "home_only": True, "wins_only": True},
             {"team": "LAL", "stat": "pts", "min_value": 120, "sort_by": "stat"},
@@ -437,6 +453,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         description="Summarize a team's win/loss record for a filtered sample.",
         required_kwargs=("team",),
         optional_kwargs=(
+            "without_player_reason",
             "season",
             "start_season",
             "end_season",
@@ -467,7 +484,10 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
         )
         + ("series_situation",),
         dispatch_only_kwargs=("opponent_quality", "opponent_conference", "opponent_division"),
-        allowed_values={"season_type": SEASON_TYPE_VALUES},
+        allowed_values={
+            "without_player_reason": ("reported_rest",),
+            "season_type": SEASON_TYPE_VALUES,
+        },
         examples=(
             {"team": "LAL", "season": "2025-26"},
             {"team": "BOS", "season": "2025-26", "opponent_conference": "East"},

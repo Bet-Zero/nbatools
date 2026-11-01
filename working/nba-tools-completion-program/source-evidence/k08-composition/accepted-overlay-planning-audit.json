@@ -1,0 +1,302 @@
+{
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "base_serialization_diagnostics": {
+    "BOS2025:raw/player_game_availability/2025-26_regular_season.csv": {
+      "base_rows": 804,
+      "exact_original_serialization_hash_match": false,
+      "expected_base_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "reconstructed_bytes_sha256": "16f2d6d8530a290247ac1cf24e6ca92b90579c4eb1ff3c4626febf17bf7508a1"
+    },
+    "BOS2025:raw/player_game_availability/2025-26_regular_season.imports.json": {
+      "base_imports": 23,
+      "exact_original_serialization_hash_match": false,
+      "expected_base_sha256": "f34b9a1b97cf71fb69ce389bc67fe7ea1bd33550eaee000199b34e82d3969adf",
+      "reconstructed_bytes_sha256": "c690f340fd3ac17446748e58800f89a4642fa3d9535550e85686b97c02a6ea81"
+    },
+    "LAL2025:raw/player_game_availability/2025-26_regular_season.csv": {
+      "base_rows": 804,
+      "exact_original_serialization_hash_match": false,
+      "expected_base_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "reconstructed_bytes_sha256": "16f2d6d8530a290247ac1cf24e6ca92b90579c4eb1ff3c4626febf17bf7508a1"
+    },
+    "LAL2025:raw/player_game_availability/2025-26_regular_season.imports.json": {
+      "base_imports": 23,
+      "exact_original_serialization_hash_match": false,
+      "expected_base_sha256": "f34b9a1b97cf71fb69ce389bc67fe7ea1bd33550eaee000199b34e82d3969adf",
+      "reconstructed_bytes_sha256": "c690f340fd3ac17446748e58800f89a4642fa3d9535550e85686b97c02a6ea81"
+    },
+    "historical:raw/player_game_availability/2023-24_regular_season.csv": {
+      "base_rows": 68,
+      "exact_original_serialization_hash_match": true,
+      "expected_base_sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+      "reconstructed_bytes_sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c"
+    },
+    "historical:raw/player_game_availability/2023-24_regular_season.imports.json": {
+      "base_imports": 2,
+      "exact_original_serialization_hash_match": false,
+      "expected_base_sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085",
+      "reconstructed_bytes_sha256": "547cd07cc80737e6adc74976165f9bc2be758a30a03f2d3091cac80ef0f60a53"
+    }
+  },
+  "classification": "read_only_planning_audit_not_composition_acceptance_or_publication",
+  "conflicts": [],
+  "current_2026_27_complete": false,
+  "decision": {
+    "append_union_valid_for_observed_inputs": true,
+    "approval_required_for_production_publication": true,
+    "minimal_next_requirement": "A bounded generic composer must bind every package to identical BASE/manifest, load/check the actual manifest-bound BASE CSV/import bytes (their formatting/order cannot generally be recovered from rewritten overlays), merge serialized rows by full primary key and imports by game ID with exact-equality-only overlap, reject source-path hash/size collisions, preserve per-game import records and recheck all group digests. Then copy retained source bytes, run unchanged publication/source replay validation once on complete source-root and one combined source-bound consumer acceptance gate. Pending Rest extra38 paths may enter only after its final gate passes. No invented generation or production activation.",
+    "straight_file_copy_union_valid": false,
+    "why": "2025 CSV and imports are two different append-only descendants of same BASE. Last-file-wins would discard the other cohort. Their804 common serialized original rows and23 shared import records agree exactly; all31 and67 new game groups are disjoint. Historical tables and source files are disjoint. No stronger PDF/packet authority conflict requires choosing a winner."
+  },
+  "full_required_slice_accepted": false,
+  "input_status": {
+    "BOS2025": "previously_accepted_staging_only",
+    "LAL2025": "previously_accepted_staging_only",
+    "Rest_pending": "first_attempt_failed_final_negative_control; passing132-path_preparation_only; corrected_full_gate_pending",
+    "historical": "previously_accepted_staging_only"
+  },
+  "inputs": {
+    "BOS2025": {
+      "path": "/workspace/nbatools/working/nba-tools-completion-program/source-evidence/k08-bos-remaining/staged-acceptance-source.zip",
+      "sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692",
+      "size_bytes": 717387,
+      "validation_sha256": "35346d874dc9adfe12ca985065b9a8068e05ebbe31c9a2575069fb4a6314826f"
+    },
+    "LAL2025": {
+      "path": "/workspace/nbatools/working/nba-tools-completion-program/source-evidence/k08-lal-remaining/staged-acceptance-source.zip",
+      "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+      "size_bytes": 336808,
+      "validation_sha256": "e37e0446d5e439edc666aca1fe5bc7c99d53392cde920218b59176c20fa8a1f4"
+    },
+    "Rest_pending": {
+      "path": "/workspace/attachments/feb0778f-84b1-4255-87dc-cb8bf32164c1/reported-rest-first-stage-attempt.zip",
+      "sha256": "f2180fdf1b825155e7ddf688dbcd668d4760fa806dfc74a01003900078de3055",
+      "size_bytes": 776265,
+      "validation_sha256": "201d0479b5a837cecfcd4f5b9778ea9e7bbcf598a59d3c9b00bf6def2f4be7b7"
+    },
+    "historical": {
+      "path": "/workspace/attachments/a1a09471-0178-4d95-8427-bad4de76dd05/historical-stage-accepted.zip",
+      "sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+      "size_bytes": 266090,
+      "validation_sha256": "a5076d1f95df9a519f5ceff2c51a32b8a6890a07fc56e68a7dbab2b42560efad"
+    }
+  },
+  "new_source_calls": 0,
+  "pairwise_intersections": [
+    {
+      "added_PK_intersection_counts": {
+        "raw/player_game_availability/2025-26_regular_season.csv": 0
+      },
+      "added_game_intersection": [],
+      "common_paths": [
+        "raw/player_game_availability/2025-26_regular_season.csv",
+        "raw/player_game_availability/2025-26_regular_season.imports.json"
+      ],
+      "left": "LAL2025",
+      "right": "BOS2025",
+      "table_and_ledger_intersections": {
+        "raw/player_game_availability/2025-26_regular_season.csv": {
+          "different_serialized_cells_PK": [],
+          "left_only_PK": 1070,
+          "right_only_PK": 2202,
+          "shared_PK_count": 804
+        },
+        "raw/player_game_availability/2025-26_regular_season.imports.json": {
+          "different_authority_imports": [],
+          "left_only_game_imports": 31,
+          "right_only_game_imports": 67,
+          "shared_game_imports": 23
+        }
+      }
+    },
+    {
+      "added_PK_intersection_counts": {},
+      "added_game_intersection": [],
+      "common_paths": [],
+      "left": "LAL2025",
+      "right": "historical",
+      "table_and_ledger_intersections": {}
+    },
+    {
+      "added_PK_intersection_counts": {
+        "raw/player_game_availability/2025-26_regular_season.csv": 1070
+      },
+      "added_game_intersection": [
+        22500336,
+        22500379,
+        22500395,
+        22500418,
+        22500446,
+        22500460,
+        22500485,
+        22500501,
+        22500514,
+        22500541,
+        22500562,
+        22500569,
+        22500586,
+        22500601,
+        22500607,
+        22500617,
+        22500633,
+        22500648,
+        22500661,
+        22500671,
+        22500688,
+        22500708,
+        22500753,
+        22500769,
+        22500791,
+        22501098,
+        22501140,
+        22501170,
+        22501185,
+        22501198,
+        22501228
+      ],
+      "common_paths": {
+        "canonical_sorted_path_set_sha256": "8657b2a60febcf2ca9c0fc618864b9ff42f7712f3d34d53f02a46b5c14d452e8",
+        "count": 94,
+        "explanation": "Exact full seed94 path set; see pinned LAL2025 validation manifest."
+      },
+      "left": "LAL2025",
+      "right": "Rest_pending",
+      "table_and_ledger_intersections": {
+        "raw/player_game_availability/2025-26_regular_season.csv": {
+          "different_serialized_cells_PK": [],
+          "left_only_PK": 0,
+          "right_only_PK": 0,
+          "shared_PK_count": 1874
+        },
+        "raw/player_game_availability/2025-26_regular_season.imports.json": {
+          "different_authority_imports": [],
+          "left_only_game_imports": 0,
+          "right_only_game_imports": 0,
+          "shared_game_imports": 54
+        }
+      }
+    },
+    {
+      "added_PK_intersection_counts": {},
+      "added_game_intersection": [],
+      "common_paths": [],
+      "left": "BOS2025",
+      "right": "historical",
+      "table_and_ledger_intersections": {}
+    },
+    {
+      "added_PK_intersection_counts": {
+        "raw/player_game_availability/2025-26_regular_season.csv": 0
+      },
+      "added_game_intersection": [],
+      "common_paths": [
+        "raw/player_game_availability/2025-26_regular_season.csv",
+        "raw/player_game_availability/2025-26_regular_season.imports.json"
+      ],
+      "left": "BOS2025",
+      "right": "Rest_pending",
+      "table_and_ledger_intersections": {
+        "raw/player_game_availability/2025-26_regular_season.csv": {
+          "different_serialized_cells_PK": [],
+          "left_only_PK": 2202,
+          "right_only_PK": 1070,
+          "shared_PK_count": 804
+        },
+        "raw/player_game_availability/2025-26_regular_season.imports.json": {
+          "different_authority_imports": [],
+          "left_only_game_imports": 67,
+          "right_only_game_imports": 31,
+          "shared_game_imports": 23
+        }
+      }
+    },
+    {
+      "added_PK_intersection_counts": {},
+      "added_game_intersection": [],
+      "common_paths": [],
+      "left": "historical",
+      "right": "Rest_pending",
+      "table_and_ledger_intersections": {}
+    }
+  ],
+  "pending_reason_identity": {
+    "all18_DNP_row_identity_and_full_pergame_identity_imports_valid_after_prospective_union": true,
+    "full_rest_final_gate_accepted": false,
+    "reason_rows": 18,
+    "seed94_paths_metadata_identical": true,
+    "seed_CSV_bytes_identical": true,
+    "seed_imports_identical": true
+  },
+  "production_writes": 0,
+  "prospective_union": {
+    "accepted_overlay_paths": 369,
+    "all_combined_game_import_digests_still_match_serialized_rows": true,
+    "arithmetic_all_season_availability_rows_after_union": 5098,
+    "known_base_all_season_availability_rows": 950,
+    "new_availability_rows": 4148,
+    "paths_with_pending_reason": 407,
+    "pending_reason_extra_paths": 38,
+    "same_2025_base23_imports_preserved_across_inputs": true,
+    "same_2025_base804_cells_preserved_across_inputs": true,
+    "tables_and_imports": {
+      "raw/player_game_availability/2023-24_regular_season.csv": {
+        "contributing_packages": [
+          "historical"
+        ],
+        "game_count": 17,
+        "rows": 597
+      },
+      "raw/player_game_availability/2023-24_regular_season.imports.json": {
+        "contributing_packages": [
+          "historical"
+        ],
+        "imports": 17
+      },
+      "raw/player_game_availability/2024-25_regular_season.csv": {
+        "contributing_packages": [
+          "historical"
+        ],
+        "game_count": 10,
+        "rows": 347
+      },
+      "raw/player_game_availability/2024-25_regular_season.imports.json": {
+        "contributing_packages": [
+          "historical"
+        ],
+        "imports": 10
+      },
+      "raw/player_game_availability/2025-26_regular_season.csv": {
+        "contributing_packages": [
+          "LAL2025",
+          "BOS2025"
+        ],
+        "game_count": 121,
+        "rows": 4076
+      },
+      "raw/player_game_availability/2025-26_regular_season.imports.json": {
+        "contributing_packages": [
+          "LAL2025",
+          "BOS2025"
+        ],
+        "imports": 121
+      }
+    },
+    "unchanged_other_season_base_rows": 78
+  },
+  "schema_version": 1,
+  "scope": "Only accepted validation manifests and serialized CSV/import dictionaries compared. Prior NBA original-source qualification/arithmetic not repeated; no source-body scan, acquisition, runtime query, auth or publication.",
+  "source_authority_counts": {
+    "raw/player_game_availability/2023-24_regular_season.imports.json": {
+      "report": 2,
+      "structured": 15
+    },
+    "raw/player_game_availability/2024-25_regular_season.imports.json": {
+      "structured": 10
+    },
+    "raw/player_game_availability/2025-26_regular_season.imports.json": {
+      "report": 12,
+      "structured": 109
+    }
+  }
+}

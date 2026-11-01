@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "classification": "one_original_gamebook_reported_reason_qualification_not_runtime_or_clinical_acceptance",
+  "approval": "PASS representative source envelope and exact Luka source-reported medical wording; same format justifies remaining13 fixed source captures after bounded remainder-selector review",
+  "run_id": 41284603061,
+  "request_revision": "574c80c74470f97a7538452ced44c18e3ac0b030",
+  "reviewed_code_revision": "0a3f2ca09941d71bd58930292dd013ac1f02b93e",
+  "code_tree": "1e30fcc0384863eac5f89e75f334fc49a7eca3a2",
+  "artifact_id": 13073934027,
+  "artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+  "artifact_size_bytes": 26926,
+  "strict_summary": {
+    "candidate_sha": "574c80c74470f97a7538452ced44c18e3ac0b030",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_luka_reported_reason_capture_real_data.py::test_capture_one_luka_reason_representative_only"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "raw_pdf": {
+    "artifact_member": "acquired_data/luka-reason-representative/0022500136/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf",
+    "sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+    "size_bytes": 26433,
+    "source_url": "https://statsdmz.nba.com/pdfs/20251029/20251029_LALMIN.pdf",
+    "retrieved_at": "2026-11-01T07:24:54.780873+00:00",
+    "original_NBA_capture_time": null,
+    "source_receipt_member": "acquired_data/luka-reason-representative/0022500136/20251029_LALMIN.json",
+    "source_receipt_sha256": "b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486",
+    "retained_local_review_path": "/workspace/nbatools/work/luka-reason-first-report-review/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf"
+  },
+  "method": "Original single-page PDF rendered with Poppler and visually inspected; independent pdftotext layout extraction, literal footer verification and same-game Summary NBA-ID binding. No shared reason parser or network used.",
+  "game": {
+    "game_id": "0022500136",
+    "game_date": "2025-10-29",
+    "away_team_id": 1610612747,
+    "home_team_id": 1610612750,
+    "away_points": 116,
+    "home_points": 115,
+    "final_box": true,
+    "printed_venue": "Target Center, Minneapolis, MN",
+    "all_played_clock_and_points_envelope": [
+      {
+        "team": "LAL",
+        "played_rows": 9,
+        "sum_points": 116,
+        "team_seconds": 14400,
+        "sum_player_seconds": 14400,
+        "display_residual_seconds": 0
+      },
+      {
+        "team": "MIN",
+        "played_rows": 9,
+        "sum_points": 115,
+        "team_seconds": 14400,
+        "sum_player_seconds": 14401,
+        "display_residual_seconds": 1
+      }
+    ]
+  },
+  "identity_authority": {
+    "player_id": 1629029,
+    "PDF_surname": "Doncic",
+    "team_id": 1610612747,
+    "source_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500136.json",
+    "source_sha256": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+    "source_json_path": "$.boxScoreSummary.awayTeam.inactives[2]",
+    "literal_source_row": {
+      "personId": 1629029,
+      "firstName": "Luka",
+      "familyName": "Doncic",
+      "jerseyNum": "77  "
+    },
+    "exact_same_game_side_envelope_verified": true,
+    "matching_same_game_surname_candidates": 1,
+    "normalization": "Accent folding and punctuation only; not surname-alone or another-game membership inference.",
+    "source_name": "Luka Doncic"
+  },
+  "source_fact": {
+    "reported_reason_qualified": true,
+    "participation_source_corrob": "Explicit Lakers inactive entry corroborates already qualified same-game DNP; no new participation table imported.",
+    "reported_reason_state": "reported_other",
+    "reported_reason_class": "reported_medical_wording",
+    "reported_reason_literal": "Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+    "reported_rest_literal_present": false,
+    "source_entry_literal": "Doncic (Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion)",
+    "page": 1,
+    "section": "Lakers inactive footer",
+    "pdftotext_layout_line": 44,
+    "character_span_start": 5572,
+    "character_span_end_exclusive": 5643,
+    "extracted_text_sha256": "63c7d8d3adc9aed2ccf38feea787a403d380e45da84220bce7732ff4cfb1fa2d",
+    "complete_LAL_footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion), James (Injury/Illness - Right Sciatica; -), Kleber (Injury/Illness -\nAbdominal Muscle; Strain), Koloko (G League - Two-Way), Thiero (Injury/Illness - Left Knee; Surgery Recovery), Vincent (Injury/Illness - Left Ankle; Sprain)\n",
+    "clinical_status_qualified": false,
+    "injury_diagnosis_or_health_or_current_status_inference": false
+  },
+  "source_only_reason_coverage_after_this_fact": {
+    "known_DNP_games": 18,
+    "explicit_reported_rest": 0,
+    "source_stated_other": 5,
+    "reason_unknown": 13,
+    "season_rest_total": null,
+    "season_rest_total_qualified": false
+  },
+  "continuation": {
+    "remaining_fixed_games": [
+      "0022500163",
+      "0022500336",
+      "0022500418",
+      "0022500601",
+      "0022500753",
+      "0022500769",
+      "0022500774",
+      "0022500791",
+      "0022501140",
+      "0022501155",
+      "0022501170",
+      "0022501185",
+      "0022501198"
+    ],
+    "same_existing_source_format_justified": true,
+    "new_remainder_selector_review_required": true,
+    "current_firstonly_selector_cannot_capture_remainder": true,
+    "do_not_refetch_first_or_old4": true,
+    "per_file_attempts": 1,
+    "pdf_max_bytes": 1500000,
+    "max_remaining_pdf_bytes": 19500000,
+    "future_per_report_qualification": "Exact canonical envelope and unique same-game NBA-ID mapping for each literal reason; absent/ambiguous/emptyreason staysunknown. Preserve source text/bytes and failures; do not infer Rest from DNP or clinical truth from medical wording."
+  },
+  "transport_receipt_flags_preserved_false": true,
+  "source_network_calls_by_checker": 0,
+  "new_reason_contract_or_consumer_accepted": false,
+  "clinical_status_qualified": false,
+  "feature_acceptance": false,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0,
+  "licensing": "Official NBA PDF footer: Copyright2025-2026 NBA Properties INC. All Rights Reserved; archive CC BY attribution is not a license replacement for this original gamebook."
+}

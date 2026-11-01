@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; genuinely separate checker agent, no cross-model claim",
+  "approval": "PASS_FOR_ONE_PINNED_775_STAGING_GATE",
+  "reviewed_remote_revision": "97b8117938cfc1edcdbfe90fc6adb376dd69e92f",
+  "equivalent_local_revision": "52cc8e92c64308ab570123ce96d574e3733e7e56",
+  "tree": "57d8b2239e22dded9203c4494d6622b8e21c947e",
+  "author_bench_repair_revision": "f44954e0018ec14a65f5d90dae913fffe3bd3d89",
+  "previous_reviews": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reported-rest-initial-review.json",
+      "sha256": "665195f748ed8e44eaba468e0f6c503a556052a1fcb268fa445fcd2330d1b869",
+      "size_bytes": 10469
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reported-rest-repair-review.json",
+      "sha256": "152f192aa44d292cf07231e75c6086c45ac3e83ef087454fb89ce9ab17e06e0b",
+      "size_bytes": 12893
+    }
+  ],
+  "all_known_blockers_resolved": true,
+  "resolutions": {
+    "opaque_reason_admission": "Recognized source reason categories are required; Traditional comments also need an explicit nonparticipation prefix. Unfamiliar annotations remain stored unknown and cannot close Rest coverage or produce zero. The20df/0c6d review applies unchanged.",
+    "residual_actor_ownership": "Exact original request/span ownership survives date, shorthand and team rewrites; remaining unclaimed actor bounds stay unsupported. Claimed team and primary-player bounds remain positive. The20df/0c6d review applies unchanged.",
+    "bench_context_source_grain": "Shared detect_on_off recognizes explicit bench location or bench minutes/stints/time before scalar absence masking. Such requests retain existing on_court_presence containment rather than becoming a full-game reported Rest predicate. This does not implement the legitimate within-game capability."
+  },
+  "bench_delta": {
+    "runtime_file": {
+      "path": "work/rest-integrated/src/nbatools/commands/_parse_helpers.py",
+      "sha256": "201ec76566f01c7434a93962974b899ce22a4e16efdbc8cd6ea8f9563b40b1c1",
+      "size_bytes": 215691
+    },
+    "new_author_test": {
+      "path": "work/rest-integrated/tests/test_bench_presence_scope.py",
+      "sha256": "a3123dc8a87f765b448bf474982f533847a00edb7de301c910a7020af42e32c6",
+      "size_bytes": 2482
+    },
+    "reviewed_code_lines_added": 10,
+    "semantics": "Generic explicit bench location/time admission; no actor-name exception, source inference or new on/off consumer. Existing role and team bench-scoring phrases remain separate.",
+    "seven_original_cases_after_fix": [
+      {
+        "query": "Lakers record when Davis rests on the bench vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests while sitting on the bench vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests while he is on the bench vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests during his bench minutes vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": "minutes",
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests off the court vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests on the floor vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": null,
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": null,
+          "half": null,
+          "unsupported_filters": [
+            "on_court_presence"
+          ]
+        },
+        "ids": []
+      },
+      {
+        "query": "Lakers record when Davis rests during the fourth quarter vs Celtics in 2023-24",
+        "status": "no_result",
+        "reason": "filter_not_supported",
+        "route_kwargs": {
+          "team": "LAL",
+          "season": "2023-24",
+          "start_season": null,
+          "end_season": null,
+          "season_type": "Regular Season",
+          "opponent": "BOS",
+          "opponent_division": null,
+          "with_player": null,
+          "without_player": "Anthony Davis",
+          "home_only": false,
+          "away_only": false,
+          "wins_only": false,
+          "losses_only": false,
+          "stat": null,
+          "min_value": null,
+          "max_value": null,
+          "start_date": null,
+          "end_date": null,
+          "without_player_reason": "reported_rest",
+          "back_to_back": false,
+          "rest_days": null,
+          "one_possession": false,
+          "nationally_televised": false,
+          "clutch": false,
+          "role": null,
+          "opponent_quality": null,
+          "quarter": "4",
+          "half": null
+        },
+        "ids": []
+      }
+    ]
+  },
+  "executed_narrow_tests": {
+    "command": "PYTHONPATH=./src:. /workspace/nbatools/.venv/bin/python -m pytest -q -n 0 tests/test_bench_presence_scope.py /workspace/nbatools/work/rest_bench_review_controls.py /workspace/nbatools/work/rest_bench_delta_controls.py /workspace/nbatools/work/rest_positive_review.py",
+    "passed": 26,
+    "skipped": 0,
+    "breakdown": {
+      "author_scope_and_neighbors": 14,
+      "original_seven_case_probe": 1,
+      "independent_unfamiliar_bench_location_and_time": 6,
+      "independent_role_and_schedule_neighbors": 3,
+      "independent_nonempty_rest_entities": 2
+    },
+    "nonempty_expected_from_fixture_rows": [
+      {
+        "actor": "Anthony Davis",
+        "game_id": 3,
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "pts": 117
+      },
+      {
+        "actor": "LeBron James",
+        "game_id": 16,
+        "games": 1,
+        "wins": 0,
+        "losses": 1,
+        "pts": 89
+      }
+    ],
+    "unfamiliar_bench_conditions": [
+      "Anthony Davis rested on his bench",
+      "LeBron James is resting on bench",
+      "Anthony Davis rests during their bench time",
+      "LeBron James rests during the bench stint",
+      "Davis sits on the bench",
+      "LeBron James plays while Davis is on the bench"
+    ],
+    "neighboring_queries": [
+      "Austin Reaves points off the bench vs Celtics in 2023-24",
+      "Lakers bench points against Celtics in 2023-24",
+      "Lakers record when Davis rests after 3 days rest vs Celtics in 2023-24"
+    ]
+  },
+  "reused_checks": {
+    "initial113_source_consumer_report_controls": "Passed on ad6d; source reader and original replay integration unchanged except later closed classifier admission, which was separately verified.",
+    "repair84_selected_and13_independent_controls": "Passed on232a/0c6d; all relevant files unchanged by bench delta. The count includes diagnostic probes as explicitly recorded in prior review.",
+    "source_fact_qualification": "477e3284ecb87ba71718ad488749597d8628e6f0e2c7e1e6afd94da6ab7907b4 remains unchanged; no source PDF replay or acquisition repeated. All18 pinned reason literals still classify Other."
+  },
+  "gate": {
+    "selector": "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games",
+    "file_sha256": "9c1c25c99a56bf9c932101f95c709f5cfabbdc4caba55b5a07766c4e2692a368",
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "manifest_file_count": 775,
+    "allowed_execution": "One existing read-only R2 validation request selecting this required source-bound staging/consumer test on the exact reviewed candidate.",
+    "input_scope": "Accepted a187 LAL overlay plus qualified retained14 PDF originals, three prior published PDF reason observations and1098 Traditional JSON. No source fetching or reacquisition.",
+    "required_meaning": "All18 explicit Other reasons support complete source-reported Rest zero/knownempty; ordinary binary18 absence and record remain correct. Sparse17 valid reason facts must block zero with an unknown. Five structured consumers and three retained local API bodies execute.",
+    "output_controls": "Original seed bytes preserved; only reason-companion/source namespace added, new CSV/ledger declared manifest-absent with18 observation keys and no fabricated base hash. Raw overlay and validation exported before consumers; test-only inventory excluded.",
+    "new_authorization_or_publication": false
+  },
+  "unresolved_review_findings": [],
+  "remaining_acceptance": [
+    "Actual required775 staging/consumer gate must execute and pass with zero skips; independently inspect exported output and compact receipt.",
+    "Normal exact-head required CI and deployed follow-through remain separate.",
+    "Within-game bench/on-off functionality and clinical status remain unfinished.",
+    "No production publication or pointer change is authorized by this review."
+  ],
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0,
+  "full_slice_accepted": false,
+  "actual_runtime_consumer_acceptance": false,
+  "git_diff_check": "passed",
+  "frozen_worktree_clean": true
+}

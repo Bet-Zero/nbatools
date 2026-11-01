@@ -254,13 +254,19 @@ def _split_inactives(record: str) -> list[tuple[str, str]]:
     return result
 
 
-def _inactives(lines: list[str]) -> list[tuple[str, list[tuple[str, str]]]]:
+def _inactives(
+    lines: list[str], *, team_name: str | None = None
+) -> list[tuple[str, list[tuple[str, str]]]]:
     groups = []
     for index, line in enumerate(lines):
         match = re.match(r"^\s*Inactive:\s*(.+?)\s+-\s+(.*)$", line, re.I)
         if match is None:
             continue
         team, first = match.groups()
+        if team_name is not None:
+            expected, label = _name(team_name), _name(team)
+            if expected != label and not expected.endswith(" " + label):
+                continue
         joined = [first]
         for value in lines[index + 1 : index + 5]:
             part = value.strip()
@@ -273,8 +279,12 @@ def _inactives(lines: list[str]) -> list[tuple[str, list[tuple[str, str]]]]:
                 break
             joined.append(part)
         groups.append((team, _split_inactives(" ".join(joined))))
-    if len(groups) != 2:
-        raise ValueError("Final Box must contain both teams' inactive lists")
+    if len(groups) != (1 if team_name is not None else 2):
+        raise ValueError(
+            "Final Box must contain unique selected inactive lists"
+            if team_name is not None
+            else "Final Box must contain both teams' inactive lists"
+        )
     return groups
 
 

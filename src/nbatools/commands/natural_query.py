@@ -2911,6 +2911,7 @@ def _opponent_count_supported(match: re.Match) -> bool:
 
 
 def _build_parse_state(query: str) -> dict:
+    availability_condition_query = normalize_text(query)
     opponents_counted = _HOW_MANY_OPPONENTS.match(normalize_text(query))
     opponent_count_unsupported = bool(
         opponents_counted and not _opponent_count_supported(opponents_counted)
@@ -2963,7 +2964,18 @@ def _build_parse_state(query: str) -> dict:
         q = _TITLE_RELATIVE_YEAR.sub(r"\1 season", q)
     from nbatools.commands._compound_event_authorization import availability_status_subject_view
 
-    subject_q, status_condition_spans = availability_status_subject_view(q)
+    reason_clause = requested_scalar_absence(q)
+    count_clause = next((m for rx in _MISSED_SHAPES if (m := rx.match(q))), None)
+    reported_reason_spans = (
+        [(reason_clause.start, reason_clause.end)]
+        if reason_clause and reason_clause.reported_reason
+        else [(count_clause.start("who"), count_clause.end("verb"))]
+        if count_clause and count_clause.group("verb") in {"rest", "rested"}
+        else []
+    )
+    subject_q, status_condition_spans = availability_status_subject_view(
+        q, preserved_spans=reported_reason_spans
+    )
     season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
@@ -3334,6 +3346,7 @@ def _build_parse_state(query: str) -> dict:
     lineup_query_mode = lineup_request["route"] if lineup_request else None
     with_player = None
     without_player = None
+    without_player_reason = None
     unresolved_with_player = None
     unresolved_without_player = None
     mixed_availability = None
@@ -3402,6 +3415,8 @@ def _build_parse_state(query: str) -> dict:
             presence_q = subject_q[:start] + " " * (end - start) + subject_q[end:]
         raw_pair = requested_availability_pair(presence_q)
         raw_scalar = requested_scalar_absence(presence_q) if not raw_pair else None
+        if raw_scalar:
+            without_player_reason = raw_scalar.reported_reason
         presence_remainder = raw_scalar.mask_clause(presence_q) if raw_scalar else presence_q
         with_player, q_without_presence = detect_with_player(
             presence_remainder, resolve_name=resolve_condition_name
@@ -3557,6 +3572,8 @@ def _build_parse_state(query: str) -> dict:
                         end_season=end_season,
                         season_type=season_type,
                     )
+                if clause.mode == "without":
+                    without_player_reason = clause.reported_reason
                 if clause.mode == "with":
                     with_player, unresolved_with_player = name, None if name else clause.players
                 else:
@@ -3566,7 +3583,9 @@ def _build_parse_state(query: str) -> dict:
                     )
                 if name:
                     resolved_clauses.append(
-                        AvailabilityClause(clause.mode, name, clause.start, clause.end)
+                        AvailabilityClause(
+                            clause.mode, name, clause.start, clause.end, clause.reported_reason
+                        )
                     )
             primary = detect_player_resolved(mixed_availability_requested.mask_clause(presence_q))
             player = primary.resolved if primary.is_confident else None
@@ -3796,9 +3815,11 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        "availability_condition_query": availability_condition_query,
         "status_condition_spans": status_condition_spans,
+        "reported_reason_spans": reported_reason_spans,
         "requested_availability_status": unsupported_availability_status(
-            {"normalized_query": normalize_text(query)}
+            {"normalized_query": q, "reported_reason_spans": reported_reason_spans}
         ),
         "requested_on_off": on_off_request,
         "month_rank": month_rank,
@@ -3935,6 +3956,7 @@ def _build_parse_state(query: str) -> dict:
         "opponent_player": opponent_player,
         "with_player": with_player,
         "without_player": without_player,
+        "without_player_reason": without_player_reason,
         "unresolved_with_player": unresolved_with_player,
         "unresolved_without_player": unresolved_without_player,
         "mixed_availability": mixed_availability,
@@ -6867,6 +6889,8 @@ def _route_parsed_query(parsed: dict) -> dict:
             "'Jokic vs Embiid recent form'."
         )
 
+    if parsed.get("without_player_reason"):
+        route_kwargs["without_player_reason"] = parsed["without_player_reason"]
     route_kwargs["back_to_back"] = back_to_back
     route_kwargs["rest_days"] = rest_days
     route_kwargs["one_possession"] = one_possession
@@ -7049,6 +7073,13 @@ def _route_parsed_query(parsed: dict) -> dict:
         # Every team_record branch selects the same game log, so the last-N
         # window applies to all of them rather than to each kwargs literal.
         route_kwargs["last_n"] = last_n
+
+    if (
+        route == "team_record"
+        and parsed.get("without_player_reason")
+        and explicit_original_pair_marker
+    ):
+        parsed["last_n_scope"] = "original_window"
 
     if parsed.get("last_n_scope") == "original_window":
         from nbatools.commands._parse_helpers import original_participation_window_owner
@@ -11165,17 +11196,17 @@ _MISSED_GAMES = re.compile(
 _MISSED_SHAPES = (
     re.compile(
         r"^how\s+many\s+(?:(?:home|road|away|playoff|regular\s+season)\s+)?games\s+"
-        r"(?:has|have|did|does|had)\s+(?P<who>.+?)\s+(?:miss|missed)\b(?P<rest>.*)$"
+        r"(?:has|have|did|does|had)\s+(?P<who>.+?)\s+(?P<verb>miss|missed|rest|rested)\b(?P<rest>.*)$"
     ),
     re.compile(
         r"^(?:(?:which|what)\s+)?(?:(?:home|road|away|playoff)\s+)?games\s+(?:has\s+|have\s+|did\s+)?"
-        r"(?P<who>.+?)\s+(?:has\s+|have\s+)?(?:miss|missed)\b(?P<rest>.*)$"
+        r"(?P<who>.+?)\s+(?:has\s+|have\s+)?(?P<verb>miss|missed|rest|rested)\b(?P<rest>.*)$"
     ),
-    re.compile(r"^(?P<who>.+?)\s+missed\s+games\b(?P<rest>.*)$"),
+    re.compile(r"^(?P<who>.+?)\s+(?P<verb>missed|rested)\s+games\b(?P<rest>.*)$"),
     re.compile(
-        r"^(?:the\s+)?number\s+of\s+games\s+(?P<who>.+?)\s+(?:has\s+|have\s+)?missed\b(?P<rest>.*)$"
+        r"^(?:the\s+)?number\s+of\s+games\s+(?P<who>.+?)\s+(?:has\s+|have\s+)?(?P<verb>missed|rested)\b(?P<rest>.*)$"
     ),
-    re.compile(r"^(?P<who>.+?)\s+games\s+missed\b(?P<rest>.*)$"),
+    re.compile(r"^(?P<who>.+?)\s+games\s+(?P<verb>missed|rested)\b(?P<rest>.*)$"),
 )
 # Season and span wording, read by the parse: taken out before the check.
 _MISSED_SEASON_WORDS = re.compile(
@@ -11194,7 +11225,8 @@ _MISSED_NOT_A_COUNT = re.compile(
 def _missed_games(parsed: dict) -> dict | None:
     q = parsed["normalized_query"]
     player = parsed.get("player")
-    if not player or not _MISSED_GAMES.search(q) or not re.search(r"\bgames?\b", q):
+    shape = next((m for rx in _MISSED_SHAPES if (m := rx.match(q))), None)
+    if not player or shape is None:
         return None
     if any(
         parsed.get(k)
@@ -11210,9 +11242,7 @@ def _missed_games(parsed: dict) -> dict | None:
         )
     ):
         return None
-    shape = next((m for rx in _MISSED_SHAPES if (m := rx.match(q))), None)
-    if shape is None:
-        return None
+    reported_rest = shape.group("verb") in {"rest", "rested"}
     who = shape.group("who")
     if len(who.split()) > 3 or _team_mentions(who) or _MISSED_NOT_A_COUNT.search(who):
         # "how many games did the Lakers win when LeBron missed": not his count.
@@ -11301,6 +11331,8 @@ def _missed_games(parsed: dict) -> dict | None:
         "sort_by": "game_date",
         "limit": 100000,
     }
+    if reported_rest:
+        kwargs["without_player_reason"] = "reported_rest"
     if game_dates:
         kwargs.update(game_dates=game_dates, start_date=None, end_date=None)
     out = dict(parsed)
@@ -11315,7 +11347,11 @@ def _missed_games(parsed: dict) -> dict | None:
         team=teams[0],
         notes=list(parsed.get("notes") or [])
         + [
-            f"missed_games: {teams[0]} games {player} did not play"
+            (
+                f"reported_rest_games: {teams[0]} games {player} was officially reported resting"
+                if reported_rest
+                else f"missed_games: {teams[0]} games {player} did not play"
+            )
             + ("; home" if kwargs["home_only"] else "; road" if kwargs["away_only"] else "")
         ],
     )
@@ -11424,17 +11460,42 @@ def _finalize_route(parsed: dict) -> dict:
         ]
         return out
     route = out.get("route")
-    condition_q = parsed["normalized_query"]
+    condition_q = (
+        (parsed.get("availability_condition_query") or parsed["normalized_query"])
+        if kwargs.get("without_player_reason")
+        else parsed["normalized_query"]
+    )
     scalar_absence = requested_scalar_absence(condition_q)
     mixed = parsed.get("mixed_availability")
+    raw_mixed = (
+        requested_mixed_availability(condition_q)
+        if mixed and kwargs.get("without_player_reason")
+        else mixed
+    )
     condition_spans = (
-        {clause.players: (clause.start, clause.end) for clause in mixed.clauses} if mixed else {}
+        {
+            clause.players: (raw.start, raw.end)
+            for clause in mixed.clauses
+            for raw in (raw_mixed.clauses if raw_mixed else ())
+            if raw.mode == clause.mode
+        }
+        if mixed
+        else {}
     )
     if any(
         presence_names_player_condition(
             condition_q,
             name,
-            condition_span=condition_spans.get(name),
+            condition_span=condition_spans.get(name)
+            or (
+                (scalar_absence.start, scalar_absence.end)
+                if scalar_absence
+                and scalar_absence.reported_reason
+                and name == kwargs.get("without_player")
+                else None
+            ),
+            primary_player=kwargs.get("player") if not parsed.get("record_intent") else None,
+            team_stat_consumer=route in {"team_record", "game_finder", "game_summary"},
             absence_span=(scalar_absence.start, scalar_absence.end)
             if scalar_absence and name == kwargs.get("without_player")
             else None,

@@ -432,6 +432,14 @@ def _build_applied_filters(
         applied_filters.append(
             {"label": "Without player", "value": without_player, "kind": "player"}
         )
+    if route_kwargs.get("without_player_reason", source.get("without_player_reason")):
+        applied_filters.append(
+            {
+                "label": "Reported absence reason",
+                "value": "officially reported Rest",
+                "kind": "reported_reason",
+            }
+        )
     if with_player:
         applied_filters.append({"label": "With player", "value": with_player, "kind": "player"})
     if source.get("home_only"):
@@ -731,6 +739,9 @@ def _build_query_metadata(
         "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
         "with_player": route_kwargs.get("with_player", parsed.get("with_player")),
         "without_player": route_kwargs.get("without_player", parsed.get("without_player")),
+        "without_player_reason": route_kwargs.get(
+            "without_player_reason", parsed.get("without_player_reason")
+        ),
         "unresolved_availability_player": route_kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": parsed.get("opponent_quality"),
@@ -2065,13 +2076,19 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
         (
             n
             for n in metadata.get("notes") or []
-            if isinstance(n, str) and n.startswith("missed_games:")
+            if isinstance(n, str) and n.startswith(("missed_games:", "reported_rest_games:"))
         ),
         None,
     )
     if not note or not isinstance(result, CountResult):
         return
-    match = re.match(r"missed_games: (\S+) games (.+) did not play(?:; (home|road))?$", note)
+    reported_rest = note.startswith("reported_rest_games:")
+    match = re.match(
+        r"reported_rest_games: (\S+) games (.+) was officially reported resting(?:; (home|road))?$"
+        if reported_rest
+        else r"missed_games: (\S+) games (.+) did not play(?:; (home|road))?$",
+        note,
+    )
     if not match:
         return
     team_context = metadata.get("team_context") or {}
@@ -2110,6 +2127,10 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
         if n == 0
         else f"{player} missed {n} {team} {venue}{games} {context}."
     )
+    if reported_rest:
+        metadata["answer_phrase"] = (
+            f"{player} had {n} {team} {venue}{games} with officially reported Rest {context}."
+        )
     metadata["count_phrase"] = metadata["answer_phrase"]
 
 
@@ -2820,7 +2841,15 @@ def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> 
     team = _team_subject(metadata) or _clean_text(row.get("team_name")) or "The team"
     game_word = "game" if games == 1 else "games"
     without_player = _clean_text(metadata.get("without_player"))
-    context = f" without {without_player}" if without_player else ""
+    context = (
+        (
+            f" when {without_player} was officially reported resting"
+            if metadata.get("without_player_reason") == "reported_rest"
+            else f" without {without_player}"
+        )
+        if without_player
+        else ""
+    )
     ppg = f", averaging {_format_one_decimal(pts_avg)} PPG" if pts_avg is not None else ""
     margin = _series_float(row, "plus_minus_avg")
     if metadata.get("stat") == "plus_minus" and margin is not None:
@@ -3778,6 +3807,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "with_player": kwargs.get("with_player"),
         "without_player": kwargs.get("without_player"),
+        "without_player_reason": kwargs.get("without_player_reason"),
         "unresolved_availability_player": kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": kwargs.get("opponent_quality"),

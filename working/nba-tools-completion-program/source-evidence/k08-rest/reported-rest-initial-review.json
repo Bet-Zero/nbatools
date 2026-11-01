@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; separate independent checker agent, no cross-model claim",
+  "approval": "BLOCKED_BEFORE_R2",
+  "reviewed_remote_revision": "893227e5475b6621ed8394d61f250814ef26b124",
+  "equivalent_local_revision": "ad6d77e3cfbfbaabc104ca8c3d69dfc3d3ae9318",
+  "tree": "14eae27a1f101e86de83946626c8136ea75c1819",
+  "source_generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "code_hashes": {
+    "src/nbatools/commands/_reported_absence_reasons.py": "5e038febae1eb4996f7fcd5678663696c1a9ed72fee730859848924cc94c7d9a",
+    "src/nbatools/commands/pipeline/reported_absence_reasons.py": "5dd5d2f5c7d75039cfeb64276924b7c6701944d28b51f6e686cd4676c87735bb",
+    "src/nbatools/commands/_matchup_utils.py": "7845fb3762118f5d2b5b5575959afd734f5d751f8c988892e64b4119cb6dc3f8",
+    "src/nbatools/commands/natural_query.py": "7b813d42d83e077304d7b62cd32dd7550fd43bd5b4751f5a5e6ae3c7b9b75ea1",
+    "tests/cloud_reported_rest_stage_real_data.py": "705bad5fa9a6b2e790c0d1228c4c8094aed82cded20e8a2a1b680466dc5b6de4"
+  },
+  "blocking_findings": [
+    {
+      "id": "opaque_reason_admission",
+      "path": "src/nbatools/commands/_reported_absence_reasons.py",
+      "function": "classify_reason",
+      "meaning": "An authenticated source-body/qualified DNP is not a reason-specific authority for arbitrary or opaque comments. Default nonempty->Other can produce false completed coverage/zero Rest.",
+      "examples": {
+        "DNP - unverified legacy annotation": "reported_other (actual; expected unknown)",
+        "INACTIVE - data not available": "reported_other (actual; expected unknown)",
+        "NWT - no information provided": "reported_other (actual; expected unknown)",
+        "garbled_import_42": "reported_other (actual; expected unknown)",
+        "DND - unrecognized": "reported_other (actual; expected unknown)"
+      },
+      "independent_producer_controls": {
+        "file": "work/rest_source_review_controls.py",
+        "new_synthetic_pdf_source_literals": [
+          "unverified legacy annotation",
+          "data not available",
+          "captured_bad_suffix_42"
+        ],
+        "actual_all": "reported_other",
+        "expected_all": "unknown",
+        "outcome": "3 discriminating assertions failed"
+      },
+      "required_resolution": "Recognized source reason-code/field shapes only; unrecognized/opaque text stays unknown. Preserve literal originals and clean18 accepted Other facts, without clinical inference."
+    },
+    {
+      "id": "shared_residual_actor_ownership",
+      "path": "src/nbatools/commands/_matchup_utils.py",
+      "function": "presence_names_player_condition",
+      "meaning": "An unclaimed actor stat can be silently promoted into team-row conditions or ignored after coordinate-changing calendar stripping. Team ownership and primary subject must survive independently of explicit Rest.",
+      "actual_cases": [
+        {
+          "query": "Lakers record when Davis rests and where Lakers scored 80 and Lakers reserve Blorg scored 30 points vs Celtics in 2023-24",
+          "route": "team_record",
+          "kwargs": {
+            "team": "LAL",
+            "season": "2023-24",
+            "start_season": null,
+            "end_season": null,
+            "season_type": "Regular Season",
+            "opponent": "BOS",
+            "opponent_division": null,
+            "with_player": null,
+            "without_player": "Anthony Davis",
+            "home_only": false,
+            "away_only": false,
+            "wins_only": false,
+            "losses_only": false,
+            "stat": "pts",
+            "min_value": 80.0,
+            "max_value": null,
+            "start_date": null,
+            "end_date": null,
+            "without_player_reason": "reported_rest",
+            "back_to_back": false,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "clutch": false,
+            "role": null,
+            "opponent_quality": null,
+            "quarter": null,
+            "half": null,
+            "conditions": [
+              {
+                "stat": "pts",
+                "min_value": 80.0,
+                "max_value": null,
+                "text": "scored 80"
+              },
+              {
+                "stat": "pts",
+                "min_value": 30.0,
+                "max_value": null,
+                "text": "scored 30 points"
+              }
+            ]
+          },
+          "status": "ok",
+          "reason": null,
+          "ids": [
+            3
+          ]
+        },
+        {
+          "query": "Lakers record from 2023-11-01 to 2024-04-01 when Davis rests and Blorg scores 30 points vs Celtics in 2023-24",
+          "route": "team_record",
+          "kwargs": {
+            "team": "LAL",
+            "season": "2023-24",
+            "start_season": null,
+            "end_season": null,
+            "season_type": "Regular Season",
+            "opponent": "BOS",
+            "opponent_division": null,
+            "with_player": null,
+            "without_player": "Anthony Davis",
+            "home_only": false,
+            "away_only": false,
+            "wins_only": false,
+            "losses_only": false,
+            "stat": "pts",
+            "min_value": 30.0,
+            "max_value": null,
+            "start_date": "2023-11-01",
+            "end_date": "2024-04-01",
+            "without_player_reason": "reported_rest",
+            "back_to_back": false,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "clutch": false,
+            "role": null,
+            "opponent_quality": null,
+            "quarter": null,
+            "half": null
+          },
+          "status": "no_result",
+          "reason": "no_match",
+          "ids": []
+        },
+        {
+          "query": "Lakers record when LeBron James scores 30 points and Davis rests vs Celtics in 2023-24",
+          "route": "player_game_summary",
+          "kwargs": {
+            "season": "2023-24",
+            "start_season": null,
+            "end_season": null,
+            "start_date": null,
+            "end_date": null,
+            "season_type": "Regular Season",
+            "player": "LeBron James",
+            "team": "LAL",
+            "opponent": "BOS",
+            "opponent_player": null,
+            "without_player": "Anthony Davis",
+            "home_only": false,
+            "away_only": false,
+            "wins_only": false,
+            "losses_only": false,
+            "stat": "pts",
+            "min_value": 30.0,
+            "max_value": null,
+            "last_n": null,
+            "career_intent": false,
+            "special_event": null,
+            "without_player_reason": "reported_rest",
+            "back_to_back": false,
+            "rest_days": null,
+            "one_possession": false,
+            "nationally_televised": false,
+            "clutch": false,
+            "role": null,
+            "opponent_quality": null,
+            "quarter": null,
+            "half": null
+          },
+          "status": "no_result",
+          "reason": "no_match",
+          "ids": []
+        }
+      ],
+      "expected": "Retain the unimplemented actor condition; do not return OK/no_match from a partial team/player sample.",
+      "diagnosis": "New residual slice analysis_text[condition_span[1]:] uses original offsets after explicit-calendar stripping can shorten text. It also excludes earlier unclaimed subjects. Named/team-qualified residual ownership requires checking exact claimed subject spans rather than allowing a team word to authorize a compound owner."
+    }
+  ],
+  "executed_tests": {
+    "command": "PYTHONPATH=./src:. /workspace/nbatools/.venv/bin/python -m pytest -q -n 0 tests/test_reported_absence_reason_sources.py tests/test_reported_rest_consumers.py",
+    "passed": 52,
+    "skipped": 0,
+    "existing_report_reader_tests": {
+      "file": "tests/test_pipeline_player_game_availability_report.py",
+      "passed": 61,
+      "skipped": 0
+    },
+    "independent_controls": {
+      "nonempty_rest_and_count_two_entities": {
+        "passed": 2,
+        "source_expected": [
+          {
+            "player": "Anthony Davis",
+            "game_id": 3,
+            "record": "1-0",
+            "pts": 117
+          },
+          {
+            "player": "LeBron James",
+            "game_id": 16,
+            "record": "0-1",
+            "pts": 89
+          }
+        ]
+      },
+      "source_forged_locator_and_wrong_namespace_rejected": {
+        "passed": 2
+      },
+      "opaque_source_admission": {
+        "failed_expected_discriminating": 3
+      },
+      "wording_probe": {
+        "queries_executed": 19,
+        "classification": "diagnostic probe, not assertion-based feature acceptance"
+      }
+    }
+  },
+  "unchanged_reviewed_boundaries": [
+    "Source-reported reason companion is separate from binary participation; no runtime PDF conversion.",
+    "CSV+ledger joint forgery is rejected by original-body replay; additional independently forged locator and wrong-namespace controls pass.",
+    "The shared absence helper qualifies DNP/reason coverage before positive sibling/stat filtering. Existing explicit original team-record window positive/unknown-outside controls pass.",
+    "Binary absence skips optional reason loading; schedule Rest days remain distinct.",
+    "Actual gate pins exact775/base and accepted a187 LAL seed overlay; no source reader/acquisition/publication. Existing seed bytes are preserved, reason-only new paths validated and exported before consumers. Test-only inventory is created after export.",
+    "Actual gate retains count-only output contracts, knownempty/no_match distinctions, five structured consumers, three localAPI bodies and sparse17reason/unknown control. Candidate source facts18Other0Rest remain accepted but runtime gate unexecuted."
+  ],
+  "future_actual_selector": "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games",
+  "runtime_gate_approval": false,
+  "new_source_calls": 0,
+  "production_writes": 0,
+  "continuation": "Author repairs both shared admission and residual actor ownership on a new frozen descendant; independent delta review before one pinned775 actual staging gate."
+}

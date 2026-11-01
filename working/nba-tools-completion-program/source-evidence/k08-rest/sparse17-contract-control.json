@@ -1,0 +1,10 @@
+{
+  "artifact_sha256": "f2180fdf1b825155e7ddf688dbcd668d4760fa806dfc74a01003900078de3055",
+  "full18_original_lineage_valid": true,
+  "original_persisted_game_id": "0022500113",
+  "lossy_numeric_rewrite_rejected": true,
+  "fixed_partial17_lineage_valid": true,
+  "fixed_partial_cells_unchanged": true,
+  "source_calls": 0,
+  "runtime_acceptance": false
+}

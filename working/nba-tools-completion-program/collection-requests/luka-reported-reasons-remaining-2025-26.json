@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "status": "fixed_remaining13_source_capture_pending_frozen_review_not_reason_or_feature_acceptance",
+  "authorization": "Owner standing routine bounded public NBA collection/staging through existing approved source/tools/credentials/cost limits; capture execution still requires frozen independent review.",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "target_team_id": 1610612747,
+  "target_player_id": 1629029,
+  "parent_request": {
+    "path": "working/nba-tools-completion-program/collection-requests/luka-reported-reasons-2025-26.json",
+    "sha256": "6b10ba37eba43064d99e1830ce58ceb08ffb7b6f64fac26d1d825551b05e7124"
+  },
+  "reason_coverage_audit": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json",
+    "sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc"
+  },
+  "representative_qualification": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-rest/representative-source-qualification.json",
+    "sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0"
+  },
+  "retained_representative": {
+    "artifact_path": "working/nba-tools-completion-program/source-evidence/k08-rest/representative-source.zip",
+    "artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+    "artifact_size_bytes": 26926,
+    "artifact_member": "acquired_data/luka-reason-representative/0022500136/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf",
+    "sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+    "size_bytes": 26433,
+    "source_url": "https://statsdmz.nba.com/pdfs/20251029/20251029_LALMIN.pdf",
+    "source_receipt_member": "acquired_data/luka-reason-representative/0022500136/20251029_LALMIN.json",
+    "source_receipt_sha256": "b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486"
+  },
+  "canonical_files": [
+    {
+      "path": "raw/games/2025-26_regular_season.csv",
+      "sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+      "size_bytes": 283089
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "size_bytes": 449374
+    }
+  ],
+  "games": [
+    {
+      "game_id": "0022500163",
+      "game_date": "2025-11-03",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "POR",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612757,
+      "opponent_team_id": 1610612757,
+      "away_points": 123,
+      "home_points": 115,
+      "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500163.json",
+        "sha256": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "TOR",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612761,
+      "opponent_team_id": 1610612761,
+      "away_points": 123,
+      "home_points": 120,
+      "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500336.json",
+        "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "PHX",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612756,
+      "opponent_team_id": 1610612756,
+      "away_points": 108,
+      "home_points": 132,
+      "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500418.json",
+        "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "POR",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612757,
+      "opponent_team_id": 1610612757,
+      "away_points": 116,
+      "home_points": 132,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500601.json",
+        "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "GSW",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612744,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612744,
+      "away_points": 99,
+      "home_points": 105,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500753.json",
+        "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "OKC",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612760,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612760,
+      "away_points": 119,
+      "home_points": 110,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500769.json",
+        "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500774",
+      "game_date": "2026-02-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "SAS",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612759,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612759,
+      "away_points": 136,
+      "home_points": 108,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500774.json",
+        "sha256": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "DAL",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612742,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612742,
+      "away_points": 104,
+      "home_points": 124,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500791.json",
+        "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "DAL",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612742,
+      "opponent_team_id": 1610612742,
+      "away_points": 128,
+      "home_points": 134,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501140.json",
+        "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022501155",
+      "game_date": "2026-04-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "OKC",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612760,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612760,
+      "away_points": 123,
+      "home_points": 87,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022501155.json",
+        "sha256": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "LAL",
+      "home_abbr": "GSW",
+      "away_team_id": 1610612747,
+      "home_team_id": 1610612744,
+      "opponent_team_id": 1610612744,
+      "away_points": 119,
+      "home_points": 103,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501170.json",
+        "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "PHX",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612756,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612756,
+      "away_points": 73,
+      "home_points": 101,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501185.json",
+        "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "away_abbr": "UTA",
+      "home_abbr": "LAL",
+      "away_team_id": 1610612762,
+      "home_team_id": 1610612747,
+      "opponent_team_id": 1610612762,
+      "away_points": 107,
+      "home_points": 131,
+      "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf",
+      "reason_state_before": "unknown",
+      "required_target_player_ids": [
+        1629029
+      ],
+      "future_imported_team_ids": [
+        1610612747
+      ],
+      "canonical_envelope_corroboration": {
+        "source_file": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501198.json",
+        "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+        "basis": "Previously qualified exact-game SummaryV3 envelope agrees with accepted canonical LAL team row; opponent score equals canonical pts-minus-plus_minus."
+      }
+    }
+  ],
+  "limits": {
+    "source_files": 13,
+    "reader_invocations": 13,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "aggregate_max_new_pdf_bytes": 19500000,
+    "retained_representative_pdf_bytes": 26433,
+    "aggregate_max_with_representative_pdf_bytes": 21000000,
+    "metered_overage_usd": 0
+  },
+  "never_refetch_game_ids": [
+    "0022500136",
+    "0022500113",
+    "0022500122",
+    "0022500338",
+    "0022501098"
+  ],
+  "execution": "All13 canonical envelopes and all prior request/audit/representative bindings verified before any reader call. Each fixed case is attempted independently once; failed bodies/typed diagnostics retained, no retry. No automatic subsequent collection.",
+  "qualification_limits": [
+    "The representative source format is qualified; each new report still needs independent exact same-game NBA identity and reported reason qualification.",
+    "Capture is source-body/envelope only: no rest, clinical, healthy/active, season-rest-total, new participation import or feature acceptance. Reasonless or ambiguous reasons remain unknown.",
+    "No production publication/pointer changes, new credentials/services/costs/permissions, bulk history, automatic refresh or weakened safeguards."
+  ]
+}

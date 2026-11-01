@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS_FOR_ONE_CHANGED_HARNESS_REPLAY_NOT_FINAL_STAGE_ACCEPTANCE",
+  "reviewed_remote_revision": "8730ee9f4ca53f364c529b27dbdfe4436d5052ca",
+  "equivalent_local_revision": "4ba60ce9402e3da82533539528c9b3cbd20490fb",
+  "tree": "24293100d8b898fe1f3f4f9db28c90a52a3d0918",
+  "original_failed_execution": {
+    "run_id": 41289395213,
+    "request_revision": "2bc9833c218e6f7bce1e25922d6918472f9f37f4",
+    "artifact_id": 13076203959,
+    "sha256": "f2180fdf1b825155e7ddf688dbcd668d4760fa806dfc74a01003900078de3055",
+    "size_bytes": 776265,
+    "members": 136,
+    "strict_summary": {
+      "candidate_sha": "2bc9833c218e6f7bce1e25922d6918472f9f37f4",
+      "generation": "availability-lebron-season-v1-20261031",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 0,
+      "skipped": 0,
+      "failed": 1,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 1,
+      "conclusion": "failure",
+      "problems": [
+        "pytest did not succeed (exit=1)",
+        "Every selected required test must execute and pass",
+        "Required tests contain skips, failures, errors, or expected failures"
+      ]
+    },
+    "consumer_failure": {
+      "type": "ValueError",
+      "message": "Reported-reason row differs from qualified lineage"
+    },
+    "retained_failed_status": true
+  },
+  "independent_output_checks": {
+    "overlay_paths": 132,
+    "all_file_hashes_and_sizes_verified": true,
+    "old_seed_paths_byte_identical": 94,
+    "new_reason_namespace_paths": 38,
+    "reason_rows_and_lineage": 18,
+    "reason_source_literals_match_accepted_journal": true,
+    "same_game_DNP_import_identity_bindings_valid": true,
+    "prior_source_qualification_repeated": false,
+    "full_query_outputs_passed_before_control_failure": 12,
+    "api_bodies_passed_before_control_failure": 3,
+    "complete_source_reason_cases": "0 Rest/18 Other; LeBron subject sample0 Rest/11 Other over60 appearances; home0 Rest/9 Other over41 home games.",
+    "independent_binary_record": {
+      "games": 18,
+      "wins": 10,
+      "losses": 8,
+      "pts_sum": 2059,
+      "game_ids": [
+        22500113,
+        22500122,
+        22500136,
+        22500163,
+        22500336,
+        22500338,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500774,
+        22500791,
+        22501098,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ]
+    }
+  },
+  "repair": {
+    "file": "tests/cloud_reported_rest_stage_real_data.py",
+    "sha256": "441bbdc535f1221eafd3c7639b8e518df5178affb4e702e8a15d67568d1d0566",
+    "semantic_source_runtime_files_changed": false,
+    "change": "Read the persisted companion CSV using dtype=str and keep_default_na=False before removing one numeric game key. Preserve original remaining17 cells and lineage hashes.",
+    "complete18_valid": true,
+    "old_lossy17_rejected_by_unchanged_guard": true,
+    "corrected17_valid": true,
+    "corrected17_cells_identical": true,
+    "missing_game_id": 22500113,
+    "offline_unknown_filter_control": {
+      "basis": "officially reported Rest",
+      "complete": false,
+      "requested_games": 18,
+      "qualified_nonparticipations": 18,
+      "reported_rest": 0,
+      "reported_other": 17,
+      "unknown": 1
+    },
+    "offline_control_scope": "Uses actual artifact rows/lineage and separately mocked selected-DNP loader; not authenticated manifest/runtime acceptance.",
+    "production_guard_weakened": false
+  },
+  "required_replay": "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games",
+  "replay_scope": "Same approved immutable775 generation/source inputs, changed test harness only; no new acquisition or production writes.",
+  "full_stage_acceptance": false,
+  "actual_unknown_runtime_control_accepted": false,
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "classification": "offline_source_reported_rest_oracle_not_runtime_acceptance",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "team_id": 1610612747,
+  "player_id": 1629029,
+  "population": {
+    "observed_games": 82,
+    "played": 64,
+    "did_not_play": 18,
+    "participation_unknown": 0,
+    "participation_basis": "Accepted unpublished LAL stage; production not activated",
+    "explicit_reported_rest": 0,
+    "source_reported_other": 18,
+    "reason_unknown": 0,
+    "reported_classes": {
+      "reported_medical_wording": 15,
+      "reported_personal": 2,
+      "reported_suspension": 1
+    },
+    "reported_rest_season_count": 0,
+    "reported_rest_season_count_qualified": true,
+    "actual_or_clinical_rest_count": null
+  },
+  "fact_journal": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reported-reason-fact-journal.json",
+    "sha256": "9cc9a05a41d837e45654d4fdae880738da03d6cb882b37fc9ae8f715c12a0356",
+    "size_bytes": 74033
+  },
+  "reported_rest": {
+    "game_ids": [],
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "points_sum": 0,
+    "points_average": null,
+    "zero_basis": "Every18DNPgame has explicit source-stated Other reason; not a DNP-to-Rest assumption."
+  },
+  "reported_other": {
+    "game_ids": [
+      "0022500113",
+      "0022500122",
+      "0022500136",
+      "0022500163",
+      "0022500336",
+      "0022500338",
+      "0022500418",
+      "0022500601",
+      "0022500753",
+      "0022500769",
+      "0022500774",
+      "0022500791",
+      "0022501098",
+      "0022501140",
+      "0022501155",
+      "0022501170",
+      "0022501185",
+      "0022501198"
+    ],
+    "games": 18
+  },
+  "unknown_game_ids": [],
+  "actual_or_clinical_rest_count": null,
+  "runtime_accepted": false,
+  "production_writes": 0
+}

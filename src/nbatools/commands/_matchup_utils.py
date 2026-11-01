@@ -649,10 +649,10 @@ def detect_without_player(
         # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
         r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
-        # `when/while/and PLAYER sits/rests`: "Lakers record when Luka sits"
+        # `when/while/and PLAYER sits`: "Lakers record when Luka sits"
         # read no absence and answered with the whole record.
         r"\b(?:when|while|and)\s+((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
-        r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b",
+        r"\s+(?:sits?|sat)(?:\s+out)?\b",
         # `when/while PLAYER is/was out`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
         # `when/while PLAYER out` (no copula)
@@ -896,17 +896,92 @@ def presence_states_player_condition(text: str) -> bool:
     )
 
 
+def _unclaimed_availability_stat_owner(
+    text, condition_span, primary_player=None, *, team_stat_consumer=False
+):
+    """Read residual owners before any coordinate-changing scope cleanup.
+
+    Consume the original availability span first. Only then expand shorthand,
+    claim exact team subjects, and inspect every remaining numeric owner. A team
+    word inside an actor's name does not establish a team subject.
+    """
+    from nbatools.commands._player_game_context import (
+        _BOUND,
+        _TEAM_STAT_VERB,
+        _subject_team,
+        team_subject_stat_conditions,
+    )
+
+    start, end = condition_span
+    residual = text[:start] + " " * (end - start) + text[end:]
+    residual = re.sub(r"(?<=[a-z])(?=\d)", " ", residual)
+    for owner in team_subject_stat_conditions(residual):
+        residual = (
+            residual[: owner["start"]]
+            + " " * (owner["end"] - owner["start"])
+            + residual[owner["end"] :]
+        )
+
+    def claimed_primary(subject):
+        return bool(primary_player and _is_exact_player_reference_phrase(subject, primary_player))
+
+    for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
+        clause = " " + clause.strip()
+        # An inherited gerund can explicitly name the team after its bound:
+        # "playing, scoring 80 points as a team". Claim only that exact
+        # predicate, leaving any following named actor/extra bound to inspect.
+        gerund = re.match(r"\s+scoring\s+", clause)
+        bound = _BOUND.match(clause, gerund.end()) if gerund else None
+        team_suffix = re.match(r"\s+as\s+a\s+team\b", clause[bound.end() :]) if bound else None
+        if team_stat_consumer and bound and bound.group("stat") and team_suffix:
+            end = bound.end() + team_suffix.end()
+            clause = " " * end + clause[end:]
+        for verb in _TEAM_STAT_VERB.finditer(clause):
+            subject = clause[: verb.start()].strip()
+            if _BOUND.match(clause, verb.end()) and subject and not claimed_primary(subject):
+                return True
+        # Gerunds and attached MIN/count bounds use the existing owner reader.
+        # Empty inherited team subjects remain available to the team consumer.
+        boundaries = list(re.finditer(r"\S+\s+", clause))
+        has_stat_verb = bool(_TEAM_STAT_VERB.search(clause)) or any(
+            _states_player_condition(" and he " + clause[b.end() :]) for b in boundaries
+        )
+        for boundary in boundaries:
+            tail = clause[boundary.end() :]
+            subject = clause[: boundary.end()].strip()
+            if (
+                not has_stat_verb
+                and _STAT_COUNT_PHRASE.match(tail.lstrip())
+                and not _subject_team(subject, tuple(set(TEAM_ALIASES.values())))
+                and not claimed_primary(subject)
+            ):
+                return True
+            if (
+                re.search(r"\d", tail)
+                and _states_player_condition(" and he " + tail)
+                and not claimed_primary(clause[: boundary.end()].strip())
+            ):
+                return True
+    return False
+
+
 def presence_names_player_condition(
     text: str,
     player: str,
     *,
     absence_span: tuple[int, int] | None = None,
     condition_span: tuple[int, int] | None = None,
+    primary_player: str | None = None,
+    team_stat_consumer: bool = False,
 ) -> bool:
     """A named teammate owns an immediately attached numerical predicate."""
     from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
 
     if condition_span:
+        if _unclaimed_availability_stat_owner(
+            text, condition_span, primary_player, team_stat_consumer=team_stat_consumer
+        ):
+            return True
         # A resolved conjunction preserves each actor's exact clause boundary,
         # including PLAYING/OUT. Check its tail before masking either actor.
         tail = strip_explicit_calendar_date_clauses(text[condition_span[1] :])
@@ -932,40 +1007,8 @@ def presence_names_player_condition(
         ):
             return True
     text = strip_explicit_calendar_date_clauses(text)
-    from nbatools.commands._player_game_context import (
-        _BOUND,
-        _TEAM_STAT_VERB,
-        team_subject_stat_conditions,
-    )
+    from nbatools.commands._player_game_context import team_subject_stat_conditions
 
-    # Match the same numeric shorthand accepted by the immediate actor guard.
-    analysis_text = re.sub(r"(?<=[a-z])(?=\d)", " ", text)
-    claimed_teams = team_subject_stat_conditions(analysis_text)
-    if condition_span and claimed_teams:
-        residual = analysis_text
-        for owner in claimed_teams:
-            residual = (
-                residual[: owner["start"]]
-                + " " * (owner["end"] - owner["start"])
-                + residual[owner["end"] :]
-            )
-        # Exempt only claimed team bounds, not the whole joined sentence.
-        # Residual numerical subjects remain unread even when unindexed.
-        for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
-            clause = " " + clause.strip()
-            for verb in _TEAM_STAT_VERB.finditer(clause):
-                if _BOUND.match(clause, verb.end()) and clause[: verb.start()].strip():
-                    # A team word inside an actor's qualified name does not
-                    # make that actor a team subject. No name resolution or
-                    # word-count limit can discard this unclaimed subject.
-                    return True
-            # Reuse attached/gerund ownership for verbs such as SCORING. Each
-            # possible subject ends at a word boundary, without a length cap;
-            # an inherited team verb at the start has no subject to remove.
-            for boundary in re.finditer(r"\S+\s+", clause):
-                tail = clause[boundary.end() :]
-                if re.search(r"\d", tail) and _states_player_condition(" and he " + tail):
-                    return True
     team_subjects = team_subject_stat_conditions(text) if condition_span else []
     for match in re.finditer(
         r"\b(?:with|without)\s+([\w .&'\-]+?)"
@@ -1195,7 +1238,7 @@ def detect_unresolved_availability_player(
             # "when Davis sits"; not "when they sit atop the standings".
             r"\b(?:when|while|and)\s+(?!(?:they|he|she|we|it|the)\b)"
             r"((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
-            r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b"
+            r"\s+(?:sits?|sat)(?:\s+out)?\b"
             r"(?!\s+(?:atop|at|in|on|near|behind|ahead)\b)",
             # "no more than 10 turnovers" is a bound, not a missing player.
             rf"\b(?:no|sans|minus)\s+(?!{_NEGATED_BOUND})([\w .&'\-]+?)"

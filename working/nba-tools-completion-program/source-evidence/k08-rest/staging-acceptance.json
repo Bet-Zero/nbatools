@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "classification": "accepted_isolated_reported_reason_stage_not_production_publication",
+  "run_id": 41289966416,
+  "reviewed_sha": "8730ee9f4ca53f364c529b27dbdfe4436d5052ca",
+  "reviewed_tree": "24293100d8b898fe1f3f4f9db28c90a52a3d0918",
+  "request_sha": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+  "artifact_id": 13076752871,
+  "artifact_sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e",
+  "artifact_size_bytes": 773368,
+  "original_receipt_sha256": "1de1ddcca1355bc8029fb8a0080d45ce5ec32b3a2e739786f712e81bb9a2583c",
+  "strict_execution_summary": {
+    "candidate_sha": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "stage_preparation_accepted": true,
+  "consumer_acceptance": "passed",
+  "consumer_failure": null,
+  "validation": {
+    "candidate_sha": "dcec27deb2f9c8576532d42224db43eebe188bbc",
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "seed_overlay_sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+    "append_only": {
+      "raw/player_game_availability/2025-26_regular_season.csv": {
+        "added_game_ids": [
+          "0022500336",
+          "0022500379",
+          "0022500395",
+          "0022500418",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022500753",
+          "0022500769",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "added_records": 1070,
+        "base_sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+        "base_size_bytes": 223000
+      },
+      "raw/player_game_availability/2025-26_regular_season.imports.json": {
+        "added_game_ids": [
+          "0022500336",
+          "0022500379",
+          "0022500395",
+          "0022500418",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022500753",
+          "0022500769",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "added_records": 31,
+        "base_sha256": "f34b9a1b97cf71fb69ce389bc67fe7ea1bd33550eaee000199b34e82d3969adf",
+        "base_size_bytes": 2645
+      }
+    },
+    "manifest_absent_creations": {
+      "raw/player_game_absence_reasons/2025-26_regular_season.csv": {
+        "base_presence": "manifest_absent",
+        "added_observation_keys": [
+          "22500113:1610612747:1629029",
+          "22500122:1610612747:1629029",
+          "22500136:1610612747:1629029",
+          "22500163:1610612747:1629029",
+          "22500336:1610612747:1629029",
+          "22500338:1610612747:1629029",
+          "22500418:1610612747:1629029",
+          "22500601:1610612747:1629029",
+          "22500753:1610612747:1629029",
+          "22500769:1610612747:1629029",
+          "22500774:1610612747:1629029",
+          "22500791:1610612747:1629029",
+          "22501098:1610612747:1629029",
+          "22501140:1610612747:1629029",
+          "22501155:1610612747:1629029",
+          "22501170:1610612747:1629029",
+          "22501185:1610612747:1629029",
+          "22501198:1610612747:1629029"
+        ],
+        "added_records": 18
+      },
+      "raw/player_game_absence_reasons/2025-26_regular_season.imports.json": {
+        "base_presence": "manifest_absent",
+        "added_observation_keys": [
+          "22500113:1610612747:1629029",
+          "22500122:1610612747:1629029",
+          "22500136:1610612747:1629029",
+          "22500163:1610612747:1629029",
+          "22500336:1610612747:1629029",
+          "22500338:1610612747:1629029",
+          "22500418:1610612747:1629029",
+          "22500601:1610612747:1629029",
+          "22500753:1610612747:1629029",
+          "22500769:1610612747:1629029",
+          "22500774:1610612747:1629029",
+          "22500791:1610612747:1629029",
+          "22501098:1610612747:1629029",
+          "22501140:1610612747:1629029",
+          "22501155:1610612747:1629029",
+          "22501170:1610612747:1629029",
+          "22501185:1610612747:1629029",
+          "22501198:1610612747:1629029"
+        ],
+        "added_records": 18
+      }
+    },
+    "new_reason_rows": 18,
+    "prior_stage_files_unchanged": true,
+    "full_required_slice_accepted": false,
+    "publication_state": "staged_only_no_writes",
+    "production_writes": 0
+  },
+  "raw_overlay_paths": 132,
+  "new_reason_paths": 38,
+  "query_count": 12,
+  "api_count": 3,
+  "query_summary": [
+    {
+      "query": "Lakers record when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "team_record"
+    },
+    {
+      "query": "LeBron James stats when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_summary"
+    },
+    {
+      "query": "LeBron James 20 point games when Luka rests in 2025-26",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_finder"
+    },
+    {
+      "command": "team_record",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "team_record"
+    },
+    {
+      "command": "game_finder",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "game_finder"
+    },
+    {
+      "command": "game_summary",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "game_summary"
+    },
+    {
+      "command": "player_game_summary",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_summary"
+    },
+    {
+      "command": "player_game_finder",
+      "status": "no_result",
+      "reason": "no_match",
+      "route": "player_game_finder"
+    },
+    {
+      "query": "How many games did Luka Doncic rest in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder"
+    },
+    {
+      "query": "How many home games did Luka Doncic rest in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder"
+    },
+    {
+      "query": "How many games did Luka Doncic miss in 2025-26?",
+      "status": "ok",
+      "reason": null,
+      "route": "game_finder"
+    },
+    {
+      "query": "Lakers record without Luka Doncic in 2025-26",
+      "status": "ok",
+      "reason": null,
+      "route": "team_record"
+    }
+  ],
+  "population": {
+    "observed_games": 82,
+    "played": 64,
+    "did_not_play": 18,
+    "participation_unknown": 0,
+    "participation_basis": "Accepted unpublished LAL stage; production not activated",
+    "explicit_reported_rest": 0,
+    "source_reported_other": 18,
+    "reason_unknown": 0,
+    "reported_classes": {
+      "reported_medical_wording": 15,
+      "reported_personal": 2,
+      "reported_suspension": 1
+    },
+    "reported_rest_season_count": 0,
+    "reported_rest_season_count_qualified": true,
+    "actual_or_clinical_rest_count": null
+  },
+  "unknown_control": {
+    "removed_valid_observation_game_id": 22500113,
+    "remaining_valid_reason_rows": 17,
+    "actual": {
+      "status": "no_result",
+      "reason": "no_data",
+      "route": "game_finder",
+      "metadata": {
+        "query_text": "How many games did Luka Doncic rest in 2025-26?",
+        "route": "game_finder",
+        "query_class": "count",
+        "season": "2025-26",
+        "start_season": null,
+        "end_season": null,
+        "explicit_relative_season": false,
+        "season_type": "Regular Season",
+        "start_date": null,
+        "end_date": null,
+        "game_dates": null,
+        "last_n": null,
+        "last_n_scope": null,
+        "player": null,
+        "team": "LAL",
+        "opponent": null,
+        "opponent_conference": null,
+        "opponent_division": null,
+        "opponent_team_abbrs": null,
+        "with_player": null,
+        "without_player": "Luka Don\u010di\u0107",
+        "without_player_reason": "reported_rest",
+        "unresolved_availability_player": null,
+        "unsupported_filters": null,
+        "opponent_quality": null,
+        "lineup_members": [],
+        "presence_state": null,
+        "unit_size": null,
+        "minute_minimum": null,
+        "window_size": null,
+        "stretch_metric": null,
+        "stretch_display_mode": null,
+        "min_streak_length": null,
+        "stat": null,
+        "ranking_key": null,
+        "requested_stat": null,
+        "requested_metrics": null,
+        "requested_event_conditions": null,
+        "unsupported_availability": null,
+        "unsupported_scope": null,
+        "requested_aggregation": null,
+        "available_aggregation": null,
+        "min_value": null,
+        "max_value": null,
+        "sort_by": "game_date",
+        "ascending": null,
+        "ranked_intent": false,
+        "threshold_conditions": [],
+        "extra_conditions": [],
+        "conditions": null,
+        "occurrence_event": null,
+        "split_type": null,
+        "season_list": null,
+        "clutch": false,
+        "back_to_back": false,
+        "series_situation": null,
+        "rest_days": null,
+        "one_possession": false,
+        "nationally_televised": false,
+        "role": null,
+        "quarter": null,
+        "half": null,
+        "position_filter": null,
+        "grouped_boolean_used": false,
+        "boolean_filter_mode": null,
+        "boolean_filter_branches": null,
+        "head_to_head_used": false,
+        "notes": [
+          "reported_rest_games: LAL games Luka Don\u010di\u0107 was officially reported resting",
+          "Incomplete officially reported Rest reason coverage for Luka Don\u010di\u0107",
+          "Officially reported Rest coverage is incomplete; no Rest total is established. Unknown selected nonparticipations: 1."
+        ],
+        "scope_kind": "single_season",
+        "applied_filters": [
+          {
+            "label": "Without player",
+            "value": "Luka Don\u010di\u0107",
+            "kind": "player"
+          },
+          {
+            "label": "Reported absence reason",
+            "value": "officially reported Rest",
+            "kind": "reported_reason"
+          }
+        ],
+        "team_context": {
+          "team_abbr": "LAL"
+        },
+        "confidence": 0.9,
+        "intent": "finder"
+      },
+      "result": {
+        "query_class": "count",
+        "result_status": "no_result",
+        "result_reason": "no_data",
+        "metadata": {
+          "reported_reason_basis": "officially reported Rest",
+          "reported_reason_coverage": {
+            "basis": "officially reported Rest",
+            "complete": false,
+            "requested_games": 82,
+            "qualified_nonparticipations": 18,
+            "reported_rest": 0,
+            "reported_other": 17,
+            "unknown": 1
+          }
+        },
+        "notes": [
+          "Incomplete officially reported Rest reason coverage for Luka Don\u010di\u0107",
+          "Officially reported Rest coverage is incomplete; no Rest total is established. Unknown selected nonparticipations: 1."
+        ],
+        "caveats": [],
+        "sections": {}
+      }
+    }
+  },
+  "independent_actual_review": {
+    "reviewer": "/root/absence_checker",
+    "sha256": "8fe9e1aceae8e62d521a6c38d62c10ed967758e82c27f4759e579db5b7ce0856",
+    "status": "passed"
+  },
+  "full_required_slice_accepted": false,
+  "actual_or_clinical_rest_or_health": null,
+  "production_writes": 0,
+  "live_data_accepted": false
+}

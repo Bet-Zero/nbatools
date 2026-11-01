@@ -272,6 +272,8 @@ def build_team_record_result(
     last_n: int | None = None,
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
+    without_player_reason: str | None = None,
+    _reported_reason_evidence: dict | None = None,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -312,8 +314,13 @@ def build_team_record_result(
             notes=["Mixed participation requires two distinct scalar whole-game predicates"],
         )
     mixed_participation = bool(with_player and without_player)
+    scalar_reason_window = bool(
+        original_window and without_player_reason and without_player and not with_player
+    )
     names = (
-        [with_player, without_player]
+        [without_player]
+        if scalar_reason_window
+        else [with_player, without_player]
         if mixed_participation
         else re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
     )
@@ -325,15 +332,20 @@ def build_team_record_result(
         or start_season
         or end_season
         or (
-            not (mixed_participation and opponent is None)
+            not ((mixed_participation or scalar_reason_window) and opponent is None)
             and (not isinstance(opponent, str) or opponent not in ALL_TEAM_ABBRS)
         )
         or opponent == team
-        or not with_player
-        or len(names) != 2
+        or (not with_player and not scalar_reason_window)
+        or len(names) != (1 if scalar_reason_window else 2)
         or not all(resolved_names)
-        or len(set(resolved_names)) != 2
-        or bool(player_ids_for_name(resolved_names[0]) & player_ids_for_name(resolved_names[1]))
+        or len(set(resolved_names)) != (1 if scalar_reason_window else 2)
+        or (
+            len(resolved_names) == 2
+            and bool(
+                player_ids_for_name(resolved_names[0]) & player_ids_for_name(resolved_names[1])
+            )
+        )
         or quarter is not None
         or half is not None
         or wins_only
@@ -379,6 +391,35 @@ def build_team_record_result(
         return NoResult(query_class="summary", reason="no_data", notes=notes)
     # "Celtics record in game 7s": every later filter starts from those games.
     base_df = apply_series_situation_filter(base_df, seasons, series_situation)
+
+    if without_player_reason is not None and period_filter_requested:
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=["Reported-rest filtering currently applies to whole games"],
+        )
+    if not original_window:
+        if without_player_reason is not None:
+            scoped = _apply_game_filters(
+                base_df,
+                team=team,
+                opponent=opponent,
+                home_only=home_only,
+                away_only=away_only,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            base_df = filter_without_player(
+                scoped,
+                without_player,
+                seasons,
+                season_type,
+                team=team,
+                opponent=opponent,
+                without_player_reason=without_player_reason,
+                reason_evidence=_reported_reason_evidence,
+            )
+            without_player = None  # Already qualified before positive/stat intersections.
 
     if period_filter_requested:
         try:
@@ -539,8 +580,10 @@ def build_team_record_result(
                 team=team,
                 strict_team_match=True,
                 opponent=opponent,
+                without_player_reason=without_player_reason,
+                reason_evidence=_reported_reason_evidence,
             )
-        if not df.empty:
+        if with_player and not df.empty:
             df = filter_with_player(
                 df,
                 with_player,
@@ -682,7 +725,11 @@ def build_team_record_result(
         by_season["win_pct"] = (by_season["wins"] / by_season["games"]).round(3)
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
-    game_log = _build_game_log_section(df) if without_player or with_player or last_n else None
+    game_log = (
+        _build_game_log_section(df)
+        if without_player or without_player_reason or with_player or last_n
+        else None
+    )
 
     caveats: list[str] = []
     if franchise_note := franchise_caveat(df, team):

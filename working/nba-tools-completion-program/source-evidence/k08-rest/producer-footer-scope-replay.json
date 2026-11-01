@@ -1,0 +1,64 @@
+{
+  "qualified_journal_sha256": "9cc9a05a41d837e45654d4fdae880738da03d6cb882b37fc9ae8f715c12a0356",
+  "report_count": 14,
+  "all_literals_match": true,
+  "default_global_parser_unchanged": true,
+  "observations": {
+    "22500136": {
+      "source_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+      "literal": "Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion"
+    },
+    "22500163": {
+      "source_sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+      "literal": "Injury/Illness - Lower Left Leg; Contusion Injury Management"
+    },
+    "22500336": {
+      "source_sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+      "literal": "Personal"
+    },
+    "22500418": {
+      "source_sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+      "literal": "Injury/Illness - Lower Left Leg; Contusion"
+    },
+    "22500601": {
+      "source_sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+      "literal": "Injury/Illness - Left Groin; Soreness"
+    },
+    "22500753": {
+      "source_sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22500769": {
+      "source_sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22500774": {
+      "source_sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+      "literal": "Injury/Illness - Left hamstring; Strain"
+    },
+    "22500791": {
+      "source_sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22501140": {
+      "source_sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22501155": {
+      "source_sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22501170": {
+      "source_sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22501185": {
+      "source_sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    },
+    "22501198": {
+      "source_sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+      "literal": "Injury/Illness - Left Hamstring; Strain"
+    }
+  }
+}
