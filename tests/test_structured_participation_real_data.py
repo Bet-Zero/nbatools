@@ -582,6 +582,6 @@ def test_published_absence_clauses_preserve_subject_bound_and_pair():
     assert [
         (int(r["game_id"]), r["pts"]) for r in source_only.result.to_dict()["sections"]["finder"]
     ] == [(21400001, 26)]
-    # Complete-season DNP still cannot be manufactured from the remaining gaps.
-    unknown = execute_natural_query("Lakers record with LeBron James out in 2025-26")
+    # Completing 2025-26 participation does not qualify a different season.
+    unknown = execute_natural_query("Lakers record with LeBron James out in 2024-25")
     assert unknown.result_status != "ok"

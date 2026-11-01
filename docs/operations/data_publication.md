@@ -33,6 +33,29 @@ full manifest SHA256 and storage projection before approving the dedicated
 that exact snapshot before invoking the existing immutable publisher. There is no
 arbitrary artifact, commit, shell-command or expected-base input.
 
+### Observed LeBron season package — preparation only
+
+`lebron-season-participation-v1` binds the34authorized retained JSON originals
+for17remaining observed LAL2025-26games. All17SummaryV3 bodies explicitly list
+LeBron inactive; Traditional omission supplies no absence predicate. Combined
+with five already-published DNPgames, staging qualifies all82observed games:
+60played/22explicitDNP/0unknown,11homeabsences and LAL14–8/114.091PPG.
+This is observed-population coverage, not independently complete NBAacquisition.
+
+The fixed publisher and inventory bind the current `de83522f…` base, exact flat
+artifact and code hashes,598new availability rows/17import entries, and byte-exact
+preservation of every prior cell/source authority. The proposed generation is
+`availability-lebron-season-v1-20261031`:775objects/403,814,381bytes. The existing
+protected process, storage limits and prior13answer checks remain; three added
+checks require22totalmissed/11homemissed/LAL14–8. The focused complete preparation
+gate also checks exact selectedIDs, every snapshot hash, append preservation,
+budget and local backup/restore compatibility without production writes.
+
+No publication is authorized by capture/staging approval. Only after complete
+no-write acceptance and normal merge/postmergeCI may the exact immutable tuple be
+presented for separate owner publication authorization and existing environment
+approval. See the sole Resume checkpoint for current execution evidence.
+
 ### Retained K08 package — published and verified
 
 [PR551](https://github.com/Bet-Zero/nbatools/pull/551) passed complete read-only
