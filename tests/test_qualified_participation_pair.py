@@ -324,6 +324,46 @@ def test_structured_request_preserves_both_scalar_predicates(qualified_pair):
 
 
 @pytest.mark.parametrize(
+    "window", ["last 2 qualifying games", "within their last 2 qualifying games"]
+)
+def test_mixed_qualifying_window_remains_positive(qualified_pair, window):
+    result = execute_natural_query(
+        f"Lakers record vs Celtics {window} without LeBron James and with Anthony Davis in {SEASON}"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["last_n_scope"] == "qualifying"
+    assert {int(row["game_id"]) for row in result.result.to_dict()["sections"]["game_log"]} == {
+        qualified_pair["ids"][1]
+    }
+
+
+@pytest.mark.parametrize(
+    "window",
+    [
+        "within their last 2 games",
+        "among their last 2 games",
+        "of their last 2 games",
+        "in their last 2 original games",
+        "in their last 2 original meetings",
+    ],
+)
+def test_mixed_original_window_never_falls_back_to_older_qualifying_game(qualified_pair, window):
+    fixture = qualified_pair
+    original = set(fixture["teams"].sort_values("game_date").tail(2).game_id)
+    assert original == set(fixture["ids"][-2:]) and fixture["ids"][1] not in original
+    # The only conjunction match is the older second fixture game, so the
+    # qualifying reading would silently change the requested population.
+    result = execute_natural_query(
+        f"Lakers record vs Celtics {window} without LeBron James and with Anthony Davis in {SEASON}"
+    )
+    assert result.result_status == "no_result", result.metadata
+    assert result.result_reason == "filter_not_supported"
+    assert result.metadata["last_n_scope"] == "original_window"
+    assert "multi_player_availability" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
     "extra",
     [
         dict(with_player="Anthony Davis and Austin Reaves"),
@@ -352,6 +392,46 @@ def test_pair_participation_never_substitutes_for_status(qualified_pair, status)
     )
     assert result.result_status == "no_result"
     assert not result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "without LeBron James and with Anthony Davis, scoring at least 30 points",
+        "with LeBron James out and Anthony Davis playing,30 points",
+        "with Anthony Davis, at least30 points and without LeBron James",
+        "without LeBron James, scoring at least30 points and with Anthony Davis",
+        "with LeBron James out,10 assists and Anthony Davis playing",
+        "without LeBron James and with Anthony Davis, at least35 minutes",
+    ],
+)
+def test_mixed_actor_bound_does_not_become_team_threshold(qualified_pair, clause):
+    fixture = qualified_pair
+    game = fixture["ids"][1]
+    own = fixture["teams"].loc[fixture["teams"].game_id.eq(game)]
+    actor = fixture["players"].loc[
+        fixture["players"].game_id.eq(game) & fixture["players"].player_id.eq(203076)
+    ]
+    assert actor.pts.item() < 30 <= own.pts.item()  # AD26 and LAL89 discriminate ownership.
+    result = execute_natural_query(f"Lakers record {clause} vs Celtics in {SEASON}")
+    assert result.result_status == "no_result", result.metadata
+    assert "teammate_stat_condition" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "without LeBron James and with Anthony Davis, when Lakers score at least80 points",
+        "with LeBron James out and Anthony Davis playing, scoring at least80 points as a team",
+    ],
+)
+def test_mixed_predicates_preserve_explicit_team_owned_threshold(qualified_pair, clause):
+    result = execute_natural_query(f"Lakers record {clause} vs Celtics in {SEASON}")
+    assert result.result_status == "ok", result.metadata
+    assert {int(row["game_id"]) for row in result.result.to_dict()["sections"]["game_log"]} == {
+        qualified_pair["ids"][1]
+    }
 
 
 @pytest.mark.parametrize(

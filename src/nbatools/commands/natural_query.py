@@ -4314,11 +4314,16 @@ def _route_parsed_query(parsed: dict) -> dict:
         max_value=max_value,
         occurrence_event=occurrence_event,
     )
-    from nbatools.commands._parse_helpers import explicit_qualifying_participation_window
+    from nbatools.commands._parse_helpers import (
+        _original_participation_window,
+        explicit_qualifying_participation_window,
+    )
 
     explicit_qualifying_pair_window = explicit_qualifying_participation_window(q)
     explicit_original_pair_marker = bool(
-        re.search(r"\blast\b", q) and re.search(r"\boriginal\b", q)
+        _original_participation_window(q)
+        or re.search(r"\blast\b", q)
+        and re.search(r"\boriginal\b", q)
     )
     played_pair = (
         played_matchup_pair(q)
@@ -6487,11 +6492,16 @@ def _route_parsed_query(parsed: dict) -> dict:
                     or one_possession
                     or nationally_televised
                 )
-            ):
+            ) or (mixed and explicit_original_pair_marker):
                 # Temporal played-pair promotion is bounded to an explicit
                 # single-season, whole-game matchup. Do not drop another
                 # requested context while opening this positive slice.
                 route_kwargs["unsupported_filters"] = ["multi_player_availability"]
+                if mixed:
+                    # Preserve the requested population even while this
+                    # composition remains unsupported; qualifying games are
+                    # a different sample from these original last-N games.
+                    parsed["last_n_scope"] = route_kwargs["last_n_scope"] = "original_window"
                 notes.append("Temporal participation composition is not yet supported")
     elif (
         team
@@ -11413,10 +11423,15 @@ def _finalize_route(parsed: dict) -> dict:
     route = out.get("route")
     condition_q = parsed["normalized_query"]
     scalar_absence = requested_scalar_absence(condition_q)
+    mixed = parsed.get("mixed_availability")
+    condition_spans = (
+        {clause.players: (clause.start, clause.end) for clause in mixed.clauses} if mixed else {}
+    )
     if any(
         presence_names_player_condition(
             condition_q,
             name,
+            condition_span=condition_spans.get(name),
             absence_span=(scalar_absence.start, scalar_absence.end)
             if scalar_absence and name == kwargs.get("without_player")
             else None,

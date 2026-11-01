@@ -136,8 +136,6 @@ def test_unfinished_bare_pair_temporal_composition_never_opens_wrong_sample(pair
         "with Tatum playing while Blorg plays",
         "with Blorg playing while Reaves plays",
         "with Tatum and Williams playing",
-        "with Tatum playing while Reaves sits",
-        "without Tatum while Reaves plays",
         "with Tatum playing while Reaves plays 35 minutes",
         "with Tatum playing while Reaves plays and scores 30 points",
         "with Tatum playing while Reaves plays and he scores at least 24",
@@ -158,6 +156,36 @@ def test_unread_composition_cannot_become_qualified_pair_or_empty(pair_sample, c
     assert result.result_status == "no_result", result.metadata
     assert result.result_reason != "no_match", result.metadata
     assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "clause,absent,played,index",
+    [
+        ("with Tatum playing while Reaves sits", "Austin Reaves", "Jayson Tatum", 1),
+        ("without Tatum while Reaves plays", "Jayson Tatum", "Austin Reaves", 2),
+    ],
+)
+def test_qualified_mixed_states_replace_former_temporary_refusal(
+    pair_sample, clause, absent, played, index
+):
+    expected = (
+        pair_sample["candidates"]
+        .loc[pair_sample["candidates"].game_id.eq(pair_sample["ids"][index])]
+        .iloc[0]
+    )
+    result = execute_natural_query(f"Lakers record against Celtics {clause} in 2023-24")
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["player"] is None and result.metadata["team"] == "LAL"
+    assert result.metadata["with_player"] == played and result.metadata["without_player"] == absent
+    sections = result.result.to_dict()["sections"]
+    assert [int(row["game_id"]) for row in sections["game_log"]] == [expected.game_id]
+    row = sections["summary"][0]
+    assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (
+        1,
+        int(expected.wl == "W"),
+        int(expected.wl == "L"),
+        expected.pts,
+    )
 
 
 @pytest.mark.parametrize("damage", ["missing", "unknown", "wrong_date", "conflicting_team"])
