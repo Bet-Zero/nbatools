@@ -1,0 +1,744 @@
+{
+  "schema_version": 1,
+  "classification": "independent_executed_hybrid_development_stage_acceptance_not_publication_or_full_slice",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "reviewed_code_sha": "7c1248688250f01a68430280d0cc216e2b6d41e9",
+  "reviewed_tree": "d2e615e7a92f17f3b2b230a421e2b6ca48f19355",
+  "run_id": 41273502501,
+  "request_sha": "e828d1bcdf4adeccb2dcd53b444f8a1e51418142",
+  "artifact_id": 13070238187,
+  "artifact_zip_sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+  "artifact_zip_bytes": 336808,
+  "validation_member_sha256": "e37e0446d5e439edc666aca1fe5bc7c99d53392cde920218b59176c20fa8a1f4",
+  "acceptance_receipt_member_sha256": "a4ed3338bcf2b29c5fc154eccbcfcd70a7d9fa0c20ff8b1e2070cabd8c86a774",
+  "required_execution": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "overlay_file_count": 94,
+  "new_source_file_count": 92,
+  "changed_existing_paths": [
+    "raw/player_game_availability/2025-26_regular_season.csv",
+    "raw/player_game_availability/2025-26_regular_season.imports.json"
+  ],
+  "overlay_files": [
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "e7ae4e259b27ed39277f9f0dc08c8719bc0509bbb91b0bc0f66cdd1a50c2389f",
+      "size_bytes": 529523
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.imports.json",
+      "sha256": "04713bd48f4b2b68b20a75533f3f1ed891323c4065d3736a56bfe27dbd3bfb98",
+      "size_bytes": 6272
+    },
+    {
+      "path": "raw/player_game_availability_sources/03216251d750269f8e0392c549135417abcc9257c9e9ae44023af7b502beb5b6.structured.json",
+      "sha256": "03216251d750269f8e0392c549135417abcc9257c9e9ae44023af7b502beb5b6",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/040f76a0ab273eeeb8e4ebb8b80bc69c89bc37ec86dc33f520154f6f5e351c80.json",
+      "sha256": "040f76a0ab273eeeb8e4ebb8b80bc69c89bc37ec86dc33f520154f6f5e351c80",
+      "size_bytes": 19605
+    },
+    {
+      "path": "raw/player_game_availability_sources/08592c2618ead4a13e30e3348acacc0468f4eab878436995bc7f1326e3267cd8.structured.json",
+      "sha256": "08592c2618ead4a13e30e3348acacc0468f4eab878436995bc7f1326e3267cd8",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/0945bfffd01e8faf2ad2077d77b68b9ed2e7ba03d75e04994fdaadca3c704fc4.structured.json",
+      "sha256": "0945bfffd01e8faf2ad2077d77b68b9ed2e7ba03d75e04994fdaadca3c704fc4",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/0b4577bfdafdb21e6e032ceb173577c648c987c3f700f879a08eb5f908428334.json",
+      "sha256": "0b4577bfdafdb21e6e032ceb173577c648c987c3f700f879a08eb5f908428334",
+      "size_bytes": 19041
+    },
+    {
+      "path": "raw/player_game_availability_sources/10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737.json",
+      "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+      "size_bytes": 17351
+    },
+    {
+      "path": "raw/player_game_availability_sources/11e6a96a1c4ecfb9e9ce5044bff77e733d1bdeebaaa5e4c8407ee41c5f7dfda5.structured.json",
+      "sha256": "11e6a96a1c4ecfb9e9ce5044bff77e733d1bdeebaaa5e4c8407ee41c5f7dfda5",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/17056f2dbe4f9e5344bef8a3feea8e1f02d166a4f8e97c7d9b70af27cd10e002.structured.json",
+      "sha256": "17056f2dbe4f9e5344bef8a3feea8e1f02d166a4f8e97c7d9b70af27cd10e002",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa.pdf",
+      "sha256": "19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa",
+      "size_bytes": 27371
+    },
+    {
+      "path": "raw/player_game_availability_sources/20260201_LALNYK.json",
+      "sha256": "5c4780c25a27bfd4377ed552ac8900ab5eaf08ccdb81879bf63f519bf644026b",
+      "size_bytes": 312
+    },
+    {
+      "path": "raw/player_game_availability_sources/227a72fc22b8334d120ff7edd62b461fc6986f17b47d3ad93d832003d3d1f40e.structured.json",
+      "sha256": "227a72fc22b8334d120ff7edd62b461fc6986f17b47d3ad93d832003d3d1f40e",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/237c1fb2e6a6c21268fe30893de7d7c7a447eecf3d122c892c93575fa79cc6d1.json",
+      "sha256": "237c1fb2e6a6c21268fe30893de7d7c7a447eecf3d122c892c93575fa79cc6d1",
+      "size_bytes": 20794
+    },
+    {
+      "path": "raw/player_game_availability_sources/239698f25b4e0b215726088b435bba233cb5f6e3b7d167c51f1464d406a5a1fb.json",
+      "sha256": "239698f25b4e0b215726088b435bba233cb5f6e3b7d167c51f1464d406a5a1fb",
+      "size_bytes": 19122
+    },
+    {
+      "path": "raw/player_game_availability_sources/23bd3b9851324a71091c8e4f3541cb78658e486b3c641e84754a1d3489046712.json",
+      "sha256": "23bd3b9851324a71091c8e4f3541cb78658e486b3c641e84754a1d3489046712",
+      "size_bytes": 18454
+    },
+    {
+      "path": "raw/player_game_availability_sources/26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce.json",
+      "sha256": "26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce",
+      "size_bytes": 16262
+    },
+    {
+      "path": "raw/player_game_availability_sources/2b704f40fb2ebad654cb6d4135c42a67db8288c2cd9e0d0d2455dd81ed1ebc13.json",
+      "sha256": "2b704f40fb2ebad654cb6d4135c42a67db8288c2cd9e0d0d2455dd81ed1ebc13",
+      "size_bytes": 18971
+    },
+    {
+      "path": "raw/player_game_availability_sources/2d40c6e8fc8a5bdbbd4f7324211457a397b4de6c57f6b911fd9a318437ee90e2.structured.json",
+      "sha256": "2d40c6e8fc8a5bdbbd4f7324211457a397b4de6c57f6b911fd9a318437ee90e2",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f.json",
+      "sha256": "368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f",
+      "size_bytes": 20358
+    },
+    {
+      "path": "raw/player_game_availability_sources/37a113c79dc358a2fda4e74b37d6f6b1746518dd0aa8619d5297f6cded0b8f57.structured.json",
+      "sha256": "37a113c79dc358a2fda4e74b37d6f6b1746518dd0aa8619d5297f6cded0b8f57",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/3ed4d8ecf348dd764522e2ef6f2b663647dc23cf2a3fc30acec346cae1f0dff5.structured.json",
+      "sha256": "3ed4d8ecf348dd764522e2ef6f2b663647dc23cf2a3fc30acec346cae1f0dff5",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00.json",
+      "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+      "size_bytes": 20283
+    },
+    {
+      "path": "raw/player_game_availability_sources/45d4c11aff76a92fddaea8eff5eb68bef1b580afeae5e9d9b45a52c8543f6e27.json",
+      "sha256": "45d4c11aff76a92fddaea8eff5eb68bef1b580afeae5e9d9b45a52c8543f6e27",
+      "size_bytes": 19080
+    },
+    {
+      "path": "raw/player_game_availability_sources/4927e554320b8a73cf81038ff17fc8dde7a07d9489b2c50e4dd3faad12b448de.json",
+      "sha256": "4927e554320b8a73cf81038ff17fc8dde7a07d9489b2c50e4dd3faad12b448de",
+      "size_bytes": 19079
+    },
+    {
+      "path": "raw/player_game_availability_sources/4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742.json",
+      "sha256": "4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742",
+      "size_bytes": 24166
+    },
+    {
+      "path": "raw/player_game_availability_sources/4f0f89745c056d7c7948d1935409f630314a98335da77c41ca654935c0101abe.structured.json",
+      "sha256": "4f0f89745c056d7c7948d1935409f630314a98335da77c41ca654935c0101abe",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/501a4c08c600f709641eda1866b9d894dd9c7d39917a2b649e6f9ed1583c04a8.json",
+      "sha256": "501a4c08c600f709641eda1866b9d894dd9c7d39917a2b649e6f9ed1583c04a8",
+      "size_bytes": 20350
+    },
+    {
+      "path": "raw/player_game_availability_sources/50f68382594127f6a26be6d6625f7894023738fe0375e4f844151b41e4c8cf1d.json",
+      "sha256": "50f68382594127f6a26be6d6625f7894023738fe0375e4f844151b41e4c8cf1d",
+      "size_bytes": 19732
+    },
+    {
+      "path": "raw/player_game_availability_sources/52f453fdc115214c080a07172a2a9a610fbb2105a885cf8f524d67080e3a4409.json",
+      "sha256": "52f453fdc115214c080a07172a2a9a610fbb2105a885cf8f524d67080e3a4409",
+      "size_bytes": 17256
+    },
+    {
+      "path": "raw/player_game_availability_sources/54ce09975860a723d44b03b241690def51889d01d1e1b5656ce5a0edebf80e78.json",
+      "sha256": "54ce09975860a723d44b03b241690def51889d01d1e1b5656ce5a0edebf80e78",
+      "size_bytes": 19030
+    },
+    {
+      "path": "raw/player_game_availability_sources/5855d313bb3cda22cad68529b7faf04e26c4369ec91663bfc009d100ade6b131.structured.json",
+      "sha256": "5855d313bb3cda22cad68529b7faf04e26c4369ec91663bfc009d100ade6b131",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/633180255d34c5a4096a35e1df3854980c654b7962f47bac34225ae999455b96.structured.json",
+      "sha256": "633180255d34c5a4096a35e1df3854980c654b7962f47bac34225ae999455b96",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/648878eb95b0c5cd91a3943c04a6f87fc224754444eada180e863a673b1f1488.json",
+      "sha256": "648878eb95b0c5cd91a3943c04a6f87fc224754444eada180e863a673b1f1488",
+      "size_bytes": 20311
+    },
+    {
+      "path": "raw/player_game_availability_sources/65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf.json",
+      "sha256": "65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf",
+      "size_bytes": 19912
+    },
+    {
+      "path": "raw/player_game_availability_sources/6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d.json",
+      "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+      "size_bytes": 18595
+    },
+    {
+      "path": "raw/player_game_availability_sources/69ec417999a89f7f6101a60bc270f75ef6593ad9eba34dac2dc4c059d5b9a3c2.structured.json",
+      "sha256": "69ec417999a89f7f6101a60bc270f75ef6593ad9eba34dac2dc4c059d5b9a3c2",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/6a5e1d306d5a92923327e9cb06c8d2da726198ba9a12aa03a1eca236ab5706b8.json",
+      "sha256": "6a5e1d306d5a92923327e9cb06c8d2da726198ba9a12aa03a1eca236ab5706b8",
+      "size_bytes": 18417
+    },
+    {
+      "path": "raw/player_game_availability_sources/71417401d927b55eef5314d4dd22f0bcc2d9b85f5eb972edc91fa4b2b0052f75.json",
+      "sha256": "71417401d927b55eef5314d4dd22f0bcc2d9b85f5eb972edc91fa4b2b0052f75",
+      "size_bytes": 19022
+    },
+    {
+      "path": "raw/player_game_availability_sources/7236e98329156a06d7a0555c2b3c26bf1ea1579183216d157d89f2d09c794b09.structured.json",
+      "sha256": "7236e98329156a06d7a0555c2b3c26bf1ea1579183216d157d89f2d09c794b09",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/73029166911f5aa428170abef3e20d562e6381118a58f619ded17c0aebcbf472.json",
+      "sha256": "73029166911f5aa428170abef3e20d562e6381118a58f619ded17c0aebcbf472",
+      "size_bytes": 19716
+    },
+    {
+      "path": "raw/player_game_availability_sources/7493a95a531fba53dbe05190ccb2ff577b8b39069f468e8500a99d8bf4ab4871.json",
+      "sha256": "7493a95a531fba53dbe05190ccb2ff577b8b39069f468e8500a99d8bf4ab4871",
+      "size_bytes": 18389
+    },
+    {
+      "path": "raw/player_game_availability_sources/7cbe5f5f40816020358a635de1826808a1bfbc23c819b17ffe27466ba2f2b7a0.json",
+      "sha256": "7cbe5f5f40816020358a635de1826808a1bfbc23c819b17ffe27466ba2f2b7a0",
+      "size_bytes": 19731
+    },
+    {
+      "path": "raw/player_game_availability_sources/820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196.json",
+      "sha256": "820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196",
+      "size_bytes": 17947
+    },
+    {
+      "path": "raw/player_game_availability_sources/83b1aec4c8044fc421e2059c91c35d3b3f1493209b2f82552efd0ff660ebf7e8.json",
+      "sha256": "83b1aec4c8044fc421e2059c91c35d3b3f1493209b2f82552efd0ff660ebf7e8",
+      "size_bytes": 21021
+    },
+    {
+      "path": "raw/player_game_availability_sources/84152b9d37863bbc9fde67badaa954589d4d5ef89ef7434b550f8ca148c8b7d4.json",
+      "sha256": "84152b9d37863bbc9fde67badaa954589d4d5ef89ef7434b550f8ca148c8b7d4",
+      "size_bytes": 20350
+    },
+    {
+      "path": "raw/player_game_availability_sources/8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3.json",
+      "sha256": "8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3",
+      "size_bytes": 16574
+    },
+    {
+      "path": "raw/player_game_availability_sources/8dfedc4cdbe1fb941f9b7038aef687beced504c5d8f566cf5c75be73054fdfb0.json",
+      "sha256": "8dfedc4cdbe1fb941f9b7038aef687beced504c5d8f566cf5c75be73054fdfb0",
+      "size_bytes": 19069
+    },
+    {
+      "path": "raw/player_game_availability_sources/8ef34b2f50aa26b7f76686fee4c7782a69860da626939174e9fd1bca98d870f5.json",
+      "sha256": "8ef34b2f50aa26b7f76686fee4c7782a69860da626939174e9fd1bca98d870f5",
+      "size_bytes": 19616
+    },
+    {
+      "path": "raw/player_game_availability_sources/8f378fed59268a66a6542cb90433734b3aa5af56e2554f458e7dbf0a7614083b.json",
+      "sha256": "8f378fed59268a66a6542cb90433734b3aa5af56e2554f458e7dbf0a7614083b",
+      "size_bytes": 18977
+    },
+    {
+      "path": "raw/player_game_availability_sources/90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd.json",
+      "sha256": "90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd",
+      "size_bytes": 20982
+    },
+    {
+      "path": "raw/player_game_availability_sources/957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d.json",
+      "sha256": "957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d",
+      "size_bytes": 25083
+    },
+    {
+      "path": "raw/player_game_availability_sources/98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722.json",
+      "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+      "size_bytes": 24681
+    },
+    {
+      "path": "raw/player_game_availability_sources/9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40.json",
+      "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40",
+      "size_bytes": 19678
+    },
+    {
+      "path": "raw/player_game_availability_sources/9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316.json",
+      "sha256": "9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316",
+      "size_bytes": 16860
+    },
+    {
+      "path": "raw/player_game_availability_sources/9c81d8a02d9869351c568f24a5ef20f000d62b676ebbc88622a445a5376b161b.structured.json",
+      "sha256": "9c81d8a02d9869351c568f24a5ef20f000d62b676ebbc88622a445a5376b161b",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/9ee8e330eed9af3aaeb0bc31b831b5d8201bad08377e77135e1643b1ebc03674.structured.json",
+      "sha256": "9ee8e330eed9af3aaeb0bc31b831b5d8201bad08377e77135e1643b1ebc03674",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/aa1aebba470fcec9c4a94f8bb57d2275273e8d223bef2ca61298e0b853e60e5e.structured.json",
+      "sha256": "aa1aebba470fcec9c4a94f8bb57d2275273e8d223bef2ca61298e0b853e60e5e",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/aa91350ca683cbf4f0d5a33842073e2a7a30c63fe3dff42ee076d8b2e3c3a6f8.json",
+      "sha256": "aa91350ca683cbf4f0d5a33842073e2a7a30c63fe3dff42ee076d8b2e3c3a6f8",
+      "size_bytes": 19592
+    },
+    {
+      "path": "raw/player_game_availability_sources/ab4478394aa3999953de0d0a1c3549c074a7f5b0e3729d8d4fcc35bbe0ca550b.structured.json",
+      "sha256": "ab4478394aa3999953de0d0a1c3549c074a7f5b0e3729d8d4fcc35bbe0ca550b",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/ad21849fe6281444e1a814289fcb255df950cf2ee174b3f803211a1ce76fc500.json",
+      "sha256": "ad21849fe6281444e1a814289fcb255df950cf2ee174b3f803211a1ce76fc500",
+      "size_bytes": 18457
+    },
+    {
+      "path": "raw/player_game_availability_sources/ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4.json",
+      "sha256": "ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4",
+      "size_bytes": 17992
+    },
+    {
+      "path": "raw/player_game_availability_sources/ae052b70bc5a92ee875998b156af6147f2e38eeedb5a1349dc3d5fd4b9574271.structured.json",
+      "sha256": "ae052b70bc5a92ee875998b156af6147f2e38eeedb5a1349dc3d5fd4b9574271",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/b4e98fc872f6fe52809a8e9d90b846bc4df1a53b075e6abeb32001fee78e2149.structured.json",
+      "sha256": "b4e98fc872f6fe52809a8e9d90b846bc4df1a53b075e6abeb32001fee78e2149",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402.json",
+      "sha256": "b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402",
+      "size_bytes": 17064
+    },
+    {
+      "path": "raw/player_game_availability_sources/b9de6a1535c776be7768e10b65dcb8288d010ffc883f5363a478184c3db25038.structured.json",
+      "sha256": "b9de6a1535c776be7768e10b65dcb8288d010ffc883f5363a478184c3db25038",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/bae1f09de922e3177942dd868f8d315a3f08882bc13c05f1d8f670b53b2c7f06.json",
+      "sha256": "bae1f09de922e3177942dd868f8d315a3f08882bc13c05f1d8f670b53b2c7f06",
+      "size_bytes": 20886
+    },
+    {
+      "path": "raw/player_game_availability_sources/bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7.json",
+      "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+      "size_bytes": 16887
+    },
+    {
+      "path": "raw/player_game_availability_sources/bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a.json",
+      "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+      "size_bytes": 21854
+    },
+    {
+      "path": "raw/player_game_availability_sources/be8457921d6375f8019651dcbed2e4d21bac96b281ae9ba0d4d461d26c3c27a2.json",
+      "sha256": "be8457921d6375f8019651dcbed2e4d21bac96b281ae9ba0d4d461d26c3c27a2",
+      "size_bytes": 20883
+    },
+    {
+      "path": "raw/player_game_availability_sources/c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93.json",
+      "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+      "size_bytes": 22652
+    },
+    {
+      "path": "raw/player_game_availability_sources/c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05.json",
+      "sha256": "c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05",
+      "size_bytes": 17144
+    },
+    {
+      "path": "raw/player_game_availability_sources/c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f.json",
+      "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+      "size_bytes": 23396
+    },
+    {
+      "path": "raw/player_game_availability_sources/d544615a14f9444b65ed3ba324316e5a638d98f5a3624fbe51b5be04d8d5f1d0.json",
+      "sha256": "d544615a14f9444b65ed3ba324316e5a638d98f5a3624fbe51b5be04d8d5f1d0",
+      "size_bytes": 19643
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5.json",
+      "sha256": "d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5",
+      "size_bytes": 22337
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b.json",
+      "sha256": "d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b",
+      "size_bytes": 22532
+    },
+    {
+      "path": "raw/player_game_availability_sources/d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0.json",
+      "sha256": "d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0",
+      "size_bytes": 17507
+    },
+    {
+      "path": "raw/player_game_availability_sources/d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607.json",
+      "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+      "size_bytes": 17380
+    },
+    {
+      "path": "raw/player_game_availability_sources/d94dc3de68dbfc482abb2ab128749a53018f3c91b6c54ed4e1bee25599e89e2c.structured.json",
+      "sha256": "d94dc3de68dbfc482abb2ab128749a53018f3c91b6c54ed4e1bee25599e89e2c",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494.json",
+      "sha256": "d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494",
+      "size_bytes": 19858
+    },
+    {
+      "path": "raw/player_game_availability_sources/de07bba04c2024ba33391c5a98b72ad3f9fa0bee9d1f3ef2af9a8be0486b850e.structured.json",
+      "sha256": "de07bba04c2024ba33391c5a98b72ad3f9fa0bee9d1f3ef2af9a8be0486b850e",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/dfdc8f71c9bc71be136f554dfb22df371d80d49b2a9e257e2e3ec597921dcf32.json",
+      "sha256": "dfdc8f71c9bc71be136f554dfb22df371d80d49b2a9e257e2e3ec597921dcf32",
+      "size_bytes": 19652
+    },
+    {
+      "path": "raw/player_game_availability_sources/e4bcffb340cb249184174a054759887c9c3c4f13cb30512a3dd5ecb489087060.structured.json",
+      "sha256": "e4bcffb340cb249184174a054759887c9c3c4f13cb30512a3dd5ecb489087060",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/e690d1e44f81717191f285776054bde2ec027374f581ee6faa8eb596906b09d7.structured.json",
+      "sha256": "e690d1e44f81717191f285776054bde2ec027374f581ee6faa8eb596906b09d7",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/e7d5b0465cecb577a855ef99cc8bc3e5505d987bd30478aded85e45f698c62b5.structured.json",
+      "sha256": "e7d5b0465cecb577a855ef99cc8bc3e5505d987bd30478aded85e45f698c62b5",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e.json",
+      "sha256": "ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e",
+      "size_bytes": 16631
+    },
+    {
+      "path": "raw/player_game_availability_sources/f4a46314e56988e6d3f32d9c0d71a03c5a5b4f61cb6edb71b459d118e283c7c0.structured.json",
+      "sha256": "f4a46314e56988e6d3f32d9c0d71a03c5a5b4f61cb6edb71b459d118e283c7c0",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/f85473f6e3be5f3de9903cdf3763f38652809441747cb7b60a068c976ea8e069.structured.json",
+      "sha256": "f85473f6e3be5f3de9903cdf3763f38652809441747cb7b60a068c976ea8e069",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78.json",
+      "sha256": "fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78",
+      "size_bytes": 17928
+    },
+    {
+      "path": "raw/player_game_availability_sources/fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26.json",
+      "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+      "size_bytes": 23089
+    },
+    {
+      "path": "raw/player_game_availability_sources/fd2cd43a34c9980095ac02fc04e4c2a621b4d4b5bd86771d02ba1f6437a148c3.structured.json",
+      "sha256": "fd2cd43a34c9980095ac02fc04e4c2a621b4d4b5bd86771d02ba1f6437a148c3",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/fd342644d456dc7387bd5ffd5ae7e08e73e191a9cc779c32b7d90358edc863d7.structured.json",
+      "sha256": "fd342644d456dc7387bd5ffd5ae7e08e73e191a9cc779c32b7d90358edc863d7",
+      "size_bytes": 1118
+    },
+    {
+      "path": "raw/player_game_availability_sources/fe8053bf97b49532f548044148c1473d9dd6a297ee0a9d6e1c6031c9bb164333.json",
+      "sha256": "fe8053bf97b49532f548044148c1473d9dd6a297ee0a9d6e1c6031c9bb164333",
+      "size_bytes": 20266
+    },
+    {
+      "path": "raw/player_game_availability_sources/febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575.json",
+      "sha256": "febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575",
+      "size_bytes": 16640
+    }
+  ],
+  "base_current_rows_preserved_cell_for_cell": 804,
+  "base_current_import_records_preserved": 23,
+  "other_season_rows_preserved_by_overlay_scope": 146,
+  "other_season_preservation_basis": "Prior accepted146row count and immutable base775manifest reused; all8other-season CSV/import file paths and hashes untouched by exact overlay. No new full-generation scan or production publication.",
+  "other_season_files": [
+    {
+      "path": "raw/player_game_availability/1997-98_regular_season.csv",
+      "sha256": "6374c8986f76832b57979e0a91c0f26d000507f737d5c4bb62c0a8e4fc9acf74",
+      "size_bytes": 6760
+    },
+    {
+      "path": "raw/player_game_availability/1997-98_regular_season.imports.json",
+      "sha256": "f4afddf0ee325b172c9410e094184a163ce1981b442ac2397be30118bf2bc500",
+      "size_bytes": 117
+    },
+    {
+      "path": "raw/player_game_availability/2004-05_regular_season.csv",
+      "sha256": "ffda740f1d5c399ec46ecf1c7e5c7db0488e71db3b8fb23fe0dbce7fa30c6120",
+      "size_bytes": 6514
+    },
+    {
+      "path": "raw/player_game_availability/2004-05_regular_season.imports.json",
+      "sha256": "03ff7d97e990d2fd0bb200176847f9e5ae8fe8e976a7089598f3903892d15691",
+      "size_bytes": 117
+    },
+    {
+      "path": "raw/player_game_availability/2014-15_regular_season.csv",
+      "sha256": "758de65697f70501b50193cdfad8a7ba00f9221c13a07546f7119bd9bdc31845",
+      "size_bytes": 8567
+    },
+    {
+      "path": "raw/player_game_availability/2014-15_regular_season.imports.json",
+      "sha256": "bd28cb0e0b8d3ebe3f19ecdaea8abc5a4557a62c56ac25fa8b94710aa38df998",
+      "size_bytes": 117
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.csv",
+      "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+      "size_bytes": 16721
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.imports.json",
+      "sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085",
+      "size_bytes": 225
+    }
+  ],
+  "new_rows": 1070,
+  "structured_new_rows": 1053,
+  "pdf_new_LAL_rows": 17,
+  "current_season_rows": 1874,
+  "projected_all_season_rows": 2020,
+  "imports_added": 31,
+  "structured_imports_added": 30,
+  "report_imports_added": 1,
+  "requested_targets_qualified": 36,
+  "quarantined_structured_originals_absent_from_overlay": {
+    "boxscoresummaryv3_0022500708.json": "a124b61f753a1d4ef0180cba3e31c87e791cfe3566e95c2b3e937edcfff24500",
+    "boxscoretraditionalv3_0022500708.json": "7155de36497b0b766de78444b8df084f4dbc43859b18b7a9d59460710fa3f22c"
+  },
+  "pdf_imported_team_scope": [
+    1610612747
+  ],
+  "full_82_report_rows_compared": 164,
+  "target_projection_numerics": [
+    {
+      "player_id": 1629029,
+      "counts": {
+        "played": 64,
+        "did_not_play": 18
+      },
+      "missed_games": 18,
+      "home_missed_games": 9,
+      "home_missed_ids": [
+        "0022500122",
+        "0022500753",
+        "0022500769",
+        "0022500774",
+        "0022500791",
+        "0022501098",
+        "0022501155",
+        "0022501185",
+        "0022501198"
+      ],
+      "all_dnp_team_record": {
+        "game_ids": [
+          "0022500113",
+          "0022500122",
+          "0022500136",
+          "0022500163",
+          "0022500336",
+          "0022500338",
+          "0022500418",
+          "0022500601",
+          "0022500753",
+          "0022500769",
+          "0022500774",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501155",
+          "0022501170",
+          "0022501185",
+          "0022501198"
+        ],
+        "games": 18,
+        "wins": 10,
+        "losses": 8,
+        "team_points": 2059,
+        "team_points_per_game": 114.38888888888889
+      },
+      "with_lebron_positive_team_record": {
+        "game_ids": [
+          "0022500336",
+          "0022500418",
+          "0022500601",
+          "0022500753",
+          "0022500769",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198"
+        ],
+        "games": 11,
+        "wins": 7,
+        "losses": 4,
+        "team_points": 1285,
+        "team_points_per_game": 116.81818181818181
+      }
+    },
+    {
+      "player_id": 1630559,
+      "counts": {
+        "played": 51,
+        "did_not_play": 31
+      },
+      "missed_games": 31,
+      "home_missed_games": 13,
+      "home_missed_ids": [
+        "0022500179",
+        "0022500446",
+        "0022500460",
+        "0022500485",
+        "0022500501",
+        "0022500541",
+        "0022500569",
+        "0022500586",
+        "0022500607",
+        "0022500774",
+        "0022501155",
+        "0022501185",
+        "0022501198"
+      ],
+      "all_dnp_team_record": {
+        "game_ids": [
+          "0022500163",
+          "0022500179",
+          "0022500185",
+          "0022500379",
+          "0022500395",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500523",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022500774",
+          "0022501140",
+          "0022501155",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "games": 31,
+        "wins": 17,
+        "losses": 14,
+        "team_points": 3547,
+        "team_points_per_game": 114.41935483870968
+      },
+      "with_lebron_positive_team_record": {
+        "game_ids": [
+          "0022500379",
+          "0022500395",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "games": 25,
+        "wins": 15,
+        "losses": 10,
+        "team_points": 2918,
+        "team_points_per_game": 116.72
+      }
+    }
+  ],
+  "actual_runtime_verification": "Required executed test asserts four missed/home natural queries with exactIDs and two reverse questions natural+structured+localAPI with exactIDs/records/PPG. Artifact stores report and reverse summaries; separate API response bodies are not retained.",
+  "source_and_pdf_qualification_files": {
+    "source-qualification.json": "3e9e67621d8b0b29c08d678d8f8735a539b520a44abaa2c9b32ad0867de4901e",
+    "report-qualification.json": "1c5e1c9ac99568932d6f8331ad564b55e3228370e183ca073c5b228bfcd74755"
+  },
+  "full_dataset_slice_accepted": false,
+  "production_publication_authorized": false,
+  "production_data_writes": 0,
+  "approval": "PASS for exact reviewed development-stage artifact and executed required numerical checks; production activation requires separate concrete package/authorization.",
+  "compact_staging_acceptance_sha256": "4e1fe5ffb8d3cee54ff4a6942c65c4457576d6948a00b85d5caa7bd947243c81",
+  "compact_staging_acceptance_checked": true,
+  "operations_and_resume_scope_review": "Staged-only counts/numerics/1070append/1874current/2020projectedall; current775production unchanged and missing2026readiness blocker explicit. No correction required."
+}

@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "classification": "independent_official_report_qualification_for_LAL_only_hybrid_staging_not_publication",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "review_methods": [
+    "rendered original PDF visual inspection",
+    "independent Poppler pdftotext layout extraction",
+    "manual player/time/point transcription and arithmetic",
+    "same-game retained SummaryV3 PID/name linkage; no historical tenure inference"
+  ],
+  "capture_run_id": 41273185301,
+  "capture_request_sha": "e87fe12f2e82f210f08eb8212eb4ccef7852729a",
+  "reviewed_capture_code": "c151b4951faf34c2ecfe190b9ac15b6313c22b1d",
+  "artifact_id": 13070302146,
+  "artifact_zip_sha256": "8d6240dbbc56daba77fac3db75bb4de5edb0ae00c2399e018f1b07cdb497bc90",
+  "pdf_file": "0708-official-report/19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa.pdf",
+  "pdf_sha256": "19f128da153815e7152e5b3784b1a668eb911532fb294c6c730abf45fce521fa",
+  "pdf_size_bytes": 27371,
+  "receipt_sha256": "5c4780c25a27bfd4377ed552ac8900ab5eaf08ccdb81879bf63f519bf644026b",
+  "source_url": "https://statsdmz.nba.com/pdfs/20260201/20260201_LALNYK.pdf",
+  "retrieved_at_utc": "2026-11-01T04:29:03.941654+00:00",
+  "original_upstream_capture_time": "unknown; retrieval time is not original capture proof",
+  "copyright": "NBA Properties INC. All Rights Reserved, as printed in original; no CC BY license attributed to official PDF",
+  "game_id": "0022500708",
+  "game_date": "2026-02-01",
+  "visitor": {
+    "team_id": 1610612747,
+    "team_name": "Los Angeles Lakers",
+    "points": 100
+  },
+  "home": {
+    "team_id": 1610612752,
+    "team_name": "New York Knicks",
+    "points": 112
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "imported_team_scope": [
+    1610612747
+  ],
+  "lal_listed_players": 17,
+  "lal_played": 13,
+  "lal_explicit_nonparticipants": 4,
+  "lal_displayed_player_seconds": 14400,
+  "lal_reported_team_seconds": 14400,
+  "lal_player_points_sum": 100,
+  "lal_rows": [
+    {
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "pdf_name": "LeBron James",
+      "participation_state": "played",
+      "displayed_clock": "34:34",
+      "seconds": 2074,
+      "points": 22,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1631222,
+      "player_name": "Jake LaRavia",
+      "pdf_name": "Jake LaRavia",
+      "participation_state": "played",
+      "displayed_clock": "23:16",
+      "seconds": 1396,
+      "points": 5,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629028,
+      "player_name": "Deandre Ayton",
+      "pdf_name": "Deandre Ayton",
+      "participation_state": "played",
+      "displayed_clock": "32:06",
+      "seconds": 1926,
+      "points": 13,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629029,
+      "player_name": "Luka Dončić",
+      "pdf_name": "Luka Doncic",
+      "participation_state": "played",
+      "displayed_clock": "36:53",
+      "seconds": 2213,
+      "points": 30,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 203935,
+      "player_name": "Marcus Smart",
+      "pdf_name": "Marcus Smart",
+      "participation_state": "played",
+      "displayed_clock": "30:14",
+      "seconds": 1814,
+      "points": 7,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629216,
+      "player_name": "Gabe Vincent",
+      "pdf_name": "Gabe Vincent",
+      "participation_state": "played",
+      "displayed_clock": "17:52",
+      "seconds": 1072,
+      "points": 8,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629637,
+      "player_name": "Jaxson Hayes",
+      "pdf_name": "Jaxson Hayes",
+      "participation_state": "played",
+      "displayed_clock": "12:20",
+      "seconds": 740,
+      "points": 2,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629060,
+      "player_name": "Rui Hachimura",
+      "pdf_name": "Rui Hachimura",
+      "participation_state": "played",
+      "displayed_clock": "29:00",
+      "seconds": 1740,
+      "points": 11,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1629020,
+      "player_name": "Jarred Vanderbilt",
+      "pdf_name": "Jarred Vanderbilt",
+      "participation_state": "played",
+      "displayed_clock": "19:49",
+      "seconds": 1189,
+      "points": 1,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1642261,
+      "player_name": "Dalton Knecht",
+      "pdf_name": "Dalton Knecht",
+      "participation_state": "played",
+      "displayed_clock": "00:59",
+      "seconds": 59,
+      "points": 0,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1628467,
+      "player_name": "Maxi Kleber",
+      "pdf_name": "Maxi Kleber",
+      "participation_state": "played",
+      "displayed_clock": "00:59",
+      "seconds": 59,
+      "points": 1,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1631166,
+      "player_name": "Drew Timme",
+      "pdf_name": "Drew Timme",
+      "participation_state": "played",
+      "displayed_clock": "00:59",
+      "seconds": 59,
+      "points": 0,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1641733,
+      "player_name": "Nick Smith Jr.",
+      "pdf_name": "Nick Smith Jr.",
+      "participation_state": "played",
+      "displayed_clock": "00:59",
+      "seconds": 59,
+      "points": 0,
+      "evidence": "explicit_positive_official_report_clock"
+    },
+    {
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "pdf_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "source_comment_literal": "DND - Injury/Illness - Left Calf; Strain",
+      "evidence": "explicit_DND_statement_not_injury_inference"
+    },
+    {
+      "player_id": 1642355,
+      "player_name": "Bronny James",
+      "pdf_name": "James",
+      "participation_state": "did_not_play",
+      "source_comment_literal": "Inactive: Lakers - James",
+      "evidence": "explicit_official_report_inactive_list_and_same_game_SummaryV3_identity"
+    },
+    {
+      "player_id": 1643024,
+      "player_name": "Chris Manon",
+      "pdf_name": "Manon",
+      "participation_state": "did_not_play",
+      "source_comment_literal": "Inactive: Lakers - Manon",
+      "evidence": "explicit_official_report_inactive_list_and_same_game_SummaryV3_identity"
+    },
+    {
+      "player_id": 1642876,
+      "player_name": "Adou Thiero",
+      "pdf_name": "Thiero",
+      "participation_state": "did_not_play",
+      "source_comment_literal": "Inactive: Lakers - Thiero",
+      "evidence": "explicit_official_report_inactive_list_and_same_game_SummaryV3_identity"
+    }
+  ],
+  "surname_identity_resolution": {
+    "literal": "Inactive: Lakers - James",
+    "player_id": 1642355,
+    "player_name": "Bronny James",
+    "basis": "unique James in exact-game SummaryV3 inactives; LeBron2544 is separate explicit played34:34 and excluded from inactive resolution"
+  },
+  "rui_hachimura_clock": {
+    "player_id": 1629060,
+    "official_pdf_clock": "29:00",
+    "official_pdf_seconds": 1740,
+    "invalid_structured_clock": "28:60",
+    "policy": "Official PDF is a separate qualified original. Structured bytes remain unchanged and quarantined; no arithmetic carry or parser waiver."
+  },
+  "same_game_summary_identity_sha256": "a124b61f753a1d4ef0180cba3e31c87e791cfe3566e95c2b3e937edcfff24500",
+  "quarantined_structured_originals": {
+    "boxscoretraditionalv3_0022500708.json": "7155de36497b0b766de78444b8df084f4dbc43859b18b7a9d59460710fa3f22c",
+    "boxscoresummaryv3_0022500708.json": "a124b61f753a1d4ef0180cba3e31c87e791cfe3566e95c2b3e937edcfff24500"
+  },
+  "original_blocked_structured_qualification_sha256": "3e9e67621d8b0b29c08d678d8f8735a539b520a44abaa2c9b32ad0867de4901e",
+  "hybrid_expected_union": {
+    "structured_games": 30,
+    "structured_rows": 1053,
+    "pdf_LAL_rows": 17,
+    "total_append_rows": 1070,
+    "projected_current_season_rows": 1874,
+    "projected_all_season_rows": 2020,
+    "qualified_requested_targets": 36
+  },
+  "approval": "PASS for separately scoped LAL-only cached-report import into development staging",
+  "canonical_hybrid_staging_execution_accepted": false,
+  "full_dataset_slice_accepted": false,
+  "production_publication_authorized": false,
+  "production_writes": 0,
+  "next": "Execute reviewed hybrid actual-data gate on pinned base; validate all old cells/source authority/import ledger, exact82target states and natural/structured/API numerics; publication separately authorized only.",
+  "structured_full_append_qualified": false,
+  "original_blocked_proof_preserved_unchanged": true,
+  "lal_official_report_clock_rows_qualified": true
+}
