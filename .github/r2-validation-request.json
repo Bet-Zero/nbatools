@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_lal_2023_participation_coverage_real_data.py::test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit"
+  ],
+  "raw_qa_cases": []
+}
