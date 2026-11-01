@@ -84,6 +84,17 @@ The existing LeBron structured request is the retained17-game dependency after
 the three formerly staged reports were published. Qualified exact-game states
 across this population avoid assuming tenure from roster snapshots.
 
+After a separately authorized collection, `python -m tools.stage_participation_collection`
+accepts `--request-path`, `--source-directory`, new `--work` and `--output`
+directories, and `--candidate-sha`. It performs no acquisition or publication.
+The source directory contains retained `sources/` originals and `sources.json`;
+exact pinned URLs, Git blob/SHA256 hashes, capture times and the requested file
+set must match. The existing structured qualifier replays every game against
+manifest-bound canonical inputs. Existing availability cells, import lineage
+and stronger PDF clock authority survive unchanged. The exported append-only
+overlay and `validation.json` remain development staging until independent
+checking, required consumer execution and separately protected publication.
+
 Generate a request against the selected inventory, for example:
 
 ```bash

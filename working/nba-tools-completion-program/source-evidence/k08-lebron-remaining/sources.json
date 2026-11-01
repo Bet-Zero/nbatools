@@ -1,0 +1,250 @@
+{
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "classification": "retained_originals_unqualified_staging_only",
+  "authorization": {
+    "owner_reply": "Approve bounded collection and staging",
+    "scope": "34 pinned archive JSON bodies for the 17 named LeBron games only; no production publication, bulk backfill, new credentials or paid service"
+  },
+  "attribution": "NBA Stats originals retained by SportsDataverse hoopR archive; CC BY 4.0 archive attribution retained; retrieval is not original NBA capture or freshness",
+  "files": {
+    "boxscoretraditionalv3_0022500136.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500136.json",
+      "sha256": "df16577fd60b149145a25bbe57e7c5dacb3410a08fea15b0ffc8249575de98ac",
+      "size_bytes": 18436,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "d7522a328b9b1ee216746f440e86c41638709530"
+    },
+    "boxscoresummaryv3_0022500136.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500136.json",
+      "sha256": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+      "size_bytes": 21310,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "de8e5100998df1ac653d56cf8a2449bc718bd3af"
+    },
+    "boxscoretraditionalv3_0022500024.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500024.json",
+      "sha256": "a2075d21356fe64fdde5dc69521bbb34e589500aeeb29a639bb3f2b53590902c",
+      "size_bytes": 19132,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "247e653a056e932c1eaee649a545de270d02d7b6"
+    },
+    "boxscoresummaryv3_0022500024.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500024.json",
+      "sha256": "4d4285396acde394905a83fd53b09c3f3529988ebb9c91accd6d8adf26fcc09a",
+      "size_bytes": 22353,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "d5ec86ae8c0944ad270997ff278e1b3678696368"
+    },
+    "boxscoretraditionalv3_0022500155.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500155.json",
+      "sha256": "2c9eca7161342a4646fea7a6fad889ceda7f09a15cbee626c7a5f0ea7bc690a2",
+      "size_bytes": 19125,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "65b6b423883b21038c8afa4bf3abc55e118c7ba7"
+    },
+    "boxscoresummaryv3_0022500155.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500155.json",
+      "sha256": "033411c6564dc5e715527d49c14a08b71fbae9ca2f8c268aec4a09d91016b54f",
+      "size_bytes": 18067,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "e2ea9dd91fb946f62c8e2a52988ba038f34abfbb"
+    },
+    "boxscoretraditionalv3_0022500163.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500163.json",
+      "sha256": "b8d2b8e1c2a82185a45966367f768b9f92f88f679ff4e35e1e9e200cd4c977ca",
+      "size_bytes": 20332,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "867fea6dd1af6a25853ce07547432bae1edc5942"
+    },
+    "boxscoresummaryv3_0022500163.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500163.json",
+      "sha256": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+      "size_bytes": 19442,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "747a4cc9e7de02942794d56754a2ca146f9510a0"
+    },
+    "boxscoretraditionalv3_0022500179.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500179.json",
+      "sha256": "cd57829bee2dcf7604516eefdb62a46f2a268931a2d7127fda39a9b536140668",
+      "size_bytes": 19124,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "e6133b6fccd0258e604214510ccb9229e76b856a"
+    },
+    "boxscoresummaryv3_0022500179.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500179.json",
+      "sha256": "bcff0694ab3f8d26577e9dd7c1f4329220e46e2b292bdc2821027875b5e98372",
+      "size_bytes": 21927,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "97685b3de1aa1b4358a9d47a7e9f96d87e448720"
+    },
+    "boxscoretraditionalv3_0022500185.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500185.json",
+      "sha256": "b0a99c6af6867fed57aefcbf3e307a760184befabe6a7850187d6b01ee165f1d",
+      "size_bytes": 18459,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "f25e584751f8f3a53b71c70ca7cb26657d087579"
+    },
+    "boxscoresummaryv3_0022500185.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500185.json",
+      "sha256": "e60940c9cd8d14daf519ab8916d219f24bf4e41422d940a0cd2fc7c49fc9a266",
+      "size_bytes": 19272,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "df8466f388c1c523c284b2ea7093e57d390d2405"
+    },
+    "boxscoretraditionalv3_0022500198.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500198.json",
+      "sha256": "22143871c5939f555845ce4bde26bf343392ca0890b10a3078e3fc711ec5c38a",
+      "size_bytes": 18444,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "2d7edf8ad9b70c33137b0bc2b324226841faa4e9"
+    },
+    "boxscoresummaryv3_0022500198.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500198.json",
+      "sha256": "a4d6ca2ce77c3c20672278e1b633f2aa56579d248b9b0f34eb92bff079098355",
+      "size_bytes": 16372,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "3ed54b216f53c7f9e06d6335fd2c96bbd3cae94b"
+    },
+    "boxscoretraditionalv3_0022500222.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500222.json",
+      "sha256": "50cec003175260ed3a598de1a086a723b503aec9826bff8f6849fc989bd7d336",
+      "size_bytes": 18436,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "1d9e0b8a814b150add0c2fe166725548e8ce9faa"
+    },
+    "boxscoresummaryv3_0022500222.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500222.json",
+      "sha256": "c7def23a5bad10f2f89813f114589b5463200bf479feb1751ea7131593e72d46",
+      "size_bytes": 22126,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "be2c1105e4399a910497d1fba4b39fc5c1574f0f"
+    },
+    "boxscoretraditionalv3_0022500045.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500045.json",
+      "sha256": "eb8df14d8c0ea6453250b9bd6f0c9372314d74768b816657711b5dc31bf329ca",
+      "size_bytes": 19080,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "fe477a8575c2b74968c16d6ef402c3bc46455f21"
+    },
+    "boxscoresummaryv3_0022500045.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500045.json",
+      "sha256": "8ea1b68d7eaf490ce5b519bf83f444d7ae2f93b0f02c930884c1c5b096345842",
+      "size_bytes": 16567,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "1b87f8dcafc30cd356b5a0592aa039ea850d25c7"
+    },
+    "boxscoretraditionalv3_0022500231.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500231.json",
+      "sha256": "536e86614f39700522fd9ee57bf5c196146f65a871c60b85d5549e6cffb9d2ea",
+      "size_bytes": 19621,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "97de56838f167f6604eabf6414581d8f582d33c6"
+    },
+    "boxscoresummaryv3_0022500231.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500231.json",
+      "sha256": "27432c40812ed9237928f45805c6ecddfa06c0abb16a66f5a13629c860b135e6",
+      "size_bytes": 20015,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "ef9f44abbd4289d3ecc0d248a94e62ff601c35c2"
+    },
+    "boxscoretraditionalv3_0022500308.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500308.json",
+      "sha256": "248646d02e390ba8a764ed53efe10a8ec5bc679bdc2a84a694c28a312dd4ba9b",
+      "size_bytes": 19073,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "435c3362c2fdb9eea3a6f12fcb2c54875bd42ed8"
+    },
+    "boxscoresummaryv3_0022500308.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500308.json",
+      "sha256": "6265a13ae0f364f41640879410a596eb865a9ac7f2dace8a4fb4c30a002fa4d1",
+      "size_bytes": 18137,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "9d0f1bd7a0ac452ef3cdc97f17454848487c1ffe"
+    },
+    "boxscoretraditionalv3_0022500523.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500523.json",
+      "sha256": "963a18d8d96c84020da4f217af49079382e23b76a79bf9175f33ccf3bf5b4d95",
+      "size_bytes": 20933,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "6317ccc5fdf30eb2731bbae70021739a1fe9a50d"
+    },
+    "boxscoresummaryv3_0022500523.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500523.json",
+      "sha256": "cb6a937e180e031509ba2af4c588c5bb9771e04250d913eb55bda33567f5fcaf",
+      "size_bytes": 21846,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "cb4574f1d5da83d7f35b1b09465561fb458858a5"
+    },
+    "boxscoretraditionalv3_0022500774.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500774.json",
+      "sha256": "9b6c8c06052278caeeee13f9d2bd0c7f89025392dfac77331e1972d6dbd22e5f",
+      "size_bytes": 20251,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "e3508e22533fab7058c7b23e4bb4cf0586eaffd5"
+    },
+    "boxscoresummaryv3_0022500774.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500774.json",
+      "sha256": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+      "size_bytes": 20394,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "c2498494fc262145c04241db10604f2e786309ad"
+    },
+    "boxscoretraditionalv3_0022500914.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500914.json",
+      "sha256": "defbfeb225b751fdff7af9ba63be19ffd4095b577b75b4c2757f33554f3f32d2",
+      "size_bytes": 19605,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "0eecfa9bb09e2a0020a245871482ed5801bac3d1"
+    },
+    "boxscoresummaryv3_0022500914.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500914.json",
+      "sha256": "0e91d4549d219571aa00de844b44ca76bf073406c4878f5d6e92f873fc5db38d",
+      "size_bytes": 17228,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "6198c66c446ef815a6bff475e9f7ebcf021ebf72"
+    },
+    "boxscoretraditionalv3_0022500922.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500922.json",
+      "sha256": "845a5673d744698c414de7513244cfcf519146cb0e0c6add7512969615a1c873",
+      "size_bytes": 21001,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "c80641a0c95a7685b22065264711de663af1ef51"
+    },
+    "boxscoresummaryv3_0022500922.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500922.json",
+      "sha256": "07dedfb2a26ecb63021e71063af5e2fd8651855e3a2aee8bb5dd4b33c1a0ce06",
+      "size_bytes": 21902,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "9351a482e844c087294581cb30e6359a5f4c015f"
+    },
+    "boxscoretraditionalv3_0022500946.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022500946.json",
+      "sha256": "b8946206b5efeab56ef5a16d987389e2bdbea8a4114a257be0ec60590f298f34",
+      "size_bytes": 22154,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "663a87d5889d1742cea6c5e78507585cb7d7e503"
+    },
+    "boxscoresummaryv3_0022500946.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500946.json",
+      "sha256": "b8191531e3ac61d758d70aa4050ef76046fd0ca0f5a902096b2cbcbdb0f0ef5e",
+      "size_bytes": 24431,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "7ce8f13968e882ad38329eff9c0c3bcb664e3f92"
+    },
+    "boxscoretraditionalv3_0022501155.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501155.json",
+      "sha256": "6783f95505ca20d7074a13d838aacba3503ba8093a7147e371f4706aa043366d",
+      "size_bytes": 21559,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "5626fe57033e25f5373b5199702c68d29337bfdb"
+    },
+    "boxscoresummaryv3_0022501155.json": {
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501155.json",
+      "sha256": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+      "size_bytes": 18444,
+      "retrieved_at": "2026-10-31T23:36:41Z",
+      "git_blob_sha": "92476a815e4c81ef7cf0154e38763bf56042f5c7"
+    }
+  }
+}
