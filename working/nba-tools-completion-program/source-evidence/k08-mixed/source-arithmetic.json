@@ -1,0 +1,153 @@
+{
+  "classification": "independent_exported_source_arithmetic_not_runtime_acceptance",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "run_id": 41267659415,
+  "artifact_id": 13067583425,
+  "zip_sha256": "a0eef5dee7f0253ec4123474548d61fa2f80e822ef4a89aa6da03ea7a1fd67d0",
+  "zip_bytes": 15458,
+  "required_execution": "FAILED before new mixed questions at existing negative-pair regression",
+  "runtime_mixed_acceptance": false,
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_files": [
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "size_bytes": 223000
+    },
+    {
+      "path": "raw/player_game_stats/2025-26_regular_season.csv",
+      "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "size_bytes": 4993942
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "size_bytes": 449374
+    }
+  ],
+  "subsets": {
+    "lal-team82.csv": {
+      "rows": 82,
+      "sha256": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436"
+    },
+    "lebron-raw-availability.csv": {
+      "rows": 23,
+      "sha256": "d6f83d6ba89a1f7f62474432556c9392bc1391cd2fbd4f0e2e9119fc7ff8d563"
+    },
+    "lebron-positive-appearances.csv": {
+      "rows": 60,
+      "sha256": "41d9cc397c0464530cb6d76d39d374bfab0fa44c2ef944cdb9b9b74900088dd4"
+    },
+    "luka-reaves-positive-appearances.csv": {
+      "rows": 115,
+      "sha256": "5878bdcb37589791623059d55d860208219874b8fd1dbfddb306279f1f68e91e"
+    },
+    "lebron82-observed-state-projection.csv": {
+      "rows": 82,
+      "sha256": "250b7c8226cb7c3d5b5f9c98b78207feca02ecf88ca0681de13da57679ff6bc9"
+    }
+  },
+  "lebron_counts": {
+    "played": 60,
+    "explicit_did_not_play": 22,
+    "unknown": 0,
+    "observed_team_games": 82,
+    "raw_availability_rows": 23
+  },
+  "answers": [
+    {
+      "positive_player": "Luka Dončić",
+      "positive_player_id": 1629029,
+      "positive_season_appearances": 64,
+      "absence_player": "LeBron James",
+      "scope": "fullseason",
+      "game_ids": [
+        22500002,
+        22500019,
+        22500024,
+        22500045,
+        22500155,
+        22500179,
+        22500185,
+        22500198,
+        22500222,
+        22500231,
+        22500308,
+        22500523,
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 15,
+      "wins": 11,
+      "losses": 4,
+      "points": 1736,
+      "points_per_game": 115.73333333333333
+    },
+    {
+      "positive_player": "Luka Dončić",
+      "positive_player_id": 1629029,
+      "positive_season_appearances": 64,
+      "absence_player": "LeBron James",
+      "scope": "2025-10-24_through_2025-10-27",
+      "game_ids": [
+        22500019
+      ],
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 128,
+      "points_per_game": 128.0
+    },
+    {
+      "positive_player": "Austin Reaves",
+      "positive_player_id": 1630559,
+      "positive_season_appearances": 51,
+      "absence_player": "LeBron James",
+      "scope": "fullseason",
+      "game_ids": [
+        22500002,
+        22500019,
+        22500024,
+        22500045,
+        22500113,
+        22500122,
+        22500136,
+        22500155,
+        22500198,
+        22500222,
+        22500231,
+        22500308,
+        22500338,
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 16,
+      "wins": 12,
+      "losses": 4,
+      "points": 1881,
+      "points_per_game": 117.5625
+    },
+    {
+      "positive_player": "Austin Reaves",
+      "positive_player_id": 1630559,
+      "positive_season_appearances": 51,
+      "absence_player": "LeBron James",
+      "scope": "2025-10-24_through_2025-10-27",
+      "game_ids": [
+        22500019,
+        22500113,
+        22500122
+      ],
+      "games": 3,
+      "wins": 2,
+      "losses": 1,
+      "points": 363,
+      "points_per_game": 121.0
+    }
+  ],
+  "qualification": "positive appearances only; no inferred Luka/Reaves DNP or dated membership",
+  "production_writes": 0
+}

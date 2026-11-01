@@ -243,7 +243,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
             if not fragment or re.search(r"\d|\b(?:and|or|with|without|both)\b", fragment):
                 return None
             clauses.append(AvailabilityClause(mode, fragment, match.start(), match.end()))
-            explicit_states.append(bool(suffix) or match.group(1) in {"without", "w/o"})
+            explicit_states.append(bool(suffix))
     if len(clauses) != 2 or {c.mode for c in clauses} != {"with", "without"}:
         return None
     conjunction = AvailabilityConjunction(tuple(clauses))
@@ -259,8 +259,9 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
         return None  # An unowned name/clause is still requested, even if unindexed.
     pair = requested_availability_pair(text)
     if pair:
-        # WITH A AND B OUT already has a shared negative scope. Explicit
-        # independent state verbs distinguish WITH A PLAYING AND B OUT.
+        # WITH A AND B OUT / WITHOUT A AND B PLAYING have shared negative
+        # scope. Only independent state suffixes on both actors can override
+        # that list; WITHOUT itself is the list's introducer, not a suffix.
         if not all(explicit_states):
             return None
         remainder = conjunction.mask_clause(text)[pair.start : pair.end]

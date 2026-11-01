@@ -324,6 +324,51 @@ def test_structured_request_preserves_both_scalar_predicates(qualified_pair):
 
 
 @pytest.mark.parametrize(
+    "clause",
+    [
+        "without LeBron James and Anthony Davis playing",
+        "with LeBron James and Anthony Davis both out",
+    ],
+)
+def test_shared_negative_name_list_is_not_reinterpreted_as_mixed(qualified_pair, clause):
+    expected = qualified_pair["teams"].loc[
+        qualified_pair["teams"].game_id.eq(qualified_pair["ids"][0])
+    ]
+    result = execute_natural_query(f"Lakers record vs Celtics {clause} in {SEASON}")
+    _assert_answer(result, expected)
+
+
+def test_legacy_lebron_luka_gerund_keeps_shared_negative_parse():
+    from nbatools.commands.natural_query import parse_query
+
+    parsed = parse_query(
+        "Lakers record without LeBron and Luka playing from 2025-10-24 to 2025-10-27 in 2025-26"
+    )
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["with_player"] is None
+    assert parsed["route_kwargs"]["without_player"] == "LeBron James and Luka Dončić"
+    assert not parsed["route_kwargs"].get("unsupported_filters")
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "with LeBron James out and Anthony Davis playing",
+        "without LeBron James and with Anthony Davis",
+        "without LeBron James while Anthony Davis plays",
+    ],
+)
+def test_independently_marked_states_keep_mixed_polarity(qualified_pair, clause):
+    result = execute_natural_query(f"Lakers record vs Celtics {clause} in {SEASON}")
+    assert result.result_status == "ok", result.metadata
+    assert result.metadata["without_player"] == "LeBron James"
+    assert result.metadata["with_player"] == "Anthony Davis"
+    assert {int(row["game_id"]) for row in result.result.to_dict()["sections"]["game_log"]} == {
+        qualified_pair["ids"][1]
+    }
+
+
+@pytest.mark.parametrize(
     "window", ["last 2 qualifying games", "within their last 2 qualifying games"]
 )
 def test_mixed_qualifying_window_remains_positive(qualified_pair, window):
