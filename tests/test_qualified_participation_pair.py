@@ -218,6 +218,133 @@ def test_structured_pair_and_subject_bound_are_already_execution_backed(qualifie
     _assert_answer(result, expected, player=True)
 
 
+@pytest.mark.parametrize(
+    "clause",
+    [
+        "without LeBron James and with Anthony Davis",
+        "with Anthony Davis and without LeBron James",
+        "with LeBron James out and with Anthony Davis",
+        "with LeBron James OUT and Anthony Davis playing",
+        "when LeBron James is out and Anthony Davis plays",
+        "with Anthony Davis playing and LeBron James out",
+        "with LeBron James not playing and Anthony Davis playing",
+        "when LeBron James did not play and Anthony Davis played",
+    ],
+)
+def test_mixed_polarity_preserves_each_clause_and_team_subject(qualified_pair, clause):
+    expected = qualified_pair["teams"].loc[
+        qualified_pair["teams"].game_id.eq(qualified_pair["ids"][1])
+    ]
+    result = execute_natural_query(f"Lakers record vs Celtics {clause} in {SEASON}")
+    assert result.result_status == "ok", (result.result_reason, result.metadata)
+    assert result.route == "team_record"
+    assert result.metadata["player"] is None
+    assert result.metadata["with_player"] == "Anthony Davis"
+    assert result.metadata["without_player"] == "LeBron James"
+    sections = result.result.to_dict()["sections"]
+    assert {int(r["game_id"]) for r in sections["game_log"]} == set(expected.game_id)
+    row = sections["summary"][0]
+    assert (row["games"], row["wins"], row["losses"], row["pts_avg"]) == (
+        1,
+        int(expected.wl.eq("W").sum()),
+        int(expected.wl.eq("L").sum()),
+        expected.pts.item(),
+    )
+    assert {"label": "With player", "value": "Anthony Davis", "kind": "player"} in result.metadata[
+        "applied_filters"
+    ]
+    assert {
+        "label": "Without player",
+        "value": "LeBron James",
+        "kind": "player",
+    } in result.metadata["applied_filters"]
+
+
+@pytest.mark.parametrize("last_scope", [None, "qualifying", "window"])
+def test_positive_sibling_cannot_hide_unknown_absence_on_original_candidates(
+    qualified_pair, last_scope
+):
+    from nbatools.commands.team_record import build_team_record_result
+
+    fixture = qualified_pair
+    # Davis is explicitly absent in this game: a positive-Davis filter would
+    # erase it. LeBron's unknown absence must still block the conjunction.
+    mask = fixture["ledger"].game_id.eq(fixture["ids"][0]) & fixture["ledger"].player_id.eq(2544)
+    fixture["ledger"].loc[mask, "participation_state"] = "unknown"
+    kwargs = dict(
+        team="LAL",
+        opponent="BOS",
+        season=SEASON,
+        with_player="Anthony Davis",
+        without_player="LeBron James",
+    )
+    if last_scope:
+        kwargs.update(last_n=1, last_n_scope=last_scope)
+    with pytest.raises(ValueError, match="Unqualified|coverage"):
+        build_team_record_result(**kwargs)
+    result = execute_natural_query(
+        f"Lakers record vs Celtics without LeBron James and with Anthony Davis in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
+def test_date_scope_is_owned_before_mixed_participation_qualification(qualified_pair):
+    fixture = qualified_pair
+    mask = fixture["ledger"].game_id.eq(fixture["ids"][0]) & fixture["ledger"].player_id.eq(2544)
+    fixture["ledger"].loc[mask, "participation_state"] = "unknown"
+    expected = fixture["teams"].loc[fixture["teams"].game_id.eq(fixture["ids"][1])]
+    day = expected.game_date.item()
+    result = execute_natural_query(
+        f"Lakers record without LeBron James and with Anthony Davis vs Celtics in {SEASON} from {day} to {day}"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert {int(r["game_id"]) for r in result.result.to_dict()["sections"]["game_log"]} == set(
+        expected.game_id
+    )
+
+
+def test_structured_request_preserves_both_scalar_predicates(qualified_pair):
+    result = execute_structured_query(
+        "team_record",
+        team="LAL",
+        opponent="BOS",
+        season=SEASON,
+        without_player="LeBron James",
+        with_player="Anthony Davis",
+    )
+    assert result.result_status == "ok", result.metadata
+    assert {int(r["game_id"]) for r in result.result.to_dict()["sections"]["game_log"]} == {
+        qualified_pair["ids"][1]
+    }
+    assert (
+        result.metadata["without_player"] == "LeBron James"
+        and result.metadata["with_player"] == "Anthony Davis"
+    )
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        dict(with_player="Anthony Davis and Austin Reaves"),
+        dict(with_player="LeBron James"),
+        dict(quarter="1"),
+    ],
+)
+def test_structured_mixed_scope_does_not_expand_to_extra_actors_or_periods(qualified_pair, extra):
+    kwargs = dict(
+        team="LAL",
+        opponent="BOS",
+        season=SEASON,
+        without_player="LeBron James",
+        with_player="Anthony Davis",
+    )
+    kwargs.update(extra)
+    result = execute_structured_query("team_record", **kwargs)
+    assert result.result_status == "no_result"
+    assert not result.to_dict()["sections"]
+
+
 @pytest.mark.parametrize("status", ["injured", "healthy", "available", "on the court"])
 def test_pair_participation_never_substitutes_for_status(qualified_pair, status):
     result = execute_natural_query(

@@ -292,6 +292,25 @@ def build_team_record_result(
     )
 
     original_window = last_n_scope == "original_window"
+    if (
+        with_player
+        and without_player
+        and (
+            quarter is not None
+            or half is not None
+            or any(
+                re.search(r"\band\b|[,;&]", name, re.IGNORECASE)
+                for name in [with_player, without_player]
+            )
+            or with_player.casefold() == without_player.casefold()
+            or bool(player_ids_for_name(with_player) & player_ids_for_name(without_player))
+        )
+    ):
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=["Mixed participation requires two distinct scalar whole-game predicates"],
+        )
     names = re.split(r"\s+and\s+", (with_player or "").strip(), flags=re.IGNORECASE)
     resolved_names = [resolve_player(name).resolved for name in names] if original_window else []
     if original_window and (
@@ -467,20 +486,20 @@ def build_team_record_result(
             start_date=start_date,
             end_date=end_date,
         )
-        if with_player and not sample.empty and not original_window:
-            sample = filter_with_player(
+        if without_player and not sample.empty:
+            sample = filter_without_player(
                 sample,
-                with_player,
+                without_player,
                 seasons,
                 season_type,
                 team=team,
                 strict_team_match=True,
                 opponent=opponent,
             )
-        if without_player and not sample.empty:
-            sample = filter_without_player(
+        if with_player and not sample.empty and not original_window:
+            sample = filter_with_player(
                 sample,
-                without_player,
+                with_player,
                 seasons,
                 season_type,
                 team=team,
@@ -551,30 +570,22 @@ def build_team_record_result(
         else:
             clutch_executed = True
 
-    if with_player and without_player:
-        return NoResult(
-            query_class="summary",
-            reason="filter_not_supported",
-            notes=[
-                "multi-player availability filters are not supported with current team record data"
-            ],
-        )
-
-    if with_player and not df.empty and not original_window:
-        df = filter_with_player(
+    # Absence must be known across the original scoped candidates. A played
+    # sibling that is false cannot conceal an unknown nonparticipation state.
+    if without_player and not df.empty:
+        df = filter_without_player(
             df,
-            with_player,
+            without_player,
             seasons,
             season_type,
             team=team,
             strict_team_match=True,
             opponent=opponent,
         )
-
-    if without_player and not df.empty:
-        df = filter_without_player(
+    if with_player and not df.empty and not original_window:
+        df = filter_with_player(
             df,
-            without_player,
+            with_player,
             seasons,
             season_type,
             team=team,

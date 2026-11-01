@@ -179,6 +179,96 @@ class AvailabilityClause(NamedTuple):
         return text[: self.start] + " " * (self.end - self.start) + text[self.end :]
 
 
+class AvailabilityConjunction(NamedTuple):
+    """Separately owned scalar clauses, retaining polarity and source spans."""
+
+    clauses: tuple[AvailabilityClause, AvailabilityClause]
+
+    def mask_clause(self, text: str) -> str:
+        for clause in self.clauses:
+            text = clause.mask_clause(text)
+        return text
+
+    def name(self, mode: str) -> str:
+        return next(clause.players for clause in self.clauses if clause.mode == mode)
+
+
+def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
+    """Read two scalar whole-game clauses before resolving either identity.
+
+    A shared name list remains owned by the existing pair reader. A mixed
+    conjunction needs its own polarity marker on each side, such as WITHOUT
+    A AND WITH B, or WITH A OUT AND B PLAYING. OR and extra actors stay unread.
+    """
+    from nbatools.commands._matchup_utils import detect_team_in_text
+    from nbatools.commands._parse_helpers import detect_stat
+
+    if re.search(r"\bor\b", text):
+        return None
+    state = (
+        r"(?:(?:is|was|are|were)\s+)?(?:out|not\s+playing|did\s+not\s+play|dnp"
+        r"|sitting|sits?|sat|playing|plays?|played)"
+    )
+    state_end = re.compile(rf"\s+({state})$")
+    stop = (
+        r"(?=\s+(?:and|while|when|but|record|games?|this|last|in|for|since|vs\.?"
+        r"|versus|against|at|on|from|during|over|before|after|through|until|home|away)\b"
+        r"|[?!,;:]|$)"
+    )
+    patterns = [
+        rf"\b(with|without|w/o|w/)\s+([\w .'\-]+?){stop}",
+        r"\b(when|while|and)\s+((?:(?!\b(?:and|or|with|without|when|while)\b)"
+        rf"[\w .'\-])+?\s+{state}){stop}",
+    ]
+    clauses, explicit_states = [], []
+    for pattern in patterns:
+        for match in re.finditer(pattern, text):
+            if any(match.start() < c.end and match.end() > c.start for c in clauses):
+                continue
+            if re.search(r"\b(?:not|unless)\s*$", text[: match.start()]):
+                return None
+            fragment = match.group(2).strip()
+            suffix = state_end.search(fragment)
+            mode = "without" if match.group(1) in {"without", "w/o"} else "with"
+            if suffix:
+                mode = (
+                    "without"
+                    if mode == "without"
+                    or not re.fullmatch(
+                        r"(?:(?:is|was|are|were)\s+)?(?:playing|plays?|played)", suffix[1]
+                    )
+                    else "with"
+                )
+                fragment = fragment[: suffix.start()].strip()
+            if not fragment or re.search(r"\d|\b(?:and|or|with|without|both)\b", fragment):
+                return None
+            clauses.append(AvailabilityClause(mode, fragment, match.start(), match.end()))
+            explicit_states.append(bool(suffix) or match.group(1) in {"without", "w/o"})
+    if len(clauses) != 2 or {c.mode for c in clauses} != {"with", "without"}:
+        return None
+    conjunction = AvailabilityConjunction(tuple(clauses))
+    remainder = conjunction.mask_clause(text)
+    for tail in re.split(r"\b(?:and|while|when|but)\b|[,;]", remainder)[1:]:
+        tail = tail.strip()
+        # Date/opponent/schedule scope belongs to the existing scope readers;
+        # a bare additional name remains here even when it is not indexed.
+        if not tail or not _SCOPE_WORD.sub("", " " + tail).strip() or detect_stat(tail) is not None:
+            continue
+        if re.search(r"\brecord\b", tail) and detect_team_in_text(tail):
+            continue  # A leading condition may precede its explicit team subject.
+        return None  # An unowned name/clause is still requested, even if unindexed.
+    pair = requested_availability_pair(text)
+    if pair:
+        # WITH A AND B OUT already has a shared negative scope. Explicit
+        # independent state verbs distinguish WITH A PLAYING AND B OUT.
+        if not all(explicit_states):
+            return None
+        remainder = conjunction.mask_clause(text)[pair.start : pair.end]
+        if re.sub(r"\band\b|[\s,;]", "", remainder):
+            return None
+    return conjunction
+
+
 def requested_scalar_absence(text: str) -> AvailabilityClause | None:
     """One explicit WITH-name-nonparticipation clause, before name resolution.
 
