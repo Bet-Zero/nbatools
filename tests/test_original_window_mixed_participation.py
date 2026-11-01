@@ -230,3 +230,81 @@ def test_temporal_suffix_does_not_hide_comma_attached_player_stat(qualified_pair
     assert result.result_status == "no_result" and result.result_reason != "no_match"
     assert "teammate_stat_condition" in result.metadata["unsupported_filters"]
     assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "Davis scores 30 points",
+        "Anthony Davis scores 30 points",
+        "he scores 30 points",
+        "he scores 130 points",
+        "Blorg scores 30 points",
+        "Blorg grabs 10 rebounds",
+        "Davis scoring30 points",
+        "Blorg scoring30 points",
+    ],
+)
+@pytest.mark.parametrize("team_first", [False, True])
+@pytest.mark.parametrize("temporal_tail", [False, True])
+def test_claimed_team_bound_cannot_swallow_residual_actor_stat(
+    qualified_pair, suffix, team_first, temporal_tail
+):
+    fixture = qualified_pair
+    game = fixture["ids"][1]
+    actor = fixture["players"].loc[
+        fixture["players"].game_id.eq(game) & fixture["players"].player_id.eq(203076)
+    ]
+    team = fixture["teams"].loc[fixture["teams"].game_id.eq(game)]
+    assert actor.pts.item() == 26 and team.pts.item() == 89
+    clause = "without LeBron James and with Anthony Davis"
+    window = "within their last 3 games"
+    middle = f"{clause} {window}" if temporal_tail else f"{window} {clause}"
+    conditions = ["the Lakers scored at least 80 points", suffix]
+    if not team_first:
+        conditions.reverse()
+    question = f"Lakers record {middle} in {SEASON} vs Celtics where " + " and ".join(conditions)
+    result = execute_natural_query(question)
+    assert result.result_status == "no_result", result.metadata
+    assert "teammate_stat_condition" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize("temporal_tail", [False, True])
+def test_team_bound_alone_remains_positive_after_residual_validation(qualified_pair, temporal_tail):
+    clause = "without LeBron James and with Anthony Davis"
+    window = "within their last 3 games"
+    middle = f"{clause} {window}" if temporal_tail else f"{window} {clause}"
+    expected = (
+        qualified_pair["teams"]
+        .loc[qualified_pair["teams"].game_id.eq(qualified_pair["ids"][1])]
+        .iloc[0]
+    )
+    _assert_one(
+        execute_natural_query(
+            f"Lakers record {middle} in {SEASON} vs Celtics where the Lakers scored at least 80 points"
+        ),
+        expected,
+    )
+
+
+@pytest.mark.parametrize(
+    "suffix", ["Davis scores30points", "he scores30points", "Blorg grabs10 rebounds"]
+)
+def test_compact_residual_actor_stat_still_cannot_become_a_team_answer(qualified_pair, suffix):
+    result = execute_natural_query(
+        f"Lakers record without LeBron James and with Anthony Davis within their last 3 games in {SEASON} vs Celtics where the Lakers scored at least 80 points and {suffix}"
+    )
+    assert result.result_status == "no_result" and result.result_reason != "no_match"
+    assert not result.result.to_dict()["sections"]
+
+
+def test_existing_inherited_team_bound_is_not_an_unindexed_actor(qualified_pair):
+    expected = (
+        qualified_pair["teams"]
+        .loc[qualified_pair["teams"].game_id.eq(qualified_pair["ids"][1])]
+        .iloc[0]
+    )
+    question = f"Lakers record without LeBron James and with Anthony Davis within their last 3 games in {SEASON} vs Celtics where the Lakers scored at least 80 points and grabbed at least 10 rebounds"
+    assert expected.reb >= 10
+    _assert_one(execute_natural_query(question), expected)

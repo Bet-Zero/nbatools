@@ -932,12 +932,50 @@ def presence_names_player_condition(
         ):
             return True
     text = strip_explicit_calendar_date_clauses(text)
-    if condition_span:
-        from nbatools.commands._player_game_context import team_subject_stat_conditions
+    from nbatools.commands._player_game_context import (
+        _ANY_PLAYER_SUBJECT,
+        _OTHER_PLAYER_STAT,
+        team_subject_stat_conditions,
+    )
 
-        team_subjects = team_subject_stat_conditions(text)
-    else:
-        team_subjects = []
+    # Match the same numeric shorthand accepted by the immediate actor guard.
+    analysis_text = re.sub(r"(?<=[a-z])(?=\d)", " ", text)
+    claimed_teams = team_subject_stat_conditions(analysis_text)
+    if condition_span and claimed_teams:
+        residual = analysis_text
+        for owner in claimed_teams:
+            residual = (
+                residual[: owner["start"]]
+                + " " * (owner["end"] - owner["start"])
+                + residual[owner["end"] :]
+            )
+        # Exempt only claimed team bounds, not the whole joined sentence.
+        # Residual numerical subjects remain unread even when unindexed.
+        for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
+            if any(
+                not detect_team_in_text(named.group("name"))
+                and not _ANY_PLAYER_SUBJECT.match(named.group("name"))
+                for named in _OTHER_PLAYER_STAT.finditer("when " + clause.strip())
+            ):
+                return True
+            if re.match(r"\s*(?:he|she)\b", clause) and _states_player_condition(
+                " and " + clause.lstrip()
+            ):
+                return True
+            # The own-stat reader also handles attached gerunds such as
+            # "Davis scoring30". The subject need not resolve to an NBA name:
+            # it remains an unclaimed numerical condition, never a team bound.
+            words = clause.split()
+            for size in range(1, min(5, len(words))):
+                subject, tail = " ".join(words[:size]), " ".join(words[size:])
+                if (
+                    re.search(r"\d", tail)
+                    and not detect_team_in_text(subject)
+                    and not _ANY_PLAYER_SUBJECT.match(subject)
+                    and _states_player_condition(" and he " + tail)
+                ):
+                    return True
+    team_subjects = team_subject_stat_conditions(text) if condition_span else []
     for match in re.finditer(
         r"\b(?:with|without)\s+([\w .&'\-]+?)"
         r"(?=\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes?|dished|"
