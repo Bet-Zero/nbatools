@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS bounded four-scope read-only pinned775 input audit at exact reviewed integration; actual audit execution acceptance pending",
+  "reviewed_revision": "05efe1d631871f4f2b8585fec3287f4ae118583e",
+  "tree": "cee5da052a9db45819fac9d72afde7b8fb187452",
+  "file_hashes": {
+    "tests/cloud_lal_2023_participation_coverage_real_data.py": "c249a188d84f360e04628df0f32de6512c5c3dce5524e34cb1f1d33b10e1ef22",
+    "tests/test_direct_participation_audit.py": "21c38941ff69ab36876d507a3699b0f0b3d2f9fd3c43a80805fd23f7b1fc0171"
+  },
+  "prior_blocked_receipts_preserved": {
+    "initial-audit-review.json": "25e1716c1c46597ce6a691b999b9ce488e948f5a64d9d2292476e0dac15853eb",
+    "audit-exception-review.json": "099973d2417ff9a5f35c09b300c2aa3a3fe78b0775dba2e41659f2071010cc62"
+  },
+  "resolved_findings": [
+    "Literal raw states are explicitly unqualified diagnostics; runtime qualification remains distinct.",
+    "All checked dependencies/raw availability and each report-or-exception persist before comparisons.",
+    "Six exact loader guard ValueErrors may record existing-evidence repair without collection keys, complete counts, totals or closures.",
+    "Returned errors are closed to exact static participation guards and dynamic contracts containing exactly report.player_name; unknown errors persist and raise.",
+    "Unexpected programming, integrity and access exceptions persist then propagate; known guard wording with wrong exception type or modified message is not accepted.",
+    "Qualified missing evidence retains exact key/count/date/side comparison; complete82positive observations can establish genuine zero when availability is absent."
+  ],
+  "focused_tests": {
+    "file": "tests/test_direct_participation_audit.py",
+    "passed": 11,
+    "skipped": 0,
+    "underlying69_unchanged_controls_reused": true
+  },
+  "independent_unfamiliar_boundary_controls": [
+    {
+      "kind": "thrown",
+      "error_type": "PermissionError",
+      "message": "denied",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "thrown",
+      "error_type": "RuntimeError",
+      "message": "Player-game participation lacks retained qualified source evidence",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "thrown",
+      "error_type": "ValueError",
+      "message": "Player-game participation lacks retained qualified source evidence: access failed",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "thrown",
+      "error_type": "ValueError",
+      "message": "Snapshot bytes differ from manifest: example",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "returned",
+      "message": "Incomplete game-day participation coverage for Other Person",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "returned",
+      "message": "Incomplete game-day participation coverage for LeBron James: denied",
+      "propagated": true,
+      "persisted": true
+    },
+    {
+      "kind": "returned",
+      "message": "Contradictory positive and report participation observations: altered contract",
+      "propagated": true,
+      "persisted": true
+    }
+  ],
+  "planned_scope": {
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "LAL_2023_24_players": [
+      203076,
+      2544,
+      1630559
+    ],
+    "conditional_BOS_2024_25_player": 1628369,
+    "max_players": 4,
+    "required_selector": "tests/cloud_lal_2023_participation_coverage_real_data.py::test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit",
+    "source_calls": 0,
+    "public_api_calls": 0,
+    "local_api_calls": 0,
+    "production_writes": 0
+  },
+  "policy": "Audit diagnostic acceptance is not capability completion or data qualification. Existing malformed/unqualified/contradictory evidence needs repair/qualification before source collection or runtime feature claims; no automatic collection keys are emitted for these states.",
+  "actual_R2_execution_accepted": false,
+  "requirement_closures": 0,
+  "capability_complete": false,
+  "source_body_network_reads_by_checker": 0,
+  "production_publication_approved": false,
+  "integrated_remote_revision": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+  "equivalent_integrated_local_revision": "764a0b12b2280bf0488854f6267888ad5f42630c",
+  "integrated_tree": "9086158e71c75e9b8dfc53d26a221df9bbdd35b2",
+  "integration_code_file_hashes_verified": true,
+  "actual_R2_approved": true
+}
