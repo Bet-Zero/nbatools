@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS actual historical canonical staging and consumer output at corrected gate; prior failed run remains failed; no production or2025stage composition acceptance",
+  "reviewed_code_revision": "1e3af5568227f7e63db27cdd30eff324ebfe7810",
+  "code_tree": "180b6d6794488a160e37798906628437c247cf61",
+  "run_id": 41283790679,
+  "request_revision": "9e59b100e897c204b439cc7780944f4fb08c0027",
+  "artifact_id": 13074158854,
+  "artifact_sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+  "artifact_size_bytes": 266090,
+  "artifact_members": 95,
+  "strict_summary": {
+    "candidate_sha": "9e59b100e897c204b439cc7780944f4fb08c0027",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_proof_sha256": {
+    "historical-source-qualification.json": "b22dd69bd22f48767c760bb71a85e1796243b857662108cd9363bfe8d55c3389",
+    "historical-projection-oracle.json": "fceebc26212b0d41f697246a68a3b23f129f6044f8dd60443668f178e5473cd3",
+    "historical-answer-oracle.json": "b589e2b3b8b9a9539ac4909d891854cd0bbeb156add92913e43acfb6138ec2e9"
+  },
+  "request_sha256": {
+    "lal-participation-remaining-2023-24.json": "7c77db1142276fff8cf8181f744c0040b550d7d8b7d3f7994c348e5d0fb11036",
+    "bos-tatum-participation-remaining-2024-25.json": "5bedec01c26494aee835c8503216e65abd71c8bddf2854f9baf409256843fb83"
+  },
+  "source_manifests_sha256": {
+    "lal-participation-remaining-2023-24.json": "ff5f604392b168c1259e3a219c2cdddc58b25b392fa8b7fbac74872b3b7f33df",
+    "bos-tatum-participation-remaining-2024-25.json": "b38929d14ed1827245307a4e666e82c3a810514fef57fe5ef46c212075993be7"
+  },
+  "overlay": {
+    "files": 79,
+    "source_originals": 50,
+    "structured_packets": 25,
+    "append_files": 2,
+    "new_table_files": 2,
+    "exact_paths_SHA_sizes_verified": true,
+    "no_test_inventory_or_core_exported": true,
+    "base80sources_unchanged": "All79overlaypaths checked against accepted775manifest; no old source/core path altered. Actual gate also copied and checked all80retained source bytes. No repeated full-snapshot scan claimed."
+  },
+  "population": {
+    "new_rows": 876,
+    "LAL2023_added_rows": 529,
+    "LAL2023_total_rows": 597,
+    "BOS2024_created_rows": 347,
+    "projected_all_season_rows": 1826,
+    "production2025_rows804_untouched": true,
+    "old68rows_allserialized_cells_equal": true,
+    "old2import_reference_bytes_reconstructed_exact225_hash": true,
+    "new_import_entries": 25,
+    "all25game_row_digests_independently_recomputed": true,
+    "all876row_ID_name_state_date_literal_clock_sourceauthority_compared_to_accepted_proof": true
+  },
+  "game_packet_bindings": [
+    {
+      "game_id": "0022300163",
+      "season": "2023-24",
+      "source_packet_sha256": "6f5bdf32e136ab9632336abdb89ee34c3949d552604a8ba13272eeef60f148c7",
+      "rows": 35,
+      "game_import_digest": "2de56b560adfcebfd584fc131a44f2bc3d4da18479b0f5a800ff133eab8ef4ed"
+    },
+    {
+      "game_id": "0022300187",
+      "season": "2023-24",
+      "source_packet_sha256": "b398a0b6f4aae6f0e51f53b46c793c922c0d2ea235679a749b4a67b691eaf9d8",
+      "rows": 35,
+      "game_import_digest": "642b54935ba8585c262e2958eeea994e32b18c36f055c6309fc10e1a676fc477"
+    },
+    {
+      "game_id": "0022300316",
+      "season": "2023-24",
+      "source_packet_sha256": "1eaa51e98fa642d43f832152c26d2487fe59017db74f65102771d71c4659fcb0",
+      "rows": 35,
+      "game_import_digest": "9597ba0b1933575e491561528ee610a1f6c70ba144f1ad6164ff95008d93b02d"
+    },
+    {
+      "game_id": "0022300331",
+      "season": "2023-24",
+      "source_packet_sha256": "73a8e6f725c81ebe646a3f5d80a1c6f576077160c9afb7f14180ba6fcde8109b",
+      "rows": 35,
+      "game_import_digest": "2650fd1e54f9f2c4d9484e6b872c76df82554f8734529c7bb86efa41dce8dd9b"
+    },
+    {
+      "game_id": "0022300380",
+      "season": "2023-24",
+      "source_packet_sha256": "5d4e64c466fdacfabff82f2ef76c1aaf7123fbcca82e7931728446ec003c4a33",
+      "rows": 34,
+      "game_import_digest": "c699a3b4ff371121084d07f749b73b87d558f2d2b7ad3da97a7e594fc9d3ab2e"
+    },
+    {
+      "game_id": "0022300549",
+      "season": "2023-24",
+      "source_packet_sha256": "98d041ad35f91f4be9e6c216b52df4a753836bddbc4df4f5f719a05f1e3ae92c",
+      "rows": 35,
+      "game_import_digest": "dfdf35ad84658c6deb75acf9a58e4a962484c7a85cbdc32e7fe402bacabcce24"
+    },
+    {
+      "game_id": "0022300618",
+      "season": "2023-24",
+      "source_packet_sha256": "74e9103f447a47cdfc1d7fa861473fef0d18fd6f935e660052697e119fbb7e0e",
+      "rows": 35,
+      "game_import_digest": "6158f9c109d9dd847eb74171d47d1b0c16f00e2ceb46c4e0e6f0f3eb19d9455f"
+    },
+    {
+      "game_id": "0022300669",
+      "season": "2023-24",
+      "source_packet_sha256": "4f72b3cdd7c3bd8b5e4d60d53eed91206650fab564cc30c7a76a559be0d6c1e1",
+      "rows": 35,
+      "game_import_digest": "9ad9537502d96c5fcce8da01d65b1bcca5b6c3998cb923d8ba9470c6f3e3a4dc"
+    },
+    {
+      "game_id": "0022300788",
+      "season": "2023-24",
+      "source_packet_sha256": "07e98fb5e7c97948ea05cf505b52afd257d3407ca47cf1c117bf648d043a1432",
+      "rows": 35,
+      "game_import_digest": "4b5949edcbab650b0d9e6a2632ef692e595f50f10fc7e633db95259220c33bed"
+    },
+    {
+      "game_id": "0022300802",
+      "season": "2023-24",
+      "source_packet_sha256": "182d38d95be7cbe4c438b313aae27e13d176ebea955e40a101ba4fb3c0b96e28",
+      "rows": 35,
+      "game_import_digest": "3210b27bf4ba5173e15ae84a30c1b11298d16327a95190b11c52b9bfa8a19531"
+    },
+    {
+      "game_id": "0022300915",
+      "season": "2023-24",
+      "source_packet_sha256": "06c42851ff5ccf48d5b55f2a0da940454af07963cafaabfba3ea189c9ad7269b",
+      "rows": 36,
+      "game_import_digest": "6e833f96d2b90a906d8ea16dfbb533606aff16180e4ce10445d36185ad2c4e9c"
+    },
+    {
+      "game_id": "0022301045",
+      "season": "2023-24",
+      "source_packet_sha256": "03918d56fb14173dd0f11d3eb27f0ee62d3415560e4d21582bbd5cbe4a0a355e",
+      "rows": 36,
+      "game_import_digest": "ed3acd05d555d4376e4d183b088f42e4866ebd1d215b2ccd619823af7b100dac"
+    },
+    {
+      "game_id": "0022301055",
+      "season": "2023-24",
+      "source_packet_sha256": "933583af2aa23c1c811a0576e42eb126b1d21fa7392788f609bc7d4f24d2451f",
+      "rows": 38,
+      "game_import_digest": "db180e075bc84a50ee56a9c78d2eede2264488b0a38f0c2aa5a60330e0b2ea49"
+    },
+    {
+      "game_id": "0022301143",
+      "season": "2023-24",
+      "source_packet_sha256": "ac3e6e184ac270e0cd467a53d1a565edb156d1c0ef7e9d638ef8c205200e033e",
+      "rows": 35,
+      "game_import_digest": "1a7beb4427aa063c83d54208b7530ea2866d863699ed97154e23ed2314c1d1f7"
+    },
+    {
+      "game_id": "0022301155",
+      "season": "2023-24",
+      "source_packet_sha256": "504390fa99ee0cb6b1be7b29dd522bbcc58552418b12a4ccf7de505195df5602",
+      "rows": 35,
+      "game_import_digest": "041c269a66eea4494871b0f6291326ecf707c987d2fcdf192b9dfd44a5b0560b"
+    },
+    {
+      "game_id": "0022400319",
+      "season": "2024-25",
+      "source_packet_sha256": "5162ba2e94ff4da2fb64aa70fab5d95c99f142dfcc9d4050f4da6dd84ee31c92",
+      "rows": 34,
+      "game_import_digest": "5a75eb0b573ac29094bd467964486b964b885803b91bec5ebb1ac537398f4ecc"
+    },
+    {
+      "game_id": "0022400393",
+      "season": "2024-25",
+      "source_packet_sha256": "a903d339139bb2a1f63418c2c8bb0ee1eded9127bbeec75601fa1be81e860d9b",
+      "rows": 34,
+      "game_import_digest": "ee3c5dccd5c1e798fa15373f3f662a51f9e81957636a0ca87b59fd3016c39d1d"
+    },
+    {
+      "game_id": "0022400891",
+      "season": "2024-25",
+      "source_packet_sha256": "7190a10914a6a09a2b185fe3a9523a6f8034fda401b9e6be815676d2d302a29c",
+      "rows": 35,
+      "game_import_digest": "dceb6a8320a84182969d64fcfd19ad42c1f4002922ef048362431d5bed891dd9"
+    },
+    {
+      "game_id": "0022400929",
+      "season": "2024-25",
+      "source_packet_sha256": "741d07ae5c8c7febb9d281d381cccba02b74a51bfa2d69adc21aa24c025c566e",
+      "rows": 35,
+      "game_import_digest": "b2202dfb51548c7c79932c4fb14758865f9ee7fdf96ffe00d5bbdcf4fb27383c"
+    },
+    {
+      "game_id": "0022400994",
+      "season": "2024-25",
+      "source_packet_sha256": "0ba5ca2b94bc534253555750184169e8b6e063ad284ad783eb7d435fb8dd1dbc",
+      "rows": 34,
+      "game_import_digest": "baf30e6d30a615463b79a3d29b0a6df9b01312bb92e8cee92219bba796c1c9ba"
+    },
+    {
+      "game_id": "0022401058",
+      "season": "2024-25",
+      "source_packet_sha256": "7e703c86aea9f8f74e196c139e539c4a825c64745919a90c2591774495786933",
+      "rows": 35,
+      "game_import_digest": "5e3ff0db916a37f28329dfee954f59e21d8c5dc2fb5652591d84fa72b3e33948"
+    },
+    {
+      "game_id": "0022401137",
+      "season": "2024-25",
+      "source_packet_sha256": "8a27612d619eeba980128f4f6297462c4546b227319ce4b7e14152f8c2622e1c",
+      "rows": 35,
+      "game_import_digest": "b4867bfc53e8d331f8e4318ca368fe259737304f5786051ebe02b932f940d439"
+    },
+    {
+      "game_id": "0022401156",
+      "season": "2024-25",
+      "source_packet_sha256": "9626aa35f60c6331581bc95a5aa8afd6eca6b23fa9ceac58977432f9b840187c",
+      "rows": 35,
+      "game_import_digest": "bc04e7fb455dc7128e7ef70ecf7a24b41d545737a1911d9d1754fe83be7547d7"
+    },
+    {
+      "game_id": "0022401187",
+      "season": "2024-25",
+      "source_packet_sha256": "62da41c87b6cac6fe6be4d992a3bfad910dd3fc8f422713af91c9c18ea1277a1",
+      "rows": 36,
+      "game_import_digest": "1a1ae59325825b89c6d2924523f7891a37ed2237f060ff8dfe95597f0d196481"
+    },
+    {
+      "game_id": "0022401205",
+      "season": "2024-25",
+      "source_packet_sha256": "078ec47e9329f32ce7e0613d0556779fb7216c1d77ba28b99499905b4d117f44",
+      "rows": 34,
+      "game_import_digest": "2361f6617324eb180b47a2171140107d2870f2b6378261ce6a11b8af7287a1d4"
+    }
+  ],
+  "full328states_date_team_ID_counts_verified": true,
+  "projected_populations": [
+    {
+      "did_not_play": 6,
+      "did_not_play_game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "home_dnp": 1,
+      "home_dnp_game_ids": [
+        22301155
+      ],
+      "played": 76,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "unknown": 0,
+      "without_record": {
+        "game_ids": [
+          22300163,
+          22300331,
+          22300669,
+          22300684,
+          22301055,
+          22301155
+        ],
+        "games": 6,
+        "losses": 4,
+        "points": 701,
+        "pts_avg": 116.833,
+        "wins": 2
+      }
+    },
+    {
+      "did_not_play": 11,
+      "did_not_play_game_ids": [
+        22300187,
+        22300316,
+        22300380,
+        22300549,
+        22300618,
+        22300684,
+        22300788,
+        22300802,
+        22300915,
+        22301045,
+        22301143
+      ],
+      "home_dnp": 3,
+      "home_dnp_game_ids": [
+        22300187,
+        22300915,
+        22301143
+      ],
+      "played": 71,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "unknown": 0,
+      "without_record": {
+        "game_ids": [
+          22300187,
+          22300316,
+          22300380,
+          22300549,
+          22300618,
+          22300684,
+          22300788,
+          22300802,
+          22300915,
+          22301045,
+          22301143
+        ],
+        "games": 11,
+        "losses": 5,
+        "points": 1320,
+        "pts_avg": 120.0,
+        "wins": 6
+      }
+    },
+    {
+      "did_not_play": 0,
+      "did_not_play_game_ids": [],
+      "home_dnp": 0,
+      "home_dnp_game_ids": [],
+      "played": 82,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "unknown": 0,
+      "without_record": {
+        "game_ids": [],
+        "games": 0,
+        "losses": 0,
+        "points": 0,
+        "pts_avg": null,
+        "wins": 0
+      }
+    },
+    {
+      "did_not_play": 10,
+      "did_not_play_game_ids": [
+        22400319,
+        22400393,
+        22400891,
+        22400929,
+        22400994,
+        22401058,
+        22401137,
+        22401156,
+        22401187,
+        22401205
+      ],
+      "home_dnp": 7,
+      "home_dnp_game_ids": [
+        22400319,
+        22400891,
+        22400929,
+        22400994,
+        22401137,
+        22401187,
+        22401205
+      ],
+      "played": 72,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "season": "2024-25",
+      "team_id": 1610612738,
+      "unknown": 0,
+      "without_record": {
+        "game_ids": [
+          22400319,
+          22400393,
+          22400891,
+          22400929,
+          22400994,
+          22401058,
+          22401137,
+          22401156,
+          22401187,
+          22401205
+        ],
+        "games": 10,
+        "losses": 2,
+        "points": 1128,
+        "pts_avg": 112.8,
+        "wins": 8
+      }
+    }
+  ],
+  "answers": [
+    {
+      "query": "how many games did Anthony Davis miss in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "count": 6
+    },
+    {
+      "query": "how many home games did Anthony Davis miss in 2023-24",
+      "ids": [
+        22301155
+      ],
+      "count": 1
+    },
+    {
+      "query": "how many games did LeBron James miss in 2023-24",
+      "ids": [
+        22300187,
+        22300316,
+        22300380,
+        22300549,
+        22300618,
+        22300684,
+        22300788,
+        22300802,
+        22300915,
+        22301045,
+        22301143
+      ],
+      "count": 11
+    },
+    {
+      "query": "how many home games did LeBron James miss in 2023-24",
+      "ids": [
+        22300187,
+        22300915,
+        22301143
+      ],
+      "count": 3
+    },
+    {
+      "query": "how many games did Austin Reaves miss in 2023-24",
+      "ids": [],
+      "count": 0
+    },
+    {
+      "query": "how many home games did Austin Reaves miss in 2023-24",
+      "ids": [],
+      "count": 0
+    },
+    {
+      "query": "how many games did Tatum miss in 2024-25",
+      "ids": [
+        22400319,
+        22400393,
+        22400891,
+        22400929,
+        22400994,
+        22401058,
+        22401137,
+        22401156,
+        22401187,
+        22401205
+      ],
+      "count": 10
+    },
+    {
+      "query": "how many home games did Jayson Tatum miss in 2024-25",
+      "ids": [
+        22400319,
+        22400891,
+        22400929,
+        22400994,
+        22401137,
+        22401187,
+        22401205
+      ],
+      "count": 7
+    },
+    {
+      "query": "Lakers record without Davis in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "wins": 2,
+      "losses": 4,
+      "points": 701
+    },
+    {
+      "query": "Lakers record without Davis and with LeBron James in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ],
+      "wins": 1,
+      "losses": 4,
+      "points": 587
+    },
+    {
+      "query": "Lakers record without Davis and Reaves in 2023-24",
+      "ids": [],
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "query": "Lakers record without Reaves in 2023-24",
+      "ids": [],
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "query": "LeBron James stats without Davis in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ],
+      "games": 5,
+      "points": 117
+    },
+    {
+      "query": "LeBron James 30 point games with Davis out in 2023-24",
+      "ids": [
+        22301155
+      ],
+      "points": 33
+    }
+  ],
+  "LeBron_summary_independent": {
+    "games": 5,
+    "points": 117,
+    "pts_avg": 23.4,
+    "wins": 1,
+    "losses": 4,
+    "game_ids": [
+      22300163,
+      22300331,
+      22300669,
+      22301055,
+      22301155
+    ]
+  },
+  "LeBron30finder_independent": {
+    "game_ids": [
+      22301155
+    ],
+    "points": 33
+  },
+  "incomplete_other_scope": {
+    "season": "2023-24",
+    "player_id": 1628369,
+    "counts": {
+      "played": 74,
+      "did_not_play": 0,
+      "same_game_other_side": 0,
+      "unknown": 8
+    },
+    "complete_requested_population": false,
+    "missed_games": null,
+    "missing_keys": [
+      {
+        "game_id": "0022300373",
+        "game_date": "2023-12-20",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300432",
+        "game_date": "2023-12-29",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300507",
+        "game_date": "2024-01-08",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022300984",
+        "game_date": "2024-03-18",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301011",
+        "game_date": "2024-03-22",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301134",
+        "game_date": "2024-04-07",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301173",
+        "game_date": "2024-04-12",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      },
+      {
+        "game_id": "0022301186",
+        "game_date": "2024-04-14",
+        "team_id": 1610612738,
+        "player_id": 1628369
+      }
+    ]
+  },
+  "consumer_acceptance": "passed",
+  "consumer_failure": null,
+  "consumer_execution_evidence": "All14recorded answer values/IDs independently checked; strict selected test also asserted naturalcount+equivalentstructuredlists, scalar/pair qualifiedzero, natural/structured playerstats mean+sum,30finder, four localAPIresponses and honest2023Tatum refusal. SeparateAPIresponse bodies and unrecorded final emptyfinder payload are not exported; their assertions are execution evidence, not fabricated artifacts.",
+  "local_API_posts": 4,
+  "prior_failed_run": {
+    "run_id": 41283001115,
+    "artifact_sha256": "d2dc52cdd4c351c05b468de2d66121f846783d27b34bd2ae999ebd24a6b7b2e5",
+    "conclusion": "failure unchanged"
+  },
+  "source_network_calls_by_checker": 0,
+  "full_required_slice_accepted": false,
+  "season2025_stage_composition_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}
