@@ -317,13 +317,31 @@ def _assert_finder(result, ids, *, route):
     assert {int(row["game_id"]) for row in result.result.to_dict()["sections"]["finder"]} == ids
 
 
-def _run_consumers(manifest_sha, states, teams, players):
+def _assert_missed_count_and_rows(query, ids, *, season, team, player, home_only):
+    counted = execute_natural_query(query)
+    assert counted.result_status == "ok" and counted.route == "game_finder", counted.metadata
+    assert counted.result.to_dict()["sections"]["count"] == [{"count": len(ids)}]
+    listed = execute_structured_query(
+        "game_finder",
+        season=season,
+        team=team,
+        without_player=player,
+        home_only=home_only,
+        limit=82,
+    )
+    _assert_finder(listed, ids, route="game_finder")
+    return counted
+
+
+def _run_consumers(manifest_sha, states, teams, players, *, progress=None):
     """Real consumers of the retained AD/Reaves/LeBron/Tatum requirements."""
     from fastapi.testclient import TestClient
 
     from nbatools.api import app
 
-    client, coverage, answers = TestClient(app), [], []
+    client = TestClient(app)
+    coverage = [] if progress is None else progress["reports"]
+    answers = [] if progress is None else progress["answers"]
     actors = [("2023-24", LAL, pid, name) for pid, name in PEOPLE.items()]
     actors.append(("2024-25", BOS, 1628369, "Jayson Tatum"))
     for season, team_id, pid, name in actors:
@@ -344,6 +362,7 @@ def _run_consumers(manifest_sha, states, teams, players):
         }
         missed = {gid for gid, state in expected.items() if state == "did_not_play"}
         assert report["missed_games"] == len(missed)
+        coverage.append(report)
         team = teams[season]
         home = set(
             team.loc[
@@ -352,21 +371,27 @@ def _run_consumers(manifest_sha, states, teams, players):
                 "game_id",
             ].astype(int)
         )
-        for query, ids in [
-            (f"how many games did {'Tatum' if pid == 1628369 else name} miss in {season}", missed),
-            (f"how many home games did {name} miss in {season}", home),
+        for query, ids, home_only in [
+            (
+                f"how many games did {'Tatum' if pid == 1628369 else name} miss in {season}",
+                missed,
+                False,
+            ),
+            (f"how many home games did {name} miss in {season}", home, True),
         ]:
-            result = execute_natural_query(query)
-            assert result.result_status == "ok" and result.route == "game_finder", result.metadata
-            sections = result.result.to_dict()["sections"]
-            assert sections["count"] == [{"count": len(ids)}]
-            assert {int(row["game_id"]) for row in sections["finder"]} == ids
+            _assert_missed_count_and_rows(
+                query,
+                ids,
+                season=season,
+                team="LAL" if team_id == LAL else "BOS",
+                player=name,
+                home_only=home_only,
+            )
             answers.append(dict(query=query, ids=sorted(ids), count=len(ids)))
             if pid == 1628369 and ids == missed:
                 response = client.post("/query", json={"query": query})
                 assert response.status_code == 200 and response.json()["result_status"] == "ok"
                 assert response.json()["result"]["sections"]["count"] == [{"count": len(ids)}]
-        coverage.append(report)
     assert states[("2023-24", 1630559)] == {int(g): "played" for g in teams["2023-24"].game_id}
     lal = teams["2023-24"]
     ad_out = {gid for gid, state in states[("2023-24", 203076)].items() if state == "did_not_play"}
@@ -608,30 +633,62 @@ def test_retained_historical_sources_expand_direct_absence_consumers(tmp_path, m
     for name, raw in subsets.items():
         (diagnostics / name).write_bytes(raw)
     (diagnostics / "source-target-facts.json").write_text(json.dumps(facts, indent=2) + "\n")
-    # This inventory only enables local test consumers over the copied/staged
-    # files. It is never exported as a publication manifest or full-slice claim.
-    inventory = json.dumps(
-        dict(
-            generation_id="legacy",
-            classification="test_only_development_staging",
-            files=[
-                dict(
-                    path=p.relative_to(root).as_posix(),
-                    size_bytes=p.stat().st_size,
-                    sha256=_sha(p.read_bytes()),
-                )
-                for p in sorted(root.rglob("*"))
-                if p.is_file()
-            ],
-        )
-    ).encode()
-    (root / "metadata/generation_manifest.json").write_bytes(inventory)
-    monkeypatch.setenv("DATA_SOURCE", "local")
-    monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
-    monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
-    reset_data_source_cache()
+    validation.update(
+        candidate_sha=os.environ["VALIDATION_SHA"],
+        request_sha256={p.name: digest for p, _, digest in requests},
+        source_manifests_sha256={
+            p.name: _sha((source / "sources.json").read_bytes()) for p, source, _ in requests
+        },
+        source_kind="retained_originals_only_no_acquisition",
+        source_proof_sha256=PROOF_SHA256,
+        staged_target_keys=25,
+        season_stage_validations=[lal, bos],
+    )
+    receipt = dict(
+        classification="isolated_historical_cohorts_staging_not_publication_or_2025_composition",
+        validation=validation,
+        stage_preparation_accepted=True,
+        consumer_acceptance="pending",
+        consumer_failure=None,
+        reports=[],
+        answers=[],
+        incomplete_other_scope=None,
+        production_writes=0,
+        full_required_slice_accepted=False,
+    )
+    (destination / "validation.json").write_text(json.dumps(validation, indent=2) + "\n")
+    (diagnostics / "acceptance.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "historical-participation-stage"
+    assert not output.exists()
+    shutil.copytree(
+        destination, output
+    )  # Keep already-validated stage evidence even if a consumer fails.
+    receipt_path = output / "historical-participation-acceptance/acceptance.json"
     try:
-        reports, answers = _run_consumers(_sha(inventory), states, teams, players)
+        # This inventory only enables local test consumers over the copied/staged
+        # files. It is never exported as a publication manifest or full-slice claim.
+        inventory = json.dumps(
+            dict(
+                generation_id="legacy",
+                classification="test_only_development_staging",
+                files=[
+                    dict(
+                        path=p.relative_to(root).as_posix(),
+                        size_bytes=p.stat().st_size,
+                        sha256=_sha(p.read_bytes()),
+                    )
+                    for p in sorted(root.rglob("*"))
+                    if p.is_file()
+                ],
+            )
+        ).encode()
+        (root / "metadata/generation_manifest.json").write_bytes(inventory)
+        monkeypatch.setenv("DATA_SOURCE", "local")
+        monkeypatch.setenv("NBATOOLS_DATA_ROOT", str(root.parent))
+        monkeypatch.setenv("NBATOOLS_DATA_GENERATION", "legacy")
+        reset_data_source_cache()
+        reports, answers = _run_consumers(_sha(inventory), states, teams, players, progress=receipt)
+        receipt.update(reports=reports, answers=answers)
         answer_oracle = proofs["historical-answer-oracle.json"]
         for answer in answers:
             if "wins" in answer:
@@ -654,36 +711,20 @@ def test_retained_historical_sources_expand_direct_absence_consumers(tmp_path, m
             team_id=BOS,
             player_id=1628369,
         )
+        receipt["incomplete_other_scope"] = unknown
         assert unknown["counts"]["unknown"] > 0 and not unknown["complete_requested_population"]
         assert unknown["missed_games"] is None and unknown["missing_keys"]
         result = execute_natural_query("how many games did Tatum miss in 2023-24")
         assert result.result_status == "no_result" and result.result_reason != "no_match", (
             result.metadata
         )
+        receipt.update(consumer_acceptance="passed", incomplete_other_scope=unknown)
+    except Exception as exc:
+        receipt.update(
+            consumer_acceptance="failed",
+            consumer_failure=dict(type=type(exc).__name__, message=str(exc)),
+        )
+        raise
     finally:
+        receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
         reset_data_source_cache()
-    validation.update(
-        candidate_sha=os.environ["VALIDATION_SHA"],
-        request_sha256={p.name: digest for p, _, digest in requests},
-        source_manifests_sha256={
-            p.name: _sha((source / "sources.json").read_bytes()) for p, source, _ in requests
-        },
-        source_kind="retained_originals_only_no_acquisition",
-        source_proof_sha256=PROOF_SHA256,
-        staged_target_keys=25,
-        season_stage_validations=[lal, bos],
-    )
-    receipt = dict(
-        classification="isolated_historical_cohorts_staging_not_publication_or_2025_composition",
-        validation=validation,
-        reports=reports,
-        answers=answers,
-        incomplete_other_scope=unknown,
-        production_writes=0,
-        full_required_slice_accepted=False,
-    )
-    (destination / "validation.json").write_text(json.dumps(validation, indent=2) + "\n")
-    (diagnostics / "acceptance.json").write_text(json.dumps(receipt, indent=2) + "\n")
-    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "historical-participation-stage"
-    assert not output.exists()
-    shutil.copytree(destination, output)
