@@ -1,0 +1,32 @@
+{
+  "classification": "bounded_direct_requirement_priority_assessment_not_acceptance_or_new_tracker",
+  "code_revision": "15a984ba7457e35f231fd99a762a5753f00bdec6",
+  "retained_requirements": "https://github.com/Bet-Zero/nbatools/pull/462#issuecomment-6440042622",
+  "retained_positive_count": 46,
+  "newly_deduced_requirement_closures": 0,
+  "fixture_supported_consumers": [
+    "Scalar and two-player whole-game absence team records, including shorthand identities and date/opponent scope where qualified.",
+    "Player stat/finder consumers with single or paired absence and primary-player20/30-point bounds; team120-point bounds retain their team subject.",
+    "Missed/home counts with complete observed participation; franchise and explicit-other-team structured controls."
+  ],
+  "support_limit": "Existing mapped fixture evidence establishes implementation paths, not source-backed completion of all46 literal populations/seasons.",
+  "remaining_implementation_and_data_gaps": {
+    "rest_cause": "The retained Luka-rests positive needs a distinct cause-aware consumer and qualified rest-reason coverage. DNP/played cannot substitute for rest or health.",
+    "membership": "Mixed-opponent and historical pre/post-transfer applicability needs exact-game association or qualified dated membership. Other-game same-date observations and roster snapshots are insufficient.",
+    "literal_2024_25_tatum": "The accepted older report has82 candidates,72played,0DNP,10unknown at generationavailability-opening-s4-v1-20261017.2025Boston staging cannot close the literal2024-25 obligation.",
+    "publication": "Accepted2025LAL/BOS stages remain separate from live775 until protected composition/publication acceptance and separate authorization."
+  },
+  "or_assessment": {
+    "direct_retained_46_obligation": false,
+    "existing_support": "Finder OR with independently qualified absence branches already produced exact fixture IDs33 and3/16/33; generic statistic OR is implemented.",
+    "remaining": "Team-record availability OR is unsupported; no broad schema implementation proposed ahead of direct source dependencies."
+  },
+  "recommended_next": {
+    "action": "One pinned775 read-only audit of2023-24LAL AnthonyDavis203076,LeBron2544,AustinReaves1630559; include at most one2024-25BOS/Tatum scope only if the old proof cannot bind current exact keys.",
+    "reason": "AD/Reaves population coverage can unlock many retained absence and LeBron-stat-bound consumers using existing execution, with fewer dependencies than broader OR.",
+    "collection_rule": "Do not assume totals or queue missing player rows as DNP. Reuse qualified observations, then inspect only exact unresolved keys and contradictions before any bounded collection."
+  },
+  "nba_source_requests": 0,
+  "runtime_changes": 0,
+  "production_writes": 0
+}
