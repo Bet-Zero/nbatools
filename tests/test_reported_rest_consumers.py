@@ -55,6 +55,35 @@ def _ids(result):
     return {int(row["game_id"]) for row in sections.get("finder", sections.get("game_log", []))}
 
 
+@pytest.mark.parametrize("floor", [80, 90])
+def test_explicit_team_gerund_keeps_its_bound_after_mixed_reason(reported, floor):
+    query = (
+        "Lakers record when LeBron James rests and Anthony Davis plays, "
+        f"scoring at least {floor} points as a team vs Celtics in {SEASON}"
+    )
+    parsed = parse_query(query)
+    assert parsed["route_kwargs"]["min_value"] == floor
+    assert "teammate_stat_condition" not in parsed["route_kwargs"].get("unsupported_filters", [])
+    result = execute_natural_query(query)
+    expected = reported["teams"].loc[lambda f: f.game_id.eq(reported["ids"][1]) & f.pts.ge(floor)]
+    if expected.empty:
+        assert result.result_status == "no_result" and result.result_reason == "no_match"
+    else:
+        assert result.result_status == "ok"
+        assert _ids(result) == set(expected.game_id.astype(int))
+
+
+@pytest.mark.parametrize("actor", ["Anthony Davis", "Alex"])
+def test_team_gerund_does_not_hide_following_actor_bound(reported, actor):
+    result = execute_natural_query(
+        "Lakers record when LeBron James rests and Anthony Davis plays, "
+        f"scoring at least 80 points as a team, {actor} scores 30 vs Celtics in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert "teammate_stat_condition" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
 @pytest.mark.parametrize(
     "route",
     ["team_record", "game_summary", "game_finder", "player_game_summary", "player_game_finder"],

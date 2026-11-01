@@ -925,6 +925,15 @@ def _unclaimed_availability_stat_owner(text, condition_span, primary_player=None
 
     for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
         clause = " " + clause.strip()
+        # An inherited gerund can explicitly name the team after its bound:
+        # "playing, scoring 80 points as a team". Claim only that exact
+        # predicate, leaving any following named actor/extra bound to inspect.
+        gerund = re.match(r"\s+scoring\s+", clause)
+        bound = _BOUND.match(clause, gerund.end()) if gerund else None
+        team_suffix = re.match(r"\s+as\s+a\s+team\b", clause[bound.end() :]) if bound else None
+        if bound and bound.group("stat") and team_suffix:
+            end = bound.end() + team_suffix.end()
+            clause = " " * end + clause[end:]
         for verb in _TEAM_STAT_VERB.finditer(clause):
             subject = clause[: verb.start()].strip()
             if _BOUND.match(clause, verb.end()) and subject and not claimed_primary(subject):

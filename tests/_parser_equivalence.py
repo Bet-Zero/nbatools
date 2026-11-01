@@ -29,13 +29,14 @@ from nbatools.commands.natural_query import parse_query
 # Fields that legitimately differ across surface forms or are not yet part
 # of the parse contract. Excluded from equivalence comparison.
 #
-# - ``normalized_query`` carries the raw input through, so of course it
-#   varies per form.
+# - ``normalized_query`` and ``availability_condition_query`` carry input
+#   text (the latter preserves ownership coordinates before rewrites), so
+#   their spelling varies per form. Semantic slots and routed bounds still match.
 # - ``confidence`` / ``alternates`` / ``intent`` are reserved for Phase D
 #   (canonical parse formalization); they are excluded pre-emptively so
 #   this helper keeps working once they land.
 _DEFAULT_EXCLUDE: frozenset[str] = frozenset(
-    {"normalized_query", "confidence", "alternates", "intent"}
+    {"normalized_query", "availability_condition_query", "confidence", "alternates", "intent"}
 )
 
 
