@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "requested_not_actual_stage_accepted",
+  "reviewed_sha": "97b8117938cfc1edcdbfe90fc6adb376dd69e92f",
+  "reviewed_tree": "57d8b2239e22dded9203c4494d6622b8e21c947e",
+  "request_sha": "2bc9833c218e6f7bce1e25922d6918472f9f37f4",
+  "branch": "r2-validation/reported-rest-stage-20261101",
+  "generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "selector": "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games",
+  "independent_code_review_sha256": "ffa4a9c9f60afcbafe4f3c1be3a1d7c3ee9ed8f664287b520752ab72a203f513",
+  "source_acquisition": 0,
+  "production_writes": 0,
+  "full_required_slice_accepted": false
+}
