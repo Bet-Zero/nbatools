@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "classification": "readiness_critical_path_reassessment_not_operational_acceptance",
+  "owner_direction": "Finish569safely; prioritize2026-27 normal production readiness before another majorK08workstream; continue useful independent work only while externally blocked.",
+  "current_main": "57198b1aabf1250285251cbe402fb07ef959bf34",
+  "current_tree": "0956e7a8dafe2a05e048434c5fa37f0b5835b7a8",
+  "completed_pr": {
+    "number": 569,
+    "final_ci": 41293858003,
+    "post_merge_ci": 41294163791,
+    "blocking_checks": "all passed",
+    "python_fast_matrices": 3,
+    "python_full_matrices": 3,
+    "receipt_comment": 6556241149
+  },
+  "production_data": {
+    "last_accepted_active_generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "objects": 775,
+    "publication_41256695103": "protected write/activation succeeded; historical live verification failed; do not relabel or rerun",
+    "lebron16liveanswers": "accepted559",
+    "exact_generation_backup_restore": "accepted41259773052; do not repeat",
+    "new_pointer_changes": 0
+  },
+  "latest_existing_monitor": {
+    "run_id": 41288504744,
+    "created_at": "2026-11-01T09:21:14Z",
+    "job_id": 124794645170,
+    "readiness_status": 503,
+    "blocker": "new_season_not_loaded",
+    "evidence_consumption": "Reused existing actual monitor log; no new public query/readiness request."
+  },
+  "readiness_contract": {
+    "raw_required": 11,
+    "processed_required": 5,
+    "current_due_game_id_coverage": "exact schedule IDs older than24hours at acceptance",
+    "full_slice_validation": "mandatory; no manufactured completeness flags",
+    "separate_production_data_publication_approval": "still required after concrete full snapshot acceptance"
+  },
+  "blocking_inputs": [
+    {
+      "name": "parameterized period Traditional+Advanced",
+      "status": "missing qualified source; cloud timedout, CDN403, archived period zero/unparameterized; unchanged retries excluded",
+      "minimal_external_input": "existing two-request Q1 laptop helper collection.zip for0022600001, even on failure; original Trad+Advanced bodies prove source access/scope before any wider batch",
+      "next": "qualify originals in cloud; only then pin due-population windows; no period bulk launch now"
+    },
+    {
+      "name": "starter roles",
+      "status": "3retained Trad sources supply76positive keys/30starters/6sides; partial proof pending independent review",
+      "available_archive_work": {
+        "new_whole_traditional_files": 77,
+        "missing_required_game_id": "0022600144",
+        "excluded_outside_regular_final_scope": "0062600001"
+      },
+      "external_remainder": "0144wholeTraditional is not indexed; retainedSummary has no position/starter. Do not infer from player order/PBP."
+    },
+    {
+      "name": "proper roster snapshot",
+      "status": "30immutable metadata files exist; one LAL representative planned before any29-file expansion; source bodies not yet qualified",
+      "representative_team_id": 1610612747
+    },
+    {
+      "name": "advanced snapshot basis",
+      "status": "four corrected players' computedTS contradict retained original snapshot; preserve raworiginals and discrepancy proof. Source basis/USG qualification remains open; no value rewrite to hide it."
+    },
+    {
+      "name": "processed outputs and fresh due coverage",
+      "status": "use existing builders after qualified prerequisites; full11+5 and fresh due-ID validation required before publication"
+    }
+  ],
+  "work_now": {
+    "request": "working/nba-tools-completion-program/collection-requests/season-rollover-roles-roster-2026-27.json",
+    "source_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+    "new_body_reader_cap": 78,
+    "bytes": 1828123,
+    "attempts_per_file": 1,
+    "source_body_calls_so_far": 0,
+    "collection_scope_review": "pending",
+    "new_costs_credentials_permissions": 0
+  },
+  "hosting": {
+    "latest_main_status": "Deployment rate limited — retry in24hours",
+    "status_created_at": "2026-11-01T09:40:45Z",
+    "prior_main_567_deployment": "successful2026-11-01T07:31:45Z; includes561 source-aware rollover support",
+    "distinction": "Build quota blocks new568/569runtime deployment; it is separate from missing current-season data. Data-only readiness does not itself require newK08engine features. Verify live compatibility at the eventual approved full-snapshot acceptance.",
+    "no_action": "no preview promotion/alias/plan change or unchanged retry loop"
+  },
+  "paused_k08": {
+    "branch": "codex/k08-tatum-canonical-integrated",
+    "sha": "b835874e7c31dc29c38d62fcda263af404c881fe",
+    "tree": "620d08df67a47c77ce36bb5be59d3569bc29e1fe",
+    "status": "source-only accepted; proposed stage harness/composer-contract change unreviewed/unexecuted; no R2 request/PR",
+    "rule": "resume only after readiness critical path explicitly blocked, not as substitute for source recovery"
+  },
+  "production_writes": 0,
+  "readiness_restored": false
+}
