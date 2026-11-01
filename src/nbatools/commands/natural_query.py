@@ -11495,6 +11495,7 @@ def _finalize_route(parsed: dict) -> dict:
                 else None
             ),
             primary_player=kwargs.get("player") if not parsed.get("record_intent") else None,
+            team_stat_consumer=route in {"team_record", "game_finder", "game_summary"},
             absence_span=(scalar_absence.start, scalar_absence.end)
             if scalar_absence and name == kwargs.get("without_player")
             else None,

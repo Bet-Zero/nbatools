@@ -896,7 +896,9 @@ def presence_states_player_condition(text: str) -> bool:
     )
 
 
-def _unclaimed_availability_stat_owner(text, condition_span, primary_player=None):
+def _unclaimed_availability_stat_owner(
+    text, condition_span, primary_player=None, *, team_stat_consumer=False
+):
     """Read residual owners before any coordinate-changing scope cleanup.
 
     Consume the original availability span first. Only then expand shorthand,
@@ -931,7 +933,7 @@ def _unclaimed_availability_stat_owner(text, condition_span, primary_player=None
         gerund = re.match(r"\s+scoring\s+", clause)
         bound = _BOUND.match(clause, gerund.end()) if gerund else None
         team_suffix = re.match(r"\s+as\s+a\s+team\b", clause[bound.end() :]) if bound else None
-        if bound and bound.group("stat") and team_suffix:
+        if team_stat_consumer and bound and bound.group("stat") and team_suffix:
             end = bound.end() + team_suffix.end()
             clause = " " * end + clause[end:]
         for verb in _TEAM_STAT_VERB.finditer(clause):
@@ -970,12 +972,15 @@ def presence_names_player_condition(
     absence_span: tuple[int, int] | None = None,
     condition_span: tuple[int, int] | None = None,
     primary_player: str | None = None,
+    team_stat_consumer: bool = False,
 ) -> bool:
     """A named teammate owns an immediately attached numerical predicate."""
     from nbatools.commands._date_utils import strip_explicit_calendar_date_clauses
 
     if condition_span:
-        if _unclaimed_availability_stat_owner(text, condition_span, primary_player):
+        if _unclaimed_availability_stat_owner(
+            text, condition_span, primary_player, team_stat_consumer=team_stat_consumer
+        ):
             return True
         # A resolved conjunction preserves each actor's exact clause boundary,
         # including PLAYING/OUT. Check its tail before masking either actor.

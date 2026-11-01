@@ -84,6 +84,17 @@ def test_team_gerund_does_not_hide_following_actor_bound(reported, actor):
     assert not result.result.to_dict()["sections"]
 
 
+def test_explicit_team_gerund_cannot_be_applied_to_player_points(reported):
+    # The qualified Rest game's Lakers117 and Reaves' own points differ.
+    result = execute_natural_query(
+        "Austin Reaves stats when Davis rests, scoring at least 80 points "
+        f"as a team vs Celtics in {SEASON}"
+    )
+    assert result.result_status == "no_result"
+    assert "teammate_stat_condition" in result.metadata["unsupported_filters"]
+    assert not result.result.to_dict()["sections"]
+
+
 @pytest.mark.parametrize(
     "route",
     ["team_record", "game_summary", "game_finder", "player_game_summary", "player_game_finder"],
