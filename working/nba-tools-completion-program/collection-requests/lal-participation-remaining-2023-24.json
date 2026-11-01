@@ -25,8 +25,22 @@
     "destructive operations or weakened safeguards"
   ],
   "season": "2023-24",
+  "dataset": "raw/player_game_availability",
   "target_team_id": 1610612747,
-  "reason": "Direct retained #462 dependencies: AD five unknown games plus LeBron ten; Reaves already qualified82 played/zero missed needs no collection. Traditional2024 is indexed but matching Summary2024 is absent. Reuse the existing official report producer/authority, limited to15 exactLAL-only games; no new adapter or league history.",
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+  "remaining_unknown_target_count": 15,
+  "unique_requested_games": 15,
+  "limits": {
+    "max_source_body_bytes": 2000000,
+    "collection_zip_bytes": 20000000,
+    "collection_expanded_bytes": 100000000,
+    "collection_max_files": 2000,
+    "attempts_per_file": 1,
+    "metered_overage_usd": 0,
+    "maximum_total_source_reader_calls": 30
+  },
   "baseline_facts": {
     "Anthony Davis": {
       "played": 76,
@@ -46,272 +60,376 @@
     "availability_rows": 68,
     "existing_imports": 2
   },
-  "limits": {
-    "source_files": 15,
-    "reader_invocations": 15,
-    "attempts_per_file": 1,
-    "timeout_seconds": 20,
-    "pdf_max_bytes": 1500000,
-    "aggregate_max_bytes": 10000000,
-    "metered_overage_usd": 0
-  },
-  "games": [
+  "scope": "Five exact AD unknown keys and ten exact LeBron unknown keys in2023\u201324 LAL82-game population. Reaves82played/zeroDNP is already complete; no Reaves collection.",
+  "requirements": [
     {
       "game_id": "0022300163",
       "game_date": "2023-11-08",
-      "away_abbr": "LAL",
-      "home_abbr": "HOU",
-      "opponent_team_id": 1610612745,
-      "away_points": 94,
-      "home_points": 128,
-      "source_url": "https://statsdmz.nba.com/pdfs/20231108/20231108_LALHOU.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        203076
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300163.json",
+          "git_blob_sha": "c37dd628cadb56b1188325eebecc6dc5943df272",
+          "size_bytes": 18995
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300163.json",
+          "git_blob_sha": "6662a6e8da608f485e773d39830600a0cb1ad7c0",
+          "size_bytes": 3900
+        }
+      ]
     },
     {
       "game_id": "0022300187",
       "game_date": "2023-11-12",
-      "away_abbr": "POR",
-      "home_abbr": "LAL",
-      "opponent_team_id": 1610612757,
-      "away_points": 110,
-      "home_points": 116,
-      "source_url": "https://statsdmz.nba.com/pdfs/20231112/20231112_PORLAL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300187.json",
+          "git_blob_sha": "a457479d4fbc71c43f1818921f06536ed787bcdf",
+          "size_bytes": 19662
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300187.json",
+          "git_blob_sha": "52c7f2334177655e99361bfd4d72d1a5301445df",
+          "size_bytes": 3890
+        }
+      ]
     },
     {
       "game_id": "0022300316",
       "game_date": "2023-12-13",
-      "away_abbr": "LAL",
-      "home_abbr": "SAS",
-      "opponent_team_id": 1610612759,
-      "away_points": 122,
-      "home_points": 119,
-      "source_url": "https://statsdmz.nba.com/pdfs/20231213/20231213_LALSAS.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300316.json",
+          "git_blob_sha": "328829c0d5c62d3a980577e5b9e704115dc98dce",
+          "size_bytes": 19727
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300316.json",
+          "git_blob_sha": "5d3aceb2d0aeb8ed459514eb205c3a03cbf3438e",
+          "size_bytes": 3859
+        }
+      ]
     },
     {
       "game_id": "0022300331",
       "game_date": "2023-12-15",
-      "away_abbr": "LAL",
-      "home_abbr": "SAS",
-      "opponent_team_id": 1610612759,
-      "away_points": 115,
-      "home_points": 129,
-      "source_url": "https://statsdmz.nba.com/pdfs/20231215/20231215_LALSAS.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        203076
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300331.json",
+          "git_blob_sha": "8d4122cd3e996beb088601aef4722873e58a3162",
+          "size_bytes": 19696
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300331.json",
+          "git_blob_sha": "bc98a960b60dc3f3a046b057641f041e211a1718",
+          "size_bytes": 3851
+        }
+      ]
     },
     {
       "game_id": "0022300380",
       "game_date": "2023-12-21",
-      "away_abbr": "LAL",
-      "home_abbr": "MIN",
-      "opponent_team_id": 1610612750,
-      "away_points": 111,
-      "home_points": 118,
-      "source_url": "https://statsdmz.nba.com/pdfs/20231221/20231221_LALMIN.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300380.json",
+          "git_blob_sha": "36c3b29b480a2334dc1460141172805e737d5ecc",
+          "size_bytes": 19144
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300380.json",
+          "git_blob_sha": "eecf15c7f4f30303ded54664a286a177f95b4760",
+          "size_bytes": 3870
+        }
+      ]
     },
     {
       "game_id": "0022300549",
       "game_date": "2024-01-13",
-      "away_abbr": "LAL",
-      "home_abbr": "UTA",
-      "opponent_team_id": 1610612762,
-      "away_points": 125,
-      "home_points": 132,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240113/20240113_LALUTA.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300549.json",
+          "git_blob_sha": "0cc680233a3357505d0484a42b73713cb5eb0ae3",
+          "size_bytes": 19744
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300549.json",
+          "git_blob_sha": "0cb6bd0c35750cea1caad91f3d456f573cf432be",
+          "size_bytes": 3781
+        }
+      ]
     },
     {
       "game_id": "0022300618",
       "game_date": "2024-01-23",
-      "away_abbr": "LAL",
-      "home_abbr": "LAC",
-      "opponent_team_id": 1610612746,
-      "away_points": 116,
-      "home_points": 127,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240123/20240123_LALLAC.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300618.json",
+          "git_blob_sha": "ffbd55586a93ed40d192d092df78cceb9645c4cd",
+          "size_bytes": 18993
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300618.json",
+          "git_blob_sha": "d37106e7381566e48ee1a6b83bd24c5a960f73cf",
+          "size_bytes": 3877
+        }
+      ]
     },
     {
       "game_id": "0022300669",
       "game_date": "2024-01-30",
-      "away_abbr": "LAL",
-      "home_abbr": "ATL",
-      "opponent_team_id": 1610612737,
-      "away_points": 122,
-      "home_points": 138,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240130/20240130_LALATL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        203076
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300669.json",
+          "git_blob_sha": "51bf4555f883cd923aaeb1f0f399b18a9de16c87",
+          "size_bytes": 19622
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300669.json",
+          "git_blob_sha": "5eadf73169044da277a927f041031edf4509ab59",
+          "size_bytes": 3792
+        }
+      ]
     },
     {
       "game_id": "0022300788",
       "game_date": "2024-02-14",
-      "away_abbr": "LAL",
-      "home_abbr": "UTA",
-      "opponent_team_id": 1610612762,
-      "away_points": 138,
-      "home_points": 122,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240214/20240214_LALUTA.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300788.json",
+          "git_blob_sha": "4510c633f57cad73762ce661d8e8ffc969a2ef71",
+          "size_bytes": 19033
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300788.json",
+          "git_blob_sha": "324e2bd869e10fe533f3521b5041ceaa16e4dd32",
+          "size_bytes": 3887
+        }
+      ]
     },
     {
       "game_id": "0022300802",
       "game_date": "2024-02-22",
-      "away_abbr": "LAL",
-      "home_abbr": "GSW",
-      "opponent_team_id": 1610612744,
-      "away_points": 110,
-      "home_points": 128,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240222/20240222_LALGSW.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300802.json",
+          "git_blob_sha": "6b04d75458146bb291c55a94b5dccb3e414fff9c",
+          "size_bytes": 19074
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300802.json",
+          "git_blob_sha": "f6cb500a2335efe8943b0094b13320b4db0cfd5a",
+          "size_bytes": 3964
+        }
+      ]
     },
     {
       "game_id": "0022300915",
       "game_date": "2024-03-08",
-      "away_abbr": "MIL",
-      "home_abbr": "LAL",
-      "opponent_team_id": 1610612749,
-      "away_points": 122,
-      "home_points": 123,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240308/20240308_MILLAL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300915.json",
+          "git_blob_sha": "8244102c1d85b886682337764ed377875c484d75",
+          "size_bytes": 19807
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300915.json",
+          "git_blob_sha": "c2784c83b4e7f3d5fd9fa03d3eea9e2d81d82b71",
+          "size_bytes": 3936
+        }
+      ]
     },
     {
       "game_id": "0022301045",
       "game_date": "2024-03-26",
-      "away_abbr": "LAL",
-      "home_abbr": "MIL",
-      "opponent_team_id": 1610612749,
-      "away_points": 128,
-      "home_points": 124,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240326/20240326_LALMIL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301045.json",
+          "git_blob_sha": "0ef7d449b1a98669234e4cb17a07bb18ca4d28b1",
+          "size_bytes": 20475
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301045.json",
+          "git_blob_sha": "873ab530b2fb972ea95caf9d63437390fe252d77",
+          "size_bytes": 3860
+        }
+      ]
     },
     {
       "game_id": "0022301055",
       "game_date": "2024-03-27",
-      "away_abbr": "LAL",
-      "home_abbr": "MEM",
-      "opponent_team_id": 1610612763,
-      "away_points": 136,
-      "home_points": 124,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240327/20240327_LALMEM.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        203076
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301055.json",
+          "git_blob_sha": "15754ea8b277a1d53d81ec9178781186f11d700a",
+          "size_bytes": 19060
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301055.json",
+          "git_blob_sha": "cb9a846e52caeba27724834c2861e5a6b7f81bee",
+          "size_bytes": 4165
+        }
+      ]
     },
     {
       "game_id": "0022301143",
       "game_date": "2024-04-07",
-      "away_abbr": "MIN",
-      "home_abbr": "LAL",
-      "opponent_team_id": 1610612750,
-      "away_points": 127,
-      "home_points": 117,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240407/20240407_MINLAL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        2544
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301143.json",
+          "git_blob_sha": "d3e6f829767de43d4f51c29d609e8cbd28662f7f",
+          "size_bytes": 20290
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301143.json",
+          "git_blob_sha": "50105b17b41b84b29c4f95d88d8bd47273ea00a3",
+          "size_bytes": 3805
+        }
+      ]
     },
     {
       "game_id": "0022301155",
       "game_date": "2024-04-09",
-      "away_abbr": "GSW",
-      "home_abbr": "LAL",
-      "opponent_team_id": 1610612744,
-      "away_points": 134,
-      "home_points": 120,
-      "source_url": "https://statsdmz.nba.com/pdfs/20240409/20240409_GSWLAL.pdf",
-      "imported_team_ids": [
-        1610612747
-      ],
-      "required_target_player_ids": [
-        203076
-      ],
-      "prior_state": "unknown"
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301155.json",
+          "git_blob_sha": "688ed72fb46836d97c3798b57dd370997dcad3e2",
+          "size_bytes": 21529
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301155.json",
+          "git_blob_sha": "3167dd1d617494a3d7c750e23644614ac98d7510",
+          "size_bytes": 3663
+        }
+      ]
     }
   ],
+  "source_metadata": {
+    "classification": "two untruncated pinned2024 indexes; exact30 leaves checked; bodies unqualified",
+    "source_file_count": 30,
+    "total_source_bytes": 352951,
+    "largest_source_bytes": 21529,
+    "source_bodies_acquired": 0
+  },
   "reuse_existing_reports": [
     {
       "game_id": "0022300403",
@@ -350,5 +468,5 @@
       "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
     }
   ],
-  "proposed_stage": "Replay qualified retained PDFs through existing report producer imported_team_ids=[LAL]; preserve68 existing serialized availability rows/two imports/80 retained source sidecars, canonical core and unrelated seasons. Derive target states from sources, then qualify whole82-game populations; unknown is not DNP. Collection transport is not source, stage or feature acceptance."
+  "proposed_stage": "Qualify one primaryAD TraditionalV3+SummaryV2 pair before remaining28 originals. Use existing strict importer, no adapter. Preserve68 existing serialized availability rows/two imports/80 retained sidecars and unrelated data. Qualified targets and full82 populations remain required; unknown is notDNP, played is nothealthy. Targeted officialPDF fallback only for actual failed qualification, reusing old0403/0684 without refetch."
 }
