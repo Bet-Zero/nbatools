@@ -2911,6 +2911,7 @@ def _opponent_count_supported(match: re.Match) -> bool:
 
 
 def _build_parse_state(query: str) -> dict:
+    availability_condition_query = normalize_text(query)
     opponents_counted = _HOW_MANY_OPPONENTS.match(normalize_text(query))
     opponent_count_unsupported = bool(
         opponents_counted and not _opponent_count_supported(opponents_counted)
@@ -3814,6 +3815,7 @@ def _build_parse_state(query: str) -> dict:
 
     return {
         "normalized_query": q,
+        "availability_condition_query": availability_condition_query,
         "status_condition_spans": status_condition_spans,
         "reported_reason_spans": reported_reason_spans,
         "requested_availability_status": unsupported_availability_status(
@@ -11458,11 +11460,27 @@ def _finalize_route(parsed: dict) -> dict:
         ]
         return out
     route = out.get("route")
-    condition_q = parsed["normalized_query"]
+    condition_q = (
+        (parsed.get("availability_condition_query") or parsed["normalized_query"])
+        if kwargs.get("without_player_reason")
+        else parsed["normalized_query"]
+    )
     scalar_absence = requested_scalar_absence(condition_q)
     mixed = parsed.get("mixed_availability")
+    raw_mixed = (
+        requested_mixed_availability(condition_q)
+        if mixed and kwargs.get("without_player_reason")
+        else mixed
+    )
     condition_spans = (
-        {clause.players: (clause.start, clause.end) for clause in mixed.clauses} if mixed else {}
+        {
+            clause.players: (raw.start, raw.end)
+            for clause in mixed.clauses
+            for raw in (raw_mixed.clauses if raw_mixed else ())
+            if raw.mode == clause.mode
+        }
+        if mixed
+        else {}
     )
     if any(
         presence_names_player_condition(
@@ -11476,6 +11494,7 @@ def _finalize_route(parsed: dict) -> dict:
                 and name == kwargs.get("without_player")
                 else None
             ),
+            primary_player=kwargs.get("player") if not parsed.get("record_intent") else None,
             absence_span=(scalar_absence.start, scalar_absence.end)
             if scalar_absence and name == kwargs.get("without_player")
             else None,

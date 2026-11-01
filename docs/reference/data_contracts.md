@@ -738,9 +738,12 @@ are `game_id`, `game_date`, `season`, `season_type`, `team_id`, `player_id`,
 `source_sha256`, `source_locator`, `identity_source_sha256`, and `coverage_scope`.
 Scope is `listed_player_reported_reason_only`; states are `reported_rest`,
 `reported_other`, or `unknown`. Only a qualified explicit Rest field establishes
-reported Rest. Other stated wording is reported Other, without clinical or healthy
-status inference. Empty, bare INACTIVE/DNP and ambiguous Rest wording remain
-unknown. Opaque legacy availability comments never become reason evidence.
+reported Rest. Recognized official medical/personal/suspension/coach-decision reason codes
+are reported Other, without clinical or healthy status inference. Traditional
+free-text comments additionally require an explicit nonparticipation state prefix.
+Empty, bare INACTIVE/DNP, unfamiliar annotations and ambiguous Rest wording remain
+unknown. Source authenticity alone never establishes a reason code. Opaque legacy
+availability comments never become reason evidence.
 
 The offline `pipeline.reported_absence_reasons.stage_observation` producer binds
 each fact to an existing qualified same-game DNP and original official gamebook

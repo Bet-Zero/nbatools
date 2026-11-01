@@ -257,3 +257,40 @@ def test_actual_complete_other_count_is_zero_with_explicit_basis(reported):
     )
     assert "officially reported Rest" in result.metadata["answer_phrase"]
     assert result.result.metadata["reported_reason_coverage"]["unknown"] == 0
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record when Davis rests and where Lakers scored 80 and Lakers reserve Blorg scored 30 points vs Celtics in 2023-24",
+        "Lakers record when Davis rests and where Lakers scored 80 and Lakers reserve Blorg scored30 points vs Celtics in 2023-24",
+        "Lakers record from 2023-11-01 to 2024-04-01 when Davis rests and Blorg scores 30 points vs Celtics in 2023-24",
+        "Lakers record when Davis rests from 2023-11-01 to 2024-04-01 and Blorg scores 30 points vs Celtics in 2023-24",
+        "Lakers record when LeBron James scores 30 points and Davis rests vs Celtics in 2023-24",
+        "Lakers record when Davis rests and LeBron James scores 30 points vs Celtics in 2023-24",
+        "Lakers record when Lakers reserve Blorg scores 30 points and Davis rests vs Celtics in 2023-24",
+        "Lakers record when Davis rests and where Lakers scored 80 and Anthony Davis of the Lakers scores 30 points vs Celtics in 2023-24",
+        "Lakers record when Davis rests and where Lakers scored 80 and Lakers reserve Blorg 30 points vs Celtics in 2023-24",
+        "Lakers record when Davis rests and Davis 30 points vs Celtics in 2023-24",
+    ],
+)
+def test_all_unclaimed_stat_owners_survive_calendar_and_clause_order(reported, query):
+    result = execute_natural_query(query)
+    assert result.result_status == "no_result" and result.result_reason == "filter_not_supported", (
+        result.metadata
+    )
+    assert "teammate_stat_condition" in result.metadata["unsupported_filters"], result.metadata
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers record when Davis rests and where Lakers scored 80 vs Celtics in 2023-24",
+        "Lakers record when Lakers scored 80 and Davis rests vs Celtics in 2023-24",
+        "Austin Reaves scores 5 points when Davis rests vs Celtics in 2023-24",
+    ],
+)
+def test_claimed_team_and_primary_player_bounds_keep_their_own_rows(reported, query):
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    assert _ids(result) == {reported["ids"][0]}

@@ -245,6 +245,14 @@ def test_reported_rest_sources_are_not_all_missed_games(tmp_path, monkeypatch):
         base_manifest_sha256=MANIFEST,
         seed_overlay_sha256=SEED_SHA,
         append_only=seed["append_only"],
+        manifest_absent_creations={
+            path: dict(
+                base_presence="manifest_absent",
+                added_observation_keys=sorted(reason_lineage),
+                added_records=18,
+            )
+            for path in (REASONS, REASON_IMPORTS)
+        },
         overlay_files=files,
         new_reason_rows=18,
         new_reason_paths=sorted(new_paths),

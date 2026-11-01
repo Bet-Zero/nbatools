@@ -110,7 +110,7 @@ def test_jointly_forged_csv_and_ledger_still_fail_original_replay(staged):
     _stage(staged)
     path = root / reasons.DIRECTORY / SUFFIX
     frame = pd.read_csv(path, dtype=str, keep_default_na=False)
-    frame.loc[0, ["reported_reason", "reason_text"]] = ["reported_other", "Personal"]
+    frame.loc[0, ["reported_reason", "reason_text"]] = ["reported_other", "DNP - Personal"]
     ledger_path = path.with_suffix(".imports.json")
     ledger = json.loads(ledger_path.read_bytes())
     ledger[reasons.key(frame.iloc[0])]["row_sha256"] = reasons.row_digest(frame.iloc[0])
@@ -267,3 +267,80 @@ def test_selected_bare_inactive_cannot_be_promoted_to_other(staged, monkeypatch)
     with pytest.raises(ValueError, match="Unrecognized official inactive row"):
         producer.stage_observation(**args)
     assert not (staged[0] / reasons.DIRECTORY).exists()
+
+
+@pytest.mark.parametrize(
+    "literal",
+    [
+        "DNP - unverified legacy annotation",
+        "INACTIVE - data not available",
+        "NWT - no information provided",
+        "garbled_import_42",
+        "DND - unrecognized",
+        "Rest - Injury Management",
+    ],
+)
+def test_unfamiliar_source_annotations_are_unknown(literal):
+    for kind in ("nba_official_finalbox", "nba_stats_structured_archive"):
+        assert reasons.classify_reason(literal, kind) == "unknown"
+
+
+@pytest.mark.parametrize(
+    "literal,expected",
+    [
+        ("DNP - Rest", "reported_rest"),
+        ("NWT - League Suspension", "reported_other"),
+        ("Rest", "unknown"),
+        ("Personal", "unknown"),
+    ],
+)
+def test_traditional_free_text_needs_state_and_recognized_code(literal, expected):
+    assert reasons.classify_reason(literal, "nba_stats_structured_archive") == expected
+
+
+def test_qualified_original_with_unrecognized_comment_cannot_complete_rest_zero(
+    source, monkeypatch
+):
+    # A qualified original can establish DNP while its opaque comment fails to
+    # establish a reason. Authenticity is independent of reason admission.
+    source[3]["boxScoreTraditional"]["homeTeam"]["players"][1]["comment"] = (
+        "DNP - unverified legacy annotation"
+    )
+    root, original, _, _, _ = source
+    run(source)
+    path = root / "raw/team_game_stats" / SUFFIX
+    teams = pd.read_csv(path)
+    teams["game_date"] = "2025-10-21"
+    teams["team_name"] = ["A Team", "B Team"]
+    teams.to_csv(path, index=False)
+    packet = json.loads(
+        next((root / "raw/player_game_availability_sources").glob("*.structured.json")).read_bytes()
+    )
+    receipt = root.parent / "sources.json"
+    receipt.write_text(
+        json.dumps(
+            {
+                "files": {
+                    "boxscoretraditionalv3_0022500002.json": packet["sources"][
+                        "boxscoretraditionalv3"
+                    ]
+                }
+            }
+        )
+    )
+    row = _stage((root, original, receipt))
+    assert row["reported_reason"] == "unknown"
+    producer.validate_publication(root)
+    _manifest(root, monkeypatch)
+    observed = reasons.load_observations(["2025-26"], "Regular Season")
+    assert list(observed.reported_reason) == ["unknown"]
+    monkeypatch.setattr(reasons.participation, "filter_absent", lambda frame, *a, **kw: frame)
+    sample = pd.DataFrame([dict(game_id=22500002, game_date="2025-10-21", team_id=1)])
+    evidence = {}
+    with pytest.raises(reasons.ReasonCoverageError, match="Incomplete"):
+        reasons.filter_reported_rest(
+            sample, "DNP Player", ["2025-26"], "Regular Season", evidence=evidence
+        )
+    assert evidence["unknown"] == 1 and not evidence["complete"]
+    clear_frame_cache()
+    reset_data_source_cache()

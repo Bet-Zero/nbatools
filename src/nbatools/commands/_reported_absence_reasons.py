@@ -46,37 +46,33 @@ class ReasonCoverageError(ValueError):
     """A requested reported reason cannot be qualified over the selected population."""
 
 
-def classify_reason(text: str) -> str:
-    """Classify a qualified source field, never an arbitrary availability comment."""
-    value = re.sub(
-        r"^(?:INACTIVE|DNP|DND|NWT|DID NOT PLAY|DID NOT DRESS)\s*-\s*", "", text.strip(), flags=re.I
+def classify_reason(text: str, source_kind: str | None = None) -> str:
+    """Admit recognized source reason codes; unfamiliar free text stays unknown."""
+    state = re.match(
+        r"^(?:INACTIVE|DNP|DND|NWT|DID NOT PLAY|DID NOT DRESS)\s*-\s*",
+        text.strip(),
+        flags=re.I,
     )
+    # Traditional comments are free text. Their state prefix and recognized
+    # reason code must both be explicit; source authenticity alone is not a code.
+    if source_kind == "nba_stats_structured_archive" and state is None:
+        return "unknown"
+    value = text.strip()[state.end() :] if state else text.strip()
     value = " ".join(value.split()).casefold()
     if value == "rest":
         return "reported_rest"
-    if (
-        not value
-        or value
-        in {
-            "inactive",
-            "dnp",
-            "dnd",
-            "nwt",
-            "did not play",
-            "did not dress",
-            "unknown",
-            "n/a",
-            "none",
-            "-",
-            "unspecified",
-            "not reported",
-            "tbd",
-        }
-        or "explicit listed row" in value
-        or re.search(r"\brest(?:ed|ing)?\b", value)
-    ):
-        return "unknown"
-    return "reported_other"
+    if re.search(r"\brest(?:ed|ing)?\b", value):
+        return "unknown"  # Mixed Rest/medical wording does not prove either code.
+    if value in {
+        "personal",
+        "personal reasons",
+        "league suspension",
+        "suspension",
+        "coach's decision",
+        "coaches decision",
+    } or re.fullmatch(r"injury/illness\s*-\s*\S.*", value):
+        return "reported_other"
+    return "unknown"
 
 
 def key(row):
@@ -108,7 +104,7 @@ def validate_rows(frame, ledger, *, source_entry):
         record = ledger[key(row)]
         if (
             record["row_sha256"] != row_digest(row)
-            or classify_reason(row["reason_text"]) != row["reported_reason"]
+            or classify_reason(row["reason_text"], row["source_kind"]) != row["reported_reason"]
         ):
             raise ValueError("Reported-reason row differs from qualified lineage")
         for field in ("source_sha256", "identity_source_sha256"):

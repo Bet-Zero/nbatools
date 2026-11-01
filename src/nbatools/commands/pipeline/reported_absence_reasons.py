@@ -197,7 +197,7 @@ def _observe(
         team_id=str(team_id),
         player_id=str(player_id),
         player_name=str(observed.player_name),
-        reported_reason=reasons.classify_reason(literal),
+        reported_reason=reasons.classify_reason(literal, source_kind),
         reason_text=literal,
         source_kind=source_kind,
         source_url=url,
