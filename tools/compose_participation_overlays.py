@@ -123,8 +123,10 @@ def compose_overlays(
 ) -> dict:
     """Merge exact cells/import objects against actual manifest-bound BASE bytes.
 
-    ``packages`` contains independently accepted artifact ZIPs and their SHA256s.
-    Acceptance is external evidence; this function checks composition/preservation,
+    ``packages`` contains previously accepted or independently source-reviewed,
+    in-run-qualified candidate ZIPs and their SHA256s. The caller must retain each
+    qualification proof, distinguish current candidates from prior acceptance, and
+    obtain final independent output acceptance. This function checks preservation,
     not fresh source qualification. Only declared raw paths plus validation.json
     are exported. The baseline is read-only and the output must be a new directory.
     """
