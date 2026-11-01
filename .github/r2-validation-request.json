@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "8341b461a763936fdda5197e63b538c3ca3a989f",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_bos_participation_coverage_real_data.py::test_current_tatum_brown_exact_observed_population_and_missing_keys"
+  ],
+  "raw_qa_cases": []
+}
