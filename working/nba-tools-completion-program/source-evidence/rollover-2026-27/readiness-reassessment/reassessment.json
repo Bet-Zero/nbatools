@@ -74,12 +74,37 @@
     "new_body_reader_cap": 78,
     "bytes": 1828123,
     "attempts_per_file": 1,
-    "source_body_calls_so_far": 0,
-    "collection_scope_review": "pending",
-    "new_costs_credentials_permissions": 0
+    "source_body_calls_so_far": 78,
+    "collection_scope_review": "accepted2a44c500; requestd06bb4f3/metadatabinding8a370fd8",
+    "new_costs_credentials_permissions": 0,
+    "captured_source_bytes": 1828123,
+    "capture_failures": 0,
+    "role_candidate": {
+      "games": 80,
+      "positive_role_rows": 1810,
+      "explicit_starter_rows": 800,
+      "missing_game_id": "0022600144",
+      "missing_positive_role_keys": 19,
+      "independent_80game_output_review": "pending"
+    },
+    "roster_representative": {
+      "team_id": 1610612747,
+      "source_rows": 18,
+      "observed_player_keys": 14,
+      "season_parameter": "2026",
+      "normalized_season": "2026-27",
+      "independent_class_review": "pending",
+      "remaining_teams": 29
+    },
+    "new_primary_count_conflicts": {
+      "cells": 83,
+      "games": 18,
+      "basis": "comparisonwithORIGINALplayerlog, notyetdeduplicatedagainstaccepted16cellcorrectionledger",
+      "status": "retained; no blind count rewrite or full-core acceptance"
+    }
   },
   "hosting": {
-    "latest_main_status": "Deployment rate limited — retry in24hours",
+    "latest_main_status": "Deployment rate limited \u2014 retry in24hours",
     "status_created_at": "2026-11-01T09:40:45Z",
     "prior_main_567_deployment": "successful2026-11-01T07:31:45Z; includes561 source-aware rollover support",
     "distinction": "Build quota blocks new568/569runtime deployment; it is separate from missing current-season data. Data-only readiness does not itself require newK08engine features. Verify live compatibility at the eventual approved full-snapshot acceptance.",
@@ -93,5 +118,26 @@
     "rule": "resume only after readiness critical path explicitly blocked, not as substitute for source recovery"
   },
   "production_writes": 0,
-  "readiness_restored": false
+  "readiness_restored": false,
+  "due_population_reassessment": {
+    "reviewed_at": "2026-11-01T09:57:00Z",
+    "due_games": 81,
+    "retained_final_games": 81,
+    "missing_due_game_ids": [],
+    "expected_current_through": "2026-10-30",
+    "next_due_change": "2026-11-01T19:00:00Z",
+    "rule": "Recompute exactdueIDs at acceptance;81isnotpermanent."
+  },
+  "advanced_source_last_change": {
+    "repository": "sportsdataverse/hoopR-nba-stats-raw",
+    "path": "nba_stats/json/leaguedashplayerstats/2027/regular-season_advanced_pergame.json",
+    "last_modified_commit": "182f6e1538a783720609cc6b96635425e9be311e",
+    "commit_time": "2026-10-31T12:17:13Z",
+    "relation": "beforepinned7arevision; no newerchangedratebodyfound, so no unchangedbodyrefetch"
+  },
+  "0144_work_with_existing_resources": {
+    "request": "working/nba-tools-completion-program/collection-requests/rollover-0144-starter-report-2026-27.json",
+    "status": "oneofficialFinalBoxPDFcaptureindependentlyapproved716b54ed; noHTTPexecutedyet",
+    "scope": "one20s/1.5MBfixedstatsdmzread; actualliteralpositionqualificationlater; notpartofthe78filereadercap"
+  }
 }

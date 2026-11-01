@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root independent review of /root/absence_checker authored capture",
+  "exact_model_id": "unavailable; no cross-model claim",
+  "reviewed_local_commit": "6d4479bc334240188e2c8d8bd8a40f57e3167536",
+  "reviewed_tree": "b06f1a56fb519175b0f585d58e66bad8def6e939",
+  "decision": "approved_for_one_existing_readonly_R2_capture_after_exact_candidate_pin",
+  "request_sha256": "9f84e321385bf222e4e822d7235b784a81f7777b813580efd9515a7ef7ca8db3",
+  "file_sha256": {
+    "tests/cloud_rollover_0144_report_capture_real_data.py": "b0f9817b3abf94e63a8eda8eb99f587c32c23844cbf32d482db03a26da3a4d2f",
+    "tests/test_rollover_0144_report_capture.py": "edb15b22c73ce7cbdcf8c833eb7f3ede413b8021ec5fd39d9b3f61eb7682e797"
+  },
+  "purpose": "Test existing official PDF route for the single missing0144starter-role source before classifying thatrole gap as externallyblocked. Parameterized period access remains a separate confirmed dependency.",
+  "checks": [
+    "Exact fixedstatsdmzURL/date/GID/CLE111/ATL114/Final scope bound by retainedSummary/PBP/Gitblob/capture and scheduleZIP+inneroriginal hashes before reader. No2026productionrows assumed.",
+    "One20-second bounded read/1.5MB cap, existing reportheader, no redirect/retry/newhost; HTTPerrorbody retained ifbounded, oversize diagnostics only.",
+    "Original bytes stored before content/date/team/score guards. Strict existing PDF envelope parser runs unchanged; failures retain typed receipt and rethrow.",
+    "No Luka/reason audit reused, no starter positions/participation/clocks/fullslice/readiness accepted from transport or envelope. Literal position-marker qualification remains separate.",
+    "Explicit-only cloudselector withneeds_data; ordinary unit suite only runs syntheticcontrols. No newworkflow,writecredential,pointer,readinessexception,cost or credential."
+  ],
+  "verification": {
+    "author_offline_controls": 9,
+    "skipped": 0,
+    "root_review": "inspected exact3file candidate and preflight/capture/failure/guard logic; did not duplicate unchangedauthorcontrols",
+    "public_or_nba_requests_by_reviewer": 0
+  },
+  "production_writes": 0,
+  "starter_positions_qualified": false,
+  "full_slice_accepted": false
+}

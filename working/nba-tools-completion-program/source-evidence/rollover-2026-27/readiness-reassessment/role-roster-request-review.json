@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model ID unavailable; separate checker agent, no cross-model claim",
+  "approval": "PASS_FIXED_78_FILE_COLLECTION_ONLY_NOT_SOURCE_OR_FULL_READINESS_ACCEPTANCE",
+  "reviewed_revision": "73945b6ecddbb5175c919c6ff42d84fd85679cb8",
+  "tree": "74c3f0f2472048508a506b1f73e0d8a9fc3da2a4",
+  "original_candidate_binding_finding": "ed35 lacked request-to-metadata SHA. Resolved by immutable requestd06b pinning exactmetadata8a37 and the81-game population proof, with original full Contents response arrays preserved. No body call occurred before resolution.",
+  "request_sha256": "d06bb4f3db8a1347f756fe5286493e9fbe44115a1ef3f1211f5ae7c4b30a55b8",
+  "metadata_sha256": "8a370fd813dd66bfcbe6df6662dcc1a44493b47e39ad4ee4a1110dc025531cf1",
+  "population_proof_sha256": "677aa8bc1ef9c6a0f7cb0cd635ae3f163cfb1359b232ea8fdc6a2ae39d7926f9",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "metadata_original_arrays": [
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/traditional-2027-contents-response.json",
+      "sha256": "731c76edc6ce6d6066c6e82aacdcbe629a766666688bc206d3595af2c6a00c8e",
+      "size_bytes": 107729
+    },
+    {
+      "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/roster-2027-contents-response.json",
+      "sha256": "f22e7490f26522f01192355ee8de4ff5c709a2a17dbf0c0ff1f2b0eccc6506ef",
+      "size_bytes": 38971
+    }
+  ],
+  "independent_mapping_checks": {
+    "full_Traditional_metadata_entries": 81,
+    "matching_regular_final_ids": 80,
+    "excluded_nonfinal_population_file": "0062600001.json",
+    "required_final_population": 81,
+    "existing_retained_Trad_games": 3,
+    "new_Trad_bodies": 77,
+    "missing_Trad_ID": "0022600144",
+    "roster_metadata_entries": 30,
+    "roster_body_representatives": 1,
+    "all78_exact_paths_blobSHA_sizes_transportURLs_revision_links_verified": true,
+    "total_expected_bytes": 1828123,
+    "retained_original_bindings": [
+      {
+        "game_id": "0022600023",
+        "git_blob_sha": "1fb69e320223aa68e9a429a72f86d7e5992f6382",
+        "sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180",
+        "size_bytes": 20317
+      },
+      {
+        "game_id": "0022600138",
+        "git_blob_sha": "480755cf3f797bee7f193b22e5aa9c6aefe9febd",
+        "sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab",
+        "size_bytes": 21569
+      },
+      {
+        "game_id": "0022600142",
+        "git_blob_sha": "9ffe2d72ee0a52d7faa9ec0ad3207ee9b420ca68",
+        "sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3",
+        "size_bytes": 18422
+      }
+    ]
+  },
+  "independent_retained_role_sample": {
+    "listed_rows": 80,
+    "required_player_game_keys": 76,
+    "explicit_starters": 30,
+    "team_games": 6,
+    "exact_five_each": true,
+    "existing_normalizer_and_key_restriction_used": true,
+    "name_variants": [
+      {
+        "game_id": "0022600138",
+        "player_id": 1642881,
+        "source_name": "Bogoljub Marković",
+        "player_log_name": "Bogoljub Markovic",
+        "existing_name_key_equal": true
+      }
+    ],
+    "no_literal_correction": true,
+    "proof_path": "work/readiness-retained-role-review.json",
+    "proof_sha256": "c57bbe06ec8ba7506fcfa130068558f84934c82a0afe375ddbf0967426cf1623"
+  },
+  "approved_collection_bounds": {
+    "reader_calls": 78,
+    "attempts_per_file": 1,
+    "expected_total_bytes": 1828123,
+    "maximum_body_bytes": 2000000,
+    "maximum_total_bytes": 1828123,
+    "metered_overage_usd": 0
+  },
+  "collector_preflight": "Pin requestSHA and metadataSHA plus population proof; use exactly the78 selected immutable Git blobs. Check exact returned UTF8 byte length, Git blob SHA1 and SHA256 before retaining originals; preserve per-file UTC retrieval/source URL/reader_attempts, unknown original NBA capture time and attribution. No automatic retry or additional source/endpoint/credential/cost.",
+  "source_qualification_required": [
+    "Every role original must match final game/date/sides and required source/canonical player keys and names. Preserve discrepancies, qualify literal positions with unchanged normalizer and exact-five starter trust; do not infer roles from Summary/PBP row order.",
+    "Qualify the one proper CommonTeamRoster body for resource, exact season/team, schema/IDs/as-of before requesting any other29 roster bodies.",
+    "Retain0144 as unqualified; a separately reviewed official-gamebook collection may be a minimal different-source fallback. It is not part of these78 URLs.",
+    "No complete-role/current-season/readiness or source-PGA numeric acceptance follows from metadata or successful transport."
+  ],
+  "independent_dependencies_retained": [
+    "Required11 raw and5 processed datasets remain unchanged.",
+    "Q1 cloud timeout/CDN403/all-zero period originals are not retried. Two-file reviewed laptop Q1 capture is the smallest confirmed external access dependency, not a full period/readiness acceptance.",
+    "Four corrected-player TS/snapshot-basis conflicts and proper roster qualification remain open.",
+    "Exact due-ID/24h coverage must be recomputed; retained snapshot next unfinalized game becomes due2026-11-01T19:00Z.",
+    "Vercel hosting quota affects new K08 code deployment, not existing deployed readiness logic. No new public probes, quota upgrade or access bypass requested."
+  ],
+  "source_body_network_calls_by_checker": 0,
+  "metadata_network_calls_by_checker": 0,
+  "source_body_collection_started": false,
+  "full_role_coverage_accepted": false,
+  "raw_complete": false,
+  "processed_complete": false,
+  "readiness_restored": false,
+  "production_publication_approved": false,
+  "production_writes": 0,
+  "unresolved_request_findings": []
+}

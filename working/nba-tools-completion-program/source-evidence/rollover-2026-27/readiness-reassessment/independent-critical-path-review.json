@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "classification": "read_only_critical_path_reassessment_no_source_acquisition_or_readiness_waiver",
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; separate checker agent, no cross-model claim",
+  "owner_priority": "Restore genuine data readiness before another major K08 workstream; preserve paused Tatum WIP as unaccepted.",
+  "mandatory_contract_unchanged": {
+    "raw_datasets": 11,
+    "processed_datasets": 5,
+    "november1_UTC_new_season_deadline": true,
+    "maximum_active_lag_hours": 24,
+    "exact_due_game_ID_coverage": true,
+    "no_environment_exception_or_current_through_rename": true,
+    "full_qualified_snapshot_before_publication": true
+  },
+  "source_evidence_reused": {
+    "partial_stage_run": 41265760582,
+    "partial_stage_checks": "3 executed/passed,0 skips; schedule/current guards, corrected core consumer outputs only. Not full slice.",
+    "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+    "production_monitor_run": 41288504744,
+    "monitor_observation_from_parent": "2026-11-01T09:21Z:503 solely new_season_not_loaded. No public check repeated.",
+    "published_generation": "availability-lebron-season-v1-20261031"
+  },
+  "done_now_on_retained_bytes": {
+    "role_originals": 3,
+    "explicit_role_team_games": 6,
+    "source_listed_rows": 80,
+    "qualified_required_positive_player_keys": 76,
+    "excluded_not_required_source_rows": 4,
+    "explicit_starters": 30,
+    "exact_five_starters_each_side": true,
+    "pure_existing_helpers": [
+      "normalize_boxscore_player_roles",
+      "_restrict_to_required_player_keys",
+      "add_trust_validation"
+    ],
+    "name_variant": [
+      {
+        "game_id": "0022600138",
+        "player_id": 1642881,
+        "source_name": "Bogoljub Marković",
+        "player_log_name": "Bogoljub Markovic",
+        "existing_name_key_equal": true
+      }
+    ],
+    "no_literal_name_correction": true,
+    "position_values": "All nonblank source position markers are literal F/C/G and source starters have positive clocks.",
+    "qualification_limit": "Source-field and retained-primary-key qualification only; not complete81-game role coverage or full canonical readiness acceptance.",
+    "local_role_review": {
+      "path": "work/readiness-retained-role-review.json",
+      "sha256": "c57bbe06ec8ba7506fcfa130068558f84934c82a0afe375ddbf0967426cf1623"
+    },
+    "local_role_rows": "work/readiness-retained-roles.csv"
+  },
+  "recommended_next_executable_work": {
+    "objective": "Finish the retained-source role adapter/partial stage and qualify the currently indexed missing whole-game Traditional population, plus one proper-roster representative.",
+    "reuse": "Existing pure role normalizer and required-positive-key restriction; explicit source positions with game/team/person identity and provenance. Do not invoke the existing network-fetch backfill, whose five automatic retries are inappropriate for already diagnosed NBA access failures.",
+    "new_scope_pending_exact_frozen_request_review": "Parent metadata now confirms77 new indexed regular-game Traditional bodies plus one LAL CommonTeamRoster representative; first qualify these source bodies and staged keys before expanding roster collection.",
+    "parallel_use": "Whole-game originals can corroborate role fields and known core-count/clock issues; do not recollect the three retained bodies.",
+    "does_not_close": "Period windows,0144 role gap, remaining proper rosters and advanced-rate basis remain required."
+  },
+  "independent_missing_dependencies": {
+    "roles0144": {
+      "required_games": 81,
+      "retained": 3,
+      "remaining_game_keys": 78,
+      "newly_indexed_missing_bodies": 77,
+      "unindexed_required_game": "0022600144",
+      "retained_Summary_position_fields": "Absent; listed player names/IDs/jerseys do not establish starters.",
+      "blocked_route": "Existing CDN403 stays failed. No retry without changed source evidence.",
+      "small_possible_followon": "One exact official gamebook via the already approved report reader may supply explicit position markers, subject to new source/role-contract qualification. It is a different source, not permission to infer lineup order or weaken role trust."
+    },
+    "periods": {
+      "confirmed_cloud_failures": "Correct-parameter Q1 V3 timed out; CDN403 and archived all-zero/unparameterized period sources remain diagnosed failures.",
+      "minimal_actual_external_action": "Run existing reviewed tools/collect_rollover_q1_laptop.py with existing Python/nba_api and return its data-only collection.zip, including failure. No new credentials, service, paid access or coding setup.",
+      "initial_source_files": 2,
+      "initial_game": "0022600001",
+      "initial_window": "Q1",
+      "initial_expected_team_points": {
+        "DET": 27,
+        "BOS": 28
+      },
+      "initial_expected_team_minutes": 60,
+      "after_initial_source_qualification": "Only then plan a bounded collection for the actual due population. Retained81 finals imply490 required quarter/half/combined-OT windows and980 Traditional+Advanced slots, reusing qualified originals. This is not an instruction to launch that batch now.",
+      "not_derivable": "Half/OT advanced rates cannot be manufactured by averaging or summing quarter percentages."
+    },
+    "rosters": {
+      "required_team_responses": 30,
+      "proper_current_source_needed": true,
+      "appearance_only_roster_forbidden": true,
+      "first_step": "Qualify the one pinned LAL source body against resource/season/team/as-of and identity scope before any29-body expansion. Existing archive route may suffice; laptop is not automatically a roster dependency."
+    },
+    "player_advanced_basis": {
+      "known_conflicts": 4,
+      "players": [
+        "Caleb Martin",
+        "Jalen Johnson",
+        "AJ Green",
+        "Nate Ament"
+      ],
+      "evidence": "season-rate-consistency.json:432 original rates match original counts, but four corrected count aggregates exceed source TS rounding tolerance; USG remains source-provided, not independently recalculated.",
+      "required_resolution": "Qualify a consistent same-population/as-of advanced source or an explicitly reviewed derived-metric/source-basis contract using qualified counts. Preserve original snapshot values and unknowns; no silent overwrite, empty stand-ins or passed flags.",
+      "current_no_source_work": "Document exact field/count/as-of dependencies and retain qualified corrected counts. Arithmetic diagnostics alone do not qualify the raw advanced dataset."
+    }
+  },
+  "source_freshness_horizon": {
+    "checked_at": "2026-11-01T09:57:05.669541+00:00",
+    "observed_schedule_ids": 1206,
+    "retained_finals": 81,
+    "due_source_ids": 81,
+    "missing_due_ids_in_retained_final_population": [],
+    "expected_current_through": "2026-10-30",
+    "next_unfinalized_source_game_id": "22600147",
+    "next_unfinalized_source_game_date": "2026-10-31",
+    "next_unfinalized_becomes_due_at": "2026-11-01T19:00:00+00:00",
+    "limitation": "Uses retained source snapshot only, not a fresh NBA capture or live readiness acceptance."
+  },
+  "hosting_separate_from_data_readiness": {
+    "current_readiness_code": "PR561 schedule/final/source/due-ID support is already deployed in the567 production build reported successful07:31Z. Latest monitor confirms a live503 data blocker, not absent readiness code.",
+    "quota_effect": "Vercel rate limit blocks new K08 code deployment/public probe. It does not create the missing2026-27 data or justify a hosting upgrade/access bypass.",
+    "publication_limit": "Only a fully qualified current snapshot, normal protected publication approval and live checks can restore readiness. Existing data-readiness code can consume a correctly qualified new generation; no quota waiver substitutes for data."
+  },
+  "source_calls_by_checker": 0,
+  "public_requests_by_checker": 0,
+  "tests_full_suite_runs": 0,
+  "readiness_restored": false,
+  "production_writes": 0,
+  "next_owner_involvement": "The already-reviewed two-file laptop Q1 capture/ZIP is the smallest confirmed external access dependency. Other bounded archive qualification and implementation can continue autonomously."
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "classification": "single_team_roster_source_representative_not_league_or_dated_membership_acceptance",
+  "source_sha256": "4be10ad40bc3a1b704c667ddd8241a77a487e4199b6df491077f3bbbc41675bf",
+  "parameters": {
+    "TeamID": 1610612747,
+    "LeagueID": "00",
+    "Season": "2026"
+  },
+  "source_season_start_year": 2026,
+  "normalized_season": "2026-27",
+  "rows": 18,
+  "observed_LAL_positive_player_ids": 14,
+  "all_observed_LAL_player_ids_and_normalized_names_present": true,
+  "csv_sha256": "b99e9b3dd6f6e1e0cf9f5f00270bc59787074408cb95c855d27b75bf9a85adf3",
+  "remaining_rosters": 29,
+  "original_nba_capture_time": null,
+  "original_timestamp_limit": "Retrieval and Git retention do not establish original NBA capture time or tenure intervals.",
+  "production_writes": 0,
+  "full_slice_accepted": false
+}
