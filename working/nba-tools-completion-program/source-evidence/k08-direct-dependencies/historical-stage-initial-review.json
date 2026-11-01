@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "approval": "BLOCKED initial oracle fixture; no actual R2 executed",
+  "reviewed_revision": "e825524a6b9bb01c4126addea33b1c1e8a7bdeaf",
+  "tree": "b882e77f8ab097b0c8583cb40be229e451e696a6",
+  "harness_sha256": "eb9087bed6ac049b048ec74bf62ded6cfb1ef7e25a71d709ec89dcde43fb61fc",
+  "finding": "Raw target-player export lackswl; player summary expected frame passed to shared _assert_record raised AttributeError.",
+  "independent_reproduction": {
+    "error": "'DataFrame' object has no attribute 'wl'",
+    "raw_primary_rows": 71,
+    "selected_AD_out_rows": 5,
+    "selected_points": 117,
+    "raw_has_wl": false
+  },
+  "minimal_fix": "Validated many-to-one game_id join to independently authenticated raw LAL team outcome; all numeric/ID/average/sum assertions retained.",
+  "runtime_or_source_defect": false,
+  "source_calls": 0
+}

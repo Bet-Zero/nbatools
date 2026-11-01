@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS one pinned775 combined historical stage required gate at exact repaired revision; actual canonical/staging/runtime execution acceptance pending",
+  "reviewed_revision": "e204b682d0300698e2a966f02539719a4a298547",
+  "equivalent_local_revision": "48d8c20686b7da57ded30ff782f734b4624f926b",
+  "tree": "1b5c67f03f77a724b227d7c6a6341947478dcbf9",
+  "file_hashes": {
+    "tests/cloud_historical_participation_stage_real_data.py": "a3727d72b52a77dd5e81afcd75d5aa6ed2c0f499f7b94f0e83812cff917d4b21",
+    "tests/test_historical_stage_merge.py": "0f95329471ef52f700c744b7fcc857fac8565998503f288822cfb92b475702f9",
+    "tools/stage_participation_collection.py": "b878bc8b69519860f2786c612f0be4734e940f9086c8aff003dd67101baf0743"
+  },
+  "initial_blocked_review_sha256": "8b883b3990f5b49d9f4d80dcd21c509242c128ba4cc34ccb44e9e19e08350b92",
+  "focused_tests": {
+    "file": "tests/test_historical_stage_merge.py",
+    "passed": 3,
+    "skipped": 0
+  },
+  "independent_offline_checks": {
+    "accepted328_state_audit_inputs_rebound_to_same775": true,
+    "all25_new_target_oracle_facts_checked": true,
+    "source_population_rows": [
+      529,
+      347
+    ],
+    "all4projected_populations_match_independent_proof": true,
+    "validated_join_preserves71rawLeBronIDs_and_points": true,
+    "AD_out_LeBron_summary": {
+      "game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ],
+      "games": 5,
+      "wins": 1,
+      "losses": 4,
+      "points": 117,
+      "pts_avg": 23.4
+    },
+    "AD_out_LeBron30finder": {
+      "game_ids": [
+        22301155
+      ],
+      "points": 33
+    },
+    "duplicate_and_missing_team_outcomes_reject": true
+  },
+  "reviewed_safeguards": {
+    "two_stage_runs_same775_base": true,
+    "full_canonical_PGA_replay_required_by_unchanged_structured_producer": true,
+    "all876_staged_row_state_names_dates_literal_seconds_checked": true,
+    "LAL68serialized_rows_and_twoimports_preserved": true,
+    "all80oldsourcefiles_and_copied_core_match_manifest": true,
+    "shared_paths_require_identical_bytes": true,
+    "creation_vs_append_paths_disjoint": true,
+    "joint_unchanged_publication_validation": true,
+    "legacy_test_manifest_created_after_overlay_export": true,
+    "flat_export_contains_no_manifest_or_core": true,
+    "all328coverage_states_and_counts_and_home_samples": true,
+    "scalar_and_pair_qualified_empty_samples": true,
+    "literal_Tatum2024_positive_and_2023unknown_control": true,
+    "no2025stage_composition_or_fullslice_claim": true
+  },
+  "required_gate": {
+    "selector": "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers",
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "selected_tests": 1,
+    "local_api_posts": 4,
+    "source_requests": 0,
+    "production_writes": 0
+  },
+  "reuse": "Source50originals/full876proof, exactprojection/answeroracles, bd3genericstager creation and oldappend reviews unchanged; no repeated source acquisition or broad suite.",
+  "actual_R2_approved": true,
+  "actual_R2_execution_accepted": false,
+  "staging_accepted": false,
+  "requirement_closures": 0,
+  "production_publication_approved": false,
+  "production_writes": 0
+}
