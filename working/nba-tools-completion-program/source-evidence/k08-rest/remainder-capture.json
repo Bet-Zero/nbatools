@@ -1,0 +1,645 @@
+{
+  "schema_version": 1,
+  "classification": "thirteen_fixed_source_captures_not_reason_or_feature_acceptance",
+  "run_id": 41285754472,
+  "job_id": 124786714570,
+  "reviewed_sha": "87690c261496b1288fb4e81f1d65eecafa0ac706",
+  "reviewed_tree": "61e5cf995e436af4d6c1f9cc3acab86675f76bfb",
+  "request_sha": "3213e32cbb9acbe120bb5a1d7fcdcded9095d8c9",
+  "artifact_id": 13075296739,
+  "artifact_sha256": "695cdb15daf25473ad378b4c2ec433fc0f6923a96f21586ffb06db5a0a5a35a7",
+  "artifact_size_bytes": 372302,
+  "strict_execution_summary": {
+    "candidate_sha": "3213e32cbb9acbe120bb5a1d7fcdcded9095d8c9",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_luka_reason_remaining_capture_real_data.py::test_capture_thirteen_remaining_luka_reason_gamebooks_only"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "capture_summary": {
+    "classification": "thirteen_fixed_source_captures_not_reason_or_feature_acceptance",
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+    "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+    "representative_artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+    "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+    "source_reader_invocations": 13,
+    "new_pdf_bytes_retained": 355028,
+    "reused_pdf_bytes_retained": 26433,
+    "combined_pdf_bytes_retained": 381461,
+    "capture_receipts": [
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500163",
+        "game_date": "2025-11-03",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:00.763975+00:00",
+        "source_receipt": {
+          "raw_file": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.182943+00:00",
+          "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+          "size_bytes": 26556,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+            "size_bytes": 26556,
+            "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771"
+          }
+        ],
+        "retained_pdf_bytes": 26556,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26556,
+          "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500336",
+        "game_date": "2025-12-04",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.185388+00:00",
+        "source_receipt": {
+          "raw_file": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.463831+00:00",
+          "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+          "size_bytes": 26430,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+            "size_bytes": 26430,
+            "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f"
+          }
+        ],
+        "retained_pdf_bytes": 26430,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26430,
+          "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500418",
+        "game_date": "2025-12-23",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.465695+00:00",
+        "source_receipt": {
+          "raw_file": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.704436+00:00",
+          "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+          "size_bytes": 26885,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+            "size_bytes": 26885,
+            "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748"
+          }
+        ],
+        "retained_pdf_bytes": 26885,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26885,
+          "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500601",
+        "game_date": "2026-01-17",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.706512+00:00",
+        "source_receipt": {
+          "raw_file": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.008083+00:00",
+          "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+          "size_bytes": 27499,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+            "size_bytes": 27499,
+            "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288"
+          }
+        ],
+        "retained_pdf_bytes": 27499,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27499,
+          "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500753",
+        "game_date": "2026-02-07",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.010205+00:00",
+        "source_receipt": {
+          "raw_file": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.215415+00:00",
+          "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+          "size_bytes": 27122,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+            "size_bytes": 27122,
+            "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2"
+          }
+        ],
+        "retained_pdf_bytes": 27122,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27122,
+          "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500769",
+        "game_date": "2026-02-09",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.217531+00:00",
+        "source_receipt": {
+          "raw_file": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.494142+00:00",
+          "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+          "size_bytes": 27072,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+            "size_bytes": 27072,
+            "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291"
+          }
+        ],
+        "retained_pdf_bytes": 27072,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27072,
+          "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500774",
+        "game_date": "2026-02-10",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.496371+00:00",
+        "source_receipt": {
+          "raw_file": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.807900+00:00",
+          "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+          "size_bytes": 27579,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+            "size_bytes": 27579,
+            "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014"
+          }
+        ],
+        "retained_pdf_bytes": 27579,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27579,
+          "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500791",
+        "game_date": "2026-02-12",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.810205+00:00",
+        "source_receipt": {
+          "raw_file": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.041206+00:00",
+          "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+          "size_bytes": 27203,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+            "size_bytes": 27203,
+            "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee"
+          }
+        ],
+        "retained_pdf_bytes": 27203,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27203,
+          "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501140",
+        "game_date": "2026-04-05",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.044781+00:00",
+        "source_receipt": {
+          "raw_file": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.303369+00:00",
+          "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+          "size_bytes": 27782,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+            "size_bytes": 27782,
+            "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080"
+          }
+        ],
+        "retained_pdf_bytes": 27782,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27782,
+          "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501155",
+        "game_date": "2026-04-07",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.305856+00:00",
+        "source_receipt": {
+          "raw_file": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.584265+00:00",
+          "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+          "size_bytes": 27968,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+            "size_bytes": 27968,
+            "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd"
+          }
+        ],
+        "retained_pdf_bytes": 27968,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27968,
+          "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501170",
+        "game_date": "2026-04-09",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.586710+00:00",
+        "source_receipt": {
+          "raw_file": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.873752+00:00",
+          "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+          "size_bytes": 27847,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+            "size_bytes": 27847,
+            "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d"
+          }
+        ],
+        "retained_pdf_bytes": 27847,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27847,
+          "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501185",
+        "game_date": "2026-04-10",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.876396+00:00",
+        "source_receipt": {
+          "raw_file": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+          "retrieved_at": "2026-11-01T07:42:04.182696+00:00",
+          "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+          "size_bytes": 27765,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+            "size_bytes": 27765,
+            "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310"
+          }
+        ],
+        "retained_pdf_bytes": 27765,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27765,
+          "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501198",
+        "game_date": "2026-04-12",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:04.185403+00:00",
+        "source_receipt": {
+          "raw_file": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+          "retrieved_at": "2026-11-01T07:42:04.387309+00:00",
+          "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+          "size_bytes": 27320,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+            "size_bytes": 27320,
+            "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28"
+          }
+        ],
+        "retained_pdf_bytes": 27320,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27320,
+          "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      }
+    ],
+    "failures": [],
+    "reported_reason_qualified": false,
+    "clinical_status_qualified": false,
+    "full_slice_accepted": false,
+    "production_writes": 0
+  },
+  "independent_source_reason_review": {
+    "status": "passed_source_facts_only",
+    "reviewer": "/root/absence_checker",
+    "sha256": "477e3284ecb87ba71718ad488749597d8628e6f0e2c7e1e6afd94da6ab7907b4",
+    "fact_journal_sha256": "9cc9a05a41d837e45654d4fdae880738da03d6cb882b37fc9ae8f715c12a0356",
+    "oracle_sha256": "31d85064bde4527840e28d3ca48f83e77871e0ae7f4fe548946bd1a82513085a"
+  },
+  "source_stage_accepted": false,
+  "consumer_accepted": false,
+  "reported_rest_total": 0,
+  "production_writes": 0,
+  "source_facts_accepted": true,
+  "source_only_reason_coverage": {
+    "observed_DNP_games": 18,
+    "officially_reported_rest": 0,
+    "reported_other": 18,
+    "unknown_reason": 0,
+    "reported_medical_wordings": 15,
+    "reported_personal": 2,
+    "reported_suspension": 1,
+    "actual_clinical_rest_or_health": null
+  }
+}

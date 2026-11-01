@@ -1,0 +1,2038 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model ID unavailable; independent checker agent, no cross-model claim",
+  "classification": "independent_complete_source_reported_reason_qualification_not_runtime_or_publication_acceptance",
+  "approval": "PASS_SOURCE_REPORTED_FACTS_ONLY",
+  "reviewed_code_revision": "87690c261496b1288fb4e81f1d65eecafa0ac706",
+  "code_tree": "61e5cf995e436af4d6c1f9cc3acab86675f76bfb",
+  "run_id": 41285754472,
+  "request_revision": "3213e32cbb9acbe120bb5a1d7fcdcded9095d8c9",
+  "artifact_id": 13075296739,
+  "artifact": {
+    "sha256": "695cdb15daf25473ad378b4c2ec433fc0f6923a96f21586ffb06db5a0a5a35a7",
+    "size_bytes": 372302,
+    "members": 44
+  },
+  "request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+  "initial_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+  "strict_summary": {
+    "candidate_sha": "3213e32cbb9acbe120bb5a1d7fcdcded9095d8c9",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_luka_reason_remaining_capture_real_data.py::test_capture_thirteen_remaining_luka_reason_gamebooks_only"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "capture_summary": {
+    "classification": "thirteen_fixed_source_captures_not_reason_or_feature_acceptance",
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+    "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+    "representative_artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+    "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+    "source_reader_invocations": 13,
+    "new_pdf_bytes_retained": 355028,
+    "reused_pdf_bytes_retained": 26433,
+    "combined_pdf_bytes_retained": 381461,
+    "capture_receipts": [
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500163",
+        "game_date": "2025-11-03",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:00.763975+00:00",
+        "source_receipt": {
+          "raw_file": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.182943+00:00",
+          "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+          "size_bytes": 26556,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+            "size_bytes": 26556,
+            "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771"
+          }
+        ],
+        "retained_pdf_bytes": 26556,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26556,
+          "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500336",
+        "game_date": "2025-12-04",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.185388+00:00",
+        "source_receipt": {
+          "raw_file": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.463831+00:00",
+          "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+          "size_bytes": 26430,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+            "size_bytes": 26430,
+            "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f"
+          }
+        ],
+        "retained_pdf_bytes": 26430,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26430,
+          "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500418",
+        "game_date": "2025-12-23",
+        "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.465695+00:00",
+        "source_receipt": {
+          "raw_file": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+          "retrieved_at": "2026-11-01T07:42:01.704436+00:00",
+          "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+          "size_bytes": 26885,
+          "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+            "size_bytes": 26885,
+            "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748"
+          }
+        ],
+        "retained_pdf_bytes": 26885,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 26885,
+          "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500601",
+        "game_date": "2026-01-17",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:01.706512+00:00",
+        "source_receipt": {
+          "raw_file": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.008083+00:00",
+          "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+          "size_bytes": 27499,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+            "size_bytes": 27499,
+            "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288"
+          }
+        ],
+        "retained_pdf_bytes": 27499,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27499,
+          "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500753",
+        "game_date": "2026-02-07",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.010205+00:00",
+        "source_receipt": {
+          "raw_file": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.215415+00:00",
+          "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+          "size_bytes": 27122,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+            "size_bytes": 27122,
+            "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2"
+          }
+        ],
+        "retained_pdf_bytes": 27122,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27122,
+          "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500769",
+        "game_date": "2026-02-09",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.217531+00:00",
+        "source_receipt": {
+          "raw_file": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.494142+00:00",
+          "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+          "size_bytes": 27072,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+            "size_bytes": 27072,
+            "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291"
+          }
+        ],
+        "retained_pdf_bytes": 27072,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27072,
+          "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500774",
+        "game_date": "2026-02-10",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.496371+00:00",
+        "source_receipt": {
+          "raw_file": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+          "retrieved_at": "2026-11-01T07:42:02.807900+00:00",
+          "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+          "size_bytes": 27579,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+            "size_bytes": 27579,
+            "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014"
+          }
+        ],
+        "retained_pdf_bytes": 27579,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27579,
+          "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022500791",
+        "game_date": "2026-02-12",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:02.810205+00:00",
+        "source_receipt": {
+          "raw_file": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.041206+00:00",
+          "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+          "size_bytes": 27203,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+            "size_bytes": 27203,
+            "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee"
+          }
+        ],
+        "retained_pdf_bytes": 27203,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27203,
+          "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501140",
+        "game_date": "2026-04-05",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.044781+00:00",
+        "source_receipt": {
+          "raw_file": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.303369+00:00",
+          "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+          "size_bytes": 27782,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+            "size_bytes": 27782,
+            "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080"
+          }
+        ],
+        "retained_pdf_bytes": 27782,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27782,
+          "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501155",
+        "game_date": "2026-04-07",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.305856+00:00",
+        "source_receipt": {
+          "raw_file": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.584265+00:00",
+          "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+          "size_bytes": 27968,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+            "size_bytes": 27968,
+            "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd"
+          }
+        ],
+        "retained_pdf_bytes": 27968,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27968,
+          "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501170",
+        "game_date": "2026-04-09",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.586710+00:00",
+        "source_receipt": {
+          "raw_file": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+          "retrieved_at": "2026-11-01T07:42:03.873752+00:00",
+          "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+          "size_bytes": 27847,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+            "size_bytes": 27847,
+            "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d"
+          }
+        ],
+        "retained_pdf_bytes": 27847,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27847,
+          "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501185",
+        "game_date": "2026-04-10",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:03.876396+00:00",
+        "source_receipt": {
+          "raw_file": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+          "retrieved_at": "2026-11-01T07:42:04.182696+00:00",
+          "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+          "size_bytes": 27765,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+            "size_bytes": 27765,
+            "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310"
+          }
+        ],
+        "retained_pdf_bytes": 27765,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27765,
+          "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      },
+      {
+        "classification": "remaining_source_envelope_capture_not_reported_reason_acceptance",
+        "base_generation": "availability-lebron-season-v1-20261031",
+        "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+        "collection_request_sha256": "dc4f8dbbebeb3c73fc9229c98d42e78a8f44bd40db0e9f2459a292ce131568b1",
+        "reason_coverage_audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "game_id": "0022501198",
+        "game_date": "2026-04-12",
+        "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf",
+        "source_reader_invocations": 1,
+        "attempts_per_file": 1,
+        "timeout_seconds": 20,
+        "pdf_max_bytes": 1500000,
+        "capture_complete": true,
+        "reported_reason_qualified": false,
+        "participation_qualified": false,
+        "clinical_status_qualified": false,
+        "full_slice_accepted": false,
+        "production_writes": 0,
+        "attempt_started_at": "2026-11-01T07:42:04.185403+00:00",
+        "source_receipt": {
+          "raw_file": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+          "retrieved_at": "2026-11-01T07:42:04.387309+00:00",
+          "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+          "size_bytes": 27320,
+          "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf"
+        },
+        "retained_pdf_files": [
+          {
+            "file": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+            "size_bytes": 27320,
+            "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28"
+          }
+        ],
+        "retained_pdf_bytes": 27320,
+        "retention_limits_passed": true,
+        "returned_body_diagnostic": {
+          "size_bytes": 27320,
+          "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+          "retained": true
+        },
+        "representative_qualification_sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0",
+        "representative_pdf_sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55"
+      }
+    ],
+    "failures": [],
+    "reported_reason_qualified": false,
+    "clinical_status_qualified": false,
+    "full_slice_accepted": false,
+    "production_writes": 0
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season": "2025-26",
+  "season_type": "Regular Season",
+  "team_id": 1610612747,
+  "player_id": 1629029,
+  "player_name": "Luka Doncic",
+  "population": {
+    "observed_games": 82,
+    "played": 64,
+    "did_not_play": 18,
+    "participation_unknown": 0,
+    "participation_basis": "Accepted unpublished LAL stage; production not activated",
+    "explicit_reported_rest": 0,
+    "source_reported_other": 18,
+    "reason_unknown": 0,
+    "reported_classes": {
+      "reported_medical_wording": 15,
+      "reported_personal": 2,
+      "reported_suspension": 1
+    },
+    "reported_rest_season_count": 0,
+    "reported_rest_season_count_qualified": true,
+    "actual_or_clinical_rest_count": null
+  },
+  "raw_population_bindings": {
+    "team82": {
+      "source_artifact": "mixed-initial-failed.zip",
+      "member": "acquired_data/mixed-participation/lal-team82.csv",
+      "sha256": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436",
+      "size_bytes": 15210,
+      "interpretation": "Authenticated raw subset accepted independently; its original runtime run remains FAILED"
+    },
+    "canonical_positive": {
+      "source_artifact": "mixed-initial-failed.zip",
+      "member": "acquired_data/mixed-participation/luka-reaves-positive-appearances.csv",
+      "sha256": "5878bdcb37589791623059d55d860208219874b8fd1dbfddb306279f1f68e91e",
+      "size_bytes": 10791
+    },
+    "participation": {
+      "source_artifact_sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+      "member": "acquired_data/raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "e7ae4e259b27ed39277f9f0dc08c8719bc0509bbb91b0bc0f66cdd1a50c2389f",
+      "size_bytes": 529523
+    }
+  },
+  "games": [
+    {
+      "game_id": "0022500113",
+      "game_date": "2025-10-26",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "participation_comment_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06.pdf",
+          "sha256": "4f3d1961f46fe1d2c8fb91fdb23e4fbcd8691802c86b40d80e09ed3c522cbb06",
+          "size_bytes": 26990,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": true
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251026_LALSAC.json",
+          "sha256": "098da56cb22b98b9592cdc0c4baa84242f11e918f9339cc70414256fbd112326",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null,
+      "reused_accepted_review": {
+        "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json",
+        "sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "basis": "Accepted original four reported observations reused; not newly rerendered or fetched."
+      }
+    },
+    {
+      "game_id": "0022500122",
+      "game_date": "2025-10-27",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "participation_comment_literal": "INACTIVE - Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5.pdf",
+          "sha256": "5944340c8398f8476ff5f5e1bdc96771bc72dff05a347a37cbf30e03cb6688b5",
+          "size_bytes": 27688,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": true
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251027_PORLAL.json",
+          "sha256": "d20265335e07f76fa588e5602b84aa219936d4210b1f085aa88efa85cdb05d99",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null,
+      "reused_accepted_review": {
+        "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json",
+        "sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "basis": "Accepted original four reported observations reused; not newly rerendered or fetched."
+      }
+    },
+    {
+      "game_id": "0022500136",
+      "game_date": "2025-10-29",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500136.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500136.json",
+          "sha256": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+          "size_bytes": 21310,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "de8e5100998df1ac653d56cf8a2449bc718bd3af"
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "participation_source_corrob": "Explicit Lakers inactive entry corroborates already qualified same-game DNP; no new participation table imported.",
+      "reported_rest_literal_present": false,
+      "source_entry_literal": "Doncic (Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion)",
+      "page": 1,
+      "section": "Lakers inactive footer",
+      "pdftotext_layout_line": 44,
+      "character_span_start": 5572,
+      "character_span_end_exclusive": 5643,
+      "extracted_text_sha256": "63c7d8d3adc9aed2ccf38feea787a403d380e45da84220bce7732ff4cfb1fa2d",
+      "complete_LAL_footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Finger; Sprain; Lower Left Leg Contusion), James (Injury/Illness - Right Sciatica; -), Kleber (Injury/Illness -\nAbdominal Muscle; Strain), Koloko (G League - Two-Way), Thiero (Injury/Illness - Left Knee; Surgery Recovery), Vincent (Injury/Illness - Left Ankle; Sprain)\n",
+      "injury_diagnosis_or_health_or_current_status_inference": false,
+      "identity_authority": {
+        "player_id": 1629029,
+        "PDF_surname": "Doncic",
+        "team_id": 1610612747,
+        "source_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500136.json",
+        "source_sha256": "4e863c426f2e176dd20518cc8c7fb73614e4bd9a14b411189e02863b2f0be6d3",
+        "source_json_path": "$.boxScoreSummary.awayTeam.inactives[2]",
+        "literal_source_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "exact_same_game_side_envelope_verified": true,
+        "matching_same_game_surname_candidates": 1,
+        "normalization": "Accent folding and punctuation only; not surname-alone or another-game membership inference.",
+        "source_name": "Luka Doncic"
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-representative/0022500136/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf",
+        "sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+        "size_bytes": 26433,
+        "source_url": "https://statsdmz.nba.com/pdfs/20251029/20251029_LALMIN.pdf",
+        "retrieved_at": "2026-11-01T07:24:54.780873+00:00",
+        "original_NBA_capture_time": null,
+        "source_receipt_member": "acquired_data/luka-reason-representative/0022500136/20251029_LALMIN.json",
+        "source_receipt_sha256": "b47c8cff76e0eea33a1fd28e54ab803340da7acf11b9120a40462e76b2a78486",
+        "retained_local_review_path": "/workspace/nbatools/work/luka-reason-first-report-review/b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf"
+      },
+      "reused_accepted_review": {
+        "path": "working/nba-tools-completion-program/source-evidence/k08-rest/representative-source-qualification.json",
+        "sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0"
+      }
+    },
+    {
+      "game_id": "0022500163",
+      "game_date": "2025-11-03",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Lower Left Leg; Contusion Injury Management",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500163.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500163.json",
+          "sha256": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+          "size_bytes": 19442,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "747a4cc9e7de02942794d56754a2ca146f9510a0"
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612757,
+        "away_points": 123,
+        "home_points": 115
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500163.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500163.json",
+          "sha256": "c15f0fc3780d9027ee1c33137cac5bb9a4530fad0d5efdd0e79fadff7b58504b",
+          "size_bytes": 19442,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "747a4cc9e7de02942794d56754a2ca146f9510a0"
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500163/d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771.pdf",
+        "sha256": "d404ec4184aff095c66f8ed67f592f7a7eee75352bd81eb0e51c7f1a7fcd2771",
+        "size_bytes": 26556,
+        "source_url": "https://statsdmz.nba.com/pdfs/20251103/20251103_LALPOR.pdf",
+        "retrieved_at": "2026-11-01T07:42:01.182943+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500163/20251103_LALPOR.json",
+        "receipt_sha256": "224c2708025b5755e30b3b75a7e303778d99a7065d58256b886e40b2ad28d1bf",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500163/capture.json",
+        "capture_sha256": "1d402ca3cb1cdc54d9f80fa23314796883694f99580c9f43e644a53b9cc3d588"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Lower Left Leg; Contusion Injury Management)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Lower Left Leg; Contusion Injury Management), James (Injury/Illness - Right Sciatica; -), Reaves (Injury/Illness -\nRight Groin; soreness), Thiero (Injury/Illness - Left Knee; Surgery Recovery), Vincent (Injury/Illness - Left Ankle; Sprain)\n",
+        "pdftotext_layout_line": 47,
+        "character_span_start": 5821,
+        "character_span_end_exclusive": 5890,
+        "extracted_text_sha256": "b5fc6ae0be64fe4088b97aa1955ca5cee3b35eb11cbb92184476515a13fc709d",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "W",
+        "pts": 123,
+        "opponent_pts": 115
+      }
+    },
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_personal",
+      "reported_reason_literal": "Personal",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500336.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500336.json",
+          "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+          "size_bytes": 18595,
+          "retrieved_at": "2026-11-01T04:06:48.143052+00:00",
+          "git_blob_sha": "f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612761,
+        "away_points": 123,
+        "home_points": 120
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500336.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500336.json",
+          "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+          "size_bytes": 18595,
+          "retrieved_at": "2026-11-01T04:06:48.143052+00:00",
+          "git_blob_sha": "f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500336/0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f.pdf",
+        "sha256": "0c960b5c3b8902912d3b1991bc193395656a741327abd37cbc9e596b8db1636f",
+        "size_bytes": 26430,
+        "source_url": "https://statsdmz.nba.com/pdfs/20251204/20251204_LALTOR.pdf",
+        "retrieved_at": "2026-11-01T07:42:01.463831+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500336/20251204_LALTOR.json",
+        "receipt_sha256": "4eb4f0a4c567a0cb5f594a087da54338695b97fb421cdc41cc24793e8f23ed6d",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500336/capture.json",
+        "capture_sha256": "caa355c60b3595d5a0b589162c7f937785b803b15630921f9dcd885bc106f5b2"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Personal)",
+        "footer_literal": "Inactive: Lakers - Doncic (Personal), Manon (), Smart (Injury/Illness - Lower Back; Injury Management), Timme ()\n",
+        "pdftotext_layout_line": 45,
+        "character_span_start": 5729,
+        "character_span_end_exclusive": 5746,
+        "extracted_text_sha256": "efe47c83ca02992b693599c1c0767aa745f2635d57c6986d0087daf786fe8224",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "W",
+        "pts": 123,
+        "opponent_pts": 120
+      }
+    },
+    {
+      "game_id": "0022500338",
+      "game_date": "2025-12-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_personal",
+      "reported_reason_literal": "INACTIVE - Personal",
+      "participation_comment_literal": "INACTIVE - Personal",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "raw/player_game_availability_sources/7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153.pdf",
+          "sha256": "7d68bf50c5aae46861ecd639fd251fc4e4c9947e350178fbdb0794f866ce6153",
+          "size_bytes": 27308,
+          "source_kind": "previously_qualified_official_gamebook",
+          "text_replayed_in_this_assessment": false
+        },
+        {
+          "path": "raw/player_game_availability_sources/20251205_LALBOS.json",
+          "sha256": "db4e5eff11dc8719ec539c0ca472e03eb5506bbbdb143197051a12d298dbb4d1",
+          "size_bytes": 312
+        }
+      ],
+      "unknown_explanation": null,
+      "reused_accepted_review": {
+        "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json",
+        "sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "basis": "Accepted original four reported observations reused; not newly rerendered or fetched."
+      }
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Lower Left Leg; Contusion",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500418.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500418.json",
+          "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+          "size_bytes": 17380,
+          "retrieved_at": "2026-11-01T04:06:49.486854+00:00",
+          "git_blob_sha": "459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612756,
+        "away_points": 108,
+        "home_points": 132
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500418.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500418.json",
+          "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+          "size_bytes": 17380,
+          "retrieved_at": "2026-11-01T04:06:49.486854+00:00",
+          "git_blob_sha": "459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/459819de56843a9d3b166b55a7d575a5c7fd0396",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500418/8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748.pdf",
+        "sha256": "8d3ac3ac1025fff1406cd3e2f5ecccbce3ad839f249260c5eced3be19be58748",
+        "size_bytes": 26885,
+        "source_url": "https://statsdmz.nba.com/pdfs/20251223/20251223_LALPHX.pdf",
+        "retrieved_at": "2026-11-01T07:42:01.704436+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500418/20251223_LALPHX.json",
+        "receipt_sha256": "fd3e9fec6b589577d15d9eca73b5e0f409a52840a216e1517c6b2b10939a1b86",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500418/capture.json",
+        "capture_sha256": "79491c0d37bc5b0c33165242ad9286b001e5295bc41eecb7ecdc21d32a70327c"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Lower Left Leg; Contusion)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Lower Left Leg; Contusion), Hachimura (Injury/Illness - Right Groin; Soreness), Timme (G League - Two-Way),\nVincent (Injury/Illness - Lumbar Back; Strain)\n",
+        "pdftotext_layout_line": 46,
+        "character_span_start": 6261,
+        "character_span_end_exclusive": 6312,
+        "extracted_text_sha256": "609df4df8979a1e9e5607db7a84b38d3e66acebb5fab0785a7eb118dd06cb478",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "L",
+        "pts": 108,
+        "opponent_pts": 132
+      }
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Groin; Soreness",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500601.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500601.json",
+          "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+          "size_bytes": 20283,
+          "retrieved_at": "2026-11-01T04:06:54.191043+00:00",
+          "git_blob_sha": "c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612757,
+        "away_points": 116,
+        "home_points": 132
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500601.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500601.json",
+          "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+          "size_bytes": 20283,
+          "retrieved_at": "2026-11-01T04:06:54.191043+00:00",
+          "git_blob_sha": "c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500601/e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288.pdf",
+        "sha256": "e7cfe96f3183b18151455a69e8977915781818c603f4ea3161046502423ff288",
+        "size_bytes": 27499,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260117/20260117_LALPOR.pdf",
+        "retrieved_at": "2026-11-01T07:42:02.008083+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500601/20260117_LALPOR.json",
+        "receipt_sha256": "5e1acb7fbab01d77f0468d86c9f88b3194bd39f406ab5763d2c06b8d582d9892",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500601/capture.json",
+        "capture_sha256": "2588288535014931c2975120ca28265d62208d9ff0c57c17de44ff3e01477905"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Groin; Soreness)",
+        "footer_literal": "Inactive: Lakers - Ayton (Injury/Illness - Left Knee; Soreness), Doncic (Injury/Illness - Left Groin; Soreness), Hayes (Injury/Illness - Left Hamstring;\nTendinopathy), Reaves (Injury/Illness - Left Calf; Strain), Thiero (Injury/Illness - Right MCL; Sprain)\n",
+        "pdftotext_layout_line": 48,
+        "character_span_start": 6522,
+        "character_span_end_exclusive": 6568,
+        "extracted_text_sha256": "138e0bcfb42ec5b9e40ced16acdcf71e57f2077f1ade79acda00c24c42c41e19",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "L",
+        "pts": 116,
+        "opponent_pts": 132
+      }
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500753.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500753.json",
+          "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+          "size_bytes": 22652,
+          "retrieved_at": "2026-11-01T04:06:57.758370+00:00",
+          "git_blob_sha": "65f718c1235ea216b597a336084885888f582d95",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/65f718c1235ea216b597a336084885888f582d95",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612744,
+        "home_team_id": 1610612747,
+        "away_points": 99,
+        "home_points": 105
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500753.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500753.json",
+          "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+          "size_bytes": 22652,
+          "retrieved_at": "2026-11-01T04:06:57.758370+00:00",
+          "git_blob_sha": "65f718c1235ea216b597a336084885888f582d95",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/65f718c1235ea216b597a336084885888f582d95",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500753/6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2.pdf",
+        "sha256": "6cf925d8db47fd91e579b90570af9ca3c5201f0284c0a926158aeb901e4172c2",
+        "size_bytes": 27122,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260207/20260207_GSWLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:02.215415+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500753/20260207_GSWLAL.json",
+        "receipt_sha256": "a2b30080831d99df66bad6784c95bd3f4e2bcd566813e5a092d919cb74a28b5a",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500753/capture.json",
+        "capture_sha256": "e8c8a7eb238da4da6a657b48244fd8740642ebb6000905fb512662c546b27a5b"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Manon (G League - Two-Way), Thiero (Injury/Illness - Right MCL; Sprain)\n",
+        "pdftotext_layout_line": 49,
+        "character_span_start": 6261,
+        "character_span_end_exclusive": 6309,
+        "extracted_text_sha256": "871d9b46787724d23187b591b87d96fcf5a23fce9ea383405977448541878cbb",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "W",
+        "pts": 105,
+        "opponent_pts": 99
+      }
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500769.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500769.json",
+          "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+          "size_bytes": 23089,
+          "retrieved_at": "2026-11-01T04:06:58.080447+00:00",
+          "git_blob_sha": "e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612760,
+        "home_team_id": 1610612747,
+        "away_points": 119,
+        "home_points": 110
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500769.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500769.json",
+          "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+          "size_bytes": 23089,
+          "retrieved_at": "2026-11-01T04:06:58.080447+00:00",
+          "git_blob_sha": "e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500769/db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291.pdf",
+        "sha256": "db22892cdab7999670af8b530af75548112d6b2c2f89df207cc3bf0070106291",
+        "size_bytes": 27072,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260209/20260209_OKCLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:02.494142+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500769/20260209_OKCLAL.json",
+        "receipt_sha256": "3063f9397d61cc34930bd4194a26675625eadb98792f9761dfce274614f0e60e",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500769/capture.json",
+        "capture_sha256": "4de51e5e23a7f22f7c53fc0bf1155fe6a09b92ba5049c4a154e7c192dfbad2f1"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Manon (G League - Two-Way), Smith Jr. (G League - Two-Way), Thiero (Injury/Illness - Right\nMCL; Sprain), Timme (G League - Two-Way)\n",
+        "pdftotext_layout_line": 49,
+        "character_span_start": 6265,
+        "character_span_end_exclusive": 6313,
+        "extracted_text_sha256": "c44c6e9935a8a43efefebec6a08b1db2eb48196165038b17ae25adc9cd70825b",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "L",
+        "pts": 110,
+        "opponent_pts": 119
+      }
+    },
+    {
+      "game_id": "0022500774",
+      "game_date": "2026-02-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500774.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500774.json",
+          "sha256": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+          "size_bytes": 20394,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "c2498494fc262145c04241db10604f2e786309ad"
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612759,
+        "home_team_id": 1610612747,
+        "away_points": 136,
+        "home_points": 108
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022500774.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500774.json",
+          "sha256": "d0c6be3f430ca030bc296e266fc882c94232db1b61606c9b5d38fa614287e1be",
+          "size_bytes": 20394,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "c2498494fc262145c04241db10604f2e786309ad"
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[3]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500774/a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014.pdf",
+        "sha256": "a0958501d5aebd1562bafd929971a71bfb3ad8cdcd64cd1637c45f4f0acaf014",
+        "size_bytes": 27579,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260210/20260210_SASLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:02.807900+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500774/20260210_SASLAL.json",
+        "receipt_sha256": "c88e4c671c7d100cabaa4b2cc1b36379fb51e7fe0829000e881e1fe028989430",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500774/capture.json",
+        "capture_sha256": "2736caf9c42941a674f070210a3a7a5ea867eb22a39e8367a394d2e9e9a100e4"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Ayton (Injury/Illness - Right Knee; Soreness), Doncic (Injury/Illness - Left hamstring; Strain), James (Injury/Illness - Left Foot; Arthritis),\nReaves (Injury/Illness - Left Calf; Injury Management), Smart (Injury/Illness - Right Ankle; Soreness)\n",
+        "pdftotext_layout_line": 51,
+        "character_span_start": 6977,
+        "character_span_end_exclusive": 7025,
+        "extracted_text_sha256": "e3addb0e967d6f84d7e538e839329e2da4dab1f60472e6892dfab140af89654e",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "L",
+        "pts": 108,
+        "opponent_pts": 136
+      }
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500791.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500791.json",
+          "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+          "size_bytes": 23396,
+          "retrieved_at": "2026-11-01T04:06:58.395951+00:00",
+          "git_blob_sha": "d0ec556d134686e37d241e12516c216d7e176fb0",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/d0ec556d134686e37d241e12516c216d7e176fb0",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612742,
+        "home_team_id": 1610612747,
+        "away_points": 104,
+        "home_points": 124
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022500791.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022500791.json",
+          "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+          "size_bytes": 23396,
+          "retrieved_at": "2026-11-01T04:06:58.395951+00:00",
+          "git_blob_sha": "d0ec556d134686e37d241e12516c216d7e176fb0",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/d0ec556d134686e37d241e12516c216d7e176fb0",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022500791/59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee.pdf",
+        "sha256": "59832b03398523762330f5628ea8b4d622f4af77d562a0e7ce8ef9599d6616ee",
+        "size_bytes": 27203,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260212/20260212_DALLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:03.041206+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022500791/20260212_DALLAL.json",
+        "receipt_sha256": "ad17abe4aa50f0bf7eee92559612740484cc532d5aa364e9a6a9ab42822cf9bf",
+        "capture_member": "acquired_data/luka-reason-remaining/0022500791/capture.json",
+        "capture_sha256": "c10fc0775836752fde94f4abfd38b4ce58710382767552b25cc7bb7b0dc20757"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Ayton (Injury/Illness - Right knee; Soreness), Doncic (Injury/Illness - Left Hamstring; Strain), Manon (G League - Two-Way), Smith Jr. (G\nLeague - Two-Way)\n",
+        "pdftotext_layout_line": 50,
+        "character_span_start": 6815,
+        "character_span_end_exclusive": 6863,
+        "extracted_text_sha256": "91c9c77c97710305469ef031e0ae2a918c37c44b93f5b5c169a3518c8d9abad9",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "W",
+        "pts": 124,
+        "opponent_pts": 104
+      }
+    },
+    {
+      "game_id": "0022501098",
+      "game_date": "2026-03-30",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_suspension",
+      "reported_reason_literal": "NWT - League Suspension",
+      "participation_comment_literal": "NWT - League Suspension",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoretraditionalv3_0022501098.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2026/0022501098.json",
+          "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40",
+          "size_bytes": 19678,
+          "retrieved_at": "2026-11-01T04:06:45.372639+00:00",
+          "git_blob_sha": "ad72d90e3f3739f1a6b23e79731875e5205d75d4",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/ad72d90e3f3739f1a6b23e79731875e5205d75d4",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reused_accepted_review": {
+        "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json",
+        "sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+        "basis": "Accepted original four reported observations reused; not newly rerendered or fetched."
+      }
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501140.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501140.json",
+          "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+          "size_bytes": 21854,
+          "retrieved_at": "2026-11-01T04:06:59.465445+00:00",
+          "git_blob_sha": "f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612742,
+        "away_points": 128,
+        "home_points": 134
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501140.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501140.json",
+          "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+          "size_bytes": 21854,
+          "retrieved_at": "2026-11-01T04:06:59.465445+00:00",
+          "git_blob_sha": "f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/f7510ee68918e8929f49036ea2c7ed8a5c701471",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022501140/cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080.pdf",
+        "sha256": "cb4f0673c10831e9ff9b2fa1dd69f6f5e60ac5e8970a6529b527498145306080",
+        "size_bytes": 27782,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260405/20260405_LALDAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:03.303369+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022501140/20260405_LALDAL.json",
+        "receipt_sha256": "ac6e56318e5142fc411ed14c7521989644746a8a332dffdfef02341886f10c18",
+        "capture_member": "acquired_data/luka-reason-remaining/0022501140/capture.json",
+        "capture_sha256": "a44fae9828fa292c775557d34ff83c7068283a1d64a5dcb3fc2abd00a81b4329"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Manon (G League - Two-Way), Reaves (Injury/Illness - Left Oblique; Muscle Strain), Smart\n(Injury/Illness - Right Ankle; Contusion), Timme (G League - Two-Way)\n",
+        "pdftotext_layout_line": 49,
+        "character_span_start": 6280,
+        "character_span_end_exclusive": 6328,
+        "extracted_text_sha256": "2e63980ad10a707c7c07e17e84d034022b38da0ebf51594b1643a539eca805d6",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "L",
+        "pts": 128,
+        "opponent_pts": 134
+      }
+    },
+    {
+      "game_id": "0022501155",
+      "game_date": "2026-04-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022501155.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501155.json",
+          "sha256": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+          "size_bytes": 18444,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "92476a815e4c81ef7cf0154e38763bf56042f5c7"
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612760,
+        "home_team_id": 1610612747,
+        "away_points": 123,
+        "home_points": 87
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources/boxscoresummaryv3_0022501155.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lebron-remaining/sources.json",
+          "sources_manifest_sha256": "6960b938bab74642f2d114169183cc37c648b82dc79fa776db0c58d8375a70ec",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501155.json",
+          "sha256": "1f8c28313070597088d5dff2b7b8ebc1a38e603440fbc5d16cef8bac45e06c7c",
+          "size_bytes": 18444,
+          "retrieved_at": "2026-10-31T23:36:41Z",
+          "git_blob_sha": "92476a815e4c81ef7cf0154e38763bf56042f5c7"
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022501155/08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd.pdf",
+        "sha256": "08a2edf19d51aa9d36b8155b8c5373cde9b5891030f03ca4db64ee06af2c02dd",
+        "size_bytes": 27968,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260407/20260407_OKCLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:03.584265+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022501155/20260407_OKCLAL.json",
+        "receipt_sha256": "c51e02d8781c7311d661f496fbab62f539dbd4099fb2905ea55b297302704e4c",
+        "capture_member": "acquired_data/luka-reason-remaining/0022501155/capture.json",
+        "capture_sha256": "8749cb5dfedabe9634d19577093121be7372ad2245ad500458293409a84a25a6"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), James (Injury/Illness - Left Foot; Injury Management), Reaves (Injury/Illness - Left Oblique;\nMuscle Strain), Smart (Injury/Illness - Right Ankle; Contusion)\n",
+        "pdftotext_layout_line": 53,
+        "character_span_start": 7332,
+        "character_span_end_exclusive": 7380,
+        "extracted_text_sha256": "73d8837956169c8ec8835fb046b04e1fdca07cf213ca31474dcc13b709312d63",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "L",
+        "pts": 87,
+        "opponent_pts": 123
+      }
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501170.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501170.json",
+          "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+          "size_bytes": 24681,
+          "retrieved_at": "2026-11-01T04:06:59.789177+00:00",
+          "git_blob_sha": "70e2e6645400314560d145e354c18a7b9bed36cd",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/70e2e6645400314560d145e354c18a7b9bed36cd",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612747,
+        "home_team_id": 1610612744,
+        "away_points": 119,
+        "home_points": 103
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501170.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501170.json",
+          "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+          "size_bytes": 24681,
+          "retrieved_at": "2026-11-01T04:06:59.789177+00:00",
+          "git_blob_sha": "70e2e6645400314560d145e354c18a7b9bed36cd",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/70e2e6645400314560d145e354c18a7b9bed36cd",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022501170/e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d.pdf",
+        "sha256": "e8eb6f2018a7dd904276eb654904ad2d68e34c72232b0f5fe9627311c0a6450d",
+        "size_bytes": 27847,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260409/20260409_LALGSW.pdf",
+        "retrieved_at": "2026-11-01T07:42:03.873752+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022501170/20260409_LALGSW.json",
+        "receipt_sha256": "6a948528837b6998e7d9542f4809f026296a8bc186558b1c034baaa897f43aed",
+        "capture_member": "acquired_data/luka-reason-remaining/0022501170/capture.json",
+        "capture_sha256": "09c9d1b42bdf87577c37493373b81d13fae01e9d2fc0c95f7c9c239fea8d465a"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Hayes (Injury/Illness - Left Foot; Soreness), Reaves (Injury/Illness - Left Oblique; Muscle\nStrain), Smart (Injury/Illness - Right Ankle; Contusion)\n",
+        "pdftotext_layout_line": 48,
+        "character_span_start": 6396,
+        "character_span_end_exclusive": 6444,
+        "extracted_text_sha256": "5867a4fe14acd8ec998ef775a3842e3b5aee484638f6e79b2190cf5b98e09f83",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": false,
+        "wl": "W",
+        "pts": 119,
+        "opponent_pts": 103
+      }
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501185.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501185.json",
+          "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+          "size_bytes": 17351,
+          "retrieved_at": "2026-11-01T04:07:00.102131+00:00",
+          "git_blob_sha": "dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612756,
+        "home_team_id": 1610612747,
+        "away_points": 73,
+        "home_points": 101
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501185.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501185.json",
+          "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+          "size_bytes": 17351,
+          "retrieved_at": "2026-11-01T04:07:00.102131+00:00",
+          "git_blob_sha": "dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/dd4df7c841947d61cf07949e8e75704a8f4c8459",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022501185/c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310.pdf",
+        "sha256": "c8af7bae7995d818db5aab42206b6529b21f59978c65146dfb1c74020a0e8310",
+        "size_bytes": 27765,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260410/20260410_PHXLAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:04.182696+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022501185/20260410_PHXLAL.json",
+        "receipt_sha256": "66b92a0220ef1a54e88cd6fee5db450efac73eab76938c9c8092b1bcceed10fb",
+        "capture_member": "acquired_data/luka-reason-remaining/0022501185/capture.json",
+        "capture_sha256": "769297ccb178acaa740bc73676eb0fe3209d56d415a0036aa5f065d5f7e0c2c4"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Hayes (Injury/Illness - Left Foot; Injury Management ), Reaves (Injury/Illness - Left Oblique;\nMuscle Strain)\n",
+        "pdftotext_layout_line": 52,
+        "character_span_start": 7056,
+        "character_span_end_exclusive": 7104,
+        "extracted_text_sha256": "16350bd9f0afdbeb2178f019afb164f5b282ec1971f8b124647fa27e8437654c",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "W",
+        "pts": 101,
+        "opponent_pts": 73
+      }
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "participation_state": "did_not_play",
+      "reported_reason_state": "reported_other",
+      "reported_reason_class": "reported_medical_wording",
+      "reported_reason_literal": "Injury/Illness - Left Hamstring; Strain",
+      "participation_comment_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row",
+      "reported_rest": false,
+      "clinical_status_qualified": false,
+      "reason_source_bindings": [
+        {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501198.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501198.json",
+          "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+          "size_bytes": 16887,
+          "retrieved_at": "2026-11-01T04:07:00.757216+00:00",
+          "git_blob_sha": "778c39342d105f05250ab31e519af7b8711db0df",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/778c39342d105f05250ab31e519af7b8711db0df",
+          "original_nba_capture_time": null
+        }
+      ],
+      "unknown_explanation": null,
+      "reported_reason_qualified": true,
+      "scope": "source_report_only_not_clinical_or_runtime_acceptance",
+      "source_envelope": {
+        "away_team_id": 1610612762,
+        "home_team_id": 1610612747,
+        "away_points": 107,
+        "home_points": 131
+      },
+      "identity_authority": {
+        "binding": {
+          "path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources/boxscoresummaryv3_0022501198.json",
+          "sources_manifest_path": "working/nba-tools-completion-program/source-evidence/k08-lal-remaining/sources.json",
+          "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+          "reader_attempts": 1,
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2026/0022501198.json",
+          "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+          "size_bytes": 16887,
+          "retrieved_at": "2026-11-01T04:07:00.757216+00:00",
+          "git_blob_sha": "778c39342d105f05250ab31e519af7b8711db0df",
+          "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/778c39342d105f05250ab31e519af7b8711db0df",
+          "original_nba_capture_time": null
+        },
+        "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+        "literal_row": {
+          "personId": 1629029,
+          "firstName": "Luka",
+          "familyName": "Doncic",
+          "jerseyNum": "77  "
+        },
+        "same_game_unique_surname_candidates": 1
+      },
+      "reported_reason_source": {
+        "artifact_member": "acquired_data/luka-reason-remaining/0022501198/a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28.pdf",
+        "sha256": "a40f7e804be235923ccd910915b7c4a664ddc1d959e4805d8e4617ccb2b3ff28",
+        "size_bytes": 27320,
+        "source_url": "https://statsdmz.nba.com/pdfs/20260412/20260412_UTALAL.pdf",
+        "retrieved_at": "2026-11-01T07:42:04.387309+00:00",
+        "receipt_member": "acquired_data/luka-reason-remaining/0022501198/20260412_UTALAL.json",
+        "receipt_sha256": "d4e4fe5244c9f09fff65d1fe9282ea8c72424cd5b0f776c2f5764eef5b647195",
+        "capture_member": "acquired_data/luka-reason-remaining/0022501198/capture.json",
+        "capture_sha256": "988eaa1a690f73af41a092d82e4e74b23bc84397395a6156a3e25c0cc072e349"
+      },
+      "source_locator": {
+        "page": 1,
+        "section": "Lakers inactive footer",
+        "entry_literal": "Doncic (Injury/Illness - Left Hamstring; Strain)",
+        "footer_literal": "Inactive: Lakers - Doncic (Injury/Illness - Left Hamstring; Strain), Hayes (Injury/Illness - Left Foot; Injury Management), Reaves (Injury/Illness - Left Oblique;\nMuscle Strain)\n",
+        "pdftotext_layout_line": 51,
+        "character_span_start": 6728,
+        "character_span_end_exclusive": 6776,
+        "extracted_text_sha256": "f38989d4d7747b09021a536c2f8fd52c936f347ea1c700c3e3b72bed3b5624ad",
+        "rendered_footer_visually_inspected": true
+      },
+      "team_outcome": {
+        "is_home": true,
+        "wl": "W",
+        "pts": 131,
+        "opponent_pts": 107
+      }
+    }
+  ],
+  "method": "All13 original PDF inactive footers visually inspected in rendered crops and exact Poppler layout text; dates, Final, score-by-period totals and Lakers side checked against original same-game SummaryV3 and independently accepted LAL82 raw rows. Each Doncic maps uniquely to1629029 in the same-game Lakers inactive list. Four old observations and representative source review reused without reacquisition. No runtime parser used for reported reason extraction.",
+  "contradictions": [],
+  "unknown_reason_games": [],
+  "incidental_other_actor_explicit_rest_in_new13": [],
+  "incidental_scan_scope": "No Rest token anywhere in complete extracted text of13new PDFs; no new actor capability inferred",
+  "limits": [
+    "Other is explicit differently reported wording, not clinical truth.",
+    "No report explicitly states Rest. A complete zero means zero source-reported Rest in the qualified DNP population; it does not establish actual health, cause or physiological rest.",
+    "No unknowns were converted from omission/zero/DNP; all18 reason facts have explicit source wording.",
+    "Published generation775 remains unchanged; original capture receipts retain reason/clinical flagsfalse.",
+    "Producer, companion dataset, runtime reasoning/consumer capability and source lineage import remain unimplemented/unaccepted."
+  ],
+  "source_network_calls_by_checker": 0,
+  "new_reason_contract_or_consumer_accepted": false,
+  "feature_acceptance": false,
+  "clinical_status_qualified": false,
+  "full_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0,
+  "licensing": "Official NBA gamebooks retain NBA Properties copyright; archive attribution does not replace original report rights.",
+  "fact_journal": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reported-reason-fact-journal.json",
+    "sha256": "9cc9a05a41d837e45654d4fdae880738da03d6cb882b37fc9ae8f715c12a0356",
+    "size_bytes": 74033
+  },
+  "reported_rest_oracle": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-rest/reported-rest-oracle.json",
+    "sha256": "31d85064bde4527840e28d3ca48f83e77871e0ae7f4fe548946bd1a82513085a",
+    "size_bytes": 1876
+  }
+}
