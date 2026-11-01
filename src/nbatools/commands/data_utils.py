@@ -2613,8 +2613,23 @@ def filter_without_player(
     team: str | None = None,
     strict_team_match: bool = False,
     opponent: str | list[str] | tuple[str, ...] | None = None,
+    without_player_reason: str | None = None,
+    reason_evidence: dict | None = None,
 ) -> pd.DataFrame:
     """Filter using explicit same-team game-day nonparticipation observations."""
+    if without_player_reason is not None:
+        if without_player_reason != "reported_rest":
+            raise ValueError("Unsupported reported absence reason")
+        from nbatools.commands._reported_absence_reasons import filter_reported_rest
+
+        return filter_reported_rest(
+            df,
+            without_player,
+            seasons,
+            season_type,
+            opponent_context=bool(opponent),
+            evidence=reason_evidence,
+        )
     from nbatools.commands._participation_observations import filter_absent
 
     return filter_absent(df, without_player, seasons, season_type, opponent_context=bool(opponent))

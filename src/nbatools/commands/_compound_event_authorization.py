@@ -356,6 +356,8 @@ def unsupported_availability_status(parsed: dict) -> str | None:
     if parsed.get("requested_availability_status"):
         return parsed["requested_availability_status"]
     text = parsed.get("normalized_query") or ""
+    for start, end in parsed.get("reported_reason_spans") or []:
+        text = text[:start] + " " * (end - start) + text[end:]
     for pattern, label in _UNSUPPORTED_AVAILABILITY_STATUS:
         if re.search(pattern, text):
             return label
@@ -429,7 +431,7 @@ def _complete_status_owners(text: str) -> bool:
     return bool(owners)
 
 
-def availability_status_subject_view(text: str) -> tuple[str, list[dict]]:
+def availability_status_subject_view(text: str, *, preserved_spans=()) -> tuple[str, list[dict]]:
     """Keep conditional status owners out of the primary subject scan.
 
     Only whole subordinate owner/predicate spans are masked. The caller keeps
@@ -441,6 +443,8 @@ def availability_status_subject_view(text: str) -> tuple[str, list[dict]]:
     for pattern, category in _UNSUPPORTED_AVAILABILITY_STATUS:
         for status in re.finditer(pattern, text):
             start, status_end = status.span()
+            if any(a <= start and status_end <= b for a, b in preserved_spans):
+                continue
             # The contextual active/available matcher includes its governing
             # text; ownership attaches to the terminal predicate itself.
             if category == "roster status":

@@ -338,6 +338,8 @@ def build_result(
     position: str | None = None,
     rookies_only: bool = False,
     per_season_limit: int | None = None,
+    without_player_reason: str | None = None,
+    _reported_reason_evidence: dict | None = None,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -378,6 +380,35 @@ def build_result(
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
         return NoResult(query_class="finder", reason="no_data", notes=notes)
     base_df = apply_series_situation_filter(base_df, seasons, series_situation)
+
+    if without_player_reason is not None and period_filter_requested:
+        return NoResult(
+            query_class="finder",
+            reason="filter_not_supported",
+            notes=["Reported-rest filtering currently applies to whole games"],
+        )
+    if without_player_reason is not None:
+        scoped = _apply_filters(
+            base_df,
+            player=player,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        base_df = filter_without_player(
+            scoped,
+            without_player,
+            seasons,
+            season_type,
+            team=team,
+            opponent=opponent,
+            without_player_reason=without_player_reason,
+            reason_evidence=_reported_reason_evidence,
+        )
+        without_player = None  # Already qualified before positive/stat intersections.
 
     if period_filter_requested:
         try:

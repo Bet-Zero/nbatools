@@ -1110,7 +1110,47 @@ def _execute_build_result(
         extra_conditions,
     )
 
-    result = build_fn(**sanitized_kwargs)
+    reason = sanitized_kwargs.get("without_player_reason")
+    if reason is not None:
+        from nbatools.commands._reported_absence_reasons import (
+            BASIS,
+            ReasonCoverageError,
+            coverage_note,
+        )
+
+        if (
+            reason != "reported_rest"
+            or not sanitized_kwargs.get("without_player")
+            or route
+            not in {
+                "team_record",
+                "game_summary",
+                "game_finder",
+                "player_game_summary",
+                "player_game_finder",
+            }
+        ):
+            return NoResult(
+                query_class=route_to_query_class(route),
+                reason="filter_not_supported",
+                notes=["The requested officially reported Rest condition was not applied"],
+            )
+        evidence = {}
+        sanitized_kwargs["_reported_reason_evidence"] = evidence
+        try:
+            result = build_fn(**sanitized_kwargs)
+        except ReasonCoverageError as exc:
+            result = NoResult(
+                query_class=route_to_query_class(route), reason="no_data", notes=[str(exc)]
+            )
+        result.metadata = {
+            **result.metadata,
+            "reported_reason_basis": BASIS,
+            "reported_reason_coverage": evidence,
+        }
+        result = _append_result_notes(result, [coverage_note(evidence)])
+    else:
+        result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)
 
     if extra_conditions:

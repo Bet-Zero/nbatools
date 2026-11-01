@@ -267,6 +267,11 @@ def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
 
 def validate_publication(root: Path) -> None:
     """Validate availability scope and retained source bytes before publication."""
+    from nbatools.commands.pipeline.reported_absence_reasons import (
+        validate_publication as validate_reasons,
+    )
+
+    validate_reasons(root)
     directory = root / "raw/player_game_availability"
     if not directory.exists():
         return

@@ -173,6 +173,7 @@ class AvailabilityClause(NamedTuple):
     players: str
     start: int
     end: int
+    reported_reason: str | None = None
 
     def mask_clause(self, text: str) -> str:
         """Preserve offsets while excluding the condition already consumed."""
@@ -207,7 +208,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
         return None
     state = (
         r"(?:(?:is|was|are|were)\s+)?(?:out|not\s+playing|did\s+not\s+play|dnp"
-        r"|sitting|sits?|sat|playing|plays?|played)"
+        r"|sitting|sits?|sat|rests?|rested|resting|playing|plays?|played)"
     )
     state_end = re.compile(rf"\s+({state})$")
     window = _original_participation_window(text)
@@ -233,6 +234,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
             fragment = match.group(2).strip()
             suffix = state_end.search(fragment)
             mode = "without" if match.group(1) in {"without", "w/o"} else "with"
+            reason = "reported_rest" if suffix and re.search(r"\brest", suffix[1]) else None
             if suffix:
                 mode = (
                     "without"
@@ -245,7 +247,7 @@ def requested_mixed_availability(text: str) -> AvailabilityConjunction | None:
                 fragment = fragment[: suffix.start()].strip()
             if not fragment or re.search(r"\d|\b(?:and|or|with|without|both)\b", fragment):
                 return None
-            clauses.append(AvailabilityClause(mode, fragment, match.start(), match.end()))
+            clauses.append(AvailabilityClause(mode, fragment, match.start(), match.end(), reason))
             explicit_states.append(bool(suffix))
     if len(clauses) != 2 or {c.mode for c in clauses} != {"with", "without"}:
         return None
@@ -293,16 +295,18 @@ def requested_scalar_absence(text: str) -> AvailabilityClause | None:
         rf"\b(?:with|w/)\s+{name}\s+(?:(?:is|was|are|were)\s+)?"
         r"(?:out|not\s+playing|did\s+not\s+play|dnp|sitting)\b"
     )
-    matches = list(re.finditer(pattern, text))
+    rest_pattern = rf"\b(?:when|while|and)\s+{name}\s+(?:rests?|rested|(?:is|was)\s+resting)\b"
+    matches = [(m, None) for m in re.finditer(pattern, text)]
+    matches += [(m, "reported_rest") for m in re.finditer(rest_pattern, text)]
     if len(matches) != 1:
         return None
-    match = matches[0]
+    match, reason = matches[0]
     fragment = match.group(1).strip()
     if re.search(r"\d|\b(?:not|unless)\s*$", fragment) or re.search(
         r"\b(?:not|unless)\s*$", text[: match.start()]
     ):
         return None
-    return AvailabilityClause("without", fragment, match.start(), match.end())
+    return AvailabilityClause("without", fragment, match.start(), match.end(), reason)
 
 
 def exact_condition_name(fragment: str, resolved: str) -> bool:

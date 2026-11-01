@@ -649,10 +649,10 @@ def detect_without_player(
         # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
         r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
-        # `when/while/and PLAYER sits/rests`: "Lakers record when Luka sits"
+        # `when/while/and PLAYER sits`: "Lakers record when Luka sits"
         # read no absence and answered with the whole record.
         r"\b(?:when|while|and)\s+((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
-        r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b",
+        r"\s+(?:sits?|sat)(?:\s+out)?\b",
         # `when/while PLAYER is/was out`
         rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
         # `when/while PLAYER out` (no copula)
@@ -941,7 +941,7 @@ def presence_names_player_condition(
     # Match the same numeric shorthand accepted by the immediate actor guard.
     analysis_text = re.sub(r"(?<=[a-z])(?=\d)", " ", text)
     claimed_teams = team_subject_stat_conditions(analysis_text)
-    if condition_span and claimed_teams:
+    if condition_span:
         residual = analysis_text
         for owner in claimed_teams:
             residual = (
@@ -949,6 +949,7 @@ def presence_names_player_condition(
                 + " " * (owner["end"] - owner["start"])
                 + residual[owner["end"] :]
             )
+        residual = residual[condition_span[1] :]
         # Exempt only claimed team bounds, not the whole joined sentence.
         # Residual numerical subjects remain unread even when unindexed.
         for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
@@ -1195,7 +1196,7 @@ def detect_unresolved_availability_player(
             # "when Davis sits"; not "when they sit atop the standings".
             r"\b(?:when|while|and)\s+(?!(?:they|he|she|we|it|the)\b)"
             r"((?:(?!\b(?:and|when|while)\b)[\w .&'\-])+?)"
-            r"\s+(?:sits?|sat|rests?|rested|is\s+resting|was\s+resting)(?:\s+out)?\b"
+            r"\s+(?:sits?|sat)(?:\s+out)?\b"
             r"(?!\s+(?:atop|at|in|on|near|behind|ahead)\b)",
             # "no more than 10 turnovers" is a bound, not a missing player.
             rf"\b(?:no|sans|minus)\s+(?!{_NEGATED_BOUND})([\w .&'\-]+?)"

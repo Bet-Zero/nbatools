@@ -264,6 +264,8 @@ def select_player_summary_sample(
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
     sample_seasons: list[str] | None = None,
+    without_player_reason: str | None = None,
+    _reported_reason_evidence: dict | None = None,
 ) -> PlayerSample | NoResult:
     """Select the games in play: every filter, condition and last-N window.
 
@@ -336,6 +338,29 @@ def select_player_summary_sample(
         # "LeBron in game 7s": windows and filters start from those games.
         df = apply_series_situation_filter(df, seasons, series_situation)
 
+        if without_player_reason is not None:
+            scoped = _apply_filters(
+                df,
+                player=player,
+                team=team,
+                opponent=opponent,
+                home_only=home_only,
+                away_only=away_only,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            df = filter_without_player(
+                scoped,
+                without_player,
+                seasons,
+                season_type,
+                team=team,
+                opponent=opponent,
+                without_player_reason=without_player_reason,
+                reason_evidence=_reported_reason_evidence,
+            )
+            without_player = None  # Already qualified before positive/stat intersections.
+
         if last_n is not None and last_n_scope in WINDOW_SCOPES:
             # The window is the player's N most recent games in play; game
             # results and stat conditions then apply inside it.
@@ -405,6 +430,28 @@ def select_player_summary_sample(
                 df, with_player, seasons, season_type, team=team, strict_team_match=True
             )
     else:
+        if without_player_reason is not None:
+            scoped = _apply_filters(
+                df,
+                player=player,
+                team=team,
+                opponent=opponent,
+                home_only=home_only,
+                away_only=away_only,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            df = filter_without_player(
+                scoped,
+                without_player,
+                seasons,
+                season_type,
+                team=team,
+                opponent=opponent,
+                without_player_reason=without_player_reason,
+                reason_evidence=_reported_reason_evidence,
+            )
+            without_player = None  # Already qualified before positive/stat intersections.
         _player_arc_seasons = None
         df = apply_series_situation_filter(df, seasons, series_situation)
         if "game_date" in df.columns:
@@ -494,6 +541,8 @@ def build_result(
     df: pd.DataFrame | None = None,
     last_n_scope: str = "qualifying",
     series_situation: str | None = None,
+    without_player_reason: str | None = None,
+    _reported_reason_evidence: dict | None = None,
 ) -> SummaryResult | NoResult:
     sample = select_player_summary_sample(
         season=season,
@@ -505,6 +554,8 @@ def build_result(
         opponent=opponent,
         opponent_player=opponent_player,
         without_player=without_player,
+        without_player_reason=without_player_reason,
+        _reported_reason_evidence=_reported_reason_evidence,
         with_player=with_player,
         special_event=special_event,
         home_only=home_only,

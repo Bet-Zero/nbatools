@@ -728,6 +728,43 @@ OR consumers remain unfinished and may retain their existing unsupported reason.
   pipeline publication/version checks and read-only runtime access remain unchanged.
 
 
+### Optional source-reported absence reasons
+
+`raw/player_game_absence_reasons/{season}_{season_type_safe}.csv` is a companion
+at `(game_id, team_id, player_id)` grain. It never replaces participation, source
+minutes, an availability row, or that row's import authority. Its required columns
+are `game_id`, `game_date`, `season`, `season_type`, `team_id`, `player_id`,
+`player_name`, `reported_reason`, `reason_text`, `source_kind`, `source_url`,
+`source_sha256`, `source_locator`, `identity_source_sha256`, and `coverage_scope`.
+Scope is `listed_player_reported_reason_only`; states are `reported_rest`,
+`reported_other`, or `unknown`. Only a qualified explicit Rest field establishes
+reported Rest. Other stated wording is reported Other, without clinical or healthy
+status inference. Empty, bare INACTIVE/DNP and ambiguous Rest wording remain
+unknown. Opaque legacy availability comments never become reason evidence.
+
+The offline `pipeline.reported_absence_reasons.stage_observation` producer binds
+each fact to an existing qualified same-game DNP and original official gamebook
+PDF or its participation-qualified Traditional JSON. A separate same-stem
+`.imports.json`, keyed by `game_id:team_id:player_id`, records the row digest,
+unchanged binary import record, and hash/size/path of the source and capture
+receipt retained in `raw/player_game_absence_reason_sources/`. Publication
+validation independently replays original source bodies; changing a CSV and its
+lineage together cannot bypass that replay. The immutable generation manifest
+binds companion tables, lineage, binary identity dependencies and retained sources.
+Runtime checks those bindings and import digests without converting PDFs.
+
+`without_player_reason="reported_rest"` qualifies the shared scalar absence
+filter for team records, team/player summaries and team/player game finders.
+Every selected DNP needs a qualified Rest or Other reason before sibling positive
+participation or statistical bounds can remove it. Missing/unknown reason facts
+mean unavailable coverage, never Rest zero. Explicit original team-record windows
+select their static game population before this qualification; older unknowns
+outside that window do not affect the answer. Qualified complete Other evidence
+supports a Rest count of zero or a known empty match. Answers label the basis
+**officially reported Rest**. Ordinary binary absence and team schedule rest days
+retain their existing meaning and do not load the companion dataset.
+
+
 ## 1B. `player_game_period_stats`
 
 ### Path pattern

@@ -202,6 +202,8 @@ def build_result(
     series_situation: str | None = None,
     per_season_limit: int | None = None,
     game_dates: list[str] | None = None,
+    without_player_reason: str | None = None,
+    _reported_reason_evidence: dict | None = None,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -256,6 +258,29 @@ def build_result(
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
+
+    if without_player_reason is not None:
+        scoped = _apply_filters(
+            df,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+            game_dates=game_dates,
+        )
+        df = filter_without_player(
+            scoped,
+            without_player,
+            seasons,
+            season_type,
+            team=team,
+            opponent=opponent,
+            without_player_reason=without_player_reason,
+            reason_evidence=_reported_reason_evidence,
+        )
+        without_player = None  # Already qualified before positive/stat intersections.
 
     window_game_ids = None
     if last_n is not None and last_n_scope in WINDOW_SCOPES:
