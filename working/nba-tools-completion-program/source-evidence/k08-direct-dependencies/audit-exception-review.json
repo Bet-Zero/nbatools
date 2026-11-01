@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "BLOCKED: unexpected programming/integrity/access failures are swallowed as passing existing-evidence diagnostics",
+  "reviewed_revision": "2476cf84c82107d9e91ddfc67d0dc6a0807d4c4d",
+  "tree": "df5f19a30ef07c57797252183dc872cc23d24b8e",
+  "file_sha256": "e45240ad36f20444a35082b128c5ade049768d382010c53bd74f80702da703f4",
+  "resolved_initial_findings": [
+    "Unqualified raw projection is explicitly separate",
+    "Raw source/dependency evidence and runtime report/exception persist before comparisons",
+    "Qualified global contradictions are not collection candidates",
+    "Missing source and fully positive zero controls preserve legitimate exact unknown/zero behavior"
+  ],
+  "focused_tests": {
+    "file": "tests/test_direct_participation_audit.py",
+    "passed": 6,
+    "skipped": 0
+  },
+  "independent_unexpected_error_reproductions": [
+    {
+      "type": "TypeError",
+      "message": "unrecognized build argument",
+      "returned_without_error": true,
+      "disposition": "existing_evidence_repair",
+      "persisted": true
+    },
+    {
+      "type": "PermissionError",
+      "message": "credential access denied",
+      "returned_without_error": true,
+      "disposition": "existing_evidence_repair",
+      "persisted": true
+    },
+    {
+      "type": "ValueError",
+      "message": "Snapshot bytes differ from manifest: raw/team_game_stats/2023-24_regular_season.csv",
+      "returned_without_error": true,
+      "disposition": "existing_evidence_repair",
+      "persisted": true
+    },
+    {
+      "type": "RuntimeError",
+      "message": "implementation failed",
+      "returned_without_error": true,
+      "disposition": "existing_evidence_repair",
+      "persisted": true
+    }
+  ],
+  "remaining_blocker": "Unconditional except Exception return is green for arbitrary runtime exceptions; any abnormal qualification_error string also bypasses comparison as existing evidence repair without known-error classification.",
+  "minimal_fix": "Persist and re-raise unexpected errors, or return an explicitly unaccepted outcome that makes the required audit fail. Permit diagnostic-only existing-evidence classification only for recognized qualification guards; an arbitrary ValueError or unfamiliar report error is not sufficient. Preserve diagnostics in finally; do not weaken source/manifest/access guards.",
+  "actual_R2_approved": false,
+  "source_body_network_reads_by_checker": 0,
+  "production_publication_approved": false
+}
