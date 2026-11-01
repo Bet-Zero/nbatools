@@ -62,26 +62,33 @@ def _assert_count(answer, query, expected_ids):
     )
 
 
-def _assert_unpublished_reason(answer):
+def _assert_unpublished_reason(answer, expected_scope):
     assert answer["query"] == REST_QUERY and answer["route"] == "team_record"
     assert answer["result_status"] == "no_result" and answer["result_reason"] == "no_data"
     result = answer["result"]
     assert not result["sections"]
-    assert result["metadata"]["reported_reason_basis"] == "officially reported Rest"
-    assert result["metadata"]["reported_reason_coverage"] == dict(
-        basis="officially reported Rest",
-        complete=False,
-        requested_games=3,
-        qualified_nonparticipations=2,
-        reported_rest=0,
-        reported_other=0,
-        unknown=2,
-    )
+    # QueryResult.to_dict replaces result.metadata with query-level metadata.
+    # Engine coverage fields are not public; assert actual public scope and notes.
+    metadata = result["metadata"]
+    for field in ("team", "season", "start_date", "end_date", "without_player_reason"):
+        assert metadata[field] == expected_scope[field]
+    assert _fold(metadata["without_player"]) == _fold(expected_scope["without_player"])
+    assert {
+        "label": "Reported absence reason",
+        "value": "officially reported Rest",
+        "kind": "reported_reason",
+    } in metadata["applied_filters"]
     notes = [_fold(note) for note in answer["notes"]]
     assert any(
-        "incomplete officially reported rest reason coverage for luka doncic" in n for n in notes
+        "incomplete officially reported rest reason coverage for "
+        + _fold(expected_scope["without_player"])
+        in note
+        for note in notes
     )
-    assert any("no rest total is established" in n for n in notes)
+    assert any(
+        "no rest total is established. unknown selected nonparticipations: 2." in note
+        for note in notes
+    )
 
 
 def test_deployed_rest_keeps_unpublished_reasons_unknown():
@@ -184,7 +191,7 @@ def test_deployed_rest_keeps_unpublished_reasons_unknown():
             if index < 2:
                 _assert_count(answer, query, expected[index])
             else:
-                _assert_unpublished_reason(answer)
+                _assert_unpublished_reason(answer, receipt["local_parser_scope"])
         assert receipt["public_readiness_requests"] == 1 and receipt["public_query_requests"] == 3
         receipt["status"] = "passed"
     except Exception as exc:

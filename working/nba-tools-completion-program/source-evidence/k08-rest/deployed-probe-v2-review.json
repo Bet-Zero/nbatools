@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root independent review of /root/absence_checker authored correction",
+  "exact_model_id": "unavailable; no cross-model claim",
+  "decision": "approved_for_one_bounded_public_run_only_after_successful_production_deployment_including568",
+  "reviewed_local_commit": "537497c35cef6afe68f32a8f457798e9a0c08964",
+  "reviewed_tree": "78454fb9a6abc7a3f0ecc6e0b52d7ea841ec3c80",
+  "file_sha256": {
+    "tests/cloud_reported_rest_deployed_real_data.py": "5bff64cf428c8625694b0683f668e112d331678c41b43241f7e65a11378c1c28",
+    "tests/test_reported_rest_deployed_probe_contract.py": "ff7523ee078d7ed6687ac7ba041881fffeb7a8cfcd25b608ec3e328366433112"
+  },
+  "supersedes": {
+    "old_source_sha": "fd8a9c55d51f9d22cec24c8fdc1caf98b0eec72c",
+    "old_authored_commit": "c7212f1c454b01a0ae999fa9b65bc95df6120565",
+    "old_review_sha256": "5e461a13188694bfd2709ec587be8e24c9f3ab4cf533e1e330a08706e3dccfc9",
+    "reason": "Unexecuted probe incorrectly expected engine-only reported_reason_coverage in serialized API metadata; initial transport mocks mirrored that wrong shape. No public request or false live acceptance occurred."
+  },
+  "checks": [
+    "QueryResult.to_dict replaces result metadata with query-level metadata, confirmed against actual accepted combined API bodies and real query_result_to_payload control.",
+    "Corrected probe requires public without_player_reason=reported_rest, exact team/player/season/start/end and applied reason label, plus no_data/empty sections and source qualification notes naming player and two unknown selected nonparticipations.",
+    "No false zero or changed date ownership can satisfy those conditions; wrong-scope and obsolete engine-metadata-shaped payloads reject.",
+    "Existing LeBron22/home11 exact game sets, single503readiness/sameBASE/solemissing2026/noexception, threePOST maximum/seven-second pacing/no retry/no redirect/rawpartialfailure preservation remain.",
+    "Source/harness checks and passing combined41292880962 do not import this explicit-only public probe; separate corrected probe review applies without repeating combined numerical execution."
+  ],
+  "verification": {
+    "author_checker_controls_passed": 7,
+    "skipped": 0,
+    "includes_real_API_serializer_control": true,
+    "public_requests": 0,
+    "root_review": "inspected exact two-file delta and actual API contract; did not repeat author controls"
+  },
+  "limitations": [
+    "An attempted local ASGI TestClient control hung and only that local test process was terminated; synchronous actual API handler serialization supplied the durable control. No transport or production result was claimed.",
+    "Existing hosting build quota blocks production deployment. This approval is conditional; no R2 public-probe request has been created for corrected bytes.",
+    "Companion reason files remain unpublished. The public expected unknown result is containment, not completion of a source-backed Rest answer."
+  ],
+  "production_writes": 0,
+  "nba_source_requests": 0
+}

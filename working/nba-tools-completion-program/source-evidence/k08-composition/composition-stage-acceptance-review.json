@@ -1,0 +1,632 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model ID unavailable; separate checker agent, no cross-model claim",
+  "approval": "PASS_ACTUAL_COMBINED_STAGING_AND_CONSUMER_ACCEPTANCE",
+  "run_id": 41292880962,
+  "request_revision": "26a243ee4285e88ccb61e5c727093ad71834efd0",
+  "reviewed_source_revision": "5058d81a6b3979671dc2515b8c5e81f6f2279cc4",
+  "source_tree": "682aee95c386199f6af3849251613febe0046a76",
+  "executed_gate_code_equivalent_to": "ed45e3c264ef828bc354c8dacead0ba708f56e42",
+  "artifact_id": 13078276111,
+  "artifact_sha256": "4ce53f28bd44230138f000927d3ffa43dbe618759e265ce65e095b505ecb92cf",
+  "artifact_size_bytes": 1668648,
+  "artifact_members": 411,
+  "strict_summary": {
+    "candidate_sha": "26a243ee4285e88ccb61e5c727093ad71834efd0",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_composed_participation_stage_real_data.py::test_accepted_cohorts_work_together_without_discarded_coverage"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "receipt_member": "acquired_data/composed-participation-stage/acceptance.json",
+  "receipt_sha256": "39bcadde97e9941371648ef62c9dfb54399629256a7eec5e73fa880616037079",
+  "validation_member": "acquired_data/composed-participation-stage/validation.json",
+  "validation_sha256": "b2b3c89764dd6ec53e9e0b6fee86d58592842347a1470da05d080c6db72729e0",
+  "source_root_validation": "passed",
+  "consumer_acceptance": "passed",
+  "consumer_failure": null,
+  "overlay_checks": {
+    "raw_paths": 407,
+    "all_raw_bytes_identical_to_independently_reviewed_first_failed_export": true,
+    "all_hashes_sizes_valid": true,
+    "all_baseline_hashes_append_creation_and_input_package_bindings_unchanged": true,
+    "original_serialized_cells_full_import_authority_PDF_JSON_sources_reason_lineage_preserved": "Inherited verified940d prepared-output review; all407 bytes identical. No original source-body requalification repeated.",
+    "new_test_inventory_exported": false,
+    "composed_availability_rows": 5020,
+    "projected_all_season_rows": 5098,
+    "unchanged_other_season_rows_reused": 78
+  },
+  "coverage_maps": [
+    {
+      "season": "2025-26",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Dončić",
+      "played": 64,
+      "did_not_play": 18,
+      "unknown": 0
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "played": 51,
+      "did_not_play": 31,
+      "unknown": 0
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "played": 16,
+      "did_not_play": 66,
+      "unknown": 0
+    },
+    {
+      "season": "2025-26",
+      "team_id": 1610612738,
+      "player_id": 1627759,
+      "player_name": "Jaylen Brown",
+      "played": 71,
+      "did_not_play": 11,
+      "unknown": 0
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "played": 76,
+      "did_not_play": 6,
+      "unknown": 0
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "played": 71,
+      "did_not_play": 11,
+      "unknown": 0
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "played": 82,
+      "did_not_play": 0,
+      "unknown": 0
+    },
+    {
+      "season": "2024-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "played": 72,
+      "did_not_play": 10,
+      "unknown": 0
+    }
+  ],
+  "verified_state_entries": 656,
+  "coverage_comparison": "All656 exact game ID/date/team/player/state entries equal independently accepted prior maps. Core source SHA bindings remain identical; combined availability SHA legitimately changes through the exact union. No missing keys/unknowns.",
+  "count_and_record_checks": [
+    {
+      "query": "How many games did Luka Dončić miss in 2025-26?",
+      "games": 18,
+      "game_ids": [
+        22500113,
+        22500122,
+        22500136,
+        22500163,
+        22500336,
+        22500338,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500774,
+        22500791,
+        22501098,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198
+      ]
+    },
+    {
+      "query": "How many home games did Luka Dončić miss in 2025-26?",
+      "games": 9,
+      "game_ids": [
+        22500122,
+        22500753,
+        22500769,
+        22500774,
+        22500791,
+        22501098,
+        22501155,
+        22501185,
+        22501198
+      ]
+    },
+    {
+      "query": "How many games did Austin Reaves miss in 2025-26?",
+      "games": 31,
+      "game_ids": [
+        22500163,
+        22500179,
+        22500185,
+        22500379,
+        22500395,
+        22500446,
+        22500460,
+        22500485,
+        22500501,
+        22500514,
+        22500523,
+        22500541,
+        22500562,
+        22500569,
+        22500586,
+        22500601,
+        22500607,
+        22500617,
+        22500633,
+        22500648,
+        22500661,
+        22500671,
+        22500688,
+        22500708,
+        22500774,
+        22501140,
+        22501155,
+        22501170,
+        22501185,
+        22501198,
+        22501228
+      ]
+    },
+    {
+      "query": "How many home games did Austin Reaves miss in 2025-26?",
+      "games": 13,
+      "game_ids": [
+        22500179,
+        22500446,
+        22500460,
+        22500485,
+        22500501,
+        22500541,
+        22500569,
+        22500586,
+        22500607,
+        22500774,
+        22501155,
+        22501185,
+        22501198
+      ]
+    },
+    {
+      "query": "How many games did Jayson Tatum miss in 2025-26?",
+      "games": 66,
+      "game_ids": [
+        22500017,
+        22500018,
+        22500021,
+        22500028,
+        22500049,
+        22500060,
+        22500083,
+        22500106,
+        22500117,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500193,
+        22500209,
+        22500216,
+        22500233,
+        22500250,
+        22500277,
+        22500293,
+        22500302,
+        22500320,
+        22500334,
+        22500338,
+        22500358,
+        22500381,
+        22500388,
+        22500403,
+        22500426,
+        22500444,
+        22500459,
+        22500474,
+        22500493,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500559,
+        22500580,
+        22500594,
+        22500621,
+        22500637,
+        22500647,
+        22500660,
+        22500673,
+        22500689,
+        22500702,
+        22500721,
+        22500728,
+        22500741,
+        22500757,
+        22500778,
+        22500799,
+        22500823,
+        22500839,
+        22500847,
+        22500859,
+        22500874,
+        22500880,
+        22500894,
+        22500959,
+        22501092,
+        22501174,
+        22501186,
+        22501206,
+        22501222
+      ]
+    },
+    {
+      "query": "How many home games did Jayson Tatum miss in 2025-26?",
+      "games": 32,
+      "game_ids": [
+        22500049,
+        22500060,
+        22500083,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500216,
+        22500233,
+        22500277,
+        22500320,
+        22500338,
+        22500381,
+        22500403,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500621,
+        22500660,
+        22500673,
+        22500689,
+        22500702,
+        22500741,
+        22500757,
+        22500778,
+        22500859,
+        22500874,
+        22500894,
+        22501174,
+        22501186,
+        22501222
+      ]
+    },
+    {
+      "query": "How many games did Jaylen Brown miss in 2025-26?",
+      "games": 11,
+      "game_ids": [
+        22500334,
+        22500388,
+        22500559,
+        22500689,
+        22500728,
+        22500839,
+        22500880,
+        22501067,
+        22501085,
+        22501168,
+        22501186
+      ]
+    },
+    {
+      "query": "How many home games did Jaylen Brown miss in 2025-26?",
+      "games": 3,
+      "game_ids": [
+        22500689,
+        22501067,
+        22501186
+      ]
+    },
+    {
+      "query": "How many games did Anthony Davis miss in 2023-24?",
+      "games": 6,
+      "game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ]
+    },
+    {
+      "query": "How many home games did Anthony Davis miss in 2023-24?",
+      "games": 1,
+      "game_ids": [
+        22301155
+      ]
+    },
+    {
+      "query": "How many games did LeBron James miss in 2023-24?",
+      "games": 11,
+      "game_ids": [
+        22300187,
+        22300316,
+        22300380,
+        22300549,
+        22300618,
+        22300684,
+        22300788,
+        22300802,
+        22300915,
+        22301045,
+        22301143
+      ]
+    },
+    {
+      "query": "How many home games did LeBron James miss in 2023-24?",
+      "games": 3,
+      "game_ids": [
+        22300187,
+        22300915,
+        22301143
+      ]
+    },
+    {
+      "query": "How many games did Austin Reaves miss in 2023-24?",
+      "games": 0,
+      "game_ids": []
+    },
+    {
+      "query": "How many home games did Austin Reaves miss in 2023-24?",
+      "games": 0,
+      "game_ids": []
+    },
+    {
+      "query": "How many games did Jayson Tatum miss in 2024-25?",
+      "games": 10,
+      "game_ids": [
+        22400319,
+        22400393,
+        22400891,
+        22400929,
+        22400994,
+        22401058,
+        22401137,
+        22401156,
+        22401187,
+        22401205
+      ]
+    },
+    {
+      "query": "How many home games did Jayson Tatum miss in 2024-25?",
+      "games": 7,
+      "game_ids": [
+        22400319,
+        22400891,
+        22400929,
+        22400994,
+        22401137,
+        22401187,
+        22401205
+      ]
+    },
+    {
+      "query": "Lakers record without Luka Doncic and with LeBron James in 2025-26",
+      "games": 11,
+      "wins": 7,
+      "losses": 4,
+      "pts_sum": 1285,
+      "game_ids": [
+        22500336,
+        22500418,
+        22500601,
+        22500753,
+        22500769,
+        22500791,
+        22501098,
+        22501140,
+        22501170,
+        22501185,
+        22501198
+      ]
+    },
+    {
+      "query": "Celtics record without Jayson Tatum and with Jaylen Brown in 2025-26",
+      "games": 58,
+      "wins": 36,
+      "losses": 22,
+      "pts_sum": 6659,
+      "game_ids": [
+        22500017,
+        22500018,
+        22500021,
+        22500028,
+        22500049,
+        22500060,
+        22500083,
+        22500106,
+        22500117,
+        22500128,
+        22500146,
+        22500158,
+        22500174,
+        22500193,
+        22500209,
+        22500216,
+        22500233,
+        22500250,
+        22500277,
+        22500293,
+        22500302,
+        22500320,
+        22500338,
+        22500358,
+        22500381,
+        22500403,
+        22500426,
+        22500444,
+        22500459,
+        22500474,
+        22500493,
+        22500503,
+        22500520,
+        22500532,
+        22500545,
+        22500580,
+        22500594,
+        22500621,
+        22500637,
+        22500647,
+        22500660,
+        22500673,
+        22500702,
+        22500721,
+        22500741,
+        22500757,
+        22500778,
+        22500799,
+        22500823,
+        22500847,
+        22500859,
+        22500874,
+        22500894,
+        22500959,
+        22501092,
+        22501174,
+        22501206,
+        22501222
+      ]
+    },
+    {
+      "query": "Lakers record without Davis in 2023-24",
+      "games": 6,
+      "wins": 2,
+      "losses": 4,
+      "pts_sum": 701,
+      "game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ]
+    },
+    {
+      "query": "team_record:ADout/LeBronin2023",
+      "games": 5,
+      "wins": 1,
+      "losses": 4,
+      "pts_sum": 587,
+      "game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ]
+    }
+  ],
+  "reported_rest_zero": {
+    "query": "How many games did Luka Doncic rest in 2025-26?",
+    "count": 0,
+    "coverage": {
+      "basis": "officially reported Rest",
+      "complete": true,
+      "requested_games": 82,
+      "qualified_nonparticipations": 18,
+      "reported_rest": 0,
+      "reported_other": 18,
+      "unknown": 0
+    },
+    "clinical_or_physiological_rest_count": null
+  },
+  "answers_verified": 21,
+  "local_api_checks": {
+    "responses": 3,
+    "all_http": 200,
+    "counts": [
+      18,
+      10,
+      0
+    ],
+    "third_basis_and_complete_reason_coverage_checked": "Actual public query metadata contains reported_rest/LAL/season; computed public note states0Rest/18Other/0Unknown/18DNP/82selected. Engine coverage metadata is separately checked; API replaces result.metadata with query metadata."
+  },
+  "independent_retained_team_subset_bindings": [
+    {
+      "artifact": "mixed-initial-failed.zip",
+      "member": "acquired_data/mixed-participation/lal-team82.csv",
+      "sha256": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436",
+      "rows": 82
+    },
+    {
+      "artifact": "bos-coverage-audit.zip",
+      "member": "acquired_data/bos-participation-coverage/team82.csv",
+      "sha256": "ac550ef7a470ca315857d0a38e54f84ec1f9449cd4615f4bd2f6553d776d4f9e",
+      "rows": 82
+    },
+    {
+      "artifact": "direct-historical-input-audit.zip",
+      "member": "acquired_data/direct-k08-participation-coverage/2023-24-1610612747-team82.csv",
+      "sha256": "c81af5e94c42dd472c50259d1e813e7d21a81ef1819a8c55b215a78233064713",
+      "rows": 82
+    },
+    {
+      "artifact": "direct-historical-input-audit.zip",
+      "member": "acquired_data/direct-k08-participation-coverage/2024-25-1610612738-team82.csv",
+      "sha256": "d926ac63e414a0e48304a702b615194129036b18c78b9c43673604c3f5a941d3",
+      "rows": 82
+    }
+  ],
+  "previous_receipts": {
+    "code_review_sha256": "1f62fdb0223eeef18cb884748e7a4141f42f1cd3a928d2d3ecdd2c66a13fbb4a",
+    "first_prepared_output_and_serializer_review_sha256": "940d183523e28db59b651c0f4a7e982c6d850a48dec41a6ba07015369e39ba4a",
+    "first_run_id": 41292246166,
+    "first_artifact_sha256": "d055bc88cbcdb6b7af15f645aa035273ffb2424af3f73ec7c9d719bd3ed6a349",
+    "first_execution_remains_failed": true
+  },
+  "remaining_limits": [
+    "Staging only; all combined datasets remain unpublished and production775 is unchanged.",
+    "Eight complete observed populations do not establish all-player/full-season NBA completeness or dated membership.",
+    "Rest means explicit officially source-reported Rest, not clinical health or physical rest. Real Luka sample is0Rest/18Other; nonempty Rest positives are separately controlled fixtures.",
+    "BOS/Tatum2023-24 still has74played/8unknown; separately approved bounded16-file source collection is not yet qualified by this review.",
+    "Public runtime follow-through remains blocked by Vercel deployment quota; this is not a deployed or operational-readiness acceptance.",
+    "Normal exact-head CI/merge and any production publication approval remain separate."
+  ],
+  "full_required_slice_accepted": false,
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0,
+  "production_publication_approved": false,
+  "unresolved_review_findings": []
+}
