@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "21b2bec19bf95a896b408b11f294936b6fbdb224",
+  "generation": "availability-k08-retained-v1-20261031",
+  "tests": [
+    "tests/test_lebron_publication_real_data.py::test_lebron_participation_complete_snapshot_prepare"
+  ],
+  "raw_qa_cases": []
+}
