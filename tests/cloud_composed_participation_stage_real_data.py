@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+from datetime import date
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -44,6 +45,15 @@ PACKAGES = [
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def _receipt_json_default(value):
+    # Finder rows contain pandas Timestamp (a datetime/date subclass). Keep
+    # their ISO dates while retaining native numerical fields and rejecting
+    # unrecognized types instead of turning arbitrary values into strings.
+    if isinstance(value, date):
+        return value.isoformat()
+    raise TypeError(f"Unsupported receipt value: {type(value).__name__}")
 
 
 def _documents():
@@ -166,7 +176,9 @@ def test_accepted_cohorts_work_together_without_discarded_coverage(tmp_path, mon
     receipt_path = output / "acceptance.json"
 
     def persist():
-        receipt_path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
+        receipt_path.write_text(
+            json.dumps(receipt, indent=2, ensure_ascii=False, default=_receipt_json_default) + "\n"
+        )
 
     persist()
     try:
