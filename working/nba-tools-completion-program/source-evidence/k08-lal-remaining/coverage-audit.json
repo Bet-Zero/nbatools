@@ -1,0 +1,500 @@
+{
+  "classification": "independent_actual_coverage_audit_not_unknown_state_qualification_or_publication",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "run_id": 41269926808,
+  "request_sha": "7b87800dcb331da703220c9a9c96d5e07b3e914c",
+  "artifact_id": 13067994735,
+  "zip_bytes": 16856,
+  "zip_sha256": "90d7fdfd2dff0ecc9f880cc4b99e37603bc697db16dbc8961dc0a97a9b6450fd",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "required_gate": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "availability_rows_in_requested_season": 804,
+  "all_season_total": 950,
+  "all_season_total_basis": "previous accepted generation receipt reused; not a new all-season scan",
+  "source_files": [
+    {
+      "path": "raw/games/2025-26_regular_season.csv",
+      "sha256": "44ca1ea9181ac7c825d01d0fc35b00c71bc1ee9a02b0618b9c2d4347bf618620",
+      "size_bytes": 283089
+    },
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "size_bytes": 223000
+    },
+    {
+      "path": "raw/player_game_stats/2025-26_regular_season.csv",
+      "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "size_bytes": 4993942
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "size_bytes": 449374
+    }
+  ],
+  "subset_hashes": {
+    "target-player-rows.csv": "d4706813be64c3e3ed09f94d8a942f562eabd4865b2d563877906647dd71cd24",
+    "target-ledger-rows.csv": "dfef02f2aee9a601cc443e046b3c46719bbbeb8a85d347a073a6205910f2481a",
+    "team82.csv": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436"
+  },
+  "target_subset_rows": {
+    "target-player-rows.csv": 115,
+    "target-ledger-rows.csv": 46,
+    "team82.csv": 82
+  },
+  "players": {
+    "1629029": {
+      "counts": {
+        "played": 64,
+        "did_not_play": 7,
+        "same_game_other_side": 0,
+        "unknown": 11
+      },
+      "unknown_keys": [
+        {
+          "game_id": "0022500336",
+          "game_date": "2025-12-04",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022500418",
+          "game_date": "2025-12-23",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022500601",
+          "game_date": "2026-01-17",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022500753",
+          "game_date": "2026-02-07",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022500769",
+          "game_date": "2026-02-09",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022500791",
+          "game_date": "2026-02-12",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022501098",
+          "game_date": "2026-03-30",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022501140",
+          "game_date": "2026-04-05",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022501170",
+          "game_date": "2026-04-09",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022501185",
+          "game_date": "2026-04-10",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        },
+        {
+          "game_id": "0022501198",
+          "game_date": "2026-04-12",
+          "team_id": 1610612747,
+          "player_id": 1629029
+        }
+      ],
+      "all_82_states_exact": true
+    },
+    "1630559": {
+      "counts": {
+        "played": 51,
+        "did_not_play": 6,
+        "same_game_other_side": 0,
+        "unknown": 25
+      },
+      "unknown_keys": [
+        {
+          "game_id": "0022500379",
+          "game_date": "2025-12-18",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500395",
+          "game_date": "2025-12-20",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500446",
+          "game_date": "2025-12-28",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500460",
+          "game_date": "2025-12-30",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500485",
+          "game_date": "2026-01-02",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500501",
+          "game_date": "2026-01-04",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500514",
+          "game_date": "2026-01-06",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500541",
+          "game_date": "2026-01-09",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500562",
+          "game_date": "2026-01-12",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500569",
+          "game_date": "2026-01-13",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500586",
+          "game_date": "2026-01-15",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500601",
+          "game_date": "2026-01-17",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500607",
+          "game_date": "2026-01-18",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500617",
+          "game_date": "2026-01-20",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500633",
+          "game_date": "2026-01-22",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500648",
+          "game_date": "2026-01-24",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500661",
+          "game_date": "2026-01-26",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500671",
+          "game_date": "2026-01-28",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500688",
+          "game_date": "2026-01-30",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022500708",
+          "game_date": "2026-02-01",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022501140",
+          "game_date": "2026-04-05",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022501170",
+          "game_date": "2026-04-09",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022501185",
+          "game_date": "2026-04-10",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022501198",
+          "game_date": "2026-04-12",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        },
+        {
+          "game_id": "0022501228",
+          "game_date": "2025-12-14",
+          "team_id": 1610612747,
+          "player_id": 1630559
+        }
+      ],
+      "all_82_states_exact": true
+    }
+  },
+  "unknown_target_keys": 36,
+  "unique_unknown_games": 31,
+  "overlap_game_ids": [
+    "0022500601",
+    "0022501140",
+    "0022501170",
+    "0022501185",
+    "0022501198"
+  ],
+  "minimum_pair_original_slots": 62,
+  "slot_basis": "one Traditional plus one Summary per unique unknown game;5overlaps share original bodies;planning only until archive metadata/body qualification",
+  "already_retained_known_game_intersection": [],
+  "known_retained_scope": "existing approved k08-lebron-remaining/structured inventories plus accepted3PDF IDs",
+  "unknown_game_scope": [
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612761
+    },
+    {
+      "game_id": "0022500379",
+      "game_date": "2025-12-18",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612762
+    },
+    {
+      "game_id": "0022500395",
+      "game_date": "2025-12-20",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612746
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612756
+    },
+    {
+      "game_id": "0022500446",
+      "game_date": "2025-12-28",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612758
+    },
+    {
+      "game_id": "0022500460",
+      "game_date": "2025-12-30",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612765
+    },
+    {
+      "game_id": "0022500485",
+      "game_date": "2026-01-02",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612763
+    },
+    {
+      "game_id": "0022500501",
+      "game_date": "2026-01-04",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612763
+    },
+    {
+      "game_id": "0022500514",
+      "game_date": "2026-01-06",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612740
+    },
+    {
+      "game_id": "0022500541",
+      "game_date": "2026-01-09",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612749
+    },
+    {
+      "game_id": "0022500562",
+      "game_date": "2026-01-12",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612758
+    },
+    {
+      "game_id": "0022500569",
+      "game_date": "2026-01-13",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612737
+    },
+    {
+      "game_id": "0022500586",
+      "game_date": "2026-01-15",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612766
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612757
+    },
+    {
+      "game_id": "0022500607",
+      "game_date": "2026-01-18",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612761
+    },
+    {
+      "game_id": "0022500617",
+      "game_date": "2026-01-20",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612743
+    },
+    {
+      "game_id": "0022500633",
+      "game_date": "2026-01-22",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612746
+    },
+    {
+      "game_id": "0022500648",
+      "game_date": "2026-01-24",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612742
+    },
+    {
+      "game_id": "0022500661",
+      "game_date": "2026-01-26",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612741
+    },
+    {
+      "game_id": "0022500671",
+      "game_date": "2026-01-28",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612739
+    },
+    {
+      "game_id": "0022500688",
+      "game_date": "2026-01-30",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612764
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612752
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612744
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612760
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612742
+    },
+    {
+      "game_id": "0022501098",
+      "game_date": "2026-03-30",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612764
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612742
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612744
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612756
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612762
+    },
+    {
+      "game_id": "0022501228",
+      "game_date": "2025-12-14",
+      "team_id": 1610612747,
+      "opponent_team_id": 1610612756
+    }
+  ],
+  "complete_absence_coverage": false,
+  "unknowns_are_dnp": false,
+  "production_writes": 0,
+  "reviewed_code_sha": "5568901cee6da2e51395e014e8fa1a0d10fb0f60",
+  "reviewed_code_tree": "c1a8d0cb9acfb444cf1704c83b6facf92db7571a"
+}

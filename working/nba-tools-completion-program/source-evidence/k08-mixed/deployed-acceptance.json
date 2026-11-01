@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "classification": "deployed_mixed_participation_queries_verified_no_data_publication",
+  "merged_main_sha": "6bad66cf4758ffc18ce79ff92e7da769f8ffd93b",
+  "merged_tree_sha": "5c2fe8fa48ccfe78292380d119212d4b3940f5ff",
+  "vercel_deployment": "BksPKEy359jaeWdvU7NJV1okjbhq",
+  "vercel_status": "success",
+  "reviewed_probe_sha": "2c35ce30669db3562b186ffd0756913b9163bd36",
+  "probe_file_sha256": "e467b7cca9add364dc2507137630a9052534f1ed55d96808e45c7387a26bcfd9",
+  "independent_checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "run_id": 41269681023,
+  "job_id": 124739819021,
+  "request_sha": "0ecaf40a532367adafef0e4720a21917af4b155d",
+  "required_summary": {
+    "candidate_sha": "0ecaf40a532367adafef0e4720a21917af4b155d",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_mixed_deployed_real_data.py::test_deployed_mixed_participation_matches_independent_season_source"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "artifact": {
+    "id": 13068239139,
+    "bytes": 7220,
+    "sha256": "b7de7ba9c8f66e5f482d52652e8b93d803cabb40f73d7d22d7d6c4a92fe9a807"
+  },
+  "public_readiness_requests": 1,
+  "public_query_requests": 3,
+  "attempts_per_request": 1,
+  "minimum_query_start_spacing_seconds": 7,
+  "verified_public_cases": [
+    {
+      "positive_player": "Luka Doncic",
+      "scope": "2025-26",
+      "games": 15,
+      "wins": 11,
+      "losses": 4,
+      "points": 1736
+    },
+    {
+      "positive_player": "Luka Doncic",
+      "scope": "2025-10-24 through2025-10-27",
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "points": 128,
+      "game_ids": [
+        22500019
+      ]
+    },
+    {
+      "positive_player": "Austin Reaves",
+      "scope": "2025-26",
+      "games": 16,
+      "wins": 12,
+      "losses": 4,
+      "points": 1881
+    }
+  ],
+  "assertions": "Every query HTTP200; team_record route, exact source game ID set/count, W-L/PPG/season and both actual public with/without caveat labels. Source arithmetic is independently bound in source-arithmetic.json; no internal API metadata assumption.",
+  "readiness": {
+    "http_status": 503,
+    "ready": false,
+    "active_generation": "availability-lebron-season-v1-20261031",
+    "only_blocker": "new_season_not_loaded",
+    "exception_applied": false
+  },
+  "ci": {
+    "final_head_sha": "56e4d8ef790d484f3d1541e02390955d964571da",
+    "final_run": 41268952003,
+    "postmerge_run": 41269336105,
+    "all_applicable_blocking_checks_passed": true,
+    "all_three_fast_then_full_python_matrices_passed": true,
+    "existing_dev_security_advisory": "informational; production security passed"
+  },
+  "nba_source_requests": 0,
+  "production_data_writes": 0,
+  "pointer_changes": 0,
+  "operational_acceptance_complete": false,
+  "prior_publication_failure_replaced": false,
+  "prior_559_queries_object_audit_backup_repeated": false
+}
