@@ -1,0 +1,213 @@
+[
+  {
+    "expected_count": 6,
+    "game_ids": [
+      22300163,
+      22300331,
+      22300669,
+      22300684,
+      22301055,
+      22301155
+    ],
+    "query": "how many games did Anthony Davis miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "expected_count": 1,
+    "game_ids": [
+      22301155
+    ],
+    "query": "how many home games did Anthony Davis miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "game_ids": [
+      22300163,
+      22300331,
+      22300669,
+      22300684,
+      22301055,
+      22301155
+    ],
+    "games": 6,
+    "losses": 4,
+    "points": 701,
+    "pts_avg": 116.833,
+    "query": "Lakers record without Anthony Davis in 2023-24",
+    "route": "team_record",
+    "wins": 2
+  },
+  {
+    "game_ids": [
+      22300163,
+      22300331,
+      22300669,
+      22301055,
+      22301155
+    ],
+    "games": 5,
+    "losses": 4,
+    "points": 587,
+    "pts_avg": 117.4,
+    "query": "Lakers record without Anthony Davis and with LeBron James in 2023-24",
+    "route": "team_record",
+    "wins": 1
+  },
+  {
+    "expected_count": 11,
+    "game_ids": [
+      22300187,
+      22300316,
+      22300380,
+      22300549,
+      22300618,
+      22300684,
+      22300788,
+      22300802,
+      22300915,
+      22301045,
+      22301143
+    ],
+    "query": "how many games did LeBron James miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "expected_count": 3,
+    "game_ids": [
+      22300187,
+      22300915,
+      22301143
+    ],
+    "query": "how many home games did LeBron James miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "game_ids": [
+      22300187,
+      22300316,
+      22300380,
+      22300549,
+      22300618,
+      22300684,
+      22300788,
+      22300802,
+      22300915,
+      22301045,
+      22301143
+    ],
+    "games": 11,
+    "losses": 5,
+    "points": 1320,
+    "pts_avg": 120.0,
+    "query": "Lakers record without LeBron James in 2023-24",
+    "route": "team_record",
+    "wins": 6
+  },
+  {
+    "game_ids": [
+      22300187,
+      22300316,
+      22300380,
+      22300549,
+      22300618,
+      22300788,
+      22300802,
+      22300915,
+      22301045,
+      22301143
+    ],
+    "games": 10,
+    "losses": 5,
+    "points": 1206,
+    "pts_avg": 120.6,
+    "query": "Lakers record without LeBron James and with Anthony Davis in 2023-24",
+    "route": "team_record",
+    "wins": 5
+  },
+  {
+    "expected_count": 0,
+    "game_ids": [],
+    "query": "how many games did Austin Reaves miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "expected_count": 0,
+    "game_ids": [],
+    "query": "how many home games did Austin Reaves miss in 2023-24",
+    "route": "game_finder"
+  },
+  {
+    "game_ids": [],
+    "games": 0,
+    "losses": 0,
+    "points": 0,
+    "pts_avg": null,
+    "query": "Lakers record without Austin Reaves in 2023-24",
+    "route": "team_record",
+    "wins": 0
+  },
+  {
+    "game_ids": [
+      22300684
+    ],
+    "games": 1,
+    "losses": 0,
+    "points": 114,
+    "pts_avg": 114.0,
+    "query": "Lakers record without Anthony Davis and LeBron James in2023-24",
+    "route": "team_record",
+    "wins": 1
+  },
+  {
+    "expected_count": 10,
+    "game_ids": [
+      22400319,
+      22400393,
+      22400891,
+      22400929,
+      22400994,
+      22401058,
+      22401137,
+      22401156,
+      22401187,
+      22401205
+    ],
+    "query": "how many games did Jayson Tatum miss in 2024-25",
+    "route": "game_finder"
+  },
+  {
+    "expected_count": 7,
+    "game_ids": [
+      22400319,
+      22400891,
+      22400929,
+      22400994,
+      22401137,
+      22401187,
+      22401205
+    ],
+    "query": "how many home games did Jayson Tatum miss in 2024-25",
+    "route": "game_finder"
+  },
+  {
+    "game_ids": [
+      22400319,
+      22400393,
+      22400891,
+      22400929,
+      22400994,
+      22401058,
+      22401137,
+      22401156,
+      22401187,
+      22401205
+    ],
+    "games": 10,
+    "losses": 2,
+    "points": 1128,
+    "pts_avg": 112.8,
+    "query": "Celtics record without Jayson Tatum in 2024-25",
+    "route": "team_record",
+    "wins": 8
+  }
+]

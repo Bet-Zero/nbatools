@@ -1,0 +1,10 @@
+{
+  "reader_attempts": 1,
+  "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300915.json",
+  "retrieved_at": "2026-11-01T06:49:17.154Z",
+  "git_blob_sha": "8244102c1d85b886682337764ed377875c484d75",
+  "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/8244102c1d85b886682337764ed377875c484d75",
+  "original_nba_capture_time": null,
+  "sha256": "525de6cf3e237eebd505e077557eb1edfd25ff0fbfc0024755547dd4e2b6e9db",
+  "size_bytes": 19807
+}

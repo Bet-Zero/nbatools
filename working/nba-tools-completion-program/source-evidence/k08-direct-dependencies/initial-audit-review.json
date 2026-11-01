@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "BLOCKED pending audit qualification/error-persistence repair; no R2 approval for frozen candidate",
+  "reviewed_revision": "fe98f58642b68e108270ab6880b503f61cd70916",
+  "equivalent_local_revision": "7ff6bb48679e2ffcb2baa83a65a1e6ac93324d99",
+  "tree": "4a5295858991cb544cf5d8e4fa24f2c8cc1fc8d4",
+  "file_sha256": "2562cf591f74d0a62d57f7262030b465b019ae3b8390241d3d3c4ceaf3646e91",
+  "finding": {
+    "severity": "blocking verification-policy defect",
+    "problem": "Raw availability literals are treated as qualified DNP or same-game association without runtime source/coverage authority; global legacy or contradiction guard failures differ from this per-target raw oracle. Report/error and complete source-binding receipt are persisted only after comparisons, so valid diagnostic failures lose their qualified report/authority reason.",
+    "affected_functions": [
+      "_raw_states",
+      "test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit"
+    ],
+    "runtime_boundary": "load_observations validates entire season availability schema/source/coverage/hash syntax before build_report constructs identity/per-game rows; global positive contradictions make every per-game runtime qualification unknown.",
+    "pinned_manifest_actual_dependency": {
+      "path": "raw/player_game_availability/2023-24_regular_season.csv",
+      "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+      "size_bytes": 16721,
+      "contents_not_fetched_or_claimed": true
+    }
+  },
+  "independent_offline_controls": [
+    {
+      "mode": "qualified_control",
+      "raw_counts": {
+        "played": 60,
+        "did_not_play": 5,
+        "unknown": 17
+      },
+      "qualified_counts": {
+        "played": 60,
+        "did_not_play": 5,
+        "same_game_other_side": 0,
+        "unknown": 17
+      },
+      "qualification_errors": [
+        "",
+        "Incomplete game-day participation coverage for LeBron James"
+      ],
+      "raw_and_report_equal": true
+    },
+    {
+      "mode": "legacy_negative_authority",
+      "raw_counts": {
+        "played": 60,
+        "did_not_play": 5,
+        "unknown": 17
+      },
+      "build_report_raises": "Player-game participation lacks retained qualified source evidence",
+      "coverage_report_emitted": false
+    },
+    {
+      "mode": "unrelated_unqualified_row",
+      "raw_counts": {
+        "played": 60,
+        "did_not_play": 5,
+        "unknown": 17
+      },
+      "build_report_raises": "Player-game participation lacks retained qualified source evidence",
+      "coverage_report_emitted": false
+    },
+    {
+      "mode": "global_positive_contradiction",
+      "raw_counts": {
+        "unknown": 18,
+        "played": 59,
+        "did_not_play": 5
+      },
+      "qualified_counts": {
+        "played": 0,
+        "did_not_play": 0,
+        "same_game_other_side": 0,
+        "unknown": 82
+      },
+      "qualification_errors": [
+        "Contradictory positive and report participation observations"
+      ],
+      "raw_and_report_equal": false
+    }
+  ],
+  "required_minimal_repair": [
+    "Keep literal raw states/rows as diagnostic evidence, separate from qualified coverage; never equate legacy DNP with qualified absence.",
+    "Persist each runtime report or explicit global exception and all checked source bindings before numerical/state comparisons can fail.",
+    "Classify contradictions/unqualified existing authority separately from genuinely missing exact-game source evidence; do not blindly turn global unknown scope into82new acquisitions.",
+    "Retain positive raw-game facts and desired requirements without calling refusal or audit failure a completed capability; preserve engine source/clock/membership guards."
+  ],
+  "unchanged_scope_review": {
+    "max_players": 4,
+    "LAL2023_players": [
+      203076,
+      2544,
+      1630559
+    ],
+    "optional_current_BOS2024_player": 1628369,
+    "manifest_and_identity_hash_size_checks": true,
+    "missing_optional_requires_absent_manifest_and_configured_source": true,
+    "catalog_reciprocal_population_validation": true,
+    "no_NBA_API_or_public_or_local_queries": true,
+    "no_production_writes": true
+  },
+  "source_body_network_reads_by_checker": 0,
+  "actual_R2_approved": false,
+  "production_publication_approved": false
+}

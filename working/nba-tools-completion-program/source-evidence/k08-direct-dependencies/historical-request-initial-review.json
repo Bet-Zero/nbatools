@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "BLOCKED initial15PDF primary plan and unused capture; superseded by parent decision to qualify existing SummaryV2 pairs first",
+  "reviewed_revision": "5e02a80c8004e03b1fbd44b53b34dd76f7751669",
+  "tree": "db3b912c4aacab7ee5448e674a8bdcca423a54fa",
+  "file_hashes": {
+    "tests/cloud_historical_lal_reports_capture_real_data.py": "d6deca925586fb1c67565ed11cf90697b4e5aa969c0df43539c5e9be6045f2b0",
+    "working/nba-tools-completion-program/collection-requests/lal-participation-remaining-2023-24.json": "89e2291465cfbb8eedc4e0a7848d35bd959addb269f0bb4d0407ebf6f3376d01",
+    "working/nba-tools-completion-program/collection-requests/bos-tatum-participation-remaining-2024-25.json": "5bedec01c26494aee835c8503216e65abd71c8bddf2854f9baf409256843fb83"
+  },
+  "scope_checks": {
+    "all25target_tuples_match_accepted_audit": true,
+    "all15PDFgame_dates_sides_scores_URLs_match_raw_reciprocal_oracle": true,
+    "known0403_0684reports_not_refetched": true,
+    "no_Reaves_collection": true
+  },
+  "findings": [
+    {
+      "kind": "source_selection",
+      "detail": "Missing SummaryV3/2024 does not rule out existing supported SummaryV2/2024. Retained accepted archive-index explicitly lists year2024 at V2endpoint4a8fadd011f1743cb9efe994793cc91aef96c3ba; current producer already supports V2, so qualify representative structured pair before selecting15PDF-primary."
+    },
+    {
+      "kind": "hard_aggregate_cap_and_accounting",
+      "detail": "total<10MB does not reserve1.5MB per next read; date/side/score failed PDFs retained before accounting are omitted; skipped budget cases incorrectly declare one reader call.",
+      "independent_mocked_controls": [
+        {
+          "control": "valid_reports_cross_budget",
+          "actual_calls": 7,
+          "summary_calls": 7,
+          "reported_retained_pdf_bytes": 10500000,
+          "actual_retained_pdf_bytes": 10500000,
+          "reported_per_case_invocations": 15,
+          "gate_failed": true
+        },
+        {
+          "control": "wrong_date_reports_bypass_accounting",
+          "actual_calls": 15,
+          "summary_calls": 15,
+          "reported_retained_pdf_bytes": 0,
+          "actual_retained_pdf_bytes": 22500000,
+          "reported_per_case_invocations": 15,
+          "gate_failed": true
+        }
+      ]
+    }
+  ],
+  "bos2024_conditional_metadata_review": {
+    "exact_keys": 10,
+    "exact_originals": 20,
+    "bytes": 369118,
+    "largest": 21599,
+    "metadata": [
+      {
+        "endpoint": "boxscoretraditionalv3",
+        "endpoint_tree_sha": "606e7b6e2656b543d464964382eee30e36f78c32",
+        "year_tree_sha": "214dc1524eeb4d2c90f61f460bd8f4ee0596009d",
+        "year_entries": 1400,
+        "endpoint_response_sha256": "8d889036ca92c30ceca8c6d1dfd3fcbb892851b965b7e0e3ab438a6ac2e0b998",
+        "year_response_sha256": "70b801701de811ba599e33ed5438a4264e5c9e8d7efe2784f99356156bfe004c",
+        "selected_original_entries": [
+          {
+            "path": "0022400319.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "547a144c23be3f67474fa2d31523344cb738ce4b",
+            "size": 20409,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/547a144c23be3f67474fa2d31523344cb738ce4b"
+          },
+          {
+            "path": "0022400393.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bfa67275caa09d253d2b0fb1695994139222e44e",
+            "size": 20391,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/bfa67275caa09d253d2b0fb1695994139222e44e"
+          },
+          {
+            "path": "0022400891.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a4ca32e09ff158a1511a22fa880ed605e08c090f",
+            "size": 21599,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/a4ca32e09ff158a1511a22fa880ed605e08c090f"
+          },
+          {
+            "path": "0022400929.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b80865b97186049d8a750a5f2aba8315eff22701",
+            "size": 19049,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b80865b97186049d8a750a5f2aba8315eff22701"
+          },
+          {
+            "path": "0022400994.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "404853d73601afc90e526f8b1f265919fcfdcc70",
+            "size": 20336,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/404853d73601afc90e526f8b1f265919fcfdcc70"
+          },
+          {
+            "path": "0022401058.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "76b5baca4bfc10048f9e2205f52692cf3a07ca34",
+            "size": 20859,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/76b5baca4bfc10048f9e2205f52692cf3a07ca34"
+          },
+          {
+            "path": "0022401137.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c7c3b5531785531bfb60d71b16c1dae33260f79d",
+            "size": 19690,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c7c3b5531785531bfb60d71b16c1dae33260f79d"
+          },
+          {
+            "path": "0022401156.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4f9ca594f74bdef99fb9cbf92887d27c411c2542",
+            "size": 20258,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/4f9ca594f74bdef99fb9cbf92887d27c411c2542"
+          },
+          {
+            "path": "0022401187.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5c7d6c52c2826349a6e4372565737bd1577c83ce",
+            "size": 18405,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/5c7d6c52c2826349a6e4372565737bd1577c83ce"
+          },
+          {
+            "path": "0022401205.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d94d915e0637180c2782ab0a8bd1a6d63aedc82b",
+            "size": 19031,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/d94d915e0637180c2782ab0a8bd1a6d63aedc82b"
+          }
+        ]
+      },
+      {
+        "endpoint": "boxscoresummaryv3",
+        "endpoint_tree_sha": "5b31c11e319249c6541df7740993c2dd03ad5765",
+        "year_tree_sha": "b52f83843203d614a622d922682d68519243e60e",
+        "year_entries": 1321,
+        "endpoint_response_sha256": "7f83d1ee41447669500ee40a7f99f646abbe4cc31ead1d961aae7a02eaa36548",
+        "year_response_sha256": "f45c36e493abe915b6b58b4511b7ec71472e53ea8ec9d21511bcbaf1f5b7596c",
+        "selected_original_entries": [
+          {
+            "path": "0022400319.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "34f9750db817364c5ceead0a34a01cf15027ab8d",
+            "size": 15553,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/34f9750db817364c5ceead0a34a01cf15027ab8d"
+          },
+          {
+            "path": "0022400393.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1e1ede0c9298c588bcaea8973f9e83f13012b663",
+            "size": 16276,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/1e1ede0c9298c588bcaea8973f9e83f13012b663"
+          },
+          {
+            "path": "0022400891.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1c544154de98ee6f6f8b2f8ef6f1be53266e840f",
+            "size": 15857,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/1c544154de98ee6f6f8b2f8ef6f1be53266e840f"
+          },
+          {
+            "path": "0022400929.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fed4a260aa58b95cf9a135268e44dbdeb96f80de",
+            "size": 15169,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/fed4a260aa58b95cf9a135268e44dbdeb96f80de"
+          },
+          {
+            "path": "0022400994.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "22b0d29ff8317fd280eb3c5db74c7941e1580e67",
+            "size": 15945,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/22b0d29ff8317fd280eb3c5db74c7941e1580e67"
+          },
+          {
+            "path": "0022401058.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2d41f0074cc5820e62069946435b81d397eea4a5",
+            "size": 20145,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/2d41f0074cc5820e62069946435b81d397eea4a5"
+          },
+          {
+            "path": "0022401137.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b3892e642ef8f5dcac6068e1211b36df4bf935b4",
+            "size": 15587,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b3892e642ef8f5dcac6068e1211b36df4bf935b4"
+          },
+          {
+            "path": "0022401156.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9ccbee7c52c362c830ec2c7637bc885dc7b2a4f4",
+            "size": 19960,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/9ccbee7c52c362c830ec2c7637bc885dc7b2a4f4"
+          },
+          {
+            "path": "0022401187.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "185d770a51588dcf011d9374c99feb6b58cd8c74",
+            "size": 15365,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/185d770a51588dcf011d9374c99feb6b58cd8c74"
+          },
+          {
+            "path": "0022401205.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cef988b9f5245e2678eb94e2e59fcc03edfdcf1d",
+            "size": 19234,
+            "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/cef988b9f5245e2678eb94e2e59fcc03edfdcf1d"
+          }
+        ]
+      }
+    ],
+    "approval": "Representative pair only first; remaining18 originals after independent actual pair qualification. Metadata presence is not body/participation/clock qualification."
+  },
+  "parent_resolution": "Halt unused15PDF plan without source calls; fetch V2endpoint/year2024 and Traditional2024 metadata only, qualify representative AD pair before other28LAL bodies. BOS representative-first remains separate. Revised request/code freeze still needs review.",
+  "source_network_calls_by_checker": 0,
+  "synthetic_control_bytes_are_not_NBA_evidence": true,
+  "actual_collection_approved": false,
+  "production_publication_approved": false
+}

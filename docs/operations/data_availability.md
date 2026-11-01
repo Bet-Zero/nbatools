@@ -100,6 +100,11 @@ manifest-bound canonical inputs. Existing availability cells, import lineage
 and stronger PDF clock authority survive unchanged. The exported append-only
 overlay and `validation.json` remain development staging until independent
 checking, required consumer execution and separately protected publication.
+For an older season whose availability CSV and import ledger are both absent
+from the manifest and configured source, the producer creates the pair together.
+The receipt records `manifest_absent_creations` with the exact added game IDs
+and record counts; it invents no baseline files or hashes. A partially present
+pair, stray configured file, extra game or invalid lineage rejects the stage.
 
 Generate a request against the selected inventory, for example:
 

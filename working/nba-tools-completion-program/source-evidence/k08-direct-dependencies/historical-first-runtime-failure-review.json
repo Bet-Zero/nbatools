@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "classification": "failed_required_run_partial_execution_evidence_not_runtime_or_final_stage_acceptance",
+  "approval": "FAILED as recorded; replay after changed harness contract/persistence repair is required",
+  "run_id": 41283001115,
+  "request_revision": "9724720d59fcf495caf5a73b8cdc61a9d5015e1d",
+  "reviewed_code_revision": "e204b682d0300698e2a966f02539719a4a298547",
+  "artifact_id": 13074076598,
+  "artifact_sha256": "d2dc52cdd4c351c05b468de2d66121f846783d27b34bd2ae999ebd24a6b7b2e5",
+  "artifact_size_bytes": 4389,
+  "artifact_members": [
+    "junit.xml",
+    "summary.json"
+  ],
+  "strict_summary": {
+    "candidate_sha": "9724720d59fcf495caf5a73b8cdc61a9d5015e1d",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "failure": {
+    "type": "KeyError",
+    "key": "finder",
+    "location": "tests/cloud_historical_participation_stage_real_data.py:363",
+    "cause": "Natural how-many result intentionally exposes count-only sections; harness incorrectly required finder rows from the same response.",
+    "reviewer_acknowledgement": "Checker missed this existing response-contract assumption in original gate approval; consumer schema must be verified before replay."
+  },
+  "partial_executed_path_evidence": [
+    "Both same775 structured stage builds including full canonical PGA replay completed without raised failure.",
+    "876row source/population/date/name/literal-second comparisons,68old serialized rows/twoimport append verification, copied80source/corehash checks, and merged publication validator completed before consumer invocation.",
+    "FirstAD full82coverage and firstADcount6 assertion completed before finder lookup failure."
+  ],
+  "limits_of_partial_evidence": "Only JUnit and strict summary were exported. Prepared raw overlay/validation was private and lost through late final copy, so those passing-path statements are execution-trace evidence, not independent post-run output acceptance. Other consumer cases did not execute.",
+  "required_repair": [
+    "Separate count-schema assertion from explicit natural list or structured count=False exact game-ID sample; preserve qualified zero semantics.",
+    "Persist prepared raw overlay/validation before consumer checks with consumer acceptance explicitly false; failure diagnostics must survive and unexpected consumer errors must still fail pytest."
+  ],
+  "source_originals_unchanged": true,
+  "source_reacquisition_required": false,
+  "source_network_calls_by_checker": 0,
+  "staging_output_independently_accepted": false,
+  "consumer_acceptance": false,
+  "feature_acceptance": false,
+  "full_required_slice_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

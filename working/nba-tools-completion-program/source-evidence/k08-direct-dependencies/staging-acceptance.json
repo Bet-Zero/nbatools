@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "classification": "isolated_historical_cohorts_staging_not_publication_or_2025_composition",
+  "run_id": 41283790679,
+  "reviewed_sha": "1e3af5568227f7e63db27cdd30eff324ebfe7810",
+  "reviewed_tree": "180b6d6794488a160e37798906628437c247cf61",
+  "request_sha": "9e59b100e897c204b439cc7780944f4fb08c0027",
+  "artifact_id": 13074158854,
+  "artifact_sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+  "artifact_size_bytes": 266090,
+  "original_receipt_sha256": "a5124ffd55734ee699e37474b05311554cddf4cbef41c9592019431235f029ea",
+  "strict_execution_summary": {
+    "candidate_sha": "9e59b100e897c204b439cc7780944f4fb08c0027",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "stage_preparation_accepted": true,
+  "consumer_acceptance": "passed",
+  "consumer_failure": null,
+  "validation": {
+    "base_generation": "availability-lebron-season-v1-20261031",
+    "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "append_only": {
+      "raw/player_game_availability/2023-24_regular_season.csv": {
+        "base_sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+        "base_size_bytes": 16721,
+        "added_game_ids": [
+          "0022300163",
+          "0022300187",
+          "0022300316",
+          "0022300331",
+          "0022300380",
+          "0022300549",
+          "0022300618",
+          "0022300669",
+          "0022300788",
+          "0022300802",
+          "0022300915",
+          "0022301045",
+          "0022301055",
+          "0022301143",
+          "0022301155"
+        ],
+        "added_records": 529
+      },
+      "raw/player_game_availability/2023-24_regular_season.imports.json": {
+        "base_sha256": "7d0ecf0aacc198a72dc45bf83952e7de99d67c9aeed74bc2610042fa87a26085",
+        "base_size_bytes": 225,
+        "added_game_ids": [
+          "0022300163",
+          "0022300187",
+          "0022300316",
+          "0022300331",
+          "0022300380",
+          "0022300549",
+          "0022300618",
+          "0022300669",
+          "0022300788",
+          "0022300802",
+          "0022300915",
+          "0022301045",
+          "0022301055",
+          "0022301143",
+          "0022301155"
+        ],
+        "added_records": 15
+      }
+    },
+    "manifest_absent_creations": {
+      "raw/player_game_availability/2024-25_regular_season.csv": {
+        "base_presence": "manifest_absent",
+        "added_game_ids": [
+          "0022400319",
+          "0022400393",
+          "0022400891",
+          "0022400929",
+          "0022400994",
+          "0022401058",
+          "0022401137",
+          "0022401156",
+          "0022401187",
+          "0022401205"
+        ],
+        "added_records": 347
+      },
+      "raw/player_game_availability/2024-25_regular_season.imports.json": {
+        "base_presence": "manifest_absent",
+        "added_game_ids": [
+          "0022400319",
+          "0022400393",
+          "0022400891",
+          "0022400929",
+          "0022400994",
+          "0022401058",
+          "0022401137",
+          "0022401156",
+          "0022401187",
+          "0022401205"
+        ],
+        "added_records": 10
+      }
+    },
+    "production_writes": 0,
+    "full_required_slice_accepted": false,
+    "publication_state": "staged_only_no_writes",
+    "candidate_sha": "9e59b100e897c204b439cc7780944f4fb08c0027",
+    "request_sha256": {
+      "lal-participation-remaining-2023-24.json": "7c77db1142276fff8cf8181f744c0040b550d7d8b7d3f7994c348e5d0fb11036",
+      "bos-tatum-participation-remaining-2024-25.json": "5bedec01c26494aee835c8503216e65abd71c8bddf2854f9baf409256843fb83"
+    },
+    "source_manifests_sha256": {
+      "lal-participation-remaining-2023-24.json": "ff5f604392b168c1259e3a219c2cdddc58b25b392fa8b7fbac74872b3b7f33df",
+      "bos-tatum-participation-remaining-2024-25.json": "b38929d14ed1827245307a4e666e82c3a810514fef57fe5ef46c212075993be7"
+    },
+    "source_kind": "retained_originals_only_no_acquisition",
+    "source_proof_sha256": {
+      "historical-source-qualification.json": "b22dd69bd22f48767c760bb71a85e1796243b857662108cd9363bfe8d55c3389",
+      "historical-projection-oracle.json": "fceebc26212b0d41f697246a68a3b23f129f6044f8dd60443668f178e5473cd3",
+      "historical-answer-oracle.json": "b589e2b3b8b9a9539ac4909d891854cd0bbeb156add92913e43acfb6138ec2e9"
+    },
+    "staged_target_keys": 25
+  },
+  "overlay_file_count": 79,
+  "season_stage_counts": [
+    {
+      "requested_game_count": 15,
+      "requested_target_count": 15,
+      "added_availability_rows": 529
+    },
+    {
+      "requested_game_count": 10,
+      "requested_target_count": 10,
+      "added_availability_rows": 347
+    }
+  ],
+  "projection_summary": [
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "observed_team_games": 82,
+      "requested_games": 82,
+      "counts": {
+        "played": 76,
+        "did_not_play": 6,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "missed_games": 6,
+      "complete_requested_population": true
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "observed_team_games": 82,
+      "requested_games": 82,
+      "counts": {
+        "played": 71,
+        "did_not_play": 11,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "missed_games": 11,
+      "complete_requested_population": true
+    },
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "observed_team_games": 82,
+      "requested_games": 82,
+      "counts": {
+        "played": 82,
+        "did_not_play": 0,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "missed_games": 0,
+      "complete_requested_population": true
+    },
+    {
+      "season": "2024-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "observed_team_games": 82,
+      "requested_games": 82,
+      "counts": {
+        "played": 72,
+        "did_not_play": 10,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "missed_games": 10,
+      "complete_requested_population": true
+    }
+  ],
+  "answers": [
+    {
+      "query": "how many games did Anthony Davis miss in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "count": 6
+    },
+    {
+      "query": "how many home games did Anthony Davis miss in 2023-24",
+      "ids": [
+        22301155
+      ],
+      "count": 1
+    },
+    {
+      "query": "how many games did LeBron James miss in 2023-24",
+      "ids": [
+        22300187,
+        22300316,
+        22300380,
+        22300549,
+        22300618,
+        22300684,
+        22300788,
+        22300802,
+        22300915,
+        22301045,
+        22301143
+      ],
+      "count": 11
+    },
+    {
+      "query": "how many home games did LeBron James miss in 2023-24",
+      "ids": [
+        22300187,
+        22300915,
+        22301143
+      ],
+      "count": 3
+    },
+    {
+      "query": "how many games did Austin Reaves miss in 2023-24",
+      "ids": [],
+      "count": 0
+    },
+    {
+      "query": "how many home games did Austin Reaves miss in 2023-24",
+      "ids": [],
+      "count": 0
+    },
+    {
+      "query": "how many games did Tatum miss in 2024-25",
+      "ids": [
+        22400319,
+        22400393,
+        22400891,
+        22400929,
+        22400994,
+        22401058,
+        22401137,
+        22401156,
+        22401187,
+        22401205
+      ],
+      "count": 10
+    },
+    {
+      "query": "how many home games did Jayson Tatum miss in 2024-25",
+      "ids": [
+        22400319,
+        22400891,
+        22400929,
+        22400994,
+        22401137,
+        22401187,
+        22401205
+      ],
+      "count": 7
+    },
+    {
+      "query": "Lakers record without Davis in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "wins": 2,
+      "losses": 4,
+      "points": 701
+    },
+    {
+      "query": "Lakers record without Davis and with LeBron James in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ],
+      "wins": 1,
+      "losses": 4,
+      "points": 587
+    },
+    {
+      "query": "Lakers record without Davis and Reaves in 2023-24",
+      "ids": [],
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "query": "Lakers record without Reaves in 2023-24",
+      "ids": [],
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    {
+      "query": "LeBron James stats without Davis in 2023-24",
+      "ids": [
+        22300163,
+        22300331,
+        22300669,
+        22301055,
+        22301155
+      ],
+      "games": 5,
+      "points": 117
+    },
+    {
+      "query": "LeBron James 30 point games with Davis out in 2023-24",
+      "ids": [
+        22301155
+      ],
+      "points": 33
+    }
+  ],
+  "incomplete_other_scope": {
+    "season": "2023-24",
+    "team_id": 1610612738,
+    "player_id": 1628369,
+    "counts": {
+      "played": 74,
+      "did_not_play": 0,
+      "same_game_other_side": 0,
+      "unknown": 8
+    },
+    "missed_games": null,
+    "complete_requested_population": false
+  },
+  "full_required_slice_accepted": false,
+  "production_writes": 0,
+  "live_publication_accepted": false,
+  "independent_actual_output_review": {
+    "status": "passed",
+    "reviewer": "/root/absence_checker",
+    "model_identity": "Exact model ID unavailable; separate reviewer, no cross-model or human claim",
+    "sha256": "a9b5117123527242992f7ca67403d546e6b3aff9b64629b4f97c68bb8d3eeccc"
+  }
+}

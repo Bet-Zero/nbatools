@@ -1,0 +1,472 @@
+{
+  "schema_version": 1,
+  "status": "bounded_source_requirement_not_publication_approval",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season_type": "Regular Season",
+  "authorization": {
+    "decision_date": "2026-11-01",
+    "basis": "Owner standing bounded public NBA collection/staging through existing approved sources/tools/credentials/cost limits",
+    "collection_and_staging_authorized": true,
+    "production_publication_authorized": false,
+    "new_credentials_costs_permissions_or_bulk_history_authorized": false
+  },
+  "audit": {
+    "run_id": 41280638841,
+    "reviewed_code_sha": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+    "artifact_id": 13072349111,
+    "artifact_sha256": "33f4a6d9a013da81f3f4c3c25f837c44cd7248de42f425b92e01af68b71cb67a",
+    "independent_review_sha256": "0a6498eb700741d0f71e5bd8bd11db2fdf17073643801f7462410a1b4ef89d86"
+  },
+  "not_authorized": [
+    "production publication or active pointer change",
+    "substantial bulk backfills or automatic refresh",
+    "new costs, credentials, services or expanded permissions",
+    "destructive operations or weakened safeguards"
+  ],
+  "season": "2023-24",
+  "dataset": "raw/player_game_availability",
+  "target_team_id": 1610612747,
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+  "remaining_unknown_target_count": 15,
+  "unique_requested_games": 15,
+  "limits": {
+    "max_source_body_bytes": 2000000,
+    "collection_zip_bytes": 20000000,
+    "collection_expanded_bytes": 100000000,
+    "collection_max_files": 2000,
+    "attempts_per_file": 1,
+    "metered_overage_usd": 0,
+    "maximum_total_source_reader_calls": 30
+  },
+  "baseline_facts": {
+    "Anthony Davis": {
+      "played": 76,
+      "did_not_play": 1,
+      "unknown": 5
+    },
+    "LeBron James": {
+      "played": 71,
+      "did_not_play": 1,
+      "unknown": 10
+    },
+    "Austin Reaves": {
+      "played": 82,
+      "did_not_play": 0,
+      "unknown": 0
+    },
+    "availability_rows": 68,
+    "existing_imports": 2
+  },
+  "scope": "Five exact AD unknown keys and ten exact LeBron unknown keys in2023\u201324 LAL82-game population. Reaves82played/zeroDNP is already complete; no Reaves collection.",
+  "requirements": [
+    {
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300163.json",
+          "git_blob_sha": "c37dd628cadb56b1188325eebecc6dc5943df272",
+          "size_bytes": 18995
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300163.json",
+          "git_blob_sha": "6662a6e8da608f485e773d39830600a0cb1ad7c0",
+          "size_bytes": 3900
+        }
+      ]
+    },
+    {
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300187.json",
+          "git_blob_sha": "a457479d4fbc71c43f1818921f06536ed787bcdf",
+          "size_bytes": 19662
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300187.json",
+          "git_blob_sha": "52c7f2334177655e99361bfd4d72d1a5301445df",
+          "size_bytes": 3890
+        }
+      ]
+    },
+    {
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300316.json",
+          "git_blob_sha": "328829c0d5c62d3a980577e5b9e704115dc98dce",
+          "size_bytes": 19727
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300316.json",
+          "git_blob_sha": "5d3aceb2d0aeb8ed459514eb205c3a03cbf3438e",
+          "size_bytes": 3859
+        }
+      ]
+    },
+    {
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300331.json",
+          "git_blob_sha": "8d4122cd3e996beb088601aef4722873e58a3162",
+          "size_bytes": 19696
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300331.json",
+          "git_blob_sha": "bc98a960b60dc3f3a046b057641f041e211a1718",
+          "size_bytes": 3851
+        }
+      ]
+    },
+    {
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300380.json",
+          "git_blob_sha": "36c3b29b480a2334dc1460141172805e737d5ecc",
+          "size_bytes": 19144
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300380.json",
+          "git_blob_sha": "eecf15c7f4f30303ded54664a286a177f95b4760",
+          "size_bytes": 3870
+        }
+      ]
+    },
+    {
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300549.json",
+          "git_blob_sha": "0cc680233a3357505d0484a42b73713cb5eb0ae3",
+          "size_bytes": 19744
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300549.json",
+          "git_blob_sha": "0cb6bd0c35750cea1caad91f3d456f573cf432be",
+          "size_bytes": 3781
+        }
+      ]
+    },
+    {
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300618.json",
+          "git_blob_sha": "ffbd55586a93ed40d192d092df78cceb9645c4cd",
+          "size_bytes": 18993
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300618.json",
+          "git_blob_sha": "d37106e7381566e48ee1a6b83bd24c5a960f73cf",
+          "size_bytes": 3877
+        }
+      ]
+    },
+    {
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300669.json",
+          "git_blob_sha": "51bf4555f883cd923aaeb1f0f399b18a9de16c87",
+          "size_bytes": 19622
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300669.json",
+          "git_blob_sha": "5eadf73169044da277a927f041031edf4509ab59",
+          "size_bytes": 3792
+        }
+      ]
+    },
+    {
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300788.json",
+          "git_blob_sha": "4510c633f57cad73762ce661d8e8ffc969a2ef71",
+          "size_bytes": 19033
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300788.json",
+          "git_blob_sha": "324e2bd869e10fe533f3521b5041ceaa16e4dd32",
+          "size_bytes": 3887
+        }
+      ]
+    },
+    {
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300802.json",
+          "git_blob_sha": "6b04d75458146bb291c55a94b5dccb3e414fff9c",
+          "size_bytes": 19074
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300802.json",
+          "git_blob_sha": "f6cb500a2335efe8943b0094b13320b4db0cfd5a",
+          "size_bytes": 3964
+        }
+      ]
+    },
+    {
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022300915.json",
+          "git_blob_sha": "8244102c1d85b886682337764ed377875c484d75",
+          "size_bytes": 19807
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022300915.json",
+          "git_blob_sha": "c2784c83b4e7f3d5fd9fa03d3eea9e2d81d82b71",
+          "size_bytes": 3936
+        }
+      ]
+    },
+    {
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301045.json",
+          "git_blob_sha": "0ef7d449b1a98669234e4cb17a07bb18ca4d28b1",
+          "size_bytes": 20475
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301045.json",
+          "git_blob_sha": "873ab530b2fb972ea95caf9d63437390fe252d77",
+          "size_bytes": 3860
+        }
+      ]
+    },
+    {
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301055.json",
+          "git_blob_sha": "15754ea8b277a1d53d81ec9178781186f11d700a",
+          "size_bytes": 19060
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301055.json",
+          "git_blob_sha": "cb9a846e52caeba27724834c2861e5a6b7f81bee",
+          "size_bytes": 4165
+        }
+      ]
+    },
+    {
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "player_name": "LeBron James",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301143.json",
+          "git_blob_sha": "d3e6f829767de43d4f51c29d609e8cbd28662f7f",
+          "size_bytes": 20290
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301143.json",
+          "git_blob_sha": "50105b17b41b84b29c4f95d88d8bd47273ea00a3",
+          "size_bytes": 3805
+        }
+      ]
+    },
+    {
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2024/0022301155.json",
+          "git_blob_sha": "688ed72fb46836d97c3798b57dd370997dcad3e2",
+          "size_bytes": 21529
+        },
+        {
+          "endpoint": "boxscoresummaryv2",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2024/0022301155.json",
+          "git_blob_sha": "3167dd1d617494a3d7c750e23644614ac98d7510",
+          "size_bytes": 3663
+        }
+      ]
+    }
+  ],
+  "source_metadata": {
+    "classification": "two untruncated pinned2024 indexes; exact30 leaves checked; bodies unqualified",
+    "source_file_count": 30,
+    "total_source_bytes": 352951,
+    "largest_source_bytes": 21529,
+    "source_bodies_acquired": 0
+  },
+  "reuse_existing_reports": [
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf",
+        "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+        "size_bytes": 26371
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20231225_BOSLAL.json",
+        "sha256": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf",
+        "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+        "size_bytes": 26828
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20240201_LALBOS.json",
+        "sha256": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    }
+  ],
+  "proposed_stage": "Qualify one primaryAD TraditionalV3+SummaryV2 pair before remaining28 originals. Use existing strict importer, no adapter. Preserve68 existing serialized availability rows/two imports/80 retained sidecars and unrelated data. Qualified targets and full82 populations remain required; unknown is notDNP, played is nothealthy. Targeted officialPDF fallback only for actual failed qualification, reusing old0403/0684 without refetch."
+}

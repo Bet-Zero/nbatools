@@ -18,7 +18,7 @@ import pandas as pd
 from nbatools.commands._player_identity import player_name_key
 from nbatools.commands.pipeline.pull_player_game_availability import validate_publication
 from nbatools.commands.pipeline.structured_participation import ARCHIVE, stage_structured_game
-from nbatools.data_source import data_generation_context, data_glob, data_path
+from nbatools.data_source import data_exists, data_generation_context, data_glob, data_path
 from tools.availability_overlay import binding, preserve_cells, verify_append
 
 SOURCES = "raw/player_game_availability_sources/"
@@ -218,14 +218,20 @@ def build_stage(
         suffix = f"{season}_{safe}.csv"
         csv = "raw/player_game_availability/" + suffix
         ledger = csv.removesuffix(".csv") + ".imports.json"
+        if (csv in entries) != (ledger in entries):
+            raise ValueError(
+                "Base availability CSV and import ledger must be jointly present or absent"
+            )
+        creating = csv not in entries
+        if creating and any(data_exists("data/" + path) for path in [csv, ledger]):
+            raise ValueError("Manifest-absent availability has a configured source file")
         for relative in [
             *(
                 f"raw/{dataset}/{suffix}"
                 for dataset in ["games", "team_game_stats", "player_game_stats"]
             ),
             "metadata/player_names.csv",
-            csv,
-            ledger,
+            *([] if creating else [csv, ledger]),
         ]:
             copy(relative)
         previous = f"{int(season[:4]) - 1}-{season[2:4]}"
@@ -243,9 +249,10 @@ def build_stage(
             raise ValueError("Served retained source set differs from manifest")
         for relative in sorted(listed):
             copy(relative)
-        existing = pd.read_csv(root / csv)
         game_ids = list(groups)
-        if set(map(int, game_ids)) & set(pd.to_numeric(existing.game_id)):
+        if not creating and set(map(int, game_ids)) & set(
+            pd.to_numeric(pd.read_csv(root / csv).game_id)
+        ):
             raise ValueError("Collection would replace existing qualified game evidence")
         added, targets = 0, []
         for requested_targets, paths, version, captured in qualified:
@@ -284,14 +291,32 @@ def build_stage(
                     }
                 )
             added += len(rows)
-        append = {
-            csv: binding(baseline[csv], game_ids, added_records=added),
-            ledger: binding(baseline[ledger], game_ids, added_records=len(game_ids)),
-        }
-        (root / csv).write_bytes(
-            preserve_cells(csv, baseline[csv], (root / csv).read_bytes(), append[csv])
-        )
-        verify_append(ledger, baseline[ledger], (root / ledger).read_bytes(), append[ledger])
+        append, creations = {}, {}
+        if creating:
+            rows, imports = pd.read_csv(root / csv), _document(root / ledger)
+            if (
+                len(rows) != added
+                or set(pd.to_numeric(rows.game_id)) != set(map(int, game_ids))
+                or set(imports) != {str(int(gid)) for gid in game_ids}
+            ):
+                raise ValueError("New availability files differ from the requested game population")
+            creations = {
+                path: dict(
+                    base_presence="manifest_absent",
+                    added_game_ids=game_ids,
+                    added_records=count,
+                )
+                for path, count in [(csv, added), (ledger, len(game_ids))]
+            }
+        else:
+            append = {
+                csv: binding(baseline[csv], game_ids, added_records=added),
+                ledger: binding(baseline[ledger], game_ids, added_records=len(game_ids)),
+            }
+            (root / csv).write_bytes(
+                preserve_cells(csv, baseline[csv], (root / csv).read_bytes(), append[csv])
+            )
+            verify_append(ledger, baseline[ledger], (root / ledger).read_bytes(), append[ledger])
         validate_publication(root)
         output.mkdir(parents=True)
         files = []
@@ -316,6 +341,7 @@ def build_stage(
             input_hashes=inputs,
             base_file_hashes={path: _sha(raw) for path, raw in baseline.items()},
             append_only=append,
+            manifest_absent_creations=creations,
             qualified_targets=targets,
             requested_target_count=len(requirements),
             requested_game_count=len(groups),

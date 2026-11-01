@@ -1,0 +1,3193 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS executed read-only historical input audit and exact collection dependency minimization; no feature completion or new source qualification",
+  "code_revision": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+  "code_tree": "9086158e71c75e9b8dfc53d26a221df9bbdd35b2",
+  "run_id": 41280638841,
+  "request_revision": "26aa51ce8bf2e4b20874c3701feed7cb0b67099b",
+  "artifact_id": 13072349111,
+  "artifact_sha256": "33f4a6d9a013da81f3f4c3c25f837c44cd7248de42f425b92e01af68b71cb67a",
+  "artifact_size_bytes": 55624,
+  "strict_summary": {
+    "candidate_sha": "26aa51ce8bf2e4b20874c3701feed7cb0b67099b",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_lal_2023_participation_coverage_real_data.py::test_current_direct_lal_2023_dependencies_and_optional_tatum_2024_audit"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_bindings": [
+    {
+      "path": "metadata/player_names.csv",
+      "sha256": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+      "size_bytes": 500982
+    },
+    {
+      "path": "raw/games/2023-24_regular_season.csv",
+      "sha256": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+      "size_bytes": 155882
+    },
+    {
+      "path": "raw/games/2024-25_regular_season.csv",
+      "sha256": "14d7deee5a5fa39e0bc42e769dd0412ade69b9e02af207b3fa2f103be5851df3",
+      "size_bytes": 283092
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.csv",
+      "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+      "size_bytes": 16721
+    },
+    {
+      "path": "raw/player_game_stats/2023-24_regular_season.csv",
+      "sha256": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+      "size_bytes": 4939911
+    },
+    {
+      "path": "raw/player_game_stats/2024-25_regular_season.csv",
+      "sha256": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+      "size_bytes": 4926374
+    },
+    {
+      "path": "raw/player_season_advanced/2023-24_regular_season.csv",
+      "sha256": "467319eed482c5be6c4a7dffe56600a803198d6b72760e4a9b4adab355cf1896",
+      "size_bytes": 75876
+    },
+    {
+      "path": "raw/player_season_advanced/2024-25_regular_season.csv",
+      "sha256": "25c0b3d008e1b6c590f9f613af2ee829c52a38852ff2c80d504e20e2b6bdda99",
+      "size_bytes": 75501
+    },
+    {
+      "path": "raw/team_game_stats/2023-24_regular_season.csv",
+      "sha256": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+      "size_bytes": 453325
+    },
+    {
+      "path": "raw/team_game_stats/2024-25_regular_season.csv",
+      "sha256": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+      "size_bytes": 453925
+    }
+  ],
+  "subset_sha256": {
+    "2023-24-1610612747-target-player-rows.csv": "3b5cc420bc4cf4f76b08600b3e4a20700fc5018edd54bceac545218baa233fe8",
+    "2024-25-1610612738-target-ledger-rows.csv": "0426d074cd583d118beb867040888148e8f90423f868ab06063c0c483d42aecc",
+    "2023-24-1610612747-catalog82.csv": "443a160974880f4d420b32b373ef31a317a5cbe01616d617f7ddb2da0217fe6e",
+    "2023-24-1610612747-reciprocal-team164.csv": "57ea67fee469fff7734580d07db4506afbb5c577f726f45a408485623c0269e3",
+    "2023-24-1610612747-target-ledger-rows.csv": "89579f8e38f86b4ed918ff51f853d2cbd8379defe0c2d3ff0ffcdd1c211a6a84",
+    "2024-25-1610612738-reciprocal-team164.csv": "421b16b406149a623c25f439f7aa4622a680e06579c7a16c9f1e3957d1cfdc01",
+    "2023-24-availability-original.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "2024-25-1610612738-target-player-rows.csv": "fd9665e167a89c86063b57c32a1d32220142adc065e53cdb6c6fcced68e0a33e",
+    "2024-25-1610612738-catalog82.csv": "0dd812405a5f8ba0ba06fb022e209ded93d9b46c51dc8fc31e8e14f843a16cc2",
+    "2023-24-1610612747-team82.csv": "c81af5e94c42dd472c50259d1e813e7d21a81ef1819a8c55b215a78233064713",
+    "2024-25-1610612738-team82.csv": "d926ac63e414a0e48304a702b615194129036b18c78b9c43673604c3f5a941d3"
+  },
+  "manifest_absent_optional_paths": [
+    "raw/player_game_availability/2024-25_regular_season.csv"
+  ],
+  "independent_checks": {
+    "player_game_states_dates_sides": 328,
+    "observed_populations": 2,
+    "each_population_team_games": 82,
+    "each_population_reciprocal_team_rows": 164,
+    "each_catalog_final_unique_games": 82,
+    "canonical_positive_facts": 301,
+    "qualified_DNP_target_facts": 2,
+    "unknown_target_facts": 25,
+    "all_report_source_hashes_match_authenticated775manifest": true,
+    "full2023availability_bytes_verified": true,
+    "full2023availability_rows": 68,
+    "all68source_scope_hash_and_participation_format_checks": true,
+    "no_actual_legacy_authority_failure_or_contradiction": true,
+    "prior_blocked_controls_are_synthetic_policy_findings_not_production_defects": true
+  },
+  "scope_results": {
+    "203076": {
+      "season": "2023-24",
+      "counts": {
+        "played": 76,
+        "did_not_play": 1,
+        "same_game_other_side": 0,
+        "unknown": 5
+      },
+      "missed_games": null,
+      "disposition": "qualified_incomplete_missing_evidence"
+    },
+    "2544": {
+      "season": "2023-24",
+      "counts": {
+        "played": 71,
+        "did_not_play": 1,
+        "same_game_other_side": 0,
+        "unknown": 10
+      },
+      "missed_games": null,
+      "disposition": "qualified_incomplete_missing_evidence"
+    },
+    "1630559": {
+      "season": "2023-24",
+      "counts": {
+        "played": 82,
+        "did_not_play": 0,
+        "same_game_other_side": 0,
+        "unknown": 0
+      },
+      "missed_games": 0,
+      "disposition": "qualified_complete_observed_population"
+    },
+    "1628369": {
+      "season": "2024-25",
+      "counts": {
+        "played": 72,
+        "did_not_play": 0,
+        "same_game_other_side": 0,
+        "unknown": 10
+      },
+      "missed_games": null,
+      "disposition": "qualified_incomplete_missing_evidence"
+    }
+  },
+  "complete_cohort": {
+    "player_id": 1630559,
+    "player_name": "Austin Reaves",
+    "season": "2023-24",
+    "observed_games": 82,
+    "played": 82,
+    "did_not_play": 0,
+    "unknown": 0,
+    "missed_games": 0,
+    "collection_needed": false,
+    "meaning": "Qualified observed population is complete; this audit makes no natural/API feature-completion claim."
+  },
+  "projections": [
+    {
+      "season": "2023-24",
+      "game_id": "0022300061",
+      "game_date": "2023-10-24",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300076",
+      "game_date": "2023-10-26",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300100",
+      "game_date": "2023-10-29",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300111",
+      "game_date": "2023-10-30",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300127",
+      "game_date": "2023-11-01",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300134",
+      "game_date": "2023-11-04",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300150",
+      "game_date": "2023-11-06",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300015",
+      "game_date": "2023-11-10",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300026",
+      "game_date": "2023-11-14",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300198",
+      "game_date": "2023-11-15",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300036",
+      "game_date": "2023-11-17",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300216",
+      "game_date": "2023-11-19",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300042",
+      "game_date": "2023-11-21",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300238",
+      "game_date": "2023-11-22",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300242",
+      "game_date": "2023-11-25",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300255",
+      "game_date": "2023-11-27",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300258",
+      "game_date": "2023-11-29",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300271",
+      "game_date": "2023-11-30",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300291",
+      "game_date": "2023-12-02",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301203",
+      "game_date": "2023-12-05",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301230",
+      "game_date": "2023-12-07",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300306",
+      "game_date": "2023-12-12",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300359",
+      "game_date": "2023-12-18",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300370",
+      "game_date": "2023-12-20",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300397",
+      "game_date": "2023-12-23",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300428",
+      "game_date": "2023-12-28",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300443",
+      "game_date": "2023-12-30",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300446",
+      "game_date": "2023-12-31",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300475",
+      "game_date": "2024-01-03",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300491",
+      "game_date": "2024-01-05",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300505",
+      "game_date": "2024-01-07",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300516",
+      "game_date": "2024-01-09",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300531",
+      "game_date": "2024-01-11",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300565",
+      "game_date": "2024-01-15",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300577",
+      "game_date": "2024-01-17",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300591",
+      "game_date": "2024-01-19",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300605",
+      "game_date": "2024-01-21",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300633",
+      "game_date": "2024-01-25",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300650",
+      "game_date": "2024-01-27",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300662",
+      "game_date": "2024-01-29",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "did_not_play"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300701",
+      "game_date": "2024-02-03",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300713",
+      "game_date": "2024-02-05",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300740",
+      "game_date": "2024-02-08",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300747",
+      "game_date": "2024-02-09",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300776",
+      "game_date": "2024-02-13",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300813",
+      "game_date": "2024-02-23",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300818",
+      "game_date": "2024-02-25",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300848",
+      "game_date": "2024-02-28",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300856",
+      "game_date": "2024-02-29",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300869",
+      "game_date": "2024-03-02",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300884",
+      "game_date": "2024-03-04",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300901",
+      "game_date": "2024-03-06",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300932",
+      "game_date": "2024-03-10",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300954",
+      "game_date": "2024-03-13",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300973",
+      "game_date": "2024-03-16",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300990",
+      "game_date": "2024-03-18",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301018",
+      "game_date": "2024-03-22",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301032",
+      "game_date": "2024-03-24",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301063",
+      "game_date": "2024-03-29",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301078",
+      "game_date": "2024-03-31",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301094",
+      "game_date": "2024-04-02",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301103",
+      "game_date": "2024-04-03",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301127",
+      "game_date": "2024-04-06",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301177",
+      "game_date": "2024-04-12",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301195",
+      "game_date": "2024-04-14",
+      "team_id": 1610612747,
+      "player_id": 203076,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300061",
+      "game_date": "2023-10-24",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300076",
+      "game_date": "2023-10-26",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300100",
+      "game_date": "2023-10-29",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300111",
+      "game_date": "2023-10-30",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300127",
+      "game_date": "2023-11-01",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300134",
+      "game_date": "2023-11-04",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300150",
+      "game_date": "2023-11-06",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300015",
+      "game_date": "2023-11-10",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300026",
+      "game_date": "2023-11-14",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300198",
+      "game_date": "2023-11-15",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300036",
+      "game_date": "2023-11-17",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300216",
+      "game_date": "2023-11-19",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300042",
+      "game_date": "2023-11-21",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300238",
+      "game_date": "2023-11-22",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300242",
+      "game_date": "2023-11-25",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300255",
+      "game_date": "2023-11-27",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300258",
+      "game_date": "2023-11-29",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300271",
+      "game_date": "2023-11-30",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300291",
+      "game_date": "2023-12-02",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301203",
+      "game_date": "2023-12-05",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301230",
+      "game_date": "2023-12-07",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300306",
+      "game_date": "2023-12-12",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300359",
+      "game_date": "2023-12-18",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300370",
+      "game_date": "2023-12-20",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300397",
+      "game_date": "2023-12-23",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300428",
+      "game_date": "2023-12-28",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300443",
+      "game_date": "2023-12-30",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300446",
+      "game_date": "2023-12-31",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300475",
+      "game_date": "2024-01-03",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300491",
+      "game_date": "2024-01-05",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300505",
+      "game_date": "2024-01-07",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300516",
+      "game_date": "2024-01-09",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300531",
+      "game_date": "2024-01-11",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300565",
+      "game_date": "2024-01-15",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300577",
+      "game_date": "2024-01-17",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300591",
+      "game_date": "2024-01-19",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300605",
+      "game_date": "2024-01-21",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300633",
+      "game_date": "2024-01-25",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300650",
+      "game_date": "2024-01-27",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300662",
+      "game_date": "2024-01-29",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "did_not_play"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300701",
+      "game_date": "2024-02-03",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300713",
+      "game_date": "2024-02-05",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300740",
+      "game_date": "2024-02-08",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300747",
+      "game_date": "2024-02-09",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300776",
+      "game_date": "2024-02-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300813",
+      "game_date": "2024-02-23",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300818",
+      "game_date": "2024-02-25",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300848",
+      "game_date": "2024-02-28",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300856",
+      "game_date": "2024-02-29",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300869",
+      "game_date": "2024-03-02",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300884",
+      "game_date": "2024-03-04",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300901",
+      "game_date": "2024-03-06",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300932",
+      "game_date": "2024-03-10",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300954",
+      "game_date": "2024-03-13",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300973",
+      "game_date": "2024-03-16",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300990",
+      "game_date": "2024-03-18",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301018",
+      "game_date": "2024-03-22",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301032",
+      "game_date": "2024-03-24",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301063",
+      "game_date": "2024-03-29",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301078",
+      "game_date": "2024-03-31",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301094",
+      "game_date": "2024-04-02",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301103",
+      "game_date": "2024-04-03",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301127",
+      "game_date": "2024-04-06",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "unknown"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301177",
+      "game_date": "2024-04-12",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301195",
+      "game_date": "2024-04-14",
+      "team_id": 1610612747,
+      "player_id": 2544,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300061",
+      "game_date": "2023-10-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300076",
+      "game_date": "2023-10-26",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300100",
+      "game_date": "2023-10-29",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300111",
+      "game_date": "2023-10-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300127",
+      "game_date": "2023-11-01",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300134",
+      "game_date": "2023-11-04",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300150",
+      "game_date": "2023-11-06",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300015",
+      "game_date": "2023-11-10",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300026",
+      "game_date": "2023-11-14",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300198",
+      "game_date": "2023-11-15",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300036",
+      "game_date": "2023-11-17",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300216",
+      "game_date": "2023-11-19",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300042",
+      "game_date": "2023-11-21",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300238",
+      "game_date": "2023-11-22",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300242",
+      "game_date": "2023-11-25",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300255",
+      "game_date": "2023-11-27",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300258",
+      "game_date": "2023-11-29",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300271",
+      "game_date": "2023-11-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300291",
+      "game_date": "2023-12-02",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301203",
+      "game_date": "2023-12-05",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301230",
+      "game_date": "2023-12-07",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300306",
+      "game_date": "2023-12-12",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300359",
+      "game_date": "2023-12-18",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300370",
+      "game_date": "2023-12-20",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300397",
+      "game_date": "2023-12-23",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300428",
+      "game_date": "2023-12-28",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300443",
+      "game_date": "2023-12-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300446",
+      "game_date": "2023-12-31",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300475",
+      "game_date": "2024-01-03",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300491",
+      "game_date": "2024-01-05",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300505",
+      "game_date": "2024-01-07",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300516",
+      "game_date": "2024-01-09",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300531",
+      "game_date": "2024-01-11",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300565",
+      "game_date": "2024-01-15",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300577",
+      "game_date": "2024-01-17",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300591",
+      "game_date": "2024-01-19",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300605",
+      "game_date": "2024-01-21",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300633",
+      "game_date": "2024-01-25",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300650",
+      "game_date": "2024-01-27",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300662",
+      "game_date": "2024-01-29",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300701",
+      "game_date": "2024-02-03",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300713",
+      "game_date": "2024-02-05",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300740",
+      "game_date": "2024-02-08",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300747",
+      "game_date": "2024-02-09",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300776",
+      "game_date": "2024-02-13",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300813",
+      "game_date": "2024-02-23",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300818",
+      "game_date": "2024-02-25",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300848",
+      "game_date": "2024-02-28",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300856",
+      "game_date": "2024-02-29",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300869",
+      "game_date": "2024-03-02",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300884",
+      "game_date": "2024-03-04",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300901",
+      "game_date": "2024-03-06",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300932",
+      "game_date": "2024-03-10",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300954",
+      "game_date": "2024-03-13",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300973",
+      "game_date": "2024-03-16",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022300990",
+      "game_date": "2024-03-18",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301018",
+      "game_date": "2024-03-22",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301032",
+      "game_date": "2024-03-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301063",
+      "game_date": "2024-03-29",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301078",
+      "game_date": "2024-03-31",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301094",
+      "game_date": "2024-04-02",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301103",
+      "game_date": "2024-04-03",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301127",
+      "game_date": "2024-04-06",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301177",
+      "game_date": "2024-04-12",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2023-24",
+      "game_id": "0022301195",
+      "game_date": "2024-04-14",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400061",
+      "game_date": "2024-10-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400073",
+      "game_date": "2024-10-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400089",
+      "game_date": "2024-10-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400104",
+      "game_date": "2024-10-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400119",
+      "game_date": "2024-10-30",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400132",
+      "game_date": "2024-11-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400141",
+      "game_date": "2024-11-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400157",
+      "game_date": "2024-11-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400172",
+      "game_date": "2024-11-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400187",
+      "game_date": "2024-11-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400202",
+      "game_date": "2024-11-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400001",
+      "game_date": "2024-11-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400218",
+      "game_date": "2024-11-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400230",
+      "game_date": "2024-11-16",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400021",
+      "game_date": "2024-11-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400028",
+      "game_date": "2024-11-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400271",
+      "game_date": "2024-11-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400281",
+      "game_date": "2024-11-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400047",
+      "game_date": "2024-11-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400307",
+      "game_date": "2024-12-01",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400316",
+      "game_date": "2024-12-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400319",
+      "game_date": "2024-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400335",
+      "game_date": "2024-12-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400345",
+      "game_date": "2024-12-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401205",
+      "game_date": "2024-12-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401217",
+      "game_date": "2024-12-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400363",
+      "game_date": "2024-12-19",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400381",
+      "game_date": "2024-12-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400393",
+      "game_date": "2024-12-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400407",
+      "game_date": "2024-12-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400420",
+      "game_date": "2024-12-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400437",
+      "game_date": "2024-12-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400449",
+      "game_date": "2024-12-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400464",
+      "game_date": "2025-01-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400471",
+      "game_date": "2025-01-03",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400487",
+      "game_date": "2025-01-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400507",
+      "game_date": "2025-01-07",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400528",
+      "game_date": "2025-01-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400542",
+      "game_date": "2025-01-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400562",
+      "game_date": "2025-01-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400577",
+      "game_date": "2025-01-17",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400587",
+      "game_date": "2025-01-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400604",
+      "game_date": "2025-01-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400620",
+      "game_date": "2025-01-22",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400629",
+      "game_date": "2025-01-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400635",
+      "game_date": "2025-01-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400650",
+      "game_date": "2025-01-27",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400666",
+      "game_date": "2025-01-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400683",
+      "game_date": "2025-01-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400698",
+      "game_date": "2025-02-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400710",
+      "game_date": "2025-02-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400728",
+      "game_date": "2025-02-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400748",
+      "game_date": "2025-02-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400759",
+      "game_date": "2025-02-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400769",
+      "game_date": "2025-02-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400789",
+      "game_date": "2025-02-20",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400811",
+      "game_date": "2025-02-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400829",
+      "game_date": "2025-02-25",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400836",
+      "game_date": "2025-02-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400852",
+      "game_date": "2025-02-28",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400866",
+      "game_date": "2025-03-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400891",
+      "game_date": "2025-03-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400900",
+      "game_date": "2025-03-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400918",
+      "game_date": "2025-03-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400929",
+      "game_date": "2025-03-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400946",
+      "game_date": "2025-03-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400958",
+      "game_date": "2025-03-14",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400968",
+      "game_date": "2025-03-15",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022400994",
+      "game_date": "2025-03-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401020",
+      "game_date": "2025-03-21",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401034",
+      "game_date": "2025-03-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401044",
+      "game_date": "2025-03-24",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401058",
+      "game_date": "2025-03-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401080",
+      "game_date": "2025-03-29",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401093",
+      "game_date": "2025-03-31",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401106",
+      "game_date": "2025-04-02",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401120",
+      "game_date": "2025-04-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401137",
+      "game_date": "2025-04-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401151",
+      "game_date": "2025-04-08",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401156",
+      "game_date": "2025-04-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401174",
+      "game_date": "2025-04-11",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "played"
+    },
+    {
+      "season": "2024-25",
+      "game_id": "0022401187",
+      "game_date": "2025-04-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "state": "unknown"
+    }
+  ],
+  "accepted_existing_report_reuse": [
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf",
+        "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+        "size_bytes": 26371
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20231225_BOSLAL.json",
+        "sha256": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf",
+        "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+        "size_bytes": 26828
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20240201_LALBOS.json",
+        "sha256": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    }
+  ],
+  "smallest_source_dependency": {
+    "total_unresolved_target_keys": 25,
+    "total_unique_games": 25,
+    "retained_individual_structured_overlap": [],
+    "minimum_new_originals_if_indexed": 50,
+    "per_season": [
+      {
+        "season": "2023-24",
+        "archive_directory_year": 2024,
+        "target_keys": 15,
+        "unique_games": 15,
+        "minimum_new_pairs": 15,
+        "minimum_new_originals_if_indexed": 30,
+        "requirements": [
+          {
+            "game_id": "0022300163",
+            "game_date": "2023-11-08",
+            "team_id": 1610612747,
+            "player_id": 203076,
+            "season": "2023-24",
+            "player_name": "Anthony Davis",
+            "opponent_team_id": 1610612745,
+            "opponent_team_abbr": "HOU",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300331",
+            "game_date": "2023-12-15",
+            "team_id": 1610612747,
+            "player_id": 203076,
+            "season": "2023-24",
+            "player_name": "Anthony Davis",
+            "opponent_team_id": 1610612759,
+            "opponent_team_abbr": "SAS",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300669",
+            "game_date": "2024-01-30",
+            "team_id": 1610612747,
+            "player_id": 203076,
+            "season": "2023-24",
+            "player_name": "Anthony Davis",
+            "opponent_team_id": 1610612737,
+            "opponent_team_abbr": "ATL",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022301055",
+            "game_date": "2024-03-27",
+            "team_id": 1610612747,
+            "player_id": 203076,
+            "season": "2023-24",
+            "player_name": "Anthony Davis",
+            "opponent_team_id": 1610612763,
+            "opponent_team_abbr": "MEM",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022301155",
+            "game_date": "2024-04-09",
+            "team_id": 1610612747,
+            "player_id": 203076,
+            "season": "2023-24",
+            "player_name": "Anthony Davis",
+            "opponent_team_id": 1610612744,
+            "opponent_team_abbr": "GSW",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022300187",
+            "game_date": "2023-11-12",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612757,
+            "opponent_team_abbr": "POR",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022300316",
+            "game_date": "2023-12-13",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612759,
+            "opponent_team_abbr": "SAS",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300380",
+            "game_date": "2023-12-21",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612750,
+            "opponent_team_abbr": "MIN",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300549",
+            "game_date": "2024-01-13",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612762,
+            "opponent_team_abbr": "UTA",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300618",
+            "game_date": "2024-01-23",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612746,
+            "opponent_team_abbr": "LAC",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300788",
+            "game_date": "2024-02-14",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612762,
+            "opponent_team_abbr": "UTA",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300802",
+            "game_date": "2024-02-22",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612744,
+            "opponent_team_abbr": "GSW",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022300915",
+            "game_date": "2024-03-08",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612749,
+            "opponent_team_abbr": "MIL",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022301045",
+            "game_date": "2024-03-26",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612749,
+            "opponent_team_abbr": "MIL",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022301143",
+            "game_date": "2024-04-07",
+            "team_id": 1610612747,
+            "player_id": 2544,
+            "season": "2023-24",
+            "player_name": "LeBron James",
+            "opponent_team_id": 1610612750,
+            "opponent_team_abbr": "MIN",
+            "is_home": 1
+          }
+        ]
+      },
+      {
+        "season": "2024-25",
+        "archive_directory_year": 2025,
+        "target_keys": 10,
+        "unique_games": 10,
+        "minimum_new_pairs": 10,
+        "minimum_new_originals_if_indexed": 20,
+        "requirements": [
+          {
+            "game_id": "0022400319",
+            "game_date": "2024-12-04",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612765,
+            "opponent_team_abbr": "DET",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022401205",
+            "game_date": "2024-12-12",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612765,
+            "opponent_team_abbr": "DET",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022400393",
+            "game_date": "2024-12-23",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612753,
+            "opponent_team_abbr": "ORL",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022400891",
+            "game_date": "2025-03-05",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612757,
+            "opponent_team_abbr": "POR",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022400929",
+            "game_date": "2025-03-10",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612762,
+            "opponent_team_abbr": "UTA",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022400994",
+            "game_date": "2025-03-18",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612751,
+            "opponent_team_abbr": "BKN",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022401058",
+            "game_date": "2025-03-26",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612756,
+            "opponent_team_abbr": "PHX",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022401137",
+            "game_date": "2025-04-06",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612764,
+            "opponent_team_abbr": "WAS",
+            "is_home": 1
+          },
+          {
+            "game_id": "0022401156",
+            "game_date": "2025-04-09",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612753,
+            "opponent_team_abbr": "ORL",
+            "is_home": 0
+          },
+          {
+            "game_id": "0022401187",
+            "game_date": "2025-04-13",
+            "team_id": 1610612738,
+            "player_id": 1628369,
+            "season": "2024-25",
+            "player_name": "Jayson Tatum",
+            "opponent_team_id": 1610612766,
+            "opponent_team_abbr": "CHA",
+            "is_home": 1
+          }
+        ]
+      }
+    ],
+    "primary_next_objective": {
+      "player_id": 203076,
+      "player_name": "Anthony Davis",
+      "season": "2023-24",
+      "exact_unknown_keys": 5,
+      "unique_games": 5,
+      "minimum_originals": 10,
+      "reason": "Direct remaining #462 AD participation dependency; closes his82observed-game population with smallest cohort while Reaves needs no data collection."
+    },
+    "qualification": "Two original endpoint bodies per exact unknown game only after immutable leaf metadata is verified; no state inferred from omission/zero. If changed-quality or missing index evidence appears, establish smallest supported fallback separately."
+  },
+  "historical_tatum_comparison": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-coverage/selected-populations.json",
+    "sha256": "7417eca7269045e0412cd075e32cd70285dffd56b33f9ea54d05ea215f792380",
+    "old_generation": "availability-opening-s4-v1-20261017",
+    "old_source_hashes": {
+      "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "raw/player_game_availability/2025-26_regular_season.csv": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902",
+      "raw/team_game_stats/2024-25_regular_season.csv": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+      "raw/player_game_stats/2024-25_regular_season.csv": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591"
+    },
+    "old_unknown_ids": [
+      22400319,
+      22400393,
+      22400891,
+      22400929,
+      22400994,
+      22401058,
+      22401137,
+      22401156,
+      22401187,
+      22401205
+    ],
+    "reuse_as_current_proof": false,
+    "missing_current_dependency_bindings": [
+      "metadata/player_names.csv",
+      "raw/games/2024-25_regular_season.csv",
+      "raw/player_season_advanced/2024-25_regular_season.csv"
+    ],
+    "changed_input_hashes": [],
+    "unbound_optional_absences": [
+      "raw/player_game_availability/2024-25_regular_season.csv"
+    ],
+    "action": "Reused only as historical corroboration; one current fourth scope audited"
+  },
+  "source_calls_by_checker": 0,
+  "capability_complete": false,
+  "requirement_closures": 0,
+  "production_publication_approved": false,
+  "production_writes": 0
+}
