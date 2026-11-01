@@ -61,7 +61,9 @@
     {
       "name": "advanced snapshot basis",
       "status": "Expanded corrected core produces12 player TS% disagreements with retained season snapshot, superseding the prior four-player count for this wider candidate. Preserve raw originals/USG; no blind snapshot rewrite or full-slice acceptance.",
-      "minimum_collection_requirement": "OnceanexistingNBAAPIroute isqualified, obtain fresh regular-season player andteam Advanced/PerGame snapshots constrained to the same verifiedgame-date population. Recompute population first; preserve every original and reject remaining basis conflicts. No unchangedcloud retry or current acquisition launched."
+      "minimum_collection_requirement": "ONE freshplayer Advanced/PerGame snapshot constrained to the same qualifiedgame-date population, or an independently reviewed alternativebasis. Existing30team AdvancedGP/WL/netarithmetic proof remains applicable; freshTeam body onlyifcutoff/populationchanges or specificcontradiction. FirstqualifyexistingNBAAPIroute; no unchangedcloudretry/acquisitionnow.",
+      "existing_derivation": "Runtimealready derivescorrectTS/EFGfromqualifiedboxcounts; thisdoesnotreplace mandatoryofficialsnapshotUSG/rating/pacefields or justify silentlypatching12rawTS cells.",
+      "independent_review_sha256": "78aa03e06d09ca1ee880a266f88dec411d6993e9d65714f380c3ee60a11c0262"
     },
     {
       "name": "processed outputs and fresh due coverage",
@@ -152,7 +154,7 @@
       ],
       "partial_preparation_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
       "local_execution": "Initial1skip and two incomplete local consumer executions retained. Both preparations complete/identical CSVs; no HTTP answers credited. TestClient/AnyIO portal hangs; separate AsyncHealth smoke also timedout. No API assertions removed.",
-      "required_gate": "Firsthosted41300081682 failedexactclockboundary; second41300742013 passedpreparation/producer/CameronHTTP thenfailedwrongTeamrouteexpectation. Bothoriginalsretained. Reviewedgate5d2d82a6correctsactualsharedresponsecontract, exactGameIDand incrementalbodyretention. Onefreshsame-selectorhostedrun pending.",
+      "required_gate": "Threeoriginalhostedfailuresretained: exactclockboundary41300081682, response-contractexpectation41300742013, relativeartifactpath41301352572. Eachfix independentlyreviewed; resolvedoutputgate475e63ccawaitsonechanged-gate hostedselector. No unchangedrerun, droppedassertionoroverallpassclaimed.",
       "readiness_accepted": false,
       "production_writes": 0,
       "final_code_review_sha256": "4ccef434377f68bf2b7dc4e2293050e693f29124c7a68592515b3d6d2a717a5b",
@@ -162,7 +164,8 @@
         "code_sha256": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
         "meaning": "Exactrational source seconds for aggregateclockcomparison; inclusive2sec policy and allMINfloatobservations unchanged. 60affectedcontrols and4clarifiedOT/ordercontrols passed; independentboundary/mixedformat/actual0137controls accepted. Freshsinglehostedselector pending."
       },
-      "consumer_contract_review_sha256": "1b18727e343852949f70515fd322e191d37cb05652731071c2c6a1d06e4aa417"
+      "consumer_contract_review_sha256": "1b18727e343852949f70515fd322e191d37cb05652731071c2c6a1d06e4aa417",
+      "artifact_path_review_sha256": "eccc009f3e1b5e21064c3c0f45c500d5353449d52990ad79b2e368c1823305d2"
     }
   },
   "hosting": {

@@ -63,7 +63,7 @@ def test_retained_expansion_preserves_grains_and_producer_query_values(tmp_path,
         else:
             additional.append(Source(name, raw))
     assert len(additional) == 76 and excluded == ["boxscoretraditionalv3_0022600096.json"]
-    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]) / "expanded-core"
+    output = Path(os.environ["NBATOOLS_ACQUISITION_OUTPUT"]).resolve() / "expanded-core"
     report = stage_retained_core(
         evidence, output, additional_traditional=additional, reconcile_team_counts=True
     )
