@@ -16,8 +16,8 @@ from nbatools.data_source import data_generation_context, data_path
 pytestmark = pytest.mark.engine
 PROGRAM = Path(__file__).resolve().parents[1] / "working/nba-tools-completion-program"
 REQUEST = PROGRAM / "collection-requests/luka-reported-reasons-2025-26.json"
-REQUEST_SHA = "5bcff3cb9ba5331ecded000e965ec1c753d5fe99a300631bd90f3d710cec43b5"
-AUDIT_SHA = "287d3d124129a35caf4907b4dd28dcf3b2cd7c1e8748f1e14564172a8a2d9bb5"
+REQUEST_SHA = "6b10ba37eba43064d99e1830ce58ceb08ffb7b6f64fac26d1d825551b05e7124"
+AUDIT_SHA = "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc"
 BASE = "availability-lebron-season-v1-20261031"
 MANIFEST = "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
 REPRESENTATIVE = "0022500136"
