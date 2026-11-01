@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "classification": "independent_hosted_expanded_core_partial_stage_and_consumer_acceptance_PASS_not_full_readiness_or_publication",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "actual_execution": {
+    "run_id": 41301691089,
+    "request_sha": "bef11793b4398eebec5c5c7d3524d5364e6ecc5f",
+    "source_commit": "396245bea5283d7861890ce262c040c60b47a4d8",
+    "generation": "availability-lebron-season-v1-20261031",
+    "summary": {
+      "candidate_sha": "bef11793b4398eebec5c5c7d3524d5364e6ecc5f",
+      "generation": "availability-lebron-season-v1-20261031",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 0,
+      "conclusion": "success",
+      "problems": []
+    }
+  },
+  "reviewed_executable_hashes": {
+    "bridge": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
+    "team_tests": "d3fda89821da672ee42930f1c6e9387c62015a0a82fb7c94c8660b0cd9eb29d2",
+    "required_gate": "475e63cced28d006e28fa485e98ed678e75536df2b4ad0d0d9ef3b7972498eb0"
+  },
+  "artifact": {
+    "sha256": "14781d501ae9afe85f6ae92a1b65053e22ffbe9b172b77b2bb25b6f66dbf3667",
+    "size_bytes": 589013,
+    "members": 10
+  },
+  "member_bindings": {
+    "acquired_data/expanded-core/corroboration-ledger.json": {
+      "sha256": "0c351d5afe440f9e503ce6000dc5efbcd0dfcfdea3fd5727e823d4781e6a3d25",
+      "size_bytes": 12762048
+    },
+    "acquired_data/expanded-core/primary-player-game-logs.csv": {
+      "sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061",
+      "size_bytes": 600182
+    },
+    "acquired_data/expanded-core/answers.json": {
+      "sha256": "e7e452fc2164fbfb1f792932ed5ff571b3d8ba8168a4cc0d2159f8369a410c6a",
+      "size_bytes": 9962
+    },
+    "acquired_data/expanded-core/primary-team-game-logs.csv": {
+      "sha256": "571ea0289031b6607be7ee1692e9016793814a0bf522d76b34a75090f8d1a1c6",
+      "size_bytes": 23346
+    },
+    "acquired_data/expanded-core/qualification.json": {
+      "sha256": "56569d81d9b8f05cb942984856a133a6f4dbaa81522e20aae8c8c192fa5f5c93",
+      "size_bytes": 78583
+    },
+    "acquired_data/expanded-core/staged-player-game-logs.csv": {
+      "sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b",
+      "size_bytes": 600228
+    },
+    "acquired_data/expanded-core/staged-team-game-logs.csv": {
+      "sha256": "180b926795d7da396848e7060b0bd3c816b559b9a22d2cd7fc9e0d49d76d0d56",
+      "size_bytes": 23347
+    },
+    "acquired_data/expanded-core/team-corroboration-ledger.json": {
+      "sha256": "b911b6871cffe025ba122256610f3c85fea6d3e53eb51582d7a824ac61d9c7c0",
+      "size_bytes": 982521
+    },
+    "junit.xml": {
+      "sha256": "cc61e206676db72caa2e47b6426dc9c4c23fcce09710f862ccf9b9e4f314e550",
+      "size_bytes": 413
+    },
+    "summary.json": {
+      "sha256": "7b1ada16c324485b8ab826b341ef5cf214c9222406c8df7aa9bbfef2b602c221",
+      "size_bytes": 512
+    }
+  },
+  "prepared_evidence_reuse": {
+    "prior_independent_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
+    "all_four_CSVs_byte_identical": true,
+    "both_complete_ledgers_equal_as_multisets": true,
+    "qualification_report_equal_modulo_affected_row_order": true,
+    "all_prior1253_observation_dicts_exact": true,
+    "all_untouched_cells_and_identity_order_preservation_reused": true,
+    "quarantined0096_rows_exact_unchanged": true
+  },
+  "actual_counts": {
+    "player_rows": 1829,
+    "team_rows": 162,
+    "player_observations": 28592,
+    "team_observations": 2377,
+    "player_changes": 115,
+    "prior_player_changes": 16,
+    "additional_player_changes": 99,
+    "team_changes": 22,
+    "explicit_team_integer_changes": 15,
+    "team_derived_ratio_changes": 7,
+    "staged_points": 18464
+  },
+  "actual_API_answers": [
+    {
+      "query": "Cameron Boozer games with at least 16 points in 2026-27 from 2026-10-25 to 2026-10-25",
+      "route": "player_game_finder",
+      "game_id": 22600118,
+      "game_date": "2026-10-25",
+      "subject_identity": {
+        "player_id": 1643409
+      },
+      "team_abbr": "MEM",
+      "opponent_abbr": "SAC",
+      "is_away": 1,
+      "metrics": {
+        "pts": 16,
+        "fgm": 6
+      }
+    },
+    {
+      "query": "Memphis Grizzlies games with at least 50 rebounds in 2026-27 from 2026-10-25 to 2026-10-25",
+      "route": "game_finder",
+      "game_id": 22600118,
+      "game_date": "2026-10-25",
+      "subject_identity": {
+        "team_abbr": "MEM"
+      },
+      "team_abbr": "MEM",
+      "opponent_abbr": "SAC",
+      "is_away": 1,
+      "metrics": {
+        "oreb": 18,
+        "dreb": 36,
+        "reb": 54
+      }
+    }
+  ],
+  "independent_answer_original_source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+  "failed_executions_preserved": [
+    {
+      "run_id": 41300081682,
+      "reason": "float2sec boundary",
+      "conclusion": "failed"
+    },
+    {
+      "run_id": 41300742013,
+      "reason": "wrong expected Teamroute/row shape",
+      "conclusion": "failed"
+    },
+    {
+      "run_id": 41301352572,
+      "reason": "relative artifact path afterchdir",
+      "conclusion": "failed"
+    }
+  ],
+  "acceptance": {
+    "partial_source_bound_expanded_stage": true,
+    "producer_natural_and_two_actual_local_API_consumers": true,
+    "overall_required_selector": true,
+    "canonical_full_core": false,
+    "canonical_PBP_ingestion": false,
+    "full11raw5processed_snapshot": false,
+    "deployed_or_public_readiness": false,
+    "production_publication": false
+  },
+  "remaining": [
+    "12player TS snapshot/core basis conflicts; preserve rawUSG and source evidence.",
+    "Parameterized period source access remains unavailable; no new acquisition in this package.",
+    "Full snapshot/raw/processed/current exactdue-ID/freshness validation and separate publication approval remain.",
+    "Finish final required CI/verified merge and checkpoint, then stop per owner instruction."
+  ],
+  "new_source_calls_by_checker": 0,
+  "new_tests_or_preparation_by_checker": false,
+  "production_writes": 0
+}

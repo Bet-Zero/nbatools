@@ -2,8 +2,6 @@
   "schema_version": 1,
   "classification": "readiness_critical_path_reassessment_not_operational_acceptance",
   "owner_direction": "Finish569safely; prioritize2026-27 normal production readiness before another majorK08workstream; continue useful independent work only while externally blocked.",
-  "current_main": "9ae00e647cdc86f323f31c4defbe4483448e5672",
-  "current_tree": "78b9f1d22b89bc8a3f18d05258945af9ea282b71",
   "completed_pr": {
     "number": 570,
     "final_ci": 41298555163,
@@ -56,7 +54,7 @@
     },
     {
       "name": "basic statistics and source revision basis",
-      "status": "Existing per-field source policy independently qualifies76 additional integer player changes and15 explicit team count changes; generic team reconciliation/local preparation preserves keys and old observations. Required hosted producer/API consumer acceptance pending. Invalid0096 supplementary source remains quarantined; primary numeric row unchanged."
+      "status": "Expanded player/team sourcecorroboration andactualproducer/natural/HTTPgate ACCEPTED.115player/22teamchanges, allpriorobservations/untouchedcells preserved. Malformed0096supplementary source staysquarantined; originalnumeric rows unchanged. No newcoreimplementation blocker identified."
     },
     {
       "name": "advanced snapshot basis",
@@ -154,7 +152,7 @@
       ],
       "partial_preparation_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
       "local_execution": "Initial1skip and two incomplete local consumer executions retained. Both preparations complete/identical CSVs; no HTTP answers credited. TestClient/AnyIO portal hangs; separate AsyncHealth smoke also timedout. No API assertions removed.",
-      "required_gate": "Threeoriginalhostedfailuresretained: exactclockboundary41300081682, response-contractexpectation41300742013, relativeartifactpath41301352572. Eachfix independentlyreviewed; resolvedoutputgate475e63ccawaitsonechanged-gate hostedselector. No unchangedrerun, droppedassertionoroverallpassclaimed.",
+      "required_gate": "ACCEPTED41301691089:1selected/executed/passed,0skip/fail/error. Two actualAPIbodies retained; independentactualreview21e32aec acceptedsourcevalues/samplekeys/lineage/preservation. Three earlierfailedruns stayfailed.",
       "readiness_accepted": false,
       "production_writes": 0,
       "final_code_review_sha256": "4ccef434377f68bf2b7dc4e2293050e693f29124c7a68592515b3d6d2a717a5b",
@@ -165,7 +163,9 @@
         "meaning": "Exactrational source seconds for aggregateclockcomparison; inclusive2sec policy and allMINfloatobservations unchanged. 60affectedcontrols and4clarifiedOT/ordercontrols passed; independentboundary/mixedformat/actual0137controls accepted. Freshsinglehostedselector pending."
       },
       "consumer_contract_review_sha256": "1b18727e343852949f70515fd322e191d37cb05652731071c2c6a1d06e4aa417",
-      "artifact_path_review_sha256": "eccc009f3e1b5e21064c3c0f45c500d5353449d52990ad79b2e368c1823305d2"
+      "artifact_path_review_sha256": "eccc009f3e1b5e21064c3c0f45c500d5353449d52990ad79b2e368c1823305d2",
+      "acceptance_receipt": "expanded-staging-acceptance.json",
+      "actual_review_sha256": "21e32aecc437f8bda8cf24da1a8d9426ec1bf0dabb277ae4f7bbc4a00d189198"
     }
   },
   "hosting": {
@@ -222,5 +222,8 @@
     "rule": "No11:00carry; whole-bodyclock/coreacceptancefalse. Independentrolemarkerprojection remainsdistinct; preserveprimaryclockandquarantine invalidsourceclock."
   },
   "reassessed_at": "2026-11-01T10:39:29Z",
-  "stop_condition": "Ownerlatestdirection:finishcurrentreadinesspackage, mergeandverifythenstop; orpreservehandoffifexternaldependency/requiredowneractionblockscompletion. No newmajorworkstream orTatum continuation."
+  "stop_condition": "Ownerrequestedstopaftercurrentreadinesspackage finalCI/merge/postCI receipt; no newworkstream. Production readiness remains externallyblocked byperiodsourceaccess andplayerAdvancedbasis. IfPR571 finalreceipt COMPLETE, remainstopped; do notrerunacceptedchecks.",
+  "source_baseline_main": "9ae00e647cdc86f323f31c4defbe4483448e5672",
+  "source_baseline_tree": "78b9f1d22b89bc8a3f18d05258945af9ea282b71",
+  "current_package": "PR571; exactfinalhead/merge/postCI/stop status in final landing receipt https://github.com/Bet-Zero/nbatools/pull/571"
 }
