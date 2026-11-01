@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "classification": "failed_required_gate_full_producer_and_query_evidence_retained",
+  "run_id": 41289395213,
+  "reviewed_sha": "97b8117938cfc1edcdbfe90fc6adb376dd69e92f",
+  "request_sha": "2bc9833c218e6f7bce1e25922d6918472f9f37f4",
+  "artifact_id": 13076203959,
+  "artifact_sha256": "f2180fdf1b825155e7ddf688dbcd668d4760fa806dfc74a01003900078de3055",
+  "artifact_size_bytes": 776265,
+  "strict_summary": {
+    "candidate_sha": "2bc9833c218e6f7bce1e25922d6918472f9f37f4",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "stage_preparation_accepted": true,
+  "consumer_acceptance": "failed",
+  "consumer_failure": {
+    "type": "ValueError",
+    "message": "Reported-reason row differs from qualified lineage"
+  },
+  "completed_full_query_checks": 12,
+  "completed_full_local_api_checks": 3,
+  "prepared_overlay_files": 132,
+  "new_reason_rows": 18,
+  "source_reads": 0,
+  "production_writes": 0,
+  "full_stage_accepted": false,
+  "failure_cause": "Harness negative17 control inferred persisted10digit game_id strings as ints and rewrote them without leading zeros; unchanged lineage correctly rejects changed cells. Producer,full18runtime queries and3APIchecks had passed and raw evidence is retained.",
+  "repair": "Read persisted reasonCSV with dtype=str,keep_default_na=False before droppingoneobservation; preservestoredcells/lineage unchanged forremaining17. Actualarchive-backedvalidate_rows full18/fixed17 passes, numeric-lossyrewrite stillrejects. No runtime/validator change.",
+  "actual_replay_still_required": true
+}

@@ -348,7 +348,8 @@ def test_reported_rest_sources_are_not_all_missed_games(tmp_path, monkeypatch):
         complete_csv = (root / REASONS).read_bytes()
         complete_imports = (root / REASON_IMPORTS).read_bytes()
         missing_gid = int(reasons.iloc[0].game_id)
-        partial = reasons.loc[~reasons.game_id.eq(missing_gid)]
+        persisted = pd.read_csv(io.BytesIO(complete_csv), dtype=str, keep_default_na=False)
+        partial = persisted.loc[pd.to_numeric(persisted.game_id).ne(missing_gid)]
         try:
             partial.to_csv(root / REASONS, index=False)
             sparse_imports = dict(reason_lineage)
