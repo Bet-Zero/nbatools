@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "classification": "partial_retained_source_staging_not_full_slice_or_publication",
+  "reviewed_code_sha": "88d44e25b7da54b299421b89999ffe5b817a0014",
+  "reviewed_tree_sha": "572beedc44b7e9f376211bdf159aa9fc015404fe",
+  "independent_checker": "/root/absence_checker",
+  "review_comment": "https://github.com/Bet-Zero/nbatools/pull/561#issuecomment-6552390123",
+  "run_id": 41265760582,
+  "job_id": 124728282780,
+  "request_sha": "19d16cc866cd1877a0207bf6d325ae911b034439",
+  "required_summary": {
+    "candidate_sha": "19d16cc866cd1877a0207bf6d325ae911b034439",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_schedule_stage_real_data.py::test_retained_schedule_and_team_records_preserve_strict_production_readiness",
+      "tests/cloud_rollover_core_stage_real_data.py::test_retained_sources_stage_corrected_player_date_minute_answers",
+      "tests/cloud_rollover_core_stage_real_data.py::test_staged_producer_natural_and_api_preserve_corrected_player_fields"
+    ],
+    "required_test_limit": 100,
+    "selected": 3,
+    "executed": 3,
+    "passed": 3,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "artifact": {
+    "id": 13066503656,
+    "bytes": 297256,
+    "sha256": "115c4d3de86a0dfa3094cfde93c6fe97ac9bc881372c09a1b47f94a29b320306"
+  },
+  "scope": {
+    "schedule_rows": 1206,
+    "explicit_final_games": 81,
+    "future_rows": 1125,
+    "team_game_rows": 162,
+    "teams_independently_reconciled": 30,
+    "player_game_rows_before": 1829,
+    "player_game_rows_after": 1829,
+    "player_identities": 432,
+    "corroborated_observations": 1253,
+    "changed_cells": 16,
+    "corrected_game_ids": [
+      "0022600138",
+      "0022600142",
+      "0022600144"
+    ],
+    "aggregate_points_before": 18461,
+    "aggregate_points_after": 18464,
+    "local_api_requests": 5,
+    "local_api_request_limit": 10
+  },
+  "examples": [
+    {
+      "subject": "Boston",
+      "record": "4–1",
+      "ppg": 120.8
+    },
+    {
+      "subject": "Lakers",
+      "record": "4–2",
+      "ppg": 118.5
+    },
+    {
+      "subject": "Charlotte",
+      "record": "3–3",
+      "ppg": 97.333
+    },
+    {
+      "subject": "Caleb Martin",
+      "game_id": "0022600142",
+      "date": "2026-10-28",
+      "pts": 10,
+      "minutes": "13:49"
+    },
+    {
+      "subject": "Jalen Johnson",
+      "game_id": "0022600144",
+      "date": "2026-10-29",
+      "pts": 17,
+      "ftm": 1,
+      "fta": 1
+    }
+  ],
+  "production": {
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "objects": 775,
+    "writes": 0,
+    "pointer_changes": 0,
+    "published_readiness_ready": false,
+    "only_published_readiness_blocker": "new_season_not_loaded",
+    "readiness_exception_applied": false,
+    "all_existing_slice_missing_due_game_ids": [],
+    "prior_publication_failure_replaced": false,
+    "prior_559_live_answers_and_backup_repeated": false
+  },
+  "unfinished": {
+    "full_required_slice_accepted": false,
+    "canonical_core_accepted": false,
+    "canonical_pbp_ingestion_accepted": false,
+    "period_qualification": false,
+    "starter_roles_accepted": false,
+    "independent_full_season_schedule_completeness": false,
+    "corrected_player_season_ts_conflicts": 4,
+    "required_raw_datasets": 11,
+    "required_processed_datasets": 5
+  },
+  "new_nba_source_requests": 0
+}

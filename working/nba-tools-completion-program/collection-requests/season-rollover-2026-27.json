@@ -47,10 +47,10 @@
   ],
   "execution_route": "Existing approved public NBA sources and reviewed GitHub archive/source tools or targeted read-only Actions collection route; acquisition laptop where appropriate. Cloud development/validation and separately protected publication remain distinct. No new access route, permission, credentials, cost, unattended refresh or production activation.",
   "pipeline_prerequisite": {
-    "status": "requires_qualified_source_adapter_and_validation_changes_before_publication",
-    "existing_failure": "pull_schedule.fetch_schedule uses completed LeagueGameFinder rows and run labels allFinal; validate_raw.run requires schedule game IDs equal games IDs. A full future schedule cannot currently pass that representation.",
+    "status": "implemented_and_authenticated_partial_staging_checked_full_slice_unqualified",
     "required_behavior": "Qualify a retained authoritative future-schedule source. Keep final game/stat catalog identity and coverage checks strict, while accepting genuine scheduled/postponed rows without requiring nonexistent final stats. Do not convert an allFinal/truncated schedule into proof of active readiness. Independently verify every due schedule gameID is represented as final, not just the maximum final date; a later final game cannot hide an earlier missing game. Preserve required11raw+5processed DATASET_SPECS; four core CSVs alone cannot supply raw_complete/processed_complete.",
-    "source_dependency": "No new schedule body has been acquired or schema qualified. Do not invent provider fields or promise existing pipeline support. Independently review and test the actual adapter and all affected consumers against retained originals before publication."
+    "source_dependency": "PR561 retains and qualifies the pinned actual schedule:1206 observed IDs/81 Final/1125 future, including6TBD/3future neutral. It does not prove all1230 future allocations or unobserved postponed/cancelled states. Source-aware schedule/final coverage and exact due-ID readiness passed three authenticated retained-source checks in41265760582; full11raw/5processed qualification remains open for roles/periods/rosters and four corrected-player season TS% conflicts. Do not fabricate current completeness, snapshots or readiness.",
+    "historical_failure": "pull_schedule.fetch_schedule uses completed LeagueGameFinder rows and run labels allFinal; validate_raw.run requires schedule game IDs equal games IDs. A full future schedule cannot currently pass that representation."
   },
   "raw_source_requirements": [
     {
@@ -123,5 +123,6 @@
       "weakened safeguards"
     ],
     "automatic_refresh": false
-  }
+  },
+  "staging_evidence": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/staging-acceptance.json"
 }
