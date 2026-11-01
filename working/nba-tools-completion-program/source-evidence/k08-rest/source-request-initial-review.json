@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "BLOCKED ten participation-comment literal mismatches; counts/14unknown minimal scope and one-source capture code otherwise pass. Refresh immutable proof/request/code pins before firstreader.",
+  "reviewed_revision": "f8d6094b99225114076775dcaa2f599da65f9694",
+  "equivalent_author_revision": "56f8306aab5fa5b481d8612f1c66ca30f86d2a5c",
+  "tree": "3712eb2e35e391550bdd94c5251e64a74a9bfe54",
+  "file_hashes": {
+    "working/nba-tools-completion-program/source-evidence/k08-rest/reason-coverage-audit.json": "287d3d124129a35caf4907b4dd28dcf3b2cd7c1e8748f1e14564172a8a2d9bb5",
+    "working/nba-tools-completion-program/collection-requests/luka-reported-reasons-2025-26.json": "5bcff3cb9ba5331ecded000e965ec1c753d5fe99a300631bd90f3d710cec43b5",
+    "tests/cloud_luka_reported_reason_capture_real_data.py": "51b4e3fccbfbb3a80624f909f291c97a4ed20c6ddddcc6edf3458ac2920d08f3"
+  },
+  "audit_checks": {
+    "all18DNPIDs_dates_comments_match_accepted_unpublished_LAL_stage": true,
+    "participation_scope": "Accepted staging, production remains775published generation with incompleteLukaDNP coverage.",
+    "reported_explicit_rest": 0,
+    "reported_other": 4,
+    "reason_unknown": 14,
+    "known_other_classes": "Two source-reported medical wordings, onePersonal and oneLeagueSuspension; none is a clinical/health truth.",
+    "known_source_bindings_match_originals_or_accepted_published_manifest": true,
+    "unknown14_are_explicit_Summaryinactive_without_reason_fields_and_Traditionalomission": true,
+    "no_season_rest_zero_claim": true,
+    "known4not_refetched": true,
+    "all14candidate_envelopes_match_accepted_LAL82_and_retainedSummary": true
+  },
+  "capture_scope": {
+    "selector": "tests/cloud_luka_reported_reason_capture_real_data.py::test_capture_one_luka_reason_representative_only",
+    "game_id": "0022500136",
+    "game_date": "2025-10-29",
+    "away": "LAL",
+    "home": "MIN",
+    "away_points": 116,
+    "home_points": 115,
+    "reader_invocations": 1,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "remaining_source_reader_invocations": 0,
+    "remaining13implemented": false
+  },
+  "budget_and_failure_review": {
+    "single_source_max1500000_structurally_enforced": true,
+    "prospective14file_max21000000_equals14_per_file_caps": true,
+    "failed_archived_PDF_bytes_counted_in_finally": true,
+    "initial_reader_invocations0_then1only_on_attempt": true,
+    "typed_reader_or_envelope_errors_preserved_and_rethrown": true,
+    "reason_clinical_participation_fullslice_flags_false": true
+  },
+  "literal_mismatches": [
+    {
+      "game_id": "0022500336",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022500418",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022500601",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022500753",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022500769",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022500791",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022501140",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022501170",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022501185",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    },
+    {
+      "game_id": "0022501198",
+      "audit_literal": "INACTIVE",
+      "accepted_staged_literal": "INACTIVE - BoxScoreSummaryV3 explicit listed row"
+    }
+  ],
+  "focused_tests": {
+    "synthetic_tests_passed": 3,
+    "skipped": 0
+  },
+  "independent_extra_controls": [
+    {
+      "mode": "wrong_score",
+      "gate_failed": true,
+      "retained_files": 1,
+      "retained_bytes": 43,
+      "retention_limits_passed": true
+    },
+    {
+      "mode": "extra_archived_pdf",
+      "gate_failed": true,
+      "retained_files": 2,
+      "retained_bytes": 69,
+      "retention_limits_passed": false
+    }
+  ],
+  "source_network_calls_by_checker": 0,
+  "reported_reason_qualified": false,
+  "clinical_status_qualified": false,
+  "participation_new_source_qualified": false,
+  "full_slice_accepted": false,
+  "feature_acceptance": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

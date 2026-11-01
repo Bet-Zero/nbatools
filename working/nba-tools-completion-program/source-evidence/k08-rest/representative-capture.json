@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "classification": "one_source_transport_and_envelope_capture_not_reason_consumer_acceptance",
+  "run_id": 41284603061,
+  "reviewed_sha": "0a3f2ca09941d71bd58930292dd013ac1f02b93e",
+  "reviewed_tree": "1e30fcc0384863eac5f89e75f334fc49a7eca3a2",
+  "request_sha": "574c80c74470f97a7538452ced44c18e3ac0b030",
+  "artifact_id": 13073934027,
+  "artifact_sha256": "cd11f240eee112254af862af6e1bfb278a5ded351d2cd1e5b085561237b7d8e4",
+  "artifact_size_bytes": 26926,
+  "strict_execution_summary": {
+    "candidate_sha": "574c80c74470f97a7538452ced44c18e3ac0b030",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_luka_reported_reason_capture_real_data.py::test_capture_one_luka_reason_representative_only"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "capture_summary": {
+    "classification": "one_representative_only_remaining13_not_implemented",
+    "source_reader_invocations": 1,
+    "retained_pdf_bytes": 26433,
+    "capture_complete": true,
+    "remaining_source_reader_invocations": 0,
+    "request_sha256": "6b10ba37eba43064d99e1830ce58ceb08ffb7b6f64fac26d1d825551b05e7124",
+    "audit_sha256": "d7732843931e7b4f0534a6c65aaf191f9e5f285fa5d66bbd3ccd1e4bf718c9dc",
+    "source_cases": [
+      {
+        "game_id": "0022500136",
+        "source_reader_invocations": 1
+      },
+      {
+        "game_id": "0022500163",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500336",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500418",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500601",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500753",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500769",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500774",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022500791",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022501140",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022501155",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022501170",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022501185",
+        "source_reader_invocations": 0
+      },
+      {
+        "game_id": "0022501198",
+        "source_reader_invocations": 0
+      }
+    ],
+    "reported_reason_qualified": false,
+    "production_writes": 0
+  },
+  "source": {
+    "raw_file": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55.pdf",
+    "retrieved_at": "2026-11-01T07:24:54.780873+00:00",
+    "sha256": "b7880804f7fa95830c85a6e5f468e5ba3a02cd3ac59b5061136dfeb78901ef55",
+    "size_bytes": 26433,
+    "source_url": "https://statsdmz.nba.com/pdfs/20251029/20251029_LALMIN.pdf"
+  },
+  "independent_reason_format_review": {
+    "status": "passed",
+    "reviewer": "/root/absence_checker",
+    "sha256": "020b022dba9b4443480b334d0d8c1ae3b9868ab630267a26ed919f2e0b2abbd0"
+  },
+  "source_readers": 1,
+  "remaining_source_readers": 0,
+  "reported_rest_total": null,
+  "feature_accepted": false,
+  "production_writes": 0,
+  "source_only_reason_coverage": {
+    "explicit_reported_rest": 0,
+    "reported_other": 5,
+    "unknown": 13,
+    "season_rest_total": null
+  },
+  "dependency_reuse": {
+    "new_main": "fea23217a15bdc4a45771ab109b2afa5ff175789",
+    "unchanged_reader_sha256": "3e75d086cd1df97b66fd7381a93363d52075d4396fcf077eb33b9b539816a090",
+    "unchanged_data_source_sha256": "aa82d638e37b44ad3ec4d37c897d7590d67cd02a2844089c2565b918fc0898fd",
+    "unchanged_pyproject_sha256": "0b72c72977f474538b6b7bf4cfc390fd6bded62f8fd9041e58a2a92c57c7e8f7",
+    "canonical_generation_and_manifest_unchanged": true
+  }
+}
