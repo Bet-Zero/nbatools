@@ -51,6 +51,14 @@ checks require22totalmissed/11homemissed/LAL14–8. The focused complete prepara
 gate also checks exact selectedIDs, every snapshot hash, append preservation,
 budget and local backup/restore compatibility without production writes.
 
+Complete no-write gate [41255077176](https://github.com/Bet-Zero/nbatools/actions/runs/41255077176)
+passed1requiredtest/zero skips: all775objecthashes,16APIanswers, exact22/11IDs,
+950availabilityrows, unchangedbasepointer, budget and localbackup/restore.
+Prepared manifest is `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`;
+storage projects1,974,514,451bytes against the unchanged10GBceiling.
+[PR558 preparation receipt](https://github.com/Bet-Zero/nbatools/pull/558)
+retains the immutable tuple, allanswers and local63,950,546bytebackupevidence.
+
 No publication is authorized by capture/staging approval. Only after complete
 no-write acceptance and normal merge/postmergeCI may the exact immutable tuple be
 presented for separate owner publication authorization and existing environment
