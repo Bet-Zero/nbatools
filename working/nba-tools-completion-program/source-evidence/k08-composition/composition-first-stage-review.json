@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model ID unavailable; separate checker agent, no cross-model claim",
+  "approval": "PASS_PREPARED_OUTPUT_AND_DATE_FIX_FOR_ONE_REPLAY_NOT_FINAL_CONSUMER_ACCEPTANCE",
+  "reviewed_remote_revision": "ed45e3c264ef828bc354c8dacead0ba708f56e42",
+  "equivalent_local_revision": "f7c6af5e4d4beb24a15d416a74e43ac24e96c692",
+  "tree": "9703e5c68a7cfed76e6ea2586d999d220b7b3803",
+  "original_failure": {
+    "run_id": 41292246166,
+    "request_revision": "eade2fd1337b19f58193a4677c87db17d5a3339d",
+    "artifact_sha256": "d055bc88cbcdb6b7af15f645aa035273ffb2424af3f73ec7c9d719bd3ed6a349",
+    "artifact_size_bytes": 1625648,
+    "members": 411,
+    "strict_summary": {
+      "candidate_sha": "eade2fd1337b19f58193a4677c87db17d5a3339d",
+      "generation": "availability-lebron-season-v1-20261031",
+      "scope": "targeted",
+      "required_selection": [
+        "tests/cloud_composed_participation_stage_real_data.py::test_accepted_cohorts_work_together_without_discarded_coverage"
+      ],
+      "required_test_limit": 100,
+      "selected": 1,
+      "executed": 1,
+      "passed": 0,
+      "skipped": 0,
+      "failed": 1,
+      "errors": 0,
+      "xfailed": 0,
+      "pytest_exit": 1,
+      "conclusion": "failure",
+      "problems": [
+        "pytest did not succeed (exit=1)",
+        "Every selected required test must execute and pass",
+        "Required tests contain skips, failures, errors, or expected failures"
+      ]
+    },
+    "junit_failure": "TypeError: Object of type Timestamp is not JSON serializable",
+    "pending_receipt_consumer_status": "pending",
+    "retained_coverage_checks": 0,
+    "retained_answers": 0,
+    "retained_api_bodies": 0,
+    "interpretation": "Composition, combined source replay and5020-row table assertions ran before the receipt serialization failure. Runtime reached the first coverage/count scope, but no query/coverage bodies were durably retained. The run remains failed and is not final runtime acceptance."
+  },
+  "independent_prepared_output_review": {
+    "all407_raw_paths_hash_size_verified": true,
+    "all_serialized_cell_maps_equal_independent_four_package_union": true,
+    "all_full_typed_import_objects_equal_input_union": true,
+    "all_source_bodies_equal_accepted_input_union": true,
+    "table_counts": {
+      "2023-24": {
+        "rows": 597,
+        "imports": 17
+      },
+      "2024-25": {
+        "rows": 347,
+        "imports": 10
+      },
+      "2025-26": {
+        "rows": 4076,
+        "imports": 121
+      }
+    },
+    "total_target_rows": 5020,
+    "per_game_authority_digests_valid": 148,
+    "reported_reason_rows": 18,
+    "reason_row_and_final_DNP_identity_import_bindings_valid": true,
+    "test_query_manifest_exported": false,
+    "repeated_NBA_source_qualification": false,
+    "source_root_validation": "Actual execution reported passed before failing serialization; original source facts and accepted input proofs reused."
+  },
+  "date_serializer_fix": {
+    "file": "tests/cloud_composed_participation_stage_real_data.py",
+    "sha256": "75164776ece60c59ab253ab3bcd51a7a7d516f0e8d53d92187859785871ec46b",
+    "change": "json.dumps default admits date and datetime subclasses through isoformat, including pandas Timestamp. Native numeric types remain numeric. Other unsupported object types still raise TypeError. No default=str fallback.",
+    "source_composer_query_logic_changed": false,
+    "focused_real_consumer_control_passed": 1,
+    "unfamiliar_pure_serializer_controls_passed": 3
+  },
+  "one_replay_approved": true,
+  "selector": "tests/cloud_composed_participation_stage_real_data.py::test_accepted_cohorts_work_together_without_discarded_coverage",
+  "remaining_required_acceptance": "Corrected exact-candidate gate must execute all eight82-game maps,21 exact-sample answers and three local API checks and retain them in a passing receipt. Independently review final output; no source reacquisition or semantic changes are authorized by this fix.",
+  "full_combined_staging_accepted": false,
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0,
+  "production_publication_approved": false,
+  "full_required_slice_accepted": false
+}

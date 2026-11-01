@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "merged_main": "9767b7c0e29fef960ff2a172eff7ea5d26194ef0",
+  "tree": "2464d633d582377466cbe627f56e9e7b9e39e028",
+  "production_status": {
+    "context": "Vercel",
+    "state": "failure",
+    "description": "Deployment rate limited \u2014 retry in 24 hours.",
+    "created_at": "2026-11-01T09:08:29Z",
+    "url": "https://vercel.com/brents-projects-686e97fc?upgradeToPro=build-rate-limit"
+  },
+  "reviewed_feature_head": "8d9685f58c515add0cee09e377ebc005fb4c94fa",
+  "feature_head_preview_status": {
+    "context": "Vercel",
+    "state": "success",
+    "description": "Deployment has completed",
+    "url": "https://vercel.com/brents-projects-686e97fc/nbatools/7EKCtto5E1rdgmW8ZshdA2nQti2U"
+  },
+  "preview_is_not_production_acceptance": true,
+  "safe_recovery": "Wait for changed quota conditions, then deploy the reviewed latest main using existing approved Git integration. A preview promotion rebuilds with production environment variables, so it is not an evidenced bypass of the build quota; no preview alias/promotion or new deployment was attempted.",
+  "public_verification": "not_executed; pending successful production deployment including568",
+  "reviewed_probe_source_sha": "fd8a9c55d51f9d22cec24c8fdc1caf98b0eec72c",
+  "reviewed_probe_tree": "3224f9945bc9af72fef2d84ae81853186c84ad54",
+  "production_data_generation": "availability-lebron-season-v1-20261031",
+  "data_publication_reruns": 0,
+  "production_pointer_changes": 0,
+  "readiness_exceptions": 0,
+  "paid_upgrades": 0,
+  "new_credentials": 0
+}

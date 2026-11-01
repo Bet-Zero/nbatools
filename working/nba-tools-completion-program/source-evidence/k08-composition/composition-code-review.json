@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Exact model identifier unavailable; genuinely separate checker agent, no cross-model claim",
+  "approval": "PASS_FOR_ONE_PINNED_COMPOSED_STAGING_GATE",
+  "reviewed_remote_revision": "22c80bcee7d0f2d0a844894ff34959724c66122e",
+  "equivalent_local_revision": "4937d824c0596cae7e06b22165619e54d1b6e79b",
+  "tree": "015d823e88a7bfafe0a8530c653d166680b58e66",
+  "author_composer_revision": "7e03f65eb223d967575d0d2ac77f6466411c95d6",
+  "code_file_sha256": {
+    "tools/compose_participation_overlays.py": "add87a7906c0442a5a4ec52d7f1c8fc145bd789181fdeb251a0a86ff6bd9e85c",
+    "tests/test_compose_participation_overlays.py": "53ae1a819679ddaac8ea5e86c6f9ebc1a8fde0df06a42e1a405a66a57322a88f",
+    "tests/cloud_composed_participation_stage_real_data.py": "c090f572a3042bc2c5c81e23e144066930467b3bf70a579d48d6ef0bf89f9f87",
+    "working/nba-tools-completion-program/source-evidence/k08-composition/composition-request.json": "4fb3f927ef10be65359788487bce817b6f87ad2348c96964703c58d499bdee91"
+  },
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "scope": "Compose four already accepted immutable overlay ZIPs into one offline changed-only staging package. No NBA collection, source qualification repetition or publication.",
+  "composer_review": {
+    "exact_overlap": "CSV columns in exact order and every serialized cell must agree on overlapping identity keys. Whole import objects use typed JSON equality; no source-authority winner is chosen. BASE row order is preserved and new rows are ordered deterministically. Duplicate observations and one-player/two-side collisions are rejected.",
+    "base_binding": "Exact manifest generation/SHA and actual touched baseline bytes are required. Package dependency metadata, including nested historical season bindings, must match manifest entries. Caller materializes and hashes other canonical/source dependencies. Existing table/import pairs and manifest-absent creations are distinguished without invented baseline hashes.",
+    "archive_safety": "Pinned ZIP SHA/size; bounded archive/file expansion, member count, duplicate names, traversal and symlink checks. Only reviewed participation/reason/source namespaces export. Invalid composition rejects before output creation.",
+    "authority": "Each package and final composed availability game population must retain the original import digest. Reasons bind to the final same-game DNP row and identical identity_import record, preserving original sources and lineage.",
+    "truthful_receipt": "Composer reports source_replay_validation_complete=false and no generation/publication/full-slice acceptance. The required gate independently runs unchanged combined source replay and consumers.",
+    "baseline_preservation": "Existing serialized cells, old full import objects and source bodies survive; BASE directory remains read-only and output must be separate/new.",
+    "future_limit": "Existing reason-table append composition is not claimed: current accepted companion CSV/lineage are manifest-absent creations. No bypass or winner-selection fallback is added."
+  },
+  "executed_focused_tests": {
+    "new_composer_tests": 28,
+    "additional_independent_controls": 3,
+    "skipped": 0,
+    "additional_cases": [
+      "Self-consistent reason row/ledger cannot graft a different binary identity_source_sha256.",
+      "One player cannot acquire both sides of the same game through separate package inputs.",
+      "Nested output inside BASE rejects without changing any baseline byte."
+    ],
+    "ruff_compile_diff": "passed",
+    "frozen_worktree_clean": true
+  },
+  "independent_actual_input_union": {
+    "classification": "independent_input_union_arithmetic_and_exact_overlap_review_not_canonical_base_or_runtime_acceptance",
+    "input_packages": [
+      {
+        "package": "k08-lal-remaining",
+        "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+        "paths": 94
+      },
+      {
+        "package": "k08-bos-remaining",
+        "sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692",
+        "paths": 198
+      },
+      {
+        "package": "k08-direct-dependencies",
+        "sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+        "paths": 79
+      },
+      {
+        "package": "k08-rest",
+        "sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e",
+        "paths": 132
+      }
+    ],
+    "unique_paths": 407,
+    "duplicate_serialized_cells_equal": 2678,
+    "duplicate_full_typed_import_records_equal": 77,
+    "duplicate_source_body_paths_equal": 92,
+    "table_scopes": {
+      "2023-24": {
+        "rows": 597,
+        "imports": 17
+      },
+      "2024-25": {
+        "rows": 347,
+        "imports": 10
+      },
+      "2025-26": {
+        "rows": 4076,
+        "imports": 121
+      }
+    },
+    "composed_touched_rows": 5020,
+    "reason_rows": 18,
+    "all_reason_identity_import_dependencies_match_combined_records": true,
+    "one_player_two_side_conflicts": 0,
+    "source_calls": 0,
+    "actual_baseline_bytes_qualified_by_this_script": false,
+    "full_source_replay_qualified_by_this_script": false,
+    "actual_combined_runtime_accepted": false
+  },
+  "independent_union_receipt_sha256": "446728dd15772156b7131683a6862912fe275b89bba20741f7e8001eb4e9d275",
+  "union_interpretation": "Directly reread each of the four already retained ZIPs and verified every declared body SHA/size. Independent CSV/import/source union found2678 equal duplicate cells,77 identical typed import records and92 byte-identical source duplicates; no conflicting fact/authority. This is not a canonical BASE materialization or full source replay.",
+  "required_gate": {
+    "selector": "tests/cloud_composed_participation_stage_real_data.py::test_accepted_cohorts_work_together_without_discarded_coverage",
+    "one_pinned_775_request_approved": true,
+    "input_packages": [
+      {
+        "package": "k08-lal-remaining",
+        "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+        "paths": 94
+      },
+      {
+        "package": "k08-bos-remaining",
+        "sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692",
+        "paths": 198
+      },
+      {
+        "package": "k08-direct-dependencies",
+        "sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+        "paths": 79
+      },
+      {
+        "package": "k08-rest",
+        "sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e",
+        "paths": 132
+      }
+    ],
+    "baseline_dependencies": "The gate reads actual BASE manifest775 and every declared base_file_hash dependency, including nested historical bindings and existing touched sources. Core/binary/source bytes are checked against immutable manifest hash/size before sandbox materialization.",
+    "joint_validator": "One unchanged availability publication validator replays the complete materialized target source root, including reported reasons. No output manifest substitutes for this execution.",
+    "coverage": "Eight previously accepted82-game state maps,656 game-state entries, compare full game-key/state sets and counts; complete/no-missing required. Original dates/sides/canonical dependencies are immutable and per-row/source validation remains enforced.",
+    "answers": "Sixteen scalar/home count answers now assert actual returned game IDs and length, not just counts, including genuine zero. Two accepted mixed-record samples compare exact IDs and numbers; historical AD record, reported-Rest complete zero and a structured mixed historical record bring total21. Three local API bodies execute.",
+    "reported_rest": "Explicit basis and complete82/18DNP/18Other/0Rest/0Unknown metadata asserted. Publication remains separate; source-reported zero is not clinical or physiological rest truth.",
+    "export_scope": "407 changed-only raw paths plus validation and consumer receipt. Test-only legacy query inventory is created only inside the private sandbox after export and must not be in overlay_files.",
+    "projection_counts": "2025 rows804+1070+2202=4076 and imports23+31+67=121; touched2023/2024 rows597+347=944; total5020. Prior qualified unchanged78 other-season rows imply projected all-season5098; that is a projection, not a freshly loaded full-snapshot claim.",
+    "pending_acceptance": "Actual combined BASE/source replay, eight runtime maps,21 answers and three API bodies have not yet executed on this candidate. Actual required gate must pass1/1 with zero skips and exported output must be independently reviewed."
+  },
+  "reused_evidence": "Four accepted source/staging ZIPs and their existing independently reviewed numerical/state oracles are immutable input evidence. Original source clocks, identities and clinical distinctions are not requalified or weakened. All earlier failed execution/review receipts retain their literal status.",
+  "public_probe": {
+    "sha256": "1cde207cffc9409f62527d7d703dd229e3237456ca82d1ef71dd581639d198ec",
+    "authorship": "Authored by this checker separately; independently reviewed/approved by parent. This is not self-approval of its code.",
+    "execution_scope": "Explicit-only separate test, not selected by the combined staging selector. Still unexecuted because Vercel deployment is rate-limited; no retry/access/cost expansion approved by this review."
+  },
+  "source_network_calls_by_checker": 0,
+  "production_writes": 0,
+  "production_publication_approved": false,
+  "full_required_slice_accepted": false,
+  "actual_combined_staging_accepted": false,
+  "unresolved_review_findings": []
+}

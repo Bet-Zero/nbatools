@@ -1,0 +1,51 @@
+{
+  "classification": "independent_input_union_arithmetic_and_exact_overlap_review_not_canonical_base_or_runtime_acceptance",
+  "input_packages": [
+    {
+      "package": "k08-lal-remaining",
+      "sha256": "a18792e51f036cfbffc509c7990ee403fbbd70edc59bd1b0fa0d4cbff3a1eb03",
+      "paths": 94
+    },
+    {
+      "package": "k08-bos-remaining",
+      "sha256": "4883c4291a74ab1139af9fd97c5242a2dcd6928cb0a994d68adebb41079df692",
+      "paths": 198
+    },
+    {
+      "package": "k08-direct-dependencies",
+      "sha256": "3b09d74c9deb5915033b3b28518a5926056e7c37ede6a0f24281d41a337312db",
+      "paths": 79
+    },
+    {
+      "package": "k08-rest",
+      "sha256": "f2c4461403706d111563cd9bd38293517b2cb8163caa9badd2026e421583532e",
+      "paths": 132
+    }
+  ],
+  "unique_paths": 407,
+  "duplicate_serialized_cells_equal": 2678,
+  "duplicate_full_typed_import_records_equal": 77,
+  "duplicate_source_body_paths_equal": 92,
+  "table_scopes": {
+    "2023-24": {
+      "rows": 597,
+      "imports": 17
+    },
+    "2024-25": {
+      "rows": 347,
+      "imports": 10
+    },
+    "2025-26": {
+      "rows": 4076,
+      "imports": 121
+    }
+  },
+  "composed_touched_rows": 5020,
+  "reason_rows": 18,
+  "all_reason_identity_import_dependencies_match_combined_records": true,
+  "one_player_two_side_conflicts": 0,
+  "source_calls": 0,
+  "actual_baseline_bytes_qualified_by_this_script": false,
+  "full_source_replay_qualified_by_this_script": false,
+  "actual_combined_runtime_accepted": false
+}
