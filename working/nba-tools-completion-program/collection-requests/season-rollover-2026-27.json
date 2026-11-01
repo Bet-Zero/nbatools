@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "planning_only_requires_separate_collection_and_publication_authorization",
+  "status": "collection_and_staging_authorized_production_publication_not_authorized",
   "reason": "The unchanged November1 UTC readiness deadline reports new_season_not_loaded; the LeBron publication preserved existing season coverage and is not its cause.",
   "base_generation": "availability-lebron-season-v1-20261031",
   "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
@@ -40,13 +40,12 @@
     "Only a separately owner-approved protected publication may activate that new combined snapshot. Then complete ordinary readiness/live verification and durable backup; keep original41256695103 historical failure unchanged."
   ],
   "not_authorized": [
-    "NBA collection until owner consents to this bounded request",
     "production publication or active pointer change",
     "bulk multi-season backfill or unattended refresh",
     "new credentials or paid services",
     "readiness waiver or deadline change"
   ],
-  "execution_route": "Existing acquisition-laptop policy unless owner separately authorizes another bounded route; cloud development/validation and existing protected publication remain separate.",
+  "execution_route": "Existing approved public NBA sources and reviewed GitHub archive/source tools or targeted read-only Actions collection route; acquisition laptop where appropriate. Cloud development/validation and separately protected publication remain distinct. No new access route, permission, credentials, cost, unattended refresh or production activation.",
   "pipeline_prerequisite": {
     "status": "requires_qualified_source_adapter_and_validation_changes_before_publication",
     "existing_failure": "pull_schedule.fetch_schedule uses completed LeagueGameFinder rows and run labels allFinal; validate_raw.run requires schedule game IDs equal games IDs. A full future schedule cannot currently pass that representation.",
@@ -110,5 +109,19 @@
     "evidence": "cloud-operations/season-inputs-runner-receipt.json; run39149759138",
     "observed": "2026-27 planning schedule1206games/6unresolvedmatchups/0finals at2026-10-18, unknown originalcapturetime; not current or canonical. Other known archives returned unscoped/previous-season Finder rows.",
     "rule": "Reuse qualified unchanged inputs where valid, but these existing planning/partial/unscoped responses cannot satisfy new-season readiness or replace current qualified originals."
+  },
+  "authorization": {
+    "owner_date": "2026-11-01",
+    "explicit": "Owner approved Option1 bounded collection/staging of this reviewed request.",
+    "standing": "Routine bounded public NBA collection/staging using existing approved sources/tools/credentials/cost limits; autonomous source collection, validation, implementation and testing without per-batch approval.",
+    "separate_approval_required": [
+      "production publication",
+      "substantial bulk backfills",
+      "new costs or credentials",
+      "expanded permissions",
+      "destructive operations",
+      "weakened safeguards"
+    ],
+    "automatic_refresh": false
   }
 }
