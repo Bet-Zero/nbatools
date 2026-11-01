@@ -33,6 +33,32 @@ full manifest SHA256 and storage projection before approving the dedicated
 that exact snapshot before invoking the existing immutable publisher. There is no
 arbitrary artifact, commit, shell-command or expected-base input.
 
+### LeBron publication — active data, operational readiness blocked
+
+Owner-approved [run41256695103](https://github.com/Bet-Zero/nbatools/actions/runs/41256695103)
+completed the protected write and all775publishedobject byte checks. Active data
+is `availability-lebron-season-v1-20261031`, manifest `3073653a…`,
+775objects/403,814,381bytes; previous generation remains retained. The immutable
+[original receipt](https://github.com/Bet-Zero/nbatools/releases/tag/data-publication-41256695103)
+remains `published_verification_failed`. Do not publish again or change the pointer.
+
+The subsequent `/readiness` check returned503 `new_season_not_loaded`, also
+confirmed by monitor41258091212. The unchanged November1UTC policy requires the
+missing2026-27season. Existing2025-26 participation improvements cannot resolve
+current-season freshness. Keep readiness, monitoring, publication acceptance and
+24-hourlag safeguards unchanged. A separate read-only audit may verify numeric
+answers and preserve an exact-generation backup without claiming operational
+readiness; it must retain the original failed receipt and distinct identities.
+
+Restoring readiness needs qualified2026-27 schedule and completed core coverage,
+plus normal trusted processing and separately approved publication. The current
+schedule pull mirrors only completed games and validation requires equality with
+the game catalog; qualified future-schedule support is a prerequisite, not a
+reason to truncate the schedule or accept one new game. No new NBA collection,
+production write, clock/deadline change or exception is authorized by diagnosis.
+See the main Resume checkpoint and [PR558 incident evidence](https://github.com/Bet-Zero/nbatools/pull/558)
+for current independent audit/backup status and the bounded collection requirement.
+
 ### Observed LeBron season package — preparation only
 
 `lebron-season-participation-v1` binds the34authorized retained JSON originals
