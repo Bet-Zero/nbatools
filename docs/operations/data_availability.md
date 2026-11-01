@@ -1,21 +1,27 @@
 # Data availability and acquisition-only handoff
 
-Owner direction (October 18, 2026): the backup laptop collects NBA source data
-when needed. R2 remains central storage. Codex develops, validates, processes and
-analyzes in the cloud. Commercial provider evaluation and cloud NBA access
-investigations are stopped. No provider key is needed. The owner resumed normal development on October 18 after accepting minimum setup. Missing specialized data does not prevent
-work on supported core datasets.
+Owner direction updated **2026-11-01**: routine, bounded public NBA collection
+and staging is authorized through existing approved sources, tools, credentials
+and cost limits. Agents own source collection, validation, implementation and
+testing autonomously; do not request approval for every batch. This includes the
+reviewed 2026-27 Regular Season request. Use qualified existing inputs first,
+then the smallest justified new capture through the existing reviewed GitHub
+archive and source tools, targeted read-only Actions route or acquisition laptop.
+The laptop remains acquisition/transfer only; development stays in the cloud.
 
-The owner's 2026-10-27 K08 exception in [AGENTS.md](../../AGENTS.md#narrow-k08-report-acquisition-exception-owner-2026-10-27)
-authorizes exactly three named official reports through the existing GitHub
-Actions acquisition route. All other acquisition and publication restrictions
-below remain in force; that exception is not a general cloud-fetch authorization.
+This supersedes older per-batch collection approval, planning-only pauses and
+laptop-only restrictions within the standing approved scope. The earlier narrow
+K08 captures retain their original evidence and statistical limits; they do not
+limit the new standing collection authority. Do not repeatedly probe known
+blocked endpoints or treat archive retrieval time as source freshness.
 
-Current K08 direction additionally authorizes the small representative structured
-source investigation described in AGENTS. It favors verified Traditional V3 plus
-Summary V2/V3 archival evidence, with PDFs as targeted fallback. Metadata inventory
-is distinct from body qualification or inactive/membership completeness. No bulk
-acquisition, automatic refresh or production publication follows from that sample.
+Separate explicit approval remains required for production publication,
+substantial bulk backfills, new costs or credentials, expanded permissions,
+destructive operations or weakened safeguards. No automatic refresh schedule,
+new service, commercial provider investigation or permission expansion is
+implied. Keep fixed-plan/$0-overage limits, existing read-only credentials,
+source/numerical/readiness safeguards and separate protected publication.
+Collection/staging does not change the production pointer.
 
 ## Before implementing a data-dependent change
 
@@ -84,7 +90,7 @@ The existing LeBron structured request is the retained17-game dependency after
 the three formerly staged reports were published. Qualified exact-game states
 across this population avoid assuming tenure from roster snapshots.
 
-After a separately authorized collection, `python -m tools.stage_participation_collection`
+After a collection within the standing bounded authority, `python -m tools.stage_participation_collection`
 accepts `--request-path`, `--source-directory`, new `--work` and `--output`
 directories, and `--candidate-sha`. It performs no acquisition or publication.
 The source directory contains retained `sources/` originals and `sources.json`;
@@ -119,7 +125,7 @@ Codex must define/qualify it before treating any new source value as that field.
 
 ## Backup laptop: acquisition and transfer only
 
-Codex supplies the bounded request and exact collector parameters. The laptop
+When the laptop route is appropriate, Codex supplies the bounded request and exact collector parameters. The laptop
 uses its existing NBA API collector to save **original source responses**, not
 fabricated or derived replacements. Put files under this data-only layout:
 
@@ -189,7 +195,7 @@ Codex then:
 
 No new production data has been published merely to test this handoff. The
 packaging/unpacking process is verified independently of a real future laptop
-collection; each collection still needs its own data qualification and approval.
+collection; each collection still needs its own data qualification and independent checking; production publication still requires separate owner approval.
 
 ## Initial observed coverage (not a new publication)
 

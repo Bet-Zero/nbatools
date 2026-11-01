@@ -89,17 +89,24 @@ benefit and safe integration are demonstrated; no giant parallel engine.
 
 ## Historical snapshot versus unattended freshness
 
-Owner direction updated October 18: data acquisition may use the backup laptop;
-cloud-only NBA source access and commercial API evaluation are no longer setup
-requirements. Codex develops, tests, processes and analyzes in the cloud against
-R2 snapshots. The acquisition machine is not a development dependency. Agents
-must inspect the generated active-generation inventory before data-dependent
-work and issue precise collection requirements for missing raw inputs. Cloud
-validation and existing separate owner-approved immutable publication transfer
-qualified collections into R2. Preserve last-good data and actual coverage dates.
-October 18 setup acceptance removed the setup dependency; current authorization
-and stop/resume state live in the queue's Resume checkpoint.
-Automatic NBA refresh or unattended production publication is not enabled.
+Owner direction updated **2026-11-01**: agents may routinely collect and stage
+bounded public NBA inputs using existing approved sources, tools, credentials and
+cost limits, including the reviewed 2026-27 Regular Season request. Agents own
+collection, validation, implementation and testing without per-batch approval.
+Use qualified retained data first, then the smallest justified new source scope
+through existing reviewed archive/Actions or acquisition-laptop routes. Codex
+development stays in the cloud; the laptop handles acquisition/transfer only.
+Read the active inventory, retain original bytes/provenance and actual coverage,
+and keep independent numerical/source checking and normal review/merge gates.
+
+Separate approval is still required for production publication, substantial bulk
+backfills, new costs/credentials, expanded permissions, destructive operations or
+weakened safeguards. Read-only runtime/validation and protected publication stay
+separate; collection does not authorize a pointer change. No unattended refresh,
+new service or commercial provider investigation is enabled. Preserve fixed-plan
+limits/$0 metered overage and last-good generations. Historical per-batch or
+laptop-only collection limits are superseded within the standing approved scope;
+current bounded work and exact continuation remain in the single Resume checkpoint.
 
 Independently inspect existing-snapshot derivations and publication, including
 compact identity metadata, before proposing a hosting/database migration.

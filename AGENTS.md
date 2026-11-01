@@ -52,29 +52,56 @@ product exclusions or revive a superseded queue from an old branch.
 
 ## Data availability before implementation
 
-Owner direction updated 2026-10-18: the backup laptop performs NBA acquisition
-when necessary; Codex development, testing and analysis stay in the cloud. R2
-remains central storage. Commercial source evaluation and cloud NBA access
-investigations are stopped; do not request a provider key. Before data-dependent
-work, follow `docs/operations/data_availability.md`, read the generated inventory
-for the active generation, and distinguish production coverage from staging and
-unknown completeness. Produce a bounded collection requirement for missing raw
-data; do not invent values or investigate providers repeatedly. The laptop does
-not run application development. Existing protected publication remains required.
-The October 18 setup acceptance removed that setup dependency. Follow current
-owner authorization and the Resume checkpoint's stop/resume state; historical
-resumption is not permission to restart paused product work.
+### Standing bounded collection and staging authority (owner, 2026-11-01)
+
+The owner approved the reviewed 2026-27 Regular Season collection/staging request
+and gave standing authorization for **routine, bounded collection and staging of
+public NBA data using existing approved sources, tools, credentials and cost
+limits**. Agents own source collection, validation, implementation and testing
+and must continue autonomously without asking for approval for each batch.
+The existing reviewed GitHub archive/source tools and targeted read-only Actions
+route, and the acquisition laptop where appropriate, remain available. This
+supersedes older per-batch collection approval, planning-only stops and laptop-only
+restrictions for routine bounded work within these approved routes. It is not
+permission to invent another access route or expand permissions.
+
+Separate explicit approval remains required for **production publication,
+substantial bulk backfills, new costs or credentials, expanded permissions,
+destructive operations, or weakened safeguards**. No unattended refresh schedule,
+new service or commercial provider investigation is authorized. Keep fixed-plan
+limits/$0 metered overage, read-only runtime/validation credentials and the
+existing protected publisher/environment approval. Collection/staging acceptance
+never activates production or authorizes an active-pointer change.
+
+Before data-dependent work, follow `docs/operations/data_availability.md` and the
+active generation's generated inventory. Reuse qualified retained bytes and
+accepted evidence; qualify the smallest needed new population, with source URLs,
+original bodies, immutable revisions where available, hashes, capture times,
+statistical scope and explicit unknowns. A source/index filename, retrieval time
+or green transport test does not establish current coverage or completeness.
+Do not retry a diagnosed blocked/stale source without changed evidence. Preserve
+all numerical/source/clock/membership/readiness/24-hour-lag and production gates;
+missing sources remain unfinished work. Do not fabricate a passed manifest or
+substitute different data. Cloud development/testing stays in the cloud; the
+laptop is acquisition/transfer only, not a development dependency. The single
+Resume checkpoint records the bounded active scope, evidence and precise next
+step, not a new approval request for each routine batch.
+
+The historical narrow authorities below retain their original evidence and
+scope. Their collection restrictions are superseded by this standing authority
+where applicable; their production, correctness and cost safeguards remain.
 
 ### Narrow K08 report-acquisition exception (owner, 2026-10-27)
 
-The owner authorizes acquisition and staging through the previously proven GitHub
+The October 27 owner exception authorized acquisition and staging through the proven GitHub
 Actions targeted-validation route for **only** the first three official reports
 in `working/nba-tools-completion-program/collection-requests/lebron-participation-2025-26.json`:
 `0022500019` / `20251024_MINLAL.pdf`, `0022500113` / `20251026_LALSAC.pdf`, and
 `0022500122` / `20251027_PORLAL.pdf`. This narrowly supersedes laptop-only acquisition
-for those reports. It does not authorize the remaining 17, other source/identity
-requests, new credentials, paid services, automatic refresh, or production R2
-publication. Reuse original retained bytes for subsequent qualification/replay;
+for those reports. That original exception did not authorize the remaining 17 or other source/identity
+requests; subsequent explicit and standing bounded collection authority above now
+controls. New credentials, paid services, automatic refresh and production R2
+publication remain separately restricted. Reuse original retained bytes for subsequent qualification/replay;
 retries need a diagnosed reason. Preserve the existing read-only workflow,
 independent source qualification and separately protected publication boundary.
 
@@ -239,10 +266,11 @@ real data. Existing, derivable, missing and unverified inputs are different.
 Do not infer complete careers, absence, official rings or injury from incomplete
 or differently scoped source facts.
 
-Fresh NBA acquisition/automatic refresh remains parked under the October 4 owner
-decision. Existing-snapshot features, qualified derived metadata, source research
-and measured performance work may continue independently. Never relabel old data
-as fresh when republishing. Unattended freshness/rollover remains open even when
+Routine bounded public NBA collection/staging follows the November 1 standing
+authority above; the October 4 acquisition pause is superseded within that scope.
+Automatic refresh remains unapproved. Existing-snapshot features, qualified
+derived metadata and measured performance work may continue independently. Never
+relabel old data as fresh when republishing. Unattended freshness remains open when
 the finite snapshot milestone is accepted. Follow `docs/operations/deployment.md`
 for validated publication, same-base protection, last-good/rollback and deployed
 checks. Runtime/validation credentials stay read-only; write authority is separate.
