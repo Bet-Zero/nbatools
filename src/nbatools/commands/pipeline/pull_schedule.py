@@ -41,12 +41,23 @@ def fetch_schedule(season: str, season_type: str) -> pd.DataFrame:
     raise RuntimeError(f"Failed to fetch schedule: {last_err}")
 
 
-def run(season: str, season_type: str) -> None:
+def run(season: str, season_type: str, *, official_original: bytes | None = None) -> None:
     out_dir = Path("data/raw/schedule")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     safe = season_type.lower().replace(" ", "_")
     out_path = out_dir / f"{season}_{safe}.csv"
+
+    if official_original is not None:
+        if season_type != "Regular Season":
+            raise ValueError("Official schedule adapter currently supports Regular Season only")
+        from nbatools.commands.pipeline.official_schedule import normalize_official_schedule
+
+        schedule = normalize_official_schedule(official_original, season)
+        schedule.to_csv(out_path, index=False)
+        print(f"Saved {out_path}")
+        print(f"Rows: {len(schedule)}")
+        return
 
     raw = fetch_schedule(season=season, season_type=season_type).copy()
 

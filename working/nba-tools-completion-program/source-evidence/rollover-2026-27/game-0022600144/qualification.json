@@ -1,0 +1,65 @@
+{
+  "classification": "independent_original_source_corroboration_not_canonical_or_published",
+  "game_id": "0022600144",
+  "production_writes": 0,
+  "canonical_core_accepted": false,
+  "original_sha256": {
+    "pbp": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+    "summary": "b615d3325b83de2d013b88412727ccd2f451186d61275d6e5505baeb1c418e98"
+  },
+  "ordered_action_count": 498,
+  "explicit_scoring_actions": 115,
+  "terminal_home_score": 114,
+  "terminal_away_score": 111,
+  "blank_non_scoring_score_pairs": 372,
+  "derived_trust_check": "Duplicate (season, season_type, game_id, action_number) in play_by_play_events",
+  "trust_decisions": null,
+  "player_game_logs_conflicts": [
+    {
+      "player_id": 1630552,
+      "player_name": "Jalen Johnson",
+      "field": "PTS",
+      "pbp": 17,
+      "player_game_logs": 16
+    },
+    {
+      "player_id": 1630552,
+      "player_name": "Jalen Johnson",
+      "field": "FTA",
+      "pbp": 1,
+      "player_game_logs": 0
+    },
+    {
+      "player_id": 1630552,
+      "player_name": "Jalen Johnson",
+      "field": "FTM",
+      "pbp": 1,
+      "player_game_logs": 0
+    }
+  ],
+  "missing_actor_event": {
+    "actionNumber": 232,
+    "clock": "PT06M54.00S",
+    "period": 2,
+    "teamId": 1610612737,
+    "teamTricode": "ATL",
+    "personId": 1630552,
+    "playerName": "Johnson",
+    "playerNameI": "J. Johnson",
+    "xLegacy": 0,
+    "yLegacy": 0,
+    "shotDistance": 0,
+    "shotResult": "",
+    "isFieldGoal": 0,
+    "scoreHome": "27",
+    "scoreAway": "35",
+    "pointsTotal": 62,
+    "location": "h",
+    "description": "Johnson Free Throw Technical (3 PTS)",
+    "actionType": "Free Throw",
+    "subType": "Free Throw Technical",
+    "videoAvailable": 1,
+    "shotValue": 0,
+    "actionId": 168
+  }
+}

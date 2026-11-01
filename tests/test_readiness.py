@@ -36,6 +36,7 @@ def _slice(
         schedule_complete=schedule_complete,
         postseason_complete=postseason_complete,
         errors=() if trusted else ("versioned dataset manifest missing",),
+        missing_due_game_ids=() if trusted else None,
     )
 
 

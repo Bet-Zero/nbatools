@@ -1,0 +1,153 @@
+{
+  "classification": "actual_failed_source_attempts_not_data_acceptance",
+  "nba_tools_production_writes": 0,
+  "attempts": [
+    {
+      "kind": "cdn",
+      "artifact_zip_sha256": "be8e9c42d3f485b2f480a4eb302250dce7134ff979b85bfef6b605b2b73c5c68",
+      "artifact_zip_bytes": 2590,
+      "required_summary": {
+        "candidate_sha": "b15b88e43ed6f06ae24c0896df987dc2bd4d360b",
+        "generation": "availability-lebron-season-v1-20261031",
+        "scope": "targeted",
+        "required_selection": [
+          "tests/cloud_rollover_cdn_real_data.py::test_collect_missing_atl_cle_2026_27_boxscore"
+        ],
+        "required_test_limit": 100,
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "skipped": 0,
+        "failed": 1,
+        "errors": 0,
+        "xfailed": 0,
+        "pytest_exit": 1,
+        "conclusion": "failure",
+        "problems": [
+          "pytest did not succeed (exit=1)",
+          "Every selected required test must execute and pass",
+          "Required tests contain skips, failures, errors, or expected failures"
+        ]
+      },
+      "capture_attempts": [
+        {
+          "source_url": "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_0022600144.json",
+          "game_id": "0022600144",
+          "started_at": "2026-11-01T02:02:55.349779+00:00",
+          "attempts": 1,
+          "production_writes": 0,
+          "http_status": 403,
+          "response_complete": true,
+          "identity_scope_qualified": false,
+          "classification": "unqualified_capture_attempt",
+          "error_type": "HTTPError",
+          "finished_at": "2026-11-01T02:02:55.582577+00:00",
+          "response_bytes": 443,
+          "response_sha256": "884028bb87e96de4edfb591eb00280dca474bffd5eaf024e986b44ae98ac08b3"
+        }
+      ]
+    },
+    {
+      "kind": "quarter",
+      "artifact_zip_sha256": "6c08148b3a30434dd81b384845996681cadb7db9e6bf8e7f4b384d1681d88978",
+      "artifact_zip_bytes": 29956,
+      "required_summary": {
+        "candidate_sha": "f4588d67bcc2e6b22a68445722d103aaa90fb724",
+        "generation": "availability-lebron-season-v1-20261031",
+        "scope": "targeted",
+        "required_selection": [
+          "tests/cloud_season_stats_real_data.py::test_qualify_retained_2026_27_season_stats",
+          "tests/cloud_rollover_q1_real_data.py::test_capture_exact_one_game_q1_traditional_and_advanced_v3"
+        ],
+        "required_test_limit": 100,
+        "selected": 2,
+        "executed": 2,
+        "passed": 1,
+        "skipped": 0,
+        "failed": 1,
+        "errors": 0,
+        "xfailed": 0,
+        "pytest_exit": 1,
+        "conclusion": "failure",
+        "problems": [
+          "pytest did not succeed (exit=1)",
+          "Every selected required test must execute and pass",
+          "Required tests contain skips, failures, errors, or expected failures"
+        ]
+      },
+      "capture_attempts": [
+        {
+          "classification": "bounded_period_source_probe_not_canonical_or_published",
+          "game_id": "0022600001",
+          "season": "2026-27",
+          "season_type": "Regular Season",
+          "period": "Q1",
+          "production_writes": 0,
+          "source_scope_qualified": false,
+          "canonical_period_accepted": false,
+          "captures": [
+            {
+              "endpoint": "boxscoretraditionalv3",
+              "request_url": "https://stats.nba.com/stats/boxscoretraditionalv3",
+              "parameters": {
+                "GameID": "0022600001",
+                "EndPeriod": 1,
+                "EndRange": 28800,
+                "RangeType": 1,
+                "StartPeriod": 1,
+                "StartRange": 0
+              },
+              "started_at": "2026-11-01T02:13:00.817470+00:00",
+              "attempts": 1,
+              "http_status": null,
+              "response_complete": false,
+              "error_type": "ReadTimeout",
+              "finished_at": "2026-11-01T02:13:30.960061+00:00",
+              "response_file": null,
+              "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "response_bytes": 0
+            }
+          ],
+          "oracle": {
+            "game_id": "0022600001",
+            "summary_sha256": "7e61162d1ec001d5235a8dd2125a654dfad30887db90e0d0c58621859383cf5a",
+            "teams": {
+              "homeTeam": {
+                "team_id": 1610612765,
+                "points": 27,
+                "full_points": 121
+              },
+              "awayTeam": {
+                "team_id": 1610612738,
+                "points": 28,
+                "full_points": 113
+              }
+            }
+          },
+          "error_type": "ReadTimeout"
+        }
+      ]
+    }
+  ],
+  "source_case_evidence": {
+    "offline_stats_case": {
+      "run_id": 41264167626,
+      "node": "tests/cloud_season_stats_real_data.py::test_qualify_retained_2026_27_season_stats",
+      "result": "passed",
+      "scope": "partial retainedsource qualification only; canonical core/period acceptance false"
+    },
+    "cdn": {
+      "run_id": 41263471957,
+      "artifact_id": 13065784480,
+      "reviewed_sha": "e084cc317f86563d582a2d908f3fcbc2dddb0604",
+      "request_sha": "b15b88e43ed6f06ae24c0896df987dc2bd4d360b"
+    },
+    "quarter": {
+      "run_id": 41264167626,
+      "artifact_id": 13066512354,
+      "reviewed_sha": "c49668bbaf3d6de4c736f982c548f6a10d4b7c2c",
+      "request_sha": "f4588d67bcc2e6b22a68445722d103aaa90fb724"
+    }
+  },
+  "conclusion": "CDN0144HTTP403 and parameterizedQ1NBAStats30secondReadTimeout are retained failures; no retries or81gameperiodbatch. Existingpublished775/3073 andreadiness503 unchanged. Continue qualifiedoffline core/schedule safeguards and existingapprovedsource/laptop collection; no newperbatchconsent required understandingauthority."
+}

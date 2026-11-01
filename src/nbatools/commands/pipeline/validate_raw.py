@@ -575,11 +575,15 @@ def run(season: str, season_type: str):
     if schedule["game_id"].duplicated().any():
         raise ValueError("Duplicate game_id in schedule")
 
-    if set(schedule["game_id"]) != set(games["game_id"]):
-        raise ValueError("Mismatch between schedule and games game_id sets")
+    from nbatools.commands.pipeline.official_schedule import validate_schedule_game_coverage
+
+    validate_schedule_game_coverage(schedule, games)
 
     # --- TEAM GAME ---
     team = validate_team_game_stats_df(team, games=games)
+    from nbatools.commands.pipeline.official_schedule import validate_schedule_team_coverage
+
+    validate_schedule_team_coverage(schedule, team)
 
     # --- PLAYER GAME ---
     require_columns(player, ["game_id", "player_id", "fgm", "fga"], "player_game_stats")

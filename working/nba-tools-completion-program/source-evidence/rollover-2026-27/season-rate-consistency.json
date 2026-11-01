@@ -1,0 +1,199 @@
+{
+  "classification": "independent_aggregate_math_check_not_snapshot_rewrite_or_publication",
+  "formula": "PTS/(2*(FGA+0.44*FTA)); zero denominator ->0, matching runtime data_utils.add_advanced_pct_columns",
+  "source_TS_precision": "three decimals; nearest-rounded tolerance0.0005+1e-12 floating allowance",
+  "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+  "advanced_original_sha256": "9111fac49d8b8c3d548f05e3869b5ca19420860fabdf9d48b400362d846a3b05",
+  "primary_table_sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061",
+  "staged_table_sha256": "d9d0b5795b676ad14085d765b19b03ce6c65de39be5ef53dc68a51a389c34ddd",
+  "results": {
+    "primary": {
+      "player_ids": 432,
+      "player_game_rows": 1829,
+      "GP_sum": 1829,
+      "rounded_precision": 3,
+      "tolerance": 0.0005,
+      "matching_TS": 432,
+      "mismatching_TS": 0,
+      "max_abs_difference": 0.0005000000000000004,
+      "mismatches": []
+    },
+    "corrected": {
+      "player_ids": 432,
+      "player_game_rows": 1829,
+      "GP_sum": 1829,
+      "rounded_precision": 3,
+      "tolerance": 0.0005,
+      "matching_TS": 428,
+      "mismatching_TS": 4,
+      "max_abs_difference": 0.024285714285714355,
+      "mismatches": [
+        {
+          "player_id": 1628997,
+          "name": "Caleb Martin",
+          "PTS": 18,
+          "FGA": 11,
+          "FTA": 0,
+          "computed_TS": 0.8181818181818182,
+          "source_TS": 0.8,
+          "difference": 0.018181818181818188
+        },
+        {
+          "player_id": 1630552,
+          "name": "Jalen Johnson",
+          "PTS": 115,
+          "FGA": 96,
+          "FTA": 34,
+          "computed_TS": 0.5182047584715213,
+          "source_TS": 0.516,
+          "difference": 0.00220475847152124
+        },
+        {
+          "player_id": 1631260,
+          "name": "AJ Green",
+          "PTS": 40,
+          "FGA": 28,
+          "FTA": 0,
+          "computed_TS": 0.7142857142857143,
+          "source_TS": 0.69,
+          "difference": 0.024285714285714355
+        },
+        {
+          "player_id": 1643417,
+          "name": "Nate Ament",
+          "PTS": 16,
+          "FGA": 17,
+          "FTA": 8,
+          "computed_TS": 0.38986354775828463,
+          "source_TS": 0.41,
+          "difference": 0.02013645224171534
+        }
+      ]
+    }
+  },
+  "unchanged_source_USG": {
+    "player_count": 432,
+    "minimum": 0.0,
+    "maximum": 0.5,
+    "qualification": "original snapshot values preserved; GP/population verified; no independentUSGrecalculationclaimed"
+  },
+  "production_writes": 0,
+  "snapshots_modified": false,
+  "known_corrected_players": [
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "GP": 2,
+      "source_TS": 0.8,
+      "source_USG": 0.118,
+      "primary": {
+        "PTS": 16,
+        "FGA": 10,
+        "FTA": 0,
+        "computed_TS": 0.8
+      },
+      "corrected": {
+        "PTS": 18,
+        "FGA": 11,
+        "FTA": 0,
+        "computed_TS": 0.8181818181818182
+      }
+    },
+    {
+      "player_id": 1629023,
+      "name": "P.J. Washington",
+      "GP": 6,
+      "source_TS": 0.529,
+      "source_USG": 0.186,
+      "primary": {
+        "PTS": 83,
+        "FGA": 71,
+        "FTA": 17,
+        "computed_TS": 0.5287971457696228
+      },
+      "corrected": {
+        "PTS": 83,
+        "FGA": 71,
+        "FTA": 17,
+        "computed_TS": 0.5287971457696228
+      }
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "GP": 6,
+      "source_TS": 0.516,
+      "source_USG": 0.262,
+      "primary": {
+        "PTS": 114,
+        "FGA": 96,
+        "FTA": 33,
+        "computed_TS": 0.5157437567861021
+      },
+      "corrected": {
+        "PTS": 115,
+        "FGA": 96,
+        "FTA": 34,
+        "computed_TS": 0.5182047584715213
+      }
+    },
+    {
+      "player_id": 1631131,
+      "name": "Oscar Tshiebwe",
+      "GP": 2,
+      "source_TS": 0.717,
+      "source_USG": 0.129,
+      "primary": {
+        "PTS": 7,
+        "FGA": 4,
+        "FTA": 2,
+        "computed_TS": 0.7172131147540983
+      },
+      "corrected": {
+        "PTS": 7,
+        "FGA": 4,
+        "FTA": 2,
+        "computed_TS": 0.7172131147540983
+      }
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "GP": 5,
+      "source_TS": 0.69,
+      "source_USG": 0.133,
+      "primary": {
+        "PTS": 40,
+        "FGA": 29,
+        "FTA": 0,
+        "computed_TS": 0.6896551724137931
+      },
+      "corrected": {
+        "PTS": 40,
+        "FGA": 28,
+        "FTA": 0,
+        "computed_TS": 0.7142857142857143
+      }
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "GP": 3,
+      "source_TS": 0.41,
+      "source_USG": 0.187,
+      "primary": {
+        "PTS": 16,
+        "FGA": 16,
+        "FTA": 8,
+        "computed_TS": 0.4098360655737705
+      },
+      "corrected": {
+        "PTS": 16,
+        "FGA": 17,
+        "FTA": 8,
+        "computed_TS": 0.38986354775828463
+      }
+    }
+  ],
+  "conclusion": "Original advancedTS matches all original playerlog totals, but four corrected shooting aggregates contradict it; snapshot values remain original and are not accepted as consistent with correctedBase. Source basis/as-of remains unresolved. GP verified; USG independent numerical correctness not established by this check."
+}
