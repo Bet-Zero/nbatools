@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "classification": "accepted_bounded_expanded_partial_stage_not_full_snapshot_or_publication",
+  "source_sha": "396245bea5283d7861890ce262c040c60b47a4d8",
+  "source_tree": "cc2d0eb3527bc95d60c6ac41abb80255d0b7cf99",
+  "run_id": 41301691089,
+  "request_sha": "bef11793b4398eebec5c5c7d3524d5364e6ecc5f",
+  "generation": "availability-lebron-season-v1-20261031",
+  "required_summary": {
+    "candidate_sha": "bef11793b4398eebec5c5c7d3524d5364e6ecc5f",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "artifact": {
+    "file": "expanded-staging-acceptance-source.zip",
+    "id": 13082070786,
+    "bytes": 589013,
+    "sha256": "14781d501ae9afe85f6ae92a1b65053e22ffbe9b172b77b2bb25b6f66dbf3667"
+  },
+  "actual_review_sha256": "21e32aecc437f8bda8cf24da1a8d9426ec1bf0dabb277ae4f7bbc4a00d189198",
+  "code_sha256": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
+  "gate_sha256": "475e63cced28d006e28fa485e98ed678e75536df2b4ad0d0d9ef3b7972498eb0",
+  "player_rows": 1829,
+  "team_rows": 162,
+  "player_observations": 28592,
+  "team_observations": 2377,
+  "player_changed_cells": 115,
+  "team_changed_cells": 22,
+  "team_integer_changes": 15,
+  "team_derived_ratios": 7,
+  "prior_observations_preserved": 1253,
+  "actual_http_responses": 2,
+  "quarantined_0096_unchanged": true,
+  "failed_runs_preserved": [
+    41300081682,
+    41300742013,
+    41301352572
+  ],
+  "remaining": [
+    "parameterized_period_sources",
+    "12player_advanced_snapshot_basis_conflicts",
+    "complete11raw5processed_validation",
+    "fresh_exact24hour_due_ids",
+    "separately_approved_publication_then_live_acceptance_and_backup"
+  ],
+  "full_snapshot_accepted": false,
+  "readiness_restored": false,
+  "production_writes": 0,
+  "landing_receipt": "https://github.com/Bet-Zero/nbatools/pull/571"
+}

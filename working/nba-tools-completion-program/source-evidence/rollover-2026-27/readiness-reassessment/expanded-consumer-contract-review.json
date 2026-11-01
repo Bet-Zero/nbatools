@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "classification": "independent_required_gate_consumer_contract_delta_review_PASS",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim",
+    "earlier_review_limitation": "Checker missed wrong team route/default row identity assumptions in prior gate approval; actual failed gate preserved and corrected contract independently checked here."
+  },
+  "gate_sha256": "5d2d82a66d2dc254499b83b8ad05c62445d1d3043d844adef38e9366fb76a8c8",
+  "bridge_sha256": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
+  "team_tests_sha256": "d3fda89821da672ee42930f1c6e9387c62015a0a82fb7c94c8660b0cd9eb29d2",
+  "prior_exact_clock_review_sha256": "f6052854e7e80799d9a5faad13ef3c5deac5f8084b95475ae08cf4942fdb3982",
+  "failed_run": {
+    "run_id": 41300742013,
+    "request_sha": "d0180b497dba7754b1dce6f953903e0378c88566",
+    "original_artifact_sha256": "a6ba33a032c38adf42e4b9f2438f81cace87c4ea3642fd8c112ba1a8a30fee5f",
+    "bytes": 589908,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "errors": 0,
+    "outcome": "Failed at wrong expected team_game_finder route; not application defect or overall acceptance. Source/preparation/producer assertions and Cameron natural/HTTP assertions were reached and passed; no TeamHTTP pass claimed."
+  },
+  "actual_contract_evidence": {
+    "shared_serializer_control_sha256": "e7e452fc2164fbfb1f792932ed5ff571b3d8ba8168a4cc0d2159f8369a410c6a",
+    "source_contract_paths": [
+      "src/nbatools/commands/game_finder.py:default output_cols include team_abbr, exclude team_id",
+      "src/nbatools/api.py:natural_query uses query_result_to_payload",
+      "src/nbatools/api_handlers.py:actual shared serializer"
+    ],
+    "natural_and_serialized_rows_checked": true,
+    "checker_new_HTTP_calls": 0
+  },
+  "delta": {
+    "team_route": "game_finder",
+    "team_default_identity": {
+      "team_abbr": "MEM"
+    },
+    "player_identity_unchanged": {
+      "player_id": 1643409
+    },
+    "both_exact_game_ids_added": 22600118,
+    "all_numeric_source_preservation_input_and_HTTP_assertions_retained": true,
+    "successful_answers_persist_incrementally": true,
+    "no_semantic_or_source_changes": true
+  },
+  "approval": "PASS for ONE justified same-selector changed-gate hosted rerun on a frozen candidate retaining these hashes and all prior immutable source pins. Actual final full required execution/output/API acceptance remains pending.",
+  "sole_required_selector": "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values",
+  "new_source_calls": 0,
+  "new_stage_execution": false,
+  "overall_gate_accepted": false,
+  "canonical_full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

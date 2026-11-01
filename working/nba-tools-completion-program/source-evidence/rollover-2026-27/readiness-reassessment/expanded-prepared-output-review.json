@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "classification": "independent_prepared_local_output_review_consumers_incomplete_no_overall_acceptance",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "attempt": {
+    "path": "/workspace/nbatools/work/expanded-core-actual-20261101/expanded-core",
+    "outcome": "Interrupted TERM143 during consumer phase; no passed overall gate or saved API answers claimed."
+  },
+  "file_bindings": {
+    "corroboration-ledger.json": {
+      "sha256": "ab91eb4056e556a7fae74c77221879b9cfd0b3e732878471e57193c8df13036f",
+      "size_bytes": 12762048
+    },
+    "primary-player-game-logs.csv": {
+      "sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061",
+      "size_bytes": 600182
+    },
+    "primary-team-game-logs.csv": {
+      "sha256": "571ea0289031b6607be7ee1692e9016793814a0bf522d76b34a75090f8d1a1c6",
+      "size_bytes": 23346
+    },
+    "qualification.json": {
+      "sha256": "df1cf08eacf91241ee00fd8c0a2efe949434fcc1332d4b0d8d004ee8c4c35fca",
+      "size_bytes": 78583
+    },
+    "staged-player-game-logs.csv": {
+      "sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b",
+      "size_bytes": 600228
+    },
+    "staged-team-game-logs.csv": {
+      "sha256": "180b926795d7da396848e7060b0bd3c816b559b9a22d2cd7fc9e0d49d76d0d56",
+      "size_bytes": 23347
+    },
+    "team-corroboration-ledger.json": {
+      "sha256": "ad31cbc94ccd4d9cb4294590871bfe5f885148301d0389f55705caab179eb810",
+      "size_bytes": 982521
+    }
+  },
+  "prepared_phase": {
+    "player_rows": 1829,
+    "team_rows": 162,
+    "player_observations": 28592,
+    "team_observations": 2377,
+    "player_changed_cells": 115,
+    "prior16_plus_new99_exact": true,
+    "all_prior1253_observation_semantics_identical": true,
+    "team_changed_cells": 22,
+    "team_integer_cells": 15,
+    "team_derived_ratios": 7,
+    "all_team_explicit_source_values_and_grain_checked": true,
+    "all_actual_changed_cells_match_ledger": true,
+    "all_other_cells_keys_order_exact_preserved": true,
+    "quarantined0096_unchanged": true,
+    "points_primary": 18461,
+    "points_staged": 18464
+  },
+  "prepared_output_accepted_as_partial_evidence": true,
+  "consumer_gate_accepted": false,
+  "canonical_full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

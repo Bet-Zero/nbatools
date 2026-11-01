@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "classification": "independent_expanded_bridge_initial_review_pending_source_binding",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_files": {
+    "tools/season_rollover_core_bridge.py": "96b74a0d8432a4a15ed0a63db1cdc590f2affad3a8b584740d752b145dfd5719",
+    "tests/test_season_rollover_team_bridge.py": "c605a867adf41e23139cc07ec8867754f72defdbbd8d5923340cdf374ba4ad6e",
+    "tests/cloud_rollover_expanded_core_stage_real_data.py": "e701d95ab324fb819b04aa2cc69c6a8d45ea152f254210a0a4ed241291e67218"
+  },
+  "semantic_findings": {
+    "generic_direct_team_grain_and_lineage_pass": true,
+    "shared_Traditional_helper_preserves_prior_player_semantics": true,
+    "default_legacy_stage_parameters_unchanged": true,
+    "atomic_conflict_failure_and_primary_preservation_pass": true,
+    "strict_clock_and_count_admission_pass": true,
+    "derived_percentage_source_inputs_preserved": true
+  },
+  "focused_execution": {
+    "new_team_unit_tests": 12,
+    "selected_old_player_identity_precision_conflict_tests": 11,
+    "independent_unfamiliar_controls": 6,
+    "failed": 0,
+    "full_or_actual_stage_repeated": false,
+    "ruff_and_diff_pass": true
+  },
+  "blocking_finding": {
+    "path": "tests/cloud_rollover_expanded_core_stage_real_data.py",
+    "finding": "Additional-source caller checks source-manifest self-consistency but does not yet bind accepted immutable manifest/request/revision; generic stage_retained_core deliberately delegates that binding to its caller.",
+    "minimum_fix": "Before constructing additional Sources, pin/check accepted sources.json SHA256 plus approved d06request/7a revision; the immutable manifest binds fixed76 selection and quarantine. No source requalification or whole-stage repeat for preflight-only assertions when unchanged bytes/output evidence are bound."
+  },
+  "verification_selection_review": {
+    "needs_data_marker_removal_accepted": true,
+    "reason": "Required real source bodies are versioned, loaded directly and missing/malformed originals fail. An unrelated served-generation CSV sentinel would incorrectly skip this offline real-data gate. engine marker and explicit required selection remain; no fixture_data or exploratory demotion."
+  },
+  "approval": "Bridge code semantic PASS; final acceptance gate approval pending the small input-binding fix.",
+  "canonical_full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

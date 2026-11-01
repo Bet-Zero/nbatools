@@ -1,0 +1,509 @@
+{
+  "schema_version": 1,
+  "classification": "independent_retained_field_authority_extension_assessment_not_full_stage_or_readiness",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "mechanical_report_sha256": "0aa4d2b0eff0ca87a7e17a3e674b59743d140298c3375feba064cfe97f5751f8",
+  "accepted_baseline_sha256": "d9d0b5795b676ad14085d765b19b03ce6c65de39be5ef53dc68a51a389c34ddd",
+  "source_manifest_sha256": "e5ece22f60bf71b0976c1447cf854a99c2e842b802f812b69cf1e964d1a2fc51",
+  "code_sha256": "7f2f5f93de478898b375497958f98a723123fd7725e5e9db728134250e9fe415",
+  "observations": {
+    "new_sources_examined": 77,
+    "qualified_valid_new_sources": 76,
+    "quarantined_game_ids": [
+      "0022600096"
+    ],
+    "explicit_player_field_observations": 27339,
+    "expected_changes": 99,
+    "integer_cells": 76,
+    "minute_cells": 12,
+    "derived_percentage_cells": 11,
+    "minute_change_game_ids": [
+      "0022600009"
+    ],
+    "all99_before_after_literal_source_hash_and_field_bindings_match": true,
+    "all76_per_game_observation_change_counts_match": true,
+    "source_shooting_rebound_and_clock_arithmetic_checked": true
+  },
+  "per_game": [
+    {
+      "game_id": "0022600001",
+      "source_sha256": "0176eee4400492fd3e488908d9bacd8d8e89ecce0a2373355ad960ec8ea429d1",
+      "observations": 352,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600002",
+      "source_sha256": "007d0cfb2a9d8fc49a0c4510ef077ce9e24396ab67d4bd82713d0e0eb047c410",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600003",
+      "source_sha256": "fa01f3e2534820e78a801a670d6a3290e68e790829723eddcaffedaeae689741",
+      "observations": 432,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600004",
+      "source_sha256": "4c9d6fa6993f50e781314e3398e8b6598c725ccc8f6b70bd8d867af362854fe4",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600005",
+      "source_sha256": "1a24ea75d7a7f55f99a5ab8c7a317587d3efa37a12e1a51afd6162caa5be1b23",
+      "observations": 400,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600006",
+      "source_sha256": "19c725fe87a98f1530e17c94dbe7a9ce7cd00fb3a63d3a4566559e5746f8a290",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600007",
+      "source_sha256": "67d44cac46a6e5f44251eecbe135786485364acabe53220dc57e9d2d26bf8c51",
+      "observations": 416,
+      "changed_cells": 12
+    },
+    {
+      "game_id": "0022600008",
+      "source_sha256": "82feb6b43b70d5c7eff334c6fdcd891d74abc74e566b20bf8de6e0ce09395a78",
+      "observations": 352,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600009",
+      "source_sha256": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662",
+      "observations": 304,
+      "changed_cells": 15
+    },
+    {
+      "game_id": "0022600015",
+      "source_sha256": "608b84d4a54a1b8eb3f2d89ba99b1dc91a31035734f0d817ab571fa4748019be",
+      "observations": 400,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600016",
+      "source_sha256": "9d5c18ebc18783d16716d56137fd8f0ba42b1bf6475db568c19316d4fb02ac47",
+      "observations": 432,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600017",
+      "source_sha256": "44f4da717f9f43ba6511caf85346400282f133950d3a413cf407c1717af781e6",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600018",
+      "source_sha256": "a389103edde30e82feb1e8985b169d612ea4021844e774cf2afe2ed3e23d6188",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600019",
+      "source_sha256": "84b06865a48ec04181b4213f46e516b0fbf06243e53a9d9d38e0b63a55e8f78a",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600020",
+      "source_sha256": "d1fa29d7e4da7f2fece7fcd633cc6e5a57e4595d08ffc17b5dfcf719bfdf3206",
+      "observations": 400,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600021",
+      "source_sha256": "3c7dad358bdb9389423f5e0ef5a343388ea5a6c288f6738a423c7cac9ab2d57e",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600022",
+      "source_sha256": "094b9830d42e3f998d546b97bb363396995564a1116bdeee76fae36ea1c1ade5",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600024",
+      "source_sha256": "48f0c091b4a799c70f6b9e34d828556ff3ca85655bc44f2bd2931cebfe32ecea",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600085",
+      "source_sha256": "1d40d0f0144ca0451bd27e58617c8adeeda1f963709df814ec04c20bceb23371",
+      "observations": 304,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600086",
+      "source_sha256": "a917e64186e08584450f05520a4209b2b066a4284d1c13173a7fd54ddc6a6b6f",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600087",
+      "source_sha256": "9ea2c782b0eb1bf8600c88a7b367e3053b82d8b48320668b8847c97ededbdb30",
+      "observations": 320,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600088",
+      "source_sha256": "92323362714ffda18586611d025596690a7c6325a651d22ab2d9e90eed391435",
+      "observations": 432,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600089",
+      "source_sha256": "7bc05783cf3a7be334820903d0af7b436dc34eba67359ed8b2b9c06f30599819",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600090",
+      "source_sha256": "82a70b351acf3150234f20d30a9981aaa0626792b208f00597e2f96b20775758",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600091",
+      "source_sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+      "observations": 386,
+      "changed_cells": 4
+    },
+    {
+      "game_id": "0022600092",
+      "source_sha256": "6f3e306d36bee75ad5a55d7ed044145183094baa7c1c706f74f5551d74fe25f6",
+      "observations": 432,
+      "changed_cells": 4
+    },
+    {
+      "game_id": "0022600093",
+      "source_sha256": "e94f5cd445bd000d2fdf6c72fbb15e65fa5761111ed5b2989e6d89947df8ad6e",
+      "observations": 384,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600094",
+      "source_sha256": "9e63ff01f067bfc14f6041b8ad498d2e63592f8788d880cb15896ebb2181fd9b",
+      "observations": 416,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600095",
+      "source_sha256": "8edf5362df0e1ed29c2d34484a96424f0a08245af9f038ff4b7bba5654b9d8a2",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600097",
+      "source_sha256": "775e1b57135cc12f0ff07a2830a2e9d3fd3e2458cb40c9733115227a3e439b3c",
+      "observations": 448,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600098",
+      "source_sha256": "0ed003ccb1ba09207a01da597488c881b4f6b5e15571d1207a1d2f2ade9eeb2c",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600099",
+      "source_sha256": "a05974b0e503c4fe446dbf3458f706fac0f329b8b14fac7ec21ed2c1d3a4bfda",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600100",
+      "source_sha256": "6d8256029e2ed0c9aa03b700fcd46a8a4995288a7960980c8e6ef530a7cb8516",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600101",
+      "source_sha256": "3b7a5cac078476a2e7e6e1e2728b5b5601f679050dcf05291368b229bbfe0660",
+      "observations": 368,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600102",
+      "source_sha256": "4516505a63b6138e8ad3cf8fc1c94137565cbd1411dc30ee7d674b7b0697d081",
+      "observations": 288,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600103",
+      "source_sha256": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55",
+      "observations": 321,
+      "changed_cells": 6
+    },
+    {
+      "game_id": "0022600104",
+      "source_sha256": "a1ccf4a1a246d72e37b03bbbc9907071006c4917e75e6320c0cad1c8b82ca133",
+      "observations": 320,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600105",
+      "source_sha256": "ad366e6477e3ebe59bc400dac280023fef29294c408cdf315107d68adbfe6006",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600106",
+      "source_sha256": "410592ab8b8207e17183c7c2fd2734651f714ab94899d23b899ffbf5b474cb89",
+      "observations": 352,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600107",
+      "source_sha256": "909833622d80c0ff8ca8a9680d1b4e2275681be095846461c0a1416ca59e6e87",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600108",
+      "source_sha256": "b5973946c538cc4fa97d5fc48067d689927eb52c526e445eed0bfa2e6698ee75",
+      "observations": 320,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600109",
+      "source_sha256": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a",
+      "observations": 401,
+      "changed_cells": 2
+    },
+    {
+      "game_id": "0022600110",
+      "source_sha256": "412b9aacd194cb18dabf320be9169a9ca63c5c7a2931b20f55cdc0b3117b1481",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600111",
+      "source_sha256": "7309b2aadde1db8246f8c60b3561cadf9a8e8563cdb57655ea60e65e74cad498",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600112",
+      "source_sha256": "ea5454c07962acbbeff2a634ee7b06a3620785016093aaa7f871b74d680a1930",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600113",
+      "source_sha256": "be34b01abe53fa5a8ca5089ba07a3e9cdf7a14eb9f95b5591db29cebbd7d1f5d",
+      "observations": 416,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600114",
+      "source_sha256": "d31a7a176d0f448a1d4227315b91fbfe663584d13b7c2f6f75008cad0eaf0c76",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600115",
+      "source_sha256": "ebb15a8e9c262f2115a267a4423557cd735020297e017c475110f85df298fb0c",
+      "observations": 432,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600116",
+      "source_sha256": "89eab2a45621fdec21149b453be4bf768ba88f6b0389ed38f4d0b9308227c4c7",
+      "observations": 352,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600117",
+      "source_sha256": "d5b62fec9669b76d15e25fe02f74562ceaa246e2928bc8207adafe1f590a49df",
+      "observations": 304,
+      "changed_cells": 1
+    },
+    {
+      "game_id": "0022600118",
+      "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+      "observations": 341,
+      "changed_cells": 33
+    },
+    {
+      "game_id": "0022600119",
+      "source_sha256": "6bb1aeaa8092e3cfc0163bd9a8359c438af97cf4fa8e2cc35f487cc4d5216ea1",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600120",
+      "source_sha256": "4678b24c38719436f19fa44a63c81bfda2c041c25e60dca2bcfba4e24ebb8d97",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600121",
+      "source_sha256": "0767ec7ea8df3655619a33e63e8bbf7479da88b71838e7cc405782dd9a34cea6",
+      "observations": 466,
+      "changed_cells": 8
+    },
+    {
+      "game_id": "0022600122",
+      "source_sha256": "b9eef8b709b61a8b16997881adc8008731c68ec1bd5af97f419f344037c6da55",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600123",
+      "source_sha256": "472306413feb0210e8f55481e3034c1d1330a97da7052147c81dec692afaf94a",
+      "observations": 368,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600124",
+      "source_sha256": "39b274b9d210523106ec9c2b879130f7c493812bb4f3bd67d0f415ed2acd8dfe",
+      "observations": 384,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600125",
+      "source_sha256": "800d71d313843bb61bc2791577226febd394e57581cbd15f68796705ad5005d4",
+      "observations": 400,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600126",
+      "source_sha256": "c69de36377888353c3a0b85a1c0e5b55d41a2ea1e8f4e4244e8002dc080868d7",
+      "observations": 384,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600127",
+      "source_sha256": "80daf1b2e32a869dab980b4d4bf00854f38a6d60886f191820ed650b82442f31",
+      "observations": 448,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600128",
+      "source_sha256": "3fffb6fb1c07064b92a2ba7978bfc601a533bcd05cf18c9e3baab68ef6be0c86",
+      "observations": 352,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600129",
+      "source_sha256": "fa8cd79638fae6a557b6164c4a09550bf7588c1228979199b0c4a8cec87ae1a5",
+      "observations": 448,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600130",
+      "source_sha256": "7fb2f6df8f31bfadf2e444ec84604880a9ce814666d6be89c67a6e950555fee9",
+      "observations": 384,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600131",
+      "source_sha256": "fea5f5e7d857e6163754c13a10177dd2a0946ad8a52b3e603c07eaa7f83e1463",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600132",
+      "source_sha256": "367f6ef884acc706f80560106d9e6cd65378a1862a180c0744735d9a67eaa56e",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600133",
+      "source_sha256": "bf7b98c698747dd77c6b9f39ca03f3de183f0e8d254485fabba85ce447c9b3f0",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600134",
+      "source_sha256": "2ae89670421b8e83f4a8ff2fa0888ebef14b019be9d084cd29cc8767f1382712",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600135",
+      "source_sha256": "c2f2ddfab87a261cfe30c3e4934af4d45f34550be79f44cf448a8ecfbbc82db6",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600136",
+      "source_sha256": "72c730cc8f264382cd90862050073977ac823fa19c707510668d214b5b20cd34",
+      "observations": 400,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600137",
+      "source_sha256": "3e894bfba419facd0d8da4ff4ff58d4acaa66dc22bb597c3d6f4419773ed29e9",
+      "observations": 320,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600139",
+      "source_sha256": "73ba04fc6074f630da3a12e2f623a83a9573aa6fde583fa1b60a2caf1028f644",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600140",
+      "source_sha256": "616a385fcd9772f4143f90a649fdb65c3b404ccdc8af4021e71eae59ab79e21b",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600141",
+      "source_sha256": "8fa543732eb315ac71c2c9c49a794bf0e4e7dd172c9597671d3d4d4b68a5e8f1",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600143",
+      "source_sha256": "29c8aa6c9bd97f2c41319126beb74bb69ba9ed05177decdff15e8d35d47f9bb3",
+      "observations": 336,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600145",
+      "source_sha256": "1e73d4458c5cda03e54aa33abbfd77fabf2ec34061049443d83c3c2924428bf6",
+      "observations": 304,
+      "changed_cells": 0
+    },
+    {
+      "game_id": "0022600146",
+      "source_sha256": "ca05fbbf24936616c28b322b5ecf0882720a1797929f6de32723774f60568a23",
+      "observations": 448,
+      "changed_cells": 0
+    }
+  ],
+  "authority_judgment": {
+    "same_existing_policy_sufficient": true,
+    "policy": "Previously accepted bridge gives exact-game Traditional explicit per-player fields precedence over the primary PlayerGameLogs observation after same-game/player/team identity, final-score/date, strict literal player/team clock and shooting-arithmetic checks. It already covers offsetting FGA/rebound changes and valid individual MIN changes, not only impossible primary team-point sums.",
+    "no_material_authority_distinction": "New bodies use the same official endpoint class, same approved archive revision/path/hash provenance and same field contract as the accepted3Traditional bodies; independent actual78review also checked names/explicit IDs and same-game team keys. No extra third-source requirement is justified solely because observations are newly collected.",
+    "not_claimed": "This does not establish endpoint infallibility, newer NBA capture time, authority from granularity or complete source-as-of freshness.",
+    "cross_source_conflict_rule": "A genuinely contradictory second qualified observation for the SAME field must still fail the existing bridge conflict check; do not silently vote/choose."
+  },
+  "next_minimum": "Extend existing source-bound partial bridge input selection to fixed76new valid originals, preserving accepted prior3Traditional/PBP observations and quarantining0096. Stage once on exact accepted baseline; emit full per-field lineage/change and preservation receipts; remeasure affected season-rate consistency and use normal numerical/consumer gates for changed staged values. No new source acquisition is required to authorize this same-policy field qualification.",
+  "limits": [
+    "This assessment independently verifies the reported99change set, not a canonical full-snapshot output or deployed answer.",
+    "0096malformed10:60 is not11:00; excluding that invalid corroborator does not authorize changing the valid retained primary observation. Do not demand an additional PDF unless a concrete clock-evidence obligation requires it.",
+    "New count/minute changes require rechecking affected aggregate/rate basis; do not assume the original four TS conflicts are the final mismatch population.",
+    "Period-source access and mandatory11raw+5processed/exactdue-ID/readiness/publication safeguards remain unchanged."
+  ],
+  "source_calls": 0,
+  "new_stage_execution": false,
+  "source_policy_extension_approved": true,
+  "canonical_full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0,
+  "reviewed_commit": "8f1466a123d70eefad61f8fe33bd503e40be5bdc"
+}

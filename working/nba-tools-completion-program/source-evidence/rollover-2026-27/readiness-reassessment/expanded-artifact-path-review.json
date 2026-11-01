@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "classification": "independent_required_gate_artifact_path_delta_review_PASS",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_gate_sha256": "475e63cced28d006e28fa485e98ed678e75536df2b4ad0d0d9ef3b7972498eb0",
+  "unchanged_bridge_sha256": "11c1d190092dd39e7ef5b4241daaa228b8f217ee37ef2071e2b0c68f8aa609ea",
+  "unchanged_team_test_sha256": "d3fda89821da672ee42930f1c6e9387c62015a0a82fb7c94c8660b0cd9eb29d2",
+  "prior_consumer_contract_review_sha256": "1b18727e343852949f70515fd322e191d37cb05652731071c2c6a1d06e4aa417",
+  "sole_delta": "Resolve acquisition-output parent path against initialcwd before producer monkeypatch.chdir; subsequent stage outputs and incremental answers retain one absolute anchor.",
+  "independent_control": {
+    "relative_environment_path": "outputs/required_data_validation/acquired_data",
+    "old_after_chdir_reproduces_FileNotFoundError": true,
+    "new_resolved_path_retains_first_and_both_original_serialized_bodies": true,
+    "all_other_gate_bytes_identical_to_prior_5d2d82a6": true,
+    "source_preparation_or_HTTP_reexecuted": false
+  },
+  "retained_failed_execution": {
+    "run_id": 41301352572,
+    "request_sha": "9a35bf4eb85dd5e8a246b8e20eee0609f6cf3d75",
+    "original_zip_sha256": "bb49a21257dee2a58341ffea0799dc1305004d2f9b96f3b618653b8238a5489b",
+    "bytes": 590402,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "errors": 0,
+    "actual_failure": "FileNotFoundError while writing incrementalanswers after Cameron natural/HTTP/GameID checks; no overall gate acceptance."
+  },
+  "approval": "PASS for one justified changed-gate hosted rerun of unchanged sole required selector on a frozen candidate retaining exact reviewed code and immutable input pins. No source/semantic/assertion weakening. Actual full gate/output/API acceptance and normal CI remain necessary.",
+  "new_source_calls": 0,
+  "new_stage_execution": false,
+  "new_HTTP_execution": false,
+  "overall_gate_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

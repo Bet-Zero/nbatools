@@ -1,0 +1,35 @@
+{
+  "run_id": 41301352572,
+  "source_sha": "cae308d5f68a117002b0fbee832487e348c810f5",
+  "request_sha": "9a35bf4eb85dd5e8a246b8e20eee0609f6cf3d75",
+  "artifact_id": 13081781259,
+  "artifact_sha256": "bb49a21257dee2a58341ffea0799dc1305004d2f9b96f3b618653b8238a5489b",
+  "artifact_bytes": 590402,
+  "required_summary": {
+    "candidate_sha": "9a35bf4eb85dd5e8a246b8e20eee0609f6cf3d75",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "diagnosis": "Preparation, preservation, producerchecksandfirstnatural/HTTP/GameID/countassertionspassed. Incrementalanswerswriter thenused relativeoutputpathafterproducer cwdchange andfailedFileNotFoundError. Resolveoutputoncebeforecwdchange; allstatistical/API/sourceassertionsunchanged.",
+  "overall_accepted": false,
+  "query_response_bodies_retained": false,
+  "production_writes": 0
+}

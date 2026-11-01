@@ -1,0 +1,35 @@
+{
+  "run_id": 41300742013,
+  "source_sha": "98f7d896b87d55e52ac332bf8cd757d03ef4100b",
+  "request_sha": "d0180b497dba7754b1dce6f953903e0378c88566",
+  "artifact_id": 13080844226,
+  "artifact_sha256": "a6ba33a032c38adf42e4b9f2438f81cace87c4ea3642fd8c112ba1a8a30fee5f",
+  "artifact_bytes": 589908,
+  "required_summary": {
+    "candidate_sha": "d0180b497dba7754b1dce6f953903e0378c88566",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "diagnosis": "Numericalpreparation/allpreservation/producerassertionsandCameron natural+HTTPpassed. Team engine correctlyreturned ok/game_finder; newgate incorrectlyexpectedteam_game_finder andunpublishedTeamIDcolumn. Gatefix uses actualsharedcontract:game_finder,TeamAbbrMEM,exactcanonicalGameID22600118, unchanged18/36/54reboundvalues.",
+  "overall_accepted": false,
+  "query_response_bodies_retained": false,
+  "production_writes": 0
+}

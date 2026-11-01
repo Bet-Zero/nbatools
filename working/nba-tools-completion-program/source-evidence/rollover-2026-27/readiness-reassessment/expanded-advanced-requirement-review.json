@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "classification": "independent_advanced_basis_and_contingent_source_requirement_not_collection_or_snapshot_acceptance",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "inspected_consistency_proof_sha256": "fec3be526cf55a5fc644ba07e880a7cfdeb8aa836a4cf285ffaed6247d186fca",
+  "actual_prepared_player_csv_sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b",
+  "independent_math": {
+    "player_game_rows": 1829,
+    "players": 432,
+    "formula": "PTS / (2*(FGA+0.44*FTA)); zero denominator0",
+    "source_precision": 3,
+    "tolerance": "0.0005+1e-12 floating allowance",
+    "matching_source_TS": 420,
+    "mismatching_source_TS": 12,
+    "mismatch_player_ids": [
+      203924,
+      1627734,
+      1628997,
+      1630230,
+      1630552,
+      1630568,
+      1631248,
+      1631260,
+      1642383,
+      1642907,
+      1643409,
+      1643417
+    ],
+    "all12IDs_match_retained_proof": true,
+    "raw_USG_and_other_original_fields_untouched": true
+  },
+  "existing_resource_judgment": {
+    "runtime_TS_and_EFG": "Already derived from qualified game/summary counts by data_utils.add_advanced_pct_columns; corrected-core TS answers need no new snapshot acquisition.",
+    "mandatory_player_snapshot": "Existing normalizer requires official source GP/MIN/USG/TS. No existing approved derivation replaces source USG, on-court/impact rates or full snapshot basis.",
+    "mandatory_team_snapshot": "Existing normalizer requires official OFF/DEF/NET/PACE plus GP/W/L; box-score possession estimates would change metric definition and do not silently replace that source.",
+    "team_conflict_not_established": "Twelve demonstrated discrepancies are player TS only. Already-qualified team30 GP/W/L and net-rating arithmetic remain valid for the unchanged81game population; basic shooting-count changes alone do not prove its official ratings/pace false or require a fresh team source.",
+    "forbidden_shortcut": "Do not patch12raw TS cells while silently retaining USG/other source fields and relabel the mixed artifact an unchanged coherent official snapshot. A derived per-field alternative would need an explicit reviewed contract/provenance and would still not manufacture official USG/rating/pace."
+  },
+  "smallest_next_dependency": "For the unchanged closed-date81game population, qualify a properly cutoff-scoped player Advanced/PerGame original against corrected core, or explicitly review an honest derived-TS/source-USG mixed-basis contract. Do not mandate additional team acquisition solely because player TS differs; retain accepted team basis if still applicable.",
+  "contingent_two_snapshot_requirement": {
+    "when": "If the core cutoff/population advances, or a common new official advanced snapshot basis is selected, collect exactly these two endpoint bodies through existing approved NBA Stats tools/routes.",
+    "sources": [
+      {
+        "endpoint": "LeagueDashPlayerStats",
+        "url": "https://stats.nba.com/stats/leaguedashplayerstats",
+        "role": "player Advanced/PerGame snapshot"
+      },
+      {
+        "endpoint": "LeagueDashTeamStats",
+        "url": "https://stats.nba.com/stats/leaguedashteamstats",
+        "role": "team Advanced/PerGame snapshot"
+      }
+    ],
+    "common_parameters": {
+      "LeagueID": "00",
+      "Season": "2026-27",
+      "SeasonType": "Regular Season",
+      "MeasureType": "Advanced",
+      "PerMode": "PerGame",
+      "DateFrom": "",
+      "DateTo": "C in supported NBA date format, e.g.10/30/2026",
+      "LastNGames": 0,
+      "Month": 0,
+      "TeamID": 0,
+      "Period": 0,
+      "PlusMinus": "N",
+      "PaceAdjust": "N",
+      "Rank": "N",
+      "other_filters": "Default/unrestricted; no opponent,location,conference,starter/bench,player-position or time-window filters."
+    },
+    "cutoff_rule": "Choose one completed Eastern basketball date C for which qualified canonical core contains every eligible final game throughC and covers ALL exact24hour due IDs at acceptance. Both sources must echo same C/scope; compare source populations/GP/W/L against that exact core. Do not stamp current maxdate onto an unscoped body.",
+    "current_candidate_cutoff": "2026-10-30 for retained81finals/162teamrows/1829playerrows/432players; conditional on due-ID recheck. Game0022600147 becomes due2026-11-01T19:00Z, so a later snapshot may require a refreshed core/cutoff first.",
+    "limits": {
+      "requests": 2,
+      "attempts_per_endpoint": 1,
+      "timeout_seconds_per_request": 30,
+      "max_original_bytes_each": 2000000,
+      "max_combined_original_bytes": 4000000,
+      "metered_overage_usd": 0,
+      "retries": 0,
+      "new_credentials_or_permissions": 0
+    },
+    "capture": "Retain exact original bodies, echoed parameters, request/captureUTC, response status/contenttype/failure diagnostics, size/SHA256 and provenance before conversion. Default existing library headers only; no bypass. Use existing approved route; if unavailable, retain failure rather than retry the diagnosed source unchanged.",
+    "qualification": "Both actual bodies must match named resources/scope/identity and corrected-core population/GP/W/L. Player TS must be compared at reported precision against corrected full-cutoff totals; player MIN/GP meaning stays distinct from team MIN. Team net arithmetic and existing numerical/source checks remain. Any continuing revision inconsistency remains unresolved, never rewritten as pass.",
+    "archive_reuse": "Pinned playerAdvanced archive original is unchanged at known lastmodified182fOct31 before7a; do not refetch that identical body. A DateTo-scoped current source is a changed query/source requirement, not an unchanged archive retry."
+  },
+  "external_period_dependency": "The two snapshot bodies do not supply quarter/half Traditional+Advanced coverage. Existing fixedQ1 two-original laptop bundle remains the smallest diagnosed period-access representative; do not rerun failed cloud/CDN/unparameterized archive period routes.",
+  "source_acquisition_calls": 0,
+  "code_edits": 0,
+  "new_test_or_stage_execution": false,
+  "source_collection_approved": false,
+  "advanced_snapshot_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

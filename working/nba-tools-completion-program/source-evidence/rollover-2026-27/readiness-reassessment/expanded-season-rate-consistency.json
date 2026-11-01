@@ -1,0 +1,126 @@
+{
+  "classification": "expanded_aggregate_consistency_evidence_not_snapshot_rewrite_or_full_readiness",
+  "formula": "PTS/(2*(FGA+0.44*FTA)); zero denominator ->0",
+  "source_TS_precision": 3,
+  "tolerance": 0.0005,
+  "player_rows": 1829,
+  "players": 432,
+  "player_csv_sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b",
+  "stats_bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+  "advanced_original_sha256": "9111fac49d8b8c3d548f05e3869b5ca19420860fabdf9d48b400362d846a3b05",
+  "matching_TS": 420,
+  "mismatching_TS": 12,
+  "mismatches": [
+    {
+      "player_id": 203924,
+      "name": "Jerami Grant",
+      "PTS": 41,
+      "FGA": 40,
+      "FTA": 10,
+      "computed_TS": 0.4617117117117117,
+      "source_TS": 0.472
+    },
+    {
+      "player_id": 1627734,
+      "name": "Domantas Sabonis",
+      "PTS": 85,
+      "FGA": 49,
+      "FTA": 17,
+      "computed_TS": 0.7524787535410764,
+      "source_TS": 0.739
+    },
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "PTS": 18,
+      "FGA": 11,
+      "FTA": 0,
+      "computed_TS": 0.8181818181818182,
+      "source_TS": 0.8
+    },
+    {
+      "player_id": 1630230,
+      "name": "Naji Marshall",
+      "PTS": 41,
+      "FGA": 36,
+      "FTA": 5,
+      "computed_TS": 0.5366492146596858,
+      "source_TS": 0.523
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "PTS": 115,
+      "FGA": 96,
+      "FTA": 34,
+      "computed_TS": 0.5182047584715213,
+      "source_TS": 0.516
+    },
+    {
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "PTS": 23,
+      "FGA": 16,
+      "FTA": 10,
+      "computed_TS": 0.5637254901960784,
+      "source_TS": 0.537
+    },
+    {
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "PTS": 17,
+      "FGA": 21,
+      "FTA": 0,
+      "computed_TS": 0.40476190476190477,
+      "source_TS": 0.425
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "PTS": 40,
+      "FGA": 28,
+      "FTA": 0,
+      "computed_TS": 0.7142857142857143,
+      "source_TS": 0.69
+    },
+    {
+      "player_id": 1642383,
+      "name": "Walter Clayton Jr.",
+      "PTS": 21,
+      "FGA": 18,
+      "FTA": 3,
+      "computed_TS": 0.5434782608695652,
+      "source_TS": 0.573
+    },
+    {
+      "player_id": 1642907,
+      "name": "Cedric Coward",
+      "PTS": 55,
+      "FGA": 43,
+      "FTA": 0,
+      "computed_TS": 0.6395348837209303,
+      "source_TS": 0.633
+    },
+    {
+      "player_id": 1643409,
+      "name": "Cameron Boozer",
+      "PTS": 79,
+      "FGA": 71,
+      "FTA": 21,
+      "computed_TS": 0.49227318045862417,
+      "source_TS": 0.48
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "PTS": 16,
+      "FGA": 17,
+      "FTA": 8,
+      "computed_TS": 0.38986354775828463,
+      "source_TS": 0.41
+    }
+  ],
+  "raw_originals_and_USG_preserved": true,
+  "source_basis_qualified": false,
+  "production_writes": 0
+}

@@ -45,9 +45,17 @@ supplies 1,829 rows/432 players, with independently observed discrepancies.
 `tools/season_rollover_core_bridge.py` copies those rows and records every explicit
 Traditional count/clock or complete PBP scoring-actor observation in a field ledger.
 It preserves keys/names and untouched cells, recalculates affected percentages,
-and rejects conflicting observations. PBP fact replay does not accept the archive
-for canonical PBP ingestion. Corrected totals disagree with four retained season
-TS% values; snapshots remain inconsistent rather than silently rewritten. Partial
+and rejects conflicting observations. Optional team reconciliation records explicit
+Traditional **team** count fields separately, preserves paired game/team identities
+and final scores, checks literal clocks/count arithmetic, and derives only affected
+ratios. Team rebounds come from team source fields, never inferred from player sums.
+Additional retained source bytes must be bound by the caller to the independently
+reviewed immutable manifest/request/revision; malformed supplementary bodies stay
+quarantined. Clock denominator arithmetic uses exact literal seconds for the
+existing inclusive two-second display residual, consistently across Python versions.
+PBP fact replay does not accept the archive for canonical PBP ingestion. The original narrow stage disagrees with four retained season TS% values; the
+expanded candidate disagrees with twelve. Snapshots remain inconsistent rather
+than silently rewritten. Partial
 team/player question checks do not establish the eleven-raw/five-processed
 publication contract, participation/tenure, roles, quarter windows or full-season
 completeness. Originals/failures/receipts are retained in the program's

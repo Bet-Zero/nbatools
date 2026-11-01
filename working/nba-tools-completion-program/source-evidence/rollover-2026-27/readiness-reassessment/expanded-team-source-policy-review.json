@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "classification": "independent_explicit_team_field_authority_assessment_not_composed_core_acceptance",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "input_assessment_sha256": "5038f42212599a25cfd800b410f3450e09c8d7671abd5415e1ccfef1087d2c61",
+  "player_projection_sha256": "9a9c5ab56bdab88d5797c1495dd0c4432d935d375cd6eb52b6b09035a00ba45b",
+  "original_finder_sha256": "dba94eec0a1be2407ba60fd018195e63d9988d8ad376180caa4aa686d3f1fd84",
+  "source_manifest_sha256": "e5ece22f60bf71b0976c1447cf854a99c2e842b802f812b69cf1e964d1a2fc51",
+  "reported12_differences_all_match_explicit_team_source_values": true,
+  "full_explicit15_team_count_field_comparison": {
+    "qualified_new_bodies": 76,
+    "team_games": 152,
+    "changed_team_cells": 15,
+    "changed_fields": [
+      {
+        "game_id": "0022600009",
+        "team_id": 1610612745,
+        "field": "AST",
+        "finder_team_value": 24,
+        "explicit_traditional_team_value": 25,
+        "source_file": "boxscoretraditionalv3_0022600009.json",
+        "source_sha256": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.assists"
+      },
+      {
+        "game_id": "0022600091",
+        "team_id": 1610612742,
+        "field": "FGA",
+        "finder_team_value": 80,
+        "explicit_traditional_team_value": 79,
+        "source_file": "boxscoretraditionalv3_0022600091.json",
+        "source_sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.fieldGoalsAttempted"
+      },
+      {
+        "game_id": "0022600091",
+        "team_id": 1610612742,
+        "field": "FG3A",
+        "finder_team_value": 38,
+        "explicit_traditional_team_value": 37,
+        "source_file": "boxscoretraditionalv3_0022600091.json",
+        "source_sha256": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.threePointersAttempted"
+      },
+      {
+        "game_id": "0022600103",
+        "team_id": 1610612758,
+        "field": "FG3A",
+        "finder_team_value": 32,
+        "explicit_traditional_team_value": 31,
+        "source_file": "boxscoretraditionalv3_0022600103.json",
+        "source_sha256": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55",
+        "source_locator": "boxScoreTraditional.homeTeam.statistics.threePointersAttempted"
+      },
+      {
+        "game_id": "0022600109",
+        "team_id": 1610612742,
+        "field": "FGA",
+        "finder_team_value": 87,
+        "explicit_traditional_team_value": 88,
+        "source_file": "boxscoretraditionalv3_0022600109.json",
+        "source_sha256": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a",
+        "source_locator": "boxScoreTraditional.homeTeam.statistics.fieldGoalsAttempted"
+      },
+      {
+        "game_id": "0022600117",
+        "team_id": 1610612765,
+        "field": "BLK",
+        "finder_team_value": 10,
+        "explicit_traditional_team_value": 11,
+        "source_file": "boxscoretraditionalv3_0022600117.json",
+        "source_sha256": "d5b62fec9669b76d15e25fe02f74562ceaa246e2928bc8207adafe1f590a49df",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.blocks"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612758,
+        "field": "FGA",
+        "finder_team_value": 95,
+        "explicit_traditional_team_value": 94,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.homeTeam.statistics.fieldGoalsAttempted"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612758,
+        "field": "TOV",
+        "finder_team_value": 13,
+        "explicit_traditional_team_value": 14,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.homeTeam.statistics.turnovers"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "FGA",
+        "finder_team_value": 96,
+        "explicit_traditional_team_value": 95,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.fieldGoalsAttempted"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "FG3A",
+        "finder_team_value": 41,
+        "explicit_traditional_team_value": 40,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.threePointersAttempted"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "OREB",
+        "finder_team_value": 19,
+        "explicit_traditional_team_value": 18,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsOffensive"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "DREB",
+        "finder_team_value": 37,
+        "explicit_traditional_team_value": 36,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsDefensive"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "REB",
+        "finder_team_value": 56,
+        "explicit_traditional_team_value": 54,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsTotal"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "STL",
+        "finder_team_value": 5,
+        "explicit_traditional_team_value": 6,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.steals"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "BLK",
+        "finder_team_value": 7,
+        "explicit_traditional_team_value": 6,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.blocks"
+      }
+    ],
+    "additional_not_in_player_sum_diagnostic": [
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "OREB",
+        "finder_team_value": 19,
+        "explicit_traditional_team_value": 18,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsOffensive"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "DREB",
+        "finder_team_value": 37,
+        "explicit_traditional_team_value": 36,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsDefensive"
+      },
+      {
+        "game_id": "0022600118",
+        "team_id": 1610612763,
+        "field": "REB",
+        "finder_team_value": 56,
+        "explicit_traditional_team_value": 54,
+        "source_file": "boxscoretraditionalv3_0022600118.json",
+        "source_sha256": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c",
+        "source_locator": "boxScoreTraditional.awayTeam.statistics.reboundsTotal"
+      }
+    ],
+    "no_player_rebound_sum_assumption": true
+  },
+  "authority_judgment": "Same existing accepted explicit official-source per-field precedence is applicable at team grain after exact game/team/date/final-score and literal-clock/shooting qualification. Values here come directly from Traditional TEAM statistics; matching player aggregates is corroboration only. No new source acquisition or third-source rule is justified solely by this extension.",
+  "required_implementation_scope": [
+    "Reconcile generic explicit TEAM count fields at game/team keys, not only12 aggregate-diagnostic rows. Preserve original Finder values and exact source-field/hash lineage.",
+    "Use explicit source team counts for OREB/DREB/REB too; never derive team rebounds or team turnovers from player sums.",
+    "Recompute count-derived percentage columns from qualified explicit team numerators/denominators under the existing precision contract; preserve unrelated Finder fields.",
+    "Retain exact paired team identity/date/final-score and shooting/clock checks, conflicting-qualified-source failure and0096quarantine. Material new team-grain code still needs independent frozen review and focused tests before actual numerical stage acceptance.",
+    "After joint player/team staging, re-evaluate advanced source/as-of and derived-rate consistency, exact due IDs and mandatory raw/processed scope; no publication or readiness waiver."
+  ],
+  "source_policy_extension_supported": true,
+  "source_calls": 0,
+  "new_stage_execution": false,
+  "composed_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0
+}

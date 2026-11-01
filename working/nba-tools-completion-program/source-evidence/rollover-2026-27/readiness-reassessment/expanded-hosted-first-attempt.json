@@ -1,0 +1,39 @@
+{
+  "run_id": 41300081682,
+  "source_sha": "128a8a91437cd80c205ca5ae7fd7e92c7bbdd9a2",
+  "request_sha": "09eb748aa640d70690471bb5709022a31666616a",
+  "artifact_id": 13080882853,
+  "artifact_sha256": "fa535780d35c6f5510255a5c978370b75708212c89e79a0b64da848fad353b6f",
+  "artifact_bytes": 2837,
+  "required_summary": {
+    "candidate_sha": "09eb748aa640d70690471bb5709022a31666616a",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 0,
+    "skipped": 0,
+    "failed": 1,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 1,
+    "conclusion": "failure",
+    "problems": [
+      "pytest did not succeed (exit=1)",
+      "Every selected required test must execute and pass",
+      "Required tests contain skips, failures, errors, or expected failures"
+    ]
+  },
+  "diagnosis": "CPython3.11sequentialfloatminute sum240.03333333333336 exceeds inclusive2/60 threshold for exact14402source seconds vs14400team. CPython3.12sum had accepted same source. No source-data failure or new acquisition needed.",
+  "failure_game_id": "0022600137",
+  "source_sha256": "3e894bfba419facd0d8da4ff4ff58d4acaa66dc22bb597c3d6f4419773ed29e9",
+  "exact_player_seconds": 14402,
+  "exact_team_seconds": 14400,
+  "fix": "Exactrational literal seconds for denominatorcomparisononly; preserve2sec inclusiveboundary and allfloatMINobservations. No epsilon/waiver.",
+  "consumer_outputs_accepted": false,
+  "production_writes": 0
+}

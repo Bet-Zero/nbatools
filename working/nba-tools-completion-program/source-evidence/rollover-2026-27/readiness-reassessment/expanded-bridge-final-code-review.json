@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "classification": "independent_expanded_bridge_and_hosted_required_gate_review_PASS_by_exact_hash",
+  "reviewer": {
+    "identity": "/root/absence_checker",
+    "model_identifier": "unavailable; no cross-model claim"
+  },
+  "reviewed_files": {
+    "tools/season_rollover_core_bridge.py": "96b74a0d8432a4a15ed0a63db1cdc590f2affad3a8b584740d752b145dfd5719",
+    "tests/test_season_rollover_team_bridge.py": "c605a867adf41e23139cc07ec8867754f72defdbbd8d5923340cdf374ba4ad6e",
+    "tests/cloud_rollover_expanded_core_stage_real_data.py": "9315fe9002befa1d5a2914fe95898c0fe9ef5a01d51caf78cbf264b0df0bc8f8"
+  },
+  "initial_review_sha256": "77c659cbf6cfa31fe05815e4a8218246b42f573f2ed2d154bbe5133f4aa31738",
+  "resolved_binding_finding": {
+    "manifest_sha256": "e5ece22f60bf71b0976c1447cf854a99c2e842b802f812b69cf1e964d1a2fc51",
+    "actual_request_sha256": "d06bb4f3db8a1347f756fe5286493e9fbe44115a1ef3f1211f5ae7c4b30a55b8",
+    "repository": "sportsdataverse/hoopR-nba-stats-raw",
+    "revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+    "all_verified_before_Source_construction": true
+  },
+  "semantic_review": {
+    "generic_direct_team_grain_and_lineage_pass": true,
+    "shared_Traditional_helper_preserves_prior_player_semantics": true,
+    "default_legacy_stage_parameters_unchanged": true,
+    "atomic_conflict_failure_and_primary_preservation_pass": true,
+    "strict_clock_and_count_admission_pass": true,
+    "derived_percentage_source_inputs_preserved": true
+  },
+  "focused_execution": {
+    "new_team_unit_tests": 12,
+    "selected_old_player_identity_precision_conflict_tests": 11,
+    "independent_unfamiliar_controls": 6,
+    "failed": 0,
+    "full_or_actual_stage_repeated": false,
+    "ruff_and_diff_pass": true
+  },
+  "hosted_marker_delta": {
+    "only_comment_and_marker_change_from_approved_bound_gate_sha256": "9ac647d8471725409f4ab18382526830db5cc51d9286e016dff85b4a6e6d62c9",
+    "original_numerical_preservation_source_and_actual_API_assertions_unchanged": true,
+    "needs_data_engine_restored": true,
+    "reason": "Existing required_data_validation runner explicitly selects needs_data. Hosted pinned generation supplies data_glob sentinel; required runner fails any skip, no-selection, xfail or execution error. Versioned new-season bodies still fail direct reads if absent. This restores existing hosted selection; no verification demotion."
+  },
+  "local_evidence": {
+    "local_attempts_sha256": "74d22ea8276e4888de289ce32a7c3edec4dc80809953ce572787cfecde7447ee",
+    "prepared_output_independent_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
+    "source_preparation_accepted_as_partial_evidence": true,
+    "overall_local_gate_accepted": false,
+    "API_consumer_accepted": false,
+    "explanation": "Local TestClient portal hang and separate AsyncClient health timeout occurred before accepted API execution. Both143interrupted attempts and original prepared bytes remain literal; no passing overall execution claimed."
+  },
+  "approval": "PASS for ONE existing read-only hosted required selector on a frozen candidate retaining these exact executable/input bytes. Source-root/current-generation publication/readiness is NOT approved. Final actual output/API acceptance and normal required CI remain necessary.",
+  "sole_required_selector": "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values",
+  "no_new_source_calls": true,
+  "no_full_suite_requested": true,
+  "canonical_full_core_accepted": false,
+  "readiness_accepted": false,
+  "production_writes": 0,
+  "reviewed_commit": "d1506b988e4f0a1110d9607a5328653eeed3e136",
+  "reviewed_tree": "f77b4e5d256624a5a791737f9b5b72ec28a8238f",
+  "reviewed_document_hashes": {
+    "docs/reference/data_contracts.md": "b37cd6c266b7a414cf88c3fcb40b8931dae67ead85aea23553543726c8181721",
+    "working/nba-tools-completion-program/README.md": "dc78c39b7bca13bed7df1fd691f86b14e99a982eee09086cc64584d74b315755",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/readiness-reassessment/reassessment.json": "3a1ce87ccb8dbae3b663ef93cc33f269d5fe9c25805d482e9757f795f24e54af"
+  },
+  "documentation_assessment": "PASS: explicit team grain/caller input binding/quarantine are stated accurately. Source-qualified/partial prepared evidence stays distinct from pending producer/API acceptance,12inconsistent TS snapshots, required full11raw+5processed/dueID/freshness and separate publication approval. Local hangs/skipped initialattempt are not credited as accepted overall gate.",
+  "receipt_only_descendant_applicability": "Adding unchanged reviews/receipts and accurately updating checkpoint does not invalidate this code/gate approval if exact executable and input bindings remain unchanged; bind remote equivalent identity before hosted request."
+}
