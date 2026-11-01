@@ -932,12 +932,51 @@ def presence_names_player_condition(
         ):
             return True
     text = strip_explicit_calendar_date_clauses(text)
+    from nbatools.commands._player_game_context import (
+        _BOUND,
+        _TEAM_STAT_VERB,
+        team_subject_stat_conditions,
+    )
+
+    # Match the same numeric shorthand accepted by the immediate actor guard.
+    analysis_text = re.sub(r"(?<=[a-z])(?=\d)", " ", text)
+    claimed_teams = team_subject_stat_conditions(analysis_text)
+    if condition_span and claimed_teams:
+        residual = analysis_text
+        for owner in claimed_teams:
+            residual = (
+                residual[: owner["start"]]
+                + " " * (owner["end"] - owner["start"])
+                + residual[owner["end"] :]
+            )
+        # Exempt only claimed team bounds, not the whole joined sentence.
+        # Residual numerical subjects remain unread even when unindexed.
+        for clause in re.split(r"\b(?:and|but|when|where|while|if|whenever)\b|[,;]", residual):
+            clause = " " + clause.strip()
+            for verb in _TEAM_STAT_VERB.finditer(clause):
+                if _BOUND.match(clause, verb.end()) and clause[: verb.start()].strip():
+                    # A team word inside an actor's qualified name does not
+                    # make that actor a team subject. No name resolution or
+                    # word-count limit can discard this unclaimed subject.
+                    return True
+            # Reuse attached/gerund ownership for verbs such as SCORING. Each
+            # possible subject ends at a word boundary, without a length cap;
+            # an inherited team verb at the start has no subject to remove.
+            for boundary in re.finditer(r"\S+\s+", clause):
+                tail = clause[boundary.end() :]
+                if re.search(r"\d", tail) and _states_player_condition(" and he " + tail):
+                    return True
+    team_subjects = team_subject_stat_conditions(text) if condition_span else []
     for match in re.finditer(
         r"\b(?:with|without)\s+([\w .&'\-]+?)"
         r"(?=\s+(?:scores?|scored|scoring|grabs?|grabbed|dishes?|dished|"
         r"has|had|records?|recorded|makes?|made|hits|plays?|played|playing)\b)",
         text,
     ):
+        if any(match.start(1) <= owner["start"] < match.end() for owner in team_subjects):
+            # A loose name fallback must not cross a new explicit team subject
+            # after a resolved availability clause and its temporal scope.
+            continue
         named = detect_player(match.group(1).strip())
         if (named and named.upper() == player.upper()) or (
             not detect_team_in_text(match.group(1))

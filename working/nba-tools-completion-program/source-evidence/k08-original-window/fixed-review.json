@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "classification": "independent_frozen_class_fix_semantic_review_before_required_R2",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "author_commit": "75f8058c8cd4aaf50421ae850dc512e66c0cf121",
+  "author_tree": "85e74d68b24a60381bd8151024d2cc4ed305a758",
+  "reviewed_remote_commit": "fac810d0e99f5a37549932c92966d27d625ece97",
+  "equivalent_local_commit": "e876f0558c30d02c7cd078977bd08a6ce8b3d281",
+  "reviewed_tree": "0c95657e31b638ae584a6f7045308f139cd8d6ac",
+  "file_hashes": {
+    "src/nbatools/commands/_matchup_utils.py": "825f2863d2f32156ef060024c6b338448db1877f66e6186694a91525652369f6",
+    "tests/test_original_window_mixed_participation.py": "ceb6257dbb3a8c32f212c56b84918758bbb105e1f9f4c4bee514a9879beee51e",
+    "tests/test_original_window_mixed_participation_real_data.py": "c36d47387c07b6dacb01ad749661e0b1c1d7aef4d0820c107c06efca6d6877a3"
+  },
+  "conclusion": "PASS for bounded original mixed-window required R2 gate; actual runtime numerical acceptance still pending",
+  "prior_blockers_resolved": [
+    "Named/pronoun/unindexed actor-stat after an explicit team bound remains unsupported",
+    "Team-qualified/possessive actor names are not team-subject exemptions",
+    "Residual stat subjects are guarded without a player-name resolver or short word-count cap"
+  ],
+  "prior_blocked_receipts_preserved": {
+    "initial-review.json": "d057c481bfea2f6b5fdab2147c406d5da89b97e79ba12ce13415fd4177cc695e",
+    "residual-team-owner-review.json": "25eb3ae3fd6413d980244121326f4c0a6480a46e05874fe4942d92f0c571ed31"
+  },
+  "focused_checks": {
+    "passed": 190,
+    "skipped": 0,
+    "files": [
+      "tests/test_original_window_mixed_participation.py",
+      "tests/test_mixed_participation_contract.py",
+      "tests/test_qualified_participation_pair.py"
+    ]
+  },
+  "independent_unfamiliar_controls": [
+    "All three previously failing team-qualified Davis phrases reject false team89/player26 answer",
+    "Long unindexed reserve-player subject containing LosAngelesLakers rejects",
+    "Their forward AnthonyDavis had30 rejects",
+    "Davis(Lakers) scores30 rejects",
+    "Comma apposition AnthonyDavis,aLaker,scored30 rejects",
+    "Coupled team rebounds10 remains positiveID16 for inherited verb, THEY and explicit Lakers subjects",
+    "Same three coupled team forms with rebounds42 return qualified no_match because fixture team rebounds41"
+  ],
+  "original_window_review_reused": "177 initial focused tests and opposing Tatum/Reaves original-window/static-order/unknown controls remain applicable; 149prior scalar/status delta controls remain applicable because new branch only runs for resolved mixed spans with team claims.",
+  "required_actual_selector": "tests/test_original_window_mixed_participation_real_data.py::test_original_mixed_windows_keep_raw_population_and_execute_registered_cases",
+  "required_actual_scope": {
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "required_pytest_tests": 1,
+    "local_API_hits": 3,
+    "inner_RawQA_cases": [
+      "k08_original_mixed_record",
+      "k08_original_mixed_team_bound",
+      "k08_original_mixed_qualified_empty"
+    ],
+    "RawQA_must_execute_pass": 3,
+    "fail_on_expectation_failure": true,
+    "NBA_source_fetches": 0,
+    "production_writes": 0
+  },
+  "independent_existing_source_oracle": {
+    "original20": {
+      "game_ids": [
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 3,
+      "wins": 3,
+      "losses": 0,
+      "points": 358
+    },
+    "original20_team120": {
+      "game_ids": [
+        22500914,
+        22500946
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "points": 248
+    },
+    "original10": {
+      "game_ids": [],
+      "games": 0
+    },
+    "qualifying20": {
+      "games": 15,
+      "wins": 11,
+      "losses": 4,
+      "points": 1736
+    }
+  },
+  "actual_R2_approved": true,
+  "actual_R2_execution_accepted": false,
+  "production_publication_authorized": false
+}

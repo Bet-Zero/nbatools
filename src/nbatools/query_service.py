@@ -608,9 +608,15 @@ def _build_applied_filters(
         scope = route_kwargs.get("last_n_scope") or source.get("last_n_scope") or "qualifying"
         if scope == "original_window":
             noun = "game" if last_n == 1 else "games"
+            mixed = bool(
+                route_kwargs.get("with_player", source.get("with_player"))
+                and route_kwargs.get("without_player", source.get("without_player"))
+            )
+            sample = "matchup " if route_kwargs.get("opponent", source.get("opponent")) else ""
+            predicates = "participation" if mixed else "both played"
             selection = (
-                f"Select the last {last_n} original matchup {noun} "
-                "before checking both played predicates"
+                f"Select the last {last_n} original {sample}{noun} "
+                f"before checking {predicates} predicates"
             )
         elif scope == "window":
             selection = f"Check conditions within the last {last_n} games"

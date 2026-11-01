@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS actual original-window numerical/runtime gate; conditional public probe content approved",
+  "runtime_revision": "fac810d0e99f5a37549932c92966d27d625ece97",
+  "runtime_tree": "0c95657e31b638ae584a6f7045308f139cd8d6ac",
+  "run_id": 41275706570,
+  "request_revision": "8eff122b9ce06e484c908cfa561c7f42fdd30ad1",
+  "artifact_id": 13071287776,
+  "artifact_sha256": "2f1ed5ddac740d7f6f78c139bc48866bf664767bc33f3d12748a3cff2bc7a9ce",
+  "artifact_size_bytes": 28849,
+  "strict_summary": {
+    "candidate_sha": "8eff122b9ce06e484c908cfa561c7f42fdd30ad1",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/test_original_window_mixed_participation_real_data.py::test_original_mixed_windows_keep_raw_population_and_execute_registered_cases"
+    ],
+    "required_test_limit": 100,
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "source_bindings": [
+    {
+      "path": "raw/player_game_availability/2025-26_regular_season.csv",
+      "sha256": "3288075f27eb00bb329f39300312f831fc9e10a7bebe0fdcab48d897be7c0d33",
+      "size_bytes": 223000
+    },
+    {
+      "path": "raw/player_game_stats/2025-26_regular_season.csv",
+      "sha256": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "size_bytes": 4993942
+    },
+    {
+      "path": "raw/team_game_stats/2025-26_regular_season.csv",
+      "sha256": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "size_bytes": 449374
+    }
+  ],
+  "subset_sha256": {
+    "actor-positive-rows.csv": "02ff0c24b87041d56b943347964c011ea5cd9be16f10eafe6a501207d79a75fe",
+    "team82.csv": "0aab6f4ef307e40d4357da66a841023005164e99ccc0c34105b7724980abf436",
+    "lebron-explicit-dnp.csv": "053816c277c4057644ae04d4e41f842d1718a64933dfd877cf6ce86fe211d81e"
+  },
+  "source_review": {
+    "teams": 82,
+    "lebron_explicit_dnp": 22,
+    "lebron_positive": 60,
+    "luka_positive": 64,
+    "full_absence_population": 82,
+    "dates_sides_ids_verified": true,
+    "prior_authenticated_team_export_byte_identical": true,
+    "three_source_bindings_match_authenticated775manifest": true,
+    "full_source_bytes_checked_by_execution_gate_not_repeated_local_scan": true
+  },
+  "independent_answers": [
+    {
+      "selected_game_ids": [
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 3,
+      "wins": 3,
+      "losses": 0,
+      "points": 358
+    },
+    {
+      "selected_game_ids": [
+        22500914,
+        22500946
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "points": 248
+    },
+    {
+      "selected_game_ids": [],
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    }
+  ],
+  "qualifying_first": {
+    "selected_game_ids": [
+      22500002,
+      22500019,
+      22500024,
+      22500045,
+      22500155,
+      22500179,
+      22500185,
+      22500198,
+      22500222,
+      22500231,
+      22500308,
+      22500523,
+      22500914,
+      22500922,
+      22500946
+    ],
+    "games": 15,
+    "wins": 11,
+    "losses": 4,
+    "points": 1736
+  },
+  "inner_raw_qa": {
+    "case_ids": [
+      "k08_original_mixed_record",
+      "k08_original_mixed_team_bound",
+      "k08_original_mixed_qualified_empty"
+    ],
+    "cases_executed": 3,
+    "cases_passed": 3,
+    "checks_passed": 33,
+    "manual_status_counts": {
+      "unreviewed": 3
+    },
+    "source_commit": "8eff122b9ce06e484c908cfa561c7f42fdd30ad1",
+    "output_sha256": "1ead6bbb5ad3d79adb41920f794057b85231bd41a4be7b2e4c1e8a78f10c8d11"
+  },
+  "local_api": {
+    "requests": 3,
+    "actual_payload_bodies_exported": false,
+    "evidence": "Required selected test made three local /query POSTs and asserted numeric/empty answers; full test passed. Exported QA rows separately verify actual runtime answer sections."
+  },
+  "durable_receipt_sha256": "f8f58cc29016eeaff6a10c3474d9c0f97b4b81a395512713e4342201436317c2",
+  "public_probe": {
+    "path": "tests/cloud_original_mixed_deployed_real_data.py",
+    "sha256": "ab64ae970fddcfcbe96fe3b6be86ea45870f654385437b6e900a2b6733825a31",
+    "approval": "Content PASS conditional on exact frozen candidate atop actual merged main and successful Vercel deployment",
+    "scope": {
+      "readiness_gets": 1,
+      "query_posts": 3,
+      "minimum_start_spacing_seconds": 7,
+      "retries": 0,
+      "source_calls": 0,
+      "production_writes": 0
+    },
+    "offline_response_assertions": "Literal actual QA response fields accepted; wrong game ID, dropped actor caveat, and false-empty reason each rejected",
+    "actual_execution_accepted": false
+  },
+  "production_writes": 0,
+  "production_publication_approved": false,
+  "operational_acceptance_complete": false
+}

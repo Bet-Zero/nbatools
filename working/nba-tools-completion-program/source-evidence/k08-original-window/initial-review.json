@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "classification": "independent_frozen_candidate_review_with_blocking_clause_ownership_findings",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "author_commit": "26df0b97a6e5d71a77eebe355ae3977b27189775",
+  "author_tree": "0073d13c6a71be1c13acd38d47f0d8d93f0d46a2",
+  "integrated_local_commit": "2e5d9988810d7ac9c62ddaff4869fd05d8393641",
+  "integrated_remote_commit": "9965bea06b77be8b27fbc663eca9d640be7554d2",
+  "integrated_tree": "8b8e390f158052de60b5cad6466b818b4b2459be",
+  "review_conclusion": "BLOCKED before required R2; no dispatch approval",
+  "focused_pytest": {
+    "passed": 177,
+    "skipped": 0,
+    "files": [
+      "tests/test_original_window_mixed_participation.py",
+      "tests/test_original_window_played_pair.py",
+      "tests/test_mixed_participation_contract.py"
+    ]
+  },
+  "fixture_evidence": {
+    "source": "unchanged tests/test_qualified_participation_pair.py::qualified_pair controlled fixture",
+    "candidate_game_ids": [
+      3,
+      16,
+      33,
+      46
+    ],
+    "only_mixed_match": 16,
+    "anthony_davis_points": 26,
+    "lakers_points": 89,
+    "team80_condition": true,
+    "actor30_condition": false
+  },
+  "blocking_findings": [
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Davis scores 30 points",
+      "actual_result_status": "ok",
+      "actual_route": "team_record",
+      "actual_last_n_scope": "original_window",
+      "actual_selected_game_ids": [
+        16
+      ],
+      "actual_team_points_floor": 80,
+      "actual_unsupported_filters": [],
+      "expected": "Retain unsupported/unavailable player-owned30point condition; must not answer team80only",
+      "clause_dropped": "Davis scores 30 points"
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and he scores 30 points",
+      "actual_result_status": "ok",
+      "actual_route": "team_record",
+      "actual_last_n_scope": "original_window",
+      "actual_selected_game_ids": [
+        16
+      ],
+      "actual_team_points_floor": 80,
+      "actual_unsupported_filters": [],
+      "expected": "Retain unsupported/unavailable player-owned30point condition; must not answer team80only",
+      "clause_dropped": "he scores 30 points"
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Blorg scores 30 points",
+      "actual_result_status": "ok",
+      "actual_route": "team_record",
+      "actual_last_n_scope": "original_window",
+      "actual_selected_game_ids": [
+        16
+      ],
+      "actual_team_points_floor": 80,
+      "actual_unsupported_filters": [],
+      "expected": "Retain unsupported/unavailable player-owned30point condition; must not answer team80only",
+      "clause_dropped": "Blorg scores 30 points"
+    },
+    {
+      "query": "Lakers record without LeBron James and with Anthony Davis within their last 3 games in 2023-24 vs Celtics where the Lakers scored at least 80 points and Anthony Davis scores 30 points",
+      "actual_result_status": "ok",
+      "actual_route": "team_record",
+      "actual_last_n_scope": "original_window",
+      "actual_selected_game_ids": [
+        16
+      ],
+      "actual_team_points_floor": 80,
+      "actual_unsupported_filters": [],
+      "expected": "Retain unsupported/unavailable player-owned30point condition; must not answer team80only",
+      "clause_dropped": "Anthony Davis scores 30 points"
+    }
+  ],
+  "root_cause": "New presence_names_player_condition skip when explicit team owner lies inside loose availability-name capture skips later residual actor-stat condition; team bound80 masks named/pronoun/unknownactor30.",
+  "minimum_repair": "Preserve unsupported residual actor-owned or unresolvedstat clauses after team-owned condition; keep explicit team80-alone positive; do not add new multi-actor-stat execution.",
+  "unfamiliar_controls_passed": [
+    "Opposing TatumDNP/Reavesplayed within original3 selectsID33",
+    "Tatumplayed/ReavesDNP of original3matchups selectsID16",
+    "TatumDNP/Reavesplayed among original2 plusLakers>=122 selectsID33",
+    "UnknownTatumID33 outside original1ID46 doesnotblockqualifiedempty",
+    "UnknownTatumID46 inside original1 blocks evenReavesDNP and9999teamfloor",
+    "Commaactorstat before/aftertemporalspan staysunsupported without explicitteamclause",
+    "Known thirdactorAustinReaves remainsunsupported"
+  ],
+  "independent_existing_source_oracle": {
+    "source": "Already authenticated mixed-source raw subsets from failed41267659415; retained bytes reused, no new source acquisition or network",
+    "original_last20": {
+      "game_ids": [
+        22500914,
+        22500922,
+        22500946
+      ],
+      "games": 3,
+      "wins": 3,
+      "losses": 0,
+      "points": 358
+    },
+    "original_last20_team120": {
+      "game_ids": [
+        22500914,
+        22500946
+      ],
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "points": 248
+    },
+    "original_last10": {
+      "game_ids": [],
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "points": 0
+    },
+    "last20_qualifying": {
+      "games": 15,
+      "wins": 11,
+      "losses": 4,
+      "points": 1736
+    }
+  },
+  "raw_qa_review": "Three registered cases preserve original20/teambound/knownempty meanings; actual required execution pending fixed code.",
+  "nba_source_requests": 0,
+  "production_writes": 0
+}
