@@ -1,0 +1,67 @@
+{
+  "classification": "qualified_retained_schedule_for_bounded_stats_selection_not_production",
+  "required_run_id": 41262014404,
+  "request_sha": "123db4917f94f23d2d01a4302b2e582d66a37413",
+  "reviewed_sha": "b00c6856d028bc699092bef64e82eab2edaa79e5",
+  "artifact_id": 13065702231,
+  "retained_bundle": "schedule-capture.zip",
+  "bundle_sha256": "67907bba9f2830b4099998ec6c89dd67f9ef8ab051afa4b003a80ae605fc768f",
+  "bundle_bytes": 347575,
+  "original_member": "acquired_data/rollover-2026-27-schedule/scheduleleaguev2-2027.json",
+  "original_sha256": "edf45e0c7f06ba0f5c842a333d054b617f23244443514fb4aa9771a6b32b75cf",
+  "original_bytes": 4379956,
+  "git_blob_sha": "f722a15886ece11915a37e197f4873c34c893284",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "source_meta": {
+    "version": 1,
+    "request": "http://nba.cloud/league/00/2026-27/scheduleleaguev2?Format=json",
+    "time": "2026-10-31T08:00:07.07Z"
+  },
+  "source_meta_time_is_capture_proof": false,
+  "retrieved_at": "2026-11-01T01:41:03.441309+00:00",
+  "independent_observations": {
+    "regular_unique_ids": 1206,
+    "explicit_final": 81,
+    "scheduled": 1125,
+    "final_dates": [
+      "2026-10-20",
+      "2026-10-30"
+    ],
+    "final_score_total": 18464,
+    "known_teams": 30,
+    "identified_games_per_team": 80,
+    "home_away_per_team": [
+      40,
+      40
+    ],
+    "unresolved_future_ids": [
+      "0022601201",
+      "0022601202",
+      "0022601203",
+      "0022601204",
+      "0022601229",
+      "0022601230"
+    ],
+    "due_source_ids_at_capture": 79,
+    "all_due_source_ids_final": true,
+    "nonregular_excluded": {
+      "preseason": 67,
+      "cup_final": 1
+    }
+  },
+  "time_contract": "Use gameDateTimeUTC as the instant. gameDateEst/gameDateTimeEst carry literalZ while expressing Eastern wall-clock/date; America/New_York conversion reconciles all1206records. Do not interpret their Z as UTC.",
+  "independent_season_completeness": "not_established",
+  "current_runtime_readiness": "not_established; source is not canonical or published",
+  "original_upstream_capture_time": "unverified; original document metadata retained literally",
+  "independent_checker": "/root/absence_checker; exactmodelID unavailable/no cross-modelclaim",
+  "required_gate": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  },
+  "production_writes": 0,
+  "next": "Qualify exact81finalteam/player/role/period/snapshot coverage from retained approved sources. Keep wrong-grain/missing/conflicting evidence explicit, then normal pipeline/source/numeric gates; productionpublication separate."
+}

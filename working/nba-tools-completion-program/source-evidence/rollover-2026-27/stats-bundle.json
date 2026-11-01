@@ -1,0 +1,90 @@
+{
+  "classification": "deterministic_data_only_retained_originals_no_acquisition_or_publication",
+  "archive_revision": "7a1ab93e02f7a4d23443d3c6abb14bafe9c94f11",
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "bundle": "stats-sources.zip",
+  "bundle_sha256": "d3f3570e318b364d5aaa3f1fc7b1f130d9d15ed202fe479225d964559d310033",
+  "bundle_bytes": 256577,
+  "original_source_bodies": 12,
+  "member_count": 15,
+  "uncompressed_bytes": 1233491,
+  "files": [
+    {
+      "path": "archive-metadata.json",
+      "size_bytes": 2776,
+      "sha256": "cab478699678e1be881717a2e5f3aa396cd1f8cadb9f2c39193a9b5a4fd3cbbb"
+    },
+    {
+      "path": "representative-sources/advanced_0022600001.json",
+      "size_bytes": 29630,
+      "sha256": "f70349a8c0ba926a953407936a592233e842308e77dedf24d92d64d38ec8b537"
+    },
+    {
+      "path": "representative-sources/period_0022600001.json",
+      "size_bytes": 45701,
+      "sha256": "d26f5ea133b824cee3aafbfdddff43d8f2a956d5e9fcbc9111b45006dfdc4a60"
+    },
+    {
+      "path": "representative-sources/player_game_logs.json",
+      "size_bytes": 773235,
+      "sha256": "269129b0b69b596f2025bcf0b307060f5b9efd3da2aeaec33c1a03c0aa18233b"
+    },
+    {
+      "path": "representative-sources/summary_0022600023.json",
+      "size_bytes": 24784,
+      "sha256": "46eb26f17bc63b6c0756728812bd87b048e68ae9b40cf08605d8522e19b426a7"
+    },
+    {
+      "path": "representative-sources/traditional_0022600023.json",
+      "size_bytes": 20317,
+      "sha256": "de09e2e30157c56119790a10649195ffcc32514e0ee560935e5ee921819c5180"
+    },
+    {
+      "path": "representative-sources/traditional_0022600138.json",
+      "size_bytes": 21569,
+      "sha256": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab"
+    },
+    {
+      "path": "representative-sources/traditional_0022600142.json",
+      "size_bytes": 18422,
+      "sha256": "c1921da578c62a5791836f590381bac38502b98498cce94587e984888fc846f3"
+    },
+    {
+      "path": "stats-capture.json",
+      "size_bytes": 3636,
+      "sha256": "ff5eabb870e43b1712b737c61583fd0118cbdb8b78551c8aa9693ef3340e920c"
+    },
+    {
+      "path": "stats-sources/finder.json",
+      "size_bytes": 32195,
+      "sha256": "dba94eec0a1be2407ba60fd018195e63d9988d8ad376180caa4aa686d3f1fd84"
+    },
+    {
+      "path": "stats-sources/gamelog.json",
+      "size_bytes": 31028,
+      "sha256": "d5ce6c657ceafed04f40f9eb4ee4cc9a0a8258123780db6ccfc8333a2c6aafaf"
+    },
+    {
+      "path": "stats-sources/players_advanced.json",
+      "size_bytes": 196603,
+      "sha256": "9111fac49d8b8c3d548f05e3869b5ca19420860fabdf9d48b400362d846a3b05"
+    },
+    {
+      "path": "stats-sources/standings.json",
+      "size_bytes": 19382,
+      "sha256": "6bcbdcd9253e8c8ff799bc2805e3d5ec2fa367cf8d19ad840e5af670fc2bdd61"
+    },
+    {
+      "path": "stats-sources/teams_advanced.json",
+      "size_bytes": 9070,
+      "sha256": "ec23ef1c8f00137d92c0b6e6fd47d29622ea81a5d3d0abed563d69d883e0c82c"
+    },
+    {
+      "path": "supplemental-capture.json",
+      "size_bytes": 5143,
+      "sha256": "7e99a89af5f9d22810857d432497bb42dbe3265944175ff5c1f108f0d304fd19"
+    }
+  ],
+  "production_writes": 0
+}
