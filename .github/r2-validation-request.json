@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "cae308d5f68a117002b0fbee832487e348c810f5",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_rollover_expanded_core_stage_real_data.py::test_retained_expansion_preserves_grains_and_producer_query_values"
+  ],
+  "raw_qa_cases": []
+}
