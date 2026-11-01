@@ -569,7 +569,7 @@
     "production_writes": 0
   },
   "stage_validation_request": {
-    "status": "requested_not_yet_accepted",
+    "status": "executed_required_failure_count_list_test_contract",
     "reviewed_sha": "e204b682d0300698e2a966f02539719a4a298547",
     "reviewed_tree": "1b5c67f03f77a724b227d7c6a6341947478dcbf9",
     "request_sha": "9724720d59fcf495caf5a73b8cdc61a9d5015e1d",
@@ -577,6 +577,14 @@
     "selector": "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers",
     "independent_review_sha256": "b207d27883aedb3154d0498ee28a7f2eaeae647e8a0f661288f660544a7a7df3",
     "generation": "availability-lebron-season-v1-20261031",
-    "production_writes": 0
+    "production_writes": 0,
+    "run_id": 41283001115,
+    "artifact_id": 13074076598,
+    "required_selected": 1,
+    "required_passed": 0,
+    "required_failed": 1,
+    "required_skipped": 0,
+    "prepared_overlay_retained": false,
+    "staging_accepted": false
   }
 }
