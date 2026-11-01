@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS reusable jointly-absent table creation and existing append preservation; actual historical source/stage integration gate requires separate review",
+  "reviewed_revision": "bd3dd38502c0cf1f19251206edfd0694e5ace7f9",
+  "tree": "ab840ac250213368c8f1611d070d9ae405528db0",
+  "file_hashes": {
+    "tools/stage_participation_collection.py": "b878bc8b69519860f2786c612f0be4734e940f9086c8aff003dd67101baf0743",
+    "tests/test_stage_participation_collection.py": "7834b45b76b1c44a79264e7653264de099abd4021e0b5b4a8bd1f65d57e898df"
+  },
+  "focused_tests": {
+    "file": "tests/test_stage_participation_collection.py",
+    "passed": 36,
+    "skipped": 0,
+    "existing_append_controls": 27,
+    "new_creation_controls": 9
+  },
+  "independent_counterexamples": [
+    {
+      "damage": "extra_csv_game",
+      "rejected": true,
+      "error": "New availability files differ from the requested game population",
+      "no_overlay_exported": true,
+      "served_base_bytes_unchanged": true
+    },
+    {
+      "damage": "extra_import_key",
+      "rejected": true,
+      "error": "New availability files differ from the requested game population",
+      "no_overlay_exported": true,
+      "served_base_bytes_unchanged": true
+    },
+    {
+      "damage": "bad_import_digest",
+      "rejected": true,
+      "error": "Structured import digest mismatch",
+      "no_overlay_exported": true,
+      "served_base_bytes_unchanged": true
+    },
+    {
+      "damage": "blank_source_authority",
+      "rejected": true,
+      "error": "Structured import digest mismatch",
+      "no_overlay_exported": true,
+      "served_base_bytes_unchanged": true
+    }
+  ],
+  "reviewed_contract": {
+    "CSV_and_import_ledger_jointly_manifest_present_or_absent": true,
+    "creation_requires_both_configured_sources_absent": true,
+    "no_empty_baseline_files_or_fabricated_base_hashes": true,
+    "existing_producer_creates_new_files": true,
+    "exact_requested_game_row_count_and_import_key_sets": true,
+    "unchanged_publication_validator_still_required": true,
+    "new_creation_declared_separately_from_append": true,
+    "old_append_cells_lineage_source_authority_unchanged": true,
+    "old_published_source_cache_bytes_preserved": true,
+    "no_runtime_query_or_acquisition_changes": true,
+    "no_production_publication_authority": true
+  },
+  "known_dependency": "BOS2024 availability is manifest/configured-source absent; LAL2023 pair exists and retains append path. Creation enables the genuine absent historical table without changing source or membership qualification.",
+  "source_calls_by_checker": 0,
+  "actual_historical_staging_accepted": false,
+  "production_publication_approved": false,
+  "production_writes": 0
+}

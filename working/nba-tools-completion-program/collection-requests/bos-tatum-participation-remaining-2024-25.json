@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "status": "bounded_source_requirement_not_publication_approval",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season_type": "Regular Season",
+  "authorization": {
+    "decision_date": "2026-11-01",
+    "basis": "Owner standing bounded public NBA collection/staging through existing approved sources/tools/credentials/cost limits",
+    "collection_and_staging_authorized": true,
+    "production_publication_authorized": false,
+    "new_credentials_costs_permissions_or_bulk_history_authorized": false
+  },
+  "audit": {
+    "run_id": 41280638841,
+    "reviewed_code_sha": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+    "artifact_id": 13072349111,
+    "artifact_sha256": "33f4a6d9a013da81f3f4c3c25f837c44cd7248de42f425b92e01af68b71cb67a",
+    "independent_review_sha256": "0a6498eb700741d0f71e5bd8bd11db2fdf17073643801f7462410a1b4ef89d86"
+  },
+  "not_authorized": [
+    "production publication or active pointer change",
+    "substantial bulk backfills or automatic refresh",
+    "new costs, credentials, services or expanded permissions",
+    "destructive operations or weakened safeguards"
+  ],
+  "season": "2024-25",
+  "dataset": "raw/player_game_availability",
+  "target_team_id": 1610612738,
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+  "scope": "Ten exact unknown Tatum keys from qualified82-game BOS2024\u201325 population; this does not substitute2025\u201326 evidence for the literal historical requirement.",
+  "baseline_facts": {
+    "observed_final_team_games": 82,
+    "played": 72,
+    "explicit_did_not_play": 0,
+    "unknown": 10,
+    "availability_csv_and_import_ledger": "both manifest-absent"
+  },
+  "remaining_unknown_target_count": 10,
+  "unique_requested_games": 10,
+  "requirements": [
+    {
+      "game_id": "0022400319",
+      "game_date": "2024-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400319.json",
+          "git_blob_sha": "547a144c23be3f67474fa2d31523344cb738ce4b",
+          "size_bytes": 20409
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400319.json",
+          "git_blob_sha": "34f9750db817364c5ceead0a34a01cf15027ab8d",
+          "size_bytes": 15553
+        }
+      ]
+    },
+    {
+      "game_id": "0022400393",
+      "game_date": "2024-12-23",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400393.json",
+          "git_blob_sha": "bfa67275caa09d253d2b0fb1695994139222e44e",
+          "size_bytes": 20391
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400393.json",
+          "git_blob_sha": "1e1ede0c9298c588bcaea8973f9e83f13012b663",
+          "size_bytes": 16276
+        }
+      ]
+    },
+    {
+      "game_id": "0022400891",
+      "game_date": "2025-03-05",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400891.json",
+          "git_blob_sha": "a4ca32e09ff158a1511a22fa880ed605e08c090f",
+          "size_bytes": 21599
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400891.json",
+          "git_blob_sha": "1c544154de98ee6f6f8b2f8ef6f1be53266e840f",
+          "size_bytes": 15857
+        }
+      ]
+    },
+    {
+      "game_id": "0022400929",
+      "game_date": "2025-03-10",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400929.json",
+          "git_blob_sha": "b80865b97186049d8a750a5f2aba8315eff22701",
+          "size_bytes": 19049
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400929.json",
+          "git_blob_sha": "fed4a260aa58b95cf9a135268e44dbdeb96f80de",
+          "size_bytes": 15169
+        }
+      ]
+    },
+    {
+      "game_id": "0022400994",
+      "game_date": "2025-03-18",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400994.json",
+          "git_blob_sha": "404853d73601afc90e526f8b1f265919fcfdcc70",
+          "size_bytes": 20336
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400994.json",
+          "git_blob_sha": "22b0d29ff8317fd280eb3c5db74c7941e1580e67",
+          "size_bytes": 15945
+        }
+      ]
+    },
+    {
+      "game_id": "0022401058",
+      "game_date": "2025-03-26",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022401058.json",
+          "git_blob_sha": "76b5baca4bfc10048f9e2205f52692cf3a07ca34",
+          "size_bytes": 20859
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401058.json",
+          "git_blob_sha": "2d41f0074cc5820e62069946435b81d397eea4a5",
+          "size_bytes": 20145
+        }
+      ]
+    },
+    {
+      "game_id": "0022401137",
+      "game_date": "2025-04-06",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022401137.json",
+          "git_blob_sha": "c7c3b5531785531bfb60d71b16c1dae33260f79d",
+          "size_bytes": 19690
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401137.json",
+          "git_blob_sha": "b3892e642ef8f5dcac6068e1211b36df4bf935b4",
+          "size_bytes": 15587
+        }
+      ]
+    },
+    {
+      "game_id": "0022401156",
+      "game_date": "2025-04-09",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022401156.json",
+          "git_blob_sha": "4f9ca594f74bdef99fb9cbf92887d27c411c2542",
+          "size_bytes": 20258
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401156.json",
+          "git_blob_sha": "9ccbee7c52c362c830ec2c7637bc885dc7b2a4f4",
+          "size_bytes": 19960
+        }
+      ]
+    },
+    {
+      "game_id": "0022401187",
+      "game_date": "2025-04-13",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022401187.json",
+          "git_blob_sha": "5c7d6c52c2826349a6e4372565737bd1577c83ce",
+          "size_bytes": 18405
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401187.json",
+          "git_blob_sha": "185d770a51588dcf011d9374c99feb6b58cd8c74",
+          "size_bytes": 15365
+        }
+      ]
+    },
+    {
+      "game_id": "0022401205",
+      "game_date": "2024-12-12",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "player_name": "Jayson Tatum",
+      "prior_state": "unknown",
+      "proposed_sources": [
+        {
+          "endpoint": "boxscoretraditionalv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022401205.json",
+          "git_blob_sha": "d94d915e0637180c2782ab0a8bd1a6d63aedc82b",
+          "size_bytes": 19031
+        },
+        {
+          "endpoint": "boxscoresummaryv3",
+          "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+          "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401205.json",
+          "git_blob_sha": "cef988b9f5245e2678eb94e2e59fcc03edfdcf1d",
+          "size_bytes": 19234
+        }
+      ]
+    }
+  ],
+  "limits": {
+    "max_source_body_bytes": 2000000,
+    "collection_zip_bytes": 20000000,
+    "collection_expanded_bytes": 100000000,
+    "collection_max_files": 2000,
+    "attempts_per_file": 1,
+    "metered_overage_usd": 0,
+    "maximum_total_source_reader_calls": 20
+  },
+  "source_metadata": {
+    "classification": "two untruncated pinned2025 indexes; exact20 leaves newly checked; original bodies unqualified",
+    "source_file_count": 20,
+    "total_source_bytes": 369118,
+    "largest_source_bytes": 21599,
+    "source_bodies_acquired": 0
+  },
+  "proposed_stage": "Qualify one representative pair before remaining18 originals. Reuse strict structured participation producer; create genuinely absent CSV and ledger together through reviewed generic stager support. No empty placeholders, clock repairs, inferred nonmembership or full-slice claim. Retain all originals and any failed qualification; qualified targeted report fallback only for diagnosed failures."
+}

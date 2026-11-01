@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "status": "bounded_source_requirement_not_publication_approval",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "season_type": "Regular Season",
+  "authorization": {
+    "decision_date": "2026-11-01",
+    "basis": "Owner standing bounded public NBA collection/staging through existing approved sources/tools/credentials/cost limits",
+    "collection_and_staging_authorized": true,
+    "production_publication_authorized": false,
+    "new_credentials_costs_permissions_or_bulk_history_authorized": false
+  },
+  "audit": {
+    "run_id": 41280638841,
+    "reviewed_code_sha": "51f07bbfd438c2d1f9ea30f0a6d0f0a976d281dd",
+    "artifact_id": 13072349111,
+    "artifact_sha256": "33f4a6d9a013da81f3f4c3c25f837c44cd7248de42f425b92e01af68b71cb67a",
+    "independent_review_sha256": "0a6498eb700741d0f71e5bd8bd11db2fdf17073643801f7462410a1b4ef89d86"
+  },
+  "not_authorized": [
+    "production publication or active pointer change",
+    "substantial bulk backfills or automatic refresh",
+    "new costs, credentials, services or expanded permissions",
+    "destructive operations or weakened safeguards"
+  ],
+  "season": "2023-24",
+  "target_team_id": 1610612747,
+  "reason": "Direct retained #462 dependencies: AD five unknown games plus LeBron ten; Reaves already qualified82 played/zero missed needs no collection. Traditional2024 is indexed but matching Summary2024 is absent. Reuse the existing official report producer/authority, limited to15 exactLAL-only games; no new adapter or league history.",
+  "baseline_facts": {
+    "Anthony Davis": {
+      "played": 76,
+      "did_not_play": 1,
+      "unknown": 5
+    },
+    "LeBron James": {
+      "played": 71,
+      "did_not_play": 1,
+      "unknown": 10
+    },
+    "Austin Reaves": {
+      "played": 82,
+      "did_not_play": 0,
+      "unknown": 0
+    },
+    "availability_rows": 68,
+    "existing_imports": 2
+  },
+  "limits": {
+    "source_files": 15,
+    "reader_invocations": 15,
+    "attempts_per_file": 1,
+    "timeout_seconds": 20,
+    "pdf_max_bytes": 1500000,
+    "aggregate_max_bytes": 10000000,
+    "metered_overage_usd": 0
+  },
+  "games": [
+    {
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "away_abbr": "LAL",
+      "home_abbr": "HOU",
+      "opponent_team_id": 1610612745,
+      "away_points": 94,
+      "home_points": 128,
+      "source_url": "https://statsdmz.nba.com/pdfs/20231108/20231108_LALHOU.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        203076
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "away_abbr": "POR",
+      "home_abbr": "LAL",
+      "opponent_team_id": 1610612757,
+      "away_points": 110,
+      "home_points": 116,
+      "source_url": "https://statsdmz.nba.com/pdfs/20231112/20231112_PORLAL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "away_abbr": "LAL",
+      "home_abbr": "SAS",
+      "opponent_team_id": 1610612759,
+      "away_points": 122,
+      "home_points": 119,
+      "source_url": "https://statsdmz.nba.com/pdfs/20231213/20231213_LALSAS.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "away_abbr": "LAL",
+      "home_abbr": "SAS",
+      "opponent_team_id": 1610612759,
+      "away_points": 115,
+      "home_points": 129,
+      "source_url": "https://statsdmz.nba.com/pdfs/20231215/20231215_LALSAS.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        203076
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "away_abbr": "LAL",
+      "home_abbr": "MIN",
+      "opponent_team_id": 1610612750,
+      "away_points": 111,
+      "home_points": 118,
+      "source_url": "https://statsdmz.nba.com/pdfs/20231221/20231221_LALMIN.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "away_abbr": "LAL",
+      "home_abbr": "UTA",
+      "opponent_team_id": 1610612762,
+      "away_points": 125,
+      "home_points": 132,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240113/20240113_LALUTA.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "away_abbr": "LAL",
+      "home_abbr": "LAC",
+      "opponent_team_id": 1610612746,
+      "away_points": 116,
+      "home_points": 127,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240123/20240123_LALLAC.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "away_abbr": "LAL",
+      "home_abbr": "ATL",
+      "opponent_team_id": 1610612737,
+      "away_points": 122,
+      "home_points": 138,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240130/20240130_LALATL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        203076
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "away_abbr": "LAL",
+      "home_abbr": "UTA",
+      "opponent_team_id": 1610612762,
+      "away_points": 138,
+      "home_points": 122,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240214/20240214_LALUTA.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "away_abbr": "LAL",
+      "home_abbr": "GSW",
+      "opponent_team_id": 1610612744,
+      "away_points": 110,
+      "home_points": 128,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240222/20240222_LALGSW.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "away_abbr": "MIL",
+      "home_abbr": "LAL",
+      "opponent_team_id": 1610612749,
+      "away_points": 122,
+      "home_points": 123,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240308/20240308_MILLAL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "away_abbr": "LAL",
+      "home_abbr": "MIL",
+      "opponent_team_id": 1610612749,
+      "away_points": 128,
+      "home_points": 124,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240326/20240326_LALMIL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "away_abbr": "LAL",
+      "home_abbr": "MEM",
+      "opponent_team_id": 1610612763,
+      "away_points": 136,
+      "home_points": 124,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240327/20240327_LALMEM.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        203076
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "away_abbr": "MIN",
+      "home_abbr": "LAL",
+      "opponent_team_id": 1610612750,
+      "away_points": 127,
+      "home_points": 117,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240407/20240407_MINLAL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        2544
+      ],
+      "prior_state": "unknown"
+    },
+    {
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "away_abbr": "GSW",
+      "home_abbr": "LAL",
+      "opponent_team_id": 1610612744,
+      "away_points": 134,
+      "home_points": 120,
+      "source_url": "https://statsdmz.nba.com/pdfs/20240409/20240409_GSWLAL.pdf",
+      "imported_team_ids": [
+        1610612747
+      ],
+      "required_target_player_ids": [
+        203076
+      ],
+      "prior_state": "unknown"
+    }
+  ],
+  "reuse_existing_reports": [
+    {
+      "game_id": "0022300403",
+      "game_date": "2023-12-25",
+      "source": "nba_official_finalbox:20231225_BOSLAL",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334.pdf",
+        "sha256": "f046b2bbf063a8d14639f36e440580751788abeefad0d9b5f03e62a009c03334",
+        "size_bytes": 26371
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20231225_BOSLAL.json",
+        "sha256": "3006f627e553339827282634747a765867964317d2e73a79cd615f218d71a779",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    },
+    {
+      "game_id": "0022300684",
+      "game_date": "2024-02-01",
+      "source": "nba_official_finalbox:20240201_LALBOS",
+      "pdf_binding": {
+        "path": "raw/player_game_availability_sources/98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4.pdf",
+        "sha256": "98f2dbbf9db7b64a99a19e80721196ec788632c5ba0bae881c70bcd3799cfda4",
+        "size_bytes": 26828
+      },
+      "receipt_binding": {
+        "path": "raw/player_game_availability_sources/20240201_LALBOS.json",
+        "sha256": "40434faea36b891f08a8cf11fe66c852fab35fc3892a6101ba4ebe77a31013c1",
+        "size_bytes": 312
+      },
+      "accepted_current_ledger_rows": 34,
+      "body_reinspection": false,
+      "body_note": "PDF originals not exported by this audit; accepted immutable published source bindings and complete source-reported ledger bytes reused, not re-fetched or re-qualified."
+    }
+  ],
+  "proposed_stage": "Replay qualified retained PDFs through existing report producer imported_team_ids=[LAL]; preserve68 existing serialized availability rows/two imports/80 retained source sidecars, canonical core and unrelated seasons. Derive target states from sources, then qualify whole82-game populations; unknown is not DNP. Collection transport is not source, stage or feature acceptance."
+}

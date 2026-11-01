@@ -465,3 +465,106 @@ def test_multiple_game_groups_append_once_and_preserve_existing_cells_and_source
     for path, raw in baseline.items():
         if path.startswith("raw/player_game_availability_sources/"):
             assert (work / "data" / path).read_bytes() == raw
+
+
+def remove_base_manifest_paths(collection, paths, *, delete_files):
+    request_path, _, _, _, served = collection
+    manifest_path = served / "metadata/generation_manifest.json"
+    manifest = json.loads(manifest_path.read_bytes())
+    manifest["files"] = [entry for entry in manifest["files"] if entry["path"] not in paths]
+    raw = json.dumps(manifest).encode()
+    manifest_path.write_bytes(raw)
+    request = json.loads(request_path.read_bytes())
+    request["base_manifest_sha256"] = hashlib.sha256(raw).hexdigest()
+    request_path.write_text(json.dumps(request))
+    if delete_files:
+        for relative in paths:
+            (served / relative).unlink()
+    reset_data_source_cache()
+
+
+def availability_paths():
+    csv_path = "raw/player_game_availability/" + SUFFIX
+    return csv_path, csv_path.removesuffix(".csv") + ".imports.json"
+
+
+def test_manifest_absent_pair_is_created_from_qualified_originals_without_fake_append(
+    collection, monkeypatch
+):
+    multiple_targets(collection)
+    paths = availability_paths()
+    remove_base_manifest_paths(collection, paths, delete_files=True)
+    served = collection[4]
+    baseline = {
+        p.relative_to(served).as_posix(): p.read_bytes() for p in served.rglob("*") if p.is_file()
+    }
+    original = builder.stage_structured_game
+    calls = []
+
+    def stage(*args, **kwargs):
+        root = args[0]
+        assert not (root / paths[0]).exists() and not (root / paths[1]).exists()
+        calls.append(kwargs["game_id"])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(builder, "stage_structured_game", stage)
+    result = run(collection)
+    assert calls == [22500002]
+    assert result["append_only"] == {}
+    assert result["manifest_absent_creations"] == {
+        path: dict(
+            base_presence="manifest_absent", added_game_ids=["0022500002"], added_records=count
+        )
+        for path, count in zip(paths, [4, 1])
+    }
+    assert not set(paths) & result["base_file_hashes"].keys()
+    assert [(row["player_id"], row["state"]) for row in result["qualified_targets"]] == [
+        (11, "played"),
+        (13, "did_not_play"),
+    ]
+    csv_path, ledger_path = (collection[2] / "data" / path for path in paths)
+    assert set(pd.read_csv(csv_path).game_id) == {22500002}
+    assert set(json.loads(ledger_path.read_bytes())) == {"22500002"}
+    assert {
+        p.relative_to(served).as_posix(): p.read_bytes() for p in served.rglob("*") if p.is_file()
+    } == baseline
+    for path, raw in baseline.items():
+        if path.startswith("raw/player_game_availability_sources/"):
+            assert (collection[2] / "data" / path).read_bytes() == raw
+    assert set(paths) <= {item["path"] for item in result["overlay_files"]}
+    assert result["publication_state"] == "staged_only_no_writes"
+
+
+@pytest.mark.parametrize("missing", [0, 1], ids=["csv-absent", "ledger-absent"])
+def test_partial_manifest_pair_is_rejected_before_work_or_export(collection, missing):
+    remove_base_manifest_paths(collection, [availability_paths()[missing]], delete_files=True)
+    with pytest.raises(ValueError, match="jointly present or absent"):
+        run(collection)
+    assert not collection[2].exists() and not collection[3].exists()
+
+
+@pytest.mark.parametrize("stray", [0, 1], ids=["unmanifested-csv", "unmanifested-ledger"])
+def test_manifest_absent_pair_rejects_either_configured_stray_file(collection, stray):
+    paths = availability_paths()
+    remove_base_manifest_paths(collection, paths, delete_files=False)
+    (collection[4] / paths[1 - stray]).unlink()
+    with pytest.raises(
+        ValueError, match="Manifest-absent availability has a configured source file"
+    ):
+        run(collection)
+    assert not collection[2].exists() and not collection[3].exists()
+
+
+@pytest.mark.parametrize("collision", ["work", "output", "same", "nested"])
+def test_creation_rejects_work_output_collisions(collection, collision):
+    remove_base_manifest_paths(collection, availability_paths(), delete_files=True)
+    request, sources, work, output, _ = collection
+    if collision in {"work", "output"}:
+        (work if collision == "work" else output).mkdir()
+    elif collision == "same":
+        output = work
+    else:
+        output = work / "nested"
+    with pytest.raises(ValueError, match="separate new work/output"):
+        build_stage(request, sources, work, output, candidate_sha="c" * 40)
+    assert not (output / "validation.json").exists()

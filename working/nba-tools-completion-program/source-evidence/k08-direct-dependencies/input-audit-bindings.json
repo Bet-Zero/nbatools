@@ -1,0 +1,302 @@
+{
+  "classification": "read_only_current_input_audit_not_DNP_inference_collection_or_publication",
+  "generation": "availability-lebron-season-v1-20261031",
+  "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "scopes": [
+    {
+      "season": "2023-24",
+      "team_id": 1610612747,
+      "player_ids": [
+        203076,
+        2544,
+        1630559
+      ]
+    },
+    {
+      "season": "2024-25",
+      "team_id": 1610612738,
+      "player_ids": [
+        1628369
+      ]
+    }
+  ],
+  "source_files": [
+    {
+      "path": "metadata/player_names.csv",
+      "sha256": "f7097aaefe54b986ea5036e3c9ca5ca4c05a58266aa6cd0e2b4710e4cfe5f1b2",
+      "size_bytes": 500982
+    },
+    {
+      "path": "raw/games/2023-24_regular_season.csv",
+      "sha256": "ddc195db5d6cb3f0e42361a8b873f0cef04813e1e49b2a1a070006dcfa1f7346",
+      "size_bytes": 155882
+    },
+    {
+      "path": "raw/games/2024-25_regular_season.csv",
+      "sha256": "14d7deee5a5fa39e0bc42e769dd0412ade69b9e02af207b3fa2f103be5851df3",
+      "size_bytes": 283092
+    },
+    {
+      "path": "raw/player_game_availability/2023-24_regular_season.csv",
+      "sha256": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+      "size_bytes": 16721
+    },
+    {
+      "path": "raw/player_game_stats/2023-24_regular_season.csv",
+      "sha256": "a455e553ceb0b4e74bd4caf37aca482c0a9aab193631b6f2b383b623f861d760",
+      "size_bytes": 4939911
+    },
+    {
+      "path": "raw/player_game_stats/2024-25_regular_season.csv",
+      "sha256": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591",
+      "size_bytes": 4926374
+    },
+    {
+      "path": "raw/player_season_advanced/2023-24_regular_season.csv",
+      "sha256": "467319eed482c5be6c4a7dffe56600a803198d6b72760e4a9b4adab355cf1896",
+      "size_bytes": 75876
+    },
+    {
+      "path": "raw/player_season_advanced/2024-25_regular_season.csv",
+      "sha256": "25c0b3d008e1b6c590f9f613af2ee829c52a38852ff2c80d504e20e2b6bdda99",
+      "size_bytes": 75501
+    },
+    {
+      "path": "raw/team_game_stats/2023-24_regular_season.csv",
+      "sha256": "b1c337e1f0099072538054b580cf280de98a5bc5aa0efd61f325037012963449",
+      "size_bytes": 453325
+    },
+    {
+      "path": "raw/team_game_stats/2024-25_regular_season.csv",
+      "sha256": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+      "size_bytes": 453925
+    }
+  ],
+  "manifest_absent_optional_paths": [
+    "raw/player_game_availability/2024-25_regular_season.csv"
+  ],
+  "absence_table_policy": "Manifest-absent availability is an empty evidence table; missing rows stay unknown unless positive/exact-game association qualifies them.",
+  "historical_tatum_proof": {
+    "path": "working/nba-tools-completion-program/source-evidence/k08-coverage/selected-populations.json",
+    "sha256": "7417eca7269045e0412cd075e32cd70285dffd56b33f9ea54d05ea215f792380",
+    "old_generation": "availability-opening-s4-v1-20261017",
+    "old_source_hashes": {
+      "raw/team_game_stats/2025-26_regular_season.csv": "9ddc7ef841db557648e88881c9919d84133a91666975cbd4e8bbaa292328ad37",
+      "raw/player_game_stats/2025-26_regular_season.csv": "55faa6727b74baa189867e421a0c4b88a987d5ac33c707272061ca0a19b0902b",
+      "raw/player_game_availability/2025-26_regular_season.csv": "7e21e4931a4062e7cbb4abc10eeba051bf8429e7418112852662808ddfefc902",
+      "raw/team_game_stats/2024-25_regular_season.csv": "36bc367e1e63d90ef7960683a484ae07020ea6e277fe1de4c80a568de05cb762",
+      "raw/player_game_stats/2024-25_regular_season.csv": "3a259df8b93029e0d809ce38b8123d98a3f0f009017ec6d43e0b285906cf6591"
+    },
+    "old_unknown_ids": [
+      22400319,
+      22400393,
+      22400891,
+      22400929,
+      22400994,
+      22401058,
+      22401137,
+      22401156,
+      22401187,
+      22401205
+    ],
+    "reuse_as_current_proof": false,
+    "missing_current_dependency_bindings": [
+      "metadata/player_names.csv",
+      "raw/games/2024-25_regular_season.csv",
+      "raw/player_season_advanced/2024-25_regular_season.csv"
+    ],
+    "changed_input_hashes": [],
+    "unbound_optional_absences": [
+      "raw/player_game_availability/2024-25_regular_season.csv"
+    ],
+    "action": "Reused only as historical corroboration; one current fourth scope audited"
+  },
+  "subset_sha256": {
+    "2023-24-1610612747-target-player-rows.csv": "3b5cc420bc4cf4f76b08600b3e4a20700fc5018edd54bceac545218baa233fe8",
+    "2024-25-1610612738-target-ledger-rows.csv": "0426d074cd583d118beb867040888148e8f90423f868ab06063c0c483d42aecc",
+    "2023-24-1610612747-catalog82.csv": "443a160974880f4d420b32b373ef31a317a5cbe01616d617f7ddb2da0217fe6e",
+    "2023-24-1610612747-reciprocal-team164.csv": "57ea67fee469fff7734580d07db4506afbb5c577f726f45a408485623c0269e3",
+    "2023-24-1610612747-target-ledger-rows.csv": "89579f8e38f86b4ed918ff51f853d2cbd8379defe0c2d3ff0ffcdd1c211a6a84",
+    "2024-25-1610612738-reciprocal-team164.csv": "421b16b406149a623c25f439f7aa4622a680e06579c7a16c9f1e3957d1cfdc01",
+    "2023-24-availability-original.csv": "cafbb2c5994881013fe3232f6a06f10677a76a9b6a31a326dd442fdc0851f95c",
+    "2024-25-1610612738-target-player-rows.csv": "fd9665e167a89c86063b57c32a1d32220142adc065e53cdb6c6fcced68e0a33e",
+    "2024-25-1610612738-catalog82.csv": "0dd812405a5f8ba0ba06fb022e209ded93d9b46c51dc8fc31e8e14f843a16cc2",
+    "2023-24-1610612747-team82.csv": "c81af5e94c42dd472c50259d1e813e7d21a81ef1819a8c55b215a78233064713",
+    "2024-25-1610612738-team82.csv": "d926ac63e414a0e48304a702b615194129036b18c78b9c43673604c3f5a941d3"
+  },
+  "collection_candidate_keys": [
+    {
+      "game_id": "0022300163",
+      "game_date": "2023-11-08",
+      "team_id": 1610612747,
+      "player_id": 203076
+    },
+    {
+      "game_id": "0022300331",
+      "game_date": "2023-12-15",
+      "team_id": 1610612747,
+      "player_id": 203076
+    },
+    {
+      "game_id": "0022300669",
+      "game_date": "2024-01-30",
+      "team_id": 1610612747,
+      "player_id": 203076
+    },
+    {
+      "game_id": "0022301055",
+      "game_date": "2024-03-27",
+      "team_id": 1610612747,
+      "player_id": 203076
+    },
+    {
+      "game_id": "0022301155",
+      "game_date": "2024-04-09",
+      "team_id": 1610612747,
+      "player_id": 203076
+    },
+    {
+      "game_id": "0022300187",
+      "game_date": "2023-11-12",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300316",
+      "game_date": "2023-12-13",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300380",
+      "game_date": "2023-12-21",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300549",
+      "game_date": "2024-01-13",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300618",
+      "game_date": "2024-01-23",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300788",
+      "game_date": "2024-02-14",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300802",
+      "game_date": "2024-02-22",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022300915",
+      "game_date": "2024-03-08",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022301045",
+      "game_date": "2024-03-26",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022301143",
+      "game_date": "2024-04-07",
+      "team_id": 1610612747,
+      "player_id": 2544
+    },
+    {
+      "game_id": "0022400319",
+      "game_date": "2024-12-04",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022400393",
+      "game_date": "2024-12-23",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022400891",
+      "game_date": "2025-03-05",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022400929",
+      "game_date": "2025-03-10",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022400994",
+      "game_date": "2025-03-18",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022401058",
+      "game_date": "2025-03-26",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022401137",
+      "game_date": "2025-04-06",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022401156",
+      "game_date": "2025-04-09",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022401187",
+      "game_date": "2025-04-13",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    },
+    {
+      "game_id": "0022401205",
+      "game_date": "2024-12-12",
+      "team_id": 1610612738,
+      "player_id": 1628369
+    }
+  ],
+  "scope_dispositions": [
+    {
+      "path": "2024-25-1628369-coverage.json",
+      "disposition": "qualified_incomplete_missing_evidence"
+    },
+    {
+      "path": "2023-24-2544-coverage.json",
+      "disposition": "qualified_incomplete_missing_evidence"
+    },
+    {
+      "path": "2023-24-203076-coverage.json",
+      "disposition": "qualified_incomplete_missing_evidence"
+    },
+    {
+      "path": "2023-24-1630559-coverage.json",
+      "disposition": "qualified_complete_observed_population"
+    }
+  ],
+  "capability_complete": false,
+  "requirement_closures": 0,
+  "collection_requirement": "Inspect qualification errors and reuse accepted evidence before proposing only exact unresolved keys; unknown is not DNP.",
+  "production_writes": 0,
+  "nba_source_requests": 0
+}
