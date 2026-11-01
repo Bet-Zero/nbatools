@@ -151,3 +151,23 @@ def test_unknown_exact_population_cannot_be_waived_by_lag_exception(monkeypatch)
     )
     assert not result.ready and not result.exception.applied
     assert [b.code for b in result.blockers] == ["active_schedule_coverage_unknown"]
+
+
+def test_contradictory_future_instant_cannot_hide_missing_earlier_game(monkeypatch):
+    schedule, games = frames()
+    schedule.loc[0, "game_datetime"] = "2026-11-05T23:00:00Z"
+    item = collect(monkeypatch, schedule, games.iloc[1:])
+    assert item.current_through == item.expected_current_through == "2026-10-30"
+    assert item.missing_due_game_ids is None
+    result = evaluate(item)
+    assert not result.ready
+    assert [b.code for b in result.blockers] == ["active_schedule_coverage_unknown"]
+
+
+def test_eastern_date_and_blank_legacy_fallback_are_preserved(monkeypatch):
+    schedule, games = frames()
+    schedule.loc[0, "game_datetime"] = "2026-10-30T01:00:00Z"
+    assert collect(monkeypatch, schedule, games).missing_due_game_ids == ()
+    schedule["game_datetime"] = ""
+    assert collect(monkeypatch, schedule, games).missing_due_game_ids == ()
+    assert collect(monkeypatch, schedule, games.iloc[1:]).missing_due_game_ids == ("0022600001",)

@@ -516,6 +516,14 @@ def _missing_due_game_ids(schedule, games, checked_at, season, season_type):
         return None
     # Use the same conservative date fallback as expected_current_through.
     timestamps = pd.to_datetime(schedule.get("game_datetime"), errors="coerce", utc=True)
+    if timestamps is not None:
+        # A valid instant cannot move a scheduled game to another basketball
+        # date and thereby hide it outside the due window. Legacy producers
+        # supply blanks; those retain the conservative date-only fallback.
+        known = timestamps.notna()
+        local_dates = timestamps.dt.tz_convert("America/New_York").dt.date
+        if (known & local_dates.ne(scheduled_dates.dt.date)).any():
+            return None
     timestamps = scheduled_dates if timestamps is None else timestamps.fillna(scheduled_dates)
     due = timestamps <= pd.Timestamp(checked_at - timedelta(hours=MAX_ACTIVE_LAG_HOURS))
     observed = dict(zip(game_ids, zip(game_dates.dt.date, flags)))
