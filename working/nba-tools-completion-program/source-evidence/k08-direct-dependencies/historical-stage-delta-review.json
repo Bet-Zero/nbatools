@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/absence_checker",
+  "model_identity": "Actual model ID unavailable; separate checker, no cross-model claim",
+  "approval": "PASS repaired count/list response contract and early evidence preservation for one justified same775 replay; first required run remains FAILED",
+  "reviewed_revision": "1e3af5568227f7e63db27cdd30eff324ebfe7810",
+  "equivalent_local_revision": "a84dc9bb4a588b17fb83579fb7545b83e5354463",
+  "tree": "180b6d6794488a160e37798906628437c247cf61",
+  "file_hashes": {
+    "tests/cloud_historical_participation_stage_real_data.py": "7ae88894f721ea0b94c0fb2f56013de24c72215777293c1e42fa68ed62f3edb5",
+    "tests/test_historical_stage_merge.py": "16f1ddffdec9ad401069c83d64bf48706b5f6e60bffba5f8668cdddbdffcc02c"
+  },
+  "prior_reviewed_runtime": "e204b682d0300698e2a966f02539719a4a298547",
+  "prior_failed_run": 41283001115,
+  "prior_failure_review_sha256": "c5bd74b76c8c33ff9fd172c41a6ff2cdc258b8eb49443bf1ae542bdae1374b96",
+  "focused_tests": {
+    "file": "tests/test_historical_stage_merge.py",
+    "passed": 5,
+    "skipped": 0,
+    "controls": "Three merge guards plus actual fixture positive5explicitDNP and fullyqualified zero naturalcount/structuredlist contracts"
+  },
+  "independent_checks": {
+    "home_count_list_equivalence": {
+      "fixture_explicit_DNP": 5,
+      "home_DNP": 2,
+      "exact_home_game_ids": [
+        22510063,
+        22510064
+      ],
+      "natural_count_and_equivalent_home_only_structured_list_pass": true
+    },
+    "persistence_controls": [
+      {
+        "mode": "startup_failure",
+        "actual_gate_tail_executed": true,
+        "prepared_overlay_validation_exported_before_consumer": true,
+        "consumer_status": "failed",
+        "failure_rethrown": true,
+        "completed_reports_retained": 0,
+        "completed_answers_retained": 0,
+        "test_manifest_excluded_from_export": true,
+        "synthetic_control_not_NBA_acceptance": true
+      },
+      {
+        "mode": "partial_consumer_failure",
+        "actual_gate_tail_executed": true,
+        "prepared_overlay_validation_exported_before_consumer": true,
+        "consumer_status": "failed",
+        "failure_rethrown": true,
+        "completed_reports_retained": 1,
+        "completed_answers_retained": 1,
+        "test_manifest_excluded_from_export": true,
+        "synthetic_control_not_NBA_acceptance": true
+      },
+      {
+        "mode": "passed",
+        "actual_gate_tail_executed": true,
+        "prepared_overlay_validation_exported_before_consumer": true,
+        "consumer_status": "passed",
+        "failure_rethrown": false,
+        "completed_reports_retained": 1,
+        "completed_answers_retained": 1,
+        "test_manifest_excluded_from_export": true,
+        "synthetic_control_not_NBA_acceptance": true
+      }
+    ],
+    "persistence_control_method": "Executed actual frozen gate persistence-tail AST with synthetic prepared bytes and mocked consumer outcomes; this tests export/error control flow, not NBA source/canonical acceptance."
+  },
+  "reviewed_delta": {
+    "natural_count_values_and_route_kept": true,
+    "structured_list_uses_same_team_season_player_home_predicates_and_limit82": true,
+    "qualified_zero_kept": true,
+    "prepared_overlay_validation_pendingreceipt_export_before_local_inventory_or_consumerstartup": true,
+    "completed_reports_answers_persist_on_failure": true,
+    "typed_failure_rethrown_and_finally_receipt_written": true,
+    "source_or_runtime_guards_weakened": false,
+    "source876_and_existing68_2_80_safeguards_unchanged": true,
+    "test_local_manifest_excluded_from_export": true
+  },
+  "required_replay": {
+    "selector": "tests/cloud_historical_participation_stage_real_data.py::test_retained_historical_sources_expand_direct_absence_consumers",
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+    "selected_tests": 1,
+    "source_requests": 0,
+    "local_api_posts": 4,
+    "production_writes": 0
+  },
+  "unrelated_carry_forward": {
+    "query": "how many home games did LeBron James miss in2025-26",
+    "fixture_expected": "2homeDNP of5explicitDNP",
+    "observed": "Existing parser uses player_game_finder/count77 rather than the miss predicate when in and year are concatenated; properly spaced query independently passes2.",
+    "introduced_by_delta": false,
+    "scope": "Separate pre-existing compressed-year interpretation gap; not a claim of completed capability and not part of this harness-only replay repair."
+  },
+  "source_network_calls_by_checker": 0,
+  "actual_R2_replay_approved": true,
+  "actual_R2_replay_accepted": false,
+  "consumer_acceptance": false,
+  "full_required_slice_accepted": false,
+  "requirement_closures": 0,
+  "production_publication_approved": false,
+  "production_writes": 0
+}
