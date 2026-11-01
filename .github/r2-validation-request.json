@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "570b3be34dd3d5eadb5d95a916e30d8cda6abf3d",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/test_bos_participation_stage_real_data.py::test_retained_boston_sources_close_both_populations_and_mixed_records"
+  ],
+  "raw_qa_cases": []
+}
