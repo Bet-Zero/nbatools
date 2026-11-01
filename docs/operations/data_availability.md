@@ -161,6 +161,36 @@ Upload `collection.zip` through GitHub's web UI on a **data-staging task branch*
 upload credentials or push to main. No R2 write credential goes on the laptop.
 GitHub staging is not production. Codex handles all subsequent technical work.
 
+### Bounded 2026–27 quarter source diagnosis
+
+The standing collection authorization covers this existing laptop route; no new
+collection consent, credentials or service is needed. The archived quarter file
+contains zero/unparameterized responses, while the correctly parameterized cloud
+Traditional V3 request timed out in run41264167626. Do not retry that cloud route
+or expand to a season batch without changed evidence.
+
+`tools/collect_rollover_q1_laptop.py` is a standalone acquisition-only helper for
+the existing Python/`nba_api` installation. Copy just that reviewed file; an NBA
+Tools checkout or development environment is unnecessary. It makes at most two
+requests: Traditional V3 and Advanced V3 for game0022600001, Q1, fixed reviewed
+parameters. Each endpoint has one attempt,30-second timeout and2MB body cap,
+standard SDK headers/session, no redirects or alternate hosts. The retained
+Summary oracle is Detroit27/Boston28 with60 team-minutes per side; full-game,
+all-zero, conflicting player/clock and invalid-rate responses cannot qualify.
+
+```bash
+python collect_rollover_q1_laptop.py --output rollover-q1-capture
+```
+
+Transfer `rollover-q1-capture/collection.zip` through the existing data-only handoff,
+including when the command fails. The ZIP retains original response bytes (or
+failure diagnostics), exact parameters, SDK version, UTC capture times and hashes;
+it uses the existing20MB/100MB/2000-file bundle limits and contains no executable,
+request/response headers or credentials. It remains unvalidated development data
+and never establishes canonical period acceptance or production authority. Codex
+qualifies the returned originals in the cloud before any larger bounded request.
+No batch-manifest or automatic expansion is included.
+
 ## Cloud: validate, prepare and request protected publication
 
 ```bash
