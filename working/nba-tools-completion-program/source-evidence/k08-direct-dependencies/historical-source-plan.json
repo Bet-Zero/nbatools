@@ -543,7 +543,7 @@
     "source_calls": 0
   },
   "representative_capture": {
-    "status": "both representatives independently qualified; all50 originals retained once; fullsource qualification pending",
+    "status": "all50 originals retained once; independent fullsource qualification passed; canonical stage/consumers pending",
     "source_reader_calls": 50,
     "original_bytes": 722069,
     "reader_attempts_each": 1,
@@ -556,5 +556,16 @@
   "source_capture_manifests_sha256": {
     "lal-2023-24": "ff5f604392b168c1259e3a219c2cdddc58b25b392fa8b7fbac74872b3b7f33df",
     "bos-2024-25": "b38929d14ed1827245307a4e666e82c3a810514fef57fe5ef46c212075993be7"
+  },
+  "full_source_qualification": {
+    "sha256": "b22dd69bd22f48767c760bb71a85e1796243b857662108cd9363bfe8d55c3389",
+    "listed_rows": 876,
+    "lal_rows": 529,
+    "bos_rows": 347,
+    "blocked_groups": [],
+    "display_clock_residuals": "five sides at plus or minus one second retained; no precise aggregate claim",
+    "full_canonical_pga_accepted": false,
+    "staging_accepted": false,
+    "production_writes": 0
   }
 }

@@ -1,0 +1,156 @@
+[
+  {
+    "did_not_play": 6,
+    "did_not_play_game_ids": [
+      22300163,
+      22300331,
+      22300669,
+      22300684,
+      22301055,
+      22301155
+    ],
+    "home_dnp": 1,
+    "home_dnp_game_ids": [
+      22301155
+    ],
+    "played": 76,
+    "player_id": 203076,
+    "player_name": "Anthony Davis",
+    "season": "2023-24",
+    "team_id": 1610612747,
+    "unknown": 0,
+    "without_record": {
+      "game_ids": [
+        22300163,
+        22300331,
+        22300669,
+        22300684,
+        22301055,
+        22301155
+      ],
+      "games": 6,
+      "losses": 4,
+      "points": 701,
+      "pts_avg": 116.833,
+      "wins": 2
+    }
+  },
+  {
+    "did_not_play": 11,
+    "did_not_play_game_ids": [
+      22300187,
+      22300316,
+      22300380,
+      22300549,
+      22300618,
+      22300684,
+      22300788,
+      22300802,
+      22300915,
+      22301045,
+      22301143
+    ],
+    "home_dnp": 3,
+    "home_dnp_game_ids": [
+      22300187,
+      22300915,
+      22301143
+    ],
+    "played": 71,
+    "player_id": 2544,
+    "player_name": "LeBron James",
+    "season": "2023-24",
+    "team_id": 1610612747,
+    "unknown": 0,
+    "without_record": {
+      "game_ids": [
+        22300187,
+        22300316,
+        22300380,
+        22300549,
+        22300618,
+        22300684,
+        22300788,
+        22300802,
+        22300915,
+        22301045,
+        22301143
+      ],
+      "games": 11,
+      "losses": 5,
+      "points": 1320,
+      "pts_avg": 120.0,
+      "wins": 6
+    }
+  },
+  {
+    "did_not_play": 0,
+    "did_not_play_game_ids": [],
+    "home_dnp": 0,
+    "home_dnp_game_ids": [],
+    "played": 82,
+    "player_id": 1630559,
+    "player_name": "Austin Reaves",
+    "season": "2023-24",
+    "team_id": 1610612747,
+    "unknown": 0,
+    "without_record": {
+      "game_ids": [],
+      "games": 0,
+      "losses": 0,
+      "points": 0,
+      "pts_avg": null,
+      "wins": 0
+    }
+  },
+  {
+    "did_not_play": 10,
+    "did_not_play_game_ids": [
+      22400319,
+      22400393,
+      22400891,
+      22400929,
+      22400994,
+      22401058,
+      22401137,
+      22401156,
+      22401187,
+      22401205
+    ],
+    "home_dnp": 7,
+    "home_dnp_game_ids": [
+      22400319,
+      22400891,
+      22400929,
+      22400994,
+      22401137,
+      22401187,
+      22401205
+    ],
+    "played": 72,
+    "player_id": 1628369,
+    "player_name": "Jayson Tatum",
+    "season": "2024-25",
+    "team_id": 1610612738,
+    "unknown": 0,
+    "without_record": {
+      "game_ids": [
+        22400319,
+        22400393,
+        22400891,
+        22400929,
+        22400994,
+        22401058,
+        22401137,
+        22401156,
+        22401187,
+        22401205
+      ],
+      "games": 10,
+      "losses": 2,
+      "points": 1128,
+      "pts_avg": 112.8,
+      "wins": 8
+    }
+  }
+]
