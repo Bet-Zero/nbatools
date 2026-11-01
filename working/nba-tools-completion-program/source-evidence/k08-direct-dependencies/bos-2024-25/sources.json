@@ -1,0 +1,36 @@
+{
+  "repository": "sportsdataverse/hoopR-nba-stats-raw",
+  "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "classification": "partial_representative_capture_unqualified_staging_only",
+  "authorization": {
+    "decision_date": "2026-11-01",
+    "basis": "Owner standing bounded public NBA collection/staging through existing approved sources/tools/credentials/cost limits",
+    "collection_and_staging_authorized": true,
+    "production_publication_authorized": false,
+    "new_credentials_costs_permissions_or_bulk_history_authorized": false
+  },
+  "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+  "collection_request_sha256": "5bedec01c26494aee835c8503216e65abd71c8bddf2854f9baf409256843fb83",
+  "files": {
+    "boxscoresummaryv3_0022400319.json": {
+      "reader_attempts": 1,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022400319.json",
+      "retrieved_at": "2026-11-01T06:47:02.727Z",
+      "git_blob_sha": "34f9750db817364c5ceead0a34a01cf15027ab8d",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/34f9750db817364c5ceead0a34a01cf15027ab8d",
+      "original_nba_capture_time": null,
+      "sha256": "c773185249d545e768421abd46dd9f7ff1feb4e5cf167b9ef01ba88b4dbb4f52",
+      "size_bytes": 15553
+    },
+    "boxscoretraditionalv3_0022400319.json": {
+      "reader_attempts": 1,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2025/0022400319.json",
+      "retrieved_at": "2026-11-01T06:47:02.412Z",
+      "git_blob_sha": "547a144c23be3f67474fa2d31523344cb738ce4b",
+      "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/547a144c23be3f67474fa2d31523344cb738ce4b",
+      "original_nba_capture_time": null,
+      "sha256": "c81f2db2e1ed06c55b0adf9b8dc2bb74712c18ca42c63a7d117e21195bba4c99",
+      "size_bytes": 20409
+    }
+  }
+}
