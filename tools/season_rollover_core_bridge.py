@@ -211,6 +211,37 @@ def _pbp_facts(source, summary_source, game):
     ]
 
 
+def _traditional_teams(source, games):
+    box = source.document["boxScoreTraditional"]
+    gid = box["gameId"]
+    if gid not in games:
+        raise ValueError("Traditional source is outside exact final population")
+    for side in ["homeTeam", "awayTeam"]:
+        team = box[side]
+        if any(team[key] != games[gid][side][key] for key in ["teamId"]):
+            raise ValueError("Traditional source side identity differs")
+        if team["statistics"]["points"] != games[gid][side]["score"]:
+            raise ValueError("Traditional source final score differs")
+        if len({p["personId"] for p in team["players"]}) != len(team["players"]):
+            raise ValueError("Traditional source has duplicate player identities")
+        if (
+            sum(_integer(p["statistics"]["points"]) for p in team["players"])
+            != team["statistics"]["points"]
+        ):
+            raise ValueError("Traditional player points do not reconcile to explicit final score")
+        team_minutes = _literal_minutes(team["statistics"]["minutes"])
+        player_minutes = [_literal_minutes(p["statistics"]["minutes"]) for p in team["players"]]
+        if (
+            not math.isfinite(team_minutes)
+            or team_minutes < 240
+            or not math.isclose(sum(player_minutes), team_minutes, abs_tol=2 / 60)
+        ):
+            raise ValueError("Traditional team/player clock denominators contradict")
+        if any(minutes > team_minutes / 5 for minutes in player_minutes):
+            raise ValueError("Traditional player clock exceeds full game duration")
+        yield gid, team, team_minutes, player_minutes
+
+
 def bridge_players(primary, schedule, finder, traditional=(), pbp=()):
     """Return staged rows and all corroborated cells; never infer from team sums."""
     games = _games(schedule, finder)
@@ -259,39 +290,10 @@ def bridge_players(primary, schedule, finder, traditional=(), pbp=()):
         )
 
     for source in traditional:
-        box = source.document["boxScoreTraditional"]
-        gid = box["gameId"]
-        if gid not in games:
-            raise ValueError("Traditional source is outside exact final population")
-        for side in ["homeTeam", "awayTeam"]:
-            team = box[side]
-            if any(team[key] != games[gid][side][key] for key in ["teamId"]):
-                raise ValueError("Traditional source side identity differs")
-            if team["statistics"]["points"] != games[gid][side]["score"]:
-                raise ValueError("Traditional source final score differs")
-            if len({p["personId"] for p in team["players"]}) != len(team["players"]):
-                raise ValueError("Traditional source has duplicate player identities")
-            if (
-                sum(_integer(p["statistics"]["points"]) for p in team["players"])
-                != team["statistics"]["points"]
-            ):
-                raise ValueError(
-                    "Traditional player points do not reconcile to explicit final score"
-                )
-            team_minutes = _literal_minutes(team["statistics"]["minutes"])
-            player_minutes = [_literal_minutes(p["statistics"]["minutes"]) for p in team["players"]]
-            if (
-                not math.isfinite(team_minutes)
-                or team_minutes < 240
-                or not math.isclose(sum(player_minutes), team_minutes, abs_tol=2 / 60)
-            ):
-                raise ValueError("Traditional team/player clock denominators contradict")
-            for person in team["players"]:
-                minutes = _literal_minutes(person["statistics"]["minutes"])
+        for gid, team, team_minutes, player_minutes in _traditional_teams(source, games):
+            for person, minutes in zip(team["players"], player_minutes, strict=True):
                 if minutes == 0:
                     continue
-                if minutes > team_minutes / 5:
-                    raise ValueError("Traditional player clock exceeds full game duration")
                 observe(
                     source,
                     gid,
@@ -391,6 +393,98 @@ def bridge_players(primary, schedule, finder, traditional=(), pbp=()):
     return result, ledger
 
 
+def bridge_teams(primary, schedule, traditional=()):
+    """Reconcile team fields from explicit team observations, preserving their grain."""
+    required = {"GAME_ID", "GAME_DATE", "TEAM_ID", *FIELDS.values()}
+    if not required.issubset(primary.columns):
+        raise ValueError("Primary team counts or identity columns are missing")
+    games = _games(schedule, primary)
+    lookup = primary.set_index(["GAME_ID", "TEAM_ID"])
+    observations, ledger = {}, []
+    for source in traditional:
+        for gid, team, _, _ in _traditional_teams(source, games):
+            tid, stats = team["teamId"], team["statistics"]
+            if not set(FIELDS).issubset(stats):
+                raise ValueError("Traditional explicit team count fields are missing")
+            counts = {field: _integer(stats[key]) for key, field in FIELDS.items()}
+            if (
+                counts["PTS"] != 2 * counts["FGM"] + counts["FG3M"] + counts["FTM"]
+                or counts["REB"] != counts["OREB"] + counts["DREB"]
+                or any(counts[p + "M"] > counts[p + "A"] for p in ["FG", "FG3", "FT"])
+                or counts["FG3M"] > counts["FGM"]
+                or counts["FG3A"] > counts["FGA"]
+            ):
+                raise ValueError("Traditional explicit team count arithmetic contradicts")
+            for source_field, field in FIELDS.items():
+                key = gid, tid, field
+                value = counts[field]
+                if key in observations and observations[key] != value:
+                    raise ValueError("Independent corroborators disagree on the same team field")
+                observations[key] = value
+                ledger.append(
+                    dict(
+                        game_id=gid,
+                        game_date=games[gid]["gameDateEst"][:10],
+                        team_id=int(tid),
+                        field=field,
+                        before=_integer(lookup.loc[(gid, tid), field]),
+                        after=value,
+                        source_file=source.path,
+                        source_sha256=source.sha256,
+                        source_field=source_field,
+                        statistical_basis="explicit_whole_game_Traditional_team_statistic",
+                    )
+                )
+    result = primary.copy(deep=True)
+    for (gid, tid, field), value in observations.items():
+        result.loc[result.GAME_ID.eq(gid) & result.TEAM_ID.eq(tid), field] = value
+    for prefix in ["FG", "FG3", "FT"]:
+        column = prefix + "_PCT"
+        if column not in result:
+            continue
+        affected = {
+            (gid, tid)
+            for gid, tid, field in observations
+            if field in {prefix + "M", prefix + "A"}
+            and observations[(gid, tid, field)] != lookup.loc[(gid, tid), field]
+        }
+        for gid, tid in affected:
+            mask = result.GAME_ID.eq(gid) & result.TEAM_ID.eq(tid)
+            row = result.loc[mask].iloc[0]
+            value = round(row[prefix + "M"] / row[prefix + "A"], 3) if row[prefix + "A"] else 0
+            if not float(value).is_integer():
+                result[column] = result[column].astype(float)
+            result.loc[mask, column] = value
+            inputs = [
+                dict(
+                    source_file=x["source_file"],
+                    source_sha256=x["source_sha256"],
+                    source_field=x["source_field"],
+                    field=x["field"],
+                )
+                for x in ledger
+                if x["game_id"] == gid
+                and x["team_id"] == tid
+                and x["field"] in {prefix + "M", prefix + "A"}
+            ]
+            ledger.append(
+                dict(
+                    game_id=gid,
+                    game_date=str(row.GAME_DATE)[:10],
+                    team_id=int(tid),
+                    field=column,
+                    before=float(lookup.loc[(gid, tid), column]),
+                    after=float(value),
+                    source_file=inputs[0]["source_file"],
+                    source_sha256=inputs[0]["source_sha256"],
+                    source_field=f"{prefix}M/{prefix}A",
+                    evidence_inputs=inputs,
+                    statistical_basis="ratio_of_corroborated_whole_game_team_counts",
+                )
+            )
+    return result, ledger
+
+
 def _additional_sources(evidence):
     extra = evidence / "game-0022600144"
     capture = json.loads((extra / "capture.json").read_text())
@@ -424,8 +518,13 @@ def _additional_sources(evidence):
     return sources
 
 
-def stage_retained_core(evidence: Path, output: Path):
-    """Bind retained originals and export a partial staged player table plus ledger."""
+def stage_retained_core(
+    evidence: Path, output: Path, *, additional_traditional=(), reconcile_team_counts=False
+):
+    """Export partial staged rows; callers bind any additional retained originals.
+
+    Team reconciliation remains explicit, and never supplies completeness flags.
+    """
     documents, inputs, bundle_sha = retained_stats_documents(evidence)
     proof = json.loads((evidence / "schedule-qualification.json").read_text())
     bundle = (evidence / proof["retained_bundle"]).read_bytes()
@@ -451,11 +550,13 @@ def stage_retained_core(evidence: Path, output: Path):
             for name, item in inputs.items()
             if name.startswith("traditional_")
         ]
+    traditional.extend(additional_traditional)
     sources = _additional_sources(evidence)
+    finder = _table(documents["finder"], "LeagueGameFinderResults")
     staged, ledger = bridge_players(
         primary,
         schedule,
-        _table(documents["finder"], "LeagueGameFinderResults"),
+        finder,
         traditional,
         [(sources["pbp.json"], sources["summary.json"])],
     )
@@ -482,7 +583,24 @@ def stage_retained_core(evidence: Path, output: Path):
         uncorroborated_primary_values="retained; not independently fully verified",
         original_source_conflicts=source_report["player_team_conflicts"],
     )
+    staged_teams, team_ledger = (
+        bridge_teams(finder, schedule, traditional) if reconcile_team_counts else (None, [])
+    )
+    if reconcile_team_counts:
+        report["team_reconciliation"] = dict(
+            primary_team_rows=len(finder),
+            staged_team_rows=len(staged_teams),
+            corroborated_observations=len(team_ledger),
+            changed_cells=[x for x in team_ledger if x["before"] != x["after"]],
+            basis="explicit_Traditional_team_fields_not_player_sum_inference",
+        )
     output.mkdir(parents=True, exist_ok=False)
+    if reconcile_team_counts:
+        finder.to_csv(output / "primary-team-game-logs.csv", index=False)
+        staged_teams.to_csv(output / "staged-team-game-logs.csv", index=False)
+        (output / "team-corroboration-ledger.json").write_text(
+            json.dumps(team_ledger, indent=2) + "\n"
+        )
     primary.to_csv(output / "primary-player-game-logs.csv", index=False)
     staged.to_csv(output / "staged-player-game-logs.csv", index=False)
     (output / "corroboration-ledger.json").write_text(json.dumps(ledger, indent=2) + "\n")

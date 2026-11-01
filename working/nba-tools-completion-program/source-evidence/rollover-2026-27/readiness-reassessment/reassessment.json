@@ -2,16 +2,16 @@
   "schema_version": 1,
   "classification": "readiness_critical_path_reassessment_not_operational_acceptance",
   "owner_direction": "Finish569safely; prioritize2026-27 normal production readiness before another majorK08workstream; continue useful independent work only while externally blocked.",
-  "current_main": "57198b1aabf1250285251cbe402fb07ef959bf34",
-  "current_tree": "0956e7a8dafe2a05e048434c5fa37f0b5835b7a8",
+  "current_main": "9ae00e647cdc86f323f31c4defbe4483448e5672",
+  "current_tree": "78b9f1d22b89bc8a3f18d05258945af9ea282b71",
   "completed_pr": {
-    "number": 569,
-    "final_ci": 41293858003,
-    "post_merge_ci": 41294163791,
+    "number": 570,
+    "final_ci": 41298555163,
+    "post_merge_ci": 41299064014,
     "blocking_checks": "all passed",
     "python_fast_matrices": 3,
     "python_full_matrices": 3,
-    "receipt_comment": 6556241149
+    "receipt_comment": 6556917717
   },
   "production_data": {
     "last_accepted_active_generation": "availability-lebron-season-v1-20261031",
@@ -56,11 +56,11 @@
     },
     {
       "name": "basic statistics and source revision basis",
-      "status": "83 original differences partition into7 already accepted integer fixes and76 unresolved cells across16 games. Preserve original counts and conflict ledger until field-level source/envelope/arithmetic qualification. Granularity alone is not source authority. Invalid0096 Jamal Cain10:60 is quarantined; no carry."
+      "status": "Existing per-field source policy independently qualifies76 additional integer player changes and15 explicit team count changes; generic team reconciliation/local preparation preserves keys and old observations. Required hosted producer/API consumer acceptance pending. Invalid0096 supplementary source remains quarantined; primary numeric row unchanged."
     },
     {
       "name": "advanced snapshot basis",
-      "status": "Four corrected-player TS% values contradict retained season snapshot; last modified source commit predates pinned7a. Preserve originals/USG and mismatch evidence; no blind snapshot rewrite."
+      "status": "Expanded corrected core produces12 player TS% disagreements with retained season snapshot, superseding the prior four-player count for this wider candidate. Preserve raw originals/USG; no blind snapshot rewrite or full-slice acceptance."
     },
     {
       "name": "processed outputs and fresh due coverage",
@@ -101,11 +101,12 @@
       "cells": 83,
       "games": 18,
       "basis": "Comparison with ORIGINAL primary, now independently partitioned against exact accepted primary/staged bytes:7 already accepted and76 unresolved.",
-      "status": "Partitioned against exact retained primary/staged bytes; no stage rerun or new count correction.",
+      "status": "Seven overlap prior accepted corrections; remaining76 integer cells now independently source-qualified under unchanged per-field policy, with required composed consumer gate still pending.",
       "already_accepted_integer_cells": 7,
-      "remaining_unresolved_cells": 76,
+      "remaining_unresolved_cells": 0,
       "remaining_games": 16,
-      "partition_review": "remaining-count-conflict-assessment.json"
+      "partition_review": "remaining-count-conflict-assessment.json",
+      "qualified_additional_integer_cells": 76
     },
     "remaining_roster_request": {
       "path": "working/nba-tools-completion-program/collection-requests/season-rollover-remaining-rosters-2026-27.json",
@@ -131,7 +132,30 @@
       "focused_checks": "45 affected bridge/report controls passed before final case extension; final repaired malformed/valid clock class13 selected passed,31 deselected; independent checker also executed13 selected against final bytes.",
       "existing_stage_reuse": "Independent checker inspected all86 source clock cells in original three accepted Traditional bodies (29/31/26, including4emptyDNP): old/new parsing is identical. Prior1253 observations/16-cell stage evidence reused, not rerun.",
       "independent_review": "APPROVED final exact executable bytes; clock-admission-independent-review.json SHA3ff55f8e5206cc553838aada602156c39ca78f4738e4d1d10572975e2aa3af5d. Initial mixed-case bypass review retained separately;13 focused and11 unfamiliar independent controls passed.",
-      "final_ci": "pending"
+      "final_ci": "570final41298555163/post41299064014 allblocking andallthree matrices passed"
+    },
+    "expanded_core": {
+      "branch": "codex/season-count-assessment",
+      "player_rows": 1829,
+      "team_rows": 162,
+      "player_observations": 28592,
+      "team_observations": 2377,
+      "player_changed_cells_total": 115,
+      "additional_player_changes": 99,
+      "team_changed_cells": 22,
+      "team_integer_changes": 15,
+      "team_derived_ratios": 7,
+      "source_policy_reviews": [
+        "expanded-player-source-policy-review.json",
+        "expanded-team-source-policy-review.json"
+      ],
+      "partial_preparation_review_sha256": "69a497f1857e72c4b476e87381b533108a8f04b663d8e62ab2ea16314e179623",
+      "local_execution": "Initial1skip and two incomplete local consumer executions retained. Both preparations complete/identical CSVs; no HTTP answers credited. TestClient/AnyIO portal hangs; separate AsyncHealth smoke also timedout. No API assertions removed.",
+      "required_gate": "One existing targeted hosted selector pending; needs_data restored because require_data_validation.py selects that marker. No full RawQA/sweep/775object scan.",
+      "readiness_accepted": false,
+      "production_writes": 0,
+      "final_code_review_sha256": "4ccef434377f68bf2b7dc4e2293050e693f29124c7a68592515b3d6d2a717a5b",
+      "rate_consistency_proof": "expanded-season-rate-consistency.json"
     }
   },
   "hosting": {
@@ -188,5 +212,5 @@
     "rule": "No11:00carry; whole-bodyclock/coreacceptancefalse. Independentrolemarkerprojection remainsdistinct; preserveprimaryclockandquarantine invalidsourceclock."
   },
   "reassessed_at": "2026-11-01T10:39:29Z",
-  "stop_condition": "Active readiness qualification, not operational completion. Period source access remains genuinely external; K08 follow-on stays paused during current PR."
+  "stop_condition": "Active readiness source reconciliation; normal readiness remains false. Period access and consistent advanced-snapshot basis remain missing; K08 follow-on paused."
 }

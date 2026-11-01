@@ -1,0 +1,83 @@
+{
+  "classification": "local_preparation_complete_consumer_acceptance_incomplete",
+  "first_files": {
+    "staged-team-game-logs.csv": {
+      "bytes": 23347,
+      "sha256": "180b926795d7da396848e7060b0bd3c816b559b9a22d2cd7fc9e0d49d76d0d56"
+    },
+    "corroboration-ledger.json": {
+      "bytes": 12762048,
+      "sha256": "ab91eb4056e556a7fae74c77221879b9cfd0b3e732878471e57193c8df13036f"
+    },
+    "primary-team-game-logs.csv": {
+      "bytes": 23346,
+      "sha256": "571ea0289031b6607be7ee1692e9016793814a0bf522d76b34a75090f8d1a1c6"
+    },
+    "team-corroboration-ledger.json": {
+      "bytes": 982521,
+      "sha256": "ad31cbc94ccd4d9cb4294590871bfe5f885148301d0389f55705caab179eb810"
+    },
+    "qualification.json": {
+      "bytes": 78583,
+      "sha256": "df1cf08eacf91241ee00fd8c0a2efe949434fcc1332d4b0d8d004ee8c4c35fca"
+    },
+    "staged-player-game-logs.csv": {
+      "bytes": 600228,
+      "sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b"
+    },
+    "primary-player-game-logs.csv": {
+      "bytes": 600182,
+      "sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061"
+    }
+  },
+  "diagnostic_files": {
+    "staged-team-game-logs.csv": {
+      "bytes": 23347,
+      "sha256": "180b926795d7da396848e7060b0bd3c816b559b9a22d2cd7fc9e0d49d76d0d56"
+    },
+    "corroboration-ledger.json": {
+      "bytes": 12762048,
+      "sha256": "9c3bc22fe9e3595080d130be109a5e05b345a88edca74f77d84dd22f51079c93"
+    },
+    "primary-team-game-logs.csv": {
+      "bytes": 23346,
+      "sha256": "571ea0289031b6607be7ee1692e9016793814a0bf522d76b34a75090f8d1a1c6"
+    },
+    "team-corroboration-ledger.json": {
+      "bytes": 982521,
+      "sha256": "90380926a263243750709367c0a0a53ec9614c1831bf8ecc345a721b7501b921"
+    },
+    "qualification.json": {
+      "bytes": 78583,
+      "sha256": "f1b33112769b087b222844e804a6fe1ad5fcaf347fa037c0bd0030ef3fac4097"
+    },
+    "staged-player-game-logs.csv": {
+      "bytes": 600228,
+      "sha256": "e0d9fd7c050d70a0df01ea2fb08c613b9dd7e8d7ef1a6d3204eac2c9e63aed5b"
+    },
+    "primary-player-game-logs.csv": {
+      "bytes": 600182,
+      "sha256": "ad9cf8bb4ca590cfdc1cfc795b183bc8f521c2bb152f1f7cd83c316eb8bc8061"
+    }
+  },
+  "comparison": "Allfour CSVs byteidentical; both complete observation ledgers match as multisets. JSON affected-percentage observation order may differ across interpreter hash seeds.",
+  "attempts": [
+    {
+      "status": "initial local selection skipped because no served CSV sentinel; no acceptance",
+      "selected": 1,
+      "skipped": 1
+    },
+    {
+      "status": "preparation completed; TestClient stalled; terminated143",
+      "overall_accepted": false
+    },
+    {
+      "status": "same prepared values;45second faulthandler diagnosed TestClient portal; terminated143",
+      "overall_accepted": false
+    }
+  ],
+  "diagnosis": "BeforeAPIendpointexecution: mainthread starlette.testclient.handle_request->anyio.from_thread.call/start_task_soon waits concurrent future; portal eventloop remains inselector. Separate AsyncClienthealth smoke also timedout15seconds,exit124. No API/middlewareassertionsremoved; useexistingtargetedhostedroute.",
+  "source_acquisition_calls": 0,
+  "production_writes": 0,
+  "readiness_restored": false
+}
