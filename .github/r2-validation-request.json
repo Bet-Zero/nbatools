@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "8730ee9f4ca53f364c529b27dbdfe4436d5052ca",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_reported_rest_stage_real_data.py::test_reported_rest_sources_are_not_all_missed_games"
+  ],
+  "raw_qa_cases": []
+}
