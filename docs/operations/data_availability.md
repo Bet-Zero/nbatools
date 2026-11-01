@@ -284,7 +284,7 @@ The combined 1,070-row append preserves all 804 prior current-season cells, 146
 other-season rows and existing core files. The 94-file overlay exports no test
 inventory or claim of full season-pipeline qualification.
 
-[Required staging acceptance](../../working/nba-tools-completion-program/source-evidence/k08-lal-remaining/staging-acceptance.json)
+[Required staging acceptance](https://github.com/Bet-Zero/nbatools/pull/564)
 binds run 41273502501, one selected/executed/passed required test and zero skips.
 Its original ZIP, source bytes, failed archive qualification and independent
 checks are retained beside the receipt. Production publication needs separate
