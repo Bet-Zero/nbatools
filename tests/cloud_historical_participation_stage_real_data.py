@@ -431,6 +431,10 @@ def _run_consumers(manifest_sha, states, teams, players):
     primary = players["2023-24"].loc[
         lambda f: f.player_id.eq(2544) & f.team_id.eq(LAL) & f.minutes.gt(0)
     ]
+    primary = primary.merge(
+        lal[["game_id", "wl"]], on="game_id", how="left", validate="many_to_one"
+    )
+    assert primary.wl.isin(["W", "L"]).all()
     summary_sample = primary.loc[primary.game_id.isin(ad_out)]
     query = "LeBron James stats without Davis in 2023-24"
     for result in [
