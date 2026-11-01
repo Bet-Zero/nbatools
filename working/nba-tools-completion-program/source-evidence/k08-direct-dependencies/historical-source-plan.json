@@ -543,13 +543,18 @@
     "source_calls": 0
   },
   "representative_capture": {
-    "status": "four originals retained; independent source qualification pending",
-    "source_reader_calls": 4,
-    "original_bytes": 58857,
+    "status": "both representatives independently qualified; all50 originals retained once; fullsource qualification pending",
+    "source_reader_calls": 50,
+    "original_bytes": 722069,
     "reader_attempts_each": 1,
-    "remaining_lal_reader_calls": 28,
-    "remaining_bos_reader_calls": 18,
+    "remaining_lal_reader_calls": 0,
+    "remaining_bos_reader_calls": 0,
     "request_review_sha256": "c283c32b4b7dac2d7353048a29452ce91edcb432fdeccdaee790106b6e83a661",
-    "production_writes": 0
+    "production_writes": 0,
+    "representative_qualification_sha256": "6fd3429094ff3bc02f50377430c2d6075b9ce9e2c0952c600d572e7fa443a80a"
+  },
+  "source_capture_manifests_sha256": {
+    "lal-2023-24": "ff5f604392b168c1259e3a219c2cdddc58b25b392fa8b7fbac74872b3b7f33df",
+    "bos-2024-25": "b38929d14ed1827245307a4e666e82c3a810514fef57fe5ef46c212075993be7"
   }
 }

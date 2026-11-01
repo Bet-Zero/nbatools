@@ -1,0 +1,13 @@
+{
+  "classification": "bounded_original_capture_not_source_or_stage_acceptance",
+  "collection_request_sha256": "7c77db1142276fff8cf8181f744c0040b550d7d8b7d3f7994c348e5d0fb11036",
+  "source_files": 30,
+  "source_reader_invocations": 30,
+  "attempts_per_file": 1,
+  "source_bytes": 352951,
+  "failures": [],
+  "representative_qualification_sha256": "6fd3429094ff3bc02f50377430c2d6075b9ce9e2c0952c600d572e7fa443a80a",
+  "source_qualified": false,
+  "staging_accepted": false,
+  "production_writes": 0
+}

@@ -1,0 +1,10 @@
+{
+  "reader_attempts": 1,
+  "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv3/2025/0022401156.json",
+  "retrieved_at": "2026-11-01T06:49:24.293Z",
+  "git_blob_sha": "9ccbee7c52c362c830ec2c7637bc885dc7b2a4f4",
+  "transport_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/9ccbee7c52c362c830ec2c7637bc885dc7b2a4f4",
+  "original_nba_capture_time": null,
+  "sha256": "ca817711765dba791a16b6b1fc898425a1c251df6c54a58078acb4b778c997f5",
+  "size_bytes": 19960
+}
