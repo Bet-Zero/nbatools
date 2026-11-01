@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root independent integration review of /root/absence_checker authored probe",
+  "exact_model_id": "unavailable; no cross-model claim",
+  "reviewed_local_commit": "c7212f1c454b01a0ae999fa9b65bc95df6120565",
+  "reviewed_tree": "57d2145899e1dc3653e4bc40d825cbde70e8f951",
+  "file": "tests/cloud_reported_rest_deployed_real_data.py",
+  "file_sha256": "1cde207cffc9409f62527d7d703dd229e3237456ca82d1ef71dd581639d198ec",
+  "decision": "approved_for_one_bounded_read_only_run_after_final_PR568_merge_and_successful_deployment",
+  "checks": [
+    "Exactly one readiness GET and at most three single-attempt POSTs to existing public application; seven-second minimum query start spacing and no redirect/retry.",
+    "Expected HTTP503 remains an operational blocker, sole new_season_not_loaded and unchanged immutable generation; no readiness exception or publication claim.",
+    "LeBron22/home11 require exact qualified game IDs and season/team scope, not count alone.",
+    "Narrow Luka Rest no_data requires source-reason basis and exact requested3/qualifiedDNP2/unknown2 coverage, distinguishing old DNP alias and dropped date scope.",
+    "Local parser assertions record exact team/player/season/date/reason options without inventing nonexistent top-level public metadata.",
+    "Original response bytes, status, public headers and hashes are retained before JSON decoding/assertions; typed partial failure persists in finally.",
+    "No NBA source requests, protected writes, backup, pointer changes, credentials or policy changes."
+  ],
+  "limitations": [
+    "Author reports six offline simulated transport/assertion controls; reviewer inspected source directly rather than duplicating those executions.",
+    "This probe verifies deployed interpretation/regression using existing production data. The18 new reason records remain staged/unpublished; positive Rest0 proof comes from accepted offline gate.",
+    "Candidate code may be rebased only with unchanged probe bytes and demonstrably unaffected relevant semantics; final executed source SHA must be recorded."
+  ],
+  "production_writes": 0,
+  "nba_source_requests": 0
+}
