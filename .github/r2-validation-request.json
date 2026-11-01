@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "7c1248688250f01a68430280d0cc216e2b6d41e9",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/test_lal_participation_stage_real_data.py::test_retained_lal_sources_close_both_populations_and_reverse_mixed_records"
+  ],
+  "raw_qa_cases": []
+}
