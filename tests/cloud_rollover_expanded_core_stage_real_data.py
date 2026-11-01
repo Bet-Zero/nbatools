@@ -127,9 +127,9 @@ def test_retained_expansion_preserves_grains_and_producer_query_values(tmp_path,
         ),
         (
             "Memphis Grizzlies games with at least 50 rebounds in 2026-27 from 2026-10-25 to 2026-10-25",
-            "team_game_finder",
-            "team_id",
-            1610612763,
+            "game_finder",
+            "team_abbr",
+            "MEM",
             {"oreb": 18, "dreb": 36, "reb": 54},
         ),
     ]
@@ -146,10 +146,11 @@ def test_retained_expansion_preserves_grains_and_producer_query_values(tmp_path,
             for result in [natural.result.to_dict(), body["result"]]:
                 rows = result["sections"]["finder"]
                 assert len(rows) == 1 and rows[0][identity] == identifier
+                assert rows[0]["game_id"] == 22600118
                 for field, value in expected.items():
                     assert rows[0][field] == value
             answers.append(dict(query=query, response=body))
+            (output / "answers.json").write_text(json.dumps(answers, indent=2) + "\n")
     finally:
         reset_data_source_cache()
         reset_latest_served_season_cache()
-    (output / "answers.json").write_text(json.dumps(answers, indent=2) + "\n")
