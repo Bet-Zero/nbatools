@@ -4404,6 +4404,16 @@ def detect_on_off(text: str) -> dict | None:
     """Detect single-player on/off phrasing."""
     from nbatools.commands._teammate_resolution import _only_the_name, requested_scalar_absence
 
+    # Explicit bench location/time is within-game presence. It cannot become a
+    # whole-game DNP or reported-reason predicate. Keep role phrases such as
+    # OFF THE BENCH and team bench scoring on their existing routes.
+    if re.search(
+        r"\bon\s+(?:(?:the|his|her|their)\s+)?bench\b"
+        r"|\bduring\s+(?:(?:the|his|her|their)\s+)?bench\s+(?:minutes?|stints?|time)\b",
+        text,
+    ):
+        return {"lineup_members": [], "presence_state": "off"}
+
     # An explicit WITH-name-SITTING clause describes whole-game absence.
     # Bare "Davis sitting" and explicit court/on-off requests keep their
     # existing on-court meaning; no participation fact can answer those.
