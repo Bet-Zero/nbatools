@@ -1,0 +1,2253 @@
+{
+  "schema_version": 1,
+  "classification": "independent_retained_source_qualification_for_staging_only_not_production_or_full_slice",
+  "checker": "/root/absence_checker; exact model ID unavailable; no cross-model claim",
+  "request_sha256": "34d95a99c630a1377d708f05eb76ae98b8b4edd31e048c3cf6b301ef0dc3b833",
+  "sources_manifest_sha256": "74a2e42f61866017c500e0bc63670c45ce5e617296ae5b6536a987f087f4ae94",
+  "capture_receipt_sha256": "944f944c6a68ce9c45bfd8f91c1522cd72800420cb64a219ab5809646f9b8e61",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "baseline_coverage_audit_run": 41269926808,
+  "baseline_coverage_source_zip_sha256": "90d7fdfd2dff0ecc9f880cc4b99e37603bc697db16dbc8961dc0a97a9b6450fd",
+  "archive_revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+  "original_source_count": 62,
+  "original_source_bytes": 1216367,
+  "original_file_bindings": {
+    "boxscoretraditionalv3_0022500336.json": {
+      "sha256": "4927e554320b8a73cf81038ff17fc8dde7a07d9489b2c50e4dd3faad12b448de",
+      "git_blob_sha": "4b9b2bc9c685b75b0f4f38d7431750be2add58f6",
+      "size_bytes": 19079
+    },
+    "boxscoretraditionalv3_0022500379.json": {
+      "sha256": "23bd3b9851324a71091c8e4f3541cb78658e486b3c641e84754a1d3489046712",
+      "git_blob_sha": "48b792483ab2884b3e76fe7a12449829ddf3f027",
+      "size_bytes": 18454
+    },
+    "boxscoretraditionalv3_0022500395.json": {
+      "sha256": "7493a95a531fba53dbe05190ccb2ff577b8b39069f468e8500a99d8bf4ab4871",
+      "git_blob_sha": "12cd5438524342e3f3165c2bb7fa44d68fc83fec",
+      "size_bytes": 18389
+    },
+    "boxscoretraditionalv3_0022500418.json": {
+      "sha256": "8ef34b2f50aa26b7f76686fee4c7782a69860da626939174e9fd1bca98d870f5",
+      "git_blob_sha": "fae79f0d517d226e329194e6658f2ca297871479",
+      "size_bytes": 19616
+    },
+    "boxscoretraditionalv3_0022500446.json": {
+      "sha256": "6a5e1d306d5a92923327e9cb06c8d2da726198ba9a12aa03a1eca236ab5706b8",
+      "git_blob_sha": "e9555c76662b1e62440381039dfa1215e723bf4a",
+      "size_bytes": 18417
+    },
+    "boxscoretraditionalv3_0022500460.json": {
+      "sha256": "2b704f40fb2ebad654cb6d4135c42a67db8288c2cd9e0d0d2455dd81ed1ebc13",
+      "git_blob_sha": "b5c5202c2fce314df894bb54344a885d2a516a87",
+      "size_bytes": 18971
+    },
+    "boxscoretraditionalv3_0022500485.json": {
+      "sha256": "239698f25b4e0b215726088b435bba233cb5f6e3b7d167c51f1464d406a5a1fb",
+      "git_blob_sha": "cd841875b6953d91ae0fd39bbaab07ffaa98880c",
+      "size_bytes": 19122
+    },
+    "boxscoretraditionalv3_0022500501.json": {
+      "sha256": "ad21849fe6281444e1a814289fcb255df950cf2ee174b3f803211a1ce76fc500",
+      "git_blob_sha": "3b1b02f4f6826f463ef779f3853e5a5dad4a74ba",
+      "size_bytes": 18457
+    },
+    "boxscoretraditionalv3_0022500514.json": {
+      "sha256": "45d4c11aff76a92fddaea8eff5eb68bef1b580afeae5e9d9b45a52c8543f6e27",
+      "git_blob_sha": "3a3bd5a42cfc298ba6af127cbb963fc3edb6f441",
+      "size_bytes": 19080
+    },
+    "boxscoretraditionalv3_0022500541.json": {
+      "sha256": "7cbe5f5f40816020358a635de1826808a1bfbc23c819b17ffe27466ba2f2b7a0",
+      "git_blob_sha": "aade9c4a9896f9b7df7a905981ce7e922283c0c0",
+      "size_bytes": 19731
+    },
+    "boxscoretraditionalv3_0022500562.json": {
+      "sha256": "84152b9d37863bbc9fde67badaa954589d4d5ef89ef7434b550f8ca148c8b7d4",
+      "git_blob_sha": "e8784a9a0ef54d607af24d8378c09f09c04b02e0",
+      "size_bytes": 20350
+    },
+    "boxscoretraditionalv3_0022500569.json": {
+      "sha256": "73029166911f5aa428170abef3e20d562e6381118a58f619ded17c0aebcbf472",
+      "git_blob_sha": "cdcf12939c48192b990f2fcf4c99fb40c215fb1d",
+      "size_bytes": 19716
+    },
+    "boxscoretraditionalv3_0022500586.json": {
+      "sha256": "fe8053bf97b49532f548044148c1473d9dd6a297ee0a9d6e1c6031c9bb164333",
+      "git_blob_sha": "cdd23bd10c87d4c6c0929e6339f6f28c60389847",
+      "size_bytes": 20266
+    },
+    "boxscoretraditionalv3_0022500601.json": {
+      "sha256": "be8457921d6375f8019651dcbed2e4d21bac96b281ae9ba0d4d461d26c3c27a2",
+      "git_blob_sha": "bebfe685c5452d8aab22f008ee8f77ca22ff6027",
+      "size_bytes": 20883
+    },
+    "boxscoretraditionalv3_0022500607.json": {
+      "sha256": "bae1f09de922e3177942dd868f8d315a3f08882bc13c05f1d8f670b53b2c7f06",
+      "git_blob_sha": "5182c74a04b1f389526d3164d6fea5694a3ab4ba",
+      "size_bytes": 20886
+    },
+    "boxscoretraditionalv3_0022500617.json": {
+      "sha256": "8dfedc4cdbe1fb941f9b7038aef687beced504c5d8f566cf5c75be73054fdfb0",
+      "git_blob_sha": "1df26deaad97eaf4495de27918942c399c85688e",
+      "size_bytes": 19069
+    },
+    "boxscoretraditionalv3_0022500633.json": {
+      "sha256": "83b1aec4c8044fc421e2059c91c35d3b3f1493209b2f82552efd0ff660ebf7e8",
+      "git_blob_sha": "ba58f31fe6dc70986aec0753a58124d61e931830",
+      "size_bytes": 21021
+    },
+    "boxscoretraditionalv3_0022500648.json": {
+      "sha256": "501a4c08c600f709641eda1866b9d894dd9c7d39917a2b649e6f9ed1583c04a8",
+      "git_blob_sha": "40ace6fb7b98037f59996c2f3f8d41dfd0257208",
+      "size_bytes": 20350
+    },
+    "boxscoretraditionalv3_0022500661.json": {
+      "sha256": "dfdc8f71c9bc71be136f554dfb22df371d80d49b2a9e257e2e3ec597921dcf32",
+      "git_blob_sha": "a0816dfcf30909757d2f414cf57635ddd835c468",
+      "size_bytes": 19652
+    },
+    "boxscoretraditionalv3_0022500671.json": {
+      "sha256": "8f378fed59268a66a6542cb90433734b3aa5af56e2554f458e7dbf0a7614083b",
+      "git_blob_sha": "69971692f9987af2494e0e9dced47def0b4d725e",
+      "size_bytes": 18977
+    },
+    "boxscoretraditionalv3_0022500688.json": {
+      "sha256": "54ce09975860a723d44b03b241690def51889d01d1e1b5656ce5a0edebf80e78",
+      "git_blob_sha": "0097bd786af3cbf9cd6e8368c27b574af2cf01a4",
+      "size_bytes": 19030
+    },
+    "boxscoretraditionalv3_0022500708.json": {
+      "sha256": "7155de36497b0b766de78444b8df084f4dbc43859b18b7a9d59460710fa3f22c",
+      "git_blob_sha": "ff38e6e83be42346bb42cfcf60562405f3f2da00",
+      "size_bytes": 20908
+    },
+    "boxscoretraditionalv3_0022500753.json": {
+      "sha256": "0b4577bfdafdb21e6e032ceb173577c648c987c3f700f879a08eb5f908428334",
+      "git_blob_sha": "33664134ae2953f76aa2077d79ccdeaefeb30ed1",
+      "size_bytes": 19041
+    },
+    "boxscoretraditionalv3_0022500769.json": {
+      "sha256": "71417401d927b55eef5314d4dd22f0bcc2d9b85f5eb972edc91fa4b2b0052f75",
+      "git_blob_sha": "a71d9dd7f6a8f9c36cfc3bf6782377f6942e2aec",
+      "size_bytes": 19022
+    },
+    "boxscoretraditionalv3_0022500791.json": {
+      "sha256": "aa91350ca683cbf4f0d5a33842073e2a7a30c63fe3dff42ee076d8b2e3c3a6f8",
+      "git_blob_sha": "3285e8da397bd45acc9d71560fcb37d6bfca324c",
+      "size_bytes": 19592
+    },
+    "boxscoretraditionalv3_0022501098.json": {
+      "sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40",
+      "git_blob_sha": "ad72d90e3f3739f1a6b23e79731875e5205d75d4",
+      "size_bytes": 19678
+    },
+    "boxscoretraditionalv3_0022501140.json": {
+      "sha256": "648878eb95b0c5cd91a3943c04a6f87fc224754444eada180e863a673b1f1488",
+      "git_blob_sha": "8edffcb65c597a70612ecfb7367426aa14e4ca99",
+      "size_bytes": 20311
+    },
+    "boxscoretraditionalv3_0022501170.json": {
+      "sha256": "040f76a0ab273eeeb8e4ebb8b80bc69c89bc37ec86dc33f520154f6f5e351c80",
+      "git_blob_sha": "1202db3bd6738cef423480b37263f3e9d6da30ea",
+      "size_bytes": 19605
+    },
+    "boxscoretraditionalv3_0022501185.json": {
+      "sha256": "237c1fb2e6a6c21268fe30893de7d7c7a447eecf3d122c892c93575fa79cc6d1",
+      "git_blob_sha": "59ec02a90fe2e9b6acc7fe412debe53b13fcf721",
+      "size_bytes": 20794
+    },
+    "boxscoretraditionalv3_0022501198.json": {
+      "sha256": "d544615a14f9444b65ed3ba324316e5a638d98f5a3624fbe51b5be04d8d5f1d0",
+      "git_blob_sha": "ef278697537e5ce5b54cf39e0c42f59a278969c4",
+      "size_bytes": 19643
+    },
+    "boxscoretraditionalv3_0022501228.json": {
+      "sha256": "50f68382594127f6a26be6d6625f7894023738fe0375e4f844151b41e4c8cf1d",
+      "git_blob_sha": "bce9bce07f05f629a8ba0b9beb64d00d96edaedb",
+      "size_bytes": 19732
+    },
+    "boxscoresummaryv3_0022500336.json": {
+      "sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+      "git_blob_sha": "f7eff6a5c2c4d7364f82c70821aaaadd8dcc1909",
+      "size_bytes": 18595
+    },
+    "boxscoresummaryv3_0022500379.json": {
+      "sha256": "febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575",
+      "git_blob_sha": "1156596f42d0db8a79ecd8d402b0a9968783a67e",
+      "size_bytes": 16640
+    },
+    "boxscoresummaryv3_0022500395.json": {
+      "sha256": "65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf",
+      "git_blob_sha": "e39f5caae619481f8a7b9d3b7a81822bab6facd9",
+      "size_bytes": 19912
+    },
+    "boxscoresummaryv3_0022500418.json": {
+      "sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+      "git_blob_sha": "459819de56843a9d3b166b55a7d575a5c7fd0396",
+      "size_bytes": 17380
+    },
+    "boxscoresummaryv3_0022500446.json": {
+      "sha256": "820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196",
+      "git_blob_sha": "1b6bc29cac98350b949731fd8f44eeefb7480136",
+      "size_bytes": 17947
+    },
+    "boxscoresummaryv3_0022500460.json": {
+      "sha256": "957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d",
+      "git_blob_sha": "dcc8de9929e94c4169686cf5143999e90621f333",
+      "size_bytes": 25083
+    },
+    "boxscoresummaryv3_0022500485.json": {
+      "sha256": "d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0",
+      "git_blob_sha": "4d78b37837c0425fa52148048eccca7d6f95ce4a",
+      "size_bytes": 17507
+    },
+    "boxscoresummaryv3_0022500501.json": {
+      "sha256": "ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4",
+      "git_blob_sha": "ccf8a27da33e3ea604efdf82a104bcf005e2f12e",
+      "size_bytes": 17992
+    },
+    "boxscoresummaryv3_0022500514.json": {
+      "sha256": "c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05",
+      "git_blob_sha": "0ab1dd5b11a6c7b916bb5971a12090af611f38ff",
+      "size_bytes": 17144
+    },
+    "boxscoresummaryv3_0022500541.json": {
+      "sha256": "368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f",
+      "git_blob_sha": "92573036582e201ecbffb5a10b0026c0c12963c7",
+      "size_bytes": 20358
+    },
+    "boxscoresummaryv3_0022500562.json": {
+      "sha256": "d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494",
+      "git_blob_sha": "af2466ef744f0b0f8efa6345f4e5c1a679ecbb41",
+      "size_bytes": 19858
+    },
+    "boxscoresummaryv3_0022500569.json": {
+      "sha256": "ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e",
+      "git_blob_sha": "9d3a86ebd0be0d7a299020da703387210c725d53",
+      "size_bytes": 16631
+    },
+    "boxscoresummaryv3_0022500586.json": {
+      "sha256": "8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3",
+      "git_blob_sha": "696fa5c3ee3755d40aac7445b2881d41ffc604f6",
+      "size_bytes": 16574
+    },
+    "boxscoresummaryv3_0022500601.json": {
+      "sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+      "git_blob_sha": "c18d1a63c3a9d8d4516ea3a3b035649e72589518",
+      "size_bytes": 20283
+    },
+    "boxscoresummaryv3_0022500607.json": {
+      "sha256": "fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78",
+      "git_blob_sha": "dfc1c8ecceef75577fa6c20e3b745c23ba483a0e",
+      "size_bytes": 17928
+    },
+    "boxscoresummaryv3_0022500617.json": {
+      "sha256": "4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742",
+      "git_blob_sha": "9c61d63cf7e0e8c2d666cef5082ff5e55577f5e8",
+      "size_bytes": 24166
+    },
+    "boxscoresummaryv3_0022500633.json": {
+      "sha256": "d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b",
+      "git_blob_sha": "5afacd5c95144e9760965af98c6f1ec479ca41c0",
+      "size_bytes": 22532
+    },
+    "boxscoresummaryv3_0022500648.json": {
+      "sha256": "d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5",
+      "git_blob_sha": "312de19f140bed5c5fbb0337bead673e9edd2ba3",
+      "size_bytes": 22337
+    },
+    "boxscoresummaryv3_0022500661.json": {
+      "sha256": "b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402",
+      "git_blob_sha": "49900281838c017b7a453281ce321bc2d26001fe",
+      "size_bytes": 17064
+    },
+    "boxscoresummaryv3_0022500671.json": {
+      "sha256": "90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd",
+      "git_blob_sha": "48eb7ef411d1f06a60e1f6021e557781d20a3221",
+      "size_bytes": 20982
+    },
+    "boxscoresummaryv3_0022500688.json": {
+      "sha256": "9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316",
+      "git_blob_sha": "e4f9a579cb736b45dac6d773889334ca2fb3e8bf",
+      "size_bytes": 16860
+    },
+    "boxscoresummaryv3_0022500708.json": {
+      "sha256": "a124b61f753a1d4ef0180cba3e31c87e791cfe3566e95c2b3e937edcfff24500",
+      "git_blob_sha": "64d86558773e562ee150baa4bfca2f3a7a068191",
+      "size_bytes": 21324
+    },
+    "boxscoresummaryv3_0022500753.json": {
+      "sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+      "git_blob_sha": "65f718c1235ea216b597a336084885888f582d95",
+      "size_bytes": 22652
+    },
+    "boxscoresummaryv3_0022500769.json": {
+      "sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+      "git_blob_sha": "e846db6f9b8dbb6658054ebea6910b7e130fa41f",
+      "size_bytes": 23089
+    },
+    "boxscoresummaryv3_0022500791.json": {
+      "sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+      "git_blob_sha": "d0ec556d134686e37d241e12516c216d7e176fb0",
+      "size_bytes": 23396
+    },
+    "boxscoresummaryv3_0022501098.json": {
+      "sha256": "52f453fdc115214c080a07172a2a9a610fbb2105a885cf8f524d67080e3a4409",
+      "git_blob_sha": "5e6395e0342cfb0be189e0299ae5589c7759f150",
+      "size_bytes": 17256
+    },
+    "boxscoresummaryv3_0022501140.json": {
+      "sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+      "git_blob_sha": "f7510ee68918e8929f49036ea2c7ed8a5c701471",
+      "size_bytes": 21854
+    },
+    "boxscoresummaryv3_0022501170.json": {
+      "sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+      "git_blob_sha": "70e2e6645400314560d145e354c18a7b9bed36cd",
+      "size_bytes": 24681
+    },
+    "boxscoresummaryv3_0022501185.json": {
+      "sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+      "git_blob_sha": "dd4df7c841947d61cf07949e8e75704a8f4c8459",
+      "size_bytes": 17351
+    },
+    "boxscoresummaryv3_0022501198.json": {
+      "sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+      "git_blob_sha": "778c39342d105f05250ab31e519af7b8711db0df",
+      "size_bytes": 16887
+    },
+    "boxscoresummaryv3_0022501228.json": {
+      "sha256": "26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce",
+      "git_blob_sha": "ddd8c3caba115d5b38c47d7f5eba4f80dd588631",
+      "size_bytes": 16262
+    }
+  },
+  "provenance": {
+    "all_62_raw_urls_transport_blob_urls_gitblob_sha_size_sha256_utc_verified": true,
+    "attribution": "NBA Stats originals retained in the SportsDataverse hoopR archive; CC BY4.0 attribution retained. Retrieval does not establish original NBA capture time or freshness.",
+    "retrieved_first_utc": "2026-11-01T04:06:34.983544+00:00",
+    "retrieved_last_utc": "2026-11-01T04:07:01.075896+00:00",
+    "original_nba_capture_time": "unverified; source metadata not capture proof",
+    "reader_calls": 66,
+    "reader_recovery_files": [
+      "boxscoretraditionalv3_0022500336.json",
+      "boxscoretraditionalv3_0022500379.json",
+      "boxscoretraditionalv3_0022500395.json",
+      "boxscoretraditionalv3_0022500418.json"
+    ],
+    "non_nba_adapter_diagnostics": 2
+  },
+  "game_identity_qualifications": [
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "utc_start": "2025-12-05T00:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 123,
+      "canonical_opponent_points": 120,
+      "home": {
+        "team_id": 1610612761,
+        "team_abbr": "TOR",
+        "score": 120,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 123,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500336.json",
+        "boxscoresummaryv3_0022500336.json"
+      ]
+    },
+    {
+      "game_id": "0022500379",
+      "game_date": "2025-12-18",
+      "utc_start": "2025-12-19T02:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 143,
+      "canonical_opponent_points": 135,
+      "home": {
+        "team_id": 1610612762,
+        "team_abbr": "UTA",
+        "score": 135,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 2
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 143,
+        "listed": 17,
+        "played": 11,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500379.json",
+        "boxscoresummaryv3_0022500379.json"
+      ]
+    },
+    {
+      "game_id": "0022500395",
+      "game_date": "2025-12-20",
+      "utc_start": "2025-12-21T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 88,
+      "canonical_opponent_points": 103,
+      "home": {
+        "team_id": 1610612746,
+        "team_abbr": "LAC",
+        "score": 103,
+        "listed": 17,
+        "played": 11,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 88,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500395.json",
+        "boxscoresummaryv3_0022500395.json"
+      ]
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "utc_start": "2025-12-24T02:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 108,
+      "canonical_opponent_points": 132,
+      "home": {
+        "team_id": 1610612756,
+        "team_abbr": "PHX",
+        "score": 132,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 108,
+        "listed": 17,
+        "played": 13,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500418.json",
+        "boxscoresummaryv3_0022500418.json"
+      ]
+    },
+    {
+      "game_id": "0022500446",
+      "game_date": "2025-12-28",
+      "utc_start": "2025-12-29T02:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 125,
+      "canonical_opponent_points": 101,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 125,
+        "listed": 17,
+        "played": 13,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612758,
+        "team_abbr": "SAC",
+        "score": 101,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500446.json",
+        "boxscoresummaryv3_0022500446.json"
+      ]
+    },
+    {
+      "game_id": "0022500460",
+      "game_date": "2025-12-30",
+      "utc_start": "2025-12-31T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 106,
+      "canonical_opponent_points": 128,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 106,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612765,
+        "team_abbr": "DET",
+        "score": 128,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500460.json",
+        "boxscoresummaryv3_0022500460.json"
+      ]
+    },
+    {
+      "game_id": "0022500485",
+      "game_date": "2026-01-02",
+      "utc_start": "2026-01-03T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 128,
+      "canonical_opponent_points": 121,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 128,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612763,
+        "team_abbr": "MEM",
+        "score": 121,
+        "listed": 19,
+        "played": 10,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500485.json",
+        "boxscoresummaryv3_0022500485.json"
+      ]
+    },
+    {
+      "game_id": "0022500501",
+      "game_date": "2026-01-04",
+      "utc_start": "2026-01-05T02:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 120,
+      "canonical_opponent_points": 114,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 120,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612763,
+        "team_abbr": "MEM",
+        "score": 114,
+        "listed": 19,
+        "played": 10,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500501.json",
+        "boxscoresummaryv3_0022500501.json"
+      ]
+    },
+    {
+      "game_id": "0022500514",
+      "game_date": "2026-01-06",
+      "utc_start": "2026-01-07T01:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 111,
+      "canonical_opponent_points": 103,
+      "home": {
+        "team_id": 1610612740,
+        "team_abbr": "NOP",
+        "score": 103,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 111,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500514.json",
+        "boxscoresummaryv3_0022500514.json"
+      ]
+    },
+    {
+      "game_id": "0022500541",
+      "game_date": "2026-01-09",
+      "utc_start": "2026-01-10T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 101,
+      "canonical_opponent_points": 105,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 101,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 1
+      },
+      "away": {
+        "team_id": 1610612749,
+        "team_abbr": "MIL",
+        "score": 105,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500541.json",
+        "boxscoresummaryv3_0022500541.json"
+      ]
+    },
+    {
+      "game_id": "0022500562",
+      "game_date": "2026-01-12",
+      "utc_start": "2026-01-13T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 112,
+      "canonical_opponent_points": 124,
+      "home": {
+        "team_id": 1610612758,
+        "team_abbr": "SAC",
+        "score": 124,
+        "listed": 18,
+        "played": 9,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 112,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500562.json",
+        "boxscoresummaryv3_0022500562.json"
+      ]
+    },
+    {
+      "game_id": "0022500569",
+      "game_date": "2026-01-13",
+      "utc_start": "2026-01-14T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 141,
+      "canonical_opponent_points": 116,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 141,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612737,
+        "team_abbr": "ATL",
+        "score": 116,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500569.json",
+        "boxscoresummaryv3_0022500569.json"
+      ]
+    },
+    {
+      "game_id": "0022500586",
+      "game_date": "2026-01-15",
+      "utc_start": "2026-01-16T03:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 117,
+      "canonical_opponent_points": 135,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 117,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612766,
+        "team_abbr": "CHA",
+        "score": 135,
+        "listed": 18,
+        "played": 12,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": -1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500586.json",
+        "boxscoresummaryv3_0022500586.json"
+      ]
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "utc_start": "2026-01-18T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 116,
+      "canonical_opponent_points": 132,
+      "home": {
+        "team_id": 1610612757,
+        "team_abbr": "POR",
+        "score": 132,
+        "listed": 18,
+        "played": 12,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 116,
+        "listed": 18,
+        "played": 12,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500601.json",
+        "boxscoresummaryv3_0022500601.json"
+      ]
+    },
+    {
+      "game_id": "0022500607",
+      "game_date": "2026-01-18",
+      "utc_start": "2026-01-19T02:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 110,
+      "canonical_opponent_points": 93,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 110,
+        "listed": 18,
+        "played": 14,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612761,
+        "team_abbr": "TOR",
+        "score": 93,
+        "listed": 17,
+        "played": 13,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500607.json",
+        "boxscoresummaryv3_0022500607.json"
+      ]
+    },
+    {
+      "game_id": "0022500617",
+      "game_date": "2026-01-20",
+      "utc_start": "2026-01-21T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 115,
+      "canonical_opponent_points": 107,
+      "home": {
+        "team_id": 1610612743,
+        "team_abbr": "DEN",
+        "score": 107,
+        "listed": 17,
+        "played": 8,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 115,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500617.json",
+        "boxscoresummaryv3_0022500617.json"
+      ]
+    },
+    {
+      "game_id": "0022500633",
+      "game_date": "2026-01-22",
+      "utc_start": "2026-01-23T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 104,
+      "canonical_opponent_points": 112,
+      "home": {
+        "team_id": 1610612746,
+        "team_abbr": "LAC",
+        "score": 112,
+        "listed": 18,
+        "played": 9,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 104,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500633.json",
+        "boxscoresummaryv3_0022500633.json"
+      ]
+    },
+    {
+      "game_id": "0022500648",
+      "game_date": "2026-01-24",
+      "utc_start": "2026-01-25T01:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 116,
+      "canonical_opponent_points": 110,
+      "home": {
+        "team_id": 1610612742,
+        "team_abbr": "DAL",
+        "score": 110,
+        "listed": 19,
+        "played": 11,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 116,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500648.json",
+        "boxscoresummaryv3_0022500648.json"
+      ]
+    },
+    {
+      "game_id": "0022500661",
+      "game_date": "2026-01-26",
+      "utc_start": "2026-01-27T01:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 129,
+      "canonical_opponent_points": 118,
+      "home": {
+        "team_id": 1610612741,
+        "team_abbr": "CHI",
+        "score": 118,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 129,
+        "listed": 17,
+        "played": 10,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500661.json",
+        "boxscoresummaryv3_0022500661.json"
+      ]
+    },
+    {
+      "game_id": "0022500671",
+      "game_date": "2026-01-28",
+      "utc_start": "2026-01-29T00:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 99,
+      "canonical_opponent_points": 129,
+      "home": {
+        "team_id": 1610612739,
+        "team_abbr": "CLE",
+        "score": 129,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 99,
+        "listed": 17,
+        "played": 13,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500671.json",
+        "boxscoresummaryv3_0022500671.json"
+      ]
+    },
+    {
+      "game_id": "0022500688",
+      "game_date": "2026-01-30",
+      "utc_start": "2026-01-31T00:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 142,
+      "canonical_opponent_points": 111,
+      "home": {
+        "team_id": 1610612764,
+        "team_abbr": "WAS",
+        "score": 111,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 142,
+        "listed": 17,
+        "played": 13,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500688.json",
+        "boxscoresummaryv3_0022500688.json"
+      ]
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "utc_start": "2026-02-02T00:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 100,
+      "canonical_opponent_points": 112,
+      "home": {
+        "team_id": 1610612752,
+        "team_abbr": "NYK",
+        "score": 112,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 100,
+        "listed": 17,
+        "played": 12,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500708.json",
+        "boxscoresummaryv3_0022500708.json"
+      ]
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "utc_start": "2026-02-08T01:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 105,
+      "canonical_opponent_points": 99,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 105,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612744,
+        "team_abbr": "GSW",
+        "score": 99,
+        "listed": 16,
+        "played": 10,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500753.json",
+        "boxscoresummaryv3_0022500753.json"
+      ]
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "utc_start": "2026-02-10T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 110,
+      "canonical_opponent_points": 119,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 110,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612760,
+        "team_abbr": "OKC",
+        "score": 119,
+        "listed": 18,
+        "played": 11,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500769.json",
+        "boxscoresummaryv3_0022500769.json"
+      ]
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "utc_start": "2026-02-13T03:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 124,
+      "canonical_opponent_points": 104,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 124,
+        "listed": 18,
+        "played": 14,
+        "explicit_nonparticipants": 4,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612742,
+        "team_abbr": "DAL",
+        "score": 104,
+        "listed": 18,
+        "played": 11,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022500791.json",
+        "boxscoresummaryv3_0022500791.json"
+      ]
+    },
+    {
+      "game_id": "0022501098",
+      "game_date": "2026-03-30",
+      "utc_start": "2026-03-31T02:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 120,
+      "canonical_opponent_points": 101,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 120,
+        "listed": 18,
+        "played": 12,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612764,
+        "team_abbr": "WAS",
+        "score": 101,
+        "listed": 18,
+        "played": 9,
+        "explicit_nonparticipants": 9,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501098.json",
+        "boxscoresummaryv3_0022501098.json"
+      ]
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "utc_start": "2026-04-05T23:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 128,
+      "canonical_opponent_points": 134,
+      "home": {
+        "team_id": 1610612742,
+        "team_abbr": "DAL",
+        "score": 134,
+        "listed": 18,
+        "played": 11,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": -1
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 128,
+        "listed": 18,
+        "played": 11,
+        "explicit_nonparticipants": 7,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501140.json",
+        "boxscoresummaryv3_0022501140.json"
+      ]
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "utc_start": "2026-04-10T02:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 119,
+      "canonical_opponent_points": 103,
+      "home": {
+        "team_id": 1610612744,
+        "team_abbr": "GSW",
+        "score": 103,
+        "listed": 18,
+        "played": 10,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 119,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501170.json",
+        "boxscoresummaryv3_0022501170.json"
+      ]
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "utc_start": "2026-04-11T02:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 101,
+      "canonical_opponent_points": 73,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 101,
+        "listed": 17,
+        "played": 14,
+        "explicit_nonparticipants": 3,
+        "clock_residual_seconds": 1
+      },
+      "away": {
+        "team_id": 1610612756,
+        "team_abbr": "PHX",
+        "score": 73,
+        "listed": 18,
+        "played": 13,
+        "explicit_nonparticipants": 5,
+        "clock_residual_seconds": 1
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501185.json",
+        "boxscoresummaryv3_0022501185.json"
+      ]
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "utc_start": "2026-04-13T00:30:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 1,
+      "canonical_lal_points": 131,
+      "canonical_opponent_points": 107,
+      "home": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 131,
+        "listed": 17,
+        "played": 14,
+        "explicit_nonparticipants": 3,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612762,
+        "team_abbr": "UTA",
+        "score": 107,
+        "listed": 18,
+        "played": 8,
+        "explicit_nonparticipants": 10,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501198.json",
+        "boxscoresummaryv3_0022501198.json"
+      ]
+    },
+    {
+      "game_id": "0022501228",
+      "game_date": "2025-12-14",
+      "utc_start": "2025-12-15T01:00:00Z",
+      "source_final_period": 4,
+      "canonical_lal_is_home": 0,
+      "canonical_lal_points": 116,
+      "canonical_opponent_points": 114,
+      "home": {
+        "team_id": 1610612756,
+        "team_abbr": "PHX",
+        "score": 114,
+        "listed": 17,
+        "played": 11,
+        "explicit_nonparticipants": 6,
+        "clock_residual_seconds": 0
+      },
+      "away": {
+        "team_id": 1610612747,
+        "team_abbr": "LAL",
+        "score": 116,
+        "listed": 17,
+        "played": 9,
+        "explicit_nonparticipants": 8,
+        "clock_residual_seconds": 0
+      },
+      "source_files": [
+        "boxscoretraditionalv3_0022501228.json",
+        "boxscoresummaryv3_0022501228.json"
+      ]
+    }
+  ],
+  "qualified_requested_targets": [
+    {
+      "game_id": "0022500336",
+      "game_date": "2025-12-04",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500336.json",
+      "source_sha256": "6666a5f549ef6cbf9b606f8378f2e99306d1771845893906a21d3ac2db1e381d",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500336.json",
+        "boxscoresummaryv3_0022500336.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500379",
+      "game_date": "2025-12-18",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500379.json",
+      "source_sha256": "febc81c3278821bb3a5e9fcdb1ae129d1fd1293fdf6ad49ade4ffedaf109d575",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[4]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500379.json",
+        "boxscoresummaryv3_0022500379.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500395",
+      "game_date": "2025-12-20",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500395.json",
+      "source_sha256": "65fe372c2f12ea537106c535042345b855d4e13b90bb4b77c9eede70aac03ccf",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500395.json",
+        "boxscoresummaryv3_0022500395.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500418",
+      "game_date": "2025-12-23",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500418.json",
+      "source_sha256": "d88731ed45af8374303e1b9d089ed693af77e68367c8c47d11ef7edb1aca1607",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500418.json",
+        "boxscoresummaryv3_0022500418.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500446",
+      "game_date": "2025-12-28",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500446.json",
+      "source_sha256": "820a6763aba496acc979b7daef22d0f8601d1343cc865e49e8dbc974634a1196",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500446.json",
+        "boxscoresummaryv3_0022500446.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500460",
+      "game_date": "2025-12-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500460.json",
+      "source_sha256": "957ff789a33498e54d908a738c07d21f9da7417430033abfc53b0f980130fa8d",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500460.json",
+        "boxscoresummaryv3_0022500460.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500485",
+      "game_date": "2026-01-02",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500485.json",
+      "source_sha256": "d7d8275db2e7861b67281f429d099b9ac353c0ba9964373e3b6db173ecd100e0",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500485.json",
+        "boxscoresummaryv3_0022500485.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500501",
+      "game_date": "2026-01-04",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500501.json",
+      "source_sha256": "ad3b8107b01b91b32d94fa7adb7c3323e8ce79702c3b46514eae3541e6eb0df4",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[4]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500501.json",
+        "boxscoresummaryv3_0022500501.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500514",
+      "game_date": "2026-01-06",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500514.json",
+      "source_sha256": "c537472c68e1f89e6f52491162c89fbee6737f6d775655553b6c5aa65443cb05",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500514.json",
+        "boxscoresummaryv3_0022500514.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500541",
+      "game_date": "2026-01-09",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500541.json",
+      "source_sha256": "368e263d535fb22d7d0415573f29ca7a8ffc3680f4f0fc7283dbc5de80ff778f",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[4]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500541.json",
+        "boxscoresummaryv3_0022500541.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500562",
+      "game_date": "2026-01-12",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500562.json",
+      "source_sha256": "d9d55fc8b0bcdbd1a0e0a624b78238fc28b7f08c35bd6a0aa0e58b95aefc1494",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[3]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500562.json",
+        "boxscoresummaryv3_0022500562.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500569",
+      "game_date": "2026-01-13",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500569.json",
+      "source_sha256": "ee9a67f85b430e42ddb842b9210057569449c375541471f84f4f0a34abe8960e",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500569.json",
+        "boxscoresummaryv3_0022500569.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500586",
+      "game_date": "2026-01-15",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500586.json",
+      "source_sha256": "8603b086c95020cda06e1e85eb095bf9a8204847f78cb072808759249d070bf3",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500586.json",
+        "boxscoresummaryv3_0022500586.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500601.json",
+      "source_sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500601.json",
+        "boxscoresummaryv3_0022500601.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500601",
+      "game_date": "2026-01-17",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500601.json",
+      "source_sha256": "40ea690ea9a817ae3822cc0e33d2f6b230f937474256f4ecd4478f354b86cc00",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[3]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500601.json",
+        "boxscoresummaryv3_0022500601.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500607",
+      "game_date": "2026-01-18",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500607.json",
+      "source_sha256": "fa83b6429e2eddb23dff31f0c946094654cac02229b4399bc901d55ed78c5e78",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500607.json",
+        "boxscoresummaryv3_0022500607.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500617",
+      "game_date": "2026-01-20",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500617.json",
+      "source_sha256": "4e0a4925e96cb148bf48cf16cf8d5bb47cbe3f4b4605e6dfd94e82bfc1907742",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500617.json",
+        "boxscoresummaryv3_0022500617.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500633",
+      "game_date": "2026-01-22",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500633.json",
+      "source_sha256": "d7719a670993d1a50653edc30b273714c8c9eee209519cacbdf1eb9040c9a11b",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500633.json",
+        "boxscoresummaryv3_0022500633.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500648",
+      "game_date": "2026-01-24",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500648.json",
+      "source_sha256": "d7282a5d37c0e55d3940ba68bd1cd2d183745f44ece3feb7f373a931319883a5",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500648.json",
+        "boxscoresummaryv3_0022500648.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500661",
+      "game_date": "2026-01-26",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500661.json",
+      "source_sha256": "b50a2ef2ee9896994e62737c499a9ea64298bbe7c6a068aae75d66b44a34a402",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500661.json",
+        "boxscoresummaryv3_0022500661.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500671",
+      "game_date": "2026-01-28",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500671.json",
+      "source_sha256": "90fa491abe372ed6d72bacfe6f3264e9a3fed7963cd7462774fd27d58bd1f5dd",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[3]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500671.json",
+        "boxscoresummaryv3_0022500671.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500688",
+      "game_date": "2026-01-30",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500688.json",
+      "source_sha256": "9b43594c10735f2a7d1b00a279d834812e6ac530dedaedaf6aac484cb7059316",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500688.json",
+        "boxscoresummaryv3_0022500688.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500708",
+      "game_date": "2026-02-01",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_Traditional_nonparticipant_statement_and_Summary_same_game_identity",
+      "source_comment_literal": "DND - Injury/Illness",
+      "source_file": "sources/boxscoretraditionalv3_0022500708.json",
+      "source_sha256": "7155de36497b0b766de78444b8df084f4dbc43859b18b7a9d59460710fa3f22c",
+      "json_path": "$.boxScoreTraditional.awayTeam.players[13]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500708.json",
+        "boxscoresummaryv3_0022500708.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500753",
+      "game_date": "2026-02-07",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500753.json",
+      "source_sha256": "c4d05bccae21ed88c234fd06239cb9a5f1f0754b80f20385c92698f0e884cc93",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500753.json",
+        "boxscoresummaryv3_0022500753.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500769",
+      "game_date": "2026-02-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500769.json",
+      "source_sha256": "fb365a0cfe356b17b769cf3caa431a5e1b557d7c892db6af48d1bd4180fe4e26",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500769.json",
+        "boxscoresummaryv3_0022500769.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022500791",
+      "game_date": "2026-02-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022500791.json",
+      "source_sha256": "c5f9e8b0b2bc07bb017a15272cf6b177598f7b93dd4b2aafa647df925d406a3f",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022500791.json",
+        "boxscoresummaryv3_0022500791.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501098",
+      "game_date": "2026-03-30",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Dončić",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_Traditional_nonparticipant_statement_and_Summary_same_game_identity",
+      "source_comment_literal": "NWT - League Suspension",
+      "source_file": "sources/boxscoretraditionalv3_0022501098.json",
+      "source_sha256": "9a9395dfa72307b2e0333805893cb9207d501c5cf8fc0d1f4461deb4a1165b40",
+      "json_path": "$.boxScoreTraditional.homeTeam.players[12]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501098.json",
+        "boxscoresummaryv3_0022501098.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501140.json",
+      "source_sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501140.json",
+        "boxscoresummaryv3_0022501140.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501140",
+      "game_date": "2026-04-05",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501140.json",
+      "source_sha256": "bc16717f2656d0417fa2f30ea6a3976b9eafaf358623dfb7702ffb1ff9db540a",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501140.json",
+        "boxscoresummaryv3_0022501140.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501170.json",
+      "source_sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501170.json",
+        "boxscoresummaryv3_0022501170.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501170",
+      "game_date": "2026-04-09",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501170.json",
+      "source_sha256": "98c53a8005899b601790c8c8862307cb4b4b9f2db69ff91352d3acaee84a2722",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[3]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501170.json",
+        "boxscoresummaryv3_0022501170.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501185.json",
+      "source_sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501185.json",
+        "boxscoresummaryv3_0022501185.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501185",
+      "game_date": "2026-04-10",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501185.json",
+      "source_sha256": "10319650e16e98a5abf47534d733d6ab23b053e51922fc40f91b2010cf1dc737",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501185.json",
+        "boxscoresummaryv3_0022501185.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1629029,
+      "player_name": "Luka Doncic",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501198.json",
+      "source_sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[0]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501198.json",
+        "boxscoresummaryv3_0022501198.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501198",
+      "game_date": "2026-04-12",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501198.json",
+      "source_sha256": "bbf5cf228544820971798c382e9c883ea9517d89fdc1e383e5010560862af4e7",
+      "json_path": "$.boxScoreSummary.homeTeam.inactives[2]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501198.json",
+        "boxscoresummaryv3_0022501198.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    },
+    {
+      "game_id": "0022501228",
+      "game_date": "2025-12-14",
+      "team_id": 1610612747,
+      "player_id": 1630559,
+      "player_name": "Austin Reaves",
+      "participation_state": "did_not_play",
+      "evidence": "explicit_same_game_SummaryV3_inactive",
+      "source_comment_literal": "INACTIVE",
+      "source_file": "sources/boxscoresummaryv3_0022501228.json",
+      "source_sha256": "26032a23a998de186fcfb31e59011c517c2c054aa81e4105bc86c5d5bff4a6ce",
+      "json_path": "$.boxScoreSummary.awayTeam.inactives[1]",
+      "source_pair": [
+        "boxscoretraditionalv3_0022501228.json",
+        "boxscoresummaryv3_0022501228.json"
+      ],
+      "traditional_omission_is_absence_proof": false
+    }
+  ],
+  "append_union": {
+    "unique_rows": 1087,
+    "states": {
+      "played": 684,
+      "did_not_play": 402,
+      "unqualified_invalid_clock": 1
+    },
+    "projection_columns": [
+      "game_id_10digit",
+      "team_id",
+      "player_id",
+      "participation_state"
+    ],
+    "projection_sha256": "07662790c89954bce5502a67a6fdfe544ae6cd2216480a6b362c8a73e5a2c46a",
+    "projected_current_season_rows": 1891,
+    "projected_all_season_rows": 2037,
+    "existing_current_season_cells_to_preserve": 804,
+    "existing_other_season_rows_to_preserve": 146,
+    "scope": "all explicitly listed Traditional/Summary identities in these31games; ONE row is NOT stage-qualified because its clock is invalid; no unlisted player or other-date tenure inference"
+  },
+  "clock_evidence": {
+    "precise_original_report_seconds_qualified": false,
+    "team_clock_all_match_summary_period_duration": true,
+    "displayed_player_sum_residuals": [
+      {
+        "game_id": "0022500379",
+        "team_id": 1610612762,
+        "displayed_player_seconds": 14402,
+        "source_team_seconds": 14400,
+        "residual_seconds": 2
+      },
+      {
+        "game_id": "0022500460",
+        "team_id": 1610612765,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022500485",
+        "team_id": 1610612763,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022500541",
+        "team_id": 1610612747,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022500541",
+        "team_id": 1610612749,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022500586",
+        "team_id": 1610612766,
+        "displayed_player_seconds": 14399,
+        "source_team_seconds": 14400,
+        "residual_seconds": -1
+      },
+      {
+        "game_id": "0022500607",
+        "team_id": 1610612761,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022501140",
+        "team_id": 1610612742,
+        "displayed_player_seconds": 14399,
+        "source_team_seconds": 14400,
+        "residual_seconds": -1
+      },
+      {
+        "game_id": "0022501185",
+        "team_id": 1610612747,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      },
+      {
+        "game_id": "0022501185",
+        "team_id": 1610612756,
+        "displayed_player_seconds": 14401,
+        "source_team_seconds": 14400,
+        "residual_seconds": 1
+      }
+    ],
+    "max_abs_residual_seconds": 2,
+    "invalid_clocks": [
+      {
+        "game_id": "0022500708",
+        "team_id": 1610612747,
+        "player_id": 1629060,
+        "player_name": "Rui Hachimura",
+        "source_file": "sources/boxscoretraditionalv3_0022500708.json",
+        "raw_minutes": "28:60",
+        "source_json_path": "$.boxScoreTraditional.awayTeam.players",
+        "reason": "seconds component is60; existing strict parser rejects; no normalization or precise clock promotion authorized"
+      }
+    ],
+    "policy": "Strict minute parser rejects28:60; diagnostic carry arithmetic used ONLY to measure display residuals and does not normalize or qualify that row. Nonzero residuals stay explicit; no precise clock/on-court promotion"
+  },
+  "closed_observed_82_projections": [
+    {
+      "player_id": 1629029,
+      "counts": {
+        "played": 64,
+        "did_not_play": 18
+      },
+      "missed_games": 18,
+      "home_missed_games": 9,
+      "home_missed_ids": [
+        "0022500122",
+        "0022500753",
+        "0022500769",
+        "0022500774",
+        "0022500791",
+        "0022501098",
+        "0022501155",
+        "0022501185",
+        "0022501198"
+      ],
+      "all_dnp_team_record": {
+        "game_ids": [
+          "0022500113",
+          "0022500122",
+          "0022500136",
+          "0022500163",
+          "0022500336",
+          "0022500338",
+          "0022500418",
+          "0022500601",
+          "0022500753",
+          "0022500769",
+          "0022500774",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501155",
+          "0022501170",
+          "0022501185",
+          "0022501198"
+        ],
+        "games": 18,
+        "wins": 10,
+        "losses": 8,
+        "team_points": 2059,
+        "team_points_per_game": 114.38888888888889
+      },
+      "with_lebron_positive_team_record": {
+        "game_ids": [
+          "0022500336",
+          "0022500418",
+          "0022500601",
+          "0022500753",
+          "0022500769",
+          "0022500791",
+          "0022501098",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198"
+        ],
+        "games": 11,
+        "wins": 7,
+        "losses": 4,
+        "team_points": 1285,
+        "team_points_per_game": 116.81818181818181
+      }
+    },
+    {
+      "player_id": 1630559,
+      "counts": {
+        "played": 51,
+        "did_not_play": 31
+      },
+      "missed_games": 31,
+      "home_missed_games": 13,
+      "home_missed_ids": [
+        "0022500179",
+        "0022500446",
+        "0022500460",
+        "0022500485",
+        "0022500501",
+        "0022500541",
+        "0022500569",
+        "0022500586",
+        "0022500607",
+        "0022500774",
+        "0022501155",
+        "0022501185",
+        "0022501198"
+      ],
+      "all_dnp_team_record": {
+        "game_ids": [
+          "0022500163",
+          "0022500179",
+          "0022500185",
+          "0022500379",
+          "0022500395",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500523",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022500774",
+          "0022501140",
+          "0022501155",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "games": 31,
+        "wins": 17,
+        "losses": 14,
+        "team_points": 3547,
+        "team_points_per_game": 114.41935483870968
+      },
+      "with_lebron_positive_team_record": {
+        "game_ids": [
+          "0022500379",
+          "0022500395",
+          "0022500446",
+          "0022500460",
+          "0022500485",
+          "0022500501",
+          "0022500514",
+          "0022500541",
+          "0022500562",
+          "0022500569",
+          "0022500586",
+          "0022500601",
+          "0022500607",
+          "0022500617",
+          "0022500633",
+          "0022500648",
+          "0022500661",
+          "0022500671",
+          "0022500688",
+          "0022500708",
+          "0022501140",
+          "0022501170",
+          "0022501185",
+          "0022501198",
+          "0022501228"
+        ],
+        "games": 25,
+        "wins": 15,
+        "losses": 10,
+        "team_points": 2918,
+        "team_points_per_game": 116.72
+      }
+    }
+  ],
+  "source_contradictions": [
+    {
+      "game_id": "0022500708",
+      "team_id": 1610612747,
+      "player_id": 1629060,
+      "player_name": "Rui Hachimura",
+      "source_file": "sources/boxscoretraditionalv3_0022500708.json",
+      "raw_minutes": "28:60",
+      "source_json_path": "$.boxScoreTraditional.awayTeam.players",
+      "reason": "seconds component is60; existing strict parser rejects; no normalization or precise clock promotion authorized"
+    }
+  ],
+  "all_originals_stage_eligible": false,
+  "qualified_requested_target_count": 36,
+  "full_append_qualified": false,
+  "unknown_is_dnp_inference": false,
+  "canonical_staging_execution_accepted": false,
+  "full_dataset_slice_accepted": false,
+  "production_publication_authorized": false,
+  "production_writes": 0,
+  "next": "Resolve invalid28:60 source clock without weakening strict parser, then reviewed grouped stager plus required pinned actual-data staging/full82/natural/structured/API/RawQA acceptance; preserve old cells/authority; production publication remains separate"
+}
