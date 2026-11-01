@@ -243,6 +243,14 @@ def test_temporal_suffix_does_not_hide_comma_attached_player_stat(qualified_pair
         "Blorg grabs 10 rebounds",
         "Davis scoring30 points",
         "Blorg scoring30 points",
+        "the Lakers' Anthony Davis scores 30 points",
+        "Anthony Davis of the Lakers scores 30 points",
+        "Davis from the Lakers scores 30 points",
+        "the Lakers' Blorg scores 30 points",
+        "Blorg of the Lakers scores 30 points",
+        "the player named Anthony Davis on the Lakers scores 30 points",
+        "the Lakers' unindexed deep bench player Blorg scores 30 points",
+        "Anthony Davis of the Lakers scoring 30 points",
     ],
 )
 @pytest.mark.parametrize("team_first", [False, True])
@@ -299,12 +307,13 @@ def test_compact_residual_actor_stat_still_cannot_become_a_team_answer(qualified
     assert not result.result.to_dict()["sections"]
 
 
-def test_existing_inherited_team_bound_is_not_an_unindexed_actor(qualified_pair):
+@pytest.mark.parametrize("subject", ["", "they ", "the Lakers "])
+def test_existing_inherited_team_bound_is_not_an_unindexed_actor(qualified_pair, subject):
     expected = (
         qualified_pair["teams"]
         .loc[qualified_pair["teams"].game_id.eq(qualified_pair["ids"][1])]
         .iloc[0]
     )
-    question = f"Lakers record without LeBron James and with Anthony Davis within their last 3 games in {SEASON} vs Celtics where the Lakers scored at least 80 points and grabbed at least 10 rebounds"
+    question = f"Lakers record without LeBron James and with Anthony Davis within their last 3 games in {SEASON} vs Celtics where the Lakers scored at least 80 points and {subject}grabbed at least 10 rebounds"
     assert expected.reb >= 10
     _assert_one(execute_natural_query(question), expected)
