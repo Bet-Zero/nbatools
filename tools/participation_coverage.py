@@ -158,7 +158,7 @@ def build_report(
         identities = pd.concat([appearances, observations], ignore_index=True)
         names = identities.loc[pd.to_numeric(identities.player_id).eq(player_id), "player_name"]
         names = names.dropna().astype(str).unique()
-        if len(names) != 1:
+        if len({participation.player_name_key(name) for name in names}) != 1:
             raise ValueError("Requested player has unavailable or conflicting name identity")
         name = names[0]
         rows = []
