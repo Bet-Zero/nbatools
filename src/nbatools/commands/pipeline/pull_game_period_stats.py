@@ -524,7 +524,10 @@ def normalize_boxscore_player_advanced_rows(df: pd.DataFrame) -> pd.DataFrame:
         out[col] = pd.to_numeric(out[col], errors="raise").astype(int)
 
     for col in PLAYER_RATE_COLUMNS:
-        out[col] = _normalize_fraction_series(out[col]).fillna(0.0)
+        # V3 turnoverRatio is percent points even when every value is <= 1;
+        # the other three V3 *Percentage fields are already fractions.
+        values = pd.to_numeric(out[col], errors="coerce")
+        out[col] = (values / 100.0 if col == "tov_pct" else values).fillna(0.0)
 
     key_columns = ["game_id", "team_id", "player_id"]
     if out.duplicated(subset=key_columns).any():
@@ -681,6 +684,8 @@ def _period_window_has_activity(team_df: pd.DataFrame) -> bool:
 def _complete_player_standard_window_keys(
     player_rows: pd.DataFrame,
     player_context: pd.DataFrame,
+    *,
+    period_windows: tuple[PeriodWindow, ...] = PERIOD_WINDOWS,
 ) -> pd.DataFrame:
     """Materialize authoritative zero-participation standard-window rows."""
     context_columns = [
@@ -709,7 +714,7 @@ def _complete_player_standard_window_keys(
                 "source_start_period": window.start_period,
                 "source_end_period": window.end_period,
             }
-            for window in PERIOD_WINDOWS
+            for window in period_windows
             if window.period_family != "overtime"
         ]
     )

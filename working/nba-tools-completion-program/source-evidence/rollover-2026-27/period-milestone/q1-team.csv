@@ -1,0 +1,3 @@
+game_id,season,season_type,game_date,period_family,period_value,source_start_period,source_end_period,team_id,team_abbr,team_name,opponent_team_id,opponent_team_abbr,opponent_team_name,is_home,is_away,wl,minutes,pts,fgm,fga,fg_pct,fg3m,fg3a,fg3_pct,ftm,fta,ft_pct,oreb,dreb,reb,ast,stl,blk,tov,pf,plus_minus,efg_pct,ts_pct
+22600001,2026-27,Regular Season,2026-10-20,quarter,1,1,1,1610612765,DET,Detroit Pistons,1610612738,BOS,Boston Celtics,1,0,L,60.0,27,11,22,0.5,2,8,0.25,3,4,0.75,3,9,12,6,4,2,4,8,-1.0,0.5454545454545454,0.5681818181818181
+22600001,2026-27,Regular Season,2026-10-20,quarter,1,1,1,1610612738,BOS,Boston Celtics,1610612765,DET,Detroit Pistons,0,1,W,60.0,28,10,21,0.476,4,9,0.444,4,5,0.8,3,7,10,8,2,2,6,4,1.0,0.5714285714285714,0.603448275862069
