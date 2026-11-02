@@ -647,7 +647,7 @@ def _advanced_player_rows(*, game_id: int, usg_pct: float) -> pd.DataFrame:
                 "usagePercentage": usg_pct,
                 "assistPercentage": 0.18,
                 "reboundPercentage": 0.09,
-                "turnoverRatio": 0.11,
+                "turnoverRatio": 11.0,
             },
             {
                 "gameId": str(game_id).zfill(10),
@@ -656,7 +656,7 @@ def _advanced_player_rows(*, game_id: int, usg_pct: float) -> pd.DataFrame:
                 "usagePercentage": 0.22,
                 "assistPercentage": 0.12,
                 "reboundPercentage": 0.08,
-                "turnoverRatio": 0.10,
+                "turnoverRatio": 10.0,
             },
         ]
     )

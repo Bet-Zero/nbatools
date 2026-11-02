@@ -196,6 +196,22 @@ and never establishes canonical period acceptance or production authority. Codex
 qualifies the returned originals in the cloud before any larger bounded request.
 No batch-manifest or automatic expansion is included.
 
+### Qualified Q1 and one fixed readiness batch (November1 Detroit / November2 UTC)
+
+The original Q1 ZIP has arrived; do not request it or laptop setup again.
+The active execution queue links the period milestone, which preserves its immutable bytes, independent source review and actual importer,
+validator and consumer replay. It remains partial Q1 staging, not readiness.
+
+The single prepared laptop ZIP contains an embedded finite1,061-request plan and
+Mac/Windows launchers using the existing installation:530missing direct period
+windows for88 exact games plus one same-cutoff PlayerAdvanced snapshot through
+October31. Existing Q1,30-teamAdvanced and roster evidence are reused. The owner
+opens the launcher and returns `readiness-capture/collection.zip`, including on
+failure; cloud agents handle qualification. Original/partial bodies and unattempted
+jobs survive; no implicit failed-request retry, new install or publication occurs.
+The fixed scope and caps are in the linked milestone. Refresh exact24-hour due
+coverage at eventual snapshot acceptance rather than reusing88 as a permanent count.
+
 ## Cloud: validate, prepare and request protected publication
 
 ```bash

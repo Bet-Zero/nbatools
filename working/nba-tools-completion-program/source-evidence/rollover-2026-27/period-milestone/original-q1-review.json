@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "classification": "independent_original_q1_source_and_existing_normalizer_review_not_full_snapshot_acceptance",
+  "checker": "/root/period_checker",
+  "identity": "Separate Codex checker session; exact model identifier not exposed; no cross-model claim",
+  "baseline_code_sha": "cf151f35e4ab263f56d36a0cedcbfbcd7f53e248",
+  "handoff_commit": "8ffc9eadc4666d4d0fca502db19ca04855f405ec",
+  "zip_sha256": "ab6618b4b0da9ddd3f262547832718544d74de7cf24d67f4b7901cb9081ef88d",
+  "conclusion": "Original bytes and Q1 statistical scope qualified; existing parser/normalizers/per-dataset validators pass; actual consumer and reusable partial-stage implementation review pending",
+  "integrity": {
+    "zip_bytes": 7943,
+    "members": 5,
+    "all_internal_sizes_and_sha256_verified": true,
+    "request_canonical_sha256_verified": true,
+    "acquisition_and_capture_attempt_identical": true
+  },
+  "scope": {
+    "game_id": "0022600001",
+    "season": "2026-27",
+    "date": "2026-10-20",
+    "period": "quarter:1",
+    "team_ids": [
+      1610612738,
+      1610612765
+    ],
+    "source_player_rows": 19,
+    "whole_game_played_keys": 22,
+    "team_rows": 2,
+    "team_seconds_each": 3600,
+    "player_seconds_each": 3600,
+    "traditional_advanced_identities_and_clocks_match": true,
+    "all_additive_team_fields_match_player_sums": true,
+    "summary_sha256": "7e61162d1ec001d5235a8dd2125a654dfad30887db90e0d0c58621859383cf5a",
+    "summary_q1_points": {
+      "1610612765": 27,
+      "1610612738": 28
+    }
+  },
+  "oracle_examples": [
+    {
+      "player_id": 1630595,
+      "pts": 6,
+      "fgm": 3,
+      "fga": 5,
+      "ast": 2,
+      "minutes": 9.25,
+      "usg_pct": 0.318,
+      "ast_pct": 0.333,
+      "tov_pct": 0.222
+    },
+    {
+      "player_id": 1628369,
+      "pts": 7,
+      "fgm": 3,
+      "fga": 9,
+      "ast": 4,
+      "minutes": 12,
+      "usg_pct": 0.31,
+      "ast_pct": 0.571,
+      "reb_pct": 0.13
+    },
+    {
+      "player_id": 1628989,
+      "pts": 3,
+      "fgm": 1,
+      "fga": 1,
+      "fg3m": 1,
+      "efg_pct": 1.5,
+      "ts_pct": 1.5
+    }
+  ],
+  "provenance": {
+    "transport": "Original acquisition.json records two exact HTTPS stats.nba.com endpoint requests, fixed Q1 parameters, one attempt each, HTTP200 and complete bodies, capture2026-11-01T18:12:31.713507+00:00 through18:12:33.238580+00:00; nba_api1.12.0.",
+    "origin_metadata": "Body meta.request http://nba.cloud/... differs from HTTPS transport record and is not independent transport proof. Original values retained.",
+    "reacquisition_requests": 0
+  },
+  "partial_stage_obligations": [
+    "Only captured Q1 may be materialized; unobserved Q2/Q3/Q4/halves must remain missing.",
+    "Qualified full-game played players1629750,1630568,1642864 omitted by both Q1 bodies require Q1 zero-participation keys under existing completion semantics.",
+    "Normalizers and validators are per-dataset checks, not full11raw+5processed acceptance or automatic readiness.",
+    "Retain Huerter TS/eFG1.5; these shooting efficiencies can exceed1.",
+    "Quarter rates and halves are separate source windows, never sum quarter rates into half Advanced fields."
+  ],
+  "executed": {
+    "command": ".venv/bin/python work/period-checker/check_original.py",
+    "result": "PASS: original integrity, independent scalar expectations, SDK parse, existing normalizers and validators;19sourceplayer/2team Q1",
+    "script_sha256": "8bc7de4c6094c717233ed72b9081660fc905f03428d2aa92cc84e2962e094d5b",
+    "player_csv_sha256": "889bb4081e76b4f1d495dc7343fb9b464690674db7052e4cebc2bc8cb21bc0ae",
+    "team_csv_sha256": "652239343189733011311d94193b13e0be768a3cdd11dda0be3fab70805fad73"
+  },
+  "production_writes": 0,
+  "readiness_accepted": false
+}

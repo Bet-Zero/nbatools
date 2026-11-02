@@ -1,0 +1,98 @@
+{
+  "revision": "75049d7c3ed9db26aa6f3b6f2956afc0c403acb2",
+  "checked_at": "2026-11-02T04:36:46.775452+00:00",
+  "files": [
+    {
+      "path": "nba_stats/json/scheduleleaguev2/2027.json",
+      "git_blob_sha": "18aaae724b199861226a6c575209abdf79c3e05b",
+      "bytes": 4381135,
+      "previous_blob": "f722a15886ece11915a37e197f4873c34c893284",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/scheduleleaguev2/2027.json",
+        "bytes": 4381135,
+        "sha256": "99366de09b9736c853e9bbe65a76709b4eac31360dc2d15be069a39e12d8513c"
+      },
+      "file": "schedule.json"
+    },
+    {
+      "path": "nba_stats/json/leaguegamefinder/2027/regular-season.json",
+      "git_blob_sha": "afaed47f0f6e71ce5129c86efd6c55952fe72f9d",
+      "bytes": 34833,
+      "previous_blob": "4e42439d782917b3cbefdac9cbf90fc8e852d237",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/leaguegamefinder/2027/regular-season.json",
+        "bytes": 34833,
+        "sha256": "56477c424f1efd60b1ceda466fca0e1dd21157692688de7f3718f92601771ad9"
+      },
+      "file": "2027-regular-season.json"
+    },
+    {
+      "path": "nba_stats/json/leaguegamelog/2027/regular-season.json",
+      "git_blob_sha": "5435e9a98b5d79cdef56cf5aa5085749878e1311",
+      "bytes": 33680,
+      "previous_blob": "a7278ff256eeb60e7199d2f159219d740311a5e2",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/leaguegamelog/2027/regular-season.json",
+        "bytes": 33680,
+        "sha256": "b24c87777709c8f4b1e0f804081fb0eae73595a0eb6882103506429165ff64f1"
+      },
+      "file": "2027-regular-season.json"
+    },
+    {
+      "path": "nba_stats/json/leaguedashplayerstats/2027/regular-season_advanced_pergame.json",
+      "git_blob_sha": "5abf9a19245a669f197272b1ff9302fb67daf98f",
+      "bytes": 201214,
+      "previous_blob": "c80b32f64d05cea092258361178d491406ede708",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/leaguedashplayerstats/2027/regular-season_advanced_pergame.json",
+        "bytes": 201214,
+        "sha256": "b82dd85124fa76e186270a19e476ccd2292fbf853eda70b9a2f72e56eee36492"
+      },
+      "file": "2027-regular-season_advanced_pergame.json"
+    },
+    {
+      "path": "nba_stats/json/leaguedashteamstats/2027/regular-season_advanced_pergame.json",
+      "git_blob_sha": "dd4740fa7492009ea13a8b33c12218d02d46deb8",
+      "bytes": 9081,
+      "previous_blob": "603216c1511a42f43ec7f8e627e11cee41fe1ecc",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/leaguedashteamstats/2027/regular-season_advanced_pergame.json",
+        "bytes": 9081,
+        "sha256": "58175f5751c6c512fb7bb2d2cc1a9ec00bf6cba35421739a4543d006056db21e"
+      },
+      "file": "2027-regular-season_advanced_pergame.json"
+    },
+    {
+      "path": "nba_stats/json/leaguestandingsv3/2027/regular-season.json",
+      "git_blob_sha": "27db8e78f791d074b0f0c42ddb9b43d8c7cc04ab",
+      "bytes": 19398,
+      "previous_blob": "a86338ba3e3d64169b40713b705102322b655a36",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/leaguestandingsv3/2027/regular-season.json",
+        "bytes": 19398,
+        "sha256": "5a0ad3680cf28d5887604a8172be3ada5020d3b07f5b91cdf9c2ba3ffd053080"
+      },
+      "file": "2027-regular-season.json"
+    },
+    {
+      "path": "nba_stats/json/playergamelogs/2027/regular-season_base_totals.json",
+      "git_blob_sha": "126d9c8f0583adc4c8dc104be3d1fc8fae4f1443",
+      "bytes": 845461,
+      "previous_blob": "b5e01c585114f59dbf561f43c09d893dcf92fd93",
+      "changed": true,
+      "capture": {
+        "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/75049d7c3ed9db26aa6f3b6f2956afc0c403acb2/nba_stats/json/playergamelogs/2027/regular-season_base_totals.json",
+        "bytes": 845461,
+        "sha256": "f351634a3758cfe41ee1ee5f57dcb5271f496fa9e20977f5061c44a7d96778a0"
+      },
+      "file": "2027-regular-season_base_totals.json"
+    }
+  ],
+  "production_writes": 0
+}

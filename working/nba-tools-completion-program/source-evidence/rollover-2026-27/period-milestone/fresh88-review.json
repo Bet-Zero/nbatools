@@ -1,0 +1,256 @@
+{
+  "classification": "independent_fresh88game_population_and_source_review_not_full_snapshot_acceptance",
+  "checker": "/root/period_checker",
+  "identity": "Separate Codex checker session; exact model identifier not exposed",
+  "checked_at": "2026-11-02T04:37:23.251771+00:00",
+  "cutoff": "2026-11-01T04:37:23.251771+00:00",
+  "schedule_games": 1206,
+  "due_games": 88,
+  "final_games": 88,
+  "due_equals_schedule_final_and_finder_teamlog_playerlog_ids": true,
+  "new_game_ids": [
+    "0022600147",
+    "0022600148",
+    "0022600149",
+    "0022600150",
+    "0022600151",
+    "0022600152",
+    "0022600153"
+  ],
+  "new_game_player_rows": 161,
+  "combined_player_rows": 1990,
+  "player_identities": 441,
+  "clock_checks": [
+    {
+      "game_id": "0022600147",
+      "team_id": 1610612762,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 12,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600147",
+      "team_id": 1610612757,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 1.0,
+      "played": 13,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600148",
+      "team_id": 1610612766,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 10,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600148",
+      "team_id": 1610612755,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 10,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600149",
+      "team_id": 1610612740,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 12,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600149",
+      "team_id": 1610612737,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 12,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600150",
+      "team_id": 1610612763,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": -1.0,
+      "played": 15,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600150",
+      "team_id": 1610612758,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 11,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600152",
+      "team_id": 1610612759,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 9,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600152",
+      "team_id": 1610612750,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 9,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600153",
+      "team_id": 1610612745,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 12,
+      "starters": 5
+    },
+    {
+      "game_id": "0022600153",
+      "team_id": 1610612760,
+      "team_seconds": 14400.0,
+      "player_display_residual_seconds": 0.0,
+      "played": 11,
+      "starters": 5
+    }
+  ],
+  "quarantined_traditional_clock_literals": [
+    {
+      "game_id": "0022600151",
+      "player_id": 1643417,
+      "minutes": "18:60"
+    }
+  ],
+  "new_game_source_integer_player_conflicts": [],
+  "new_game_source_integer_team_conflicts": [],
+  "new_game_overtime_ids": [],
+  "all88_overtime_ids": [
+    "0022600110",
+    "0022600120",
+    "0022600141"
+  ],
+  "fresh_player_advanced_population_GP_WL_match": true,
+  "player_TS_mismatches": [
+    {
+      "player_id": 203924,
+      "name": "Jerami Grant",
+      "PTS": 55,
+      "FGA": 50,
+      "FTA": 15,
+      "computed_TS": 0.48586572438162545,
+      "source_TS": 0.495
+    },
+    {
+      "player_id": 1627734,
+      "name": "Domantas Sabonis",
+      "PTS": 96,
+      "FGA": 54,
+      "FTA": 23,
+      "computed_TS": 0.7485963817841547,
+      "source_TS": 0.737
+    },
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "PTS": 18,
+      "FGA": 11,
+      "FTA": 0,
+      "computed_TS": 0.8181818181818182,
+      "source_TS": 0.8
+    },
+    {
+      "player_id": 1630230,
+      "name": "Naji Marshall",
+      "PTS": 41,
+      "FGA": 36,
+      "FTA": 5,
+      "computed_TS": 0.5366492146596858,
+      "source_TS": 0.523
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "PTS": 128,
+      "FGA": 107,
+      "FTA": 36,
+      "computed_TS": 0.5210029306414848,
+      "source_TS": 0.519
+    },
+    {
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "PTS": 23,
+      "FGA": 16,
+      "FTA": 10,
+      "computed_TS": 0.5637254901960784,
+      "source_TS": 0.537
+    },
+    {
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "PTS": 17,
+      "FGA": 21,
+      "FTA": 0,
+      "computed_TS": 0.40476190476190477,
+      "source_TS": 0.425
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "PTS": 40,
+      "FGA": 29,
+      "FTA": 0,
+      "computed_TS": 0.6896551724137931,
+      "source_TS": 0.667
+    },
+    {
+      "player_id": 1642383,
+      "name": "Walter Clayton Jr.",
+      "PTS": 21,
+      "FGA": 18,
+      "FTA": 3,
+      "computed_TS": 0.5434782608695652,
+      "source_TS": 0.573
+    },
+    {
+      "player_id": 1642907,
+      "name": "Cedric Coward",
+      "PTS": 65,
+      "FGA": 51,
+      "FTA": 2,
+      "computed_TS": 0.6264456437933693,
+      "source_TS": 0.622
+    },
+    {
+      "player_id": 1643409,
+      "name": "Cameron Boozer",
+      "PTS": 106,
+      "FGA": 85,
+      "FTA": 29,
+      "computed_TS": 0.5421440261865793,
+      "source_TS": 0.532
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "PTS": 30,
+      "FGA": 25,
+      "FTA": 8,
+      "computed_TS": 0.5259467040673211,
+      "source_TS": 0.545
+    }
+  ],
+  "fresh_team_advanced_GP_WL_net_arithmetic_pass": true,
+  "remaining_requirement": "0151source clock replacement and fresh same-cutoff player Advanced response or separately reviewed coherent basis still required; fresh team snapshot denominator matches88 and existing net arithmetic; no additional team capture indicated absent contradiction",
+  "production_writes": 0,
+  "provenance_limits": [
+    "Mirror commit/retrieval timestamps are recorded independently of original NBA body meta.time and do not establish NBA capture-as-of.",
+    "Fresh Advanced bodies retain DateTo empty; their observed GP/WL population reconciles to88-game through2026-10-31 scope, but player TS conflicts remain unresolved.",
+    "Malformed0151 supplementary Traditional remains quarantined, with valid primary log cells preserved unchanged; no replacement source is mandatory solely because this supplemental clock is malformed.",
+    "Existing11raw/5processed full-snapshot checks, exact due refresh at acceptance, separate publication approval, production pointer/LeBron safeguard remain required."
+  ]
+}
