@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "classification": "independent_period_input_milestone_candidate_review_not_full_snapshot_or_publication_acceptance",
+  "checker": "/root/period_checker",
+  "identity": "Separate Codex checker session. Exact model identifier unavailable in this session; no cross-model claim.",
+  "candidate_sha": "279e66a408116367f6be9e390d0ecb2e150044b0",
+  "candidate_tree": "e95de4e86291e77f1a481d65bef68321df0e4186",
+  "file_sha256": {
+    "tools/stage_rollover_periods.py": "215aefaf0903f7a43e3d91e253226fe7d40e3479b2bfa29799b28b497a1becdf",
+    "tools/qualify_rollover_q1.py": "e920cfee03a5504c8371f38584301162a34edbcf6dab26733687c1660cc38294",
+    "src/nbatools/commands/pipeline/pull_game_period_stats.py": "2e561738c9a9efef84de3d0cfb66e3fc3696ba5ac68ecce2e9b34fcf4bb6cede",
+    "tools/collect_rollover_readiness_laptop.py": "5542ce5380d5fb84b2fe88f22b8e26456ce2958731132e6188ed1d145cbf4b9b",
+    "tests/test_rollover_period_stage.py": "fdf603620750626a0e7a97601d8a206551b272ed42f2bf8ec1cb649c1a5b9d6d",
+    "tests/test_phase_g_period_execution.py": "60a4c7aa608d68418c26bcae67476fdcffa7a320f1c664e3813c683fa7486b70",
+    "tests/test_collect_rollover_readiness_laptop.py": "a43c222453fa9bf41b4c9c6a9f89315d9bfa66f65d8e5e49ccfd3ff1c358c648",
+    "working/nba-tools-completion-program/collection-requests/rollover-period-readiness-2026-27.json": "830cc9c5be63aecc2dcf1ae10f31401077c9c825cb2a0cfef22b8070e1c106b8",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/period-milestone/NBA-Tools-Readiness-Capture.zip": "8e3f2ab622d4912a67c389162d2521accdba078ff56716a3cf579922038c2545"
+  },
+  "conclusion": "APPROVED for this bounded source/import/package milestone, subject to normal required CI and integration gates. No unresolved blocking finding.",
+  "approval_scope": [
+    "Original Q1 ZIP source/statistical qualification, per-dataset validation and actual isolated consumers.",
+    "Reusable direct-window admission, observed-window-only zero completion and explicit V3 turnoverRatio percent-point conversion.",
+    "Finite standalone laptop package with fixed 1061 requests for recorded 88-game through2026-10-31 basis, one same-cutoff player Advanced snapshot, no publication.",
+    "Preserved fresh source population/role/roster review and honest remaining 12 player Advanced basis conflicts."
+  ],
+  "findings": [
+    {
+      "id": "period-team-margin",
+      "severity": "blocking",
+      "status": "resolved",
+      "initial_candidate": "be363e1559eaffe324a1d58cef4dbba4e1ddc72e",
+      "reproduction": "DET original Q1 plusMinusPoints -1 changed to+1 was admitted, deriving both DET27 and BOS28 as winners despite Summary scores.",
+      "repair": "279e requires finite signed team margin equal own Summary window score minus opponent Summary window score.",
+      "independent_delta_check": "Original passes; incorrect+1/0, NaN, infinity and bool margin values all reject before normalization. New regression present."
+    }
+  ],
+  "checks_executed": [
+    {
+      "candidate": "be363e1559eaffe324a1d58cef4dbba4e1ddc72e",
+      "command": "PYTHONPATH=src:. /workspace/nbatools/.venv/bin/python -m pytest -q tests/test_rollover_period_stage.py tests/test_phase_g_period_execution.py tests/test_collect_rollover_readiness_laptop.py",
+      "selected_executed_passed": 59,
+      "skipped_failed_errors": 0,
+      "result": "PASS. Reused for unchanged executable behavior; only final delta is margin validation/regression and author metadata. No claim this run executed on279e."
+    },
+    {
+      "candidate": "279e66a408116367f6be9e390d0ecb2e150044b0",
+      "command": "PYTHONPATH=src:. /workspace/nbatools/.venv/bin/python /workspace/nbatools/work/period-checker/review_candidate.py",
+      "result": "PASS: independent final-candidate source/consumer/control/embedded-package execution; no network or installs.",
+      "script_sha256": "1a7eff6b78275d5974dbf6d975839ab4b4ebece4c77c5ace16309f1dd0cf77e0",
+      "details": {
+        "candidate": "279e66a408116367f6be9e390d0ecb2e150044b0",
+        "new_independent_consumer_answers": [
+          {
+            "player": "Paul Reed",
+            "expected": {
+              "pts": 2,
+              "fgm": 1,
+              "fga": 2,
+              "minutes": 4.366666666666666,
+              "ts_pct": 0.5
+            }
+          },
+          {
+            "player": "Isaiah Joe",
+            "expected": {
+              "pts": 0,
+              "fga": 3,
+              "ast": 1,
+              "blk": 1,
+              "minutes": 8.083333333333334
+            }
+          },
+          {
+            "player": "Paul George",
+            "expected": {
+              "pts": 5,
+              "fgm": 2,
+              "fga": 4,
+              "plus_minus": 0
+            }
+          }
+        ],
+        "heldout_controls": [
+          "wrong/nonfinite/bool margin rejected",
+          "wrong/nonfinite/bool margin rejected",
+          "wrong/nonfinite/bool margin rejected",
+          "wrong/nonfinite/bool margin rejected",
+          "wrong/nonfinite/bool margin rejected",
+          "controlled directH1 admits onlyH1 rows with same22keys, no unobservedquarters/otherhalf",
+          "allsub1 rawturnover ratios map fixed/100 without changing fractionfields",
+          "exactall1061embeddedrequests preflight with existingSDK; no network/install"
+        ],
+        "outcome": "PASS",
+        "production_writes": 0
+      }
+    }
+  ],
+  "independent_source_evidence": {
+    "original_review": "original-q1-review.json",
+    "fresh_review": "fresh88-review.json",
+    "due_population": "Exact88 due/final game IDs at2026-11-02T04:37:23.251771+00:00; refreshed at04:44:40.063303+00:00; next retained schedule due change20:30UTC. Frozen acquisition basis, not permanent freshness.",
+    "new_roles": "Independently read all14 archived Traditional/Summary originals and new7 primary player logs:161 exact positive player-game keys, five literal starters per side=70, including0151 position projection without accepting malformed18:60 clock.",
+    "roster": "Independently compared441 observed player/team pairs to525 qualified roster pairs:zero missing; no dated tenure claim.",
+    "advanced": "Fresh441 player GP/WL population matches1990 combined player rows; same12TS conflicts remain. Fresh30team GP/WL/net arithmetic passes; no redundant team snapshot capture needed.",
+    "clock_quarantine": "Original0096 and new0151 malformed supplementary clocks preserved/quarantined. Valid primary cells not overwritten or carried."
+  },
+  "package_review": {
+    "owner_zip_sha256": "8e3f2ab622d4912a67c389162d2521accdba078ff56716a3cf579922038c2545",
+    "standalone_source_sha256": "f9a3134ee327937d8316961796f901e46670fe5364877acdac8900c74a8b362c",
+    "canonical_request_sha256": "4a30c59cc6753fb060359b09d12b9b24c49e65851fb880d57e7154079959f1e0",
+    "scope": "530 exact missing windows x Traditional+Advanced; one Player Advanced/PerGame DateTo10/31/2026. Reuses0001/Q1. Six direct standard windows per88games plus direct OT0110/0120/0141, excluding only qualified pair.",
+    "limits": "One attempt/job,30s timeout,2MB/body,>=1s serial spacing,12h invocation ceiling;20MB ZIP/100MB expanded/2000files bounds.",
+    "failure_handling": "HTTP/transport/JSON/oversize/interrupt failures preserve original success/failed partial bodies, metadata and unattempted jobs; fail closed, no automatic retry. Resume validates prior request/bytes. Existing ordinary tests exercised these paths and both generated launchers.",
+    "sdk_scope": "Every embedded job mapped through available installed SDK without network. Exact1.12 cloud execution not claimed. Narrow absent/None ISTRound equivalence is supported by retained read-only v1.12 declaration comparison and tests; non-None filter rejects.",
+    "production_writes": 0
+  },
+  "not_accepted": [
+    "Full11raw+5processed snapshot and trusted complete receipts remain unvalidated.",
+    "12 player Advanced snapshot/basis conflicts remain unresolved awaiting one output package.",
+    "Later due games require refreshed exact due-ID coverage at eventual snapshot acceptance.",
+    "No production pointer/data publication, new-generation live acceptance or backup authorized by this review.",
+    "No K08/K12 work resumed."
+  ],
+  "production_writes": 0,
+  "full_snapshot_accepted": false,
+  "readiness_accepted": false
+}

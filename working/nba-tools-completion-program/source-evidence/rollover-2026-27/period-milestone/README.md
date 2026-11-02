@@ -91,4 +91,10 @@ acceptance. Then assemble/validate all11raw+5processed datasets with trusted
 receipts, refresh exact due IDs, and present a concrete publication package for
 separate approval. Unattended freshness and any later due games remain explicit.
 Existing LeBron publication,16live answers and backup are preserved; K08/K12 stay
-paused. CI/review/landing details belong in the task PR's final receipt.
+paused. The [final independent review](final-review.json) APPROVES semantic candidate
+`279e66a408116367f6be9e390d0ecb2e150044b0`; the checker independently reproduced
+a contradictory-margin admission, then confirmed its repair against both Summary
+scores. Unfamiliar PaulReed/IsaiahJoe/PaulGeorge consumers, direct-H1-only completion
+and all-sub1 turnover rates passed.60focused controls passed. Exact final-head
+CI and landing details belong in [PR572](https://github.com/Bet-Zero/nbatools/pull/572)
+and its final receipt; receipt-only descendants retain the reviewed hashes.
