@@ -1,0 +1,438 @@
+{
+  "classification": "independent_same_cutoff_advanced_basis_conflict_receipt_not_source_rewrite",
+  "checker": "/root/period_checker",
+  "direct_snapshot_sha256": "c53e696f1ba87c1d91039aecf605ae828fb08b26c3b530b6ac58efc83a411961",
+  "direct_snapshot_parameters_DateTo": "10/31/2026",
+  "old81_primary_matches_old432player_snapshot_TS": true,
+  "fresh88_primary_retains_prior81_PTS_FGA_FTA_FGM_FTM_cells": true,
+  "fresh88_primary_matches_direct441player_snapshot_TS": true,
+  "qualified88_conflicting_players": 12,
+  "players": [
+    {
+      "player_id": 203924,
+      "name": "Jerami Grant",
+      "primary_totals": {
+        "PTS": 55,
+        "FGA": 49,
+        "FTA": 15
+      },
+      "qualified_totals": {
+        "PTS": 55,
+        "FGA": 50,
+        "FTA": 15
+      },
+      "direct_snapshot_TS": 0.495,
+      "primary_TS": 0.49460431654676257,
+      "qualified_TS": 0.48586572438162545,
+      "affected_games": [
+        {
+          "game_id": "0022600118",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 7,
+              "qualified": 8,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1627734,
+      "name": "Domantas Sabonis",
+      "primary_totals": {
+        "PTS": 96,
+        "FGA": 55,
+        "FTA": 23
+      },
+      "qualified_totals": {
+        "PTS": 96,
+        "FGA": 54,
+        "FTA": 23
+      },
+      "direct_snapshot_TS": 0.737,
+      "primary_TS": 0.7371007371007371,
+      "qualified_TS": 0.7485963817841547,
+      "affected_games": [
+        {
+          "game_id": "0022600118",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 9,
+              "qualified": 8,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "primary_totals": {
+        "PTS": 16,
+        "FGA": 10,
+        "FTA": 0
+      },
+      "qualified_totals": {
+        "PTS": 18,
+        "FGA": 11,
+        "FTA": 0
+      },
+      "direct_snapshot_TS": 0.8,
+      "primary_TS": 0.8,
+      "qualified_TS": 0.8181818181818182,
+      "affected_games": [
+        {
+          "game_id": "0022600142",
+          "count_conflicts": [
+            {
+              "field": "PTS",
+              "primary": 8,
+              "qualified": 10,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            },
+            {
+              "field": "FGA",
+              "primary": 5,
+              "qualified": 6,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1630230,
+      "name": "Naji Marshall",
+      "primary_totals": {
+        "PTS": 41,
+        "FGA": 37,
+        "FTA": 5
+      },
+      "qualified_totals": {
+        "PTS": 41,
+        "FGA": 36,
+        "FTA": 5
+      },
+      "direct_snapshot_TS": 0.523,
+      "primary_TS": 0.5229591836734694,
+      "qualified_TS": 0.5366492146596858,
+      "affected_games": [
+        {
+          "game_id": "0022600091",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 14,
+              "qualified": 13,
+              "captured_all_four_quarters": true,
+              "quarter_count_sum": 14,
+              "matches_primary": true,
+              "matches_qualified": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "primary_totals": {
+        "PTS": 127,
+        "FGA": 107,
+        "FTA": 35
+      },
+      "qualified_totals": {
+        "PTS": 128,
+        "FGA": 107,
+        "FTA": 36
+      },
+      "direct_snapshot_TS": 0.519,
+      "primary_TS": 0.5187908496732025,
+      "qualified_TS": 0.5210029306414848,
+      "affected_games": [
+        {
+          "game_id": "0022600144",
+          "count_conflicts": [
+            {
+              "field": "PTS",
+              "primary": 16,
+              "qualified": 17,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            },
+            {
+              "field": "FTA",
+              "primary": 0,
+              "qualified": 1,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "primary_totals": {
+        "PTS": 23,
+        "FGA": 17,
+        "FTA": 10
+      },
+      "qualified_totals": {
+        "PTS": 23,
+        "FGA": 16,
+        "FTA": 10
+      },
+      "direct_snapshot_TS": 0.537,
+      "primary_TS": 0.5373831775700935,
+      "qualified_TS": 0.5637254901960784,
+      "affected_games": [
+        {
+          "game_id": "0022600121",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 4,
+              "qualified": 3,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "primary_totals": {
+        "PTS": 17,
+        "FGA": 20,
+        "FTA": 0
+      },
+      "qualified_totals": {
+        "PTS": 17,
+        "FGA": 21,
+        "FTA": 0
+      },
+      "direct_snapshot_TS": 0.425,
+      "primary_TS": 0.425,
+      "qualified_TS": 0.40476190476190477,
+      "affected_games": [
+        {
+          "game_id": "0022600121",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 4,
+              "qualified": 5,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "primary_totals": {
+        "PTS": 40,
+        "FGA": 30,
+        "FTA": 0
+      },
+      "qualified_totals": {
+        "PTS": 40,
+        "FGA": 29,
+        "FTA": 0
+      },
+      "direct_snapshot_TS": 0.667,
+      "primary_TS": 0.6666666666666666,
+      "qualified_TS": 0.6896551724137931,
+      "affected_games": [
+        {
+          "game_id": "0022600138",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 6,
+              "qualified": 5,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1642383,
+      "name": "Walter Clayton Jr.",
+      "primary_totals": {
+        "PTS": 21,
+        "FGA": 17,
+        "FTA": 3
+      },
+      "qualified_totals": {
+        "PTS": 21,
+        "FGA": 18,
+        "FTA": 3
+      },
+      "direct_snapshot_TS": 0.573,
+      "primary_TS": 0.5731441048034934,
+      "qualified_TS": 0.5434782608695652,
+      "affected_games": [
+        {
+          "game_id": "0022600109",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 2,
+              "qualified": 3,
+              "captured_all_four_quarters": true,
+              "quarter_count_sum": 2,
+              "matches_primary": true,
+              "matches_qualified": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1642907,
+      "name": "Cedric Coward",
+      "primary_totals": {
+        "PTS": 67,
+        "FGA": 53,
+        "FTA": 2
+      },
+      "qualified_totals": {
+        "PTS": 65,
+        "FGA": 51,
+        "FTA": 2
+      },
+      "direct_snapshot_TS": 0.622,
+      "primary_TS": 0.6217520415738679,
+      "qualified_TS": 0.6264456437933693,
+      "affected_games": [
+        {
+          "game_id": "0022600118",
+          "count_conflicts": [
+            {
+              "field": "PTS",
+              "primary": 17,
+              "qualified": 15,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            },
+            {
+              "field": "FGA",
+              "primary": 13,
+              "qualified": 11,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1643409,
+      "name": "Cameron Boozer",
+      "primary_totals": {
+        "PTS": 104,
+        "FGA": 85,
+        "FTA": 29
+      },
+      "qualified_totals": {
+        "PTS": 106,
+        "FGA": 85,
+        "FTA": 29
+      },
+      "direct_snapshot_TS": 0.532,
+      "primary_TS": 0.5319148936170213,
+      "qualified_TS": 0.5421440261865793,
+      "affected_games": [
+        {
+          "game_id": "0022600118",
+          "count_conflicts": [
+            {
+              "field": "PTS",
+              "primary": 14,
+              "qualified": 16,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "primary_totals": {
+        "PTS": 30,
+        "FGA": 24,
+        "FTA": 8
+      },
+      "qualified_totals": {
+        "PTS": 30,
+        "FGA": 25,
+        "FTA": 8
+      },
+      "direct_snapshot_TS": 0.545,
+      "primary_TS": 0.5450581395348837,
+      "qualified_TS": 0.5259467040673211,
+      "affected_games": [
+        {
+          "game_id": "0022600138",
+          "count_conflicts": [
+            {
+              "field": "FGA",
+              "primary": 7,
+              "qualified": 8,
+              "captured_all_four_quarters": false,
+              "quarter_count_sum": null,
+              "matches_primary": null,
+              "matches_qualified": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "counts_only_projection_note": "Disjoint quarter counts are summed only to compare count observations. No half or Advanced rate is reconstructed; malformed-clock windows remain unqualified even where integer observations agree.",
+  "assessment": "Fresh direct snapshot and retained primary logs share a coherent statistical basis; all12conflicts are explained by accepted whole-game Traditional/PBP count overrides. Do not undo accepted corrections or patch snapshot cells silently. Investigate exact conflicting source fields using retained direct period count evidence and prior qualified source policy; currently uncollected affected games remain explicit. Repeating identical snapshot capture has no justification.",
+  "production_writes": 0
+}

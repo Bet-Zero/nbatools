@@ -1,0 +1,1076 @@
+{
+  "classification": "independent_current92population_source_projection_not_full_snapshot",
+  "checker": "/root/period_checker",
+  "revision": "123d89ef4b439254f2ab9f7766ff19d93d0b4c98",
+  "checked_at": "2026-11-03T09:22:50.755298+00:00",
+  "due_cutoff": "2026-11-02T09:22:50.755298+00:00",
+  "schedule_games": 1206,
+  "exact_due_ids": [
+    "0022600001",
+    "0022600002",
+    "0022600003",
+    "0022600004",
+    "0022600005",
+    "0022600006",
+    "0022600007",
+    "0022600008",
+    "0022600009",
+    "0022600015",
+    "0022600016",
+    "0022600017",
+    "0022600018",
+    "0022600019",
+    "0022600020",
+    "0022600021",
+    "0022600022",
+    "0022600023",
+    "0022600024",
+    "0022600085",
+    "0022600086",
+    "0022600087",
+    "0022600088",
+    "0022600089",
+    "0022600090",
+    "0022600091",
+    "0022600092",
+    "0022600093",
+    "0022600094",
+    "0022600095",
+    "0022600096",
+    "0022600097",
+    "0022600098",
+    "0022600099",
+    "0022600100",
+    "0022600101",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600105",
+    "0022600106",
+    "0022600107",
+    "0022600108",
+    "0022600109",
+    "0022600110",
+    "0022600111",
+    "0022600112",
+    "0022600113",
+    "0022600114",
+    "0022600115",
+    "0022600116",
+    "0022600117",
+    "0022600118",
+    "0022600119",
+    "0022600120",
+    "0022600121",
+    "0022600122",
+    "0022600123",
+    "0022600124",
+    "0022600125",
+    "0022600126",
+    "0022600127",
+    "0022600128",
+    "0022600129",
+    "0022600130",
+    "0022600131",
+    "0022600132",
+    "0022600133",
+    "0022600134",
+    "0022600135",
+    "0022600136",
+    "0022600137",
+    "0022600138",
+    "0022600139",
+    "0022600140",
+    "0022600141",
+    "0022600142",
+    "0022600143",
+    "0022600144",
+    "0022600145",
+    "0022600146",
+    "0022600147",
+    "0022600148",
+    "0022600149",
+    "0022600150",
+    "0022600151",
+    "0022600152",
+    "0022600153",
+    "0022600154",
+    "0022600155",
+    "0022600156",
+    "0022600157"
+  ],
+  "due_final_games": 92,
+  "new_due_ids": [
+    "0022600154",
+    "0022600155",
+    "0022600156",
+    "0022600157"
+  ],
+  "primary_player_rows": 2079,
+  "player_identities": 442,
+  "new4_player_rows": 89,
+  "new4_checks": [
+    {
+      "game_id": "0022600154",
+      "team_id": 1610612753,
+      "player_rows": 9,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 0.0,
+      "explicit_starters": 5,
+      "summary_available": false
+    },
+    {
+      "game_id": "0022600154",
+      "team_id": 1610612738,
+      "player_rows": 10,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 1.0,
+      "explicit_starters": 5,
+      "summary_available": false
+    },
+    {
+      "game_id": "0022600155",
+      "team_id": 1610612754,
+      "player_rows": 11,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 0.0,
+      "explicit_starters": 5,
+      "summary_available": true
+    },
+    {
+      "game_id": "0022600155",
+      "team_id": 1610612751,
+      "player_rows": 9,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 1.0,
+      "explicit_starters": 5,
+      "summary_available": true
+    },
+    {
+      "game_id": "0022600156",
+      "team_id": 1610612744,
+      "player_rows": 12,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 0.0,
+      "explicit_starters": 5,
+      "summary_available": true
+    },
+    {
+      "game_id": "0022600156",
+      "team_id": 1610612746,
+      "player_rows": 14,
+      "team_minutes": 240.0,
+      "display_residual_seconds": 0.0,
+      "explicit_starters": 5,
+      "summary_available": true
+    },
+    {
+      "game_id": "0022600157",
+      "team_id": 1610612747,
+      "player_rows": 12,
+      "team_minutes": 240.0,
+      "display_residual_seconds": -2.0,
+      "explicit_starters": 5,
+      "summary_available": true
+    },
+    {
+      "game_id": "0022600157",
+      "team_id": 1610612761,
+      "player_rows": 12,
+      "team_minutes": 240.0,
+      "display_residual_seconds": null,
+      "explicit_starters": 5,
+      "summary_available": true
+    }
+  ],
+  "new4_source_count_conflicts": [
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "PTS",
+      "primary": 21,
+      "traditional": 23
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "FGA",
+      "primary": 10,
+      "traditional": 12
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "FG3A",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "FTM",
+      "primary": 8,
+      "traditional": 10
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "FTA",
+      "primary": 9,
+      "traditional": 11
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "DREB",
+      "primary": 7,
+      "traditional": 8
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "REB",
+      "primary": 7,
+      "traditional": 8
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "AST",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "field": "STL",
+      "primary": 1,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "PTS",
+      "primary": 12,
+      "traditional": 14
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "FGM",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "FGA",
+      "primary": 14,
+      "traditional": 20
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "FG3A",
+      "primary": 3,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "DREB",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "REB",
+      "primary": 5,
+      "traditional": 6
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "AST",
+      "primary": 10,
+      "traditional": 12
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "field": "PF",
+      "primary": 3,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "field": "FGA",
+      "primary": 5,
+      "traditional": 6
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "field": "FG3A",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "field": "OREB",
+      "primary": 1,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "field": "REB",
+      "primary": 9,
+      "traditional": 10
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "field": "TOV",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "PTS",
+      "primary": 14,
+      "traditional": 19
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "FGM",
+      "primary": 5,
+      "traditional": 7
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "FGA",
+      "primary": 10,
+      "traditional": 13
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "FG3M",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "FG3A",
+      "primary": 7,
+      "traditional": 9
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "STL",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "field": "PF",
+      "primary": 2,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "PTS",
+      "primary": 18,
+      "traditional": 23
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "FGM",
+      "primary": 7,
+      "traditional": 9
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "FGA",
+      "primary": 12,
+      "traditional": 14
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "FG3M",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "FG3A",
+      "primary": 7,
+      "traditional": 8
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "OREB",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "field": "REB",
+      "primary": 9,
+      "traditional": 10
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "PTS",
+      "primary": 12,
+      "traditional": 17
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FGM",
+      "primary": 5,
+      "traditional": 6
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FGA",
+      "primary": 12,
+      "traditional": 14
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FG3M",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FG3A",
+      "primary": 8,
+      "traditional": 10
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FTM",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "FTA",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "DREB",
+      "primary": 2,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "REB",
+      "primary": 4,
+      "traditional": 6
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "field": "STL",
+      "primary": 1,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "PTS",
+      "primary": 28,
+      "traditional": 32
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "FGM",
+      "primary": 6,
+      "traditional": 8
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "FGA",
+      "primary": 17,
+      "traditional": 19
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "DREB",
+      "primary": 1,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "REB",
+      "primary": 2,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "AST",
+      "primary": 5,
+      "traditional": 7
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "field": "TOV",
+      "primary": 2,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1629674,
+      "field": "PTS",
+      "primary": 6,
+      "traditional": 8
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1629674,
+      "field": "FGM",
+      "primary": 3,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1629674,
+      "field": "FGA",
+      "primary": 8,
+      "traditional": 9
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1629674,
+      "field": "BLK",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "field": "PTS",
+      "primary": 10,
+      "traditional": 12
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "field": "FTM",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "field": "FTA",
+      "primary": 0,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "field": "TOV",
+      "primary": 0,
+      "traditional": 1
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "field": "PF",
+      "primary": 0,
+      "traditional": 1
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "PTS",
+      "primary": 5,
+      "traditional": 7
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "FGM",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "FGA",
+      "primary": 9,
+      "traditional": 11
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "FG3A",
+      "primary": 6,
+      "traditional": 7
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "DREB",
+      "primary": 1,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "REB",
+      "primary": 5,
+      "traditional": 7
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "field": "AST",
+      "primary": 2,
+      "traditional": 3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630568,
+      "field": "DREB",
+      "primary": 3,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630568,
+      "field": "REB",
+      "primary": 5,
+      "traditional": 6
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "field": "PTS",
+      "primary": 7,
+      "traditional": 10
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "field": "FGM",
+      "primary": 3,
+      "traditional": 4
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "field": "FGA",
+      "primary": 4,
+      "traditional": 5
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "field": "FG3M",
+      "primary": 1,
+      "traditional": 2
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "field": "FG3A",
+      "primary": 2,
+      "traditional": 3
+    }
+  ],
+  "new4_primary_clock_conflicts": [
+    {
+      "game_id": "0022600154",
+      "player_id": 1641710,
+      "name": "Anthony Black",
+      "primary_minutes": 26.166666666666668,
+      "traditional_minutes": "32:49",
+      "difference_seconds": -398.99999999999994
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630532,
+      "name": "Franz Wagner",
+      "primary_minutes": 33.15,
+      "traditional_minutes": "39:48",
+      "difference_seconds": -399.0
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628976,
+      "name": "Wendell Carter Jr.",
+      "primary_minutes": 28.55,
+      "traditional_minutes": "35:12",
+      "difference_seconds": -399.0
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630217,
+      "name": "Desmond Bane",
+      "primary_minutes": 32.92166666666667,
+      "traditional_minutes": "39:34",
+      "difference_seconds": -398.6999999999998
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641783,
+      "name": "Tristan da Silva",
+      "primary_minutes": 28.366666666666667,
+      "traditional_minutes": "35:01",
+      "difference_seconds": -399.0
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 202331,
+      "name": "Paul George",
+      "primary_minutes": 27.566666666666666,
+      "traditional_minutes": "33:21",
+      "difference_seconds": -347.00000000000006
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628369,
+      "name": "Jayson Tatum",
+      "primary_minutes": 30.186666666666667,
+      "traditional_minutes": "34:24",
+      "difference_seconds": -252.79999999999998
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1629674,
+      "name": "Neemias Queta",
+      "primary_minutes": 23.061666666666667,
+      "traditional_minutes": "27:21",
+      "difference_seconds": -257.29999999999995
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1642864,
+      "name": "Hugo Gonz\u00e1lez",
+      "primary_minutes": 13.121666666666666,
+      "traditional_minutes": "13:55",
+      "difference_seconds": -47.70000000000004
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1628401,
+      "name": "Derrick White",
+      "primary_minutes": 29.366666666666667,
+      "traditional_minutes": "33:44",
+      "difference_seconds": -262.0
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630202,
+      "name": "Payton Pritchard",
+      "primary_minutes": 22.578333333333333,
+      "traditional_minutes": "26:57",
+      "difference_seconds": -262.3
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1641775,
+      "name": "Jordan Walsh",
+      "primary_minutes": 12.671666666666667,
+      "traditional_minutes": "12:49",
+      "difference_seconds": -8.69999999999998
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630573,
+      "name": "Sam Hauser",
+      "primary_minutes": 14.3,
+      "traditional_minutes": "16:40",
+      "difference_seconds": -142.0
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "primary_minutes": 18.266666666666666,
+      "traditional_minutes": "20:33",
+      "difference_seconds": -137.00000000000003
+    },
+    {
+      "game_id": "0022600154",
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "primary_minutes": 15.63,
+      "traditional_minutes": "20:17",
+      "difference_seconds": -279.2
+    }
+  ],
+  "new4_unqualified_supplementary_clock_literals": [
+    {
+      "game_id": "0022600157",
+      "player_id": 1642867,
+      "minutes": "19:60"
+    }
+  ],
+  "new4_ot_ids": [],
+  "missing_new4_summary": [
+    "0022600154"
+  ],
+  "primary_TS_conflicts": [],
+  "preserved_corrected_core_TS_conflicts": [
+    {
+      "player_id": 203924,
+      "name": "Jerami Grant",
+      "computed": 0.48586572438162545,
+      "snapshot": 0.495
+    },
+    {
+      "player_id": 1627734,
+      "name": "Domantas Sabonis",
+      "computed": 0.7485963817841547,
+      "snapshot": 0.737
+    },
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "computed": 0.8181818181818182,
+      "snapshot": 0.8
+    },
+    {
+      "player_id": 1630230,
+      "name": "Naji Marshall",
+      "computed": 0.5366492146596858,
+      "snapshot": 0.523
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "computed": 0.5210029306414848,
+      "snapshot": 0.519
+    },
+    {
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "computed": 0.6093314763231198,
+      "snapshot": 0.589
+    },
+    {
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "computed": 0.48,
+      "snapshot": 0.5
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "computed": 0.6896551724137931,
+      "snapshot": 0.667
+    },
+    {
+      "player_id": 1642383,
+      "name": "Walter Clayton Jr.",
+      "computed": 0.5434782608695652,
+      "snapshot": 0.573
+    },
+    {
+      "player_id": 1642907,
+      "name": "Cedric Coward",
+      "computed": 0.6264456437933693,
+      "snapshot": 0.622
+    },
+    {
+      "player_id": 1643409,
+      "name": "Cameron Boozer",
+      "computed": 0.5421440261865793,
+      "snapshot": 0.532
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "computed": 0.5259467040673211,
+      "snapshot": 0.545
+    }
+  ],
+  "team_advanced_records_net_arithmetic_pass": true,
+  "roster_observed_player_team_keys": 442,
+  "roster_missing_keys": [],
+  "requirements": "517boundedrequests:459priortransportgaps+48new4directperiodrequests+7firstdirectwholebasisprobes+one154Summary+twoexplicitDateTo11/1Advancedsources. Eleven known bad-clock capturedpairs remain quarantined, not silently retried. Full11raw/5processed/sourcecoherence/publication acceptance remain false.",
+  "production_writes": 0,
+  "current_0154_primary_points_sums": {
+    "1610612738": 90,
+    "1610612753": 83
+  },
+  "current_0154_final_traditional_points": {
+    "1610612753": 97,
+    "1610612738": 108
+  },
+  "0154_integer_count_conflict_cells": 76,
+  "snapshot_clock_basis": {
+    "raw_primary_MIN_means_match_snapshot_players": 442,
+    "snapshot_player_count": 442,
+    "0154_whole_clock_substitution_creates_MIN_conflicts": 15,
+    "affected_player_examples": [
+      {
+        "player_id": 202331,
+        "name": "Paul George",
+        "snapshot_MIN": 30.0,
+        "primary_mean": 29.991666666666664,
+        "hypothetical_whole154_mean": 30.95555555555556
+      },
+      {
+        "player_id": 1628369,
+        "name": "Jayson Tatum",
+        "snapshot_MIN": 34.9,
+        "primary_mean": 34.89694444444444,
+        "hypothetical_whole154_mean": 35.59916666666667
+      },
+      {
+        "player_id": 1628401,
+        "name": "Derrick White",
+        "snapshot_MIN": 29.2,
+        "primary_mean": 29.233333333333334,
+        "hypothetical_whole154_mean": 29.961111111111112
+      },
+      {
+        "player_id": 1628976,
+        "name": "Wendell Carter Jr.",
+        "snapshot_MIN": 31.1,
+        "primary_mean": 31.07777777777778,
+        "hypothetical_whole154_mean": 32.18611111111111
+      },
+      {
+        "player_id": 1629674,
+        "name": "Neemias Queta",
+        "snapshot_MIN": 20.3,
+        "primary_mean": 20.275833333333335,
+        "hypothetical_whole154_mean": 20.990555555555556
+      },
+      {
+        "player_id": 1630202,
+        "name": "Payton Pritchard",
+        "snapshot_MIN": 26.9,
+        "primary_mean": 26.93361111111111,
+        "hypothetical_whole154_mean": 27.662222222222223
+      },
+      {
+        "player_id": 1630217,
+        "name": "Desmond Bane",
+        "snapshot_MIN": 33.4,
+        "primary_mean": 33.394444444444446,
+        "hypothetical_whole154_mean": 34.50194444444444
+      },
+      {
+        "player_id": 1630532,
+        "name": "Franz Wagner",
+        "snapshot_MIN": 34.4,
+        "primary_mean": 34.36611111111111,
+        "hypothetical_whole154_mean": 35.474444444444444
+      },
+      {
+        "player_id": 1630568,
+        "name": "Luka Garza",
+        "snapshot_MIN": 10.4,
+        "primary_mean": 10.431944444444445,
+        "hypothetical_whole154_mean": 10.8125
+      },
+      {
+        "player_id": 1630573,
+        "name": "Sam Hauser",
+        "snapshot_MIN": 19.7,
+        "primary_mean": 19.711944444444445,
+        "hypothetical_whole154_mean": 20.10638888888889
+      },
+      {
+        "player_id": 1631248,
+        "name": "Baylor Scheierman",
+        "snapshot_MIN": 18.0,
+        "primary_mean": 17.978333333333335,
+        "hypothetical_whole154_mean": 18.75388888888889
+      },
+      {
+        "player_id": 1631288,
+        "name": "Jamal Cain",
+        "snapshot_MIN": 15.0,
+        "primary_mean": 14.962222222222222,
+        "hypothetical_whole154_mean": 14.963055555555556
+      },
+      {
+        "player_id": 1641710,
+        "name": "Anthony Black",
+        "snapshot_MIN": 26.3,
+        "primary_mean": 26.282916666666665,
+        "hypothetical_whole154_mean": 27.945416666666667
+      },
+      {
+        "player_id": 1641775,
+        "name": "Jordan Walsh",
+        "snapshot_MIN": 16.5,
+        "primary_mean": 16.53388888888889,
+        "hypothetical_whole154_mean": 16.558055555555555
+      },
+      {
+        "player_id": 1641783,
+        "name": "Tristan da Silva",
+        "snapshot_MIN": 27.8,
+        "primary_mean": 27.768611111111113,
+        "hypothetical_whole154_mean": 28.876944444444444
+      },
+      {
+        "player_id": 1642864,
+        "name": "Hugo Gonz\u00e1lez",
+        "snapshot_MIN": 11.9,
+        "primary_mean": 11.895555555555555,
+        "hypothetical_whole154_mean": 12.028055555555556
+      }
+    ],
+    "team_snapshot_MIN_vs_required_elapsed_game_clock": [
+      {
+        "team_id": 1610612738,
+        "snapshot_total_MIN": 286.0,
+        "qualified_game_clock_minutes": 293,
+        "GP": 6
+      },
+      {
+        "team_id": 1610612753,
+        "snapshot_total_MIN": 281.0,
+        "qualified_game_clock_minutes": 288,
+        "GP": 6
+      }
+    ],
+    "interpretation": "Current player and team Advanced bodies share incomplete0154 clock/count basis despite final GP/WL population. New explicitDateTo11/1 Player+Team snapshots are necessary bounded source probes; captured10/31 snapshot remains preserved and is not requested again."
+  }
+}

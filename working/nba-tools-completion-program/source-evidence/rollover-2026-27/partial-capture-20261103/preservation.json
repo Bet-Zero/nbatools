@@ -1,0 +1,67 @@
+{
+  "original_staging_branch": "data/readiness-partial-capture-20261103",
+  "original_staging_commit": "489933dead602ad75c359a7f90bc165fd2742357",
+  "baseline_main": "f2b731f5ab861e9c76b8b36ef6f13ab0f4e16e1e",
+  "production_writes": 0,
+  "raw_required": 11,
+  "processed_required": 5,
+  "full_snapshot_accepted": false,
+  "artifacts": {
+    "reuse-ledger.json": {
+      "bytes": 168651,
+      "sha256": "ff6a2aa5fbd21fe458bfd9820bce17fdea329f27c09ed649b01c0d33d35a68ee"
+    },
+    "build-report.json": {
+      "bytes": 7949,
+      "sha256": "281985fdcbcd8ed9885062277b2b4bb330d2152469ef22fa7dfd456b7728b3be"
+    },
+    "NBA-Tools-Readiness-Recovery.zip": {
+      "bytes": 13640,
+      "sha256": "c4e3e279091f9da8db2343545c836a5c4de50d44f7d8f51f33ed2fa2a5f46366"
+    },
+    "extension-scope.json": {
+      "bytes": 3082,
+      "sha256": "80cdccfabb14dda1ce334551c9aa2b036623d0ba2ec0a3ff5208431129d8ff5b"
+    },
+    "advanced-basis-review.json": {
+      "bytes": 11624,
+      "sha256": "20fa0651ca9f14bc0a1702077b9dfa756277e1ed3edee5b1491ae6c71b317cca"
+    },
+    "clock-dependencies.json": {
+      "bytes": 6223,
+      "sha256": "3879e0507e5a2f10ebf9b9ba9adb8171071d9a416a05be1f1703135ce5bf62c9"
+    },
+    "actual-replay-review.json": {
+      "bytes": 43196,
+      "sha256": "463b0aa079e767c02c3b6cc28cb26159d65a9e04ab913fa5c070cb659e3b2058"
+    },
+    "partial-qualification.json": {
+      "bytes": 133437,
+      "sha256": "c6d586ce22e0f6afd805e8f1894598463376e234593d79cff32587e088ac9a1c"
+    },
+    "current92-review.json": {
+      "bytes": 24775,
+      "sha256": "32f1fa804117853bc36704047364341a735adf6728281888552c79e838544af9"
+    },
+    "partial-stage.zip": {
+      "bytes": 319478,
+      "sha256": "e98f42882026e15e196ca5b43c057bdfbd2d31877e8dbd27e84cc6deaf3b66be"
+    },
+    "current-sources.zip": {
+      "bytes": 289502,
+      "sha256": "24d041dce0dc568802a4a2664dc2d40c1a4ed7ef4ddb96dc56c826d56587b3c4"
+    },
+    "summary-oracles.zip": {
+      "bytes": 532918,
+      "sha256": "487b42ca27753f778be4be677021bd350dbd212b0837167abe9f7768c81c9d71"
+    },
+    "collection.zip": {
+      "bytes": 1698901,
+      "sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3"
+    },
+    "partial-source-review.json": {
+      "bytes": 17700,
+      "sha256": "22c0129d411e84facb7a9fc2581830dad9e4854653cf22577806541c6a1ae7a8"
+    }
+  }
+}

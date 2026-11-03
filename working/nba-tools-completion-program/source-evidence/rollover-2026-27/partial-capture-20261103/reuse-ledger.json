@@ -1,0 +1,4263 @@
+{
+  "classification": "byte_verified_retained_sources_not_full_statistical_acceptance",
+  "original_zip_sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+  "parent_request_sha256": "4a30c59cc6753fb060359b09d12b9b24c49e65851fb880d57e7154079959f1e0",
+  "acquisition_sha256": "1432ac8fa2489369f7b14d628f0b2ed587de708fcd7544cf6854a9f751e13a46",
+  "retained_successful_sources": [
+    {
+      "parent_job_index": 0,
+      "source_file": "sources/player-advanced-through-20261031.json",
+      "bytes": 166128,
+      "sha256": "c53e696f1ba87c1d91039aecf605ae828fb08b26c3b530b6ac58efc83a411961",
+      "captured_at": "2026-11-02T05:46:56.252730+00:00"
+    },
+    {
+      "parent_job_index": 1,
+      "source_file": "sources/boxscoretraditionalv3_0022600001_q2.json",
+      "bytes": 13712,
+      "sha256": "86849f126f48658f58016a96a26188056ded827acc6baa16299bad46b82f0c1b",
+      "captured_at": "2026-11-02T05:46:58.014043+00:00"
+    },
+    {
+      "parent_job_index": 2,
+      "source_file": "sources/boxscoreadvancedv3_0022600001_q2.json",
+      "bytes": 15521,
+      "sha256": "d31d67b8f525708ba1bf71bb6db4eefdffbfbcfc8d9c5856694ca048df64cfca",
+      "captured_at": "2026-11-02T05:46:59.536616+00:00"
+    },
+    {
+      "parent_job_index": 3,
+      "source_file": "sources/boxscoretraditionalv3_0022600001_q3.json",
+      "bytes": 14850,
+      "sha256": "70f9faf0a9466d0a0d4374d3f7b54a2281befd7c7efe4f7e0633bb8c5f778f75",
+      "captured_at": "2026-11-02T05:47:01.489001+00:00"
+    },
+    {
+      "parent_job_index": 4,
+      "source_file": "sources/boxscoreadvancedv3_0022600001_q3.json",
+      "bytes": 16995,
+      "sha256": "2f59cab73c42d812af9692ff03c0e0477dac89eba7cfae79cfcb5b583b1875ff",
+      "captured_at": "2026-11-02T05:47:02.954976+00:00"
+    },
+    {
+      "parent_job_index": 5,
+      "source_file": "sources/boxscoretraditionalv3_0022600001_q4.json",
+      "bytes": 13731,
+      "sha256": "6c33a2488d66d8378ca6b03d22010a77e972c5a8bcd7f1bd403fdd3fd4d586e9",
+      "captured_at": "2026-11-02T05:47:04.513188+00:00"
+    },
+    {
+      "parent_job_index": 6,
+      "source_file": "sources/boxscoreadvancedv3_0022600001_q4.json",
+      "bytes": 15525,
+      "sha256": "c49e8763a236e36458620ed4350c7b742e7e1cbe52f9c00f16125a83cef56ed9",
+      "captured_at": "2026-11-02T05:47:06.200530+00:00"
+    },
+    {
+      "parent_job_index": 7,
+      "source_file": "sources/boxscoretraditionalv3_0022600001_h1.json",
+      "bytes": 14935,
+      "sha256": "1ca2ffaf5b5a7a4276de3e0f7ce1d83a624647a6dbef09183d001ebf8a3b12da",
+      "captured_at": "2026-11-02T05:47:07.838334+00:00"
+    },
+    {
+      "parent_job_index": 8,
+      "source_file": "sources/boxscoreadvancedv3_0022600001_h1.json",
+      "bytes": 17058,
+      "sha256": "9ce3511307ab676e1ffb7e6637a650987f11e5e3484b6edd5ad45c6e889b9f5f",
+      "captured_at": "2026-11-02T05:47:09.311991+00:00"
+    },
+    {
+      "parent_job_index": 9,
+      "source_file": "sources/boxscoretraditionalv3_0022600001_h2.json",
+      "bytes": 14927,
+      "sha256": "b783fbedfbceb83f1206b3e6501b24c764381a15002ace6ffba0381f0bf9b1fe",
+      "captured_at": "2026-11-02T05:47:11.321724+00:00"
+    },
+    {
+      "parent_job_index": 10,
+      "source_file": "sources/boxscoreadvancedv3_0022600001_h2.json",
+      "bytes": 17088,
+      "sha256": "02877be4842f3f5a580a779e2208adadd66c7029d1ae87379b8981f2965a79f5",
+      "captured_at": "2026-11-02T05:47:12.958648+00:00"
+    },
+    {
+      "parent_job_index": 11,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_q1.json",
+      "bytes": 12580,
+      "sha256": "ff0ea44808c7f63e83a020cfbb5600ed3cd8523860f48e90aedfe1a8b103d26d",
+      "captured_at": "2026-11-02T05:47:14.596279+00:00"
+    },
+    {
+      "parent_job_index": 12,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_q1.json",
+      "bytes": 14098,
+      "sha256": "7c32edf356758a5a1362e1fa7ee0ca7e511035b8cd03696dbc4a12b00837be0e",
+      "captured_at": "2026-11-02T05:47:16.440010+00:00"
+    },
+    {
+      "parent_job_index": 13,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_q2.json",
+      "bytes": 13720,
+      "sha256": "0b64781d1bfb4d7d96f150537f2ef80da809ccc67fee2f63043c7cdd7b22a978",
+      "captured_at": "2026-11-02T05:47:18.091611+00:00"
+    },
+    {
+      "parent_job_index": 14,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_q2.json",
+      "bytes": 15557,
+      "sha256": "d7c0678462ef106b81e52badcc977ffa1046b868b4e01cd4babbdcca70a20e7e",
+      "captured_at": "2026-11-02T05:47:19.716980+00:00"
+    },
+    {
+      "parent_job_index": 15,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_q3.json",
+      "bytes": 12037,
+      "sha256": "93c7cb9df3a8e341156249c595d51eb5e397bc1b7906cbfddaf974cfe6899ba9",
+      "captured_at": "2026-11-02T05:47:21.356612+00:00"
+    },
+    {
+      "parent_job_index": 16,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_q3.json",
+      "bytes": 13360,
+      "sha256": "2cfa039e5fe216c6905e3a2d2910db7f95e4bfae6a2894c8890a41940b393f80",
+      "captured_at": "2026-11-02T05:47:22.842809+00:00"
+    },
+    {
+      "parent_job_index": 17,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_q4.json",
+      "bytes": 12591,
+      "sha256": "2757a324051963d26125652cbbe8000b887941384aeec604337db7c27c3d846d",
+      "captured_at": "2026-11-02T05:47:24.427101+00:00"
+    },
+    {
+      "parent_job_index": 18,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_q4.json",
+      "bytes": 14068,
+      "sha256": "d39a6b4ea005dd8ca6387e10baa31712980fa84cb171a7910bdc48b133522387",
+      "captured_at": "2026-11-02T05:47:26.479093+00:00"
+    },
+    {
+      "parent_job_index": 19,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_h1.json",
+      "bytes": 13787,
+      "sha256": "a1ad71b82ccdb7c46571ff155019b68710613e9ae60b88224b87d837fa550d98",
+      "captured_at": "2026-11-02T05:47:28.318357+00:00"
+    },
+    {
+      "parent_job_index": 20,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_h1.json",
+      "bytes": 15623,
+      "sha256": "c8bac0c833dd3d250da2be7a961e61a88f0d18922ffe17059d5a9adf7344235e",
+      "captured_at": "2026-11-02T05:47:29.956713+00:00"
+    },
+    {
+      "parent_job_index": 21,
+      "source_file": "sources/boxscoretraditionalv3_0022600002_h2.json",
+      "bytes": 13227,
+      "sha256": "72635bc253813906812344f97dbb669c282f2621c81cd19c6fe473d58a553034",
+      "captured_at": "2026-11-02T05:47:36.920059+00:00"
+    },
+    {
+      "parent_job_index": 22,
+      "source_file": "sources/boxscoreadvancedv3_0022600002_h2.json",
+      "bytes": 14859,
+      "sha256": "bd694ed756824e17787dc382e4fff80eb88229d72731097e85e2211b887c36fb",
+      "captured_at": "2026-11-02T05:47:38.558379+00:00"
+    },
+    {
+      "parent_job_index": 23,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_q1.json",
+      "bytes": 13779,
+      "sha256": "a4c9d43f6f4d5cff8449adc85718b030cc9129ac9ae2156c528ca7a34fc3fa23",
+      "captured_at": "2026-11-02T05:47:40.197324+00:00"
+    },
+    {
+      "parent_job_index": 24,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_q1.json",
+      "bytes": 15645,
+      "sha256": "0d45cc283d1729836960a87c13ec4e4839d7651aa6839f74f95ea91af4811a8a",
+      "captured_at": "2026-11-02T05:47:41.655059+00:00"
+    },
+    {
+      "parent_job_index": 25,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_q2.json",
+      "bytes": 13798,
+      "sha256": "12b4ea3aaeb2e6e7d6d930cc9c9bdff98019fb1ac94ab89ff52ed306f0449646",
+      "captured_at": "2026-11-02T05:47:43.274191+00:00"
+    },
+    {
+      "parent_job_index": 26,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_q2.json",
+      "bytes": 15628,
+      "sha256": "81b0531bf9ce366bb627ff38b808b93f2585b7a2e4b2d94709d09761150ac1c2",
+      "captured_at": "2026-11-02T05:47:44.908022+00:00"
+    },
+    {
+      "parent_job_index": 27,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_q3.json",
+      "bytes": 14934,
+      "sha256": "42d7def887105fb7f6cb4be8edae195519ec8e0679ef87b143be1c838aa9b997",
+      "captured_at": "2026-11-02T05:47:46.546353+00:00"
+    },
+    {
+      "parent_job_index": 28,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_q3.json",
+      "bytes": 17085,
+      "sha256": "e47b8c618e27db7b7169eb13d138bc8b3d9a39497433a61308b4d43a257d2eda",
+      "captured_at": "2026-11-02T05:47:48.184236+00:00"
+    },
+    {
+      "parent_job_index": 29,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_q4.json",
+      "bytes": 17783,
+      "sha256": "bbc5a2295df5dad0af2f2f3a18b1b21c045ba4b58b2f85899ac51955fa919cb8",
+      "captured_at": "2026-11-02T05:47:49.822593+00:00"
+    },
+    {
+      "parent_job_index": 30,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_q4.json",
+      "bytes": 20602,
+      "sha256": "69d73a567c871f836917d68979da7c38b6b351a0846722c5b08ddabfef690f37",
+      "captured_at": "2026-11-02T05:47:51.464292+00:00"
+    },
+    {
+      "parent_job_index": 31,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_h1.json",
+      "bytes": 14996,
+      "sha256": "10ec86ea365593c34d6029e26a3237bb90e011958b77ec51f59e4d14486882d0",
+      "captured_at": "2026-11-02T05:47:53.100614+00:00"
+    },
+    {
+      "parent_job_index": 32,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_h1.json",
+      "bytes": 17166,
+      "sha256": "16bb7743c5d9ab267b5b5461114ff8e6510465bd4b43f254350c25e54ace2fbb",
+      "captured_at": "2026-11-02T05:47:54.738731+00:00"
+    },
+    {
+      "parent_job_index": 33,
+      "source_file": "sources/boxscoretraditionalv3_0022600003_h2.json",
+      "bytes": 18427,
+      "sha256": "22c27cb09fa55a15c36399da22f2a16e8567a211fbc19e81519c7219337af52c",
+      "captured_at": "2026-11-02T05:47:56.376441+00:00"
+    },
+    {
+      "parent_job_index": 34,
+      "source_file": "sources/boxscoreadvancedv3_0022600003_h2.json",
+      "bytes": 21462,
+      "sha256": "0faae5b2aecd848baad7610515673862c91bc7fac1f1115c5c60b31c6ef2f7ee",
+      "captured_at": "2026-11-02T05:47:58.219555+00:00"
+    },
+    {
+      "parent_job_index": 35,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_q1.json",
+      "bytes": 13226,
+      "sha256": "a1de1db6f3e1f6bf33b273cbfdb7dde423aa706d5650b4d8281403e645f1fbf4",
+      "captured_at": "2026-11-02T05:48:00.062862+00:00"
+    },
+    {
+      "parent_job_index": 36,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_q1.json",
+      "bytes": 14930,
+      "sha256": "a19f96cc8585ae6427a602bdbb3d88b7667ea769732795d0c81403f3c8c0906b",
+      "captured_at": "2026-11-02T05:48:01.775079+00:00"
+    },
+    {
+      "parent_job_index": 37,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_q2.json",
+      "bytes": 13213,
+      "sha256": "c693fc5c495510028085b8245f6402e431557409e2a28d10d8b3c5c2578e50e6",
+      "captured_at": "2026-11-02T05:48:03.544581+00:00"
+    },
+    {
+      "parent_job_index": 38,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_q2.json",
+      "bytes": 14890,
+      "sha256": "64d93f514905560429837bbef950dc27595fc38d16008df68249da92e6730b17",
+      "captured_at": "2026-11-02T05:48:05.184425+00:00"
+    },
+    {
+      "parent_job_index": 39,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_q3.json",
+      "bytes": 13217,
+      "sha256": "a1a2bff91201d1750abe85b5bd97c517c91fa320d8103eccddbe1afee86e1868",
+      "captured_at": "2026-11-02T05:48:06.820919+00:00"
+    },
+    {
+      "parent_job_index": 40,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_q3.json",
+      "bytes": 14870,
+      "sha256": "0b3ea7378867a84bd53d4b82b31a71ffe518a0ddb5019eb20246c706b5d72852",
+      "captured_at": "2026-11-02T05:48:08.664259+00:00"
+    },
+    {
+      "parent_job_index": 41,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_q4.json",
+      "bytes": 17755,
+      "sha256": "3278c99e80cd7f70762fb7be4f2c54274b8385ea0a9972ae7211ce71f87d8935",
+      "captured_at": "2026-11-02T05:48:10.917262+00:00"
+    },
+    {
+      "parent_job_index": 42,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_q4.json",
+      "bytes": 20638,
+      "sha256": "351be9317e0216993e74e2e246bf452507b8a00d8a3ec684c541d80d5e3ab251",
+      "captured_at": "2026-11-02T05:48:12.761119+00:00"
+    },
+    {
+      "parent_job_index": 43,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_h1.json",
+      "bytes": 13266,
+      "sha256": "58537d43930934a83380a4a6b1d0f21df21a3182447a7e35a0bc4ba3d0df2b32",
+      "captured_at": "2026-11-02T05:48:14.810289+00:00"
+    },
+    {
+      "parent_job_index": 44,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_h1.json",
+      "bytes": 14983,
+      "sha256": "f772a8d67e885ba0a926d35b9edf1f6bd95e8c31d8fddbdcefba43309e31f394",
+      "captured_at": "2026-11-02T05:48:16.447589+00:00"
+    },
+    {
+      "parent_job_index": 45,
+      "source_file": "sources/boxscoretraditionalv3_0022600004_h2.json",
+      "bytes": 17829,
+      "sha256": "175895b747d65274431ff94a7250d5bebc7954c33da2598c83f632a00159603d",
+      "captured_at": "2026-11-02T05:48:18.095542+00:00"
+    },
+    {
+      "parent_job_index": 46,
+      "source_file": "sources/boxscoreadvancedv3_0022600004_h2.json",
+      "bytes": 20725,
+      "sha256": "be5e51e71ea3872c09986ca8d36177a5370069bac13441a8762fc14e65ad2b2e",
+      "captured_at": "2026-11-02T05:48:19.723776+00:00"
+    },
+    {
+      "parent_job_index": 47,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_q1.json",
+      "bytes": 13759,
+      "sha256": "d5a0f63f7cafb556457b704467b7db0fcc5d051e39b90c75e478da9de8def124",
+      "captured_at": "2026-11-02T05:48:21.624395+00:00"
+    },
+    {
+      "parent_job_index": 48,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_q1.json",
+      "bytes": 15569,
+      "sha256": "11744705da33acd60002dbc1c2cd68010be748ac0caf6e03e895c2f8acf83973",
+      "captured_at": "2026-11-02T05:48:23.256646+00:00"
+    },
+    {
+      "parent_job_index": 49,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_q2.json",
+      "bytes": 13196,
+      "sha256": "0bf24df9140f1b74628fd24f85c099f2768462a726e2e335530f3ab061107035",
+      "captured_at": "2026-11-02T05:48:24.862771+00:00"
+    },
+    {
+      "parent_job_index": 50,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_q2.json",
+      "bytes": 14882,
+      "sha256": "3c63e2ba0c7bf160344add7f5b931a34ec0176a381fec64c31fec88285f8d102",
+      "captured_at": "2026-11-02T05:48:26.740750+00:00"
+    },
+    {
+      "parent_job_index": 51,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_q3.json",
+      "bytes": 13769,
+      "sha256": "87f5bcba629c4360350caad339d93423fb323ed3f1f29be16d95e66a9afc688a",
+      "captured_at": "2026-11-02T05:48:28.331767+00:00"
+    },
+    {
+      "parent_job_index": 52,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_q3.json",
+      "bytes": 15599,
+      "sha256": "1ae365cad26985295ba240bfebcbc1770fe0f5324b68ccd24aa18cc687027988",
+      "captured_at": "2026-11-02T05:48:29.825871+00:00"
+    },
+    {
+      "parent_job_index": 53,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_q4.json",
+      "bytes": 14873,
+      "sha256": "791b9406f62417b3b7dd34feea26927fab364bb66110e4ed1aa0180623c1ad89",
+      "captured_at": "2026-11-02T05:48:31.331520+00:00"
+    },
+    {
+      "parent_job_index": 54,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_q4.json",
+      "bytes": 17033,
+      "sha256": "0533247ba666825ddd95e985c8ddcaade58a3105ee725d5bb3c06004816e8010",
+      "captured_at": "2026-11-02T05:48:32.941463+00:00"
+    },
+    {
+      "parent_job_index": 55,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_h1.json",
+      "bytes": 13834,
+      "sha256": "8447b39ff8f942feeac8139af6856135c2df50e5b6bf8e21fbdce4fac12fb9af",
+      "captured_at": "2026-11-02T05:48:34.538966+00:00"
+    },
+    {
+      "parent_job_index": 56,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_h1.json",
+      "bytes": 15703,
+      "sha256": "67da1e03435d9c7307ca1b479d33927078e3d6d35ad3a9c377a1d0158e68ccca",
+      "captured_at": "2026-11-02T05:48:36.091813+00:00"
+    },
+    {
+      "parent_job_index": 57,
+      "source_file": "sources/boxscoretraditionalv3_0022600005_h2.json",
+      "bytes": 17195,
+      "sha256": "ddf3881175a57a5a3efa017a1c709762d9ae66b4f09bd7dd5a4734e1109a9e33",
+      "captured_at": "2026-11-02T05:48:37.849109+00:00"
+    },
+    {
+      "parent_job_index": 58,
+      "source_file": "sources/boxscoreadvancedv3_0022600005_h2.json",
+      "bytes": 20015,
+      "sha256": "150363c24dcf35d5a6a1bedfa8894032493c1c0849750549501cae23a8fb85ea",
+      "captured_at": "2026-11-02T05:48:39.487342+00:00"
+    },
+    {
+      "parent_job_index": 59,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_q1.json",
+      "bytes": 12021,
+      "sha256": "69be6adc66232b48c8db8d4f55d96d5feeb5e80ed9ea82e786089cbd3f52e09f",
+      "captured_at": "2026-11-02T05:48:41.125187+00:00"
+    },
+    {
+      "parent_job_index": 60,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_q1.json",
+      "bytes": 13407,
+      "sha256": "a3a1ae28ffa1206bc878aa2f22018d382b40e0272359f911c38a97675cd14d25",
+      "captured_at": "2026-11-02T05:48:42.763691+00:00"
+    },
+    {
+      "parent_job_index": 61,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_q2.json",
+      "bytes": 13736,
+      "sha256": "9b0306c54e55165100c3ac40fff4b18993469604f178db50fc197ddf08b35f17",
+      "captured_at": "2026-11-02T05:48:44.401978+00:00"
+    },
+    {
+      "parent_job_index": 62,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_q2.json",
+      "bytes": 15581,
+      "sha256": "3f10e9cfa248d2ddc6251d103861d1bf6f1ae67b2038b546aa0b9d1a00f8df72",
+      "captured_at": "2026-11-02T05:48:46.244127+00:00"
+    },
+    {
+      "parent_job_index": 63,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_q3.json",
+      "bytes": 12025,
+      "sha256": "555525b33a8230a53ffe336df6aab3206acd0a0c806a655cfb9d83713fe89543",
+      "captured_at": "2026-11-02T05:48:47.883520+00:00"
+    },
+    {
+      "parent_job_index": 64,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_q3.json",
+      "bytes": 13371,
+      "sha256": "968a806b4270e2f71cdd435a5375ce36095212f3a745688d9df73e7321fdbafb",
+      "captured_at": "2026-11-02T05:48:49.420553+00:00"
+    },
+    {
+      "parent_job_index": 65,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_q4.json",
+      "bytes": 12023,
+      "sha256": "2e370de0c22a0597b1ecc626bcb9934a7b4c013dedeb0d9cedf363e5e349da33",
+      "captured_at": "2026-11-02T05:48:50.970436+00:00"
+    },
+    {
+      "parent_job_index": 66,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_q4.json",
+      "bytes": 13345,
+      "sha256": "53c995e8bc37841b60e99775af5f6484db10d12d02eda7b64e5e4e1fd7f1d757",
+      "captured_at": "2026-11-02T05:48:52.491558+00:00"
+    },
+    {
+      "parent_job_index": 67,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_h1.json",
+      "bytes": 13815,
+      "sha256": "c581fda11cbff75e7c8e135eb8d3535e45bbbbcf8adb3233c538b9091c810328",
+      "captured_at": "2026-11-02T05:48:54.143831+00:00"
+    },
+    {
+      "parent_job_index": 68,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_h1.json",
+      "bytes": 15664,
+      "sha256": "1ebded72eab22467555bb732fffc673876558ddd9221b1de3cd85cc992cbcfca",
+      "captured_at": "2026-11-02T05:48:55.769032+00:00"
+    },
+    {
+      "parent_job_index": 69,
+      "source_file": "sources/boxscoretraditionalv3_0022600006_h2.json",
+      "bytes": 12686,
+      "sha256": "991f9605731f847faf9bc577f9275bba2120704938d613302e6536e860bb0bed",
+      "captured_at": "2026-11-02T05:48:57.424144+00:00"
+    },
+    {
+      "parent_job_index": 70,
+      "source_file": "sources/boxscoreadvancedv3_0022600006_h2.json",
+      "bytes": 14178,
+      "sha256": "c639d5fec30da3da2a93a072c196e297fe9ce56354dcc5ebba3bf21546c32d30",
+      "captured_at": "2026-11-02T05:48:58.975108+00:00"
+    },
+    {
+      "parent_job_index": 71,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_q1.json",
+      "bytes": 13198,
+      "sha256": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+      "captured_at": "2026-11-02T05:49:00.757282+00:00"
+    },
+    {
+      "parent_job_index": 72,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_q1.json",
+      "bytes": 14855,
+      "sha256": "04d58b38de945fbc17a05dc7cc240fad63362f0c999553d519b9bf79ffcbff2a",
+      "captured_at": "2026-11-02T05:49:02.322101+00:00"
+    },
+    {
+      "parent_job_index": 73,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_q2.json",
+      "bytes": 14892,
+      "sha256": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+      "captured_at": "2026-11-02T05:49:03.875167+00:00"
+    },
+    {
+      "parent_job_index": 74,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_q2.json",
+      "bytes": 16985,
+      "sha256": "16b008038f6455d60e405db9e6a82e1aad5bfbf28b210cf68f586cf5bb9f537d",
+      "captured_at": "2026-11-02T05:49:05.381457+00:00"
+    },
+    {
+      "parent_job_index": 75,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_q3.json",
+      "bytes": 12620,
+      "sha256": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+      "captured_at": "2026-11-02T05:49:06.956986+00:00"
+    },
+    {
+      "parent_job_index": 76,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_q3.json",
+      "bytes": 14102,
+      "sha256": "73ade3cdaccc9903461dca0db5cf50bbad3dc07984a3c0003598a0e81fac2420",
+      "captured_at": "2026-11-02T05:49:08.434502+00:00"
+    },
+    {
+      "parent_job_index": 77,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_q4.json",
+      "bytes": 16051,
+      "sha256": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8",
+      "captured_at": "2026-11-02T05:49:10.311486+00:00"
+    },
+    {
+      "parent_job_index": 78,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_q4.json",
+      "bytes": 18488,
+      "sha256": "41889136d894f82f823f660cd9dadf498c31d557f846949cbddf6c761aebf4d9",
+      "captured_at": "2026-11-02T05:49:12.150960+00:00"
+    },
+    {
+      "parent_job_index": 79,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_h1.json",
+      "bytes": 14964,
+      "sha256": "bba9567d513006fabb69f60ab49af8e20539dced2fb8b9c6f768ec26fbebfa76",
+      "captured_at": "2026-11-02T05:49:13.796526+00:00"
+    },
+    {
+      "parent_job_index": 80,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_h1.json",
+      "bytes": 17087,
+      "sha256": "1e7f970d88ebbc9f8e0f5dd7503e3b1d72ff9a15c1ead8c7405528974098fa27",
+      "captured_at": "2026-11-02T05:49:15.429579+00:00"
+    },
+    {
+      "parent_job_index": 81,
+      "source_file": "sources/boxscoretraditionalv3_0022600007_h2.json",
+      "bytes": 17257,
+      "sha256": "bebda7dbedce81137ebd3a709680ed49eb39570cc872595c910125058deea264",
+      "captured_at": "2026-11-02T05:49:16.984051+00:00"
+    },
+    {
+      "parent_job_index": 82,
+      "source_file": "sources/boxscoreadvancedv3_0022600007_h2.json",
+      "bytes": 19987,
+      "sha256": "0736683e2c221d09ed6c71d5a3ea8936250fbde8b50b2729a86b4f32fec1a100",
+      "captured_at": "2026-11-02T05:49:18.501779+00:00"
+    },
+    {
+      "parent_job_index": 83,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_q1.json",
+      "bytes": 14288,
+      "sha256": "ba63728797c6ef6838a2eff16369403207e2b663fee9f7491508b0229444be23",
+      "captured_at": "2026-11-02T05:49:20.060200+00:00"
+    },
+    {
+      "parent_job_index": 84,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_q1.json",
+      "bytes": 16253,
+      "sha256": "fb04c630e22b5c8ea95a64a4c1e19a30093ec7c2f791222a514ba3c0bd8fe2d8",
+      "captured_at": "2026-11-02T05:49:21.574072+00:00"
+    },
+    {
+      "parent_job_index": 85,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_q2.json",
+      "bytes": 14846,
+      "sha256": "5311531df844175d2b877714caf41f8e35a69e846ed34a5d7dd9308061d88225",
+      "captured_at": "2026-11-02T05:49:23.211992+00:00"
+    },
+    {
+      "parent_job_index": 86,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_q2.json",
+      "bytes": 16889,
+      "sha256": "ba12687f578414c94b16396065ef16fc312f0089b68467dff51ad54827bcf2e4",
+      "captured_at": "2026-11-02T05:49:25.056009+00:00"
+    },
+    {
+      "parent_job_index": 87,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_q3.json",
+      "bytes": 12585,
+      "sha256": "cf1addad6ef082d30d737b302a2f667bda6aedf051be1cb77164091f39f7fb6d",
+      "captured_at": "2026-11-02T05:49:26.693863+00:00"
+    },
+    {
+      "parent_job_index": 88,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_q3.json",
+      "bytes": 14072,
+      "sha256": "ee5f21bb1b2eff04f3e2af50ad57ecdec50c52aef8cf1df4a575c157785eb2cf",
+      "captured_at": "2026-11-02T05:49:28.175961+00:00"
+    },
+    {
+      "parent_job_index": 89,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_q4.json",
+      "bytes": 13156,
+      "sha256": "85d9933f830aa56240d7911ae4148931c3e5dca190593041916edc2c5f76a0ba",
+      "captured_at": "2026-11-02T05:49:29.757483+00:00"
+    },
+    {
+      "parent_job_index": 90,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_q4.json",
+      "bytes": 14778,
+      "sha256": "51db534fa8301ec8f8597d78bdcc5db3345c559ec2fd511e10be2d838677fedf",
+      "captured_at": "2026-11-02T05:49:31.333415+00:00"
+    },
+    {
+      "parent_job_index": 91,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_h1.json",
+      "bytes": 15471,
+      "sha256": "07c488d814aa3226e0954f02a0c90408c95439b696b3ca036454f6a99a6f560a",
+      "captured_at": "2026-11-02T05:49:32.888677+00:00"
+    },
+    {
+      "parent_job_index": 92,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_h1.json",
+      "bytes": 17766,
+      "sha256": "f5e2b38119334a791a1ed2b9c3e27f6626dfc5f9e17a959e21865522fb1120da",
+      "captured_at": "2026-11-02T05:49:34.373208+00:00"
+    },
+    {
+      "parent_job_index": 93,
+      "source_file": "sources/boxscoretraditionalv3_0022600008_h2.json",
+      "bytes": 13211,
+      "sha256": "cdd64d641e5fd1d91c0b8fe44bee43b13f22aebe9d6e61e2d174c51733d7ece1",
+      "captured_at": "2026-11-02T05:49:36.114320+00:00"
+    },
+    {
+      "parent_job_index": 94,
+      "source_file": "sources/boxscoreadvancedv3_0022600008_h2.json",
+      "bytes": 14881,
+      "sha256": "cc10d96efae73937a3f3ecbb25b80db7724fef970b15d7572c81745eabd47721",
+      "captured_at": "2026-11-02T05:49:37.653363+00:00"
+    },
+    {
+      "parent_job_index": 95,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_q1.json",
+      "bytes": 12574,
+      "sha256": "755348e062b763de83cf68e8813c589848b66ce21dd05f7b31101381bfc3465d",
+      "captured_at": "2026-11-02T05:49:39.278902+00:00"
+    },
+    {
+      "parent_job_index": 96,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_q1.json",
+      "bytes": 14104,
+      "sha256": "cf64fa035a04c1cfb343d3cfc24accc91b429a024207f5fe2e0810deb47ddd39",
+      "captured_at": "2026-11-02T05:49:40.738715+00:00"
+    },
+    {
+      "parent_job_index": 97,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_q2.json",
+      "bytes": 13731,
+      "sha256": "3c5005619e832bc0c37ded91173b50b7a08f6010337a6e57dc3f2318251f818c",
+      "captured_at": "2026-11-02T05:49:42.565500+00:00"
+    },
+    {
+      "parent_job_index": 98,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_q2.json",
+      "bytes": 15550,
+      "sha256": "f24735283df1502eb1cdb787ea26975f7398a779d628c6e34772616862b307af",
+      "captured_at": "2026-11-02T05:49:44.214858+00:00"
+    },
+    {
+      "parent_job_index": 99,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_q3.json",
+      "bytes": 12578,
+      "sha256": "0ad24db4a0fbe180beca7a53853c4dca607d7bb73186e0b0bdf805f397680461",
+      "captured_at": "2026-11-02T05:49:46.046590+00:00"
+    },
+    {
+      "parent_job_index": 100,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_q3.json",
+      "bytes": 14086,
+      "sha256": "f1048a76079182d1e1cb50b01ae4498e5a9b763ddf4d4b5b8a3330d21711dbd6",
+      "captured_at": "2026-11-02T05:49:47.659411+00:00"
+    },
+    {
+      "parent_job_index": 101,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_q4.json",
+      "bytes": 12038,
+      "sha256": "8133bed5f9e9e61adb90ec87a02c953cfb512de6c02f0ca43499bff5c8c14bc4",
+      "captured_at": "2026-11-02T05:49:49.192611+00:00"
+    },
+    {
+      "parent_job_index": 102,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_q4.json",
+      "bytes": 13376,
+      "sha256": "98a539c870b0a5dc526e463b4ad323e40af8c89b56cde45c8d15ce4fb52eb4c2",
+      "captured_at": "2026-11-02T05:49:50.759644+00:00"
+    },
+    {
+      "parent_job_index": 103,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_h1.json",
+      "bytes": 13808,
+      "sha256": "0fcff4305b4a55066590184890a3009d18e18a361b093347b78dd8bc8eb4d6c6",
+      "captured_at": "2026-11-02T05:49:52.396080+00:00"
+    },
+    {
+      "parent_job_index": 104,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_h1.json",
+      "bytes": 15639,
+      "sha256": "215d8f8b192623e5e623856fb3873f5c6de454ef0e41f306fc365dd83e3b880c",
+      "captured_at": "2026-11-02T05:49:54.035228+00:00"
+    },
+    {
+      "parent_job_index": 105,
+      "source_file": "sources/boxscoretraditionalv3_0022600009_h2.json",
+      "bytes": 13241,
+      "sha256": "b4c7684fef131a9f229637f0e3ef5cdc6e5d5aba5eddbf5125e8bc572eadc03e",
+      "captured_at": "2026-11-02T05:49:55.672506+00:00"
+    },
+    {
+      "parent_job_index": 106,
+      "source_file": "sources/boxscoreadvancedv3_0022600009_h2.json",
+      "bytes": 14900,
+      "sha256": "c6a119e9cee2454f56839a50a0197aa3df03967bcd4742b0a8f6e06b84d7f8b9",
+      "captured_at": "2026-11-02T05:49:57.210105+00:00"
+    },
+    {
+      "parent_job_index": 107,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_q1.json",
+      "bytes": 12586,
+      "sha256": "0bbdaa658160366beaa947f21e349e43b138064435c27fed5caec37d0c9f7d5d",
+      "captured_at": "2026-11-02T05:49:58.849095+00:00"
+    },
+    {
+      "parent_job_index": 108,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_q1.json",
+      "bytes": 14111,
+      "sha256": "9eb952c25d86ef37d306ecbfe1f8cd25f99a26d72863c4e1d39728c8964e675e",
+      "captured_at": "2026-11-02T05:50:00.588275+00:00"
+    },
+    {
+      "parent_job_index": 109,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_q2.json",
+      "bytes": 13729,
+      "sha256": "a6eb63bad5ba23451f8d4f656d42609b8714aac19a6b5c0290313f2714bab1ee",
+      "captured_at": "2026-11-02T05:50:02.646558+00:00"
+    },
+    {
+      "parent_job_index": 110,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_q2.json",
+      "bytes": 15514,
+      "sha256": "3024c6404a8c773bcaaccd8575a463769379ea70f480b95379fb6e7ba632fb71",
+      "captured_at": "2026-11-02T05:50:04.288281+00:00"
+    },
+    {
+      "parent_job_index": 111,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_q3.json",
+      "bytes": 14318,
+      "sha256": "dcd7e5337f388ee6c76b682a235098dedbc64b334d0a8f1f5065b9c33d39efbe",
+      "captured_at": "2026-11-02T05:50:05.912336+00:00"
+    },
+    {
+      "parent_job_index": 112,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_q3.json",
+      "bytes": 16243,
+      "sha256": "11094530f1d2ffe3fa132844c28cf3f96f426190fa5ce808ae5590e76ba14cd7",
+      "captured_at": "2026-11-02T05:50:07.553100+00:00"
+    },
+    {
+      "parent_job_index": 113,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_q4.json",
+      "bytes": 15979,
+      "sha256": "a137f55cbb7db056ccf021cf66d837d4af0d32e62335e35c1406c49a86251e39",
+      "captured_at": "2026-11-02T05:50:09.224278+00:00"
+    },
+    {
+      "parent_job_index": 114,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_q4.json",
+      "bytes": 18330,
+      "sha256": "1ba4860678f823054f7b970eed7e969baaf2a05144b9e7c2361486a95aad378f",
+      "captured_at": "2026-11-02T05:50:10.828310+00:00"
+    },
+    {
+      "parent_job_index": 115,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_h1.json",
+      "bytes": 14354,
+      "sha256": "4500c064ca59605c832133944bd58df56ede65a4d11b5bee9826db272f27496a",
+      "captured_at": "2026-11-02T05:50:12.466905+00:00"
+    },
+    {
+      "parent_job_index": 116,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_h1.json",
+      "bytes": 16288,
+      "sha256": "198a6443832b5091c7cca5d699c6f06a2a6af167fda4fb1031ee95263da00793",
+      "captured_at": "2026-11-02T05:50:14.106740+00:00"
+    },
+    {
+      "parent_job_index": 117,
+      "source_file": "sources/boxscoretraditionalv3_0022600015_h2.json",
+      "bytes": 16610,
+      "sha256": "2ab2c2e424e85c13163912d7dd6101d8edea7e20162009ae7ed06bd36b7242ce",
+      "captured_at": "2026-11-02T05:50:15.743846+00:00"
+    },
+    {
+      "parent_job_index": 118,
+      "source_file": "sources/boxscoreadvancedv3_0022600015_h2.json",
+      "bytes": 19153,
+      "sha256": "836b5885ad2f36abc0922af7a67e28069f4061b978d3ec4e2c7f1067f6d82a57",
+      "captured_at": "2026-11-02T05:50:17.382142+00:00"
+    },
+    {
+      "parent_job_index": 119,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_q1.json",
+      "bytes": 14282,
+      "sha256": "426d22950c4495cf10aa9b73271f1f64852ca3cde3444dbd4f4f38ce62dff6ec",
+      "captured_at": "2026-11-02T05:50:19.026251+00:00"
+    },
+    {
+      "parent_job_index": 120,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_q1.json",
+      "bytes": 16284,
+      "sha256": "f55d486ca0b034b5cee004a06d9b99dd2015ff716f4ee91cd8dd1f036f2e67d3",
+      "captured_at": "2026-11-02T05:50:20.659942+00:00"
+    },
+    {
+      "parent_job_index": 121,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_q2.json",
+      "bytes": 14812,
+      "sha256": "3482aaf6d5a422ee7004017c941094d5964c363ffd25033d161ddb92d6e8402e",
+      "captured_at": "2026-11-02T05:50:22.296822+00:00"
+    },
+    {
+      "parent_job_index": 122,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_q2.json",
+      "bytes": 16971,
+      "sha256": "1bf3c1b00ff95cc518bc14d4d22c7a722a843405a23b5784e38c643c38d93b70",
+      "captured_at": "2026-11-02T05:50:23.935405+00:00"
+    },
+    {
+      "parent_job_index": 123,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_q3.json",
+      "bytes": 14830,
+      "sha256": "a301d589363f6f0f04bec869de9107833e7fb9c2a03335b24466a754bb65fa84",
+      "captured_at": "2026-11-02T05:50:25.505966+00:00"
+    },
+    {
+      "parent_job_index": 124,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_q3.json",
+      "bytes": 16946,
+      "sha256": "834c3bb14eaf49bae66dfd3b99a3583c77fb4c600f98960fd4ef26d5b48b7efe",
+      "captured_at": "2026-11-02T05:50:27.007754+00:00"
+    },
+    {
+      "parent_job_index": 125,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_q4.json",
+      "bytes": 15410,
+      "sha256": "64dd70c8f8097387ddbebbdfc1fad1ee18dd80b08c49fe75573e110974ade5f5",
+      "captured_at": "2026-11-02T05:50:28.646703+00:00"
+    },
+    {
+      "parent_job_index": 126,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_q4.json",
+      "bytes": 17737,
+      "sha256": "10f036c2c11b8da46d1d954618e5a97dfafdc1fa97b34bcad747adbe6acf56b0",
+      "captured_at": "2026-11-02T05:50:30.116976+00:00"
+    },
+    {
+      "parent_job_index": 127,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_h1.json",
+      "bytes": 16601,
+      "sha256": "3b8b7e2bd9190df897de842cb67e563314437775952a8be7ef628d7fdd6f78d4",
+      "captured_at": "2026-11-02T05:50:31.717967+00:00"
+    },
+    {
+      "parent_job_index": 128,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_h1.json",
+      "bytes": 19242,
+      "sha256": "cc6a7b0f583270be23ebbc2df99d1e01712ad3edd2f25992d823c17d0d2745f7",
+      "captured_at": "2026-11-02T05:50:33.356833+00:00"
+    },
+    {
+      "parent_job_index": 129,
+      "source_file": "sources/boxscoretraditionalv3_0022600016_h2.json",
+      "bytes": 17739,
+      "sha256": "09c4d19560bee19b7a168a0ea49a8f58b46dba57a867871710a34c71f2c9664f",
+      "captured_at": "2026-11-02T05:50:35.413829+00:00"
+    },
+    {
+      "parent_job_index": 130,
+      "source_file": "sources/boxscoreadvancedv3_0022600016_h2.json",
+      "bytes": 20685,
+      "sha256": "8090d1b0a14241091474aecf262a977e217b7ca1a7e27074cc958fc0d33a2390",
+      "captured_at": "2026-11-02T05:50:37.043897+00:00"
+    },
+    {
+      "parent_job_index": 131,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_q1.json",
+      "bytes": 13167,
+      "sha256": "3e15af3f491735fece1759ddbe224866c6ce595c99cc86504e269474ac7c2054",
+      "captured_at": "2026-11-02T05:50:38.655391+00:00"
+    },
+    {
+      "parent_job_index": 132,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_q1.json",
+      "bytes": 14837,
+      "sha256": "3a684442a4c1f655a178584dc175e6b1b9cc4457094d584692aaf3695374ab8d",
+      "captured_at": "2026-11-02T05:50:40.319518+00:00"
+    },
+    {
+      "parent_job_index": 133,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_q2.json",
+      "bytes": 13170,
+      "sha256": "0c37269339ac3ce6ca7d2f67e7b66e825b10ce7109f9d9dd595149ab90dfb25c",
+      "captured_at": "2026-11-02T05:50:41.957170+00:00"
+    },
+    {
+      "parent_job_index": 134,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_q2.json",
+      "bytes": 14829,
+      "sha256": "90bd3e15b30d7765486a747d897d937f46ea2aeb9b1aeb9fcf110038277317a6",
+      "captured_at": "2026-11-02T05:50:43.422626+00:00"
+    },
+    {
+      "parent_job_index": 135,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_q3.json",
+      "bytes": 13744,
+      "sha256": "bc4ca3d377e14c3fd736e2ed921e0b462d0f84a0d8a3fc659d9af7be7cbc62bc",
+      "captured_at": "2026-11-02T05:50:45.234622+00:00"
+    },
+    {
+      "parent_job_index": 136,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_q3.json",
+      "bytes": 15595,
+      "sha256": "a155b7c9d2133e0dd23d8d48831f55a27d5d096ed173e81bbb792054d14ebe3e",
+      "captured_at": "2026-11-02T05:50:46.711016+00:00"
+    },
+    {
+      "parent_job_index": 137,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_q4.json",
+      "bytes": 14807,
+      "sha256": "7c1bb8eb3651406168b54981b472f9e609cf7a4aebb6ce222c5a12eee4280fe0",
+      "captured_at": "2026-11-02T05:50:48.306970+00:00"
+    },
+    {
+      "parent_job_index": 138,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_q4.json",
+      "bytes": 16926,
+      "sha256": "e1f11cfb4bdf102ad5f3eae36f38fa90f12f74fc5825c94e60deff51af2e8d93",
+      "captured_at": "2026-11-02T05:50:49.939827+00:00"
+    },
+    {
+      "parent_job_index": 139,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_h1.json",
+      "bytes": 13238,
+      "sha256": "984b863e7acd3eae2afa12c95bcd7c7a3aac68d359427f6fae18758ebb1eae73",
+      "captured_at": "2026-11-02T05:50:51.583560+00:00"
+    },
+    {
+      "parent_job_index": 140,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_h1.json",
+      "bytes": 14913,
+      "sha256": "b7c911637cbc5f6bc4df6884f043a87e14d203c62c1c311bb803d486c6d75cf9",
+      "captured_at": "2026-11-02T05:50:53.227760+00:00"
+    },
+    {
+      "parent_job_index": 141,
+      "source_file": "sources/boxscoretraditionalv3_0022600017_h2.json",
+      "bytes": 17731,
+      "sha256": "08fc859d2954e82c0406b9241a4b2d769a27d9df1ca209188a6937cdd56edfea",
+      "captured_at": "2026-11-02T05:50:54.860697+00:00"
+    },
+    {
+      "parent_job_index": 142,
+      "source_file": "sources/boxscoreadvancedv3_0022600017_h2.json",
+      "bytes": 20672,
+      "sha256": "728e7e11eaf0e0bfd6a8690bfca49a3e84848751fe839872d25732c9e5ad6b05",
+      "captured_at": "2026-11-02T05:50:56.500499+00:00"
+    },
+    {
+      "parent_job_index": 143,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_q1.json",
+      "bytes": 12550,
+      "sha256": "c20a806a0a5b01612f33c3e6145d63bdefbe91d4167acd439c450c687bbd71bc",
+      "captured_at": "2026-11-02T05:50:58.136707+00:00"
+    },
+    {
+      "parent_job_index": 144,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_q1.json",
+      "bytes": 14030,
+      "sha256": "bee0064d939636f7d1b85178b9302ac312919ce0422a1ec6c3ba5a425858cf5a",
+      "captured_at": "2026-11-02T05:50:59.790172+00:00"
+    },
+    {
+      "parent_job_index": 145,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_q2.json",
+      "bytes": 13137,
+      "sha256": "708ad9d5309d2f7c1368f672cc545ac4fbcdab008f5a21e5dd9af2e698f4f2c5",
+      "captured_at": "2026-11-02T05:51:01.413869+00:00"
+    },
+    {
+      "parent_job_index": 146,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_q2.json",
+      "bytes": 14785,
+      "sha256": "1978187f93536d88f2f7c204cccf27526dcfef4c36bae7469cebf79017c0efba",
+      "captured_at": "2026-11-02T05:51:03.053641+00:00"
+    },
+    {
+      "parent_job_index": 147,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_q3.json",
+      "bytes": 11997,
+      "sha256": "868d1a118d05956f7704ab72af38834aaa8aaa3b837ba978ab071b214a0433aa",
+      "captured_at": "2026-11-02T05:51:04.691730+00:00"
+    },
+    {
+      "parent_job_index": 148,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_q3.json",
+      "bytes": 13319,
+      "sha256": "f5efc7f66dc15aa7f2e65d14dd4f57f92caccfcbb16153f273196a67d3086a48",
+      "captured_at": "2026-11-02T05:51:06.329163+00:00"
+    },
+    {
+      "parent_job_index": 149,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_q4.json",
+      "bytes": 12544,
+      "sha256": "01f8b000d4e16dd63c89121d1d20acbd5c2b02b0d01e1f44c4ccfec504cafe98",
+      "captured_at": "2026-11-02T05:51:07.967690+00:00"
+    },
+    {
+      "parent_job_index": 150,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_q4.json",
+      "bytes": 13991,
+      "sha256": "7af0d8fdb707e233a8c1dbd197306f80e7c21c31d512b2674f6ddad3ef0e5662",
+      "captured_at": "2026-11-02T05:51:10.015845+00:00"
+    },
+    {
+      "parent_job_index": 151,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_h1.json",
+      "bytes": 13202,
+      "sha256": "f92288790c2354764fe6406a6343d1ddf83de56f763ad1d67c8320e7c18baee3",
+      "captured_at": "2026-11-02T05:51:12.063828+00:00"
+    },
+    {
+      "parent_job_index": 152,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_h1.json",
+      "bytes": 14868,
+      "sha256": "8d1839062a40a520a0aebd805bd4f9e0e0a16d5cb5a0006fed06a86e76277ccc",
+      "captured_at": "2026-11-02T05:51:13.590505+00:00"
+    },
+    {
+      "parent_job_index": 153,
+      "source_file": "sources/boxscoretraditionalv3_0022600018_h2.json",
+      "bytes": 13192,
+      "sha256": "e1a411137aabb5ae6441b5f6c468e63b473d5da734890ff580cd793cbaffe0c7",
+      "captured_at": "2026-11-02T05:51:15.340683+00:00"
+    },
+    {
+      "parent_job_index": 154,
+      "source_file": "sources/boxscoreadvancedv3_0022600018_h2.json",
+      "bytes": 14827,
+      "sha256": "5b619ab5ecb9725dc7191b594ea326c64a67b39704bc0aa23e15556241f5b65d",
+      "captured_at": "2026-11-02T05:51:16.979073+00:00"
+    },
+    {
+      "parent_job_index": 155,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_q1.json",
+      "bytes": 13191,
+      "sha256": "7a9145a057e91a73c5f5676461baddf941035334fb9d465b103037d9549734e0",
+      "captured_at": "2026-11-02T05:51:18.617388+00:00"
+    },
+    {
+      "parent_job_index": 156,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_q1.json",
+      "bytes": 14840,
+      "sha256": "b75edb022cc9b03c992c3d23d65fbfcf9652bcbb53b283f6df1d90100eccf837",
+      "captured_at": "2026-11-02T05:51:20.665671+00:00"
+    },
+    {
+      "parent_job_index": 157,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_q2.json",
+      "bytes": 13182,
+      "sha256": "a89f2bd820ff99066fcd39eafde7f57458b6bfdcfe6b20f668d8b15d53d76c74",
+      "captured_at": "2026-11-02T05:51:22.303935+00:00"
+    },
+    {
+      "parent_job_index": 158,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_q2.json",
+      "bytes": 14824,
+      "sha256": "9dda10b3cdc532a4e66686a39dc827fc2fb8c5f5d9def71287cdea669edfd87d",
+      "captured_at": "2026-11-02T05:51:24.148732+00:00"
+    },
+    {
+      "parent_job_index": 159,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_q3.json",
+      "bytes": 13173,
+      "sha256": "4aae3cbd309d5c3a165a557c9e2858693343f02da9a249efe6b94395d3d47af6",
+      "captured_at": "2026-11-02T05:51:25.789220+00:00"
+    },
+    {
+      "parent_job_index": 160,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_q3.json",
+      "bytes": 14845,
+      "sha256": "a37d679a0003aab6129d4192860dd81bbd6882fcc71bf36ce999841b2d9c4a74",
+      "captured_at": "2026-11-02T05:51:27.423850+00:00"
+    },
+    {
+      "parent_job_index": 161,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_q4.json",
+      "bytes": 12588,
+      "sha256": "a95647f77cd5a422edc52d930184d4ebbfc6a4adbe509dad7e52a49d5ce1ba1a",
+      "captured_at": "2026-11-02T05:51:29.093580+00:00"
+    },
+    {
+      "parent_job_index": 162,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_q4.json",
+      "bytes": 14068,
+      "sha256": "d348e54b4483e2af7e5b2801a141b00981b2196ff27ff06fca7eb2d5ca3a527e",
+      "captured_at": "2026-11-02T05:51:30.585908+00:00"
+    },
+    {
+      "parent_job_index": 163,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_h1.json",
+      "bytes": 14413,
+      "sha256": "96b30580f91cd3c4d85b1c7c46bb965fe7596825ce518a4c18e466c921c24ecb",
+      "captured_at": "2026-11-02T05:51:32.164647+00:00"
+    },
+    {
+      "parent_job_index": 164,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_h1.json",
+      "bytes": 16365,
+      "sha256": "7180c2127650e77677a3ecef6bcf6f0be54ec46ac85838e138e32c5539277089",
+      "captured_at": "2026-11-02T05:51:33.772977+00:00"
+    },
+    {
+      "parent_job_index": 165,
+      "source_file": "sources/boxscoretraditionalv3_0022600019_h2.json",
+      "bytes": 13805,
+      "sha256": "92a073fbcdd99e483ec5839a7347aab3381d44b10acaf9ac88580b7e5f2bb634",
+      "captured_at": "2026-11-02T05:51:35.616054+00:00"
+    },
+    {
+      "parent_job_index": 166,
+      "source_file": "sources/boxscoreadvancedv3_0022600019_h2.json",
+      "bytes": 15630,
+      "sha256": "ed84696ab4ab58f2ed8edd565560691c4be459fd3809d7129ffdf4bf61ca2d0a",
+      "captured_at": "2026-11-02T05:51:37.254485+00:00"
+    },
+    {
+      "parent_job_index": 167,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_q1.json",
+      "bytes": 14317,
+      "sha256": "9f09b1c306355285bc18a553f7d14ab8deacd2948e9d53b73747441204cadf05",
+      "captured_at": "2026-11-02T05:51:39.111402+00:00"
+    },
+    {
+      "parent_job_index": 168,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_q1.json",
+      "bytes": 16324,
+      "sha256": "73dfda755bc3391a9c167137c2a07f25ff24ec82e4fadb428131c9ef90cd9752",
+      "captured_at": "2026-11-02T05:51:40.736104+00:00"
+    },
+    {
+      "parent_job_index": 169,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_q2.json",
+      "bytes": 13750,
+      "sha256": "9581b76e18cddb05ddd9d6b872097977dabdded9ff715eb1acbcee8fca7a10df",
+      "captured_at": "2026-11-02T05:51:42.784301+00:00"
+    },
+    {
+      "parent_job_index": 170,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_q2.json",
+      "bytes": 15541,
+      "sha256": "2d7e4da6c4cc20eaf871d9c495bbc2a0b733e3030261fc2e805c0018ab32c21c",
+      "captured_at": "2026-11-02T05:51:44.423739+00:00"
+    },
+    {
+      "parent_job_index": 171,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_q3.json",
+      "bytes": 13737,
+      "sha256": "5f41bc8e975e64b6d77b81c8f2ed1852e1918705a67832386c1ce7e2fd4609c8",
+      "captured_at": "2026-11-02T05:51:46.103079+00:00"
+    },
+    {
+      "parent_job_index": 172,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_q3.json",
+      "bytes": 15567,
+      "sha256": "3ffdf4c8cf468299dcc1a26b5308ffefc95012d48df3917f68f1f28c8794d18e",
+      "captured_at": "2026-11-02T05:51:47.699172+00:00"
+    },
+    {
+      "parent_job_index": 173,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_q4.json",
+      "bytes": 15452,
+      "sha256": "4a22992b61fe6f12a7d635d05b98d7c1674698cbb7df2de45331ee022771e087",
+      "captured_at": "2026-11-02T05:51:49.306536+00:00"
+    },
+    {
+      "parent_job_index": 174,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_q4.json",
+      "bytes": 17818,
+      "sha256": "52c98e22109d4a42880e2a6e0af91c2b526ff202a8ec89aff8ac2193475da5d7",
+      "captured_at": "2026-11-02T05:51:50.976234+00:00"
+    },
+    {
+      "parent_job_index": 175,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_h1.json",
+      "bytes": 14949,
+      "sha256": "f0faca3754b1baff259bfd002f945af30ff9fb4a12bff20493ab816b730df562",
+      "captured_at": "2026-11-02T05:51:52.819253+00:00"
+    },
+    {
+      "parent_job_index": 176,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_h1.json",
+      "bytes": 17126,
+      "sha256": "f9b47d11b4b118060cd8444a2c4dc445d66aeb28d0bd8d6fc14a9589aac78cd8",
+      "captured_at": "2026-11-02T05:51:54.324715+00:00"
+    },
+    {
+      "parent_job_index": 177,
+      "source_file": "sources/boxscoretraditionalv3_0022600020_h2.json",
+      "bytes": 16670,
+      "sha256": "2b43f6ccf18fc68e5d870cd368382cb1656b91a403acbb235d8b2173b599f338",
+      "captured_at": "2026-11-02T05:51:56.100463+00:00"
+    },
+    {
+      "parent_job_index": 178,
+      "source_file": "sources/boxscoreadvancedv3_0022600020_h2.json",
+      "bytes": 19349,
+      "sha256": "e5b4ab42d6d06f79d973e40fff5b54281a8ec5bdb81c42e0f8de81ad12fd6739",
+      "captured_at": "2026-11-02T05:51:57.939749+00:00"
+    },
+    {
+      "parent_job_index": 179,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_q1.json",
+      "bytes": 12615,
+      "sha256": "d0108d0d8e93544781fc34c7fc675603ef092e075c4ee78415d7d4e5da55d402",
+      "captured_at": "2026-11-02T05:51:59.522199+00:00"
+    },
+    {
+      "parent_job_index": 180,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_q1.json",
+      "bytes": 14096,
+      "sha256": "25f56f548af6af72cb09888de472b62130e30292df97032b7fa39518456a9d5a",
+      "captured_at": "2026-11-02T05:52:01.216289+00:00"
+    },
+    {
+      "parent_job_index": 181,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_q2.json",
+      "bytes": 13193,
+      "sha256": "1bc59a9ded83e94e04c1d40a5958bf8e18b41f267b13a8814b62afd69ecf4548",
+      "captured_at": "2026-11-02T05:52:02.850652+00:00"
+    },
+    {
+      "parent_job_index": 182,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_q2.json",
+      "bytes": 14857,
+      "sha256": "109cf7ee50bca31ab83148da4d094c8189bd82c64a65ceb6357618212c06066a",
+      "captured_at": "2026-11-02T05:52:04.493078+00:00"
+    },
+    {
+      "parent_job_index": 183,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_q3.json",
+      "bytes": 12612,
+      "sha256": "dd0ffba04053d3dfa70428f90b360a8ca1f9c89369084887367a5b2dd80ac756",
+      "captured_at": "2026-11-02T05:52:06.133114+00:00"
+    },
+    {
+      "parent_job_index": 184,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_q3.json",
+      "bytes": 14167,
+      "sha256": "935ccd871c570821c882df3748340a8b7937437ecbbd06d644d6784d8f8e016c",
+      "captured_at": "2026-11-02T05:52:07.771042+00:00"
+    },
+    {
+      "parent_job_index": 185,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_q4.json",
+      "bytes": 12065,
+      "sha256": "ae00d72ec516e1af790494b599d895af84d9345d4181e2cc6d6ad66cf151e360",
+      "captured_at": "2026-11-02T05:52:09.414199+00:00"
+    },
+    {
+      "parent_job_index": 186,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_q4.json",
+      "bytes": 13408,
+      "sha256": "f3bbe28ed7562c814290c9a01eaa44b551421e6b5835ddccbc2229fc38079f13",
+      "captured_at": "2026-11-02T05:52:11.046698+00:00"
+    },
+    {
+      "parent_job_index": 187,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_h1.json",
+      "bytes": 13831,
+      "sha256": "5a566449570e502cccd619deb6ed8482df59d32d36fc6ee4a561588750c7d44d",
+      "captured_at": "2026-11-02T05:52:12.695314+00:00"
+    },
+    {
+      "parent_job_index": 188,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_h1.json",
+      "bytes": 15639,
+      "sha256": "9693824a79e9ebb137bf0448399f411d5f21615801db74aabf60d5f90ad88784",
+      "captured_at": "2026-11-02T05:52:14.323698+00:00"
+    },
+    {
+      "parent_job_index": 189,
+      "source_file": "sources/boxscoretraditionalv3_0022600021_h2.json",
+      "bytes": 13280,
+      "sha256": "f137e4ba9b908d47c9281aafe386162e70687880ae2a19373b0039806c2f2d71",
+      "captured_at": "2026-11-02T05:52:16.166992+00:00"
+    },
+    {
+      "parent_job_index": 190,
+      "source_file": "sources/boxscoreadvancedv3_0022600021_h2.json",
+      "bytes": 14964,
+      "sha256": "5b36f75ef10ca10b21ce7f552a16aa9c078fe7ecd9b72bb6c3c7293b02b9eeda",
+      "captured_at": "2026-11-02T05:52:17.805035+00:00"
+    },
+    {
+      "parent_job_index": 191,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_q1.json",
+      "bytes": 13719,
+      "sha256": "b6fac7d120ba01f5314edf3946054b0c3eafb994c1a06a9a78ace43d6db48c76",
+      "captured_at": "2026-11-02T05:52:19.525621+00:00"
+    },
+    {
+      "parent_job_index": 192,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_q1.json",
+      "bytes": 15524,
+      "sha256": "45058f35ca8d2283abd598516bda3508ca9da5bbf841fe4fdf91aa524c6cdb2b",
+      "captured_at": "2026-11-02T05:52:21.286892+00:00"
+    },
+    {
+      "parent_job_index": 193,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_q2.json",
+      "bytes": 13145,
+      "sha256": "46ae6fea62c66188214a24cb874cf05a50060f17b2e9a380edcbfc3e0a246b37",
+      "captured_at": "2026-11-02T05:52:22.926058+00:00"
+    },
+    {
+      "parent_job_index": 194,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_q2.json",
+      "bytes": 14808,
+      "sha256": "a7f9f83ab8c2808901d8dc27652794fcc10f460245dc50ff4defaae198185b72",
+      "captured_at": "2026-11-02T05:52:24.563437+00:00"
+    },
+    {
+      "parent_job_index": 195,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_q3.json",
+      "bytes": 13722,
+      "sha256": "365cb67f28b9cb26e992ba4e278f55327688cf8bcaacb2fd9f595a0b4cc50ea8",
+      "captured_at": "2026-11-02T05:52:26.409506+00:00"
+    },
+    {
+      "parent_job_index": 196,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_q3.json",
+      "bytes": 15531,
+      "sha256": "a6adf2c9fab228df638b4165b9075fbf7cd31482c99c53e382c8ad015f1efdda",
+      "captured_at": "2026-11-02T05:52:28.250544+00:00"
+    },
+    {
+      "parent_job_index": 197,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_q4.json",
+      "bytes": 17101,
+      "sha256": "155381cb1ec5b868dbc73be190bec3b9466c06f9566e7c1afbc0d238ce248add",
+      "captured_at": "2026-11-02T05:52:29.889254+00:00"
+    },
+    {
+      "parent_job_index": 198,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_q4.json",
+      "bytes": 19868,
+      "sha256": "c5ef5712213882719e28acc60946ccdda389e729067b7625898cdb8c5224828d",
+      "captured_at": "2026-11-02T05:52:31.525668+00:00"
+    },
+    {
+      "parent_job_index": 199,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_h1.json",
+      "bytes": 13773,
+      "sha256": "4ab3929c7dbf33c59c6affd093e698b6f1d00d93eed765a4c5886ea9cbed676a",
+      "captured_at": "2026-11-02T05:52:33.779848+00:00"
+    },
+    {
+      "parent_job_index": 200,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_h1.json",
+      "bytes": 15624,
+      "sha256": "10ed7e245c4f4ff59235d8a326db4f7cc636730840a31ae63ea2b51d5b5a35f0",
+      "captured_at": "2026-11-02T05:52:35.418004+00:00"
+    },
+    {
+      "parent_job_index": 201,
+      "source_file": "sources/boxscoretraditionalv3_0022600022_h2.json",
+      "bytes": 17749,
+      "sha256": "c4be5d0cb6ee26bbf2889dac897ab36fcfada958875d8b4d4d7c1b36a5bf0697",
+      "captured_at": "2026-11-02T05:52:37.057311+00:00"
+    },
+    {
+      "parent_job_index": 202,
+      "source_file": "sources/boxscoreadvancedv3_0022600022_h2.json",
+      "bytes": 20708,
+      "sha256": "85ad44f53dc405f789262313e83dad5303834ece6ac5690802275d9db3635920",
+      "captured_at": "2026-11-02T05:52:38.695272+00:00"
+    },
+    {
+      "parent_job_index": 203,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_q1.json",
+      "bytes": 13806,
+      "sha256": "8cb27f0d59a93a214f789d7a568e48cecb0bb5d2355949055e2e7024a68eae9e",
+      "captured_at": "2026-11-02T05:52:40.640366+00:00"
+    },
+    {
+      "parent_job_index": 204,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_q1.json",
+      "bytes": 15625,
+      "sha256": "666613935ec4b3f8c65f5adeba84337333b4161f09890e8d4185ea4c4ea93949",
+      "captured_at": "2026-11-02T05:52:42.278933+00:00"
+    },
+    {
+      "parent_job_index": 205,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_q2.json",
+      "bytes": 14359,
+      "sha256": "0fac6de2afe7a14274d581f46585b0c2240564be451c01d74b1a01d33d51d88b",
+      "captured_at": "2026-11-02T05:52:43.847406+00:00"
+    },
+    {
+      "parent_job_index": 206,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_q2.json",
+      "bytes": 16322,
+      "sha256": "0f3166ff917abbdef8029201b292f561e005f8a5c7ace92415a6661db19a0e28",
+      "captured_at": "2026-11-02T05:52:45.555994+00:00"
+    },
+    {
+      "parent_job_index": 207,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_q3.json",
+      "bytes": 14372,
+      "sha256": "c31d94d450333be2e0194ce341aefda46a461de9829aee91f2b4327126797b6f",
+      "captured_at": "2026-11-02T05:52:47.296491+00:00"
+    },
+    {
+      "parent_job_index": 208,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_q3.json",
+      "bytes": 16325,
+      "sha256": "deb1e964ed7ba841101497a0a47d056dd8f06532425965ddd0280be278d2e88b",
+      "captured_at": "2026-11-02T05:52:48.832561+00:00"
+    },
+    {
+      "parent_job_index": 209,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_q4.json",
+      "bytes": 17749,
+      "sha256": "8fc63ecd3d534ad8da10f87f936a4c3fc8d1743eb92e90da71c7fd183db2d5a1",
+      "captured_at": "2026-11-02T05:52:50.676128+00:00"
+    },
+    {
+      "parent_job_index": 210,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_q4.json",
+      "bytes": 20577,
+      "sha256": "9619154568058e5a80d999ee4d0a32d944d86957b66c4100049906c9c1ed5f58",
+      "captured_at": "2026-11-02T05:52:52.518863+00:00"
+    },
+    {
+      "parent_job_index": 211,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_h1.json",
+      "bytes": 14993,
+      "sha256": "51980bf221818d76e2965121cbc393ba328c201af22b28391b2746feaed3e880",
+      "captured_at": "2026-11-02T05:52:54.153518+00:00"
+    },
+    {
+      "parent_job_index": 212,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_h1.json",
+      "bytes": 17156,
+      "sha256": "a90f34a9813db2e86ce8e917bd8b97136e54b4b05c43a2ccf773fba3c272212b",
+      "captured_at": "2026-11-02T05:52:55.807064+00:00"
+    },
+    {
+      "parent_job_index": 213,
+      "source_file": "sources/boxscoretraditionalv3_0022600023_h2.json",
+      "bytes": 17815,
+      "sha256": "95e2657b89cb58e46e8347cda1a79af562b0f5edf504a90b18d82bf4ccd04b20",
+      "captured_at": "2026-11-02T05:52:57.434243+00:00"
+    },
+    {
+      "parent_job_index": 214,
+      "source_file": "sources/boxscoreadvancedv3_0022600023_h2.json",
+      "bytes": 20713,
+      "sha256": "2e9e06488c1e617ced3f3164d344f4d7fe7703010a7a2452b8a95b4197d95bfe",
+      "captured_at": "2026-11-02T05:52:59.072943+00:00"
+    },
+    {
+      "parent_job_index": 215,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_q1.json",
+      "bytes": 12572,
+      "sha256": "4b0ab89953207d2dec9717b1f578b75de5bd228437f267cbd8862beef154a84c",
+      "captured_at": "2026-11-02T05:53:01.119665+00:00"
+    },
+    {
+      "parent_job_index": 216,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_q1.json",
+      "bytes": 14093,
+      "sha256": "8b658931fa30ad2836db65d967d2ded3a49d10019ce7736304c75ce783fb0436",
+      "captured_at": "2026-11-02T05:53:02.714922+00:00"
+    },
+    {
+      "parent_job_index": 217,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_q2.json",
+      "bytes": 13707,
+      "sha256": "b736221fe555d64db7171b7fb46c3f7f40b30e612aaca45c20f586c1bacb6dcc",
+      "captured_at": "2026-11-02T05:53:04.609002+00:00"
+    },
+    {
+      "parent_job_index": 218,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_q2.json",
+      "bytes": 15521,
+      "sha256": "6e26a5234100d6b2a9a9d05d62c6918c8741a826d4a2918f0be5d8ab70cdc17f",
+      "captured_at": "2026-11-02T05:53:06.240714+00:00"
+    },
+    {
+      "parent_job_index": 219,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_q3.json",
+      "bytes": 12579,
+      "sha256": "79f9abd9805cf4b924f37bdbe5c5a76de0ba9210188aec18c0967b04e6dbb12d",
+      "captured_at": "2026-11-02T05:53:07.823313+00:00"
+    },
+    {
+      "parent_job_index": 220,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_q3.json",
+      "bytes": 14075,
+      "sha256": "745e325ba053d76247b9afd1ae1bd7f150e6020537cae6bddf631e9f20ee1c9d",
+      "captured_at": "2026-11-02T05:53:09.723888+00:00"
+    },
+    {
+      "parent_job_index": 221,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_q4.json",
+      "bytes": 12564,
+      "sha256": "07f651c4415db647063f540f486e89f744b495a94d992bb0eec2e0cced8d5280",
+      "captured_at": "2026-11-02T05:53:11.462858+00:00"
+    },
+    {
+      "parent_job_index": 222,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_q4.json",
+      "bytes": 14043,
+      "sha256": "156ea2f5c93d14571aac1a66c6b19a35c396805c121c00f3c49f53efcb7b7a5e",
+      "captured_at": "2026-11-02T05:53:13.408838+00:00"
+    },
+    {
+      "parent_job_index": 223,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_h1.json",
+      "bytes": 13771,
+      "sha256": "a7c33826486351f85514756c4468a3ecb03e9460e9f8c72bc59100763b16c21b",
+      "captured_at": "2026-11-02T05:53:15.047153+00:00"
+    },
+    {
+      "parent_job_index": 224,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_h1.json",
+      "bytes": 15607,
+      "sha256": "4e1cfa30136ce08450abe45d8d6b7f316a8a6c79b6c518a6ed500e45003941e3",
+      "captured_at": "2026-11-02T05:53:16.685624+00:00"
+    },
+    {
+      "parent_job_index": 225,
+      "source_file": "sources/boxscoretraditionalv3_0022600024_h2.json",
+      "bytes": 13780,
+      "sha256": "b4ac843fc7f8cf4024ca2c6ba3c595c303e07aa4a343f3aeb6c2d55f9a2f3169",
+      "captured_at": "2026-11-02T05:53:18.325665+00:00"
+    },
+    {
+      "parent_job_index": 226,
+      "source_file": "sources/boxscoreadvancedv3_0022600024_h2.json",
+      "bytes": 15581,
+      "sha256": "68d60392601323ec08ec60e80232b5b345a1dd66291c951d76a40c62598371d0",
+      "captured_at": "2026-11-02T05:53:20.168538+00:00"
+    },
+    {
+      "parent_job_index": 227,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_q1.json",
+      "bytes": 13196,
+      "sha256": "bf4f33d253189abb1582bbfd67b8fd81649d3b960e5f2f8e704d99cf92ecc009",
+      "captured_at": "2026-11-02T05:53:22.215040+00:00"
+    },
+    {
+      "parent_job_index": 228,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_q1.json",
+      "bytes": 14872,
+      "sha256": "c714397af3dcd5d678b75e08e5bf426366545a39a9ee117493dba4d6b065c81b",
+      "captured_at": "2026-11-02T05:53:24.468034+00:00"
+    },
+    {
+      "parent_job_index": 229,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_q2.json",
+      "bytes": 13220,
+      "sha256": "014c94d9b2c3c7037f56d23b84cce80d1ab0d383dca2cf6f9616421221b707a9",
+      "captured_at": "2026-11-02T05:53:26.107853+00:00"
+    },
+    {
+      "parent_job_index": 230,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_q2.json",
+      "bytes": 14905,
+      "sha256": "7b1a48b7346272852548a2db31cdb639899620a8ba840d0a0d218bb68f070ac2",
+      "captured_at": "2026-11-02T05:53:27.610730+00:00"
+    },
+    {
+      "parent_job_index": 231,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_q3.json",
+      "bytes": 13180,
+      "sha256": "bab938bddcf22ad7d52e2b0ad839933028c19ab62d50fb1603cab49da383de72",
+      "captured_at": "2026-11-02T05:53:29.383485+00:00"
+    },
+    {
+      "parent_job_index": 232,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_q3.json",
+      "bytes": 14875,
+      "sha256": "6733df9d23e47403e9d3e55efb5400f997928a1f1807731ddad927442be6d9fe",
+      "captured_at": "2026-11-02T05:53:31.021544+00:00"
+    },
+    {
+      "parent_job_index": 233,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_q4.json",
+      "bytes": 12047,
+      "sha256": "6746911dc19a547575ba51f509780f9c7d817d031a7a7f4ee1acb778683b8727",
+      "captured_at": "2026-11-02T05:53:33.085213+00:00"
+    },
+    {
+      "parent_job_index": 234,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_q4.json",
+      "bytes": 13420,
+      "sha256": "437c9681f337ed62bcba8b95adac245c7ec458d16decd166352a9330670f828c",
+      "captured_at": "2026-11-02T05:53:34.710395+00:00"
+    },
+    {
+      "parent_job_index": 235,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_h1.json",
+      "bytes": 13849,
+      "sha256": "3c20345c1cc0ecc4a55c488169f97d80d57f7a9e8193c25468a40064fb2a4361",
+      "captured_at": "2026-11-02T05:53:36.551322+00:00"
+    },
+    {
+      "parent_job_index": 236,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_h1.json",
+      "bytes": 15710,
+      "sha256": "c912e99a84c853f9e44783b6e15a57bcec8557a217b1da710edf70ca6ce0bae7",
+      "captured_at": "2026-11-02T05:53:38.191629+00:00"
+    },
+    {
+      "parent_job_index": 237,
+      "source_file": "sources/boxscoretraditionalv3_0022600085_h2.json",
+      "bytes": 13261,
+      "sha256": "0982332ae3b781534b81c89f36278784693620f4b361625beecf8b795720b72c",
+      "captured_at": "2026-11-02T05:53:40.647281+00:00"
+    },
+    {
+      "parent_job_index": 238,
+      "source_file": "sources/boxscoreadvancedv3_0022600085_h2.json",
+      "bytes": 14939,
+      "sha256": "81eefde08ac26f9d5221206bea1e6e633777d42d5a561c2fc4ec3df81554869d",
+      "captured_at": "2026-11-02T05:53:42.285684+00:00"
+    },
+    {
+      "parent_job_index": 239,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_q1.json",
+      "bytes": 13148,
+      "sha256": "3cb94d879237265c835b39f08fbd2fe67f09408b9b805bcc538fa424785f6170",
+      "captured_at": "2026-11-02T05:53:44.129132+00:00"
+    },
+    {
+      "parent_job_index": 240,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_q1.json",
+      "bytes": 14778,
+      "sha256": "6f80ac3b23e901e1a5a978dbc9a330250795fd48200ef0f8d6e1ade3d056aba2",
+      "captured_at": "2026-11-02T05:53:46.177158+00:00"
+    },
+    {
+      "parent_job_index": 241,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_q2.json",
+      "bytes": 14275,
+      "sha256": "5a06808117031c741faa38e9ef39500b60a66ad8e9b182f954f24ff98ae5cd07",
+      "captured_at": "2026-11-02T05:53:48.225367+00:00"
+    },
+    {
+      "parent_job_index": 242,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_q2.json",
+      "bytes": 16264,
+      "sha256": "0411cbb468df71c1a52d6681b32b06bb9c1ebcd6aa47847c4ae4758a238c97c9",
+      "captured_at": "2026-11-02T05:53:49.864422+00:00"
+    },
+    {
+      "parent_job_index": 243,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_q3.json",
+      "bytes": 14300,
+      "sha256": "c359ede931e38513fa3f7723d48a7b908972daed8e648dae8b151509fedbae92",
+      "captured_at": "2026-11-02T05:53:51.502186+00:00"
+    },
+    {
+      "parent_job_index": 244,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_q3.json",
+      "bytes": 16296,
+      "sha256": "2b1767fbc05291ab59b68086f67a490555cfce0b2c0d0a181dd0e2bb115c97ea",
+      "captured_at": "2026-11-02T05:53:53.140331+00:00"
+    },
+    {
+      "parent_job_index": 245,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_q4.json",
+      "bytes": 13725,
+      "sha256": "bc7c800357a9287b115779f9f8d674d0a90935c2f03786028fc0eba48d43ba0f",
+      "captured_at": "2026-11-02T05:53:54.751624+00:00"
+    },
+    {
+      "parent_job_index": 246,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_q4.json",
+      "bytes": 15538,
+      "sha256": "802349267859efef33f9ae8bc9da876c9118496d6e3caf36a7329b1a9909c709",
+      "captured_at": "2026-11-02T05:53:56.831314+00:00"
+    },
+    {
+      "parent_job_index": 247,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_h1.json",
+      "bytes": 14344,
+      "sha256": "dd7c53c6e10b4c1a18f823979f3dcb34adf9456ab2331a4894ed9e59ab8037f5",
+      "captured_at": "2026-11-02T05:53:59.285269+00:00"
+    },
+    {
+      "parent_job_index": 248,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_h1.json",
+      "bytes": 16346,
+      "sha256": "a18c670df534596b828051a58c7fa2f5abcd81834ddfdc2d692253c4671df0ee",
+      "captured_at": "2026-11-02T05:54:00.924167+00:00"
+    },
+    {
+      "parent_job_index": 249,
+      "source_file": "sources/boxscoretraditionalv3_0022600086_h2.json",
+      "bytes": 14937,
+      "sha256": "928a242b7762101ac951c1059fb06a7e6f2bf970653d6155c734d52e908ceb30",
+      "captured_at": "2026-11-02T05:54:02.767346+00:00"
+    },
+    {
+      "parent_job_index": 250,
+      "source_file": "sources/boxscoreadvancedv3_0022600086_h2.json",
+      "bytes": 17101,
+      "sha256": "054560607a5e27ca745d09f670acfd1d1e21a3ff93cef45ff917deee006dbd11",
+      "captured_at": "2026-11-02T05:54:04.404743+00:00"
+    },
+    {
+      "parent_job_index": 251,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_q1.json",
+      "bytes": 13727,
+      "sha256": "17c23fa02715d9e07d42df84f104a030b651264d20a10c21b8f6de47011b0d3d",
+      "captured_at": "2026-11-02T05:54:06.043105+00:00"
+    },
+    {
+      "parent_job_index": 252,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_q1.json",
+      "bytes": 15531,
+      "sha256": "966f92d8013e6666c66a4e843e85116f525b382164963570b9c460cb0e30414c",
+      "captured_at": "2026-11-02T05:54:07.519218+00:00"
+    },
+    {
+      "parent_job_index": 253,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_q2.json",
+      "bytes": 14291,
+      "sha256": "e180c61a3b53da9f3a7c7feb237758ca3f06be843871a7da1fee80612567e6f5",
+      "captured_at": "2026-11-02T05:54:09.163383+00:00"
+    },
+    {
+      "parent_job_index": 254,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_q2.json",
+      "bytes": 16248,
+      "sha256": "0f4fe5bfa4e0be9a72113755ee0a347492de8c030c2463a67346aabd24addbc9",
+      "captured_at": "2026-11-02T05:54:10.753279+00:00"
+    },
+    {
+      "parent_job_index": 255,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_q3.json",
+      "bytes": 13158,
+      "sha256": "95d642ae618819c4c8d9f3857ef71758ec6500dbdd69a5ca591d74a82aa6f498",
+      "captured_at": "2026-11-02T05:54:12.404030+00:00"
+    },
+    {
+      "parent_job_index": 256,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_q3.json",
+      "bytes": 14870,
+      "sha256": "c54f672841a05a7691417ac0a9d1185afca3d4c304f08a8c348531a8ccf3b0e5",
+      "captured_at": "2026-11-02T05:54:14.031400+00:00"
+    },
+    {
+      "parent_job_index": 257,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_q4.json",
+      "bytes": 12033,
+      "sha256": "abf69e512be27b7bf4fceeb18f81c37887d415417a41cd32abddfcbf9f82c694",
+      "captured_at": "2026-11-02T05:54:15.685265+00:00"
+    },
+    {
+      "parent_job_index": 258,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_q4.json",
+      "bytes": 13338,
+      "sha256": "c6a3a08f9a57565430e5f10b067517793921beed9bfe902504c54572d025cd7f",
+      "captured_at": "2026-11-02T05:54:17.306790+00:00"
+    },
+    {
+      "parent_job_index": 259,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_h1.json",
+      "bytes": 14352,
+      "sha256": "648c0aca7d9c567daabf817b371744471b824c02fd60d05541761c59677ccc55",
+      "captured_at": "2026-11-02T05:54:18.945539+00:00"
+    },
+    {
+      "parent_job_index": 260,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_h1.json",
+      "bytes": 16353,
+      "sha256": "225f54451c9a98ff198d8dfbd23dc935b6e976acf8be515b12731b525df6c015",
+      "captured_at": "2026-11-02T05:54:20.586308+00:00"
+    },
+    {
+      "parent_job_index": 261,
+      "source_file": "sources/boxscoretraditionalv3_0022600087_h2.json",
+      "bytes": 13235,
+      "sha256": "578b89f73547c05e3fc02b72a044dfdcd911d2f3aa57681c391f05f442aeb3e6",
+      "captured_at": "2026-11-02T05:54:22.222291+00:00"
+    },
+    {
+      "parent_job_index": 262,
+      "source_file": "sources/boxscoreadvancedv3_0022600087_h2.json",
+      "bytes": 14908,
+      "sha256": "186428fa2573856309175530f97f52b08d45d2cbbcd1db6738d674c9209ca244",
+      "captured_at": "2026-11-02T05:54:24.065445+00:00"
+    },
+    {
+      "parent_job_index": 263,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_q1.json",
+      "bytes": 13717,
+      "sha256": "3809bfc5d7ccfb621dc72a9b50b5192f2f260f7c00b2c36aeed16d0b002036bc",
+      "captured_at": "2026-11-02T05:54:26.124353+00:00"
+    },
+    {
+      "parent_job_index": 264,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_q1.json",
+      "bytes": 15546,
+      "sha256": "d3b29cbb60d3f7e3b019871b06d3fbfe07fae5857cde4935e5be8e5fd821fbe5",
+      "captured_at": "2026-11-02T05:54:27.751661+00:00"
+    },
+    {
+      "parent_job_index": 265,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_q2.json",
+      "bytes": 14278,
+      "sha256": "f0dfa1dc0de59341094badd00cf2624277406d37bdab8bd911277673bb76dfe3",
+      "captured_at": "2026-11-02T05:54:29.595518+00:00"
+    },
+    {
+      "parent_job_index": 266,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_q2.json",
+      "bytes": 16265,
+      "sha256": "5f66803f7b172a498712ced5f93bd46783f0afd5e92fb7e5a72328aa48692a69",
+      "captured_at": "2026-11-02T05:54:31.233330+00:00"
+    },
+    {
+      "parent_job_index": 267,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_q3.json",
+      "bytes": 15398,
+      "sha256": "f0fc9c13464bb2263143efef414352197d2306e5d10d75160270aeafb3872db4",
+      "captured_at": "2026-11-02T05:54:32.872516+00:00"
+    },
+    {
+      "parent_job_index": 268,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_q3.json",
+      "bytes": 17698,
+      "sha256": "9cf8e1a105a0c0e26a538060b94221fbe4e0496b07a3c804f25acf5b570881ff",
+      "captured_at": "2026-11-02T05:54:34.365013+00:00"
+    },
+    {
+      "parent_job_index": 269,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_q4.json",
+      "bytes": 14303,
+      "sha256": "f8ac67cf464e4655726a1650bf625e17f5fc29b663394b64e57478fd6423e8d8",
+      "captured_at": "2026-11-02T05:54:35.944188+00:00"
+    },
+    {
+      "parent_job_index": 270,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_q4.json",
+      "bytes": 16254,
+      "sha256": "50e0c6503dfb90470cd2572b8023a11d9384a05654bbaf973f5203477a71466f",
+      "captured_at": "2026-11-02T05:54:37.993436+00:00"
+    },
+    {
+      "parent_job_index": 271,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_h1.json",
+      "bytes": 14372,
+      "sha256": "17c1dc154a72a5df687613361dfa17c2cbb285d6c5edb26e82a90b8d86bebc26",
+      "captured_at": "2026-11-02T05:54:39.630519+00:00"
+    },
+    {
+      "parent_job_index": 272,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_h1.json",
+      "bytes": 16342,
+      "sha256": "b5bda58d6ca523114cbde3365f174c2db85f107b82daab4cfb584e76d2dbdfd1",
+      "captured_at": "2026-11-02T05:54:41.268502+00:00"
+    },
+    {
+      "parent_job_index": 273,
+      "source_file": "sources/boxscoretraditionalv3_0022600088_h2.json",
+      "bytes": 18326,
+      "sha256": "186af9eb0dc397bb9a6f03f230b1e3f14ad63c30a5f78e68efe52b91c09985b8",
+      "captured_at": "2026-11-02T05:54:43.179706+00:00"
+    },
+    {
+      "parent_job_index": 274,
+      "source_file": "sources/boxscoreadvancedv3_0022600088_h2.json",
+      "bytes": 21442,
+      "sha256": "4a592015d5a5d7c4dda753ea417466353e39fa5f9e5f0ee9c7d1057b308a1c41",
+      "captured_at": "2026-11-02T05:54:45.059345+00:00"
+    },
+    {
+      "parent_job_index": 275,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_q1.json",
+      "bytes": 13715,
+      "sha256": "f7d35a400cc05d61abf084d3240dbd084e26c25cfc46cb5c6c8b5e6c0b97e903",
+      "captured_at": "2026-11-02T05:54:46.778107+00:00"
+    },
+    {
+      "parent_job_index": 276,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_q1.json",
+      "bytes": 15564,
+      "sha256": "973dbeaa92da5b06ad4ab6f634ccc4554301b5aba5b118a9396221797c749b18",
+      "captured_at": "2026-11-02T05:54:48.383767+00:00"
+    },
+    {
+      "parent_job_index": 277,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_q2.json",
+      "bytes": 13723,
+      "sha256": "238de11bacce48e0e221dacd2a234233fbe1f72388e8cb80abf9b7c427893562",
+      "captured_at": "2026-11-02T05:54:49.941870+00:00"
+    },
+    {
+      "parent_job_index": 278,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_q2.json",
+      "bytes": 15550,
+      "sha256": "4caddbec7cc230ac7b28f6236ded2756b9bde546771484e9590f29916a34ce4b",
+      "captured_at": "2026-11-02T05:54:51.508558+00:00"
+    },
+    {
+      "parent_job_index": 279,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_q3.json",
+      "bytes": 13719,
+      "sha256": "25635e0ad3c4feea268618a34f78eeec0e1dcec69bde5c798613e8581ff48af7",
+      "captured_at": "2026-11-02T05:54:53.147086+00:00"
+    },
+    {
+      "parent_job_index": 280,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_q3.json",
+      "bytes": 15590,
+      "sha256": "a9976f9d81f2234be806eb11da1abfd47f7cfec942146c74811896d2d5e8209d",
+      "captured_at": "2026-11-02T05:54:54.785534+00:00"
+    },
+    {
+      "parent_job_index": 281,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_q4.json",
+      "bytes": 14848,
+      "sha256": "6a79405a158a704ce1f63ce71eca122fd193982b7c541d4bf91043f0c4b8ecd8",
+      "captured_at": "2026-11-02T05:54:56.837227+00:00"
+    },
+    {
+      "parent_job_index": 282,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_q4.json",
+      "bytes": 16916,
+      "sha256": "aab47ddf0518d38ca3268947693d2a234990bdc68a123c5528a9633a7b626f02",
+      "captured_at": "2026-11-02T05:54:59.291054+00:00"
+    },
+    {
+      "parent_job_index": 283,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_h1.json",
+      "bytes": 14368,
+      "sha256": "22f9b9821a3f811e4d03bcfc895cf85e92601e4974ab75df62aa0c36684da730",
+      "captured_at": "2026-11-02T05:55:01.235852+00:00"
+    },
+    {
+      "parent_job_index": 284,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_h1.json",
+      "bytes": 16370,
+      "sha256": "616f8c40e3c7610314d43cdcfa9c5120e05b79296045ff5caa19fd72dfcd1adc",
+      "captured_at": "2026-11-02T05:55:02.875535+00:00"
+    },
+    {
+      "parent_job_index": 285,
+      "source_file": "sources/boxscoretraditionalv3_0022600089_h2.json",
+      "bytes": 14925,
+      "sha256": "79f349bde62f8082aa0967a47caa5f909884b3a93fc03835257760c2ddaceba9",
+      "captured_at": "2026-11-02T05:55:04.846778+00:00"
+    },
+    {
+      "parent_job_index": 286,
+      "source_file": "sources/boxscoreadvancedv3_0022600089_h2.json",
+      "bytes": 17111,
+      "sha256": "8aba8f752ff60521a274accf5859b33286c86b7d1f826af441f5010e1d0e6d96",
+      "captured_at": "2026-11-02T05:55:06.357233+00:00"
+    },
+    {
+      "parent_job_index": 287,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_q1.json",
+      "bytes": 13742,
+      "sha256": "ec3bc2efffdbb7e6b3b6ec018d1a9341b82c0112b466780da174ee3a82b314fc",
+      "captured_at": "2026-11-02T05:55:07.994648+00:00"
+    },
+    {
+      "parent_job_index": 288,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_q1.json",
+      "bytes": 15585,
+      "sha256": "2e0589491ff2da67ee35d72e1da95e516eb15e4be63302488770763327f2693c",
+      "captured_at": "2026-11-02T05:55:09.530374+00:00"
+    },
+    {
+      "parent_job_index": 289,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_q2.json",
+      "bytes": 13171,
+      "sha256": "8ab22542666d687d2cda20d7655e0f50393917ca7d7be3b031d497616c94852e",
+      "captured_at": "2026-11-02T05:55:11.272121+00:00"
+    },
+    {
+      "parent_job_index": 290,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_q2.json",
+      "bytes": 14850,
+      "sha256": "6fc607099e4e1aad860906605145c7f0658e6adce4ffd9e542472948ce7b4aa5",
+      "captured_at": "2026-11-02T05:55:12.910864+00:00"
+    },
+    {
+      "parent_job_index": 291,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_q3.json",
+      "bytes": 13727,
+      "sha256": "f471f4b899217860155ddbdc72e814c6246ef2d6d0ad5475fa4c4c995b9ae272",
+      "captured_at": "2026-11-02T05:55:14.752895+00:00"
+    },
+    {
+      "parent_job_index": 292,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_q3.json",
+      "bytes": 15569,
+      "sha256": "24e95d6ebb99c4d7a7518bc3a401e63c675af0256ddfa7578e28f25879a9329f",
+      "captured_at": "2026-11-02T05:55:16.234738+00:00"
+    },
+    {
+      "parent_job_index": 293,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_q4.json",
+      "bytes": 12605,
+      "sha256": "5311f27a2026a47b76b98cf9b47e36bf37999ee4285c80c4db70fa389d3aa12d",
+      "captured_at": "2026-11-02T05:55:17.824970+00:00"
+    },
+    {
+      "parent_job_index": 294,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_q4.json",
+      "bytes": 14105,
+      "sha256": "e1494191ab886383d146a9275d4ea2230ac51b834419e67c2d719e4b59e5b2ab",
+      "captured_at": "2026-11-02T05:55:19.311071+00:00"
+    },
+    {
+      "parent_job_index": 295,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_h1.json",
+      "bytes": 14378,
+      "sha256": "297f1521e58ebe973f929a7cf33a116a127cda71e1ccbaf7971532d76e74a1fe",
+      "captured_at": "2026-11-02T05:55:20.899094+00:00"
+    },
+    {
+      "parent_job_index": 296,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_h1.json",
+      "bytes": 16401,
+      "sha256": "5c63ec4915442b7e53ad525dc35747fbd62d2b7c4caadfd9df9897b9577613cf",
+      "captured_at": "2026-11-02T05:55:22.536200+00:00"
+    },
+    {
+      "parent_job_index": 297,
+      "source_file": "sources/boxscoretraditionalv3_0022600090_h2.json",
+      "bytes": 13793,
+      "sha256": "8bac85d1ca8fe790efa957ed8efbfb61be7820cb0dbf7b9136c9065b5a979366",
+      "captured_at": "2026-11-02T05:55:24.584385+00:00"
+    },
+    {
+      "parent_job_index": 298,
+      "source_file": "sources/boxscoreadvancedv3_0022600090_h2.json",
+      "bytes": 15667,
+      "sha256": "07d90347ace43056c35574eee05ac192cd352561a69d2df49afbce8a800c050d",
+      "captured_at": "2026-11-02T05:55:26.121979+00:00"
+    },
+    {
+      "parent_job_index": 299,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_q1.json",
+      "bytes": 13184,
+      "sha256": "9a9be2dfa2fa91430a4d2c122b45081f52e8b79ad018e3a154c12081ceded6b4",
+      "captured_at": "2026-11-02T05:55:28.292693+00:00"
+    },
+    {
+      "parent_job_index": 300,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_q1.json",
+      "bytes": 14826,
+      "sha256": "8ff9fdfcb167dcf690e66b53bd318e99f70606cfa7ef542f400612804d9d5210",
+      "captured_at": "2026-11-02T05:55:29.766948+00:00"
+    },
+    {
+      "parent_job_index": 301,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_q2.json",
+      "bytes": 13789,
+      "sha256": "e3904ab9f09800eae64335a9cc9b337b3402073c56a7e6e956296a62b3bbc661",
+      "captured_at": "2026-11-02T05:55:31.547602+00:00"
+    },
+    {
+      "parent_job_index": 302,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_q2.json",
+      "bytes": 15632,
+      "sha256": "2ee48452feb09f71419af0ce1d8659aecf7587dfd0383b083fa58eb835e9b399",
+      "captured_at": "2026-11-02T05:55:33.402954+00:00"
+    },
+    {
+      "parent_job_index": 303,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_q3.json",
+      "bytes": 12625,
+      "sha256": "7447645c2f7a40f625b1343285e63567d43325eccbfc86f73bca377a6d8bd9e7",
+      "captured_at": "2026-11-02T05:55:35.131355+00:00"
+    },
+    {
+      "parent_job_index": 304,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_q3.json",
+      "bytes": 14176,
+      "sha256": "2c9613bc7a0b87db1f852cef5bdb97faa626f2b520d7cf0537142505daaa2250",
+      "captured_at": "2026-11-02T05:55:36.667552+00:00"
+    },
+    {
+      "parent_job_index": 305,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_q4.json",
+      "bytes": 14894,
+      "sha256": "08a558e3c9f436d722aaeb98d43fb3eba172f2975ab46c8d31ab6bd584712317",
+      "captured_at": "2026-11-02T05:55:38.306271+00:00"
+    },
+    {
+      "parent_job_index": 306,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_q4.json",
+      "bytes": 16983,
+      "sha256": "6e79cf11a559e72dd578c4ab74f50dd1f4387fc43a7252196d1b4164a6d17be0",
+      "captured_at": "2026-11-02T05:55:40.047035+00:00"
+    },
+    {
+      "parent_job_index": 307,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_h1.json",
+      "bytes": 14407,
+      "sha256": "f6f8d9d42cda738cb35a88776ac138f5317f1e75f839c89c9eaa000f554d4a33",
+      "captured_at": "2026-11-02T05:55:41.685673+00:00"
+    },
+    {
+      "parent_job_index": 308,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_h1.json",
+      "bytes": 16385,
+      "sha256": "1e9f88f670cdaa28e04a35c4eb284c263e42952fcb8c6b8d6c227a3c116f5d52",
+      "captured_at": "2026-11-02T05:55:43.187710+00:00"
+    },
+    {
+      "parent_job_index": 309,
+      "source_file": "sources/boxscoretraditionalv3_0022600091_h2.json",
+      "bytes": 16131,
+      "sha256": "00d1bac966c29cb37f62261ec11dd3ca4d9f719fe4ef321354f8c2fc85be76de",
+      "captured_at": "2026-11-02T05:55:44.962373+00:00"
+    },
+    {
+      "parent_job_index": 310,
+      "source_file": "sources/boxscoreadvancedv3_0022600091_h2.json",
+      "bytes": 18589,
+      "sha256": "f9fbd3684039919c59e8e96808f3605673297b76dca76c10076fb8832f718c80",
+      "captured_at": "2026-11-02T05:55:46.941377+00:00"
+    },
+    {
+      "parent_job_index": 311,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_q1.json",
+      "bytes": 12627,
+      "sha256": "3d4f1796ccb78c15f06d459c9c81f5b43de4b495df3ef1928a46926e6ad8667a",
+      "captured_at": "2026-11-02T05:55:49.058652+00:00"
+    },
+    {
+      "parent_job_index": 312,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_q1.json",
+      "bytes": 14132,
+      "sha256": "3fc6cad5fdc2de5a56732884d037e4b5eefbaa87525b4dac079c86d23580d13c",
+      "captured_at": "2026-11-02T05:55:50.903956+00:00"
+    },
+    {
+      "parent_job_index": 313,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_q2.json",
+      "bytes": 13731,
+      "sha256": "98c9ac6728b7321d8ba5fb2478cb79e41f5a03975cf0cbcade96c305beb17936",
+      "captured_at": "2026-11-02T05:55:52.539883+00:00"
+    },
+    {
+      "parent_job_index": 314,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_q2.json",
+      "bytes": 15566,
+      "sha256": "7c8ef3c6c26826194bbae3c825cd0027384544f2fd66ff5b0a8d4977b7b2f5a4",
+      "captured_at": "2026-11-02T05:55:54.144991+00:00"
+    },
+    {
+      "parent_job_index": 315,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_q3.json",
+      "bytes": 12592,
+      "sha256": "fad9a2018f7c1198a64b0968c6d4eb1800a7bdf9d51c841b3a3347c4cc997817",
+      "captured_at": "2026-11-02T05:55:55.817843+00:00"
+    },
+    {
+      "parent_job_index": 316,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_q3.json",
+      "bytes": 14110,
+      "sha256": "229de754c52de8273a2c807caebf4444f3195f857bb14778790794374f5368c9",
+      "captured_at": "2026-11-02T05:55:57.456469+00:00"
+    },
+    {
+      "parent_job_index": 317,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_q4.json",
+      "bytes": 10639,
+      "sha256": "0dbda9a086bbc4d560fd04b1dee6e3b095bf3e7beab3e7d53fd91f3e4e8133d3",
+      "captured_at": "2026-11-02T05:55:59.093294+00:00"
+    },
+    {
+      "parent_job_index": 318,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_q4.json",
+      "bytes": 12572,
+      "sha256": "be3484ee7293084b150eb18eea1e5dd876421a37662b6c6f5bb1942aca383815",
+      "captured_at": "2026-11-02T05:56:00.732054+00:00"
+    },
+    {
+      "parent_job_index": 319,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_h1.json",
+      "bytes": 13810,
+      "sha256": "b115c91b25c8279575f26b2ba6eba3910e3833ba63076a3890b86b432585d927",
+      "captured_at": "2026-11-02T05:56:02.370194+00:00"
+    },
+    {
+      "parent_job_index": 320,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_h1.json",
+      "bytes": 15655,
+      "sha256": "3e0d67ee5f17e216690ccb5c3952d21aed1d505825b6f3b51726798e7cd0f0aa",
+      "captured_at": "2026-11-02T05:56:03.878563+00:00"
+    },
+    {
+      "parent_job_index": 321,
+      "source_file": "sources/boxscoretraditionalv3_0022600092_h2.json",
+      "bytes": 17687,
+      "sha256": "3dfc542df4aa06baae1fbcb71d613b033f0ba9ede0f46fdf976b0336ec18a389",
+      "captured_at": "2026-11-02T05:56:05.442767+00:00"
+    },
+    {
+      "parent_job_index": 322,
+      "source_file": "sources/boxscoreadvancedv3_0022600092_h2.json",
+      "bytes": 20661,
+      "sha256": "27bb0d4a30200a4aacb9b093ec7947597ceef858bda15c4c2e659b0b6d896076",
+      "captured_at": "2026-11-02T05:56:07.081001+00:00"
+    },
+    {
+      "parent_job_index": 323,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_q1.json",
+      "bytes": 14308,
+      "sha256": "81a1127736d52200ea6d6bb19731eef525a86fc85b591712e0f87b9f4c407be6",
+      "captured_at": "2026-11-02T05:56:08.718980+00:00"
+    },
+    {
+      "parent_job_index": 324,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_q1.json",
+      "bytes": 16309,
+      "sha256": "2af961d8bb8eba01ae4422e3df363f106ad6b234682f80355f017b1bf51ec70e",
+      "captured_at": "2026-11-02T05:56:10.564074+00:00"
+    },
+    {
+      "parent_job_index": 325,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_q2.json",
+      "bytes": 13164,
+      "sha256": "f2526f085911c5457d740fef029d5749f30badd28289d8504f9843b18c675eed",
+      "captured_at": "2026-11-02T05:56:12.200961+00:00"
+    },
+    {
+      "parent_job_index": 326,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_q2.json",
+      "bytes": 14815,
+      "sha256": "5cb157e5dd175960bd781bdec5d6484645315b45ba6114b53a99223bd5243570",
+      "captured_at": "2026-11-02T05:56:13.839332+00:00"
+    },
+    {
+      "parent_job_index": 327,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_q3.json",
+      "bytes": 13150,
+      "sha256": "d8ea4f4686be63352a9331995e072c0044c4d2bcda8ac6e2cef794c7734acff9",
+      "captured_at": "2026-11-02T05:56:15.477602+00:00"
+    },
+    {
+      "parent_job_index": 328,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_q3.json",
+      "bytes": 14850,
+      "sha256": "327a6dafa274f9f3f4493c48895ee43b45438bea4f205e5ffe4015cc39ecc4cb",
+      "captured_at": "2026-11-02T05:56:17.117976+00:00"
+    },
+    {
+      "parent_job_index": 329,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_q4.json",
+      "bytes": 14838,
+      "sha256": "0ecd4c8a302dd3ba104f00b36679f8cf35e7c57cbb1e0d7394d1d3c3d4257d55",
+      "captured_at": "2026-11-02T05:56:18.754924+00:00"
+    },
+    {
+      "parent_job_index": 330,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_q4.json",
+      "bytes": 16961,
+      "sha256": "44738e1b72fca0a996ac53851a9372ec35a1de6fe5a1f8080bcf463a8393ef40",
+      "captured_at": "2026-11-02T05:56:20.598056+00:00"
+    },
+    {
+      "parent_job_index": 331,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_h1.json",
+      "bytes": 14359,
+      "sha256": "c9ffb029a18d3b161911223b78d2802e690feb1aaa6de0f5ee0c1b25fe816555",
+      "captured_at": "2026-11-02T05:56:22.235977+00:00"
+    },
+    {
+      "parent_job_index": 332,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_h1.json",
+      "bytes": 16374,
+      "sha256": "c66645c9309010ff33df29f5cb36927de7673109c5f7b53e1fbb81f1c096f208",
+      "captured_at": "2026-11-02T05:56:23.874773+00:00"
+    },
+    {
+      "parent_job_index": 333,
+      "source_file": "sources/boxscoretraditionalv3_0022600093_h2.json",
+      "bytes": 16621,
+      "sha256": "15d1742505db863162024d560b26ecbdaf81024d7d5e998fa820ccd6c23abc08",
+      "captured_at": "2026-11-02T05:56:25.513120+00:00"
+    },
+    {
+      "parent_job_index": 334,
+      "source_file": "sources/boxscoreadvancedv3_0022600093_h2.json",
+      "bytes": 19263,
+      "sha256": "210b69838407fd5f2f229c6ee61d708c80038450801ae99eeb0411f3df7ffb81",
+      "captured_at": "2026-11-02T05:56:27.560971+00:00"
+    },
+    {
+      "parent_job_index": 335,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_q1.json",
+      "bytes": 13785,
+      "sha256": "ff2af1a8b74aa23f6c5b6b1a221abee073342c83d2edb4471ae848901f818968",
+      "captured_at": "2026-11-02T05:56:29.404667+00:00"
+    },
+    {
+      "parent_job_index": 336,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_q1.json",
+      "bytes": 15595,
+      "sha256": "4ad6a7dc03bcd6de3c961dc405ffa3475bad38fd476b0ca7a70b31f20dc287e8",
+      "captured_at": "2026-11-02T05:56:30.911579+00:00"
+    },
+    {
+      "parent_job_index": 337,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_q2.json",
+      "bytes": 13768,
+      "sha256": "296ea86d7be578f234b2e983978da5dc7b4a2ab9892c49bf588489f14573b4f3",
+      "captured_at": "2026-11-02T05:56:32.680804+00:00"
+    },
+    {
+      "parent_job_index": 338,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_q2.json",
+      "bytes": 15569,
+      "sha256": "b42860594e75c06f1c48c1f515ff0e2bc47829c143201548aae85c96e291791a",
+      "captured_at": "2026-11-02T05:56:34.319324+00:00"
+    },
+    {
+      "parent_job_index": 339,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_q3.json",
+      "bytes": 13766,
+      "sha256": "ac642ce8f80b5a3165eeb129899382487b9332f7a4f155dd3953d0c7557bf610",
+      "captured_at": "2026-11-02T05:56:35.914567+00:00"
+    },
+    {
+      "parent_job_index": 340,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_q3.json",
+      "bytes": 15633,
+      "sha256": "92f9c23fd18b6298cb6878c7d56da7f8d98b10c8ac98470afc8ad33a9b9f3fef",
+      "captured_at": "2026-11-02T05:56:37.611913+00:00"
+    },
+    {
+      "parent_job_index": 341,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_q4.json",
+      "bytes": 12613,
+      "sha256": "b7532b020483addbbae0051e79ffb61e5963e19438a1847232e198d7f07b24e4",
+      "captured_at": "2026-11-02T05:56:39.234894+00:00"
+    },
+    {
+      "parent_job_index": 342,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_q4.json",
+      "bytes": 14126,
+      "sha256": "1217f922298f0a22fecc45cc9aa84b94accec23405f316276800756d3f791ee0",
+      "captured_at": "2026-11-02T05:56:41.282600+00:00"
+    },
+    {
+      "parent_job_index": 343,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_h1.json",
+      "bytes": 13840,
+      "sha256": "8a5a2e3290a63b5e18ea31842df84389fda7f5d3d08e48066598f3c1c9363fee",
+      "captured_at": "2026-11-02T05:56:42.920859+00:00"
+    },
+    {
+      "parent_job_index": 344,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_h1.json",
+      "bytes": 15708,
+      "sha256": "a722fd3771fd6530b5d54ad28afba43285d6efd49e3464539802a64ca0c2137d",
+      "captured_at": "2026-11-02T05:56:44.456937+00:00"
+    },
+    {
+      "parent_job_index": 345,
+      "source_file": "sources/boxscoretraditionalv3_0022600094_h2.json",
+      "bytes": 17797,
+      "sha256": "67199a0f970e9fb05b2ad09b7a4fc465f71ce40d31957dad0cf7a678715fe747",
+      "captured_at": "2026-11-02T05:56:46.095477+00:00"
+    },
+    {
+      "parent_job_index": 346,
+      "source_file": "sources/boxscoreadvancedv3_0022600094_h2.json",
+      "bytes": 20767,
+      "sha256": "c5b0cf02af72974ff7e0771b7f3e37df84af2f0bfc271b247aab46b34540d044",
+      "captured_at": "2026-11-02T05:56:47.734037+00:00"
+    },
+    {
+      "parent_job_index": 347,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_q1.json",
+      "bytes": 13213,
+      "sha256": "88e6b88bec79ba47e144c00f1a95bd6146a0647c0cec57af71944c164bdf49c2",
+      "captured_at": "2026-11-02T05:56:49.790942+00:00"
+    },
+    {
+      "parent_job_index": 348,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_q1.json",
+      "bytes": 14905,
+      "sha256": "840c8969a791bb25b6d1093a26904a726987d2b370b1fb4163a17791833be183",
+      "captured_at": "2026-11-02T05:56:51.829814+00:00"
+    },
+    {
+      "parent_job_index": 349,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_q2.json",
+      "bytes": 14312,
+      "sha256": "3c54f43eb5236360a50e0fb8252816a533c04706a31ed46e175341e73c188c60",
+      "captured_at": "2026-11-02T05:56:53.491298+00:00"
+    },
+    {
+      "parent_job_index": 350,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_q2.json",
+      "bytes": 16304,
+      "sha256": "ed93d22c694c2c859e0c5153832120494c2530d291d29e0c1e48828842060ac3",
+      "captured_at": "2026-11-02T05:56:54.995610+00:00"
+    },
+    {
+      "parent_job_index": 351,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_q3.json",
+      "bytes": 13189,
+      "sha256": "8b710d6c115ad366f13d724ef80cf26241883f437d25113a6a4a65325f79871e",
+      "captured_at": "2026-11-02T05:56:56.749990+00:00"
+    },
+    {
+      "parent_job_index": 352,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_q3.json",
+      "bytes": 14867,
+      "sha256": "8b51b3ddd1ef1c65d61669ce14d1e7e0414a3545b491ce0bdf30838c53028f90",
+      "captured_at": "2026-11-02T05:56:58.388646+00:00"
+    },
+    {
+      "parent_job_index": 353,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_q4.json",
+      "bytes": 16592,
+      "sha256": "518544b0c6f95dac8adce4b9d06d6a1e0182f5f41ecf4a3c369aefe7406142f1",
+      "captured_at": "2026-11-02T05:57:00.022450+00:00"
+    },
+    {
+      "parent_job_index": 354,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_q4.json",
+      "bytes": 19151,
+      "sha256": "733fcc961575e886400bf07eb388cb009f98106b48c9a363749a1ab8064e5ff5",
+      "captured_at": "2026-11-02T05:57:01.661570+00:00"
+    },
+    {
+      "parent_job_index": 355,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_h1.json",
+      "bytes": 14396,
+      "sha256": "3d91a302a3393bd0f4158a081e5dbca46c9f4eea6aad7f3d11a0123afb34d06c",
+      "captured_at": "2026-11-02T05:57:03.301886+00:00"
+    },
+    {
+      "parent_job_index": 356,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_h1.json",
+      "bytes": 16402,
+      "sha256": "f7ba9c3d9028a5df259525a231d58bc27434af91b14b171e0805ee299683789e",
+      "captured_at": "2026-11-02T05:57:04.948505+00:00"
+    },
+    {
+      "parent_job_index": 357,
+      "source_file": "sources/boxscoretraditionalv3_0022600095_h2.json",
+      "bytes": 17237,
+      "sha256": "c20beb8aa4325b04bd4acbe8c49e1a90fba0b9a07de6803022f6e2d977d4c898",
+      "captured_at": "2026-11-02T05:57:06.513130+00:00"
+    },
+    {
+      "parent_job_index": 358,
+      "source_file": "sources/boxscoreadvancedv3_0022600095_h2.json",
+      "bytes": 19953,
+      "sha256": "78a2ef2871b71ec5efebfe7e5c70bace69f656382a0716dcb6877bf8e28d503f",
+      "captured_at": "2026-11-02T05:57:08.419086+00:00"
+    },
+    {
+      "parent_job_index": 359,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_q1.json",
+      "bytes": 13183,
+      "sha256": "d662579cc0c8691b97666daa829c76f8348cdeb30d10186851dacc0842bd3d10",
+      "captured_at": "2026-11-02T05:57:10.261953+00:00"
+    },
+    {
+      "parent_job_index": 360,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_q1.json",
+      "bytes": 14833,
+      "sha256": "6ae0fb0409f870c8c850919b5dcb1962981aef139c7241415ef9b80f8b8194b9",
+      "captured_at": "2026-11-02T05:57:11.901645+00:00"
+    },
+    {
+      "parent_job_index": 361,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_q2.json",
+      "bytes": 14307,
+      "sha256": "5d197efe19bfe3c8430a195f4f43968cfa8f973b10946f201bc4a49e1bb41d94",
+      "captured_at": "2026-11-02T05:57:13.538957+00:00"
+    },
+    {
+      "parent_job_index": 362,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_q2.json",
+      "bytes": 16279,
+      "sha256": "1ad1a52bbef0a41fb355ad7b54c7b59e3dd518dffb76029f4c6089b1728e4e4d",
+      "captured_at": "2026-11-02T05:57:15.177450+00:00"
+    },
+    {
+      "parent_job_index": 363,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_q3.json",
+      "bytes": 13750,
+      "sha256": "3792af579f48a109f8f6c874297c0e1bcdc9fa43d3200d8203c7c7d99d10d3cf",
+      "captured_at": "2026-11-02T05:57:16.785562+00:00"
+    },
+    {
+      "parent_job_index": 364,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_q3.json",
+      "bytes": 15545,
+      "sha256": "cba16a92bcfc99a11b1e2c2e54b883e0418a377f33033c8d235d1c9cd203fa6e",
+      "captured_at": "2026-11-02T05:57:18.444468+00:00"
+    },
+    {
+      "parent_job_index": 365,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_q4.json",
+      "bytes": 15441,
+      "sha256": "8c5205783984e5b7d646c3295d7470e5dd90e120770d303479d647dd897666b3",
+      "captured_at": "2026-11-02T05:57:20.095366+00:00"
+    },
+    {
+      "parent_job_index": 366,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_q4.json",
+      "bytes": 17752,
+      "sha256": "62775c42b33e1197071d6fa89fda55fa17b925ad5731474f3c3f3cfb10ece682",
+      "captured_at": "2026-11-02T05:57:21.935704+00:00"
+    },
+    {
+      "parent_job_index": 367,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_h1.json",
+      "bytes": 14387,
+      "sha256": "28e1e00a37c0c0ae9d12c3634339e4fa7845c7a00a4cd15810da65616b7d5c72",
+      "captured_at": "2026-11-02T05:57:23.573993+00:00"
+    },
+    {
+      "parent_job_index": 368,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_h1.json",
+      "bytes": 16388,
+      "sha256": "8f931044ce012fdfbfa27c6df3496c6efc4e14b91a3d6bd0ce9b333f1e09a794",
+      "captured_at": "2026-11-02T05:57:25.112465+00:00"
+    },
+    {
+      "parent_job_index": 369,
+      "source_file": "sources/boxscoretraditionalv3_0022600096_h2.json",
+      "bytes": 17211,
+      "sha256": "2ce7308a5af8eafd43b95a9be984627c01fc1c0fee440fb0295470b49087f8b1",
+      "captured_at": "2026-11-02T05:57:26.832434+00:00"
+    },
+    {
+      "parent_job_index": 370,
+      "source_file": "sources/boxscoreadvancedv3_0022600096_h2.json",
+      "bytes": 19978,
+      "sha256": "9316227e9dab1ca88e7df234468b8e9baf2a46ffb8c3df235d248f53452f2164",
+      "captured_at": "2026-11-02T05:57:28.694517+00:00"
+    },
+    {
+      "parent_job_index": 371,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_q1.json",
+      "bytes": 13182,
+      "sha256": "c52bc422a88c8e30f7f11e59a76a9cb7b3f691febfd68f00924efccde19045d4",
+      "captured_at": "2026-11-02T05:57:30.332781+00:00"
+    },
+    {
+      "parent_job_index": 372,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_q1.json",
+      "bytes": 14853,
+      "sha256": "8afcef95f15516ae5671a008187f521a4a25c6d7bcb5872c1410386ab7da68a1",
+      "captured_at": "2026-11-02T05:57:31.971000+00:00"
+    },
+    {
+      "parent_job_index": 373,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_q2.json",
+      "bytes": 14294,
+      "sha256": "1cdfc232b2e27d1c062c33ccc96d4c98eebea39fa44a3808b88f09c31667f8a3",
+      "captured_at": "2026-11-02T05:57:33.609376+00:00"
+    },
+    {
+      "parent_job_index": 374,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_q2.json",
+      "bytes": 16287,
+      "sha256": "5b2c1d52cb0350f363650f6e58dba90bf03aa48838abee36c22bf9c2fa1f7aa2",
+      "captured_at": "2026-11-02T05:57:35.248912+00:00"
+    },
+    {
+      "parent_job_index": 375,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_q3.json",
+      "bytes": 13163,
+      "sha256": "1d09eaa1d77e16a0f87c6f70d2c64585be0f6904d15539378b0cd809c9c0205b",
+      "captured_at": "2026-11-02T05:57:37.092094+00:00"
+    },
+    {
+      "parent_job_index": 376,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_q3.json",
+      "bytes": 14831,
+      "sha256": "1e93c1bff42a7a09375e3d8083a271c43cf8559d802a459015e6fc7017f43250",
+      "captured_at": "2026-11-02T05:57:38.729612+00:00"
+    },
+    {
+      "parent_job_index": 377,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_q4.json",
+      "bytes": 18274,
+      "sha256": "57a9fe27a02fe2411d22edd82314d936ed6975b3c022b5f38831efc2c74be3b2",
+      "captured_at": "2026-11-02T05:57:40.305128+00:00"
+    },
+    {
+      "parent_job_index": 378,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_q4.json",
+      "bytes": 21254,
+      "sha256": "00b8bb216b0bf27709a2229a95451f13d3aadd19408f8da41c4d48a516899e47",
+      "captured_at": "2026-11-02T05:57:42.006361+00:00"
+    },
+    {
+      "parent_job_index": 379,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_h1.json",
+      "bytes": 14387,
+      "sha256": "b1484a2e6f63715d9c68c51e3f594cb938c97851b366292ae315cb2ae4a4d0b0",
+      "captured_at": "2026-11-02T05:57:43.596032+00:00"
+    },
+    {
+      "parent_job_index": 380,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_h1.json",
+      "bytes": 16398,
+      "sha256": "8e7d471231751e7693ea0634c84b7c07e5198702e16fc5ea8d06ec92ffc58a16",
+      "captured_at": "2026-11-02T05:57:45.284195+00:00"
+    },
+    {
+      "parent_job_index": 381,
+      "source_file": "sources/boxscoretraditionalv3_0022600097_h2.json",
+      "bytes": 18912,
+      "sha256": "3f90f7c9d2549fac500f49fe2a1737e4f4eebb7eb8048ec72c5bdbcdb01edf5d",
+      "captured_at": "2026-11-02T05:57:46.921520+00:00"
+    },
+    {
+      "parent_job_index": 382,
+      "source_file": "sources/boxscoreadvancedv3_0022600097_h2.json",
+      "bytes": 22015,
+      "sha256": "dafcd8d127325d50b8c7187df184d50f32f0e22e39eccdf519292ed32cde4016",
+      "captured_at": "2026-11-02T05:57:48.765173+00:00"
+    },
+    {
+      "parent_job_index": 383,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_q1.json",
+      "bytes": 13782,
+      "sha256": "51012e1db6455391101a96e66d4619468563e3290c89d0e94e81dce4f8edef24",
+      "captured_at": "2026-11-02T05:57:50.607836+00:00"
+    },
+    {
+      "parent_job_index": 384,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_q1.json",
+      "bytes": 15609,
+      "sha256": "c8e0de92f06d9eb04b9b59e3395093c6db0f43d2a0c2a8c099670d9b32ddee9a",
+      "captured_at": "2026-11-02T05:57:52.250437+00:00"
+    },
+    {
+      "parent_job_index": 385,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_q2.json",
+      "bytes": 13751,
+      "sha256": "e3ea4be1fcc75fe34e5719d35f2d710130d8c198ca632e28f0c24130c152e79f",
+      "captured_at": "2026-11-02T05:57:53.884935+00:00"
+    },
+    {
+      "parent_job_index": 386,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_q2.json",
+      "bytes": 15579,
+      "sha256": "326e7c08c227500ff1cfbd3cb6cb3a8141af5c4061e1f288f8e26053bdd1c794",
+      "captured_at": "2026-11-02T05:57:55.523277+00:00"
+    },
+    {
+      "parent_job_index": 387,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_q3.json",
+      "bytes": 13189,
+      "sha256": "5b94af8d18a6ef0ccb36e48d32865f299c2dcde8885a8307d07eeee4d146495b",
+      "captured_at": "2026-11-02T05:57:57.366379+00:00"
+    },
+    {
+      "parent_job_index": 388,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_q3.json",
+      "bytes": 14881,
+      "sha256": "cd48da3cd9ee20bde1b577580d89c1081e649a30d2cbabdfe8fae42a0b6e5527",
+      "captured_at": "2026-11-02T05:57:59.415348+00:00"
+    },
+    {
+      "parent_job_index": 389,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_q4.json",
+      "bytes": 15428,
+      "sha256": "192864b17de78993106ddcf687fd9cfc85ad704f355907b15f3d2b0dec23a62f",
+      "captured_at": "2026-11-02T05:58:01.666647+00:00"
+    },
+    {
+      "parent_job_index": 390,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_q4.json",
+      "bytes": 17749,
+      "sha256": "423d0b84b2add596e932305e73ad3ae0eba225508b77a4dfa2425fd83f3d0d8b",
+      "captured_at": "2026-11-02T05:58:03.305828+00:00"
+    },
+    {
+      "parent_job_index": 391,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_h1.json",
+      "bytes": 14404,
+      "sha256": "01c78a5f85b665051bc39f963d5bf84982c1efea892b8d86fc0195973d4d2814",
+      "captured_at": "2026-11-02T05:58:04.944522+00:00"
+    },
+    {
+      "parent_job_index": 392,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_h1.json",
+      "bytes": 16435,
+      "sha256": "a843060c0f03d95d89a1840cf08e524bc868f330c514d58682a967e1a003951c",
+      "captured_at": "2026-11-02T05:58:06.787779+00:00"
+    },
+    {
+      "parent_job_index": 393,
+      "source_file": "sources/boxscoretraditionalv3_0022600098_h2.json",
+      "bytes": 17221,
+      "sha256": "907e563d737f23e8a191285721a6dafccefc2adca4c1bef1a156f52a474d781e",
+      "captured_at": "2026-11-02T05:58:08.425736+00:00"
+    },
+    {
+      "parent_job_index": 394,
+      "source_file": "sources/boxscoreadvancedv3_0022600098_h2.json",
+      "bytes": 20012,
+      "sha256": "4c8276195a1b24d76b4c5e0ce32c3f15e0d7425cdaf572abf4141c757f598360",
+      "captured_at": "2026-11-02T05:58:09.946360+00:00"
+    },
+    {
+      "parent_job_index": 395,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_q1.json",
+      "bytes": 14251,
+      "sha256": "b2d0c84e5e8a36e063b685bc95d7a8dff89996b00498f9ce01ecf193733bfb2d",
+      "captured_at": "2026-11-02T05:58:11.909715+00:00"
+    },
+    {
+      "parent_job_index": 396,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_q1.json",
+      "bytes": 16217,
+      "sha256": "209004271f205b2d0cd6117b41a12da30b71350ed38dd22ba214a81db6fb820b",
+      "captured_at": "2026-11-02T05:58:13.648282+00:00"
+    },
+    {
+      "parent_job_index": 397,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_q2.json",
+      "bytes": 14261,
+      "sha256": "42260a308e9b668f4a0820cc1913b1612072038cb9aa173cb276ffac60ed8646",
+      "captured_at": "2026-11-02T05:58:15.491422+00:00"
+    },
+    {
+      "parent_job_index": 398,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_q2.json",
+      "bytes": 16254,
+      "sha256": "dea94a742fea6e66cd142cff125fe8d4dfc9606a0125c2a3ac761495b00af033",
+      "captured_at": "2026-11-02T05:58:17.539449+00:00"
+    },
+    {
+      "parent_job_index": 399,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_q3.json",
+      "bytes": 14246,
+      "sha256": "451477f97cece43294447a292dc4d21ea138cc46b62ab415fe5392233a34f089",
+      "captured_at": "2026-11-02T05:58:19.178671+00:00"
+    },
+    {
+      "parent_job_index": 400,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_q3.json",
+      "bytes": 16246,
+      "sha256": "50d90565e4d86d438da7c69ee970e1ca50452553d27c86e56b65dab2c8e0de04",
+      "captured_at": "2026-11-02T05:58:20.816211+00:00"
+    },
+    {
+      "parent_job_index": 401,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_q4.json",
+      "bytes": 13107,
+      "sha256": "33175b1fa65d0284d911a8fd34860fcf019d968d3633ad342bc91b74bea2a389",
+      "captured_at": "2026-11-02T05:58:23.276003+00:00"
+    },
+    {
+      "parent_job_index": 402,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_q4.json",
+      "bytes": 14767,
+      "sha256": "007a6f526ef549a07e98ad34b933d64b1fe261dbd79b49123c55cc4b39f51c99",
+      "captured_at": "2026-11-02T05:58:24.914989+00:00"
+    },
+    {
+      "parent_job_index": 403,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_h1.json",
+      "bytes": 14308,
+      "sha256": "7966588f9df57be23684e90c2014120088d2d831a01ebcc096347d0d007175c3",
+      "captured_at": "2026-11-02T05:58:26.758017+00:00"
+    },
+    {
+      "parent_job_index": 404,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_h1.json",
+      "bytes": 16339,
+      "sha256": "0b87c88e0e03322e421ca8fdf99d1d2fadbd3ff1ccc142d7d5003213a7c89230",
+      "captured_at": "2026-11-02T05:58:28.393954+00:00"
+    },
+    {
+      "parent_job_index": 405,
+      "source_file": "sources/boxscoretraditionalv3_0022600099_h2.json",
+      "bytes": 14315,
+      "sha256": "9fe872f13ba8af326b86b1e4fe11cd3d088b7935197973609901e00769e82dcf",
+      "captured_at": "2026-11-02T05:58:30.237391+00:00"
+    },
+    {
+      "parent_job_index": 406,
+      "source_file": "sources/boxscoreadvancedv3_0022600099_h2.json",
+      "bytes": 16342,
+      "sha256": "e684d4c782eaf16d77abf4ea8f77714f89b3822783b679210c3ca14c2811b5ff",
+      "captured_at": "2026-11-02T05:58:32.285486+00:00"
+    },
+    {
+      "parent_job_index": 407,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_q1.json",
+      "bytes": 14324,
+      "sha256": "67633832e45d2043b22dc648f78e51a2a1f0c2a8d654f06f20d6d61e8dbb5be0",
+      "captured_at": "2026-11-02T05:58:34.127793+00:00"
+    },
+    {
+      "parent_job_index": 408,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_q1.json",
+      "bytes": 16329,
+      "sha256": "65bd04ae76c0ae0c3d58f48ace7607ac66c2b4f9c6277443141d926f66dc2ebb",
+      "captured_at": "2026-11-02T05:58:35.627703+00:00"
+    },
+    {
+      "parent_job_index": 409,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_q2.json",
+      "bytes": 13742,
+      "sha256": "0995cda264f97a5ffeb5a69b451522d47daa39620693c58525c5112edd3087e4",
+      "captured_at": "2026-11-02T05:58:37.815258+00:00"
+    },
+    {
+      "parent_job_index": 410,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_q2.json",
+      "bytes": 15572,
+      "sha256": "a7f36cef605051f4ce3a40ef8e0f308298304ee718b03688520a0a28b2312fd6",
+      "captured_at": "2026-11-02T05:58:39.454377+00:00"
+    },
+    {
+      "parent_job_index": 411,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_q3.json",
+      "bytes": 14347,
+      "sha256": "da3fc34e7bcad91efe2b03c5facb4e004f2c2f6319b7d51186f5f021a0587ead",
+      "captured_at": "2026-11-02T05:58:41.025948+00:00"
+    },
+    {
+      "parent_job_index": 412,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_q3.json",
+      "bytes": 16364,
+      "sha256": "dd9897dca0fdf8906e6108d6acef2a1dc4b7529ca39b86e09a1e8a43996f1e84",
+      "captured_at": "2026-11-02T05:58:42.577524+00:00"
+    },
+    {
+      "parent_job_index": 413,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_q4.json",
+      "bytes": 13182,
+      "sha256": "1d0d9dca61a4e7d31ceee34d0391d487df84a88506fd53aeeb6d48d01c71aa2d",
+      "captured_at": "2026-11-02T05:58:44.165944+00:00"
+    },
+    {
+      "parent_job_index": 414,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_q4.json",
+      "bytes": 14862,
+      "sha256": "fc664d1032a33efb4bd346544d96fffe086c2bf03a71d0d52aaede4e1d9a7958",
+      "captured_at": "2026-11-02T05:58:45.685174+00:00"
+    },
+    {
+      "parent_job_index": 415,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_h1.json",
+      "bytes": 14382,
+      "sha256": "8cf4d133435f642079757b9539f6c7ff4c2e7a91d84bfe3265856daecbabb1e9",
+      "captured_at": "2026-11-02T05:58:47.362065+00:00"
+    },
+    {
+      "parent_job_index": 416,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_h1.json",
+      "bytes": 16397,
+      "sha256": "2e1ce045073bed36690b857b2c3f33ad9f2026a2edf505ba0c72c914e6b5c9c7",
+      "captured_at": "2026-11-02T05:58:48.898158+00:00"
+    },
+    {
+      "parent_job_index": 417,
+      "source_file": "sources/boxscoretraditionalv3_0022600100_h2.json",
+      "bytes": 14399,
+      "sha256": "471309af37bdd5360542cd0e0d4f41804c67a73d71caa089be072bccad68155c",
+      "captured_at": "2026-11-02T05:58:50.628559+00:00"
+    },
+    {
+      "parent_job_index": 418,
+      "source_file": "sources/boxscoreadvancedv3_0022600100_h2.json",
+      "bytes": 16456,
+      "sha256": "2e1c8826691cbb2482f2b52471e1f0eaf550a002fa806b11ad299989edc9fdbc",
+      "captured_at": "2026-11-02T05:58:52.252388+00:00"
+    },
+    {
+      "parent_job_index": 419,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_q1.json",
+      "bytes": 15402,
+      "sha256": "cf0c12bfc9c6a5e39fc7ff1a24e7df2d559391c9d87e61a8dc12bd4ae3831066",
+      "captured_at": "2026-11-02T05:58:54.110003+00:00"
+    },
+    {
+      "parent_job_index": 420,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_q1.json",
+      "bytes": 17718,
+      "sha256": "d4d7adc42915c0b6bd20214b947e06cf6cb9f7f270b92499ba75b9bfe5becc54",
+      "captured_at": "2026-11-02T05:58:55.734852+00:00"
+    },
+    {
+      "parent_job_index": 421,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_q2.json",
+      "bytes": 14279,
+      "sha256": "596c70d139592ebc9d69cefb7fae820031b6a47fcd998826c0bae6ea7ae4c315",
+      "captured_at": "2026-11-02T05:58:57.340164+00:00"
+    },
+    {
+      "parent_job_index": 422,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_q2.json",
+      "bytes": 16254,
+      "sha256": "27e5b391b2515382d7cb45e03a73de393fa534903f60b86c606096ac5679734b",
+      "captured_at": "2026-11-02T05:58:59.011767+00:00"
+    },
+    {
+      "parent_job_index": 423,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_q3.json",
+      "bytes": 15409,
+      "sha256": "360e8ab5f1258b1d5355a31b3e21f9af5ea8605f7f45f937ca3c6ffea15e18a9",
+      "captured_at": "2026-11-02T05:59:00.859391+00:00"
+    },
+    {
+      "parent_job_index": 424,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_q3.json",
+      "bytes": 17678,
+      "sha256": "600049a789169497a7be80793bdce14171996f8d1556711c45b92f42784c7d15",
+      "captured_at": "2026-11-02T05:59:02.402442+00:00"
+    },
+    {
+      "parent_job_index": 425,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_q4.json",
+      "bytes": 14851,
+      "sha256": "d52c513d3fe90c4010d6f0eb39a59a4f6b26b62f906b928ff7a0e7fe19cb52fb",
+      "captured_at": "2026-11-02T05:59:03.984870+00:00"
+    },
+    {
+      "parent_job_index": 426,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_q4.json",
+      "bytes": 16944,
+      "sha256": "6670ab4885d8afb9c5c4e6c29e389f62735cdc56a1ce7d7fbad19bdab4da0417",
+      "captured_at": "2026-11-02T05:59:05.566928+00:00"
+    },
+    {
+      "parent_job_index": 427,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_h1.json",
+      "bytes": 15496,
+      "sha256": "4cdc0f31658c23fc40d40d6fb483eaacac13651cc28664744c7a9952013ac69f",
+      "captured_at": "2026-11-02T05:59:07.193184+00:00"
+    },
+    {
+      "parent_job_index": 428,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_h1.json",
+      "bytes": 17825,
+      "sha256": "8310d83e3399949f4955376000931f4e59573048577c6f4c75ebd39516d68a57",
+      "captured_at": "2026-11-02T05:59:08.703302+00:00"
+    },
+    {
+      "parent_job_index": 429,
+      "source_file": "sources/boxscoretraditionalv3_0022600101_h2.json",
+      "bytes": 15499,
+      "sha256": "41562ca49ce0e1b2326a5a8e2eb7dcff5ce48ed7e44fcbcd675b3e63fbce6b46",
+      "captured_at": "2026-11-02T05:59:10.264338+00:00"
+    },
+    {
+      "parent_job_index": 430,
+      "source_file": "sources/boxscoreadvancedv3_0022600101_h2.json",
+      "bytes": 17779,
+      "sha256": "fde0df3bcaafd9b447536ef1003398eab840a2854f23fbcc85641353f617c6d0",
+      "captured_at": "2026-11-02T05:59:11.762310+00:00"
+    },
+    {
+      "parent_job_index": 431,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_q1.json",
+      "bytes": 13177,
+      "sha256": "30a15af117aa4f1b9bdc543ffa1786b6dc0853c166b5d7f5ab2554167efe9285",
+      "captured_at": "2026-11-02T05:59:13.350943+00:00"
+    },
+    {
+      "parent_job_index": 432,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_q1.json",
+      "bytes": 14863,
+      "sha256": "5d26114ff7a81aa55d8691ebb9d86424d85e5a056c5a6b0a08130e8796d76add",
+      "captured_at": "2026-11-02T05:59:14.954862+00:00"
+    },
+    {
+      "parent_job_index": 433,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_q2.json",
+      "bytes": 12599,
+      "sha256": "bfda9d90290aa61b2a547663bac7b581c42571874e9b9afb943e50793a26449c",
+      "captured_at": "2026-11-02T05:59:16.828978+00:00"
+    },
+    {
+      "parent_job_index": 434,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_q2.json",
+      "bytes": 14131,
+      "sha256": "2d539c823a61ba0fa97f692664b233030eb49b8b43a9d0b114f75a617648e42e",
+      "captured_at": "2026-11-02T05:59:18.335700+00:00"
+    },
+    {
+      "parent_job_index": 435,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_q3.json",
+      "bytes": 12620,
+      "sha256": "2cc49362506fa26730d0987ac400e191ea4b0316127e7812f69e84349e8a36a2",
+      "captured_at": "2026-11-02T05:59:19.938244+00:00"
+    },
+    {
+      "parent_job_index": 436,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_q3.json",
+      "bytes": 14164,
+      "sha256": "90a0c949aae497378d87da35059dca0ace5b134fecc3a15580ea2d0a3f87527f",
+      "captured_at": "2026-11-02T05:59:21.540630+00:00"
+    },
+    {
+      "parent_job_index": 437,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_q4.json",
+      "bytes": 12614,
+      "sha256": "cb4af60eef7c554b4a975f4e047adcbf725ec972a4e83df090e76a2db904f2f4",
+      "captured_at": "2026-11-02T05:59:23.384329+00:00"
+    },
+    {
+      "parent_job_index": 438,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_q4.json",
+      "bytes": 14136,
+      "sha256": "eaa1a01461df2bbc901423d8bfa16e01ba5e5b36d28718643e6431844588277d",
+      "captured_at": "2026-11-02T05:59:25.022806+00:00"
+    },
+    {
+      "parent_job_index": 439,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_h1.json",
+      "bytes": 13249,
+      "sha256": "d479463605e7bea2cd8e128bd5c8749fba0baf2d44bfba212cbece2628362246",
+      "captured_at": "2026-11-02T05:59:26.665092+00:00"
+    },
+    {
+      "parent_job_index": 440,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_h1.json",
+      "bytes": 14955,
+      "sha256": "c33d9ad81aa1cf2b049c79e20305688a3cd5ac699129c752809915a5ce7fd4ba",
+      "captured_at": "2026-11-02T05:59:28.506710+00:00"
+    },
+    {
+      "parent_job_index": 441,
+      "source_file": "sources/boxscoretraditionalv3_0022600102_h2.json",
+      "bytes": 12688,
+      "sha256": "26edd95944b1933b5192946ded70e1621c92478c462cd9b5ac489d56a775ec1f",
+      "captured_at": "2026-11-02T05:59:30.553098+00:00"
+    },
+    {
+      "parent_job_index": 442,
+      "source_file": "sources/boxscoreadvancedv3_0022600102_h2.json",
+      "bytes": 14229,
+      "sha256": "ae507b2e6d15d80daf05ceca3b8ae4424d9cf1b3a7d81a981012a797c2eae51f",
+      "captured_at": "2026-11-02T05:59:32.100014+00:00"
+    },
+    {
+      "parent_job_index": 443,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_q1.json",
+      "bytes": 13769,
+      "sha256": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+      "captured_at": "2026-11-02T05:59:33.740730+00:00"
+    },
+    {
+      "parent_job_index": 444,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_q1.json",
+      "bytes": 15583,
+      "sha256": "f1372f5d6aed5e171db13d9beb378a59f324aa1bf68eb44a6a2ca393b26932bc",
+      "captured_at": "2026-11-02T05:59:35.471678+00:00"
+    },
+    {
+      "parent_job_index": 445,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_q2.json",
+      "bytes": 13186,
+      "sha256": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+      "captured_at": "2026-11-02T05:59:37.515354+00:00"
+    },
+    {
+      "parent_job_index": 446,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_q2.json",
+      "bytes": 14861,
+      "sha256": "9c8bc4930c3a5ecf5c7e314297b0bb9566125d1d5b92a17245071abf07a59a71",
+      "captured_at": "2026-11-02T05:59:39.153785+00:00"
+    },
+    {
+      "parent_job_index": 447,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_q3.json",
+      "bytes": 13206,
+      "sha256": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+      "captured_at": "2026-11-02T05:59:40.996816+00:00"
+    },
+    {
+      "parent_job_index": 448,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_q3.json",
+      "bytes": 14896,
+      "sha256": "f9a720473c5b53831a80e7619d449629b53cc01109230d421c913a534fc6c60a",
+      "captured_at": "2026-11-02T05:59:42.635299+00:00"
+    },
+    {
+      "parent_job_index": 449,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_q4.json",
+      "bytes": 11460,
+      "sha256": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40",
+      "captured_at": "2026-11-02T05:59:44.251859+00:00"
+    },
+    {
+      "parent_job_index": 450,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_q4.json",
+      "bytes": 12647,
+      "sha256": "de170d69f5dd53786d572f68278e15135451e861f85e64fd85210bf2dce33d19",
+      "captured_at": "2026-11-02T05:59:45.844673+00:00"
+    },
+    {
+      "parent_job_index": 451,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_h1.json",
+      "bytes": 14388,
+      "sha256": "38adc54ebcf0eb43ea7ab34359780d5d5a336980eb1001ec7c64a70d37097c3f",
+      "captured_at": "2026-11-02T05:59:47.706392+00:00"
+    },
+    {
+      "parent_job_index": 452,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_h1.json",
+      "bytes": 16380,
+      "sha256": "9727125723c5bc58a27e76076ba137ae0e24fad4741822b883a4da3502b5ead3",
+      "captured_at": "2026-11-02T05:59:49.290392+00:00"
+    },
+    {
+      "parent_job_index": 453,
+      "source_file": "sources/boxscoretraditionalv3_0022600103_h2.json",
+      "bytes": 13252,
+      "sha256": "c95e8724b34280cc250e0331f39104ecc83a4f46e18f09b15015df374d157327",
+      "captured_at": "2026-11-02T05:59:51.134630+00:00"
+    },
+    {
+      "parent_job_index": 454,
+      "source_file": "sources/boxscoreadvancedv3_0022600103_h2.json",
+      "bytes": 14944,
+      "sha256": "56b10a966f0c253723e6c5d80e25ad3175715d7671846e03dde1225f88107636",
+      "captured_at": "2026-11-02T05:59:52.692180+00:00"
+    },
+    {
+      "parent_job_index": 455,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_q1.json",
+      "bytes": 13775,
+      "sha256": "4ef5bf9e9c35b3440ce6808b2af23ee0cf707e19c79cfb6b53299c0ca14fadf3",
+      "captured_at": "2026-11-02T05:59:54.437648+00:00"
+    },
+    {
+      "parent_job_index": 456,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_q1.json",
+      "bytes": 15613,
+      "sha256": "9e571925a3c6a3125aa4d73913066ee56b8761577b416c08d20b62c9f6365978",
+      "captured_at": "2026-11-02T05:59:56.581740+00:00"
+    },
+    {
+      "parent_job_index": 457,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_q2.json",
+      "bytes": 13191,
+      "sha256": "a7f82fef8b1ba8a1928063742a26e6f94c9dbe4d2aba221580983a441f6bc09e",
+      "captured_at": "2026-11-02T05:59:58.334234+00:00"
+    },
+    {
+      "parent_job_index": 458,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_q2.json",
+      "bytes": 14865,
+      "sha256": "1dfc1a47f984dab7e8a3eab51c7c4d442d4386e4d510f030374121bff07bc731",
+      "captured_at": "2026-11-02T05:59:59.942776+00:00"
+    },
+    {
+      "parent_job_index": 459,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_q3.json",
+      "bytes": 13206,
+      "sha256": "6c98308b8d4d0466064b137f828b53e7286af6878f58fd68735472b96de0f404",
+      "captured_at": "2026-11-02T06:00:01.988837+00:00"
+    },
+    {
+      "parent_job_index": 460,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_q3.json",
+      "bytes": 14853,
+      "sha256": "6c3411cc2c460a6ce4649ff6f2a3b27dd4c537ddb2de2d10ba15686da222b6e8",
+      "captured_at": "2026-11-02T06:00:03.628514+00:00"
+    },
+    {
+      "parent_job_index": 461,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_q4.json",
+      "bytes": 11508,
+      "sha256": "224c84f99a4ff2f3c3af7e813114b5abc0ab0e9cf084c6c10d39bf5079e3f807",
+      "captured_at": "2026-11-02T06:00:05.470929+00:00"
+    },
+    {
+      "parent_job_index": 462,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_q4.json",
+      "bytes": 12671,
+      "sha256": "ef075693372a278f2cca88e3d4cc009a0296f93eb1117e8139cedf4adbd166aa",
+      "captured_at": "2026-11-02T06:00:07.119022+00:00"
+    },
+    {
+      "parent_job_index": 463,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_h1.json",
+      "bytes": 13823,
+      "sha256": "61d942ff6fe5b6abe02388e07b55228ac36a98ab0b7fceee747444f4bcfd33f4",
+      "captured_at": "2026-11-02T06:00:08.953200+00:00"
+    },
+    {
+      "parent_job_index": 464,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_h1.json",
+      "bytes": 15723,
+      "sha256": "5c7d27a26e1852fae3e34af5e036791b75d5bc17550cb04b2690d99320eb919c",
+      "captured_at": "2026-11-02T06:00:11.412744+00:00"
+    },
+    {
+      "parent_job_index": 465,
+      "source_file": "sources/boxscoretraditionalv3_0022600104_h2.json",
+      "bytes": 13256,
+      "sha256": "89e358c49699be19b7f63f2f8baa3da67c96a9720e5d070f92dbb66efbf9f50f",
+      "captured_at": "2026-11-02T06:00:13.459524+00:00"
+    },
+    {
+      "parent_job_index": 466,
+      "source_file": "sources/boxscoreadvancedv3_0022600104_h2.json",
+      "bytes": 14898,
+      "sha256": "e51928f5fdb6fd9e307227d222837d9ebbd7b92e2052cbf30195c0381ca008a9",
+      "captured_at": "2026-11-02T06:00:15.304657+00:00"
+    },
+    {
+      "parent_job_index": 467,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_q1.json",
+      "bytes": 13144,
+      "sha256": "1316bc99fa7c825bf784876d1a880ac0a06f3bac17fb343c3c9385181d7ee3d3",
+      "captured_at": "2026-11-02T06:00:17.353189+00:00"
+    },
+    {
+      "parent_job_index": 468,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_q1.json",
+      "bytes": 14853,
+      "sha256": "f38798624a306bd7f6696d323065a81f6967d3218d85db425195a9a66e065db7",
+      "captured_at": "2026-11-02T06:00:19.013256+00:00"
+    },
+    {
+      "parent_job_index": 469,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_q2.json",
+      "bytes": 14286,
+      "sha256": "23b659157d95db04d1d395d7aeb28758d1a35c89230084eb73fc2485f7ad6cad",
+      "captured_at": "2026-11-02T06:00:21.245362+00:00"
+    },
+    {
+      "parent_job_index": 470,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_q2.json",
+      "bytes": 16263,
+      "sha256": "00910d9218c6d9acd362dbd248ea8d690641e4c0ed04d72dd9c34f4625659539",
+      "captured_at": "2026-11-02T06:00:22.890848+00:00"
+    },
+    {
+      "parent_job_index": 471,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_q3.json",
+      "bytes": 13130,
+      "sha256": "0d8d47aba988deba784df4cdbc33b588c83d27924eb83f3c371cff1282b7dc50",
+      "captured_at": "2026-11-02T06:00:24.954486+00:00"
+    },
+    {
+      "parent_job_index": 472,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_q3.json",
+      "bytes": 14818,
+      "sha256": "70355cafe80fd2d6b5ad6829e4816de2d52b5291d4f3cb346d91ebf5c4f3990f",
+      "captured_at": "2026-11-02T06:00:26.779757+00:00"
+    },
+    {
+      "parent_job_index": 473,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_q4.json",
+      "bytes": 13733,
+      "sha256": "0aa0105ad2d2b051fbc1b873a2204a4b13023225a3b53cc212af5bdc96862416",
+      "captured_at": "2026-11-02T06:00:28.405614+00:00"
+    },
+    {
+      "parent_job_index": 474,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_q4.json",
+      "bytes": 15574,
+      "sha256": "5ba6978b44a1fb1db673592a5dd67e866de0c9dcef6a0cd2cc69811eac2b8e19",
+      "captured_at": "2026-11-02T06:00:30.258513+00:00"
+    },
+    {
+      "parent_job_index": 475,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_h1.json",
+      "bytes": 14364,
+      "sha256": "e75ed31cfb888bf36e24b0061919155cfc74ce657f4630a7ef3bcc9067dacf28",
+      "captured_at": "2026-11-02T06:00:31.874690+00:00"
+    },
+    {
+      "parent_job_index": 476,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_h1.json",
+      "bytes": 16414,
+      "sha256": "c76d1c23728c8eda29aba1cfc97540adb69903c18ce9374656deaab79a652ebf",
+      "captured_at": "2026-11-02T06:00:33.535833+00:00"
+    },
+    {
+      "parent_job_index": 477,
+      "source_file": "sources/boxscoretraditionalv3_0022600105_h2.json",
+      "bytes": 13800,
+      "sha256": "4d3c2a4d46f730c3743b31c3ca9357026b1acf235aac1ebf486c2a70e406e51b",
+      "captured_at": "2026-11-02T06:00:35.174182+00:00"
+    },
+    {
+      "parent_job_index": 478,
+      "source_file": "sources/boxscoreadvancedv3_0022600105_h2.json",
+      "bytes": 15669,
+      "sha256": "a5939443784e1c4d755fa3e378a2ac200ba6de92327120f58c339148bd332264",
+      "captured_at": "2026-11-02T06:00:37.017569+00:00"
+    },
+    {
+      "parent_job_index": 479,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_q1.json",
+      "bytes": 13715,
+      "sha256": "b232645f7a61f401ea264df4218896deb637461f0b329dcdae8fec8c21383051",
+      "captured_at": "2026-11-02T06:00:39.475409+00:00"
+    },
+    {
+      "parent_job_index": 480,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_q1.json",
+      "bytes": 15543,
+      "sha256": "e36856c8901b579268af0b26da900cd316baf5ef25ca19ea3a44cb8ac0434d1e",
+      "captured_at": "2026-11-02T06:00:41.523348+00:00"
+    },
+    {
+      "parent_job_index": 481,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_q2.json",
+      "bytes": 13715,
+      "sha256": "8c7e7ed67b79e9ec7d0bd201e6589064cb34139ed4c622862c63e01cb91453ff",
+      "captured_at": "2026-11-02T06:00:43.181346+00:00"
+    },
+    {
+      "parent_job_index": 482,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_q2.json",
+      "bytes": 15544,
+      "sha256": "d513d4a5e39e340e4a2676aaa932aa51dff353e53d5cb11170a99794acf915df",
+      "captured_at": "2026-11-02T06:00:45.414905+00:00"
+    },
+    {
+      "parent_job_index": 483,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_q3.json",
+      "bytes": 13695,
+      "sha256": "2b196969224c6df05e3214ba76e208512a8420579c8ea8596863c8091379ac23",
+      "captured_at": "2026-11-02T06:00:47.058032+00:00"
+    },
+    {
+      "parent_job_index": 484,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_q3.json",
+      "bytes": 15553,
+      "sha256": "549868a3ad327ed332d13f9f10ed2ca2dbeb1c6709b335aed4253432bc9e1c25",
+      "captured_at": "2026-11-02T06:00:48.896744+00:00"
+    },
+    {
+      "parent_job_index": 485,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_q4.json",
+      "bytes": 14299,
+      "sha256": "65355ff897282705a5920fb413d418648a39bfd14cfb41540a4ba82e2be88adf",
+      "captured_at": "2026-11-02T06:00:51.354473+00:00"
+    },
+    {
+      "parent_job_index": 486,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_q4.json",
+      "bytes": 16222,
+      "sha256": "67e7917524c4428fbc5e98cc2cac977b68aadb5177bda9cf5598d33637315e5a",
+      "captured_at": "2026-11-02T06:00:53.016823+00:00"
+    },
+    {
+      "parent_job_index": 487,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_h1.json",
+      "bytes": 14362,
+      "sha256": "e663560352a779240bb9c5461bfab6acea6e86e091a53d04c31c670632ce26e1",
+      "captured_at": "2026-11-02T06:00:54.835989+00:00"
+    },
+    {
+      "parent_job_index": 488,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_h1.json",
+      "bytes": 16367,
+      "sha256": "87991994f7b229bdf1fed91d0538229a842bb32f87c0e9abf652975b57fb2e36",
+      "captured_at": "2026-11-02T06:00:56.886855+00:00"
+    },
+    {
+      "parent_job_index": 489,
+      "source_file": "sources/boxscoretraditionalv3_0022600106_h2.json",
+      "bytes": 15481,
+      "sha256": "a7bb9d04463e7c36bb645d3c67b1a083bc2e81260fafaac12535c5e280eef886",
+      "captured_at": "2026-11-02T06:00:58.727629+00:00"
+    },
+    {
+      "parent_job_index": 490,
+      "source_file": "sources/boxscoreadvancedv3_0022600106_h2.json",
+      "bytes": 17764,
+      "sha256": "055f77300a8ad41fac80026d4d828e75af5462607024c9b4e28e31e322c3ad5f",
+      "captured_at": "2026-11-02T06:01:00.775638+00:00"
+    },
+    {
+      "parent_job_index": 491,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_q1.json",
+      "bytes": 13771,
+      "sha256": "c414aa35e56728c991bc71395db60f120554f177fc30aa5ac26b138dc634d153",
+      "captured_at": "2026-11-02T06:01:02.823552+00:00"
+    },
+    {
+      "parent_job_index": 492,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_q1.json",
+      "bytes": 15571,
+      "sha256": "3f9fa244b74318e0b71642201bab2565e38896eb543bd910c3eb78de2d45ca54",
+      "captured_at": "2026-11-02T06:01:04.671179+00:00"
+    },
+    {
+      "parent_job_index": 493,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_q2.json",
+      "bytes": 13188,
+      "sha256": "d512d0686c1459da88c1bfb36a5dee18372f2ab991b559a670d974842f6ed982",
+      "captured_at": "2026-11-02T06:01:06.714733+00:00"
+    },
+    {
+      "parent_job_index": 494,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_q2.json",
+      "bytes": 14852,
+      "sha256": "6cf2eb9b777d173c3f9cdc15ceff3607b0852e578a8ea6b4aede7ab7b24b0f46",
+      "captured_at": "2026-11-02T06:01:08.764166+00:00"
+    },
+    {
+      "parent_job_index": 495,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_q3.json",
+      "bytes": 13751,
+      "sha256": "65b920e29f68bd9f19d99722499ad99d984328f7c299c20ae168d13625854f2b",
+      "captured_at": "2026-11-02T06:01:10.605996+00:00"
+    },
+    {
+      "parent_job_index": 496,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_q3.json",
+      "bytes": 15577,
+      "sha256": "f6c67c946bd376a73d7b452313e5f6aa484ba9cad64f9e3b4369a0e777d2e130",
+      "captured_at": "2026-11-02T06:01:12.664176+00:00"
+    },
+    {
+      "parent_job_index": 497,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_q4.json",
+      "bytes": 12070,
+      "sha256": "1215059d8492671dec5a3d05910edf7b788b8f00faa9f8d5480cef1dd894cf04",
+      "captured_at": "2026-11-02T06:01:14.497117+00:00"
+    },
+    {
+      "parent_job_index": 498,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_q4.json",
+      "bytes": 13445,
+      "sha256": "b778c6470fc6dd8dc6248955238debe8d365600e0205814fa94104f6480f830c",
+      "captured_at": "2026-11-02T06:01:16.135784+00:00"
+    },
+    {
+      "parent_job_index": 499,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_h1.json",
+      "bytes": 14418,
+      "sha256": "c9a8c6d6a861c4a3143af1ae12c5ab236b92cf522b26563e257ad1e495d87809",
+      "captured_at": "2026-11-02T06:01:17.979586+00:00"
+    },
+    {
+      "parent_job_index": 500,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_h1.json",
+      "bytes": 16398,
+      "sha256": "3e8c002ecb4c4b359b34339f8207cc1f8c48118f8b5e90c7396edda76c0e94ef",
+      "captured_at": "2026-11-02T06:01:19.618106+00:00"
+    },
+    {
+      "parent_job_index": 501,
+      "source_file": "sources/boxscoretraditionalv3_0022600107_h2.json",
+      "bytes": 13848,
+      "sha256": "c04d8d91547da81a0d4bc4cdc56f65d473076d3e9c0c6ed72ce8ab43c4531960",
+      "captured_at": "2026-11-02T06:01:21.461471+00:00"
+    },
+    {
+      "parent_job_index": 502,
+      "source_file": "sources/boxscoreadvancedv3_0022600107_h2.json",
+      "bytes": 15676,
+      "sha256": "4eece0b2d94d4cb565b2dac3e30a2a0a1af0d9d0e9fdb51f5534cbef9ef324d2",
+      "captured_at": "2026-11-02T06:01:23.508670+00:00"
+    },
+    {
+      "parent_job_index": 503,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_q1.json",
+      "bytes": 14246,
+      "sha256": "c0f72b4e42420d23bdb77c4239e7b888820a1b0243059c79d2529d9e5122cf1c",
+      "captured_at": "2026-11-02T06:01:25.352232+00:00"
+    },
+    {
+      "parent_job_index": 504,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_q1.json",
+      "bytes": 16225,
+      "sha256": "762d92d38854f9a1ae9f98d13d15d1a0f6f760017b600f106a13443e73f0d859",
+      "captured_at": "2026-11-02T06:01:28.118058+00:00"
+    },
+    {
+      "parent_job_index": 505,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_q2.json",
+      "bytes": 14237,
+      "sha256": "b35a3a5a6fee5b38f07d641293b6d4fd52a712298b992cdb09feb904de03e0a9",
+      "captured_at": "2026-11-02T06:01:29.857369+00:00"
+    },
+    {
+      "parent_job_index": 506,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_q2.json",
+      "bytes": 16215,
+      "sha256": "e9e7e754b63305f311af9f184cb1a26af7e8efb437db123d3e404ff0c329f6fc",
+      "captured_at": "2026-11-02T06:01:32.010168+00:00"
+    },
+    {
+      "parent_job_index": 507,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_q3.json",
+      "bytes": 13128,
+      "sha256": "9ae65023cce3b8d981f342695af73cbaa0b15e1a7b2f51360512e31e998ed9af",
+      "captured_at": "2026-11-02T06:01:33.749187+00:00"
+    },
+    {
+      "parent_job_index": 508,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_q3.json",
+      "bytes": 14801,
+      "sha256": "02fa7ba05a5b9e9786859878d665871a789157475712ab4ad8a1588e47f26ad5",
+      "captured_at": "2026-11-02T06:01:35.387217+00:00"
+    },
+    {
+      "parent_job_index": 509,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_q4.json",
+      "bytes": 13140,
+      "sha256": "1ee3159f3304a2c1be5c50c067d8800f7574f55532eb529bc070bd06c8cd3e01",
+      "captured_at": "2026-11-02T06:01:37.231632+00:00"
+    },
+    {
+      "parent_job_index": 510,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_q4.json",
+      "bytes": 14771,
+      "sha256": "1793397cf6290b1dd1a6abec4883fbf02249e9aa5edb505ba47743a1c1f4f236",
+      "captured_at": "2026-11-02T06:01:38.876802+00:00"
+    },
+    {
+      "parent_job_index": 511,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_h1.json",
+      "bytes": 14308,
+      "sha256": "ea201a21ab6dcb873eabf2ca8b4714bae2bb609ffbae2febedc3c9a7d2053fe5",
+      "captured_at": "2026-11-02T06:01:40.711986+00:00"
+    },
+    {
+      "parent_job_index": 512,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_h1.json",
+      "bytes": 16316,
+      "sha256": "99885c1eb9fdd06d53afa11c92f8aa4be518d618025dc8158cd181335a3a4195",
+      "captured_at": "2026-11-02T06:01:42.368407+00:00"
+    },
+    {
+      "parent_job_index": 513,
+      "source_file": "sources/boxscoretraditionalv3_0022600108_h2.json",
+      "bytes": 13767,
+      "sha256": "bf5885f6bd5a14efe02408e9e861197f4cce1a0db92cb9731585d213462666ba",
+      "captured_at": "2026-11-02T06:01:44.193555+00:00"
+    },
+    {
+      "parent_job_index": 514,
+      "source_file": "sources/boxscoreadvancedv3_0022600108_h2.json",
+      "bytes": 15594,
+      "sha256": "9d6ab49587370eb7f7b829e62c86fcce226aabef17b203b0631feb51dc5ebc33",
+      "captured_at": "2026-11-02T06:01:46.241601+00:00"
+    },
+    {
+      "parent_job_index": 515,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_q1.json",
+      "bytes": 13781,
+      "sha256": "f670a55a7b414aa2d989a0ff8ea317829278e2e4e324674761176a537bc826ee",
+      "captured_at": "2026-11-02T06:01:48.699325+00:00"
+    },
+    {
+      "parent_job_index": 516,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_q1.json",
+      "bytes": 15661,
+      "sha256": "df1a6c1ccd9834114e6bcddb1f853aa4610972c325cb6936adf0434016db51da",
+      "captured_at": "2026-11-02T06:01:50.542839+00:00"
+    },
+    {
+      "parent_job_index": 517,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_q2.json",
+      "bytes": 13770,
+      "sha256": "96ad9383dda37299301f64c26cfb32cb52a78a0e6cc13c821a93e0bb5426a99a",
+      "captured_at": "2026-11-02T06:01:54.024724+00:00"
+    },
+    {
+      "parent_job_index": 518,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_q2.json",
+      "bytes": 15624,
+      "sha256": "1b89fef692f769399198512f6a5442dbb9537f563f003b9620827388b12ae9d4",
+      "captured_at": "2026-11-02T06:01:56.072226+00:00"
+    },
+    {
+      "parent_job_index": 519,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_q3.json",
+      "bytes": 13205,
+      "sha256": "9209dab5243dd46eb71b6ec960350bfbd0256f46d2399768c66c1fc6374bf446",
+      "captured_at": "2026-11-02T06:01:57.915710+00:00"
+    },
+    {
+      "parent_job_index": 520,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_q3.json",
+      "bytes": 14887,
+      "sha256": "becb4ade6affedf09e4a5459274e0cf42cdae88954dc454937ce16039738fc43",
+      "captured_at": "2026-11-02T06:01:59.554700+00:00"
+    },
+    {
+      "parent_job_index": 521,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_q4.json",
+      "bytes": 15488,
+      "sha256": "f87b40cd515d99581ac1273be5be90c52baee3c9362eb8f08cf0b93826c00ab8",
+      "captured_at": "2026-11-02T06:02:01.397072+00:00"
+    },
+    {
+      "parent_job_index": 522,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_q4.json",
+      "bytes": 17744,
+      "sha256": "2e3fc61ae2985e231b9024da79bd7c23e9438b8dea2db9b7478b56132b6e96c3",
+      "captured_at": "2026-11-02T06:02:03.035501+00:00"
+    },
+    {
+      "parent_job_index": 523,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_h1.json",
+      "bytes": 14419,
+      "sha256": "94ce114ccfb442105e86b124d682ddcccd82b8288deaf1382ae97ed0598f8308",
+      "captured_at": "2026-11-02T06:02:04.879414+00:00"
+    },
+    {
+      "parent_job_index": 524,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_h1.json",
+      "bytes": 16448,
+      "sha256": "71bd84b79193f609d25f27a35cad7505b338d009dcdd885dae9a4ab7198e2c3a",
+      "captured_at": "2026-11-02T06:02:06.535601+00:00"
+    },
+    {
+      "parent_job_index": 525,
+      "source_file": "sources/boxscoretraditionalv3_0022600109_h2.json",
+      "bytes": 16703,
+      "sha256": "05aaa2793df5ee8f9f6da6c863f342a998dce2285a92c48f154a4178d23d9a07",
+      "captured_at": "2026-11-02T06:02:08.769924+00:00"
+    },
+    {
+      "parent_job_index": 526,
+      "source_file": "sources/boxscoreadvancedv3_0022600109_h2.json",
+      "bytes": 19298,
+      "sha256": "d62ef1d8c9741c82370bae142f1781b675726e4c6159deacfef5e321fab945d5",
+      "captured_at": "2026-11-02T06:02:10.408880+00:00"
+    },
+    {
+      "parent_job_index": 527,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_q1.json",
+      "bytes": 13724,
+      "sha256": "9a0a8db8e5680f9d396c5f544b8ef2828fe302a322535adeb52243f361abb1c8",
+      "captured_at": "2026-11-02T06:02:12.251534+00:00"
+    },
+    {
+      "parent_job_index": 528,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_q1.json",
+      "bytes": 15561,
+      "sha256": "a2c811ad4cb49bae78b2657644823465d3b1321a1ba3cc86390281a909539928",
+      "captured_at": "2026-11-02T06:02:13.803546+00:00"
+    },
+    {
+      "parent_job_index": 529,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_q2.json",
+      "bytes": 14310,
+      "sha256": "ab30e863332765cd9cde84eac32c8ba52144ffa34042b20c96ad9a81e0ee4278",
+      "captured_at": "2026-11-02T06:02:15.733174+00:00"
+    },
+    {
+      "parent_job_index": 530,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_q2.json",
+      "bytes": 16309,
+      "sha256": "5414658e3b88ac55ed4179dea8ba20780e3a3ba01ced658eec94bfbd2c507fe0",
+      "captured_at": "2026-11-02T06:02:17.402709+00:00"
+    },
+    {
+      "parent_job_index": 531,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_q3.json",
+      "bytes": 13173,
+      "sha256": "4a2c387956899bbd4280fdcc3afad053d69db7ec606506253c852d9b9c9fab78",
+      "captured_at": "2026-11-02T06:02:20.219205+00:00"
+    },
+    {
+      "parent_job_index": 532,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_q3.json",
+      "bytes": 14855,
+      "sha256": "040b523203a272ef610c6891f2c3fa0c4af363d63e0242648bd283c89986d9b8",
+      "captured_at": "2026-11-02T06:02:22.082129+00:00"
+    },
+    {
+      "parent_job_index": 533,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_q4.json",
+      "bytes": 13771,
+      "sha256": "2f1bbaef2fd24eec29243ae0c2be865d4cc166018dfec4255c9fe2c9deeb1c6c",
+      "captured_at": "2026-11-02T06:02:24.130439+00:00"
+    },
+    {
+      "parent_job_index": 534,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_q4.json",
+      "bytes": 15598,
+      "sha256": "a219a58cd4576ab3f80f802ae2370b6f32210adb6de8b049745c9c04d307efa1",
+      "captured_at": "2026-11-02T06:02:26.181721+00:00"
+    },
+    {
+      "parent_job_index": 535,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_h1.json",
+      "bytes": 14944,
+      "sha256": "b1a197b74e9eba2c79a7fd1a23acf623d36d03a1c251cb3785f2e02e6523bd5c",
+      "captured_at": "2026-11-02T06:02:28.022067+00:00"
+    },
+    {
+      "parent_job_index": 536,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_h1.json",
+      "bytes": 17128,
+      "sha256": "5d906f4ebc248f1d253d0ad64d33698d89ebfd8e62d793ae7d3dbe7c3a0f72b0",
+      "captured_at": "2026-11-02T06:02:29.659885+00:00"
+    },
+    {
+      "parent_job_index": 537,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_h2.json",
+      "bytes": 14383,
+      "sha256": "3b2560fcc7ba0555011239b2de45731799f831fba3a5b2ae2f8befe87d43af72",
+      "captured_at": "2026-11-02T06:02:31.503103+00:00"
+    },
+    {
+      "parent_job_index": 538,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_h2.json",
+      "bytes": 16393,
+      "sha256": "14394787ad28a93a3b77f362b230e71dfd51ed6c781a86b404cf091f5f8948b0",
+      "captured_at": "2026-11-02T06:02:33.551090+00:00"
+    },
+    {
+      "parent_job_index": 539,
+      "source_file": "sources/boxscoretraditionalv3_0022600110_ot.json",
+      "bytes": 9713,
+      "sha256": "ee0d66b1e44d2d95101c397017f5a79d274533caef585687b8f21b117c1c79b7",
+      "captured_at": "2026-11-02T06:02:35.394117+00:00"
+    },
+    {
+      "parent_job_index": 540,
+      "source_file": "sources/boxscoreadvancedv3_0022600110_ot.json",
+      "bytes": 10419,
+      "sha256": "59b05f7b67fa2019e6151108b573b7c7e48a2e6dee64cf36b44db1e19a12ee93",
+      "captured_at": "2026-11-02T06:02:37.032373+00:00"
+    },
+    {
+      "parent_job_index": 541,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_q1.json",
+      "bytes": 14826,
+      "sha256": "4655e2087116d3313d2d42d17ccc270f9debc17c47ef9524599078ea651fea74",
+      "captured_at": "2026-11-02T06:02:38.876401+00:00"
+    },
+    {
+      "parent_job_index": 542,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_q1.json",
+      "bytes": 16906,
+      "sha256": "741a3da92b28b2ce7b504332fe55a039119da3376d0c94157814a7a69b57c416",
+      "captured_at": "2026-11-02T06:02:40.514272+00:00"
+    },
+    {
+      "parent_job_index": 543,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_q2.json",
+      "bytes": 13714,
+      "sha256": "fdfd0923d76d642d10625ded717ed22bfeb447480905304a9132105048252c5e",
+      "captured_at": "2026-11-02T06:02:42.357893+00:00"
+    },
+    {
+      "parent_job_index": 544,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_q2.json",
+      "bytes": 15606,
+      "sha256": "3f7c1a1065169ad44b59cf2cc846f13c0d7f5d90edbd7ce6335b0c21f484c840",
+      "captured_at": "2026-11-02T06:02:43.996344+00:00"
+    },
+    {
+      "parent_job_index": 545,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_q3.json",
+      "bytes": 14266,
+      "sha256": "c5ce369e547230f7259e717a5ab8b91b87617f45a4bc54dc146de6a956cbf2e5",
+      "captured_at": "2026-11-02T06:02:45.839004+00:00"
+    },
+    {
+      "parent_job_index": 546,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_q3.json",
+      "bytes": 16266,
+      "sha256": "9d9750175c275379883b78844c3301c2b51eb93800d8171c5fa71be44a867782",
+      "captured_at": "2026-11-02T06:02:47.361636+00:00"
+    },
+    {
+      "parent_job_index": 547,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_q4.json",
+      "bytes": 12008,
+      "sha256": "463ba709b10933ed1d167d6acab896fe7f63796e9c2934bb4a7adb1025fe97bd",
+      "captured_at": "2026-11-02T06:02:49.013730+00:00"
+    },
+    {
+      "parent_job_index": 548,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_q4.json",
+      "bytes": 13378,
+      "sha256": "602bcc32ced389bb46a7189373ec1452907cbfa9c4ec5bc20aded4ae72a0116d",
+      "captured_at": "2026-11-02T06:02:50.754139+00:00"
+    },
+    {
+      "parent_job_index": 549,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_h1.json",
+      "bytes": 14890,
+      "sha256": "5e25cfecc3e4eefa0e4911a2efbfd9b68e543bba9b612792e19ae570860361dc",
+      "captured_at": "2026-11-02T06:02:52.422463+00:00"
+    },
+    {
+      "parent_job_index": 550,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_h1.json",
+      "bytes": 17076,
+      "sha256": "eff5c7463c34464be8fa21345ab5d96c58f22e32507b4c20509bdb585b4f4595",
+      "captured_at": "2026-11-02T06:02:54.034729+00:00"
+    },
+    {
+      "parent_job_index": 551,
+      "source_file": "sources/boxscoretraditionalv3_0022600111_h2.json",
+      "bytes": 14335,
+      "sha256": "bde5579e12e68929c79ebcf93e3ea7fa912bb5106a551a5b1d20a89f529df3b3",
+      "captured_at": "2026-11-02T06:02:55.677457+00:00"
+    },
+    {
+      "parent_job_index": 552,
+      "source_file": "sources/boxscoreadvancedv3_0022600111_h2.json",
+      "bytes": 16354,
+      "sha256": "686d32ec2b2b992d86d38b0b413c2d321a68001ab329d97edab1aa1246a6e421",
+      "captured_at": "2026-11-02T06:02:57.308075+00:00"
+    },
+    {
+      "parent_job_index": 553,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_q1.json",
+      "bytes": 13800,
+      "sha256": "9cd05d207b20a0e8c5c300605dfed36dca11537d3f5326daf78fc67f908d2b60",
+      "captured_at": "2026-11-02T06:02:59.151193+00:00"
+    },
+    {
+      "parent_job_index": 554,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_q1.json",
+      "bytes": 15643,
+      "sha256": "c96b0a9aaca94935278ef5ddca74728e0b4672261d06ea4e60fe50baac3acaf5",
+      "captured_at": "2026-11-02T06:03:00.796679+00:00"
+    },
+    {
+      "parent_job_index": 555,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_q2.json",
+      "bytes": 13221,
+      "sha256": "0dac7c01f33f5e28bf27a3d9935d82877ab9ca4e4396a1a479bc416fcb7f3fa1",
+      "captured_at": "2026-11-02T06:03:02.633321+00:00"
+    },
+    {
+      "parent_job_index": 556,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_q2.json",
+      "bytes": 14894,
+      "sha256": "cb716a5818cd7d8e490d3f83d7335f428a848986e6ab91a299578f9f162ad1e5",
+      "captured_at": "2026-11-02T06:03:04.295797+00:00"
+    },
+    {
+      "parent_job_index": 557,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_q3.json",
+      "bytes": 13774,
+      "sha256": "d26300bfc07a3094b9dcc2f3034afa4aa066a715bd42dd237870190273c32611",
+      "captured_at": "2026-11-02T06:03:06.525723+00:00"
+    },
+    {
+      "parent_job_index": 558,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_q3.json",
+      "bytes": 15566,
+      "sha256": "84c9eee05797fe92544139d9257867d37a52813db88de0b232cee0df8f49dcc5",
+      "captured_at": "2026-11-02T06:03:08.162811+00:00"
+    },
+    {
+      "parent_job_index": 559,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_q4.json",
+      "bytes": 14344,
+      "sha256": "fb5a2ad72212f31d438b05e9b36d3713e71a543616cb2a51396a03c2b7282014",
+      "captured_at": "2026-11-02T06:03:10.007573+00:00"
+    },
+    {
+      "parent_job_index": 560,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_q4.json",
+      "bytes": 16258,
+      "sha256": "4add4caf1adb6091fe59cf29a869dd50bffad5d19ffcefebb7c0ddf5e9580cdf",
+      "captured_at": "2026-11-02T06:03:11.511087+00:00"
+    },
+    {
+      "parent_job_index": 561,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_h1.json",
+      "bytes": 14407,
+      "sha256": "44390d57791104542012596d97f4fcb0122fe616ac03a33a294db6ad04031f54",
+      "captured_at": "2026-11-02T06:03:13.292337+00:00"
+    },
+    {
+      "parent_job_index": 562,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_h1.json",
+      "bytes": 16433,
+      "sha256": "2daa24c14c0f4f45fdcc1d2c5264e6e2d8ccbf069f587931a735600af17c85ee",
+      "captured_at": "2026-11-02T06:03:14.921035+00:00"
+    },
+    {
+      "parent_job_index": 563,
+      "source_file": "sources/boxscoretraditionalv3_0022600112_h2.json",
+      "bytes": 14405,
+      "sha256": "8ea1d11de617449881c30ca5bc76f02576d291ab3d4f15748b36ca94390730bc",
+      "captured_at": "2026-11-02T06:03:16.589913+00:00"
+    },
+    {
+      "parent_job_index": 564,
+      "source_file": "sources/boxscoreadvancedv3_0022600112_h2.json",
+      "bytes": 16365,
+      "sha256": "6d1eed0c0966570f7bc601bbedca98228dd1510b2d5b4cc55dfa779f4f9f91b7",
+      "captured_at": "2026-11-02T06:03:18.200252+00:00"
+    },
+    {
+      "parent_job_index": 565,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_q1.json",
+      "bytes": 14273,
+      "sha256": "17f23ba931147027d690009e88d1ad35a19aa306d2d08698296992f9583bb704",
+      "captured_at": "2026-11-02T06:03:20.068539+00:00"
+    },
+    {
+      "parent_job_index": 566,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_q1.json",
+      "bytes": 16239,
+      "sha256": "008ef0d5233816f85b55e43f6c0a26ad5241c06544f4c5086f0424d83377562c",
+      "captured_at": "2026-11-02T06:03:21.687488+00:00"
+    },
+    {
+      "parent_job_index": 567,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_q2.json",
+      "bytes": 14294,
+      "sha256": "f8259ffe3033163af6b8d26635e30306d2ae317dab0cb2cb4dd8ad93e7e4a84f",
+      "captured_at": "2026-11-02T06:03:23.546078+00:00"
+    },
+    {
+      "parent_job_index": 568,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_q2.json",
+      "bytes": 16293,
+      "sha256": "6d901ececeec7596a2a420b81ac8655d39386ba110781f5a535e05a596000cdc",
+      "captured_at": "2026-11-02T06:03:25.160955+00:00"
+    },
+    {
+      "parent_job_index": 569,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_q3.json",
+      "bytes": 15402,
+      "sha256": "abc12f178fa3095c5da275e5d627a4e71576a33c6a72553eb5ec832aa2118987",
+      "captured_at": "2026-11-02T06:03:27.007690+00:00"
+    },
+    {
+      "parent_job_index": 570,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_q3.json",
+      "bytes": 17715,
+      "sha256": "0bfce8798c1f660e07b785df6166b2f73f7ae47d3dbe7fd2a5a693a926160f00",
+      "captured_at": "2026-11-02T06:03:28.645675+00:00"
+    },
+    {
+      "parent_job_index": 571,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_q4.json",
+      "bytes": 12391,
+      "sha256": "24f658b4cc850855ebce561711054951e26853383a393e4d3067dfee1aae7349",
+      "captured_at": "2026-11-02T06:03:30.502725+00:00"
+    },
+    {
+      "parent_job_index": 572,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_q4.json",
+      "bytes": 14804,
+      "sha256": "d560f527dc2d256aae2d86db9675a70682731164e130930bb632efd40c533951",
+      "captured_at": "2026-11-02T06:03:32.044408+00:00"
+    },
+    {
+      "parent_job_index": 573,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_h1.json",
+      "bytes": 15479,
+      "sha256": "a6d62cbfd72ef9753b9321bb084f96c6c98f5f5e470bf00fb90dc5131f9bf23b",
+      "captured_at": "2026-11-02T06:03:33.763311+00:00"
+    },
+    {
+      "parent_job_index": 574,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_h1.json",
+      "bytes": 17812,
+      "sha256": "9af78ceaab39fcf408e54650ca0f2e12017b2716d083f5270a978b4b7d0dc35f",
+      "captured_at": "2026-11-02T06:03:35.291167+00:00"
+    },
+    {
+      "parent_job_index": 575,
+      "source_file": "sources/boxscoretraditionalv3_0022600113_h2.json",
+      "bytes": 17163,
+      "sha256": "335af03e3960ce7df7ad0d762ab7cbe028644f5ed090dfa2efe6ffcddb4b48e4",
+      "captured_at": "2026-11-02T06:03:37.040344+00:00"
+    },
+    {
+      "parent_job_index": 576,
+      "source_file": "sources/boxscoreadvancedv3_0022600113_h2.json",
+      "bytes": 19975,
+      "sha256": "356efbc436bc896a502eb11987a885dd58de24e2b7ef28152da4b43cbed8a93d",
+      "captured_at": "2026-11-02T06:03:38.678863+00:00"
+    },
+    {
+      "parent_job_index": 577,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_q1.json",
+      "bytes": 13146,
+      "sha256": "0bc4c513b36929ae0d88ed19e1b63899ae6f3394541ef9fea32d8847623704f1",
+      "captured_at": "2026-11-02T06:03:40.521143+00:00"
+    },
+    {
+      "parent_job_index": 578,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_q1.json",
+      "bytes": 14767,
+      "sha256": "5519f07c014445bc58f972841a94b54b28dcaaa6883d73fed53f123f1eae55e0",
+      "captured_at": "2026-11-02T06:03:42.160293+00:00"
+    },
+    {
+      "parent_job_index": 579,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_q2.json",
+      "bytes": 13704,
+      "sha256": "e7b1358359e4993114d06ca8106402f11f0ee8d5b7f399308ff02f1425ee24f4",
+      "captured_at": "2026-11-02T06:03:43.816903+00:00"
+    },
+    {
+      "parent_job_index": 580,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_q2.json",
+      "bytes": 15521,
+      "sha256": "590fbaf00abe9e6eb99ebaefb16ab7796ba2bfaf25fc4a5f714a145f383b51ca",
+      "captured_at": "2026-11-02T06:03:45.437039+00:00"
+    },
+    {
+      "parent_job_index": 581,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_q3.json",
+      "bytes": 13691,
+      "sha256": "faafbec59661db26a23f608938b87231603da1134500008510d6c2e2da7693c2",
+      "captured_at": "2026-11-02T06:03:47.041100+00:00"
+    },
+    {
+      "parent_job_index": 582,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_q3.json",
+      "bytes": 15491,
+      "sha256": "6a8d222ce6747addc8c662505dbc1eb9e2276c516a75bc6af2ef4a77235f3e02",
+      "captured_at": "2026-11-02T06:03:48.674788+00:00"
+    },
+    {
+      "parent_job_index": 583,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_q4.json",
+      "bytes": 13168,
+      "sha256": "94b6029ae6fd189f17e3286137d77e4fea9c2124e362d5790737e6673fe5bd7a",
+      "captured_at": "2026-11-02T06:03:50.331492+00:00"
+    },
+    {
+      "parent_job_index": 584,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_q4.json",
+      "bytes": 14815,
+      "sha256": "070686c6768c208182bb39c3969e12ea4d164154d4828bde013801d8295f234a",
+      "captured_at": "2026-11-02T06:03:51.885025+00:00"
+    },
+    {
+      "parent_job_index": 585,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_h1.json",
+      "bytes": 14349,
+      "sha256": "a30c5b3c3f398839a177693375b5e1cb09a1d97c37fc8548e02b071d7a9d8463",
+      "captured_at": "2026-11-02T06:03:53.493040+00:00"
+    },
+    {
+      "parent_job_index": 586,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_h1.json",
+      "bytes": 16324,
+      "sha256": "b1b08cdf7dd83909d07a624c1a6ee1d30b97243cb57fcb1280917cc844857414",
+      "captured_at": "2026-11-02T06:03:55.088218+00:00"
+    },
+    {
+      "parent_job_index": 587,
+      "source_file": "sources/boxscoretraditionalv3_0022600114_h2.json",
+      "bytes": 13793,
+      "sha256": "c2aa2209d2bca227988b125b84f9f947e02048fb92ee725be3b672a5bea985bc",
+      "captured_at": "2026-11-02T06:03:56.718111+00:00"
+    },
+    {
+      "parent_job_index": 588,
+      "source_file": "sources/boxscoreadvancedv3_0022600114_h2.json",
+      "bytes": 15611,
+      "sha256": "bb15c0b51e672b5e20b5ef79516430aeacf807530f70e6e9b4404a8ee6a11b96",
+      "captured_at": "2026-11-02T06:03:58.237441+00:00"
+    },
+    {
+      "parent_job_index": 589,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_q1.json",
+      "bytes": 13758,
+      "sha256": "1a554357f908b50b45fd22d7213274d080e961d54b29d707cd7995bfbd82145e",
+      "captured_at": "2026-11-02T06:04:00.080400+00:00"
+    },
+    {
+      "parent_job_index": 590,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_q1.json",
+      "bytes": 15557,
+      "sha256": "3b4216d354c775b374a7183675423f99b16e40eb515973e6e5a44613c2a0bf24",
+      "captured_at": "2026-11-02T06:04:01.923247+00:00"
+    },
+    {
+      "parent_job_index": 591,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_q2.json",
+      "bytes": 13748,
+      "sha256": "2abd2762e983928d4f5f65fe5844eb8513b0a3a7780cc74e3f093d1cedf08b54",
+      "captured_at": "2026-11-02T06:04:03.572233+00:00"
+    },
+    {
+      "parent_job_index": 592,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_q2.json",
+      "bytes": 15524,
+      "sha256": "7d729df702fdf2fcdaad93a3862a78584507207fbfc5de5d0d3acfd94022dabb",
+      "captured_at": "2026-11-02T06:04:05.085773+00:00"
+    },
+    {
+      "parent_job_index": 593,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_q3.json",
+      "bytes": 14320,
+      "sha256": "a733aef1cfe60e6bbf110bff362ecef219dd23e8c2cfb113602ea7742490536f",
+      "captured_at": "2026-11-02T06:04:06.695680+00:00"
+    },
+    {
+      "parent_job_index": 594,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_q3.json",
+      "bytes": 16308,
+      "sha256": "cf52663f0292ad3f0780a3da8d67c4f1bd4b089647c4504fd3b3ea094cdab540",
+      "captured_at": "2026-11-02T06:04:08.212050+00:00"
+    },
+    {
+      "parent_job_index": 595,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_q4.json",
+      "bytes": 16569,
+      "sha256": "dc6b83b3079f10d7ecba43b723ee11a0a14a3125dd80fd33d98bce964fc422c9",
+      "captured_at": "2026-11-02T06:04:09.816039+00:00"
+    },
+    {
+      "parent_job_index": 596,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_q4.json",
+      "bytes": 19180,
+      "sha256": "45b24db4b70602eb09bf91bea1fb0b14a22f5e63278c48c78d36a87d059d54a6",
+      "captured_at": "2026-11-02T06:04:11.375068+00:00"
+    },
+    {
+      "parent_job_index": 597,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_h1.json",
+      "bytes": 14940,
+      "sha256": "0a962aa30a364778b1a427646dc45bf345099acd5b9d2f2781b8a1fdd31706b6",
+      "captured_at": "2026-11-02T06:04:13.216750+00:00"
+    },
+    {
+      "parent_job_index": 598,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_h1.json",
+      "bytes": 17047,
+      "sha256": "78baddcd896c8d6265fe67feb6b598f4aabf7ac6c799a9d89b91bd035dc7c319",
+      "captured_at": "2026-11-02T06:04:14.827680+00:00"
+    },
+    {
+      "parent_job_index": 599,
+      "source_file": "sources/boxscoretraditionalv3_0022600115_h2.json",
+      "bytes": 18365,
+      "sha256": "832f4cddd2925847455a35e4530dc1d426f99f31271f5d43589431b16d8f08f4",
+      "captured_at": "2026-11-02T06:04:17.054514+00:00"
+    },
+    {
+      "parent_job_index": 600,
+      "source_file": "sources/boxscoreadvancedv3_0022600115_h2.json",
+      "bytes": 21469,
+      "sha256": "a91d4e63f42f0b6f5403e478db611fb4d9553978ca266dcf33a2e5a36139bad9",
+      "captured_at": "2026-11-02T06:04:19.498792+00:00"
+    },
+    {
+      "parent_job_index": 601,
+      "source_file": "sources/boxscoretraditionalv3_0022600116_q1.json",
+      "bytes": 14869,
+      "sha256": "cef8f95d6d7042ecea367f181fe52a59d630dcdc893d63ba957482cfe1bfc99a",
+      "captured_at": "2026-11-02T06:04:21.382608+00:00"
+    }
+  ],
+  "retained_source_count": 602,
+  "failed_attempt": {
+    "job": {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "EndPeriod": 1,
+        "EndRange": 28800,
+        "GameID": "0022600116",
+        "RangeType": 1,
+        "StartPeriod": 1,
+        "StartRange": 0
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600116_q1.json"
+    },
+    "endpoint": "boxscoreadvancedv3",
+    "url": "https://stats.nba.com/stats/boxscoreadvancedv3",
+    "parameters": {
+      "EndPeriod": 1,
+      "EndRange": 28800,
+      "GameID": "0022600116",
+      "RangeType": 1,
+      "StartPeriod": 1,
+      "StartRange": 0
+    },
+    "started_at": "2026-11-02T06:04:22.445606+00:00",
+    "attempts": 1,
+    "timeout_seconds": 30,
+    "http_status": null,
+    "response_complete": false,
+    "transport_complete": false,
+    "error_type": "ReadTimeout",
+    "finished_at": "2026-11-02T06:04:52.516905+00:00",
+    "response_bytes": 0,
+    "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_file": null
+  },
+  "unattempted_job_count": 458,
+  "no_successful_source_reacquisition": true,
+  "player_advanced_reacquisition": false,
+  "statistical_qualification": "Separate source/statistical review remains mandatory",
+  "production_writes": 0
+}

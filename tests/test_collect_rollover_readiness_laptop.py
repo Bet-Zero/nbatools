@@ -286,10 +286,11 @@ def test_elapsed_and_size_limits_stop_without_extra_requests(tmp_path, monkeypat
     unpack(tmp_path / "elapsed/collection.zip", plan, tmp_path / "unpacked")
 
 
-def test_proven_v112_unset_round_parameter_is_transport_equivalent():
-    from nba_api.stats.endpoints import LeagueDashPlayerStats
+@pytest.mark.parametrize("endpoint_name", ["LeagueDashPlayerStats", "LeagueDashTeamStats"])
+def test_proven_v112_unset_round_parameter_is_transport_equivalent(endpoint_name):
+    from nba_api.stats import endpoints
 
-    endpoint = LeagueDashPlayerStats(
+    endpoint = getattr(endpoints, endpoint_name)(
         season="2026-27",
         measure_type_detailed_defense="Advanced",
         per_mode_detailed="PerGame",
@@ -300,10 +301,10 @@ def test_proven_v112_unset_round_parameter_is_transport_equivalent():
     job = dict(
         endpoint=endpoint.endpoint, source_file="sources/advanced.json", parameters=parameters
     )
-    assert collector._client(job)[1].endswith("leaguedashplayerstats")
+    assert collector._client(job)[1].endswith(endpoint.endpoint)
     prepared = requests.Request(
         "GET",
-        "https://stats.nba.com/stats/leaguedashplayerstats",
+        "https://stats.nba.com/stats/" + endpoint.endpoint,
         params=sorted(parameters.items()),
     ).prepare()
     assert "ISTRound" not in prepared.url
@@ -380,3 +381,85 @@ def test_exact_1061_job_package_preflights_every_sdk_request_and_self_contains_p
     # Preflight every embedded job too; none sends a network request.
     for job in namespace["EMBEDDED_REQUEST"]["jobs"]:
         assert namespace["_client"](job)[1] == "https://stats.nba.com/stats/" + job["endpoint"]
+
+
+def dependency_jobs():
+    from nba_api.stats.endpoints import BoxScoreSummaryV3, BoxScoreTraditionalV3
+
+    whole = BoxScoreTraditionalV3(game_id="0022600091", get_request=False)
+    summary = BoxScoreSummaryV3(game_id="0022600154", get_request=False)
+    return [
+        dict(endpoint=obj.endpoint, parameters=obj.parameters, source_file="sources/" + name)
+        for obj, name in [(whole, "whole_0091.json"), (summary, "summary_0154.json")]
+    ]
+
+
+def test_new_dependency_forms_use_exact_sdk_defaults_without_relaxing_transport(
+    tmp_path, monkeypatch
+):
+    plan = request()
+    plan["jobs"] = dependency_jobs()
+    assert plan["jobs"][0]["parameters"] == dict(
+        GameID="0022600091",
+        StartPeriod="0",
+        EndPeriod="0",
+        RangeType="0",
+        StartRange="0",
+        EndRange="0",
+    )
+    assert plan["jobs"][1]["parameters"] == {"GameID": "0022600154"}
+    for job in plan["jobs"]:
+        assert collector._client(job)[1] == "https://stats.nba.com/stats/" + job["endpoint"]
+    payloads = [b'{"controlled_full_source":true}', b'{"controlled_summary_source":true}']
+    calls, _ = fake_client(monkeypatch, payloads)
+    output = tmp_path / "capture"
+    report = collector.collect(output, plan)
+    assert report["transport_finished"] and not report["canonical_period_accepted"]
+    assert len(calls) == 2
+    for call, job, body in zip(calls, plan["jobs"], payloads, strict=True):
+        assert call["timeout"] == 30 and call["allow_redirects"] is False
+        assert dict(call["params"]) == job["parameters"]
+        assert (output / job["source_file"]).read_bytes() == body
+    unpack(output / "collection.zip", plan, tmp_path / "unpacked")
+
+
+@pytest.mark.parametrize(
+    "damage", ["advanced_full", "mixed_scope", "summary_filter", "summary_game", "unknown_endpoint"]
+)
+def test_new_dependency_forms_reject_unrequested_scope(damage):
+    plan = request()
+    plan["jobs"] = dependency_jobs()
+    if damage == "advanced_full":
+        plan["jobs"][0]["endpoint"] = "boxscoreadvancedv3"
+    elif damage == "mixed_scope":
+        plan["jobs"][0]["parameters"]["RangeType"] = 1
+    elif damage == "summary_filter":
+        plan["jobs"][1]["parameters"]["StartPeriod"] = 1
+    elif damage == "summary_game":
+        plan["jobs"][1]["parameters"]["GameID"] = "0022500154"
+    elif damage == "unknown_endpoint":
+        plan["jobs"][1]["endpoint"] = "boxscoresummaryv2"
+    with pytest.raises(ValueError):
+        collector.validate_request(plan)
+
+
+def test_new_dependency_http_failure_still_stops_once_and_keeps_originals(tmp_path, monkeypatch):
+    plan = request()
+    plan["jobs"] = dependency_jobs()
+    plan["jobs"].append(
+        dict(
+            endpoint="boxscoretraditionalv3",
+            source_file="sources/unattempted_full.json",
+            parameters={**plan["jobs"][0]["parameters"], "GameID": "0022600109"},
+        )
+    )
+    plan["maximum_requests"] = 3
+    payloads = [b'{"controlled_whole":true}', b'{"controlled_HTTP_failure_body":true}']
+    calls, _ = fake_client(monkeypatch, payloads, "403")
+    output = tmp_path / "capture"
+    report = collector.collect(output, plan)
+    assert len(calls) == 2 and not report["transport_finished"]
+    assert report["unattempted_jobs"] == plan["jobs"][2:]
+    assert (output / plan["jobs"][1]["source_file"]).read_bytes() == payloads[1]
+    collector.collect(output, plan)
+    assert len(calls) == 2

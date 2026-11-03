@@ -1,0 +1,199 @@
+{
+  "classification": "precise_retained_source_clock_dependencies_not_transport_failures",
+  "checker": "/root/period_checker",
+  "windows": [
+    {
+      "game_id": "0022600002",
+      "window": "q1",
+      "traditional_sha256": "ff0ea44808c7f63e83a020cfbb5600ed3cd8523860f48e90aedfe1a8b103d26d",
+      "advanced_sha256": "7c32edf356758a5a1362e1fa7ee0ca7e511035b8cd03696dbc4a12b00837be0e",
+      "reasons": [
+        {
+          "team_id": 1610612752,
+          "invalid_literal_players": [
+            {
+              "player_id": 1630631,
+              "name": "Jose Alvarado",
+              "minutes": "2:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600021",
+      "window": "h1",
+      "traditional_sha256": "5a566449570e502cccd619deb6ed8482df59d32d36fc6ee4a561588750c7d44d",
+      "advanced_sha256": "9693824a79e9ebb137bf0448399f411d5f21615801db74aabf60d5f90ad88784",
+      "reasons": [
+        {
+          "team_id": 1610612745,
+          "invalid_literal_players": [
+            {
+              "player_id": 1627832,
+              "name": "Fred VanVleet",
+              "minutes": "14:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600023",
+      "window": "q3",
+      "traditional_sha256": "c31d94d450333be2e0194ce341aefda46a461de9829aee91f2b4327126797b6f",
+      "advanced_sha256": "deb1e964ed7ba841101497a0a47d056dd8f06532425965ddd0280be278d2e88b",
+      "reasons": [
+        {
+          "team_id": 1610612744,
+          "invalid_literal_players": [
+            {
+              "player_id": 1629646,
+              "name": "Charles Bassey",
+              "minutes": "3:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600087",
+      "window": "h2",
+      "traditional_sha256": "578b89f73547c05e3fc02b72a044dfdcd911d2f3aa57681c391f05f442aeb3e6",
+      "advanced_sha256": "186428fa2573856309175530f97f52b08d45d2cbbcd1db6738d674c9209ca244",
+      "reasons": [
+        {
+          "team_id": 1610612766,
+          "invalid_literal_players": [
+            {
+              "player_id": 1642883,
+              "name": "Sion James",
+              "minutes": "11:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600094",
+      "window": "h2",
+      "traditional_sha256": "67199a0f970e9fb05b2ad09b7a4fc465f71ce40d31957dad0cf7a678715fe747",
+      "advanced_sha256": "c5b0cf02af72974ff7e0771b7f3e37df84af2f0bfc271b247aab46b34540d044",
+      "reasons": [
+        {
+          "team_id": 1610612766,
+          "invalid_literal_players": [
+            {
+              "player_id": 1643515,
+              "name": "Christian Anderson",
+              "minutes": "10:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600095",
+      "window": "q1",
+      "traditional_sha256": "88e6b88bec79ba47e144c00f1a95bd6146a0647c0cec57af71944c164bdf49c2",
+      "advanced_sha256": "840c8969a791bb25b6d1093a26904a726987d2b370b1fb4163a17791833be183",
+      "reasons": [
+        {
+          "team_id": 1610612742,
+          "invalid_literal_players": [
+            {
+              "player_id": 1630230,
+              "name": "Naji Marshall",
+              "minutes": "4:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600097",
+      "window": "h2",
+      "traditional_sha256": "3f90f7c9d2549fac500f49fe2a1737e4f4eebb7eb8048ec72c5bdbcdb01edf5d",
+      "advanced_sha256": "dafcd8d127325d50b8c7187df184d50f32f0e22e39eccdf519292ed32cde4016",
+      "reasons": [
+        {
+          "team_id": 1610612764,
+          "display_residual_seconds": 4.0,
+          "allowed_absolute_seconds": 2
+        }
+      ]
+    },
+    {
+      "game_id": "0022600097",
+      "window": "q4",
+      "traditional_sha256": "57a9fe27a02fe2411d22edd82314d936ed6975b3c022b5f38831efc2c74be3b2",
+      "advanced_sha256": "00b8bb216b0bf27709a2229a95451f13d3aadd19408f8da41c4d48a516899e47",
+      "reasons": [
+        {
+          "team_id": 1610612764,
+          "display_residual_seconds": 4.0,
+          "allowed_absolute_seconds": 2
+        }
+      ]
+    },
+    {
+      "game_id": "0022600107",
+      "window": "q3",
+      "traditional_sha256": "65b920e29f68bd9f19d99722499ad99d984328f7c299c20ae168d13625854f2b",
+      "advanced_sha256": "f6c67c946bd376a73d7b452313e5f6aa484ba9cad64f9e3b4369a0e777d2e130",
+      "reasons": [
+        {
+          "team_id": 1610612745,
+          "invalid_literal_players": [
+            {
+              "player_id": 1630578,
+              "name": "Alperen Sengun",
+              "minutes": "7:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600109",
+      "window": "q2",
+      "traditional_sha256": "96ad9383dda37299301f64c26cfb32cb52a78a0e6cc13c821a93e0bb5426a99a",
+      "advanced_sha256": "1b89fef692f769399198512f6a5442dbb9537f563f003b9620827388b12ae9d4",
+      "reasons": [
+        {
+          "team_id": 1610612759,
+          "invalid_literal_players": [
+            {
+              "player_id": 1641705,
+              "name": "Victor Wembanyama",
+              "minutes": "7:60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game_id": "0022600110",
+      "window": "h1",
+      "traditional_sha256": "b1a197b74e9eba2c79a7fd1a23acf623d36d03a1c251cb3785f2e02e6523bd5c",
+      "advanced_sha256": "5d906f4ebc248f1d253d0ad64d33698d89ebfd8e62d793ae7d3dbe7c3a0f72b0",
+      "reasons": [
+        {
+          "team_id": 1610612743,
+          "invalid_literal_players": [
+            {
+              "player_id": 1642350,
+              "name": "Trevon Brazile",
+              "minutes": "8:60"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pair_count": 11,
+  "retained_bodies": 22,
+  "source_scope": "Original returned laptop capture, nba_api1.12.0, exact direct endpoint window parameters; allHTTP200 complete but numerically unqualified.",
+  "required_resolution": "Independent qualified literal player clocks and same-window rate denominators, or a separately reviewed precise alternative basis. No carrying :60, changing display-residual tolerance, quarter-summed half Advanced rates, or repeated unchanged capture masquerading as resolution.",
+  "production_writes": 0
+}
