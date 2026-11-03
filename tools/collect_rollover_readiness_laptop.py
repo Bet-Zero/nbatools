@@ -30,6 +30,7 @@ MAX_JOBS = 1200
 ENDPOINTS = {
     "boxscoretraditionalv3",
     "boxscoreadvancedv3",
+    "boxscoresummaryv3",
     "leaguedashplayerstats",
     "leaguedashteamstats",
 }
@@ -81,7 +82,20 @@ def validate_request(request):
         if identity in requests_seen:
             raise ValueError("Duplicate source request")
         requests_seen.add(identity)
-        if job["endpoint"].startswith("boxscore"):
+        if job["endpoint"] == "boxscoresummaryv3":
+            if set(params) != {"GameID"} or not re.fullmatch(r"00226\d{5}", params["GameID"]):
+                raise ValueError("Summary source must use its exact game identity only")
+        elif job["endpoint"].startswith("boxscore"):
+            full_traditional = (
+                job["endpoint"] == "boxscoretraditionalv3"
+                and set(params)
+                == {"GameID", "StartPeriod", "EndPeriod", "RangeType", "StartRange", "EndRange"}
+                and all(params[key] == "0" for key in params if key != "GameID")
+            )
+            if full_traditional:
+                if not re.fullmatch(r"00226\d{5}", params["GameID"]):
+                    raise ValueError("Invalid full Traditional source game identity")
+                continue
             if (
                 set(params)
                 != {"GameID", "StartPeriod", "EndPeriod", "RangeType", "StartRange", "EndRange"}
@@ -109,6 +123,7 @@ def validate_request(request):
 def _client(job):
     from nba_api.stats.endpoints import (
         BoxScoreAdvancedV3,
+        BoxScoreSummaryV3,
         BoxScoreTraditionalV3,
         LeagueDashPlayerStats,
         LeagueDashTeamStats,
@@ -116,15 +131,17 @@ def _client(job):
     from nba_api.stats.library.http import NBAStatsHTTP
 
     name, params = job["endpoint"], job["parameters"]
-    if name.startswith("boxscore"):
+    if name == "boxscoresummaryv3":
+        endpoint = BoxScoreSummaryV3(game_id=params["GameID"], get_request=False)
+    elif name.startswith("boxscore"):
         cls = BoxScoreTraditionalV3 if name == "boxscoretraditionalv3" else BoxScoreAdvancedV3
         endpoint = cls(
             game_id=params["GameID"],
             start_period=params["StartPeriod"],
             end_period=params["EndPeriod"],
-            range_type=1,
-            start_range=0,
-            end_range=28800,
+            range_type=params["RangeType"],
+            start_range=params["StartRange"],
+            end_range=params["EndRange"],
             get_request=False,
         )
     else:
@@ -140,9 +157,9 @@ def _client(job):
         )
     actual_parameters = endpoint.parameters.copy()
     planned_parameters = params.copy()
-    # v1.12 adds only this optional default None to the player endpoint.
+    # v1.12 adds this optional default None to both Advanced snapshot endpoints.
     # Requests omits None-valued query items; no statistical filter changes.
-    if name == "leaguedashplayerstats":
+    if name in {"leaguedashplayerstats", "leaguedashteamstats"}:
         for parameters in [actual_parameters, planned_parameters]:
             if "ISTRound" in parameters:
                 if parameters["ISTRound"] is not None:

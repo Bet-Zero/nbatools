@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "classification": "independent_partial_readiness_tools_and_source_package_review_not_full_snapshot_acceptance",
+  "checker": "/root/period_checker",
+  "identity": "Separate Codex checker session. Exact model identifier not exposed; no cross-model claim.",
+  "candidate_sha": "3270a9e3e7d9b208ace64b98eb75260e9922e4dc",
+  "candidate_tree": "ff1491c0627edd593c0e0584942d82c44fdb9c03",
+  "conclusion": "APPROVED for the bounded partial readiness qualification/recovery milestone, subject to normal required CI and integration gates. No unresolved blocking implementation or scope findings.",
+  "review_scope": [
+    "Authenticate original partial capture and preserve602 original successful bodies, failed zero-byte timeout,458never-attempted jobs and all provenance.",
+    "Actual offline period importer/validation/consumer execution admits290 windows including priorQ1, quarantines11 and retains orphanTraditional0116Q1.",
+    "Preserve existing accepted81-game core cells and exact source conflicts; no automatic precedence reversal or source-stat rewrite.",
+    "One fixed517-request self-contained laptop package, with zero repeat of602 successful requests and separately justified new source questions.",
+    "Collector extensions are limited to wholeTraditional exact SDK string-zero defaults, Summary GameID-only and unset/None ISTRound equivalence; transport policy remains unchanged."
+  ],
+  "file_sha256": {
+    "tools/qualify_readiness_partial.py": "aa34cfdd5d9422b9cf8afe0376e764680ad7ad67306c7bf005a6380b497d9171",
+    "tools/build_readiness_recovery.py": "c1eea73533571cba52298c7b36c4621a6f4ee8f354b5671410d3adcb2dc140b0",
+    "tools/collect_rollover_readiness_laptop.py": "8a8abda744da9140b1fb153041c6bc56377555b53e99d17177793c5f152829d4",
+    "tools/stage_rollover_periods.py": "215aefaf0903f7a43e3d91e253226fe7d40e3479b2bfa29799b28b497a1becdf",
+    "src/nbatools/commands/pipeline/pull_game_period_stats.py": "2e561738c9a9efef84de3d0cfb66e3fc3696ba5ac68ecce2e9b34fcf4bb6cede",
+    "tests/test_build_readiness_recovery.py": "e71b2cd97a9a82c93926abf4c7fcbcb5ff26dcada7cdb733d1c328baa877f0cb",
+    "tests/test_collect_rollover_readiness_laptop.py": "4c1fba109be2386128bb7d8c72beeb458b46054435b90f06c5f5ba8b287b4867",
+    "tests/test_readiness_partial_stage.py": "0a8154d9989635ebfea2707dfabba8df0a158d95343b0546b70ffc3bd91ebd4d",
+    "working/nba-tools-completion-program/collection-requests/readiness-recovery-20261103.json": "c72bea8610fc6fb080561052125720ca97d666b12f23d9cff706038d09cd9f6f",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/collection.zip": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/NBA-Tools-Readiness-Recovery.zip": "c4e3e279091f9da8db2343545c836a5c4de50d44f7d8f51f33ed2fa2a5f46366",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/partial-stage.zip": "e98f42882026e15e196ca5b43c057bdfbd2d31877e8dbd27e84cc6deaf3b66be",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/summary-oracles.zip": "487b42ca27753f778be4be677021bd350dbd212b0837167abe9f7768c81c9d71",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/current-sources.zip": "24d041dce0dc568802a4a2664dc2d40c1a4ed7ef4ddb96dc56c826d56587b3c4",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/build-report.json": "281985fdcbcd8ed9885062277b2b4bb330d2152469ef22fa7dfd456b7728b3be",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/extension-scope.json": "80cdccfabb14dda1ce334551c9aa2b036623d0ba2ec0a3ff5208431129d8ff5b",
+    "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/reuse-ledger.json": "ff6a2aa5fbd21fe458bfd9820bce17fdea329f27c09ed649b01c0d33d35a68ee"
+  },
+  "artifact_bindings": {
+    "original_zip_sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+    "canonical_recovery_request_sha256": "ee6eb91d35ff5f1c2c008df3cd460e516bf412c8a0f0161c366c87098823ad6d",
+    "owner_zip_sha256": "c4e3e279091f9da8db2343545c836a5c4de50d44f7d8f51f33ed2fa2a5f46366",
+    "embedded_collector_sha256": "ad5ffe141f2dc0c43f45b910d2c9ac982c05a67084fef246c65698972bf42f32",
+    "reuse_ledger_sha256": "5f0baf2d01aebdb02b895351feb65fba634aff8086e84159c89ea528ef7b30f7",
+    "scope_sha256": "80cdccfabb14dda1ce334551c9aa2b036623d0ba2ec0a3ff5208431129d8ff5b"
+  },
+  "executed_checks": [
+    {
+      "candidate": "3270a9e3e7d9b208ace64b98eb75260e9922e4dc",
+      "command": "PYTHONPATH=src:. /workspace/nbatools/.venv/bin/python -m pytest -q tests/test_build_readiness_recovery.py tests/test_collect_rollover_readiness_laptop.py tests/test_readiness_partial_stage.py",
+      "selected_executed_passed": 65,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "result": "PASS in19.43s, isolated frozen worktree."
+    },
+    {
+      "candidate": "3270a9e3e7d9b208ace64b98eb75260e9922e4dc",
+      "command": "PYTHONPATH=src:. /workspace/nbatools/.venv/bin/python /workspace/nbatools/work/partial-checker/review_frozen.py",
+      "script_sha256": "d1bc6662b708d7993e5612bb221e58896ab6bb554ddb2694b9bbbc8121cd2fc8",
+      "result": {
+        "candidate": "3270a9e3e7d9b208ace64b98eb75260e9922e4dc",
+        "outcome": "PASS",
+        "checks": [
+          "Original actual ZIP/602-source ledger and exact459unfinished parent partition authenticate independently.",
+          "517 prepared HTTPS query URLs are unique and repeat none of602 successes, including transport-equivalent string/None handling.",
+          "First-time scope exactly48newperiod+7whole+1Summary+2newdateAdvanced; same10/31snapshot not repeated.",
+          "All517 embedded SDK jobs preflight offline; owner ZIP/source/request hashes match fixed receipt.",
+          "Collector collect/checkpoint/bundle/resume function ASTs exactly preserve previous fail-fast/no-retry/byte/time/size policy.",
+          "Preserved stage6588player/580team values and keys exactly equal independent raw-source import replay.",
+          "All old81 accepted player/team source cells survive retained context append unchanged.",
+          "Generated standalone Summary/whole transport fixture retains original success, fails on zero-byte timeout, preserves unattempted job and makes zero requests on re-entry."
+        ],
+        "production_writes": 0,
+        "full_snapshot_accepted": false
+      }
+    }
+  ],
+  "independent_source_and_numerical_judgment": {
+    "source_reports": {
+      "partial-source-review.json": "22c0129d411e84facb7a9fc2581830dad9e4854653cf22577806541c6a1ae7a8",
+      "advanced-basis-review.json": "20fa0651ca9f14bc0a1702077b9dfa756277e1ed3edee5b1491ae6c71b317cca",
+      "clock-dependencies.json": "3879e0507e5a2f10ebf9b9ba9adb8171071d9a416a05be1f1703135ce5bf62c9",
+      "actual-replay-review.json": "463b0aa079e767c02c3b6cc28cb26159d65a9e04ab913fa5c070cb659e3b2058",
+      "current92-review.json": "32f1fa804117853bc36704047364341a735adf6728281888552c79e838544af9"
+    },
+    "transport": "1698901 original ZIP bytes/605members/604manifest-bound files authenticate; exact original1061-job parent,603attempts,602successes, oneReadTimeout and458unattempted bind correctly.",
+    "actual_pipeline": "Independently checked all source bodies and51 hash/Git-bound Summary originals, then exercised301paired windows including oldQ1 through existing importer/validators. Exact290accepted/11quarantined,6588player/580team rows. Current preserved staged values and keys match independent replay cell-for-cell.",
+    "actual_consumers": "Independent held-out real-source values: FranzWagner0114/Q4=21PTS,13FGA,TS.6907894736842105; JamalMurray0024/H2=28PTS,13FGA,TS.7847533632286996. RejectedNaji0095/Q1 returns no_result. Candidate tests additionally verifyTatum0001/Q4=2PTS1/5 andBoston0001/H1=58/+13.",
+    "basis": "Direct10/31snapshot matches primary88-game counts for441players;12accepted-corrected-count conflicts remain exactly mapped to7games. Captured disjoint quarter counts match primary in41cells across13games; direct half count arithmetic agrees. No Advanced rate or half data is reconstructed.",
+    "clock_quarantine": "Nine malformed:60windowpairs and0097/Q4,H2 +4sec residual pairs remain rejected with original bytes, no carrying or relaxed2sec tolerance. Summary0111 terminalperiod5 contradicts its four literal scoreperiods; quarter/half score projection remains distinct from OT authority.",
+    "current_population": "Exact92due/final IDs at2026-11-03T09:22:50.755298+00:00. Four new0154\u20130157, zero newOT.442observed player/team keys covered by525retained roster keys. Refresh exact24h due coverage at eventual acceptance.",
+    "new0154": "Primary player clocks sum206.75/side and pointsBOS90/ORL83 versus final whole/schedule108/97;76count and15clock cell conflicts. Current442-player Advanced MIN values match incomplete primary; team Advanced MINBOS286vsrequired293 andORL281vs288. These concrete contradictions justify the two first11/1snapshots. No final92-game core accepted.",
+    "new0157": "Supplementary wholeTraditional CollinMurray-Boyles19:60 remains quarantined; valid primary clocks are not replaced. Earlier0096/0151 source quarantines remain intact."
+  },
+  "package_scope": {
+    "requests": 517,
+    "partition": {
+      "original_transport_gaps": 459,
+      "new4_direct_period_sources": 48,
+      "missing154Summary": 1,
+      "first_direct_whole_Traditional_basis_probes": 7,
+      "newDateTo1101_Player_Team_Advanced": 2
+    },
+    "no_successful_source_repeat": "Independently prepared all517HTTPS query URLs and compared with all602 original successes:zero intersections,517unique URLs, including None omission/string-number equivalence. Same10/31 snapshot is not repeated.",
+    "limits": "Existing serial one-attempt30s/2MB request bounds,>=1s spacing,12h invocation ceiling,20MBZIP/100MBexpanded/2000files bounds remain. Exact collect/checkpoint/bundle/resume function ASTs match prioraccepted code.",
+    "failure_and_launchers": "Generated executable independently exercised with controlled Summary/whole-source transport fixture:one success preserved, secondReadTimeout stops, thirdunattempted retained, re-entry makeszero requests; unpack/hash protocol passes. Existing65tests also exercise generated launchers, byte/partition damage, source forms and all SDK preflights. Finite existing environment selection; no installs/home crawl.",
+    "sdk_execution_boundary": "All embedded517jobs executed offline against available installed SDK mappings. No new endpoint fetch or package install, and no exact1.12 cloud execution claim. Original1.12capture evidence is reused; None-valued optional ISTRound omission is stat-neutral and otherwise parameter comparison fails closed."
+  },
+  "findings": [],
+  "documentation_judgment": "README and sole Resume checkpoint accurately distinguish602transport successes from290accepted windows, retain11timing dependencies/12TSbasis conflicts/new0154partial data, describe517source scope and external stop, preserve11raw/5processed and publication safeguards. No misleading all602-qualified or repaired:60 claim found.",
+  "acceptance_boundaries": [
+    "This approves the partial source/import/package milestone; full snapshot acceptance is not a prerequisite for merging these truthful partial tools.",
+    "Full11raw/5processed validation, trustworthy completeness receipts, coherent source basis, unresolved11timing windows and refreshed exactdue coverage remain open.",
+    "No production write/pointer/readiness waiver, publication approval or new-generation live/backup acceptance is supplied.",
+    "K08/K12 remain paused.",
+    "Receipt/checkpoint-only descendants preserve this review when listed executable/input/artifact hashes remain identical; exact final-head CI is still required."
+  ],
+  "production_writes": 0,
+  "full_snapshot_accepted": false,
+  "readiness_accepted": false
+}

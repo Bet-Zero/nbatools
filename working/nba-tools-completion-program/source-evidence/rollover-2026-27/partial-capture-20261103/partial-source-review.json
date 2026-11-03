@@ -1,0 +1,814 @@
+{
+  "classification": "independent_partial_laptop_capture_qualification_not_full_snapshot_acceptance",
+  "checker": "/root/period_checker",
+  "code_baseline": "f2b731f5ab861e9c76b8b36ef6f13ab0f4e16e1e",
+  "zip_sha256": "03ee634189d3f245badbd0baadc60ddaeac4b9efd978c5d2bd62d02aa7d4ceb3",
+  "zip_bytes": 1698901,
+  "members": 605,
+  "all_manifest_request_attempt_hashes_valid": true,
+  "capture_started_at": "2026-11-02T05:46:54.737061+00:00",
+  "capture_finished_at": "2026-11-02T06:04:52.569135+00:00",
+  "successful_bodies": 602,
+  "successful_traditional": 301,
+  "successful_period_advanced": 300,
+  "successful_season_advanced": 1,
+  "attempted": 603,
+  "failed": 1,
+  "unattempted": 458,
+  "failed_request": {
+    "job": {
+      "endpoint": "boxscoreadvancedv3",
+      "parameters": {
+        "EndPeriod": 1,
+        "EndRange": 28800,
+        "GameID": "0022600116",
+        "RangeType": 1,
+        "StartPeriod": 1,
+        "StartRange": 0
+      },
+      "source_file": "sources/boxscoreadvancedv3_0022600116_q1.json"
+    },
+    "endpoint": "boxscoreadvancedv3",
+    "url": "https://stats.nba.com/stats/boxscoreadvancedv3",
+    "parameters": {
+      "EndPeriod": 1,
+      "EndRange": 28800,
+      "GameID": "0022600116",
+      "RangeType": 1,
+      "StartPeriod": 1,
+      "StartRange": 0
+    },
+    "started_at": "2026-11-02T06:04:22.445606+00:00",
+    "attempts": 1,
+    "timeout_seconds": 30,
+    "http_status": null,
+    "response_complete": false,
+    "transport_complete": false,
+    "error_type": "ReadTimeout",
+    "finished_at": "2026-11-02T06:04:52.516905+00:00",
+    "response_bytes": 0,
+    "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_file": null
+  },
+  "remaining_requests": 459,
+  "paired_windows": 301,
+  "includes_prior_qualified_q1": true,
+  "window_body_checks": 581,
+  "period_errors": [
+    {
+      "window": [
+        "0022600002",
+        1,
+        1
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '2:60')"
+    },
+    {
+      "window": [
+        "0022600002",
+        1,
+        1
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '2:60')"
+    },
+    {
+      "window": [
+        "0022600002",
+        1,
+        1
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '2:60')"
+    },
+    {
+      "window": [
+        "0022600021",
+        1,
+        2
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '14:60')"
+    },
+    {
+      "window": [
+        "0022600021",
+        1,
+        2
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '14:60')"
+    },
+    {
+      "window": [
+        "0022600021",
+        1,
+        2
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '14:60')"
+    },
+    {
+      "window": [
+        "0022600023",
+        3,
+        3
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '3:60')"
+    },
+    {
+      "window": [
+        "0022600023",
+        3,
+        3
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '3:60')"
+    },
+    {
+      "window": [
+        "0022600023",
+        3,
+        3
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '3:60')"
+    },
+    {
+      "window": [
+        "0022600087",
+        3,
+        4
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '11:60')"
+    },
+    {
+      "window": [
+        "0022600087",
+        3,
+        4
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '11:60')"
+    },
+    {
+      "window": [
+        "0022600087",
+        3,
+        4
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '11:60')"
+    },
+    {
+      "window": [
+        "0022600094",
+        3,
+        4
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '10:60')"
+    },
+    {
+      "window": [
+        "0022600094",
+        3,
+        4
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '10:60')"
+    },
+    {
+      "window": [
+        "0022600094",
+        3,
+        4
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '10:60')"
+    },
+    {
+      "window": [
+        "0022600095",
+        1,
+        1
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '4:60')"
+    },
+    {
+      "window": [
+        "0022600095",
+        1,
+        1
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '4:60')"
+    },
+    {
+      "window": [
+        "0022600095",
+        1,
+        1
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '4:60')"
+    },
+    {
+      "window": [
+        "0022600097",
+        4,
+        4
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": ""
+    },
+    {
+      "window": [
+        "0022600097",
+        4,
+        4
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": ""
+    },
+    {
+      "window": [
+        "0022600097",
+        3,
+        4
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": ""
+    },
+    {
+      "window": [
+        "0022600097",
+        3,
+        4
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": ""
+    },
+    {
+      "window": [
+        "0022600107",
+        3,
+        3
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600107",
+        3,
+        3
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600107",
+        3,
+        3
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600109",
+        2,
+        2
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600109",
+        2,
+        2
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600109",
+        2,
+        2
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '7:60')"
+    },
+    {
+      "window": [
+        "0022600110",
+        1,
+        2
+      ],
+      "endpoint": "boxscoretraditionalv3",
+      "error": "('invalid literal clock', '8:60')"
+    },
+    {
+      "window": [
+        "0022600110",
+        1,
+        2
+      ],
+      "endpoint": "boxscoreadvancedv3",
+      "error": "('invalid literal clock', '8:60')"
+    },
+    {
+      "window": [
+        "0022600110",
+        1,
+        2
+      ],
+      "endpoint": "paired",
+      "error": "('invalid literal clock', '8:60')"
+    }
+  ],
+  "complete_captured_games": [
+    "0022600001",
+    "0022600002",
+    "0022600003",
+    "0022600004",
+    "0022600005",
+    "0022600006",
+    "0022600007",
+    "0022600008",
+    "0022600009",
+    "0022600015",
+    "0022600016",
+    "0022600017",
+    "0022600018",
+    "0022600019",
+    "0022600020",
+    "0022600021",
+    "0022600022",
+    "0022600023",
+    "0022600024",
+    "0022600085",
+    "0022600086",
+    "0022600087",
+    "0022600088",
+    "0022600089",
+    "0022600090",
+    "0022600091",
+    "0022600092",
+    "0022600093",
+    "0022600094",
+    "0022600095",
+    "0022600096",
+    "0022600097",
+    "0022600098",
+    "0022600099",
+    "0022600100",
+    "0022600101",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600105",
+    "0022600106",
+    "0022600107",
+    "0022600108",
+    "0022600109",
+    "0022600110",
+    "0022600111",
+    "0022600112",
+    "0022600113",
+    "0022600114",
+    "0022600115"
+  ],
+  "partial_captured_games": [
+    "0022600116"
+  ],
+  "quarter_vs_direct_half_count_differences": [],
+  "quarter_vs_qualified_core_count_differences": [
+    {
+      "game_id": "0022600007",
+      "player_id": 1631114,
+      "field": "STL",
+      "quarter_counts": 1,
+      "qualified_core": 0
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1642349,
+      "field": "STL",
+      "quarter_counts": 4,
+      "qualified_core": 5
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1641717,
+      "field": "DREB",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1641717,
+      "field": "REB",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1631119,
+      "field": "DREB",
+      "quarter_counts": 6,
+      "qualified_core": 7
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1631119,
+      "field": "REB",
+      "quarter_counts": 6,
+      "qualified_core": 7
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1643813,
+      "field": "AST",
+      "quarter_counts": 2,
+      "qualified_core": 3
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1628963,
+      "field": "AST",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1641747,
+      "field": "OREB",
+      "quarter_counts": 0,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1641747,
+      "field": "REB",
+      "quarter_counts": 0,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1643624,
+      "field": "OREB",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600007",
+      "player_id": 1643624,
+      "field": "REB",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600009",
+      "player_id": 201142,
+      "field": "AST",
+      "quarter_counts": 5,
+      "qualified_core": 6
+    },
+    {
+      "game_id": "0022600009",
+      "player_id": 1631095,
+      "field": "STL",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600009",
+      "player_id": 203500,
+      "field": "STL",
+      "quarter_counts": 0,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600085",
+      "player_id": 1628976,
+      "field": "STL",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600085",
+      "player_id": 1630217,
+      "field": "STL",
+      "quarter_counts": 2,
+      "qualified_core": 3
+    },
+    {
+      "game_id": "0022600087",
+      "player_id": 1630549,
+      "field": "STL",
+      "quarter_counts": 1,
+      "qualified_core": 0
+    },
+    {
+      "game_id": "0022600087",
+      "player_id": 1631165,
+      "field": "STL",
+      "quarter_counts": 1,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600088",
+      "player_id": 1626181,
+      "field": "STL",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600088",
+      "player_id": 1643591,
+      "field": "STL",
+      "quarter_counts": 0,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600091",
+      "player_id": 1630230,
+      "field": "FGA",
+      "quarter_counts": 14,
+      "qualified_core": 13
+    },
+    {
+      "game_id": "0022600091",
+      "player_id": 1630230,
+      "field": "FG3A",
+      "quarter_counts": 7,
+      "qualified_core": 6
+    },
+    {
+      "game_id": "0022600092",
+      "player_id": 1631123,
+      "field": "DREB",
+      "quarter_counts": 1,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600092",
+      "player_id": 1631123,
+      "field": "REB",
+      "quarter_counts": 1,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600092",
+      "player_id": 1642346,
+      "field": "DREB",
+      "quarter_counts": 2,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600092",
+      "player_id": 1642346,
+      "field": "REB",
+      "quarter_counts": 3,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600094",
+      "player_id": 1630700,
+      "field": "AST",
+      "quarter_counts": 5,
+      "qualified_core": 4
+    },
+    {
+      "game_id": "0022600094",
+      "player_id": 203468,
+      "field": "AST",
+      "quarter_counts": 1,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600102",
+      "player_id": 1630543,
+      "field": "TOV",
+      "quarter_counts": 2,
+      "qualified_core": 3
+    },
+    {
+      "game_id": "0022600102",
+      "player_id": 1627739,
+      "field": "TOV",
+      "quarter_counts": 3,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600103",
+      "player_id": 203897,
+      "field": "FG3A",
+      "quarter_counts": 10,
+      "qualified_core": 9
+    },
+    {
+      "game_id": "0022600103",
+      "player_id": 1642270,
+      "field": "OREB",
+      "quarter_counts": 5,
+      "qualified_core": 4
+    },
+    {
+      "game_id": "0022600103",
+      "player_id": 1642270,
+      "field": "REB",
+      "quarter_counts": 11,
+      "qualified_core": 10
+    },
+    {
+      "game_id": "0022600103",
+      "player_id": 1641739,
+      "field": "OREB",
+      "quarter_counts": 0,
+      "qualified_core": 1
+    },
+    {
+      "game_id": "0022600103",
+      "player_id": 1641739,
+      "field": "REB",
+      "quarter_counts": 2,
+      "qualified_core": 3
+    },
+    {
+      "game_id": "0022600104",
+      "player_id": 203471,
+      "field": "AST",
+      "quarter_counts": 5,
+      "qualified_core": 4
+    },
+    {
+      "game_id": "0022600104",
+      "player_id": 1631217,
+      "field": "AST",
+      "quarter_counts": 1,
+      "qualified_core": 2
+    },
+    {
+      "game_id": "0022600108",
+      "player_id": 1642273,
+      "field": "AST",
+      "quarter_counts": 4,
+      "qualified_core": 5
+    },
+    {
+      "game_id": "0022600108",
+      "player_id": 203076,
+      "field": "AST",
+      "quarter_counts": 5,
+      "qualified_core": 4
+    },
+    {
+      "game_id": "0022600109",
+      "player_id": 1642383,
+      "field": "FGA",
+      "quarter_counts": 2,
+      "qualified_core": 3
+    }
+  ],
+  "snapshot_rows": 441,
+  "snapshot_GP_WL_population_matches": true,
+  "snapshot_source_sha256": "c53e696f1ba87c1d91039aecf605ae828fb08b26c3b530b6ac58efc83a411961",
+  "snapshot_TS_basis_results": [
+    {
+      "basis": "fresh_primary88",
+      "rows": 1990,
+      "players": 441,
+      "TS_conflicts": 0,
+      "conflicts": []
+    },
+    {
+      "basis": "qualified_core88",
+      "rows": 1990,
+      "players": 441,
+      "TS_conflicts": 12,
+      "conflicts": [
+        {
+          "player_id": 203924,
+          "name": "Jerami Grant",
+          "PTS": 55,
+          "FGA": 50,
+          "FTA": 15,
+          "expected_TS": 0.48586572438162545,
+          "snapshot_TS": 0.495
+        },
+        {
+          "player_id": 1627734,
+          "name": "Domantas Sabonis",
+          "PTS": 96,
+          "FGA": 54,
+          "FTA": 23,
+          "expected_TS": 0.7485963817841547,
+          "snapshot_TS": 0.737
+        },
+        {
+          "player_id": 1628997,
+          "name": "Caleb Martin",
+          "PTS": 18,
+          "FGA": 11,
+          "FTA": 0,
+          "expected_TS": 0.8181818181818182,
+          "snapshot_TS": 0.8
+        },
+        {
+          "player_id": 1630230,
+          "name": "Naji Marshall",
+          "PTS": 41,
+          "FGA": 36,
+          "FTA": 5,
+          "expected_TS": 0.5366492146596858,
+          "snapshot_TS": 0.523
+        },
+        {
+          "player_id": 1630552,
+          "name": "Jalen Johnson",
+          "PTS": 128,
+          "FGA": 107,
+          "FTA": 36,
+          "expected_TS": 0.5210029306414848,
+          "snapshot_TS": 0.519
+        },
+        {
+          "player_id": 1630568,
+          "name": "Luka Garza",
+          "PTS": 23,
+          "FGA": 16,
+          "FTA": 10,
+          "expected_TS": 0.5637254901960784,
+          "snapshot_TS": 0.537
+        },
+        {
+          "player_id": 1631248,
+          "name": "Baylor Scheierman",
+          "PTS": 17,
+          "FGA": 21,
+          "FTA": 0,
+          "expected_TS": 0.40476190476190477,
+          "snapshot_TS": 0.425
+        },
+        {
+          "player_id": 1631260,
+          "name": "AJ Green",
+          "PTS": 40,
+          "FGA": 29,
+          "FTA": 0,
+          "expected_TS": 0.6896551724137931,
+          "snapshot_TS": 0.667
+        },
+        {
+          "player_id": 1642383,
+          "name": "Walter Clayton Jr.",
+          "PTS": 21,
+          "FGA": 18,
+          "FTA": 3,
+          "expected_TS": 0.5434782608695652,
+          "snapshot_TS": 0.573
+        },
+        {
+          "player_id": 1642907,
+          "name": "Cedric Coward",
+          "PTS": 65,
+          "FGA": 51,
+          "FTA": 2,
+          "expected_TS": 0.6264456437933693,
+          "snapshot_TS": 0.622
+        },
+        {
+          "player_id": 1643409,
+          "name": "Cameron Boozer",
+          "PTS": 106,
+          "FGA": 85,
+          "FTA": 29,
+          "expected_TS": 0.5421440261865793,
+          "snapshot_TS": 0.532
+        },
+        {
+          "player_id": 1643417,
+          "name": "Nate Ament",
+          "PTS": 30,
+          "FGA": 25,
+          "FTA": 8,
+          "expected_TS": 0.5259467040673211,
+          "snapshot_TS": 0.545
+        }
+      ]
+    }
+  ],
+  "production_writes": 0,
+  "readiness_accepted": false,
+  "historical_basis_note": "The separate advanced-basis-review.json compares old81 to its matching old432-player snapshot (zero conflicts). The current441-player snapshot is compared here only to88-game bases with matching cutoff/population."
+}
