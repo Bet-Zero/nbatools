@@ -115,3 +115,10 @@ Then all11raw/5processed datasets, trustworthy receipts and newly refreshed exac
 No production write/pointer change, readiness waiver, new credentials/spend or
 K08/K12 work occurred. PR571/572 and LeBron publication/16 live answers/backup
 remain applicable historical evidence, not repeated execution on this candidate.
+
+The [final independent review](final-candidate-review.json) APPROVES semantic
+candidate3270a9e3e7d9b208ace64b98eb75260e9922e4dc;65focused author checks and65
+independent checks pass. All602 successful request URLs are excluded from the
+517-job package. Receipt-only descendants preserve the listed executable/input
+hashes. Exact final-head CI, post-merge CI and stop state are recorded in
+[PR573](https://github.com/Bet-Zero/nbatools/pull/573) and its final receipt.
