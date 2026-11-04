@@ -214,6 +214,181 @@
       "source_ts": 0.545
     }
   ],
+  "source_period_population": {
+    "scope": "independent_bound_source_audit_plus_current_stage_coverage",
+    "audit_sha256": "cb0378271140376177596882e03a71eb3bc4301d4561a97b805054ba580992ac",
+    "audit": {
+      "checker": "/root/recovery_checker",
+      "candidate": "1739880a958fd4d4aeffaf4197d6b78e6ef85fe9",
+      "scope": "independent_all92Summary_period_denominator_and_originalTeamAdvanced_clock_comparison",
+      "summaries": 92,
+      "expected_retained92_windows": 556,
+      "captured_windows": 555,
+      "missing_windows": [
+        [
+          "0022600128",
+          5,
+          14
+        ]
+      ],
+      "overtime_games": [
+        {
+          "game_id": "0022600110",
+          "period": 5,
+          "summary_sha256": "ec0a5134e9027a8fb54b128c3edcb5601073e9220b175d7c523e910b745989ff",
+          "captured": true
+        },
+        {
+          "game_id": "0022600120",
+          "period": 5,
+          "summary_sha256": "f7e1e36e81a3357da2fdc09781f4f2c0320c0f5d42defaa5d910043818e83a1d",
+          "captured": true
+        },
+        {
+          "game_id": "0022600128",
+          "period": 5,
+          "summary_sha256": "89d68e6e61d494b1972ba19c472c5c6bd90d19ac7d8187f8b9675e7cd1a81b7c",
+          "captured": false
+        },
+        {
+          "game_id": "0022600141",
+          "period": 5,
+          "summary_sha256": "5c4dfa0931f2d348298d23f5344791b2fae857977d2cabdd86e4a4242f177551",
+          "captured": true
+        }
+      ],
+      "originalTeamAdvanced_elapsed_minutes_matches_all30_observed_period_arrays": true,
+      "summary_header_disagreements": [
+        {
+          "game_id": "0022600111",
+          "header_period": 5,
+          "max_observed_period": 4,
+          "summary_sha256": "6f65b8de95676d782f1e774d92227478eae00defe68980882277483198dce5e0"
+        }
+      ],
+      "whole_period_universe_accepted": false,
+      "known_required_manifest_denominator_limitation": "Canonical team minutes264 in0128 hide authoritative Summary OT; ordinary manifest missing-key counts omit the uncaptured overtime window.",
+      "production_writes": 0,
+      "full_snapshot_accepted": false
+    },
+    "expected_known_overtime_team_keys": [
+      [
+        "0022600110",
+        1610612740
+      ],
+      [
+        "0022600110",
+        1610612743
+      ],
+      [
+        "0022600120",
+        1610612739
+      ],
+      [
+        "0022600120",
+        1610612750
+      ],
+      [
+        "0022600128",
+        1610612738
+      ],
+      [
+        "0022600128",
+        1610612751
+      ],
+      [
+        "0022600141",
+        1610612759
+      ],
+      [
+        "0022600141",
+        1610612762
+      ]
+    ],
+    "observed_overtime_team_keys": [
+      [
+        "0022600110",
+        1610612740
+      ],
+      [
+        "0022600110",
+        1610612743
+      ],
+      [
+        "0022600120",
+        1610612739
+      ],
+      [
+        "0022600120",
+        1610612750
+      ],
+      [
+        "0022600141",
+        1610612759
+      ],
+      [
+        "0022600141",
+        1610612762
+      ]
+    ],
+    "missing_overtime_team_keys": [
+      [
+        "0022600128",
+        1610612738
+      ],
+      [
+        "0022600128",
+        1610612751
+      ]
+    ],
+    "unexpected_overtime_team_keys": [],
+    "duplicate_overtime_team_keys": [],
+    "whole_game_clock_conflicts": [
+      {
+        "game_id": "0022600120",
+        "team_id": 1610612739,
+        "whole_game_minutes": 264.0,
+        "source_period_expected_minutes": 265,
+        "summary_sha256": "f7e1e36e81a3357da2fdc09781f4f2c0320c0f5d42defaa5d910043818e83a1d"
+      },
+      {
+        "game_id": "0022600120",
+        "team_id": 1610612750,
+        "whole_game_minutes": 266.0,
+        "source_period_expected_minutes": 265,
+        "summary_sha256": "f7e1e36e81a3357da2fdc09781f4f2c0320c0f5d42defaa5d910043818e83a1d"
+      },
+      {
+        "game_id": "0022600128",
+        "team_id": 1610612738,
+        "whole_game_minutes": 264.0,
+        "source_period_expected_minutes": 265,
+        "summary_sha256": "89d68e6e61d494b1972ba19c472c5c6bd90d19ac7d8187f8b9675e7cd1a81b7c"
+      },
+      {
+        "game_id": "0022600128",
+        "team_id": 1610612751,
+        "whole_game_minutes": 263.0,
+        "source_period_expected_minutes": 265,
+        "summary_sha256": "89d68e6e61d494b1972ba19c472c5c6bd90d19ac7d8187f8b9675e7cd1a81b7c"
+      },
+      {
+        "game_id": "0022600141",
+        "team_id": 1610612759,
+        "whole_game_minutes": 264.0,
+        "source_period_expected_minutes": 265,
+        "summary_sha256": "5c4dfa0931f2d348298d23f5344791b2fae857977d2cabdd86e4a4242f177551"
+      }
+    ],
+    "unknown_overtime_player_game_ids": [
+      "0022600128"
+    ],
+    "overtime_player_participation_inferred": false,
+    "standard_manifest_missing_keys_do_not_measure_overtime_completeness": true,
+    "whole_period_universe_accepted": false,
+    "source_period_completeness_passed": false,
+    "production_writes": 0
+  },
   "snapshot_record_consistency": {
     "player_ids": 442,
     "team_ids": 30,
@@ -400,7 +575,7 @@
   },
   "usage_independent_numerical_basis": "not_established",
   "exact_due_population": {
-    "checked_at": "2026-11-04T03:48:49.094902+00:00",
+    "checked_at": "2026-11-04T03:56:53.722566+00:00",
     "lag_hours": 24,
     "due_game_ids": [
       "0022600001",
@@ -548,8 +723,12 @@
       "sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17"
     },
     "qualification-evidence.zip": {
-      "bytes": 865694,
-      "sha256": "9a5a0962a98733da4dc05e342265c0f815c495fa37b0b8b4c88725a050d34145"
+      "bytes": 868997,
+      "sha256": "535f20e988b6a7217c8e302e38c87f16e85d77afefdaddc5459010f047049c95"
+    },
+    "source-period-denominator.json": {
+      "bytes": 1717,
+      "sha256": "cb0378271140376177596882e03a71eb3bc4301d4561a97b805054ba580992ac"
     },
     "staging-custody.json": {
       "bytes": 496,

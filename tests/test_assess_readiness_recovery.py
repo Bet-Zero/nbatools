@@ -127,6 +127,19 @@ def test_all_sixteen_obligations_remain_when_period_sources_are_missing(tmp_path
     assert result["exact_due_population"]["missing_due_game_ids"] == [
         f"0022600{n}" for n in range(158, 173)
     ]
+    population = result["source_period_population"]
+    assert len(population["missing_overtime_team_keys"]) == 8
+    assert population["unknown_overtime_player_game_ids"] == [
+        "0022600110",
+        "0022600120",
+        "0022600128",
+        "0022600141",
+    ]
+    assert population["audit"]["expected_retained92_windows"] == 556
+    assert population["audit"]["captured_windows"] == 555
+    assert population["audit"]["missing_windows"] == [["0022600128", 5, 14]]
+    assert population["audit"]["summary_header_disagreements"][0]["game_id"] == "0022600111"
+    assert not population["source_period_completeness_passed"]
     assert result["source_input_preserved"]
     assert not result["full_snapshot_accepted"] and not result["readiness_accepted"]
     assert not result["trusted_acceptance_receipt_created"] and result["production_writes"] == 0
@@ -191,3 +204,50 @@ def test_minute_interval_preserves_subseconds_and_inclusive_boundary_uncertainty
         minute_mean_interval([])
     with pytest.raises(ValueError, match="Invalid serialized"):
         minute_mean_interval([float("nan")])
+
+
+def test_unrequested_summary_overtime_is_not_hidden_by_standard_manifest(tmp_path):
+    from tools.assess_readiness_recovery import source_period_population
+
+    games = [22600110, 22600120, 22600128, 22600141]
+    teams = [
+        dict(game_id=gid, team_id=tid, minutes=264 if gid == 22600128 else 265)
+        for gid in games
+        for tid in [1610612738, 1610612751]
+    ]
+    save(tmp_path, "team_game_stats", teams)
+    # The original fixed transport plan captured all its requested overtime
+    # windows, but Summary establishes another overtime game outside that plan.
+    save(
+        tmp_path,
+        "team_game_period_stats",
+        [
+            dict(game_id=gid, team_id=tid, period_family="overtime", period_value="ot")
+            for gid in games
+            if gid != 22600128
+            for tid in [1610612738, 1610612751]
+        ],
+    )
+    result = source_period_population(tmp_path)
+    assert len(result["expected_known_overtime_team_keys"]) == 8
+    assert len(result["observed_overtime_team_keys"]) == 6
+    assert result["missing_overtime_team_keys"] == [
+        ["0022600128", 1610612738],
+        ["0022600128", 1610612751],
+    ]
+    assert result["unknown_overtime_player_game_ids"] == ["0022600128"]
+    assert not result["overtime_player_participation_inferred"]
+    assert not result["source_period_completeness_passed"]
+    assert not result["whole_period_universe_accepted"]
+    assert len(result["whole_game_clock_conflicts"]) == 2
+    assert {r["source_period_expected_minutes"] for r in result["whole_game_clock_conflicts"]} == {
+        265
+    }
+    assert result["audit"]["summary_header_disagreements"] == [
+        dict(
+            game_id="0022600111",
+            header_period=5,
+            max_observed_period=4,
+            summary_sha256="6f65b8de95676d782f1e774d92227478eae00defe68980882277483198dce5e0",
+        )
+    ]

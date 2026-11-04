@@ -36,6 +36,7 @@ SUFFIX = "2026-27_regular_season.csv"
 ROLES_SHA = "255ec5a2c14e0fdc163bdf07a446c0273047f8f1e3dfb54e555ec148dc1999b3"
 ROSTER_SHA = "6a4f136a4488a8be5ae49117160c5bc21c5ea43b3b1f3082b872153e099ef8c8"
 CURRENT_SHA = "24d041dce0dc568802a4a2664dc2d40c1a4ed7ef4ddb96dc56c826d56587b3c4"
+PERIOD_AUDIT_SHA = "cb0378271140376177596882e03a71eb3bc4301d4561a97b805054ba580992ac"
 
 
 def _checked_csv(path, expected):
@@ -409,6 +410,78 @@ def due_population(root, checked_at):
     )
 
 
+def source_period_population(root):
+    """Keep the independent Summary denominator distinct from standard manifests.
+
+    Known overtime requires its two source-context team keys. Missing player
+    overtime participation remains unknown; never fill zero-duration player rows
+    or derive participation from a whole-game or team row.
+    """
+    raw = (RECOVERY / "source-period-denominator.json").read_bytes()
+    _require(
+        hashlib.sha256(raw).hexdigest() == PERIOD_AUDIT_SHA,
+        "Independent period denominator audit differs",
+    )
+    audit = json.loads(raw)
+    teams = pd.read_csv(root / "data/raw/team_game_stats" / SUFFIX)
+    expected, clock_conflicts = set(), []
+    for game in audit["overtime_games"]:
+        gid = game["game_id"]
+        context = teams.loc[pd.to_numeric(teams.game_id, errors="raise").eq(int(gid))]
+        _require(
+            len(context) == 2 and context.team_id.nunique() == 2,
+            "Known Summary overtime game requires exactly two context teams",
+        )
+        expected_minutes = 240 + 25 * (game["period"] - 4)
+        for row in context.itertuples():
+            expected.add((gid, int(row.team_id)))
+            if row.minutes != expected_minutes:
+                clock_conflicts.append(
+                    dict(
+                        game_id=gid,
+                        team_id=int(row.team_id),
+                        whole_game_minutes=float(row.minutes),
+                        source_period_expected_minutes=expected_minutes,
+                        summary_sha256=game["summary_sha256"],
+                    )
+                )
+    path = root / "data/raw/team_game_period_stats" / SUFFIX
+    observed, duplicates = set(), []
+    if path.exists():
+        periods = pd.read_csv(path, dtype={"period_value": str})
+        overtime = periods.loc[periods.period_family.eq("overtime") & periods.period_value.eq("ot")]
+        for row in overtime.itertuples():
+            key = (str(int(row.game_id)).zfill(10), int(row.team_id))
+            if key in observed:
+                duplicates.append(list(key))
+            observed.add(key)
+    missing = sorted(expected - observed)
+    return dict(
+        scope="independent_bound_source_audit_plus_current_stage_coverage",
+        audit_sha256=PERIOD_AUDIT_SHA,
+        audit=audit,
+        expected_known_overtime_team_keys=[list(k) for k in sorted(expected)],
+        observed_overtime_team_keys=[list(k) for k in sorted(observed)],
+        missing_overtime_team_keys=[list(k) for k in missing],
+        unexpected_overtime_team_keys=[list(k) for k in sorted(observed - expected)],
+        duplicate_overtime_team_keys=duplicates,
+        whole_game_clock_conflicts=clock_conflicts,
+        unknown_overtime_player_game_ids=sorted({k[0] for k in missing}),
+        overtime_player_participation_inferred=False,
+        standard_manifest_missing_keys_do_not_measure_overtime_completeness=True,
+        whole_period_universe_accepted=False,
+        source_period_completeness_passed=not (
+            missing
+            or observed - expected
+            or duplicates
+            or clock_conflicts
+            or audit["missing_windows"]
+            or audit["summary_header_disagreements"]
+        ),
+        production_writes=0,
+    )
+
+
 def assess(stage: Path, output: Path, *, checked_at=None):
     """Attempt the normal full dataset gates without accepting their failures."""
     from nbatools.commands.pipeline import (
@@ -485,6 +558,7 @@ def assess(stage: Path, output: Path, *, checked_at=None):
         manifest_validation_errors=manifest_errors,
         numerical_source_basis=source_basis_report(root),
         snapshot_record_consistency=snapshot_record_checks(root, output / "original"),
+        source_period_population=source_period_population(root),
         exact_due_population=due_population(root, checked_at),
         source_input_preserved=True,
         full_snapshot_accepted=False,
