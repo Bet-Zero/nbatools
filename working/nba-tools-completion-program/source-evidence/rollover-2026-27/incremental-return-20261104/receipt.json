@@ -1,0 +1,245 @@
+{
+  "classification": "offline_qualification_not_full_acceptance",
+  "retained_direct_successes": 1537,
+  "known_expected_windows": 647,
+  "admitted_windows": 641,
+  "missing_windows": [
+    [
+      22600142,
+      "half",
+      "second"
+    ],
+    [
+      22600142,
+      "quarter",
+      "3"
+    ],
+    [
+      22600144,
+      "half",
+      "first"
+    ],
+    [
+      22600144,
+      "quarter",
+      "2"
+    ],
+    [
+      22600161,
+      "quarter",
+      "2"
+    ],
+    [
+      22600161,
+      "quarter",
+      "3"
+    ]
+  ],
+  "required_raw": 11,
+  "required_processed": 5,
+  "new_snapshot_cells_promoted": false,
+  "reported_usage_independently_accepted": false,
+  "full_snapshot_accepted": false,
+  "production_writes": 0,
+  "code_revision": "3e347e47e964ba505d670c650e8e6602e9d6c23c",
+  "new_windows": 90,
+  "source_summary161_period_count": 4,
+  "prior_stage_raw_preservation": true,
+  "archive_hashes": {
+    "clock-source-originals.zip": "719eff651a2dbf6303f3a3e8fb2c1a0d65094561d28089f66fdd5824d4ff2bea",
+    "collection.zip": "d98ddb5f8b5f3ac7c288abed786b92c6ff3474b7fd97cdc0dead58b87c7736ab",
+    "qualification-evidence.zip": "04151f5ed20aedf27ee2a5c279ee75babc9084170a01b64ab79104ec8eaa4486",
+    "current-run.zip": "8db6864968d2f6060959310517d6ef0d4838ded54b6100873ec8a8163264afc8"
+  },
+  "required_dataset_records": [
+    {
+      "name": "games",
+      "state": "passed"
+    },
+    {
+      "name": "schedule",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_starter_roles",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "player_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "rosters",
+      "state": "passed"
+    },
+    {
+      "name": "standings_snapshots",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "game_features",
+      "state": "passed"
+    },
+    {
+      "name": "schedule_context_features",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "league_season_stats",
+      "state": "passed"
+    }
+  ],
+  "due_population": {
+    "checked_at": "2026-11-04T09:25:46.952498+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [],
+    "observed_final_games": 107,
+    "population_current_against_retained_schedule": true,
+    "final_acceptance_requires_new_freshness_check": true
+  },
+  "independent_review": {
+    "identity": "/root/independent_check",
+    "model": "inherited session model; separate agent",
+    "revision": "3e347e47e964ba505d670c650e8e6602e9d6c23c",
+    "sha256": "44ca9ee471755300c9d51f2c7396e0c74a6ed2e252ed7dc4df1cbaad32693a5f",
+    "verdict": "bounded_checkpoint_approved_conditional_exact_head_CI",
+    "tests_passed": 4
+  }
+}
