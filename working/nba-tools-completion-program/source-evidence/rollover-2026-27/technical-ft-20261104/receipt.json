@@ -1,0 +1,407 @@
+{
+  "classification": "reviewed_unpublished_technical_ft_qualification",
+  "baseline_main": "d0b970dbb1effdbfcb5b0f7aa1217e99ef8fec6d",
+  "reviewed_code": "f123299a05fcf8e0287c6e698ae8aaf68131a5b6",
+  "admitted_windows": 645,
+  "known_required_windows": 647,
+  "remaining_period_windows": [
+    [
+      "0022600142",
+      "quarter",
+      "3"
+    ],
+    [
+      "0022600142",
+      "half",
+      "second"
+    ]
+  ],
+  "required_raw": 11,
+  "required_processed": 5,
+  "required_dataset_records": [
+    {
+      "name": "games",
+      "state": "passed"
+    },
+    {
+      "name": "schedule",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_starter_roles",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "player_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "rosters",
+      "state": "passed"
+    },
+    {
+      "name": "standings_snapshots",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "game_features",
+      "state": "passed"
+    },
+    {
+      "name": "schedule_context_features",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "league_season_stats",
+      "state": "passed"
+    }
+  ],
+  "executed_stages": [
+    {
+      "stage": "nbatools.commands.pipeline.validate_raw",
+      "state": "failed",
+      "error": "Cross-dataset coverage validation failed: player_game_period_stats: coverage missing 48 requested keys; team_game_period_stats: coverage missing 4 requested keys"
+    },
+    {
+      "stage": "nbatools.commands.pipeline.build_team_game_features",
+      "state": "passed"
+    },
+    {
+      "stage": "nbatools.commands.pipeline.build_game_features",
+      "state": "passed"
+    },
+    {
+      "stage": "nbatools.commands.pipeline.build_schedule_context_features",
+      "state": "passed"
+    },
+    {
+      "stage": "nbatools.commands.pipeline.build_player_game_features",
+      "state": "passed"
+    },
+    {
+      "stage": "nbatools.commands.pipeline.build_league_season_stats",
+      "state": "passed"
+    }
+  ],
+  "qualified_positive_rate_cases": 55,
+  "source_body_requests": 0,
+  "retained_successful_direct_identities": 1537,
+  "author_focused_tests": 15,
+  "author_importer_execution_tests": 35,
+  "independent_review": {
+    "classification": "genuine_separate_agent_frozen_review",
+    "reviewer": "/root/credit_checker (Codex separate agent, inherited model; no Claude review claimed)",
+    "reviewed_sha": "f123299a05fcf8e0287c6e698ae8aaf68131a5b6",
+    "verdict": "approve_for_bounded_0144_retained_source_qualification",
+    "material_findings": [],
+    "independent_tests": {
+      "command": ".venv/bin/python -m pytest -q work/credit-checker/review_test.py --disable-warnings",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 7.49,
+      "hostile_event_or_direct_field_cases": 11,
+      "other_oracle_clock_witness_TS_pipeline_cases": 5
+    },
+    "independent_numbers": {
+      "player_observations": 55,
+      "window_populations": {
+        "Q1": 17,
+        "Q2": 19,
+        "H1": 19
+      },
+      "all_match": [
+        "plus_minus",
+        "usage_percentage",
+        "offensive_rating",
+        "defensive_rating",
+        "assist_percentage",
+        "rebound_percentage",
+        "turnover_ratio"
+      ],
+      "reported_possessions_used_as_oracle": false,
+      "johnson_Q2_PTS": 3,
+      "johnson_Q2_TS": "75/122",
+      "johnson_H1_PTS": 5,
+      "johnson_H1_TS": "125/272",
+      "Q1_plays_ATL_CLE": [
+        27,
+        25
+      ],
+      "Q2_plays_ATL_CLE": [
+        28,
+        30
+      ],
+      "Q1_possessions_ATL_CLE": [
+        23,
+        23
+      ],
+      "Q2_possessions_ATL_CLE": [
+        26,
+        26
+      ]
+    },
+    "pipeline": {
+      "independent_fresh_replay": true,
+      "admitted_windows": 645,
+      "known_required_windows": 647,
+      "raw_bytes_and_prior_period_prefixes_preserved": true,
+      "required_structural_records_pass": 14,
+      "required_structural_records_fail": 2,
+      "player_period_missing_keys": 48,
+      "team_period_missing_keys": 4,
+      "builders_pass": 5,
+      "full_snapshot_accepted": false
+    },
+    "remaining_count_obligations": {
+      "original": 86,
+      "resolved_0144": 3,
+      "remaining": 83,
+      "compared_complete_game_conflicts": 80,
+      "compared_conflict_games": 17,
+      "complete_games": 106,
+      "unadmitted_0142_original_conflicts": 3
+    },
+    "scope_limits": [
+      "Only retained0144Q1/Q2/H1 credit semantics qualified; no generalNBApossession model acceptance.",
+      "0142Q3/H2 timing/rates nonunique; two event-consistent outgoing-player witnesses preserved.",
+      "0160 exact timing and broader full numerical/readiness/R2/publication acceptance remain unresolved."
+    ],
+    "source_sha256": {
+      "0144_events": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "0144_whole": "824203da10364ac23f0bb60ea2d4995c134b1ef2352ffe0b17be42ddc9b30e13"
+    },
+    "artifacts": [
+      {
+        "file": "review_test.py",
+        "sha256": "090d7d7308b8c29e5459ead56e27121b59b6f1cc6dd5521ada1ae91c4e2f8d11"
+      },
+      {
+        "file": "independent-rate-oracles.json",
+        "sha256": "f86f8b4c4b1d4864f74155f27dc93ffefad542b491d03a393fd44350c37035a0"
+      },
+      {
+        "file": "defensive-rating-oracles.json",
+        "sha256": "543bad315297a0fb846e9c8f9fd57eec113f8d1776b7e337bf83e6c3aa8d21bb"
+      },
+      {
+        "file": "0142-obligation-ledger.json",
+        "sha256": "9ff7e6773b75fcb9a8258fe3c3ec06dab0dc8e3b479fa6121b590a685177ce46"
+      },
+      {
+        "file": "count-coherence-review.json",
+        "sha256": "6646db7936fe504f7d9a1d8f2c0d852a7462fe37796f92f86794c4e282258f16"
+      },
+      {
+        "file": "oracle.py",
+        "sha256": "e57565d5c5fa080bc7c303e619e4bc4eaec36e321df5a2cb58063a9b8166a944"
+      },
+      {
+        "file": "exposure.py",
+        "sha256": "52baac288af7e44a029eba19c7a8e382d87d7f365c0df840820610bf1969247c"
+      },
+      {
+        "file": "plays.py",
+        "sha256": "d125bf441154f56cd79ad40b97c51d92e6858e6791e409ce53f7e83b72967b4c"
+      },
+      {
+        "file": "defense.py",
+        "sha256": "64c042267a8e67883e9325175c8e4709e1804381dc5b8995c936688c941eb153"
+      },
+      {
+        "file": "0142-witnesses.py",
+        "sha256": "5b303a2ae8cde34bd0bfee2dab3e5a75e8a9ad94e816755ff1e0dd0732dbbe40"
+      },
+      {
+        "file": "count-review.py",
+        "sha256": "7e96a0d677781fe21d36bc142ffeaad9cb07396f8017ebb094ce4b29642e30b4"
+      }
+    ],
+    "production_writes": 0,
+    "source_acquisitions": 0,
+    "independent_review_is_not_CI_or_safe_merge_receipt": true
+  },
+  "source_hashes": [
+    {
+      "events": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "whole": "824203da10364ac23f0bb60ea2d4995c134b1ef2352ffe0b17be42ddc9b30e13",
+      "traditional": "b1581e1bb8b6cad6703bdce84236590bb4e23e0c2830a8a1a1778cb43ade41f6",
+      "advanced": "11cbce042fc666752dd27fc85e7c2e88d2feefb5af9b40c06a9347da0fd11f47"
+    },
+    {
+      "events": "9494f7dd6560fbfd93f636c7a6658981789d6acc81c17f88ed4c5496bf023b09",
+      "whole": "824203da10364ac23f0bb60ea2d4995c134b1ef2352ffe0b17be42ddc9b30e13",
+      "traditional": "699bd338af99c9b3335aba106d8a4eec0408beab67ddea527bff87e72fca2a36",
+      "advanced": "6f5fd52c2044b1ce4e625202c0324856d15df804b8057bf2c131e53fa024d08e"
+    }
+  ],
+  "archive_hashes": {
+    "qualification-evidence.zip": {
+      "bytes": 731429,
+      "sha256": "ea4ecc075abf28e8c09b662185ad40a86f9d94ed18aec2a330ffbb485e846296"
+    },
+    "independent-review.zip": {
+      "bytes": 25456,
+      "sha256": "b75665dc5b061f5d512ad133577265d2631550c8464f44795ae75dbc7505c57e"
+    }
+  },
+  "due_population": {
+    "checked_at": "2026-11-04T12:14:31.758141+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [],
+    "observed_final_games": 107,
+    "population_current_against_retained_schedule": true,
+    "final_acceptance_requires_new_freshness_check": true
+  },
+  "current_count_obligations": {
+    "original_ledger": 86,
+    "resolved_0144": 3,
+    "complete_games_compared": 106,
+    "complete_game_conflicts": 80,
+    "complete_conflict_games": 17,
+    "unadmitted_0142_original_conflicts": 3,
+    "known_original_obligations_remaining": 83
+  },
+  "raw_bytes_preserved": true,
+  "prior_period_prefixes_preserved": true,
+  "accepted_source_values_rewritten": false,
+  "full_snapshot_accepted": false,
+  "production_writes": 0
+}

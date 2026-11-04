@@ -1,0 +1,695 @@
+{
+  "classification": "current_admitted_period_count_contradictions_not_repair",
+  "original_ledger": "current-refresh-20261104/period-basis-deltas.json",
+  "original_ledger_conflicts": 86,
+  "original_ledger_games": 19,
+  "current_complete_game_count": 106,
+  "uncompared_incomplete_game_ids": [
+    "0022600142"
+  ],
+  "current_conflict_count": 80,
+  "current_conflict_game_ids": [
+    "0022600007",
+    "0022600009",
+    "0022600085",
+    "0022600087",
+    "0022600088",
+    "0022600091",
+    "0022600092",
+    "0022600094",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600108",
+    "0022600109",
+    "0022600117",
+    "0022600118",
+    "0022600121",
+    "0022600138"
+  ],
+  "by_field": {
+    "ast": 11,
+    "oreb": 5,
+    "reb": 14,
+    "stl": 15,
+    "dreb": 10,
+    "fga": 9,
+    "fg3a": 3,
+    "tov": 7,
+    "blk": 2,
+    "fgm": 2,
+    "pts": 2
+  },
+  "conflicts": [
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1628963,
+      "field": "ast",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1641747,
+      "field": "oreb",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1641747,
+      "field": "reb",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643624,
+      "field": "oreb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643624,
+      "field": "reb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643813,
+      "field": "ast",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631114,
+      "field": "stl",
+      "period_sum": 1.0,
+      "canonical": 0.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631119,
+      "field": "dreb",
+      "period_sum": 6.0,
+      "canonical": 7.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631119,
+      "field": "reb",
+      "period_sum": 6.0,
+      "canonical": 7.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1641717,
+      "field": "dreb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1641717,
+      "field": "reb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1642349,
+      "field": "stl",
+      "period_sum": 4.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "field": "ast",
+      "period_sum": 5.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "field": "stl",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "field": "stl",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600085",
+      "team_id": 1610612753,
+      "player_id": 1628976,
+      "field": "stl",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600085",
+      "team_id": 1610612753,
+      "player_id": 1630217,
+      "field": "stl",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600087",
+      "team_id": 1610612751,
+      "player_id": 1630549,
+      "field": "stl",
+      "period_sum": 1.0,
+      "canonical": 0.0
+    },
+    {
+      "game_id": "0022600087",
+      "team_id": 1610612751,
+      "player_id": 1631165,
+      "field": "stl",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600088",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "field": "stl",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600088",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "field": "stl",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "field": "fga",
+      "period_sum": 14.0,
+      "canonical": 13.0
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "field": "fg3a",
+      "period_sum": 7.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1631123,
+      "field": "dreb",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1631123,
+      "field": "reb",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1642346,
+      "field": "dreb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1642346,
+      "field": "reb",
+      "period_sum": 3.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600094",
+      "team_id": 1610612737,
+      "player_id": 203468,
+      "field": "ast",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600094",
+      "team_id": 1610612737,
+      "player_id": 1630700,
+      "field": "ast",
+      "period_sum": 5.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600102",
+      "team_id": 1610612746,
+      "player_id": 1627739,
+      "field": "tov",
+      "period_sum": 3.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600102",
+      "team_id": 1610612746,
+      "player_id": 1630543,
+      "field": "tov",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1641739,
+      "field": "oreb",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1641739,
+      "field": "reb",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1642270,
+      "field": "oreb",
+      "period_sum": 5.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1642270,
+      "field": "reb",
+      "period_sum": 11.0,
+      "canonical": 10.0
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "field": "fg3a",
+      "period_sum": 10.0,
+      "canonical": 9.0
+    },
+    {
+      "game_id": "0022600104",
+      "team_id": 1610612766,
+      "player_id": 203471,
+      "field": "ast",
+      "period_sum": 5.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600104",
+      "team_id": 1610612766,
+      "player_id": 1631217,
+      "field": "ast",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600108",
+      "team_id": 1610612764,
+      "player_id": 203076,
+      "field": "ast",
+      "period_sum": 5.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600108",
+      "team_id": 1610612764,
+      "player_id": 1642273,
+      "field": "ast",
+      "period_sum": 4.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600109",
+      "team_id": 1610612742,
+      "player_id": 1642383,
+      "field": "fga",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600117",
+      "team_id": 1610612765,
+      "player_id": 1630194,
+      "field": "blk",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "field": "tov",
+      "period_sum": 4.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "field": "fga",
+      "period_sum": 9.0,
+      "canonical": 8.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "field": "tov",
+      "period_sum": 3.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "field": "dreb",
+      "period_sum": 1.0,
+      "canonical": 0.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "field": "reb",
+      "period_sum": 2.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "field": "dreb",
+      "period_sum": 2.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "field": "reb",
+      "period_sum": 5.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "field": "tov",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "fga",
+      "period_sum": 7.0,
+      "canonical": 8.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "dreb",
+      "period_sum": 4.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "reb",
+      "period_sum": 6.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "stl",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "blk",
+      "period_sum": 3.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "field": "ast",
+      "period_sum": 7.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "field": "stl",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "field": "dreb",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "field": "reb",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "field": "stl",
+      "period_sum": 1.0,
+      "canonical": 0.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "oreb",
+      "period_sum": 3.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "dreb",
+      "period_sum": 4.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "reb",
+      "period_sum": 7.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "fgm",
+      "period_sum": 7.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "fga",
+      "period_sum": 13.0,
+      "canonical": 11.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "ast",
+      "period_sum": 1.0,
+      "canonical": 2.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "pts",
+      "period_sum": 17.0,
+      "canonical": 15.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "fgm",
+      "period_sum": 5.0,
+      "canonical": 6.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "fg3a",
+      "period_sum": 8.0,
+      "canonical": 7.0
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "pts",
+      "period_sum": 14.0,
+      "canonical": 16.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "field": "tov",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "field": "tov",
+      "period_sum": 4.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "field": "fga",
+      "period_sum": 4.0,
+      "canonical": 3.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "field": "fga",
+      "period_sum": 4.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "field": "stl",
+      "period_sum": 0.0,
+      "canonical": 1.0
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "field": "stl",
+      "period_sum": 1.0,
+      "canonical": 0.0
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "player_id": 1631131,
+      "field": "dreb",
+      "period_sum": 3.0,
+      "canonical": 4.0
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "player_id": 1631131,
+      "field": "reb",
+      "period_sum": 4.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612749,
+      "player_id": 1631260,
+      "field": "fga",
+      "period_sum": 6.0,
+      "canonical": 5.0
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612749,
+      "player_id": 1643417,
+      "field": "fga",
+      "period_sum": 7.0,
+      "canonical": 8.0
+    }
+  ],
+  "accepted_cells_rewritten": false,
+  "full_numerical_acceptance": false,
+  "input_sha256": {
+    "player_game_stats": "f8547a518a14e7d0e5b814972b5a2b2a20ffd9d09c7f69f58fa084c805a98325",
+    "player_game_period_stats": "81830cac86586b474d581b24f6510bf20663ff51cda46f0bb013a170849d3821"
+  },
+  "original_ledger_sha256": "6a655143bbc49012791e51d684c02bcafab0b4d2ec2f15395a538ad5add5ba8c",
+  "original_0144_conflicts_resolved": 3,
+  "known_unadmitted_0142_conflicts": 3,
+  "known_original_obligations_remaining": 83
+}
