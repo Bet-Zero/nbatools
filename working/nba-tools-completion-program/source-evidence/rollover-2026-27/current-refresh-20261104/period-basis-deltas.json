@@ -1,0 +1,1327 @@
+{
+  "compared_games": 91,
+  "compared_game_ids": [
+    "0022600001",
+    "0022600002",
+    "0022600003",
+    "0022600004",
+    "0022600005",
+    "0022600006",
+    "0022600007",
+    "0022600008",
+    "0022600009",
+    "0022600015",
+    "0022600016",
+    "0022600017",
+    "0022600018",
+    "0022600019",
+    "0022600020",
+    "0022600021",
+    "0022600022",
+    "0022600023",
+    "0022600024",
+    "0022600085",
+    "0022600086",
+    "0022600087",
+    "0022600088",
+    "0022600089",
+    "0022600090",
+    "0022600091",
+    "0022600092",
+    "0022600093",
+    "0022600094",
+    "0022600095",
+    "0022600096",
+    "0022600097",
+    "0022600098",
+    "0022600099",
+    "0022600100",
+    "0022600101",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600105",
+    "0022600106",
+    "0022600107",
+    "0022600108",
+    "0022600109",
+    "0022600110",
+    "0022600111",
+    "0022600112",
+    "0022600113",
+    "0022600114",
+    "0022600115",
+    "0022600116",
+    "0022600117",
+    "0022600118",
+    "0022600119",
+    "0022600120",
+    "0022600121",
+    "0022600122",
+    "0022600123",
+    "0022600124",
+    "0022600125",
+    "0022600126",
+    "0022600127",
+    "0022600129",
+    "0022600130",
+    "0022600131",
+    "0022600132",
+    "0022600133",
+    "0022600134",
+    "0022600135",
+    "0022600136",
+    "0022600137",
+    "0022600138",
+    "0022600139",
+    "0022600140",
+    "0022600141",
+    "0022600142",
+    "0022600143",
+    "0022600144",
+    "0022600145",
+    "0022600146",
+    "0022600147",
+    "0022600148",
+    "0022600149",
+    "0022600150",
+    "0022600151",
+    "0022600152",
+    "0022600153",
+    "0022600154",
+    "0022600155",
+    "0022600156",
+    "0022600157"
+  ],
+  "integer_cell_conflicts": 86,
+  "conflict_game_ids": [
+    "0022600007",
+    "0022600009",
+    "0022600085",
+    "0022600087",
+    "0022600088",
+    "0022600091",
+    "0022600092",
+    "0022600094",
+    "0022600102",
+    "0022600103",
+    "0022600104",
+    "0022600108",
+    "0022600109",
+    "0022600117",
+    "0022600118",
+    "0022600121",
+    "0022600138",
+    "0022600142",
+    "0022600144"
+  ],
+  "conflicts": [
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631114,
+      "field": "STL",
+      "period_sum": 1,
+      "staged_core": 0,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1641717,
+      "field": "DREB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1641717,
+      "field": "REB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631119,
+      "field": "DREB",
+      "period_sum": 6,
+      "staged_core": 7,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1631119,
+      "field": "REB",
+      "period_sum": 6,
+      "staged_core": 7,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612760,
+      "player_id": 1642349,
+      "field": "STL",
+      "period_sum": 4,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643813,
+      "field": "AST",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1628963,
+      "field": "AST",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1641747,
+      "field": "OREB",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1641747,
+      "field": "REB",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643624,
+      "field": "OREB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600007",
+      "team_id": 1610612743,
+      "player_id": 1643624,
+      "field": "REB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "ec6abb5875cd180eafbe84c770b08e186ded17bd1c2d734ff58fee7befd81c75",
+        "q2": "38b6e74795d4a43b7af4a693c88b3eca9fb2b15cc8999200ae0442d45dbf3b7d",
+        "q3": "73b7a52baf9a2e48b155c62ecc50452aa2850fe6245aff0907f6c1dd07de701c",
+        "q4": "1c664c7f9b92fefa142cbca7b5b682f76720d4f55b5c2f20df8c16adb4ca2fd8"
+      }
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "field": "AST",
+      "period_sum": 5,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "755348e062b763de83cf68e8813c589848b66ce21dd05f7b31101381bfc3465d",
+        "q2": "3c5005619e832bc0c37ded91173b50b7a08f6010337a6e57dc3f2318251f818c",
+        "q3": "0ad24db4a0fbe180beca7a53853c4dca607d7bb73186e0b0bdf805f397680461",
+        "q4": "8133bed5f9e9e61adb90ec87a02c953cfb512de6c02f0ca43499bff5c8c14bc4"
+      }
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "field": "STL",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "755348e062b763de83cf68e8813c589848b66ce21dd05f7b31101381bfc3465d",
+        "q2": "3c5005619e832bc0c37ded91173b50b7a08f6010337a6e57dc3f2318251f818c",
+        "q3": "0ad24db4a0fbe180beca7a53853c4dca607d7bb73186e0b0bdf805f397680461",
+        "q4": "8133bed5f9e9e61adb90ec87a02c953cfb512de6c02f0ca43499bff5c8c14bc4"
+      }
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "field": "STL",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "755348e062b763de83cf68e8813c589848b66ce21dd05f7b31101381bfc3465d",
+        "q2": "3c5005619e832bc0c37ded91173b50b7a08f6010337a6e57dc3f2318251f818c",
+        "q3": "0ad24db4a0fbe180beca7a53853c4dca607d7bb73186e0b0bdf805f397680461",
+        "q4": "8133bed5f9e9e61adb90ec87a02c953cfb512de6c02f0ca43499bff5c8c14bc4"
+      }
+    },
+    {
+      "game_id": "0022600085",
+      "team_id": 1610612753,
+      "player_id": 1628976,
+      "field": "STL",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "bf4f33d253189abb1582bbfd67b8fd81649d3b960e5f2f8e704d99cf92ecc009",
+        "q2": "014c94d9b2c3c7037f56d23b84cce80d1ab0d383dca2cf6f9616421221b707a9",
+        "q3": "bab938bddcf22ad7d52e2b0ad839933028c19ab62d50fb1603cab49da383de72",
+        "q4": "6746911dc19a547575ba51f509780f9c7d817d031a7a7f4ee1acb778683b8727"
+      }
+    },
+    {
+      "game_id": "0022600085",
+      "team_id": 1610612753,
+      "player_id": 1630217,
+      "field": "STL",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "bf4f33d253189abb1582bbfd67b8fd81649d3b960e5f2f8e704d99cf92ecc009",
+        "q2": "014c94d9b2c3c7037f56d23b84cce80d1ab0d383dca2cf6f9616421221b707a9",
+        "q3": "bab938bddcf22ad7d52e2b0ad839933028c19ab62d50fb1603cab49da383de72",
+        "q4": "6746911dc19a547575ba51f509780f9c7d817d031a7a7f4ee1acb778683b8727"
+      }
+    },
+    {
+      "game_id": "0022600087",
+      "team_id": 1610612751,
+      "player_id": 1630549,
+      "field": "STL",
+      "period_sum": 1,
+      "staged_core": 0,
+      "original_sha256": {
+        "q1": "17c23fa02715d9e07d42df84f104a030b651264d20a10c21b8f6de47011b0d3d",
+        "q2": "e180c61a3b53da9f3a7c7feb237758ca3f06be843871a7da1fee80612567e6f5",
+        "q3": "95d642ae618819c4c8d9f3857ef71758ec6500dbdd69a5ca591d74a82aa6f498",
+        "q4": "abf69e512be27b7bf4fceeb18f81c37887d415417a41cd32abddfcbf9f82c694"
+      }
+    },
+    {
+      "game_id": "0022600087",
+      "team_id": 1610612751,
+      "player_id": 1631165,
+      "field": "STL",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "17c23fa02715d9e07d42df84f104a030b651264d20a10c21b8f6de47011b0d3d",
+        "q2": "e180c61a3b53da9f3a7c7feb237758ca3f06be843871a7da1fee80612567e6f5",
+        "q3": "95d642ae618819c4c8d9f3857ef71758ec6500dbdd69a5ca591d74a82aa6f498",
+        "q4": "abf69e512be27b7bf4fceeb18f81c37887d415417a41cd32abddfcbf9f82c694"
+      }
+    },
+    {
+      "game_id": "0022600088",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "field": "STL",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "3809bfc5d7ccfb621dc72a9b50b5192f2f260f7c00b2c36aeed16d0b002036bc",
+        "q2": "f0dfa1dc0de59341094badd00cf2624277406d37bdab8bd911277673bb76dfe3",
+        "q3": "f0fc9c13464bb2263143efef414352197d2306e5d10d75160270aeafb3872db4",
+        "q4": "f8ac67cf464e4655726a1650bf625e17f5fc29b663394b64e57478fd6423e8d8"
+      }
+    },
+    {
+      "game_id": "0022600088",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "field": "STL",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "3809bfc5d7ccfb621dc72a9b50b5192f2f260f7c00b2c36aeed16d0b002036bc",
+        "q2": "f0dfa1dc0de59341094badd00cf2624277406d37bdab8bd911277673bb76dfe3",
+        "q3": "f0fc9c13464bb2263143efef414352197d2306e5d10d75160270aeafb3872db4",
+        "q4": "f8ac67cf464e4655726a1650bf625e17f5fc29b663394b64e57478fd6423e8d8"
+      }
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "field": "FGA",
+      "period_sum": 14,
+      "staged_core": 13,
+      "original_sha256": {
+        "q1": "9a9be2dfa2fa91430a4d2c122b45081f52e8b79ad018e3a154c12081ceded6b4",
+        "q2": "e3904ab9f09800eae64335a9cc9b337b3402073c56a7e6e956296a62b3bbc661",
+        "q3": "7447645c2f7a40f625b1343285e63567d43325eccbfc86f73bca377a6d8bd9e7",
+        "q4": "08a558e3c9f436d722aaeb98d43fb3eba172f2975ab46c8d31ab6bd584712317"
+      }
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "field": "FG3A",
+      "period_sum": 7,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "9a9be2dfa2fa91430a4d2c122b45081f52e8b79ad018e3a154c12081ceded6b4",
+        "q2": "e3904ab9f09800eae64335a9cc9b337b3402073c56a7e6e956296a62b3bbc661",
+        "q3": "7447645c2f7a40f625b1343285e63567d43325eccbfc86f73bca377a6d8bd9e7",
+        "q4": "08a558e3c9f436d722aaeb98d43fb3eba172f2975ab46c8d31ab6bd584712317"
+      }
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1642346,
+      "field": "DREB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "3d4f1796ccb78c15f06d459c9c81f5b43de4b495df3ef1928a46926e6ad8667a",
+        "q2": "98c9ac6728b7321d8ba5fb2478cb79e41f5a03975cf0cbcade96c305beb17936",
+        "q3": "fad9a2018f7c1198a64b0968c6d4eb1800a7bdf9d51c841b3a3347c4cc997817",
+        "q4": "0dbda9a086bbc4d560fd04b1dee6e3b095bf3e7beab3e7d53fd91f3e4e8133d3"
+      }
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1642346,
+      "field": "REB",
+      "period_sum": 3,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "3d4f1796ccb78c15f06d459c9c81f5b43de4b495df3ef1928a46926e6ad8667a",
+        "q2": "98c9ac6728b7321d8ba5fb2478cb79e41f5a03975cf0cbcade96c305beb17936",
+        "q3": "fad9a2018f7c1198a64b0968c6d4eb1800a7bdf9d51c841b3a3347c4cc997817",
+        "q4": "0dbda9a086bbc4d560fd04b1dee6e3b095bf3e7beab3e7d53fd91f3e4e8133d3"
+      }
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1631123,
+      "field": "DREB",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "3d4f1796ccb78c15f06d459c9c81f5b43de4b495df3ef1928a46926e6ad8667a",
+        "q2": "98c9ac6728b7321d8ba5fb2478cb79e41f5a03975cf0cbcade96c305beb17936",
+        "q3": "fad9a2018f7c1198a64b0968c6d4eb1800a7bdf9d51c841b3a3347c4cc997817",
+        "q4": "0dbda9a086bbc4d560fd04b1dee6e3b095bf3e7beab3e7d53fd91f3e4e8133d3"
+      }
+    },
+    {
+      "game_id": "0022600092",
+      "team_id": 1610612756,
+      "player_id": 1631123,
+      "field": "REB",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "3d4f1796ccb78c15f06d459c9c81f5b43de4b495df3ef1928a46926e6ad8667a",
+        "q2": "98c9ac6728b7321d8ba5fb2478cb79e41f5a03975cf0cbcade96c305beb17936",
+        "q3": "fad9a2018f7c1198a64b0968c6d4eb1800a7bdf9d51c841b3a3347c4cc997817",
+        "q4": "0dbda9a086bbc4d560fd04b1dee6e3b095bf3e7beab3e7d53fd91f3e4e8133d3"
+      }
+    },
+    {
+      "game_id": "0022600094",
+      "team_id": 1610612737,
+      "player_id": 1630700,
+      "field": "AST",
+      "period_sum": 5,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "ff2af1a8b74aa23f6c5b6b1a221abee073342c83d2edb4471ae848901f818968",
+        "q2": "296ea86d7be578f234b2e983978da5dc7b4a2ab9892c49bf588489f14573b4f3",
+        "q3": "ac642ce8f80b5a3165eeb129899382487b9332f7a4f155dd3953d0c7557bf610",
+        "q4": "b7532b020483addbbae0051e79ffb61e5963e19438a1847232e198d7f07b24e4"
+      }
+    },
+    {
+      "game_id": "0022600094",
+      "team_id": 1610612737,
+      "player_id": 203468,
+      "field": "AST",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "ff2af1a8b74aa23f6c5b6b1a221abee073342c83d2edb4471ae848901f818968",
+        "q2": "296ea86d7be578f234b2e983978da5dc7b4a2ab9892c49bf588489f14573b4f3",
+        "q3": "ac642ce8f80b5a3165eeb129899382487b9332f7a4f155dd3953d0c7557bf610",
+        "q4": "b7532b020483addbbae0051e79ffb61e5963e19438a1847232e198d7f07b24e4"
+      }
+    },
+    {
+      "game_id": "0022600102",
+      "team_id": 1610612746,
+      "player_id": 1630543,
+      "field": "TOV",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "30a15af117aa4f1b9bdc543ffa1786b6dc0853c166b5d7f5ab2554167efe9285",
+        "q2": "bfda9d90290aa61b2a547663bac7b581c42571874e9b9afb943e50793a26449c",
+        "q3": "2cc49362506fa26730d0987ac400e191ea4b0316127e7812f69e84349e8a36a2",
+        "q4": "cb4af60eef7c554b4a975f4e047adcbf725ec972a4e83df090e76a2db904f2f4"
+      }
+    },
+    {
+      "game_id": "0022600102",
+      "team_id": 1610612746,
+      "player_id": 1627739,
+      "field": "TOV",
+      "period_sum": 3,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "30a15af117aa4f1b9bdc543ffa1786b6dc0853c166b5d7f5ab2554167efe9285",
+        "q2": "bfda9d90290aa61b2a547663bac7b581c42571874e9b9afb943e50793a26449c",
+        "q3": "2cc49362506fa26730d0987ac400e191ea4b0316127e7812f69e84349e8a36a2",
+        "q4": "cb4af60eef7c554b4a975f4e047adcbf725ec972a4e83df090e76a2db904f2f4"
+      }
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "field": "FG3A",
+      "period_sum": 10,
+      "staged_core": 9,
+      "original_sha256": {
+        "q1": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+        "q2": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+        "q3": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+        "q4": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40"
+      }
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1641739,
+      "field": "OREB",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+        "q2": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+        "q3": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+        "q4": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40"
+      }
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1641739,
+      "field": "REB",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+        "q2": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+        "q3": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+        "q4": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40"
+      }
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1642270,
+      "field": "OREB",
+      "period_sum": 5,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+        "q2": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+        "q3": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+        "q4": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40"
+      }
+    },
+    {
+      "game_id": "0022600103",
+      "team_id": 1610612757,
+      "player_id": 1642270,
+      "field": "REB",
+      "period_sum": 11,
+      "staged_core": 10,
+      "original_sha256": {
+        "q1": "345c904f78d5bbab999c2fa4ea531e28709644b7c81285b7e796c2d3a19cbd69",
+        "q2": "5c379c74859e90561171fe461b25af46f9acecd47f659a76a1e5c5241ebc10e2",
+        "q3": "0ae04536560d70cd41dbbae002d57d67cbc0e74e4639366662639113188abf46",
+        "q4": "14dfd2244583c1ad82d2ab943393b2446657cbd77735215500a8176387f61f40"
+      }
+    },
+    {
+      "game_id": "0022600104",
+      "team_id": 1610612766,
+      "player_id": 1631217,
+      "field": "AST",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "4ef5bf9e9c35b3440ce6808b2af23ee0cf707e19c79cfb6b53299c0ca14fadf3",
+        "q2": "a7f82fef8b1ba8a1928063742a26e6f94c9dbe4d2aba221580983a441f6bc09e",
+        "q3": "6c98308b8d4d0466064b137f828b53e7286af6878f58fd68735472b96de0f404",
+        "q4": "224c84f99a4ff2f3c3af7e813114b5abc0ab0e9cf084c6c10d39bf5079e3f807"
+      }
+    },
+    {
+      "game_id": "0022600104",
+      "team_id": 1610612766,
+      "player_id": 203471,
+      "field": "AST",
+      "period_sum": 5,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "4ef5bf9e9c35b3440ce6808b2af23ee0cf707e19c79cfb6b53299c0ca14fadf3",
+        "q2": "a7f82fef8b1ba8a1928063742a26e6f94c9dbe4d2aba221580983a441f6bc09e",
+        "q3": "6c98308b8d4d0466064b137f828b53e7286af6878f58fd68735472b96de0f404",
+        "q4": "224c84f99a4ff2f3c3af7e813114b5abc0ab0e9cf084c6c10d39bf5079e3f807"
+      }
+    },
+    {
+      "game_id": "0022600108",
+      "team_id": 1610612764,
+      "player_id": 203076,
+      "field": "AST",
+      "period_sum": 5,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "c0f72b4e42420d23bdb77c4239e7b888820a1b0243059c79d2529d9e5122cf1c",
+        "q2": "b35a3a5a6fee5b38f07d641293b6d4fd52a712298b992cdb09feb904de03e0a9",
+        "q3": "9ae65023cce3b8d981f342695af73cbaa0b15e1a7b2f51360512e31e998ed9af",
+        "q4": "1ee3159f3304a2c1be5c50c067d8800f7574f55532eb529bc070bd06c8cd3e01"
+      }
+    },
+    {
+      "game_id": "0022600108",
+      "team_id": 1610612764,
+      "player_id": 1642273,
+      "field": "AST",
+      "period_sum": 4,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "c0f72b4e42420d23bdb77c4239e7b888820a1b0243059c79d2529d9e5122cf1c",
+        "q2": "b35a3a5a6fee5b38f07d641293b6d4fd52a712298b992cdb09feb904de03e0a9",
+        "q3": "9ae65023cce3b8d981f342695af73cbaa0b15e1a7b2f51360512e31e998ed9af",
+        "q4": "1ee3159f3304a2c1be5c50c067d8800f7574f55532eb529bc070bd06c8cd3e01"
+      }
+    },
+    {
+      "game_id": "0022600109",
+      "team_id": 1610612742,
+      "player_id": 1642383,
+      "field": "FGA",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "f670a55a7b414aa2d989a0ff8ea317829278e2e4e324674761176a537bc826ee",
+        "q2": "96ad9383dda37299301f64c26cfb32cb52a78a0e6cc13c821a93e0bb5426a99a",
+        "q3": "9209dab5243dd46eb71b6ec960350bfbd0256f46d2399768c66c1fc6374bf446",
+        "q4": "f87b40cd515d99581ac1273be5be90c52baee3c9362eb8f08cf0b93826c00ab8"
+      }
+    },
+    {
+      "game_id": "0022600117",
+      "team_id": 1610612765,
+      "player_id": 1630194,
+      "field": "BLK",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "cb67b864abd685144d491894f4ddf68872522514122300f1c778d4efe468fb22",
+        "q2": "4a76fcfdefa435b0aac594a2ccda2988b4713ed4091ab31f9055e392a3b1c680",
+        "q3": "98de4ba2a757fbef901a77a63952d329834a15a5bdc5f888f474f362e044349a",
+        "q4": "6c7fd47a48acf45c25f7b0ca231dbb8fcab0501792897bbc061381acb1b2d715"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "field": "DREB",
+      "period_sum": 2,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "field": "REB",
+      "period_sum": 5,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "field": "FGA",
+      "period_sum": 9,
+      "staged_core": 8,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "field": "TOV",
+      "period_sum": 3,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "field": "TOV",
+      "period_sum": 4,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "field": "TOV",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "field": "DREB",
+      "period_sum": 1,
+      "staged_core": 0,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "field": "REB",
+      "period_sum": 2,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "OREB",
+      "period_sum": 3,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "DREB",
+      "period_sum": 4,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "field": "REB",
+      "period_sum": 7,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "PTS",
+      "period_sum": 14,
+      "staged_core": 16,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "FGM",
+      "period_sum": 5,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "field": "FG3A",
+      "period_sum": 8,
+      "staged_core": 7,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "field": "STL",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "PTS",
+      "period_sum": 17,
+      "staged_core": 15,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "FGM",
+      "period_sum": 7,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "FGA",
+      "period_sum": 13,
+      "staged_core": 11,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "field": "AST",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "field": "AST",
+      "period_sum": 7,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "field": "STL",
+      "period_sum": 1,
+      "staged_core": 0,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "FGA",
+      "period_sum": 7,
+      "staged_core": 8,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "DREB",
+      "period_sum": 4,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "REB",
+      "period_sum": 6,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "STL",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "field": "BLK",
+      "period_sum": 3,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "field": "DREB",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "field": "REB",
+      "period_sum": 1,
+      "staged_core": 2,
+      "original_sha256": {
+        "q1": "0427cdb055cc2c0a1018dc87c5e39c62b2d66d6c8d28812761c664d43e955adb",
+        "q2": "888f32dc3df243c83210808d1212b4965f8918c95af8b6b392dc9f4d497c8afa",
+        "q3": "ec9dd4b2fc20c8ed34ef6ff0f07b92ef67d727e1adb69aa8cd3af15a7f44135a",
+        "q4": "51b08d458be8ef3c5581cea35011d99efe74a5aa43be3275a50fead1c4e27588"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "field": "TOV",
+      "period_sum": 4,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "field": "STL",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "field": "FGA",
+      "period_sum": 4,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "field": "FGA",
+      "period_sum": 4,
+      "staged_core": 3,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "field": "TOV",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "field": "STL",
+      "period_sum": 1,
+      "staged_core": 0,
+      "original_sha256": {
+        "q1": "11a67dd9d1992182809b5331297069e220703811afe521acdd2a9bc149ef8692",
+        "q2": "8a04040c55db57cbb9cd6bfdeffb3f1684747aba7cb97d0d65e34d47e52fe6a7",
+        "q3": "0351f4f25be2bd127c67ab7d4fbfc79dd6de99a76ed4f944bd22f44aa6fc261c",
+        "q4": "3cd5efb07b8cfee94cc8d1d3c783a99fccf6d4145915c03e3e15b266deab5cc5"
+      }
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612749,
+      "player_id": 1631260,
+      "field": "FGA",
+      "period_sum": 6,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "00d6377fb298dc4860cbf4446e776fe04a51bc66bcdca8090ea4be5505f778ad",
+        "q2": "9071bea2dea02702fdc6d8b705ef6dfffa14d5f04eb3b5dc6548ea01b1cecd0a",
+        "q3": "8d5d1cadd0667a8a32b091b522f57065a26f1d37445cf4fbf32e3ab4646cf546",
+        "q4": "c1938349e29d2a7834b6c5c9404fb85f6debd73f9b326de28ad1ae4467f6a65c"
+      }
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612749,
+      "player_id": 1643417,
+      "field": "FGA",
+      "period_sum": 7,
+      "staged_core": 8,
+      "original_sha256": {
+        "q1": "00d6377fb298dc4860cbf4446e776fe04a51bc66bcdca8090ea4be5505f778ad",
+        "q2": "9071bea2dea02702fdc6d8b705ef6dfffa14d5f04eb3b5dc6548ea01b1cecd0a",
+        "q3": "8d5d1cadd0667a8a32b091b522f57065a26f1d37445cf4fbf32e3ab4646cf546",
+        "q4": "c1938349e29d2a7834b6c5c9404fb85f6debd73f9b326de28ad1ae4467f6a65c"
+      }
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "player_id": 1631131,
+      "field": "DREB",
+      "period_sum": 3,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "00d6377fb298dc4860cbf4446e776fe04a51bc66bcdca8090ea4be5505f778ad",
+        "q2": "9071bea2dea02702fdc6d8b705ef6dfffa14d5f04eb3b5dc6548ea01b1cecd0a",
+        "q3": "8d5d1cadd0667a8a32b091b522f57065a26f1d37445cf4fbf32e3ab4646cf546",
+        "q4": "c1938349e29d2a7834b6c5c9404fb85f6debd73f9b326de28ad1ae4467f6a65c"
+      }
+    },
+    {
+      "game_id": "0022600138",
+      "team_id": 1610612745,
+      "player_id": 1631131,
+      "field": "REB",
+      "period_sum": 4,
+      "staged_core": 5,
+      "original_sha256": {
+        "q1": "00d6377fb298dc4860cbf4446e776fe04a51bc66bcdca8090ea4be5505f778ad",
+        "q2": "9071bea2dea02702fdc6d8b705ef6dfffa14d5f04eb3b5dc6548ea01b1cecd0a",
+        "q3": "8d5d1cadd0667a8a32b091b522f57065a26f1d37445cf4fbf32e3ab4646cf546",
+        "q4": "c1938349e29d2a7834b6c5c9404fb85f6debd73f9b326de28ad1ae4467f6a65c"
+      }
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "player_id": 1628997,
+      "field": "PTS",
+      "period_sum": 8,
+      "staged_core": 10,
+      "original_sha256": {
+        "q1": "642eea413c79aad243e5356dad8446c60476f7ac010ce01506dd1fb037f023f7",
+        "q2": "e750b7c0c748031df095f889c8108f4fbfcdd8b807e2e258cba6acff881f504f",
+        "q3": "46d1c28ccf6ea0868c52817072e3212c9b6481b32e2aee572b06e4184f0239f7",
+        "q4": "b5b9d71b892086d4d0ae2b951db1dddb59febab387f04924ff39df426c5344e2"
+      }
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "player_id": 1628997,
+      "field": "FGM",
+      "period_sum": 3,
+      "staged_core": 4,
+      "original_sha256": {
+        "q1": "642eea413c79aad243e5356dad8446c60476f7ac010ce01506dd1fb037f023f7",
+        "q2": "e750b7c0c748031df095f889c8108f4fbfcdd8b807e2e258cba6acff881f504f",
+        "q3": "46d1c28ccf6ea0868c52817072e3212c9b6481b32e2aee572b06e4184f0239f7",
+        "q4": "b5b9d71b892086d4d0ae2b951db1dddb59febab387f04924ff39df426c5344e2"
+      }
+    },
+    {
+      "game_id": "0022600142",
+      "team_id": 1610612742,
+      "player_id": 1628997,
+      "field": "FGA",
+      "period_sum": 5,
+      "staged_core": 6,
+      "original_sha256": {
+        "q1": "642eea413c79aad243e5356dad8446c60476f7ac010ce01506dd1fb037f023f7",
+        "q2": "e750b7c0c748031df095f889c8108f4fbfcdd8b807e2e258cba6acff881f504f",
+        "q3": "46d1c28ccf6ea0868c52817072e3212c9b6481b32e2aee572b06e4184f0239f7",
+        "q4": "b5b9d71b892086d4d0ae2b951db1dddb59febab387f04924ff39df426c5344e2"
+      }
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "PTS",
+      "period_sum": 16,
+      "staged_core": 17,
+      "original_sha256": {
+        "q1": "5acc38adda62c92cbd6a161e877bbd3c971a455c9f7d0d3061f3722cdf8ca5fd",
+        "q2": "b1581e1bb8b6cad6703bdce84236590bb4e23e0c2830a8a1a1778cb43ade41f6",
+        "q3": "ae7c709e4b22c44d6b373fc74b5faaf30e2961caf62fb136f1f51a08e8e81c16",
+        "q4": "d3793ee8053cc5be29cf95444251c782da069ab8cef7d8ff7dc063cd8905ed13"
+      }
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "FTM",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "5acc38adda62c92cbd6a161e877bbd3c971a455c9f7d0d3061f3722cdf8ca5fd",
+        "q2": "b1581e1bb8b6cad6703bdce84236590bb4e23e0c2830a8a1a1778cb43ade41f6",
+        "q3": "ae7c709e4b22c44d6b373fc74b5faaf30e2961caf62fb136f1f51a08e8e81c16",
+        "q4": "d3793ee8053cc5be29cf95444251c782da069ab8cef7d8ff7dc063cd8905ed13"
+      }
+    },
+    {
+      "game_id": "0022600144",
+      "team_id": 1610612737,
+      "player_id": 1630552,
+      "field": "FTA",
+      "period_sum": 0,
+      "staged_core": 1,
+      "original_sha256": {
+        "q1": "5acc38adda62c92cbd6a161e877bbd3c971a455c9f7d0d3061f3722cdf8ca5fd",
+        "q2": "b1581e1bb8b6cad6703bdce84236590bb4e23e0c2830a8a1a1778cb43ade41f6",
+        "q3": "ae7c709e4b22c44d6b373fc74b5faaf30e2961caf62fb136f1f51a08e8e81c16",
+        "q4": "d3793ee8053cc5be29cf95444251c782da069ab8cef7d8ff7dc063cd8905ed13"
+      }
+    }
+  ],
+  "metadata_unknown": [],
+  "original_quarantines_still_apply": true,
+  "accepted_core_rewritten": false
+}

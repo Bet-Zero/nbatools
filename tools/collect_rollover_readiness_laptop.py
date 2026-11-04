@@ -16,7 +16,7 @@ import re
 import time
 import zipfile
 import zlib
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from importlib.metadata import version
 from pathlib import Path
 
@@ -27,6 +27,33 @@ MAX_BODY = 2_000_000
 MAX_EXPANDED = 100_000_000
 MAX_ZIP = 20_000_000
 MAX_JOBS = 1200
+# Explicit bounded source-basis rechecks: retained core/period integer counts
+# disagree in these19games. Original RangeType1 successes are never repeated.
+DIAGNOSTIC_GAME_IDS = frozenset(
+    "00226" + number
+    for number in (
+        "00007",
+        "00009",
+        "00085",
+        "00087",
+        "00088",
+        "00091",
+        "00092",
+        "00094",
+        "00102",
+        "00103",
+        "00104",
+        "00108",
+        "00109",
+        "00117",
+        "00118",
+        "00121",
+        "00138",
+        "00142",
+        "00144",
+    )
+)
+DIAGNOSTIC_WINDOWS = frozenset({(1, 1), (2, 2), (3, 3), (4, 4), (1, 2), (3, 4)})
 ENDPOINTS = {
     "boxscoretraditionalv3",
     "boxscoreadvancedv3",
@@ -99,24 +126,45 @@ def validate_request(request):
             if (
                 set(params)
                 != {"GameID", "StartPeriod", "EndPeriod", "RangeType", "StartRange", "EndRange"}
+                or not isinstance(params["GameID"], str)
                 or not re.fullmatch(r"00226\d{5}", params["GameID"])
-                or type(params["StartPeriod"]) is not int
-                or type(params["EndPeriod"]) is not int
-                or (params["StartPeriod"], params["EndPeriod"])
-                not in {(1, 1), (2, 2), (3, 3), (4, 4), (1, 2), (3, 4), (5, 14)}
-                or params["RangeType"] != 1
-                or params["StartRange"] != 0
-                or params["EndRange"] != 28800
+                or any(type(params[key]) is not int for key in params if key != "GameID")
             ):
+                raise ValueError("Invalid fixed box-score parameters")
+            window = (params["StartPeriod"], params["EndPeriod"])
+            ordinary = (
+                params["RangeType"] == 1
+                and window in {(1, 1), (2, 2), (3, 3), (4, 4), (1, 2), (3, 4), (5, 14)}
+                and params["StartRange"] == 0
+                and params["EndRange"] == 28800
+            )
+            diagnostic = (
+                params["RangeType"] == 2
+                and params["GameID"] in DIAGNOSTIC_GAME_IDS
+                and window in DIAGNOSTIC_WINDOWS
+                and params["StartRange"] == (window[0] - 1) * 7200
+                and params["EndRange"] == window[1] * 7200
+            )
+            if not (ordinary or diagnostic):
                 raise ValueError("Invalid fixed box-score window")
-        elif (
-            params.get("Season") != "2026-27"
-            or params.get("SeasonType") != "Regular Season"
-            or params.get("MeasureType") != "Advanced"
-            or params.get("PerMode") != "PerGame"
-            or not re.fullmatch(r"\d{2}/\d{2}/2026", params.get("DateTo", ""))
-        ):
-            raise ValueError("Advanced snapshot must retain its explicit cutoff/basis")
+        else:
+            try:
+                cutoff = datetime.strptime(params.get("DateTo", ""), "%m/%d/%Y").date()
+            except (ValueError, TypeError) as exc:
+                raise ValueError("Invalid Advanced snapshot cutoff") from exc
+            if (
+                not re.fullmatch(r"\d{2}/\d{2}/\d{4}", params.get("DateTo", ""))
+                or not date(2026, 10, 1) <= cutoff <= date(2027, 6, 30)
+                or params.get("Season") != "2026-27"
+                or params.get("SeasonType") != "Regular Season"
+                or params.get("MeasureType") != "Advanced"
+                or params.get("PerMode") != "PerGame"
+                or params.get("DateFrom", "") != ""
+            ):
+                raise ValueError("Advanced snapshot must retain its explicit cutoff/basis")
+            # Exact installed SDK defaults: no opponent, period, team or other filter.
+            # The existing optional unset ISTRound transport equivalence is preserved.
+            _client(job)
     return _sha(_json(request))
 
 
