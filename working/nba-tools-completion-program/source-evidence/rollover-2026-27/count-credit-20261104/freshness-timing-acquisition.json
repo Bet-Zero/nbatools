@@ -1,0 +1,33 @@
+{
+  "revision": "2b57bdead60b670e161e4f9d265380dbab97c4e0",
+  "captured_at": "2026-11-04T13:35:18.674327+00:00",
+  "new_successful_body_requests": 2,
+  "files": [
+    {
+      "file": "0022600160.json",
+      "bytes": 247939,
+      "sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6",
+      "git_blob": "e7a3c84ab2dd494d06b019d0ace81c7c548038b0"
+    },
+    {
+      "file": "fresh-schedule.json",
+      "bytes": 4393859,
+      "sha256": "53e6083424d33d8941eff07a655e2922b63169f4185392ee0545ff19b0e46563",
+      "git_blob": "ef4feaa4328dba873c9cb18fd678c284775d68c8"
+    },
+    {
+      "file": "fresh-pbp-directory.json",
+      "bytes": 137915,
+      "sha256": "c8d9f16affac735578f16aeb6c1b1b5ba8019105303640eb7de1b80c270ec8cc",
+      "git_blob": "5698dd9f97eb367791398906c88316c235cb43bd"
+    },
+    {
+      "file": "fresh-schedule-directory.json",
+      "bytes": 38132,
+      "sha256": "463455168e09924befb19f09dc61c1ab1c2010153642461a7b7210265868905e",
+      "git_blob": "30ff8396c11ae88e3c7340afb85138ee5d27511e"
+    }
+  ],
+  "production_writes": 0,
+  "archive_sha256": "2ca9194808c2856a510f52f48ab07ef5a06bb197aa3a96fc9f8969f9d654846e"
+}

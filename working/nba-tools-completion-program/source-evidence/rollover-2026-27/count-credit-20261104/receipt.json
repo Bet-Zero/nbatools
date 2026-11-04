@@ -1,0 +1,573 @@
+{
+  "classification": "count_qualified_rate_incomplete_unpublished_copy",
+  "original_obligations": 83,
+  "resolved_count_obligations": 80,
+  "remaining_unadmitted_count_obligations": 3,
+  "independent_event_supported_counts": 83,
+  "by_statistic": {
+    "ast": 11,
+    "oreb": 5,
+    "reb": 14,
+    "stl": 15,
+    "dreb": 10,
+    "fga": 10,
+    "fg3a": 3,
+    "tov": 7,
+    "blk": 2,
+    "fgm": 3,
+    "pts": 3
+  },
+  "due_population": {
+    "checked_at": "2026-11-04T13:37:05.020708+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [],
+    "fresh_schedule_sha256": "53e6083424d33d8941eff07a655e2922b63169f4185392ee0545ff19b0e46563",
+    "archive_revision": "2b57bdead60b670e161e4f9d265380dbab97c4e0",
+    "source_snapshot_is_not_production": true,
+    "timing_0160": {
+      "state": "qualified_exact_complete_vector",
+      "exact_seconds": "1030",
+      "quarter_seconds": [
+        "275",
+        "335",
+        "211",
+        "209"
+      ],
+      "reused_prior_seconds": [
+        "488",
+        "82",
+        "1124"
+      ],
+      "exact_mean_minutes": "227/20",
+      "absolute_difference": "1/20",
+      "inclusive_limit": "1/20",
+      "period_facts": {
+        "game_id": "0022600160",
+        "source_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6",
+        "periods": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "period_count": 4,
+        "period_scores": {
+          "1": {
+            "1610612754": 29,
+            "1610612737": 37
+          },
+          "2": {
+            "1610612754": 27,
+            "1610612737": 31
+          },
+          "3": {
+            "1610612754": 23,
+            "1610612737": 19
+          },
+          "4": {
+            "1610612754": 25,
+            "1610612737": 21
+          }
+        },
+        "events": 506,
+        "repeated_terminal_markers": [],
+        "complete_timeline": true,
+        "canonical_pbp_accepted": false,
+        "score_snapshot_evidence": {
+          "source_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6",
+          "observations": [
+            {
+              "action_id": 417,
+              "period": 4,
+              "clock": "PT07M36.00S",
+              "event_prefix_score": {
+                "1610612754": 89,
+                "1610612737": 93
+              },
+              "literal_score": {
+                "1610612754": 90,
+                "1610612737": 93
+              },
+              "explaining_scoring_action_ids": [
+                418
+              ],
+              "event_order_changed": false,
+              "clock_changed": false
+            }
+          ],
+          "interpretation": "replay_metadata_score_snapshot_at_identical_clock"
+        }
+      },
+      "strict_score_error": "Unexplained event score change",
+      "event_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6"
+    },
+    "game0142_pbp_unchanged": true
+  },
+  "timing_addendum": {
+    "state": "qualified_exact_complete_vector",
+    "exact_seconds": "1030",
+    "quarter_seconds": [
+      "275",
+      "335",
+      "211",
+      "209"
+    ],
+    "reused_prior_seconds": [
+      "488",
+      "82",
+      "1124"
+    ],
+    "exact_mean_minutes": "227/20",
+    "absolute_difference": "1/20",
+    "inclusive_limit": "1/20",
+    "period_facts": {
+      "game_id": "0022600160",
+      "source_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6",
+      "periods": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "period_count": 4,
+      "period_scores": {
+        "1": {
+          "1610612754": 29,
+          "1610612737": 37
+        },
+        "2": {
+          "1610612754": 27,
+          "1610612737": 31
+        },
+        "3": {
+          "1610612754": 23,
+          "1610612737": 19
+        },
+        "4": {
+          "1610612754": 25,
+          "1610612737": 21
+        }
+      },
+      "events": 506,
+      "repeated_terminal_markers": [],
+      "complete_timeline": true,
+      "canonical_pbp_accepted": false,
+      "score_snapshot_evidence": {
+        "source_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6",
+        "observations": [
+          {
+            "action_id": 417,
+            "period": 4,
+            "clock": "PT07M36.00S",
+            "event_prefix_score": {
+              "1610612754": 89,
+              "1610612737": 93
+            },
+            "literal_score": {
+              "1610612754": 90,
+              "1610612737": 93
+            },
+            "explaining_scoring_action_ids": [
+              418
+            ],
+            "event_order_changed": false,
+            "clock_changed": false
+          }
+        ],
+        "interpretation": "replay_metadata_score_snapshot_at_identical_clock"
+      }
+    },
+    "strict_score_error": "Unexplained event score change",
+    "event_sha256": "6201b22e467da1738e5d5bba9ac1367362d0f6ad1f502c48b9cf1bf548f6e3b6"
+  },
+  "full_numerical_acceptance": false,
+  "production_ready": false,
+  "production_writes": 0,
+  "general_possession_usage_accepted": false,
+  "precision_0160_still_unknown": false,
+  "reviewed_code": "dd0111a00260b86de5ff8dbfe703478dd6c10c03",
+  "baseline_main": "687960373934c27e5df531542623f9c574b37d71",
+  "complete_game_count": 106,
+  "admitted_period_windows": 645,
+  "required_period_windows": 647,
+  "full_affected_actor_field_vectors": 1440,
+  "count_cell_changes": 190,
+  "derived_ratio_changes": 97,
+  "explicit_dependent_rate_invalidations": 1365,
+  "all_originals_preserved": true,
+  "all_undeclared_period_csv_tokens_preserved": true,
+  "canonical_whole_game_cells_changed": false,
+  "all_1537_direct_successes_reused": true,
+  "source_body_requests": 12,
+  "source_route": "approved immutable GitHub archive only",
+  "source_new_population": "10 count-conflict PBP originals, newly available0160 PBP, changed schedule",
+  "author_tests": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "structural_records": [
+    {
+      "name": "games",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "schedule",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "team_game_stats",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "player_game_stats",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "player_game_starter_roles",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "player_game_period_stats",
+      "state": "failed",
+      "errors": [
+        "coverage missing 48 requested keys"
+      ]
+    },
+    {
+      "name": "team_game_period_stats",
+      "state": "failed",
+      "errors": [
+        "coverage missing 4 requested keys"
+      ]
+    },
+    {
+      "name": "team_season_advanced",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "player_season_advanced",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "rosters",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "standings_snapshots",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "team_game_features",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "game_features",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "schedule_context_features",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "player_game_features",
+      "state": "passed",
+      "errors": []
+    },
+    {
+      "name": "league_season_stats",
+      "state": "passed",
+      "errors": []
+    }
+  ],
+  "raw_validation": {
+    "state": "failed",
+    "literal_error": "Cross-dataset coverage validation failed: player_game_period_stats: coverage missing 48 requested keys; team_game_period_stats: coverage missing 4 requested keys"
+  },
+  "processed_builder_evidence": "Prior five passed builders reused; all five processed CSV bytes and every builder input unchanged. No broad rebuild repeated.",
+  "unresolved": [
+    "0142 Q3/H2 nonunique substitution/on-court vectors; missing positive Martin Advanced row. Count-proven3 remain unadmitted.",
+    "1365 explicitly invalidated AST/REB/TOV/USG rate cells require independent corrected event numerator/exposure qualification; no general possession/usage acceptance.",
+    "Team rebound/turnover counts include separate team events and are outside83player-cell ledger; no blanket team numerical acceptance.",
+    "0009 scoreboard chronology remains unqualified; nonshooting count evidence only.",
+    "Full numerical, consumer/R2, and production acceptance remain false."
+  ],
+  "archives": {
+    "freshness-timing-originals.zip": {
+      "bytes": 364088,
+      "sha256": "2ca9194808c2856a510f52f48ab07ef5a06bb197aa3a96fc9f8969f9d654846e"
+    },
+    "qualification-evidence.zip": {
+      "bytes": 867530,
+      "sha256": "6cecb60c127321c794733c65818054711445fcf9d6c049de342607fcb614060b"
+    },
+    "independent-review.zip": {
+      "bytes": 36405,
+      "sha256": "4f20bf2b637be0319b78b81d504d77a3097fc9f9a1ece5c19747535adce36778"
+    },
+    "source-originals.zip": {
+      "bytes": 178349,
+      "sha256": "d00be79b6e0f5b93f0baffab47e12525f563cca09adff6d30ce08fee7526a558"
+    }
+  },
+  "approved_final_test_delta": "ee63a28f14f1f03a13fdaa273c6137d8151c55d4",
+  "independent_review": {
+    "classification": "genuine_separate_checker_frozen_revision_review",
+    "reviewer": "/root/count_checker (Codex separate agent; inherited model, no Claude review claimed)",
+    "reviewed_implementation_sha": "dd0111a00260b86de5ff8dbfe703478dd6c10c03",
+    "approved_final_test_delta_sha": "ee63a28f14f1f03a13fdaa273c6137d8151c55d4",
+    "verdict": "approve_bounded_count_credit_qualification_and_exact_timing_addendum",
+    "material_findings_remaining": [],
+    "resolved_findings": [
+      {
+        "finding": "0009 early scoreboard error concealed duplicate nonterminal period-end from strict validator",
+        "fixed_sha": "dd0111a00260b86de5ff8dbfe703478dd6c10c03",
+        "independent_regression": "test_0009_score_failure_does_not_hide_duplicate_period_end"
+      }
+    ],
+    "independent_tests": {
+      "final_source_oracle_hostile_command": ".venv/bin/python -m pytest -q work/count-checker/review_test.py --disable-warnings",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 4.08,
+      "stage_assertions_passed": 5,
+      "stage_assertions_reused_from_equivalent_count_output": true,
+      "stage_details": "4 passed initial stage run plus corrected reviewer-only required-record selection assertion passed focused rerun; initial reviewer assertion incorrectly counted5optional records as required. No application failure hidden.",
+      "final_test_delta_review": "Only authorfixture cutoff now explicit2026-11-04T13:37:00Z; implementation unchanged. Appropriate immutable-snapshot test; no rerun necessary."
+    },
+    "independent_numbers": {
+      "original_obligations": 83,
+      "resolved_in_explicit_copy": 80,
+      "game0142_count_proven_unadmitted": 3,
+      "event_canonical_direct_whole_totals_match": 83,
+      "complete_nonDNP_affected_actor_vectors": 964,
+      "quarters_and_halves_compared": true,
+      "total_candidate_vectors_including_DNP": 1440,
+      "source_proofs": 18,
+      "count_cell_changes": 190,
+      "dependent_rate_invalidations": 1365,
+      "explicit_derived_ratio_changes": 97,
+      "steal_block_pairs": 515,
+      "exact0160_seconds": 1030,
+      "exact0160_quarters": [
+        275,
+        335,
+        211,
+        209
+      ],
+      "minute_mean": "227/20",
+      "unchanged_inclusive_precision_difference": "1/20",
+      "fresh_due_game_ids": 107,
+      "fresh_due_gaps": 0
+    },
+    "pipeline": {
+      "independent_fresh_qualify": "work/count-checker/frozen-stage",
+      "all_undeclared_csv_tokens_preserved": true,
+      "other_raw_and_all5processed_bytes_preserved": true,
+      "required_raw": 11,
+      "required_processed": 5,
+      "required_structural_pass": 14,
+      "required_structural_fail": 2,
+      "failures": [
+        "player_game_period_stats",
+        "team_game_period_stats"
+      ],
+      "actual_finder_Mitchell_Q2_STL": 2,
+      "actual_finder_Jalen_Williams_Q2_STL": 0,
+      "actual_Jalen_Q3_REB_rate_null": true
+    },
+    "remaining_scope": [
+      "0142Q3/H2 remain unadmitted; fullgame minutes support incompatible outgoing-player witnesses, not unique oncourt authority.",
+      "Full numerical coherence and general possession/usage not accepted; team-event rebound/turnover credits not promoted by player-count evidence.",
+      "0009 scoreboard strict rejection preserved; only triple-corroborated nonshooting counts qualify.",
+      "0160 timing dependency resolved at unchanged inclusive precision threshold.",
+      "Full production/readiness acceptance remains false."
+    ],
+    "production_writes": 0,
+    "new_source_acquisition_by_checker": 0,
+    "artifacts": [
+      {
+        "file": "oracle.py",
+        "sha256": "69f83972355cf0a707482d14e0771193f40293d3fbf64543d858f390a525ed40"
+      },
+      {
+        "file": "oracles.json",
+        "sha256": "e6b70d2ab55ce32bac17b5004366124ee0dd8e5d33a77b2a1a819cc1f61f446f"
+      },
+      {
+        "file": "whole_oracle.py",
+        "sha256": "5b83714d7dfb7472d01920352e3647a2808a15fcb9bb8ce0d3d5652f4d460918"
+      },
+      {
+        "file": "whole-canonical-oracles.json",
+        "sha256": "6c618ca301e50a9ad385b5c8eb137ff29a0349f22e4227e83ab57d4d0241d89a"
+      },
+      {
+        "file": "vector_check.py",
+        "sha256": "a713ed26dc63a4f608f7a6e8a4b2cca02dbf762148ee3be0932d44d05f7c75a6"
+      },
+      {
+        "file": "vector-whole-check.json",
+        "sha256": "f2d410988f422e1cbee1c76e751c4d1603bc08214042501e11b0035b7638de1d"
+      },
+      {
+        "file": "steal-block-pairs.json",
+        "sha256": "e900a18b308a44bb469ba7676b6754fab1344665c07025d37c832ee3359df117"
+      },
+      {
+        "file": "check_0142_minutes.py",
+        "sha256": "07c73d8be38bfa0ce9a770213fb6c5061cd14edcda7db88e935ac1582cd5b9ef"
+      },
+      {
+        "file": "0142-minute-discriminator.json",
+        "sha256": "292b5e057ef5cf4e7f130ca474d4c01a750ece8ac5cbf9f4b8d943aad4220a6b"
+      },
+      {
+        "file": "clock160.py",
+        "sha256": "000a9b443c6732b95cb8496001616a81ab528983e10e951891583bdecf9f4d90"
+      },
+      {
+        "file": "0160-clock-review.json",
+        "sha256": "6d774b4ceade847573846780135c93a2e86cdee273a9a0aa5c9b0858526895b3"
+      },
+      {
+        "file": "fresh_due.py",
+        "sha256": "31105e88d0807ddcc28f9aa4eca03dbe1d0e601dd584a31e50ecf9b7774134f5"
+      },
+      {
+        "file": "fresh-due-review.json",
+        "sha256": "1014b0e69a667dfffcac953d6f0fe6d4c7e531b1278e434b3f413b8bed090e8f"
+      },
+      {
+        "file": "review_test.py",
+        "sha256": "e933f2635b860f7f27b9a4796be1884183a7af29bb714cfd72b19f167dae870d"
+      },
+      {
+        "file": "review_stage_test.py",
+        "sha256": "a95afd3e3728a285d5a8873442f072c9f2375baee21f82b7021346660eea69a5"
+      }
+    ]
+  }
+}
