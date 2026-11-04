@@ -40,8 +40,97 @@ def event_clock(value):
     return _literal_clock_seconds(value)
 
 
-def period_facts(raw, *, game_id, final_teams):
+def same_clock_score_evidence(raw, *, game_id, final_teams):
+    """Qualify replay scoreboard snapshots without moving an event or its clock.
+
+    Scoring actions retain their literal sequential score assertions. Only a
+    non-actor Instant Replay row may report a later, uniquely explained score
+    from scoring actions at its identical period/clock. This is an explicit
+    metadata interpretation, never an event-order correction.
+    """
+    rows = json.loads(raw)["game"]["actions"]
+    require(json.loads(raw)["game"]["gameId"] == game_id, "Score proof identity differs")
+    ids = list(final_teams)
+    score = dict.fromkeys(ids, 0)
+    states, groups = [], defaultdict(list)
+    for row in rows:
+        value = 0
+        if row["actionType"] == "Made Shot":
+            require(row["shotValue"] in [2, 3], "Invalid scoring shot value")
+            value = row["shotValue"]
+        elif row["actionType"] == "Free Throw" and not row["description"].startswith("MISS "):
+            value = 1
+        if value:
+            require(row["teamId"] in score and row["personId"] > 0, "Scoring actor missing")
+            score[row["teamId"]] += value
+        states.append(score.copy())
+        groups[(row["period"], row["clock"])].append(len(states) - 1)
+    require(score == final_teams, "Score proof final total differs")
+    observations = []
+    for i, row in enumerate(rows):
+        literal = {
+            tid: int(row[name])
+            for tid, name in zip(ids, ["scoreHome", "scoreAway"], strict=True)
+            if row[name] not in ["", None]
+        }
+        if all(states[i][tid] == value for tid, value in literal.items()):
+            continue
+        require(
+            row["actionType"] == "Instant Replay"
+            and row["teamId"] == row["personId"] == 0
+            and set(literal) == set(ids),
+            "Unexplained event score change",
+        )
+        later = [j for j in groups[(row["period"], row["clock"])] if j > i]
+        scorers = [
+            j
+            for j in later
+            if rows[j]["actionType"] == "Made Shot"
+            or (
+                rows[j]["actionType"] == "Free Throw"
+                and not rows[j]["description"].startswith("MISS ")
+            )
+        ]
+        matches = [j for j in scorers if states[j] == literal]
+        require(len(matches) == 1, "Replay snapshot lacks unique same-clock scoring explanation")
+        target = matches[0]
+        require(
+            all(
+                rows[j]["period"] == row["period"] and rows[j]["clock"] == row["clock"]
+                for j in range(i, target + 1)
+            ),
+            "Replay explanation crosses a clock boundary",
+        )
+        observations.append(
+            dict(
+                action_id=row["actionId"],
+                period=row["period"],
+                clock=row["clock"],
+                event_prefix_score=states[i],
+                literal_score=literal,
+                explaining_scoring_action_ids=[rows[j]["actionId"] for j in scorers if j <= target],
+                event_order_changed=False,
+                clock_changed=False,
+            )
+        )
+    require(observations, "No same-clock scoreboard metadata requiring qualification")
+    return dict(
+        source_sha256=hashlib.sha256(raw).hexdigest(),
+        observations=observations,
+        interpretation="replay_metadata_score_snapshot_at_identical_clock",
+    )
+
+
+def period_facts(raw, *, game_id, final_teams, score_snapshots=None):
     """Check every event, literal period boundary and score transition."""
+    qualified_snapshots = {}
+    if score_snapshots is not None:
+        require(
+            score_snapshots
+            == same_clock_score_evidence(raw, game_id=game_id, final_teams=final_teams),
+            "Score snapshot evidence differs from exact original",
+        )
+        qualified_snapshots = {item["action_id"]: item for item in score_snapshots["observations"]}
     game = json.loads(raw)["game"]
     require(game["gameId"] == game_id, "Event game identity differs")
     ids = list(final_teams)
@@ -94,7 +183,15 @@ def period_facts(raw, *, game_id, final_teams):
             score[row["teamId"]] += value
         for tid, name in zip(ids, ["scoreHome", "scoreAway"], strict=True):
             if row[name] not in ["", None]:
-                require(int(row[name]) == score[tid], "Unexplained event score change")
+                if row["actionId"] in qualified_snapshots:
+                    proof = qualified_snapshots[row["actionId"]]
+                    require(
+                        proof["event_prefix_score"] == score
+                        and int(row[name]) == proof["literal_score"][tid],
+                        "Score snapshot observation differs",
+                    )
+                else:
+                    require(int(row[name]) == score[tid], "Unexplained event score change")
         previous_period, previous_clock = period, clock
     expected = set(range(1, max(periods) + 1))
     require(
@@ -120,6 +217,7 @@ def period_facts(raw, *, game_id, final_teams):
         repeated_terminal_markers=repeated_terminal_markers,
         complete_timeline=True,
         canonical_pbp_accepted=False,
+        **({"score_snapshot_evidence": score_snapshots} if score_snapshots is not None else {}),
     )
 
 
@@ -139,6 +237,7 @@ def clock_facts(raw, whole_raw, *, period_report, only_periods=None, trace=None)
         final_teams={
             whole[s]["teamId"]: whole[s]["statistics"]["points"] for s in ["homeTeam", "awayTeam"]
         },
+        score_snapshots=period_report.get("score_snapshot_evidence"),
     )
     require(checked == period_report, "Clock evidence does not bind the validated event original")
     teams, aliases, starters = {}, {}, {}
