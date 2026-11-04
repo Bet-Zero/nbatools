@@ -1,0 +1,11 @@
+{
+  "checker": "/root/recovery_checker",
+  "scope": "independent_remote_staging_custody_readback",
+  "branch": "data/readiness-recovery-capture-20261104",
+  "commit": "828c741f6500a96b956d5a1d2481d241d275f275",
+  "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/collection.zip",
+  "bytes": 1445891,
+  "sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17",
+  "matches_owner_original": true,
+  "production_writes": 0
+}
