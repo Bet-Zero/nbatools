@@ -1,0 +1,480 @@
+{
+  "classification": "verified_recovery_checkpoint_not_full_snapshot_acceptance",
+  "baseline_main": "b2255da06c886e9955e93cd60c7762e5621af597",
+  "original_staging_branch": "data/readiness-recovery-capture-20261104",
+  "original_staging_commit": "828c741f6500a96b956d5a1d2481d241d275f275",
+  "successful_responses_reused": 602,
+  "recovery_successes": 517,
+  "repeated_successful_requests": 0,
+  "paired_windows": 555,
+  "direct_admitted_windows": 536,
+  "derived_clock_admitted_windows": 13,
+  "original_quarantined_windows": 19,
+  "remaining_quarantined_windows": [
+    {
+      "game_id": "0022600097",
+      "start_period": 3,
+      "end_period": 4,
+      "period_family": "half",
+      "period_value": "second",
+      "source_sha256": {
+        "boxscoretraditionalv3": "3f90f7c9d2549fac500f49fe2a1737e4f4eebb7eb8048ec72c5bdbcdb01edf5d",
+        "boxscoreadvancedv3": "dafcd8d127325d50b8c7187df184d50f32f0e22e39eccdf519292ed32cde4016"
+      },
+      "error": "Period player clock denominator differs",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    },
+    {
+      "game_id": "0022600097",
+      "start_period": 4,
+      "end_period": 4,
+      "period_family": "quarter",
+      "period_value": "4",
+      "source_sha256": {
+        "boxscoretraditionalv3": "57a9fe27a02fe2411d22edd82314d936ed6975b3c022b5f38831efc2c74be3b2",
+        "boxscoreadvancedv3": "00b8bb216b0bf27709a2229a95451f13d3aadd19408f8da41c4d48a516899e47"
+      },
+      "error": "Period player clock denominator differs",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    },
+    {
+      "game_id": "0022600142",
+      "start_period": 3,
+      "end_period": 3,
+      "period_family": "quarter",
+      "period_value": "3",
+      "source_sha256": {
+        "boxscoretraditionalv3": "46d1c28ccf6ea0868c52817072e3212c9b6481b32e2aee572b06e4184f0239f7",
+        "boxscoreadvancedv3": "a4897db148a2df6801127d32460363e1752e31ce91c2b14937db5647607fdc34"
+      },
+      "error": "Period score differs from Summary",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    },
+    {
+      "game_id": "0022600142",
+      "start_period": 3,
+      "end_period": 4,
+      "period_family": "half",
+      "period_value": "second",
+      "source_sha256": {
+        "boxscoretraditionalv3": "d871ae4483682f54c57908f19d9d110cc00343b71327ac3e49d31be19c455a2f",
+        "boxscoreadvancedv3": "0bcf5d413a4d694e7fd2039784c73f397f253758c6ae54ca03d8201d0cd25bd0"
+      },
+      "error": "Period score differs from Summary",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    },
+    {
+      "game_id": "0022600144",
+      "start_period": 1,
+      "end_period": 2,
+      "period_family": "half",
+      "period_value": "first",
+      "source_sha256": {
+        "boxscoretraditionalv3": "699bd338af99c9b3335aba106d8a4eec0408beab67ddea527bff87e72fca2a36",
+        "boxscoreadvancedv3": "6f5fd52c2044b1ce4e625202c0324856d15df804b8057bf2c131e53fa024d08e"
+      },
+      "error": "Period score differs from Summary",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    },
+    {
+      "game_id": "0022600144",
+      "start_period": 2,
+      "end_period": 2,
+      "period_family": "quarter",
+      "period_value": "2",
+      "source_sha256": {
+        "boxscoretraditionalv3": "b1581e1bb8b6cad6703bdce84236590bb4e23e0c2830a8a1a1778cb43ade41f6",
+        "boxscoreadvancedv3": "11cbce042fc666752dd27fc85e7c2e88d2feefb5af9b40c06a9347da0fd11f47"
+      },
+      "error": "Period score differs from Summary",
+      "alternate_clock_qualification_error": "Clock terms require prior independent importer admission; cycles forbidden"
+    }
+  ],
+  "player_period_rows": 12369,
+  "team_period_rows": 1098,
+  "prior88_core_cells_preserved": true,
+  "appended_core_games": 4,
+  "required_raw": 11,
+  "required_processed": 5,
+  "required_present": 16,
+  "required_assessed": 16,
+  "structural_passes": 13,
+  "failed_required_datasets": [
+    "schedule",
+    "player_game_period_stats",
+    "team_game_period_stats"
+  ],
+  "ts_conflicts": [
+    {
+      "player_id": 203924,
+      "name": "Jerami Grant",
+      "pts": 55,
+      "fga": 50,
+      "fta": 15,
+      "expected_ts": 0.48586572438162545,
+      "source_ts": 0.495
+    },
+    {
+      "player_id": 1627734,
+      "name": "Domantas Sabonis",
+      "pts": 96,
+      "fga": 54,
+      "fta": 23,
+      "expected_ts": 0.7485963817841547,
+      "source_ts": 0.737
+    },
+    {
+      "player_id": 1628997,
+      "name": "Caleb Martin",
+      "pts": 18,
+      "fga": 11,
+      "fta": 0,
+      "expected_ts": 0.8181818181818182,
+      "source_ts": 0.8
+    },
+    {
+      "player_id": 1630230,
+      "name": "Naji Marshall",
+      "pts": 41,
+      "fga": 36,
+      "fta": 5,
+      "expected_ts": 0.5366492146596858,
+      "source_ts": 0.523
+    },
+    {
+      "player_id": 1630552,
+      "name": "Jalen Johnson",
+      "pts": 128,
+      "fga": 107,
+      "fta": 36,
+      "expected_ts": 0.5210029306414848,
+      "source_ts": 0.519
+    },
+    {
+      "player_id": 1630568,
+      "name": "Luka Garza",
+      "pts": 35,
+      "fga": 23,
+      "fta": 13,
+      "expected_ts": 0.6093314763231198,
+      "source_ts": 0.589
+    },
+    {
+      "player_id": 1631248,
+      "name": "Baylor Scheierman",
+      "pts": 27,
+      "fga": 26,
+      "fta": 0,
+      "expected_ts": 0.5192307692307693,
+      "source_ts": 0.54
+    },
+    {
+      "player_id": 1631260,
+      "name": "AJ Green",
+      "pts": 40,
+      "fga": 29,
+      "fta": 0,
+      "expected_ts": 0.6896551724137931,
+      "source_ts": 0.667
+    },
+    {
+      "player_id": 1642383,
+      "name": "Walter Clayton Jr.",
+      "pts": 21,
+      "fga": 18,
+      "fta": 3,
+      "expected_ts": 0.5434782608695652,
+      "source_ts": 0.573
+    },
+    {
+      "player_id": 1642907,
+      "name": "Cedric Coward",
+      "pts": 65,
+      "fga": 51,
+      "fta": 2,
+      "expected_ts": 0.6264456437933693,
+      "source_ts": 0.622
+    },
+    {
+      "player_id": 1643409,
+      "name": "Cameron Boozer",
+      "pts": 106,
+      "fga": 85,
+      "fta": 29,
+      "expected_ts": 0.5421440261865793,
+      "source_ts": 0.532
+    },
+    {
+      "player_id": 1643417,
+      "name": "Nate Ament",
+      "pts": 30,
+      "fga": 25,
+      "fta": 8,
+      "expected_ts": 0.5259467040673211,
+      "source_ts": 0.545
+    }
+  ],
+  "snapshot_record_consistency": {
+    "player_ids": 442,
+    "team_ids": 30,
+    "conflicts": [
+      {
+        "dataset": "player_season_advanced",
+        "identity": 203500,
+        "field": "minutes_per_game",
+        "expected": 8.883333333333333,
+        "source": 8.4,
+        "absolute_residual_minutes": 0.483333333333333
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1628368,
+        "field": "minutes_per_game",
+        "expected": 32.231944444444444,
+        "source": 32.0,
+        "absolute_residual_minutes": 0.23194444444444368
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1628997,
+        "field": "minutes_per_game",
+        "expected": 19.416666666666664,
+        "source": 18.4,
+        "absolute_residual_minutes": 1.016666666666666
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1629023,
+        "field": "minutes_per_game",
+        "expected": 33.134166666666665,
+        "source": 33.5,
+        "absolute_residual_minutes": 0.36583333333333334
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1629656,
+        "field": "minutes_per_game",
+        "expected": 26.75,
+        "source": 26.8,
+        "absolute_residual_minutes": 0.05000000000000072
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1630170,
+        "field": "minutes_per_game",
+        "expected": 32.31444444444444,
+        "source": 32.0,
+        "absolute_residual_minutes": 0.3144444444444435
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1630577,
+        "field": "minutes_per_game",
+        "expected": 27.79,
+        "source": 28.3,
+        "absolute_residual_minutes": 0.5100000000000018
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1642264,
+        "field": "minutes_per_game",
+        "expected": 29.5375,
+        "source": 29.6,
+        "absolute_residual_minutes": 0.06250000000000033
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1642844,
+        "field": "minutes_per_game",
+        "expected": 33.64138888888889,
+        "source": 33.3,
+        "absolute_residual_minutes": 0.3413888888888872
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1642868,
+        "field": "minutes_per_game",
+        "expected": 8.980555555555556,
+        "source": 9.3,
+        "absolute_residual_minutes": 0.31944444444444464
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1643544,
+        "field": "minutes_per_game",
+        "expected": 4.75,
+        "source": 4.8,
+        "absolute_residual_minutes": 0.05000000000000015
+      }
+    ],
+    "passed": false,
+    "count_and_record_tolerance": 0,
+    "minutes_compared_player_ids": 442,
+    "minutes_source_precision": 1,
+    "minutes_rounding_half_step": 0.05,
+    "net_rating_tolerance_exclusive": 0.5,
+    "statistical_scope": "retained92game_population_not_fresh_due_completeness"
+  },
+  "usage_independent_numerical_basis": "not_established",
+  "exact_due_population": {
+    "checked_at": "2026-11-04T03:44:25.575450+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "observed_final_games": 92,
+    "population_current_against_retained_schedule": true,
+    "final_acceptance_requires_new_freshness_check": true
+  },
+  "new_archive_bodies": 30,
+  "new_archive_scope": "29 first-time Summary bodies and one changed schedule at a0d9c9539f0ffbb6a912fb9c25ac04ba7ce1d5bb; no successful collector job repeated",
+  "production_writes": 0,
+  "trusted_acceptance_receipt_created": false,
+  "full_snapshot_accepted": false,
+  "readiness_accepted": false,
+  "artifacts": {
+    "authentication.json": {
+      "bytes": 219355,
+      "sha256": "620718552648f2bb9fe87ff46756cc0650373982cf7e30ddb1dcdf37fac05fb3"
+    },
+    "collection.zip": {
+      "bytes": 1445891,
+      "sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17"
+    },
+    "qualification-evidence.zip": {
+      "bytes": 863821,
+      "sha256": "345e122b033af4cb992e2d09f40066a82bcde67cbf4ce41c275087b50013f0d8"
+    },
+    "staging-custody.json": {
+      "bytes": 496,
+      "sha256": "c0b5f09257cb63fa5d97fc5fb54cc273bc50da464f30a614ae81b61f3f62d6eb"
+    },
+    "supplementary-sources.zip": {
+      "bytes": 445100,
+      "sha256": "e2e5dff5ac60cdbb93371556490d5117d40012e452d47ea837092b8dccd53de1"
+    }
+  }
+}
