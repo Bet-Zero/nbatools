@@ -1,6 +1,8 @@
 """Real source repairs and versioned projections do not erase blocking evidence."""
 
 import copy
+import csv
+import io
 import json
 import zipfile
 from fractions import Fraction
@@ -180,18 +182,28 @@ def test_current107_stage_preserves_history_and_exposes_missing_period_data(tmp_
             if dataset == "player_game_stats":
                 # Preserve all accepted88 original CSV bytes; the four later
                 # partial contexts were explicitly unaccepted in the prior receipt.
-                old = pd.read_csv(__import__("io").BytesIO(prior))
+                old = pd.read_csv(io.BytesIO(prior))
                 accepted = old[old.game_id < 22600154]
                 assert current.startswith(
                     b"".join(prior.splitlines(keepends=True)[: len(accepted) + 1])
                 )
-                now = pd.read_csv(__import__("io").BytesIO(current)).iloc[: len(old)]
+                now = pd.read_csv(io.BytesIO(current)).iloc[: len(old)]
+                prior_tokens = list(csv.DictReader(io.StringIO(prior.decode())))
+                current_tokens = list(csv.DictReader(io.StringIO(current.decode())))[: len(old)]
                 for change in report["partial_context_margin_repairs"]:
                     mask = (old.game_id == int(change["game_id"])) & (
                         old.player_id == change["player_id"]
                     )
                     assert old.loc[mask, "plus_minus"].item() == change["before"]
                     old.loc[mask, "plus_minus"] = change["after"]
+                    for row in prior_tokens:
+                        if (int(row["game_id"]), int(row["team_id"]), int(row["player_id"])) == (
+                            int(change["game_id"]),
+                            change["team_id"],
+                            change["player_id"],
+                        ):
+                            row["plus_minus"] = str(change["after"])
+                assert current_tokens == prior_tokens
                 pd.testing.assert_frame_equal(now, old, check_exact=True)
             else:
                 assert current.startswith(prior)
@@ -225,18 +237,24 @@ def test_current107_stage_preserves_history_and_exposes_missing_period_data(tmp_
 
 
 def test_partial_context_margin_repair_requires_all_qualified_quarters():
-    from tools.stage_current_season import RECOVERY, SUFFIX
+    from tools.stage_current_season import RECOVERY, SUFFIX, repair_margin_tokens
 
     with zipfile.ZipFile(RECOVERY / "qualification-evidence.zip") as z:
-        import io
-
-        core = pd.read_csv(io.BytesIO(z.read(f"stage/data/raw/player_game_stats/{SUFFIX}")))
+        raw_core = z.read(f"stage/data/raw/player_game_stats/{SUFFIX}")
+        core = pd.read_csv(io.BytesIO(raw_core))
         periods = pd.read_csv(
             io.BytesIO(z.read(f"stage/data/raw/player_game_period_stats/{SUFFIX}"))
         )
     old = core.copy(deep=True)
     repaired, changes = repair_partial_context_margins(core, periods)
     assert len(changes) == 14
+    assert repair_margin_tokens(raw_core, []) == raw_core
+    with pytest.raises(ValueError, match="Duplicate margin token"):
+        repair_margin_tokens(raw_core, [changes[0], changes[0]])
+    with pytest.raises(ValueError, match="differs from the qualified ledger"):
+        repair_margin_tokens(raw_core, [{**changes[0], "before": changes[0]["before"] + 1}])
+    with pytest.raises(ValueError, match="Only unaccepted154"):
+        repair_margin_tokens(raw_core, [{**changes[0], "game_id": "0022600001"}])
     pd.testing.assert_frame_equal(core, old)
     assert repaired.loc[repaired.game_id != 22600154].equals(core.loc[core.game_id != 22600154])
     bad = periods.drop(

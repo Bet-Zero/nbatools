@@ -282,7 +282,34 @@ class SourceCache:
                 unresolved[key] = record
         return unresolved
 
+    def unresolved_transport_blocks(self):
+        archive = {
+            key: record
+            for key, record in self.data["attempts"].items()
+            if key not in self.data["mirror"]
+        }
+        runs = {
+            key: {
+                "state": record["receipt"]["state"],
+                "seed_sha256": record["seed_sha256"],
+                "error_type": record["receipt"].get("error_type"),
+            }
+            for key, record in self.data.get("runs", {}).items()
+            if record.get("acquisition_blocked")
+            or record["receipt"].get("state") == "failed_preserve_output_do_not_retry"
+        }
+        return {
+            name: values
+            for name, values in (("archive_attempts", archive), ("failed_runs", runs))
+            if values
+        }
+
+    def require_transport_unblocked(self):
+        if self.unresolved_transport_blocks():
+            raise ValueError("Failed/interrupted transport requires explicit cloud diagnosis")
+
     def require_unblocked(self, jobs):
+        self.require_transport_unblocked()
         blocked = self.unresolved_direct_attempts()
         if any(identity(job) in blocked for job in jobs):
             raise ValueError("Failed/interrupted direct request requires explicit cloud diagnosis")
@@ -430,7 +457,7 @@ class SourceCache:
             if previous["seed_sha256"] != seed_sha256:
                 raise ValueError("Returned ZIP belongs to another reviewed seed")
             self._check_run_original(previous)
-            if previous.get("direct_attempt_tracking") == 2:
+            if previous.get("direct_attempt_tracking") == 3:
                 return previous
         members, expanded, entries = _run_members(payload)
         receipts = [name for name in members if re.fullmatch(_RUN + r"/receipt\.json", name)]
@@ -565,6 +592,37 @@ class SourceCache:
                 raise ValueError("Returned run exceeds500 distinct direct requests")
             if receipt["state"] == "no_missing_direct_requests" and (nested or planned):
                 raise ValueError("Empty delta cannot contain direct captures")
+            archive_attempts, completed_archives = {}, {}
+            original_by_blob = {item["blob"]: item for item in originals}
+            for key, attempt in state.get("archive_attempts", {}).items():
+                path, separator, blob = key.rpartition(":")
+                if (
+                    separator != ":"
+                    or not PATH.fullmatch(path)
+                    or not re.fullmatch(r"[a-f0-9]{40}", blob)
+                    or attempt.get("state") not in {"started", "complete"}
+                    or not re.fullmatch(r"[a-f0-9]{40}", attempt.get("revision", ""))
+                ):
+                    raise ValueError("Returned archive attempt identity/bounds differ")
+                archive_attempts[key] = {
+                    **attempt,
+                    "path": path,
+                    "blob": blob,
+                    "outer_zip_sha256": expected_sha256,
+                }
+                original = original_by_blob.get(blob)
+                if attempt["state"] == "complete" and original and original["git_blob_matches"]:
+                    completed_archives[key] = {
+                        "path": path,
+                        "blob": blob,
+                        "revision": attempt["revision"],
+                        "sha256": original["sha256"],
+                        "bytes": original["bytes"],
+                        "provenance": {
+                            "outer_zip_sha256": expected_sha256,
+                            "member": original["member"],
+                        },
+                    }
             for key, record in scratch.data["direct"].items():
                 previous_source = self.data["direct"].get(key)
                 if previous_source and previous_source["sha256"] != record["sha256"]:
@@ -580,6 +638,8 @@ class SourceCache:
             _preserve_zip(import_root / (expected_sha256 + ".zip"), payload)
             next_data = json.loads(json.dumps(self.data))
             _merge_direct_failures(next_data["direct_attempts"], scratch.data["direct_attempts"])
+            next_data["attempts"].update(archive_attempts)
+            next_data["mirror"].update(completed_archives)
             for item in nested:
                 path = import_root / (item["sha256"] + ".collection.zip")
                 _preserve_zip(path, members[item["member"]])
@@ -607,7 +667,10 @@ class SourceCache:
                 "loose_failed_files": sorted(loose),
                 "successful_sources": len(scratch.data["direct"]),
                 "failed_or_interrupted": failed,
-                "direct_attempt_tracking": 2,
+                "direct_attempt_tracking": 3,
+                "acquisition_blocked": state.get("blocked") is True,
+                "archive_attempts": archive_attempts,
+                "completed_archive_blobs": sorted(completed_archives),
                 "blocked_direct_attempts": sorted(scratch.unresolved_direct_attempts()),
                 "production_writes": 0,
             }
@@ -726,6 +789,7 @@ def period_count(document, game_id):
 
 def direct_delta(cache, due_ids, *, period_counts=None):
     """Six required windows, OT only from qualified evidence; cache suppresses repeats."""
+    cache.require_transport_unblocked()
     jobs, unresolved = [], []
     period_counts = period_counts or {}
     for gid in sorted(set(due_ids)):
@@ -764,6 +828,7 @@ def direct_delta(cache, due_ids, *, period_counts=None):
 
 
 def mirror_delta(cache, inventory, due_ids):
+    cache.require_transport_unblocked()
     revision = inventory["revision"]
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("Full immutable mirror revision required")
@@ -793,6 +858,7 @@ def stage_mirror(
     cache, plan, *, max_requests=MAX_REQUESTS, max_bytes=MAX_BYTES, max_seconds=MAX_SECONDS
 ):
     """No failed-request retry; reentry reuses every completed immutable blob."""
+    cache.require_transport_unblocked()
     if not (
         1 <= max_requests <= MAX_REQUESTS
         and 1 <= max_bytes <= MAX_BYTES
@@ -970,6 +1036,9 @@ def build_reusable_bundle(
     blocked = cache.unresolved_direct_attempts()
     if blocked:
         seed["blocked_attempts"] = blocked
+    transport_blocks = cache.unresolved_transport_blocks()
+    if transport_blocks:
+        seed["transport_blocks"] = transport_blocks
     extra = [*dependencies, *snapshot_templates]
     if extra:
         validate_request(

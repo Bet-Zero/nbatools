@@ -8,7 +8,7 @@ the task PR's final receipt for candidate, independent review, CI and merge SHAs
 
 ## Verified progress
 
-- The exact 24-hour population at **2026-11-04 05:51:04 UTC** is **107 due games**.
+- The exact 24-hour population at **2026-11-04 05:56:13 UTC** is **107 due games**.
   Whole-game rows are staged for all107: 2,413 player rows and214 team rows.
   This closes the prior15-game whole-row gap (0158–0172), not full qualification.
   Fourteen new whole Traditional bodies corroborate the new primary counts;

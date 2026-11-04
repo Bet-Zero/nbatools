@@ -1,6 +1,6 @@
 {
   "classification": "offline_initial_delta_preflight_not_capture",
-  "checked_at": "2026-11-04T05:51:29.193751+00:00",
+  "checked_at": "2026-11-04T05:56:01.884651+00:00",
   "production_writes": 0,
   "statistical_acceptance": false,
   "lag_hours": 24,
@@ -5203,15 +5203,15 @@
   "verified_successes_after_run": 1121,
   "archive_requests": 0,
   "archive_bytes": 0,
-  "finished_at": "2026-11-04T05:51:29.244349+00:00",
+  "finished_at": "2026-11-04T05:56:01.937256+00:00",
   "acquired_requests": 0,
   "acquired_bytes": 0,
   "request_sha256": "1cd6bda4aa6a535e1c2f73d18461fad079c3738d5226e0bf8fa3d9f156425e6e",
   "bundle": {
     "seed_sha256": "105a4e1536693d010cce534c45fdd5300632b0c1b499c1647a3f2ee07c7e79a0",
     "seed_successes": 1121,
-    "owner_bundle_sha256": "e37c0c5b431099045f56e5f9553beab0b7bd245afc2fa9d577e6145e99238f09",
-    "runtime_sha256": "0b91e4275ec5b252a0cd213a78a558d24bd52fa3d0ab9e13d0820bd2eb5d369f",
+    "owner_bundle_sha256": "81891a5003a8799556c9a349b5fda3523c31a8632940984a1326786cdd315deb",
+    "runtime_sha256": "bfdc0d575f7a5577db72676d1d1778096f43277c64c3cdad3d85bb04ac1fbc0b",
     "production_writes": 0
   },
   "source_seed_successes": 1121,

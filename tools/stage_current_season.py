@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import csv
 import hashlib
 import io
 import json
@@ -297,6 +298,44 @@ def repair_partial_context_margins(core, period_rows):
     return result, changes
 
 
+def repair_margin_tokens(raw, changes):
+    """Change only ledgered margin tokens, never reserialize historical floats."""
+    lines = raw.splitlines(keepends=True)
+    header = next(csv.reader([lines[0].decode()]))
+    columns = {
+        name: header.index(name) for name in ["game_id", "team_id", "player_id", "plus_minus"]
+    }
+    targets = {}
+    for change in changes:
+        require(
+            change["game_id"] == "0022600154" and change["field"] == "plus_minus",
+            "Only unaccepted154 margin changes are allowed",
+        )
+        key = tuple(int(change[k]) for k in ["game_id", "team_id", "player_id"])
+        require(key not in targets, "Duplicate margin token change")
+        targets[key] = change
+    seen = set()
+    for index, line in enumerate(lines[1:], 1):
+        row = next(csv.reader([line.decode()]))
+        key = tuple(int(row[columns[k]]) for k in ["game_id", "team_id", "player_id"])
+        if key not in targets:
+            continue
+        require(key not in seen, "Duplicate margin source grain")
+        seen.add(key)
+        change = targets[key]
+        require(
+            Fraction(row[columns["plus_minus"]]) == change["before"],
+            "Literal margin token differs from the qualified ledger",
+        )
+        row[columns["plus_minus"]] = str(change["after"])
+        output = io.StringIO()
+        csv.writer(output, lineterminator="\n").writerow(row)
+        lines[index] = output.getvalue().encode()
+        require(next(csv.reader([lines[index].decode()])) == row, "Margin CSV token write differs")
+    require(seen == set(targets), "Margin token change identity is absent")
+    return b"".join(lines)
+
+
 def period_count_coherence(core, catalog):
     """Compare retained disjoint original quarters/OT to staged whole-game counts.
 
@@ -502,7 +541,7 @@ def stage(output):
         game_path.write_bytes(protected_games)
         _append_rows(game_path, new_games)
         period_rows = pd.read_csv(root / f"data/raw/player_game_period_stats/{SUFFIX}")
-        repaired, context_repairs = repair_partial_context_margins(contexts["player"], period_rows)
+        _, context_repairs = repair_partial_context_margins(contexts["player"], period_rows)
         accepted_ids = {int(x) for x in prior_context["accepted_old_game_ids"]}
         accepted_count = int(before["player"].game_id.isin(accepted_ids).sum())
         require(
@@ -513,8 +552,11 @@ def stage(output):
         lines = protected["player"].splitlines(keepends=True)
         require(len(lines) == len(before["player"]) + 1, "Unsupported historical multiline CSV")
         player_path = root / f"data/raw/player_game_stats/{SUFFIX}"
-        player_path.write_bytes(b"".join(lines[: accepted_count + 1]))
-        _append_rows(player_path, repaired.loc[~repaired.game_id.isin(accepted_ids)])
+        player_path.write_bytes(repair_margin_tokens(player_path.read_bytes(), context_repairs))
+        require(
+            player_path.read_bytes().startswith(b"".join(lines[: accepted_count + 1])),
+            "Accepted historical player CSV prefix changed",
+        )
         contexts["player"] = pd.read_csv(player_path)
         pc = contexts["player"].merge(
             contexts["team"][["game_id", "team_id", "wl"]],

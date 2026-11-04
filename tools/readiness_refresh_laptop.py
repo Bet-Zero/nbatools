@@ -320,7 +320,7 @@ def execute(root, seed):
     outputs = []
     failed_paths = [root / name for name in state.get("blocked_files", [])]
     try:
-        if state.get("blocked") or seed.get("blocked_attempts"):
+        if state.get("blocked") or seed.get("blocked_attempts") or seed.get("transport_blocks"):
             raise ValueError("Prior failed invocation requires cloud diagnosis; do not retry")
         successes = retained_successes(root, seed)
         receipt["reused_successes"] = len(successes)

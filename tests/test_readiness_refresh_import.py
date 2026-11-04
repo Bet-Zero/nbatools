@@ -380,4 +380,118 @@ def test_reimport_migrates_pre_fix_run_that_dropped_attempt_blocks(tmp_path, mon
     assert restored.unresolved_direct_attempts() == {}
     migrated = import_files(restored, tmp_path, files)
     assert identity(report["attempts"][-1]["job"]) in restored.unresolved_direct_attempts()
-    assert migrated["direct_attempt_tracking"] == 2
+    assert migrated["direct_attempt_tracking"] == 3
+
+
+@pytest.mark.parametrize("failure_kind", ["archive_partial", "discovery_only"])
+def test_failed_archive_or_discovery_survives_reseed_without_transport(
+    tmp_path, monkeypatch, failure_kind
+):
+    from tests.test_readiness_refresh import portable_schedule
+    from tools.readiness_refresh import build_reusable_bundle, mirror_delta, stage_mirror
+
+    files, calls, _, _ = run_files(tmp_path, monkeypatch, failure=True)
+    files = files[1:]  # Isolate archive/discovery failure: no direct attempts.
+    receipt = json.loads(files[0][1])
+    receipt["jobs"] = []
+    files[0] = (RECEIPT, json.dumps(receipt).encode())
+    state = json.loads(files[1][1])
+    path = "nba_stats/json/boxscoresummaryv3/2027/0022600001.json"
+    blob, revision = "b" * 40, "c" * 40
+    key = path + ":" + blob
+    if failure_kind == "archive_partial":
+        member = f"archive/{blob}.json"
+        state["archive_attempts"] = {key: {"state": "started", "revision": revision}}
+        state["blocked_files"] = [member]
+        files.append((member, b"literal partial body"))
+    else:
+        member = f"runs/{STAMP}/metadata/00.json"
+        state["archive_attempts"] = {}
+        state["blocked_files"] = [member]
+        files.append((member, b"literal failed discovery body"))
+    files[1] = ("state.json", json.dumps(state).encode())
+    cache = SourceCache(tmp_path / "cache")
+    import_files(cache, tmp_path, files)
+    restored = SourceCache(tmp_path / "cache")
+    assert restored.unresolved_direct_attempts() == {}
+    assert restored.unresolved_transport_blocks()["failed_runs"]
+    if failure_kind == "archive_partial":
+        assert restored.data["attempts"][key]["state"] == "started"
+        assert key in restored.unresolved_transport_blocks()["archive_attempts"]
+        restored.data["attempts"] = {}
+        for record in restored.data["runs"].values():
+            record["direct_attempt_tracking"] = 2
+        restored.save()
+        restored = SourceCache(tmp_path / "cache")
+        # Even a pre-fix failed-run receipt stops transport before replay.
+        assert restored.unresolved_transport_blocks()["failed_runs"]
+        import_files(restored, tmp_path, files)
+        assert key in restored.unresolved_transport_blocks()["archive_attempts"]
+    inventory = {
+        "revision": revision,
+        "entries": {"summary": {"path": path, "sha": blob, "size": 20}},
+    }
+    plan = {
+        "revision": revision,
+        "jobs": [{"path": path, "blob": blob, "bytes": 20, "revision": revision}],
+    }
+    with pytest.raises(ValueError, match="explicit cloud diagnosis"):
+        mirror_delta(restored, inventory, ["0022600001"])
+    with pytest.raises(ValueError, match="explicit cloud diagnosis"):
+        stage_mirror(restored, plan)
+    schedule_raw = json.dumps(portable_schedule()).encode()
+    target = tmp_path / "blocked-owner.zip"
+    build_reusable_bundle(
+        restored,
+        target,
+        schedule_raw=schedule_raw,
+        schedule_blob=git_blob(schedule_raw),
+        summaries={},
+        base_generation="base",
+        base_manifest_sha256="f" * 64,
+    )
+    with zipfile.ZipFile(target) as z:
+        namespace = {"__name__": "not_main", "__file__": str(tmp_path / "run_capture.py")}
+        exec(compile(z.read("run_capture.py"), "run_capture.py", "exec"), namespace)
+    seed = namespace["SEED"]
+    assert seed["transport_blocks"]["failed_runs"]
+    discoveries = []
+    monkeypatch.setattr(
+        namespace["ArchiveSession"], "discover", lambda self: discoveries.append(True)
+    )
+    result = namespace["execute"](tmp_path / "portable", seed)
+    assert result["state"] == "failed_preserve_output_do_not_retry"
+    assert discoveries == [] and len(calls) == 2
+
+
+def test_completed_git_verified_archive_is_reused_separately_from_failed_blocks(
+    tmp_path, monkeypatch
+):
+    from tools.readiness_refresh import mirror_delta, stage_mirror
+
+    files, _, _, _ = run_files(tmp_path, monkeypatch)
+    raw = b'{"literal_archived_source":true}'
+    path = "nba_stats/json/boxscoresummaryv3/2027/0022600001.json"
+    blob, revision = git_blob(raw), "c" * 40
+    key = path + ":" + blob
+    state = json.loads(files[-1][1])
+    state["archive_attempts"] = {key: {"state": "complete", "revision": revision}}
+    files[-1] = ("state.json", json.dumps(state).encode())
+    files.append((f"archive/{blob}.json", raw))
+    cache = SourceCache(tmp_path / "cache")
+    result = import_files(cache, tmp_path, files)
+    restored = SourceCache(tmp_path / "cache")
+    assert result["completed_archive_blobs"] == [key]
+    assert restored.read(restored.data["mirror"][key]) == raw
+    assert restored.unresolved_transport_blocks() == {}
+    inventory = {
+        "revision": revision,
+        "entries": {"summary": {"path": path, "sha": blob, "size": len(raw)}},
+    }
+    assert mirror_delta(restored, inventory, ["0022600001"])["jobs"] == []
+    plan = {
+        "revision": revision,
+        "jobs": [{"path": path, "blob": blob, "bytes": len(raw), "revision": revision}],
+    }
+    assert stage_mirror(restored, plan)["completed"] == 0
+    assert result["classification"] == "authenticated_run_transport_not_statistical_acceptance"
