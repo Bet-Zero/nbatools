@@ -1,0 +1,297 @@
+{
+  "classification": "reviewed_unpublished_field_scoped_qualification",
+  "baseline_main": "38813c373c97ba2e461a8060fd5011782f654dfe",
+  "reviewed_code": "a29228ed2dc85600f34b1d0d826ef78e188c1280",
+  "raw": 11,
+  "processed": 5,
+  "admitted_windows": 643,
+  "known_required_windows": 647,
+  "remaining_windows": [
+    [
+      "0022600142",
+      "quarter",
+      "3"
+    ],
+    [
+      "0022600142",
+      "half",
+      "second"
+    ],
+    [
+      "0022600144",
+      "quarter",
+      "2"
+    ],
+    [
+      "0022600144",
+      "half",
+      "first"
+    ]
+  ],
+  "due_population": {
+    "checked_at": "2026-11-04T11:04:13.680772+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [],
+    "observed_final_games": 107,
+    "population_current_against_retained_schedule": true,
+    "final_acceptance_requires_new_freshness_check": true
+  },
+  "required_dataset_records": [
+    {
+      "name": "games",
+      "state": "passed"
+    },
+    {
+      "name": "schedule",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_stats",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_starter_roles",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_game_period_stats",
+      "state": "failed"
+    },
+    {
+      "name": "team_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "player_season_advanced",
+      "state": "passed"
+    },
+    {
+      "name": "rosters",
+      "state": "passed"
+    },
+    {
+      "name": "standings_snapshots",
+      "state": "passed"
+    },
+    {
+      "name": "team_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "game_features",
+      "state": "passed"
+    },
+    {
+      "name": "schedule_context_features",
+      "state": "passed"
+    },
+    {
+      "name": "player_game_features",
+      "state": "passed"
+    },
+    {
+      "name": "league_season_stats",
+      "state": "passed"
+    }
+  ],
+  "reported_ts_basis": {
+    "players": 448,
+    "teams": 30,
+    "canonical_differences": {
+      "players": 12,
+      "teams": 3
+    }
+  },
+  "minute_serialized_states": {
+    "raw_basis_rounding_matches": 441,
+    "real_clock_boundary_unknown": 7
+  },
+  "independent_exact_minute_case": [
+    {
+      "player_id": 1641712,
+      "game_ids": [
+        "0022600163"
+      ],
+      "games": 1,
+      "exact_seconds": "123",
+      "exact_mean_minutes": "41/20",
+      "reported_minutes": "21/10",
+      "absolute_residual_minutes": "1/20",
+      "unchanged_inclusive_limit_minutes": "1/20",
+      "state": "qualified_exact_clock_boundary",
+      "source_sha256": {
+        "events": "4629750e9d7ec6860f057bd267370a5f4f86f9d2922b4692cff6e80cee8314fd",
+        "whole": "c2aed7c2ef57ac91edc37b674f32b6a0848b1de1f300640e6a843d8706f0e32d"
+      },
+      "source_events": 541,
+      "original_event_order_preserved": true,
+      "rounding_policy_invented": false
+    }
+  ],
+  "remaining_clock_unknown_players": [
+    1642854
+  ],
+  "independent_usage": {
+    "qualified_real_sample_cases": 10,
+    "previously_unresolved_cases_resolved": 6,
+    "source_game": "0022600116",
+    "period": 1,
+    "team_id": 1610612746,
+    "full_usage_accepted": false
+  },
+  "retained_successful_direct_identities": 1537,
+  "source_body_requests": 14,
+  "author_focused_tests_passed": 45,
+  "independent_review": {
+    "identity": "/root/chronology_checker",
+    "model": "inherited configured Codex model; no cross-model claim",
+    "tests_passed": 22,
+    "reviewed_sha": "6adad6cee196028b9bddd1f9026ffb0d5062f7cd",
+    "report_sha256": "17699449dd69f402f3fd090e65c82ff5a6ec247cf7dc7c5b880c54c9412b4009",
+    "verdict": "approved_bounded_checkpoint_conditional_exact_head_CI",
+    "final_delta_sha": "a29228ed2dc85600f34b1d0d826ef78e188c1280",
+    "delta_tests_passed": 6,
+    "delta_report_sha256": "83f9057137808256f9aaf4087712632a05f79ace96c68f5c5ac0a94ee1821a86",
+    "reuse_note": "Original22independenttests+sourcejudgment at6adad6ce apply where unchanged; new6tests/sourceaudit cover precision and literal-display-alias delta. No claim of reexecution of22tests on final head."
+  },
+  "full_snapshot_accepted": false,
+  "production_writes": 0,
+  "archive_hashes": {
+    "independent-review.zip": {
+      "bytes": 153629,
+      "sha256": "d6e1952aac72af70d84b270575742069e2ccf2cb47165ef3a3a0a9d9df6cdf43"
+    },
+    "precision-source-originals.zip": {
+      "bytes": 252816,
+      "sha256": "888bbbcf8a1bc4b15bdbb2a04433bcabe1b81da6994c8c593b37d2a9e9362bd2"
+    },
+    "qualification-evidence.zip": {
+      "bytes": 837489,
+      "sha256": "8e177a33ee0c8f91e7f6d93c0030d8ef5575f379b09574bb3d71d7f19b3686e4"
+    }
+  },
+  "direct_source_requests": 0,
+  "first_time_archive_event_requests": 14,
+  "independent_timing_boundary_cases_qualified": 6,
+  "missing_event_game_ids": [
+    "0022600160"
+  ],
+  "new_precision_sources_archive_sha256": "888bbbcf8a1bc4b15bdbb2a04433bcabe1b81da6994c8c593b37d2a9e9362bd2"
+}

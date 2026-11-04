@@ -48,7 +48,7 @@ def bound_zip(path, digest):
         yield z
 
 
-def event_clock_copy(pair, event_raw, whole_raw, *, start, end):
+def event_clock_copy(pair, event_raw, whole_raw, *, start, end, score_snapshots=None):
     """Explicit copied full-vector refinement; original malformed tokens survive.
 
     Only the diagnosed display rollover ':60' is interpreted for a <=1 second
@@ -70,6 +70,7 @@ def event_clock_copy(pair, event_raw, whole_raw, *, start, end):
             whole[side]["teamId"]: whole[side]["statistics"]["points"]
             for side in ["homeTeam", "awayTeam"]
         },
+        score_snapshots=score_snapshots,
     )
     clocks = clock_facts(event_raw, whole_raw, period_report=facts)
     ledger, result = [], {}
