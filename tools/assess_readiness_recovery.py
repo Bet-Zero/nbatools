@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import io
 import json
+import math
 import shutil
 from datetime import UTC, datetime
 from fractions import Fraction
@@ -222,9 +223,33 @@ def source_basis_report(root):
     )
 
 
+def minute_mean_interval(tokens):
+    """Bound serialization ambiguity without inventing source clock resolution.
+
+    A CSV decimal token and the rounding cell of its nearest binary64 value
+    delimit the representational information available here. Use exact rational
+    midpoints to adjacent floats, not a numeric epsilon. A source comparison
+    crossing either unchanged acceptance boundary remains an unmet obligation;
+    this interval neither repairs a clock nor establishes its true precision.
+    """
+    tokens = list(tokens)
+    _require(bool(tokens), "Cannot compare an empty minute population")
+    lower = upper = Fraction(0)
+    for token in tokens:
+        value = float(token)
+        _require(math.isfinite(value) and value >= 0, "Invalid serialized minute value")
+        center = Fraction.from_float(value)
+        before, after = math.nextafter(value, -math.inf), math.nextafter(value, math.inf)
+        _require(math.isfinite(before) and math.isfinite(after), "Unbounded minute serialization")
+        decimal = Fraction(str(token))
+        lower += min(decimal, (Fraction.from_float(before) + center) / 2)
+        upper += max(decimal, (center + Fraction.from_float(after)) / 2)
+    return lower / len(tokens), upper / len(tokens)
+
+
 def snapshot_record_checks(root, source_output=None):
     """Apply existing exact count/record and net-rating consistency rules."""
-    players = pd.read_csv(root / "data/raw/player_game_stats" / SUFFIX)
+    players = pd.read_csv(root / "data/raw/player_game_stats" / SUFFIX, dtype={"minutes": str})
     teams = pd.read_csv(root / "data/raw/team_game_stats" / SUFFIX)
     player_adv = pd.read_csv(root / "data/raw/player_season_advanced" / SUFFIX)
     team_adv = pd.read_csv(root / "data/raw/team_season_advanced" / SUFFIX)
@@ -293,6 +318,7 @@ def snapshot_record_checks(root, source_output=None):
                         )
                     )
     minute_checked = 0
+    precision_boundary_unresolved = []
     if "minutes" in players and "minutes_per_game" in player_adv:
         indexed = player_adv.set_index("player_id")
         for pid, rows in players.groupby("player_id"):
@@ -303,17 +329,36 @@ def snapshot_record_checks(root, source_output=None):
                 (source_minutes * 10).denominator == 1,
                 "Player Advanced minutes precision differs from one decimal",
             )
-            mean_minutes = sum((Fraction(str(v)) for v in rows.minutes), Fraction(0)) / len(rows)
+            mean_lower, mean_upper = minute_mean_interval(rows.minutes)
+            serialized_mean = sum((Fraction(str(v)) for v in rows.minutes), Fraction(0)) / len(rows)
             minute_checked += 1
-            if abs(source_minutes - mean_minutes) > Fraction(1, 20):
+            allowed_lower, allowed_upper = (
+                source_minutes - Fraction(1, 20),
+                source_minutes + Fraction(1, 20),
+            )
+            details = dict(
+                dataset="player_season_advanced",
+                identity=int(pid),
+                field="minutes_per_game",
+                serialized_mean_minutes=float(serialized_mean),
+                source=float(source_minutes),
+                representational_mean_interval=dict(lower=str(mean_lower), upper=str(mean_upper)),
+            )
+            if mean_upper < allowed_lower or mean_lower > allowed_upper:
                 conflicts.append(
                     dict(
-                        dataset="player_season_advanced",
-                        identity=int(pid),
-                        field="minutes_per_game",
-                        expected=float(mean_minutes),
-                        source=float(source_minutes),
-                        absolute_residual_minutes=float(abs(source_minutes - mean_minutes)),
+                        details,
+                        absolute_residual_minutes=float(abs(source_minutes - serialized_mean)),
+                    )
+                )
+            elif mean_lower < allowed_lower or mean_upper > allowed_upper:
+                precision_boundary_unresolved.append(
+                    dict(
+                        details,
+                        reason=(
+                            "serialized source clock precision cannot resolve "
+                            "inclusive rounding boundary"
+                        ),
                     )
                 )
     rating_residual = (team_adv.off_rating - team_adv.def_rating - team_adv.net_rating).abs()
@@ -330,11 +375,15 @@ def snapshot_record_checks(root, source_output=None):
         player_ids=len(expected_players),
         team_ids=len(team_records),
         conflicts=conflicts,
-        passed=not conflicts,
+        passed=not (conflicts or precision_boundary_unresolved),
+        precision_boundary_unresolved=precision_boundary_unresolved,
         count_and_record_tolerance=0,
         minutes_compared_player_ids=minute_checked,
         minutes_source_precision=1,
         minutes_rounding_half_step=0.05,
+        minutes_serialization_policy=(
+            "exact decimal/binary64 rounding-cell interval; boundary straddles remain unresolved"
+        ),
         net_rating_tolerance_exclusive=0.5,
         statistical_scope="retained92game_population_not_fresh_due_completeness",
     )

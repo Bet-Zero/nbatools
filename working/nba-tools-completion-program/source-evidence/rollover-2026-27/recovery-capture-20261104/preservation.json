@@ -222,102 +222,185 @@
         "dataset": "player_season_advanced",
         "identity": 203500,
         "field": "minutes_per_game",
-        "expected": 8.883333333333333,
+        "serialized_mean_minutes": 8.883333333333333,
         "source": 8.4,
+        "representational_mean_interval": {
+          "lower": "10001744172451975/1125899906842624",
+          "upper": "10001744172451977/1125899906842624"
+        },
         "absolute_residual_minutes": 0.483333333333333
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1628368,
         "field": "minutes_per_game",
-        "expected": 32.231944444444444,
+        "serialized_mean_minutes": 32.231944444444444,
         "source": 32.0,
+        "representational_mean_interval": {
+          "lower": "36289943247356629/1125899906842624",
+          "upper": "36289943247356635/1125899906842624"
+        },
         "absolute_residual_minutes": 0.23194444444444368
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1628997,
         "field": "minutes_per_game",
-        "expected": 19.416666666666664,
+        "serialized_mean_minutes": 19.416666666666664,
         "source": 18.4,
+        "representational_mean_interval": {
+          "lower": "43722446382388561/2251799813685248",
+          "upper": "43722446382388567/2251799813685248"
+        },
         "absolute_residual_minutes": 1.016666666666666
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1629023,
         "field": "minutes_per_game",
-        "expected": 33.134166666666665,
+        "serialized_mean_minutes": 33.134166666666665,
         "source": 33.5,
+        "representational_mean_interval": {
+          "lower": "27979316372480981/844424930131968",
+          "upper": "13989658186240493/422212465065984"
+        },
         "absolute_residual_minutes": 0.36583333333333334
-      },
-      {
-        "dataset": "player_season_advanced",
-        "identity": 1629656,
-        "field": "minutes_per_game",
-        "expected": 26.75,
-        "source": 26.8,
-        "absolute_residual_minutes": 0.05000000000000072
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1630170,
         "field": "minutes_per_game",
-        "expected": 32.31444444444444,
+        "serialized_mean_minutes": 32.31444444444444,
         "source": 32.0,
+        "representational_mean_interval": {
+          "lower": "109148489969013433/3377699720527872",
+          "upper": "109148489969013451/3377699720527872"
+        },
         "absolute_residual_minutes": 0.3144444444444435
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1630577,
         "field": "minutes_per_game",
-        "expected": 27.79,
+        "serialized_mean_minutes": 27.79,
         "source": 28.3,
+        "representational_mean_interval": {
+          "lower": "46933137616734775/1688849860263936",
+          "upper": "46933137616734781/1688849860263936"
+        },
         "absolute_residual_minutes": 0.5100000000000018
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1642264,
         "field": "minutes_per_game",
-        "expected": 29.5375,
+        "serialized_mean_minutes": 29.5375,
         "source": 29.6,
+        "representational_mean_interval": {
+          "lower": "8314067124591001/281474976710656",
+          "upper": "24942201373773007/844424930131968"
+        },
         "absolute_residual_minutes": 0.06250000000000033
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1642844,
         "field": "minutes_per_game",
-        "expected": 33.64138888888889,
+        "serialized_mean_minutes": 33.64138888888889,
         "source": 33.3,
+        "representational_mean_interval": {
+          "lower": "113630509848169441/3377699720527872",
+          "upper": "113630509848169459/3377699720527872"
+        },
         "absolute_residual_minutes": 0.3413888888888872
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1642868,
         "field": "minutes_per_game",
-        "expected": 8.980555555555556,
+        "serialized_mean_minutes": 8.980555555555556,
         "source": 9.3,
+        "representational_mean_interval": {
+          "lower": "121334479960740101/13510798882111488",
+          "upper": "40444826653580041/4503599627370496"
+        },
         "absolute_residual_minutes": 0.31944444444444464
+      }
+    ],
+    "passed": false,
+    "precision_boundary_unresolved": [
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1629656,
+        "field": "minutes_per_game",
+        "serialized_mean_minutes": 26.75,
+        "source": 26.8,
+        "representational_mean_interval": {
+          "lower": "52706189389070331/1970324836974592",
+          "upper": "52706189389070339/1970324836974592"
+        },
+        "reason": "serialized source clock precision cannot resolve inclusive rounding boundary"
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1630192,
+        "field": "minutes_per_game",
+        "serialized_mean_minutes": 3.55,
+        "source": 3.6,
+        "representational_mean_interval": {
+          "lower": "15987778677165259/4503599627370496",
+          "upper": "15987778677165261/4503599627370496"
+        },
+        "reason": "serialized source clock precision cannot resolve inclusive rounding boundary"
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1630695,
+        "field": "minutes_per_game",
+        "serialized_mean_minutes": 8.15,
+        "source": 8.2,
+        "representational_mean_interval": {
+          "lower": "36704336963069539/4503599627370496",
+          "upper": "36704336963069545/4503599627370496"
+        },
+        "reason": "serialized source clock precision cannot resolve inclusive rounding boundary"
+      },
+      {
+        "dataset": "player_season_advanced",
+        "identity": 1642942,
+        "field": "minutes_per_game",
+        "serialized_mean_minutes": 4.25,
+        "source": 4.3,
+        "representational_mean_interval": {
+          "lower": "9570149208162303/2251799813685248",
+          "upper": "9570149208162305/2251799813685248"
+        },
+        "reason": "serialized source clock precision cannot resolve inclusive rounding boundary"
       },
       {
         "dataset": "player_season_advanced",
         "identity": 1643544,
         "field": "minutes_per_game",
-        "expected": 4.75,
+        "serialized_mean_minutes": 4.75,
         "source": 4.8,
-        "absolute_residual_minutes": 0.05000000000000015
+        "representational_mean_interval": {
+          "lower": "85568392920039411/18014398509481984",
+          "upper": "85568392920039429/18014398509481984"
+        },
+        "reason": "serialized source clock precision cannot resolve inclusive rounding boundary"
       }
     ],
-    "passed": false,
     "count_and_record_tolerance": 0,
     "minutes_compared_player_ids": 442,
     "minutes_source_precision": 1,
     "minutes_rounding_half_step": 0.05,
+    "minutes_serialization_policy": "exact decimal/binary64 rounding-cell interval; boundary straddles remain unresolved",
     "net_rating_tolerance_exclusive": 0.5,
     "statistical_scope": "retained92game_population_not_fresh_due_completeness"
   },
   "usage_independent_numerical_basis": "not_established",
   "exact_due_population": {
-    "checked_at": "2026-11-04T03:44:25.575450+00:00",
+    "checked_at": "2026-11-04T03:48:49.094902+00:00",
     "lag_hours": 24,
     "due_game_ids": [
       "0022600001",
@@ -465,8 +548,8 @@
       "sha256": "7eb2f30f0afa7806fd2e7a7bca98c1a42c1b3d480134c226f577f99f1415bf17"
     },
     "qualification-evidence.zip": {
-      "bytes": 863821,
-      "sha256": "345e122b033af4cb992e2d09f40066a82bcde67cbf4ce41c275087b50013f0d8"
+      "bytes": 865694,
+      "sha256": "9a5a0962a98733da4dc05e342265c0f815c495fa37b0b8b4c88725a050d34145"
     },
     "staging-custody.json": {
       "bytes": 496,

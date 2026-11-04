@@ -115,6 +115,14 @@ def test_all_sixteen_obligations_remain_when_period_sources_are_missing(tmp_path
     failed = {r["name"] for r in result["required_records"] if r["validation"]["state"] == "failed"}
     assert failed == {"schedule", "player_game_period_stats", "team_game_period_stats"}
     assert len(result["numerical_source_basis"]["ts_conflicts"]) == 12
+    minutes = result["snapshot_record_consistency"]
+    unresolved = {r["identity"] for r in minutes["precision_boundary_unresolved"]}
+    assert unresolved == {1629656, 1630192, 1630695, 1642942, 1643544}
+    assert {
+        r["identity"] for r in minutes["conflicts"] if r["field"] == "minutes_per_game"
+    }.isdisjoint({1629656, 1643544})
+    assert len(minutes["conflicts"]) == 9
+    assert not minutes["passed"]
     assert len(result["exact_due_population"]["due_game_ids"]) == 107
     assert result["exact_due_population"]["missing_due_game_ids"] == [
         f"0022600{n}" for n in range(158, 173)
@@ -164,3 +172,22 @@ def test_snapshot_count_and_record_conflicts_stay_visible(tmp_path):
         ("standings_snapshots", "wins"),
         ("standings_snapshots", "losses"),
     }
+
+
+def test_minute_interval_preserves_subseconds_and_inclusive_boundary_uncertainty():
+    from fractions import Fraction
+
+    from tools.assess_readiness_recovery import minute_mean_interval
+
+    # This is a tenth-second primary clock, not a whole-second clock.
+    low, high = minute_mean_interval(["27.473333333333333"])
+    assert low <= Fraction(8242, 300) <= high
+    assert low != high
+    # These serialized clocks represent an unresolved exact 4.75 minute mean.
+    # It must never be called a contradiction to source4.8's inclusive0.05 bound.
+    low, high = minute_mean_interval(["8.133333333333333", "1.3666666666666667"])
+    assert low < Fraction(19, 4) <= high
+    with pytest.raises(ValueError, match="empty minute"):
+        minute_mean_interval([])
+    with pytest.raises(ValueError, match="Invalid serialized"):
+        minute_mean_interval([float("nan")])

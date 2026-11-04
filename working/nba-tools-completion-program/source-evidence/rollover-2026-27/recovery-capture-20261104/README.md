@@ -76,12 +76,19 @@ assessed**, using existing normalizers, all five existing processed builders,
 records pass schema/trust/coverage checks; **schedule, player periods and team
 periods fail**. These are not 13 fully source-qualified datasets. The raw validator
 also fails the exact final catalog gate. Separate numerical/source checks retain
-12 TS disagreements, 11 per-game minute-basis disagreements and the
-unestablished independent usage basis. All 442 player GP/WL records and 30 team
+12 TS disagreements, nine clear per-game minute-basis contradictions, five
+unresolved precision boundaries and the unestablished independent usage basis. All 442 player GP/WL records and 30 team
 GP/WL/standings/net-rating checks pass; those do not resolve the count/time basis. There is no
 trusted passed acceptance receipt, complete backfill manifest or protected R2
 validation claim. Building processed files for diagnosis does not accept their
 source data.
+
+Independent review caught two false minute contradictions at the exact rounding
+boundary. The diagnostic now preserves literal CSV tokens and uses exact
+decimal/binary64 representation intervals against the unchanged inclusive 0.05
+minute half-step. A boundary-straddling interval stays unresolved and blocks
+acceptance; no tolerance, data cell or clock guard changes. Applying the method
+consistently also leaves three formerly inside comparisons unresolved.
 
 The existing exact 24-hour due-ID calculation, refreshed against the latest
 retained official schedule, finds **107 due games** and **15 absent games
