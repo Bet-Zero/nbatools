@@ -252,6 +252,19 @@ def clock_facts(raw, whole_raw, *, period_report, only_periods=None, trace=None)
                 person["familyName"],
                 re.sub(r"\s+(?:Jr\.?|Sr\.?|II|III|IV)$", "", person["familyName"]),
             }
+            # A source-provided abbreviated display name can use another
+            # family order (e.g. firstName=Hansen/familyName=Yang, Y. Hansen).
+            # This is a literal same-player field, never a first-name guess.
+            # Keep all identity collisions in the alias set so ambiguity fails.
+            display_name = person.get("nameI")
+            display = (
+                re.fullmatch(r"[^\W\d_]\.\s+(.+)", display_name)
+                if isinstance(display_name, str)
+                else None
+            )
+            if display is not None:
+                index[_alias(display[1].strip())].add(person["personId"])
+                index[_alias(display_name)].add(person["personId"])
             for family in families:
                 index[_alias(family)].add(person["personId"])
                 # NBA descriptions disambiguate e.g. Jal./Jay. Williams.
