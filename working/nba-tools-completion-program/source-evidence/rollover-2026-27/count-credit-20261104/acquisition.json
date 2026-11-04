@@ -1,0 +1,181 @@
+{
+  "classification": "bounded_missing_count_evidence",
+  "revision": "97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+  "source_body_requests": 10,
+  "files": [
+    {
+      "name": "0022600007.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600007.json",
+      "sha": "c5d7053db87b3312cd5a6a9b430f6e7c19fab6d1",
+      "size": 261199,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600007.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600007.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c5d7053db87b3312cd5a6a9b430f6e7c19fab6d1",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600007.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600007.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/c5d7053db87b3312cd5a6a9b430f6e7c19fab6d1",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600007.json"
+      },
+      "sha256": "b98b68793a9eb8351676661392704d0fb42c2522011eb26659c07872b8e3f3c0"
+    },
+    {
+      "name": "0022600085.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600085.json",
+      "sha": "8d1304f28bea09464752a2fd56559bb140c2df3c",
+      "size": 275627,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600085.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600085.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/8d1304f28bea09464752a2fd56559bb140c2df3c",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600085.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600085.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/8d1304f28bea09464752a2fd56559bb140c2df3c",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600085.json"
+      },
+      "sha256": "407b548360bad5a66ef8a706654ee9aa975bdeddec6a1f1da5a6fccb9cf4b6a1"
+    },
+    {
+      "name": "0022600087.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600087.json",
+      "sha": "a3e9a50bed1a9208b8988f4e4052c6509e34e839",
+      "size": 255430,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600087.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600087.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/a3e9a50bed1a9208b8988f4e4052c6509e34e839",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600087.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600087.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/a3e9a50bed1a9208b8988f4e4052c6509e34e839",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600087.json"
+      },
+      "sha256": "34a39a91d12f692cd581b5b1f71e98b2f590711fd52909605618aad4d7c7ebb2"
+    },
+    {
+      "name": "0022600088.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600088.json",
+      "sha": "b118a15c8fc516296954b095a1edfab0af5974f5",
+      "size": 312924,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600088.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600088.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b118a15c8fc516296954b095a1edfab0af5974f5",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600088.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600088.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b118a15c8fc516296954b095a1edfab0af5974f5",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600088.json"
+      },
+      "sha256": "d1eb66ec63b09f345ce68c4f7026876875595f5d08e2ed840373045f76aa8791"
+    },
+    {
+      "name": "0022600091.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600091.json",
+      "sha": "31ea5fb61c6abf2943e1f4500c6caa6061c90a98",
+      "size": 253040,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600091.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600091.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/31ea5fb61c6abf2943e1f4500c6caa6061c90a98",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600091.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600091.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/31ea5fb61c6abf2943e1f4500c6caa6061c90a98",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600091.json"
+      },
+      "sha256": "8470e393d50aa2ca1e4f52ee4fef3ca7c49fef2aabe6f6ca590a375dea5fb87a"
+    },
+    {
+      "name": "0022600102.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600102.json",
+      "sha": "bf2c0097827be6203538f642816002e80d5dbab9",
+      "size": 252699,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600102.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600102.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/bf2c0097827be6203538f642816002e80d5dbab9",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600102.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600102.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/bf2c0097827be6203538f642816002e80d5dbab9",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600102.json"
+      },
+      "sha256": "f394c63ac2f9c4b57fc98cd3aef5e3e490b90e14f726368945a593831d1713ff"
+    },
+    {
+      "name": "0022600104.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600104.json",
+      "sha": "7c6b0e14d7d6bf22742d420be6538a9d3f1ae831",
+      "size": 250440,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600104.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600104.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/7c6b0e14d7d6bf22742d420be6538a9d3f1ae831",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600104.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600104.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/7c6b0e14d7d6bf22742d420be6538a9d3f1ae831",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600104.json"
+      },
+      "sha256": "bf171dba74f8f89267b137f0aa76f750e2a0b6987a41e34d1b3610b978be6458"
+    },
+    {
+      "name": "0022600108.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600108.json",
+      "sha": "940870809ba2ccc2ec5e754682b6dfdca995f649",
+      "size": 269189,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600108.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600108.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/940870809ba2ccc2ec5e754682b6dfdca995f649",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600108.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600108.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/940870809ba2ccc2ec5e754682b6dfdca995f649",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600108.json"
+      },
+      "sha256": "2adbdb846d70c154b33d18d0c5a5746c83f228a979d96932c9b38330cced7e9e"
+    },
+    {
+      "name": "0022600117.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600117.json",
+      "sha": "7407a98ff7b2a02594ab32cf90198b2f9c134c2e",
+      "size": 264133,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600117.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600117.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/7407a98ff7b2a02594ab32cf90198b2f9c134c2e",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600117.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600117.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/7407a98ff7b2a02594ab32cf90198b2f9c134c2e",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600117.json"
+      },
+      "sha256": "4eb5d73facccd55e3ca1db34a78590db1c56fa67b8397a126f65af4ad0c90dcd"
+    },
+    {
+      "name": "0022600138.json",
+      "path": "nba_stats/json/playbyplayv3/2027/0022600138.json",
+      "sha": "b40072e7fa9d02768694a1ac13a485bca3e40462",
+      "size": 248221,
+      "url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600138.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+      "html_url": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600138.json",
+      "git_url": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b40072e7fa9d02768694a1ac13a485bca3e40462",
+      "download_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600138.json",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/contents/nba_stats/json/playbyplayv3/2027/0022600138.json?ref=97d4ff2ed169fbde64b7db5db32eaf390eb11236",
+        "git": "https://api.github.com/repos/sportsdataverse/hoopR-nba-stats-raw/git/blobs/b40072e7fa9d02768694a1ac13a485bca3e40462",
+        "html": "https://github.com/sportsdataverse/hoopR-nba-stats-raw/blob/97d4ff2ed169fbde64b7db5db32eaf390eb11236/nba_stats/json/playbyplayv3/2027/0022600138.json"
+      },
+      "sha256": "cd687bbb69eb2bf273f18a47c33f53a3a66d24952ffd0156d125076d5afd92b7"
+    }
+  ],
+  "production_writes": 0,
+  "captured_at": "2026-11-04T13:28:20.845712+00:00",
+  "reason": "Ten conflict-game PBP originals absent from retained bundles; bounded approved archive route, no repeat direct successes.",
+  "archive_sha256": "d00be79b6e0f5b93f0baffab47e12525f563cca09adff6d30ce08fee7526a558"
+}
