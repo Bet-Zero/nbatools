@@ -463,3 +463,85 @@ def test_new_dependency_http_failure_still_stops_once_and_keeps_originals(tmp_pa
     assert (output / plan["jobs"][1]["source_file"]).read_bytes() == payloads[1]
     collector.collect(output, plan)
     assert len(calls) == 2
+
+
+def test_reviewed_range2_targets_and_current_snapshot_templates_match_sdk():
+    from tools.readiness_refresh import readiness_dependencies
+
+    fixed, snapshots = readiness_dependencies("11/02/2026")
+    assert len(fixed) == 229 and len(snapshots) == 2
+    plan = request()
+    plan.update(jobs=fixed + snapshots, maximum_requests=231)
+    collector.validate_request(plan)
+    for job in plan["jobs"]:
+        assert collector._client(job)[1] == "https://stats.nba.com/stats/" + job["endpoint"]
+    snapshots[0]["parameters"]["DateTo"] = "01/02/2027"
+    snapshots[1]["parameters"]["DateTo"] = "04/10/2027"
+    collector.validate_request(plan)
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("GameID", "0022600143"),
+        ("StartPeriod", 5),
+        ("EndPeriod", 14),
+        ("RangeType", "2"),
+        ("RangeType", True),
+        ("StartRange", 1),
+        ("EndRange", 7201),
+        ("StartRange", "0"),
+        ("EndPeriod", 1.0),
+    ],
+)
+def test_range2_never_expands_beyond_reviewed_game_windows(key, value):
+    from tools.readiness_refresh import readiness_dependencies
+
+    fixed, _ = readiness_dependencies("11/02/2026")
+    plan = request()
+    plan.update(jobs=[fixed[0]], maximum_requests=1)
+    plan["jobs"][0]["parameters"][key] = value
+    with pytest.raises(ValueError):
+        collector.validate_request(plan)
+
+
+@pytest.mark.parametrize(
+    "cutoff",
+    [
+        "09/30/2026",
+        "07/01/2027",
+        "01/01/2028",
+        "02/29/2027",
+        "13/01/2026",
+        "1/2/2027",
+    ],
+)
+def test_snapshot_calendar_is_finite_and_date_is_real(cutoff):
+    from tools.readiness_refresh import readiness_dependencies
+
+    _, snapshots = readiness_dependencies(cutoff)
+    plan = request()
+    plan.update(jobs=snapshots, maximum_requests=2)
+    with pytest.raises(ValueError):
+        collector.validate_request(plan)
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("DateFrom", "11/01/2026"),
+        ("TeamID", 1610612738),
+        ("Period", 1),
+        ("MeasureType", "Base"),
+        ("OpponentTeamID", 1610612738),
+    ],
+)
+def test_evolving_snapshots_retain_only_approved_default_source_basis(key, value):
+    from tools.readiness_refresh import readiness_dependencies
+
+    _, snapshots = readiness_dependencies("11/02/2026")
+    plan = request()
+    plan.update(jobs=snapshots, maximum_requests=2)
+    plan["jobs"][0]["parameters"][key] = value
+    with pytest.raises(ValueError):
+        collector.validate_request(plan)

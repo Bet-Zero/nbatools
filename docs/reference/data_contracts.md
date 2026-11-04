@@ -1585,6 +1585,28 @@ Depending on source availability, this dataset may include:
 
 If a requested season leaderboard stat is not directly present here, the command may fall back to building it from `player_game_stats`. That fallback behavior should stay explicit and tested.
 
+Development staging may explicitly project `ts_pct` as
+`PTS / (2 * (FGA + 0.44 * FTA))` from same-scope game totals, and
+`minutes_per_game` as the arithmetic mean of the preserved game minutes.
+The game population and player GP must match the snapshot exactly. A zero
+shooting denominator yields zero TS; game minutes retain their original
+subsecond precision. These are derived field bases, not claims that a
+disagreeing NBA-reported snapshot was corrected at its source.
+
+Such a projection must retain `reported_ts_pct` and
+`reported_minutes_per_game`, identify both derived bases in `ts_pct_basis` and
+`minutes_per_game_basis`, and preserve the source originals and a per-player
+numerator/denominator/minute ledger. Historical accepted game cells remain
+unchanged. This permits an independently checkable candidate calculation;
+source, completeness and freshness qualification remain separate gates.
+
+`usage_rate` retains NBA's reported possession-based meaning. The conventional
+0.44-FTA/minute-scaled usage estimate is a different basis and must not replace
+it. Event-derived usage checks need the corresponding possession-credit
+semantics; matching a reported `POSS` field is not an independent denominator
+check. Unknown possession attribution remains explicit and blocks a claim of
+complete independent usage validation.
+
 ---
 
 ## 4. `team_season_advanced`
