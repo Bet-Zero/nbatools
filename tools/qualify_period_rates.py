@@ -68,6 +68,23 @@ def free_throw_facts(acts, teams):
             for a in acts
             if a["actionId"] < aid and a["clock"] == r["clock"] and a["actionType"] == "Foul"
         ]
+        # Match award types before requiring one anchor. A same-clock technical
+        # is a separate award; an unpenalized personal foul cannot award an
+        # ordinary multi-attempt trip. Unsupported foul types remain candidates
+        # so their statistical meaning is never guessed by filtering them away.
+        if r["subType"] == "Free Throw Technical":
+            fouls = [a for a in fouls if a["subType"] in {"Technical", "Defense 3 Second"}]
+        elif match is not None:
+            fouls = [
+                a
+                for a in fouls
+                if a["subType"] != "Technical"
+                and not (
+                    int(match[2]) > 1
+                    and a["subType"] == "Personal"
+                    and "PN" not in a["description"]
+                )
+            ]
         require(len(fouls) == 1, "FT lacks unique same-clock foul")
         foul = fouls[0]
         technical = r["subType"] == "Free Throw Technical" or (
