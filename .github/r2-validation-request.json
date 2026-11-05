@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "a07f0a60aba39653bbe627c153ebb76878de352f",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/test_compact_absence_scope_real_data.py::test_compact_home_absence_matches_literal_qualified_rows_and_api"
+  ],
+  "raw_qa_cases": [
+    "k08_compact_home_absence_season"
+  ]
+}
