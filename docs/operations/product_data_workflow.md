@@ -220,7 +220,8 @@ and symlink aliases. Selection uses request context rather than process-wide roo
 or environment mutation; caches include the snapshot hash. The API/JSON export
 carries `result.metadata.data_quality`; the result UI displays a dedicated warning
 with snapshot, scope, hash and exceptions. Numerical and production acceptance
-remain false. Text/CSV result notices identify the provisional version too.
+remain false. The local query launcher exports JSON with the same quality metadata. Portable
+CSV datasets travel with their hash-bound quality manifest.
 
 Consumption currently uses a conservative **file-level** unknown-value guard.
 An accessed statistical CSV with missing numeric inputs yields labeled no-data
