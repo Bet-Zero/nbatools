@@ -17539,3 +17539,21 @@ cases:
     - path: result.metadata.without_player
       equals: LeBron James
     review_notes: All original last 10 LAL games have known LeBron participation. None satisfiesLeBron DNP + Luka played. This is a qualified empty sample, not missing data and not the older latest 10 matching games.
+
+  - id: k08_compact_home_absence_season
+    query: how many home games did LeBron miss in2025-26
+    category: participation
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections: [count, finder]
+    expected_row_counts:
+      count: 1
+      finder: 11
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 11
+    - path: result.metadata.without_player
+      equals: LeBron James
+    review_notes: Compact IN+season must preserve the absence predicate and home scope. PR559's qualified published generation contains22explicit DNP observations,11home. Appearance omission is not the oracle; no injury, tenure or current-freshness claim.

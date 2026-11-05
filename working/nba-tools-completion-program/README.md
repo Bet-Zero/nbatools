@@ -45,8 +45,13 @@ with explicit provisional status and DQ001–003, without numerical certificatio
 All original16CSVbytes and484unknown rate values remain preserved. A controlled
 AST correction proves a new version and recalculated rolling values; it changes no
 NBA source value. Independent checker approved `38cd2b5dff728c7b217b7a0a87634cc83a774cfd` after15controlled probes/0skips and exact16CSV/484unknown preservation. [Evidence](source-evidence/development-workflow-20261105/receipt.json) retains the review, independent probes and local browser result. Author14focused tests and26frontend tests pass. Exact final-head CI/landing receipts remain in PR584.
-Next product task: repair the reproduced compact `miss in2025-26` clause, which
-currently routes to played-player rows and drops absence. Preserve qualified
+Current product candidate: `codex/compact-absence-scope-20261105` repairs the
+reproduced compact `miss in2025-26` clause through shared calendar-word boundaries.
+Controlled fixtures distinguish2home DNP games from appearances and preserve an
+explicit compact date. Required actual-data acceptance selects the published
+LeBron season's11home DNP rows and independently aggregates its team record.
+That test and RawQA case `k08_compact_home_absence_season` remain required;
+review/R2/CI/merge are pending. Source data is unchanged. Preserve qualified
 participation, home/date scope, all46obligations and medical-status distinctions.
 
 ### Agent 1 next milestone
