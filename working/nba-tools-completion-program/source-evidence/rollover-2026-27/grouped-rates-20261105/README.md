@@ -75,6 +75,17 @@ and independently established jump-ball ownership. Separate review evidence is
 retained in `independent-review.zip`; its receipt records the actual checker,
 revision, independently derived numbers and findings.
 
+Initial PR580 CI41997493894 preserved two failures in existing fixed-fixture
+rolling-window tests (Python3.13:10,060passed/38skipped; other versions canceled
+by matrix fail-fast). The unchanged tests also fail in isolation because their
+real calendar has moved outside the fixture. Test-only65bdd434 anchors both query
+date globals to the fixture's actual maximum date and adds exact30-day bounds;
+positive answers remain mandatory. Both author and independent checker passed
+all71 tests in that file, with zero skips; independent checking confirms the
+actual three-game Lakers sample and restored globals. No runtime or rate source
+changed. The receipt retains this delta review; required final-head CI remains
+separate from the original failed execution.
+
 All11raw/5processed requirements were reassessed after the rate changes:
 14structural passes and two period-coverage failures (48player/4team keys).
 Coverage remains645/647. All five processed files and their unchanged inputs
