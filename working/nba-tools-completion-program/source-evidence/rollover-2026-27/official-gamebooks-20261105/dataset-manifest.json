@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "dataset_id": "nba-2026-27-normalized-official-gamebooks-v1-20261105",
+  "state": "unpublished_development_snapshot",
+  "season": "2026-27",
+  "season_type": "Regular Season",
+  "historical_validation_cutoff_utc": "2026-11-05T06:59:31.715470Z",
+  "observed_games": 107,
+  "standard_and_overtime_windows": 647,
+  "current_24_hour_freshness_accepted": false,
+  "full_numerical_readiness": false,
+  "production_published": false,
+  "original_withheld_population": 1365,
+  "original_population_qualified": 953,
+  "original_population_unknown": 412,
+  "newly_unknown": 72,
+  "total_explicit_unknown_rates": 484,
+  "unknown_groups": 20,
+  "prior811qualified_rates_preserved": true,
+  "required_structural_datasets_passed": 16,
+  "original_capture_archive": {
+    "file": "original-capture.zip",
+    "sha256": "8ff6e2052f89cf6e0070aee22c5fcee4c83edc7a285a6d7f4c6209135e8b7190",
+    "git_blob": "27969ff1d381ce857b3f39d830685cd990fcf409"
+  },
+  "parent_stage": {
+    "repository": "Bet-Zero/nbatools",
+    "revision": "cd47ab9d4ff3edb00e17c1a21b414213fc0076ad",
+    "git_blob": "27c8cfb2f8232dfd6cfe633cc6d6971535a3d652",
+    "sha256": "3981e4e459daedee069a30ac49dc84c69078ddb2efb244f07d57b3aa596e076c"
+  },
+  "rate_units": "ast_pct, reb_pct, tov_pct and usg_pct are fractions, with explicit nulls for unknown inputs; zero-duration contract rows retain zero",
+  "numeric_scope": "Field-scoped official scorer/PBP corrections and rate oracles. Structural passes do not certify every retained Advanced or derived field or complete current-season freshness.",
+  "source_generation_independence": "Unestablished; field-specific official scorer authority and complete independent arithmetic do not prove a different upstream observer.",
+  "files": [
+    {
+      "path": "canonical_events/0022600009.json",
+      "sha256": "d74189ed25b8b11f5a4d357ee794e1f2ecdcd1803ed3c8ff46bfd0f694d2d99f",
+      "size_bytes": 353977
+    },
+    {
+      "path": "canonical_events/0022600138.json",
+      "sha256": "316449573b3f6ffd44f3612e5bda46ad01f8396b9a432d59936ab59ba5b2ccd5",
+      "size_bytes": 348454
+    },
+    {
+      "path": "canonical_events/0022600142.json",
+      "sha256": "6df9a946ba01352d90bcd9b1b223bfade8e018234c63314597af4e83a34c7c18",
+      "size_bytes": 225148
+    },
+    {
+      "path": "data/processed/game_features/2026-27_regular_season.csv",
+      "sha256": "685089e322c2a0fceef75e5bd458a263a715c17d976bdf3f2f974e94079c881b",
+      "size_bytes": 23838,
+      "rows": 107
+    },
+    {
+      "path": "data/processed/league_season_stats/2026-27_regular_season.csv",
+      "sha256": "7fa29d04a3cdec02ef21b9fce240c379ebaf452dad479b2867e12695bf17071c",
+      "size_bytes": 218,
+      "rows": 1
+    },
+    {
+      "path": "data/processed/player_game_features/2026-27_regular_season.csv",
+      "sha256": "598c451fa1a2fa39a151e4e4ef3f0fc1916077821db41b1f8fd5d506b0d0c56a",
+      "size_bytes": 355043,
+      "rows": 2413
+    },
+    {
+      "path": "data/processed/schedule_context_features/2026-27_regular_season.csv",
+      "sha256": "699e207c16d255f8aee7199fccd5715043fdd08df6a3b062449a76d7b4f26c13",
+      "size_bytes": 35955,
+      "rows": 214
+    },
+    {
+      "path": "data/processed/team_game_features/2026-27_regular_season.csv",
+      "sha256": "99234b46f859f4dc95a255ea1f2916d928075f80392ab127cb749ce3fbc60da0",
+      "size_bytes": 27886,
+      "rows": 214
+    },
+    {
+      "path": "data/raw/games/2026-27_regular_season.csv",
+      "sha256": "c780ed652c25cdca043f262d19d8c8c68dd3ccea472ec7414f799d61d9265e31",
+      "size_bytes": 25001,
+      "rows": 107
+    },
+    {
+      "path": "data/raw/player_game_period_stats/2026-27_regular_season.csv",
+      "sha256": "2ce3d80c75102b3d48f6975f67c6da92cbef4f38bd406566d78bf5217e34644d",
+      "size_bytes": 4013490,
+      "rows": 14547
+    },
+    {
+      "path": "data/raw/player_game_starter_roles/2026-27_regular_season.csv",
+      "sha256": "f3d59f02843e412ddb04e344c1fc759c24e57a99d9216e1caf42e658521de3cf",
+      "size_bytes": 267040,
+      "rows": 2413
+    },
+    {
+      "path": "data/raw/player_game_stats/2026-27_regular_season.csv",
+      "sha256": "bb057263fa3b53ff8b83e8b2992960e8b40e8143613fcf9b2d5afb5b4d865396",
+      "size_bytes": 484347,
+      "rows": 2413
+    },
+    {
+      "path": "data/raw/player_season_advanced/2026-27_regular_season.csv",
+      "sha256": "753fcb8af8e4b99e45ba075a133ac2732a159a0936bb48fd586bbd5fe469d6f3",
+      "size_bytes": 98822,
+      "rows": 448
+    },
+    {
+      "path": "data/raw/rosters/2026-27.csv",
+      "sha256": "466d68af7eb4c8f91ad6e2f5c0902900328d5419b54b6ea3ba0c263f0d823e03",
+      "size_bytes": 48333,
+      "rows": 525
+    },
+    {
+      "path": "data/raw/schedule/2026-27_regular_season.csv",
+      "sha256": "5923ce99369e39aa6808b956e908067f86003ff90f268b3ffd42d373cedfb72c",
+      "size_bytes": 484388,
+      "rows": 1206
+    },
+    {
+      "path": "data/raw/standings_snapshots/2026-27_regular_season.csv",
+      "sha256": "a895fc1882e00d4f22c83eb85c922ff50af15bd172801596553da3ad18f7816a",
+      "size_bytes": 2698,
+      "rows": 30
+    },
+    {
+      "path": "data/raw/team_game_period_stats/2026-27_regular_season.csv",
+      "sha256": "1bbcd94d3fb05ed44addae2b7f683bba60f863ed4a91ee99f5ba02a137317335",
+      "size_bytes": 290675,
+      "rows": 1294
+    },
+    {
+      "path": "data/raw/team_game_stats/2026-27_regular_season.csv",
+      "sha256": "246573db0bb534ac1eee0371c0e3a4c42584041052a9b5d67d7a00bf6a95dce7",
+      "size_bytes": 39315,
+      "rows": 214
+    },
+    {
+      "path": "data/raw/team_season_advanced/2026-27_regular_season.csv",
+      "sha256": "e0ab2f5440aa01b215a3bd0c362e431469238b8956add9c373c5abe951956b0d",
+      "size_bytes": 2638,
+      "rows": 30
+    },
+    {
+      "path": "lineage/0009-cell-corrections.json",
+      "sha256": "d36645abd6f5e24312ed95fb487ea748053fa559a1e0543c4f8ff5e1050ee0bc",
+      "size_bytes": 153133
+    },
+    {
+      "path": "lineage/0022600009-event-id-map.json",
+      "sha256": "85c168d4b79ed94d23b91e430e1e60d519a7f108decfb8bc6cfc51c4179e043b",
+      "size_bytes": 67151
+    },
+    {
+      "path": "lineage/0022600138-event-id-map.json",
+      "sha256": "56c0804f31d6f701aa3f4a016264399772a4322001ef3039102a3c46e7a60068",
+      "size_bytes": 65883
+    },
+    {
+      "path": "lineage/0142-whole-corrections.json",
+      "sha256": "b66b862552325658150c2cf89955eaf5536ad5f40e3b67e1b7633b56fecf3537",
+      "size_bytes": 1739
+    },
+    {
+      "path": "lineage/event-corrections.json",
+      "sha256": "d97cb13758d7f22853632bef23816784c5d0c3c7caa831375bc3b16836fb64c4",
+      "size_bytes": 21955
+    },
+    {
+      "path": "lineage/official-source-provenance.json",
+      "sha256": "a2602a1d554183f44e15d28236aeb4b0d45845a1c913f867e412c1d4b0ef9c77",
+      "size_bytes": 6417
+    },
+    {
+      "path": "lineage/restored-rate-corrections.json",
+      "sha256": "a6a814cb28dbd4b8cb1e11b0a0c716ebb9e9673dee0d5d6b1d35d858e8cb0d90",
+      "size_bytes": 46369
+    },
+    {
+      "path": "lineage/unknown-rate-keys.json",
+      "sha256": "c28a33f04a12cc77e5e614d9c6c33349988df5f16bdc31a2cb61f2c97ed2bc00",
+      "size_bytes": 123579
+    }
+  ]
+}

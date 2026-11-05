@@ -28,7 +28,13 @@ def zipped(files):
     with warnings.catch_warnings(), zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
         warnings.simplefilter("ignore", UserWarning)
         for name, raw in files:
-            z.writestr(name, raw)
+            # The same evidence fixture must retain one byte identity when
+            # reimport spans ZIP's two-second wall-clock timestamp boundary.
+            info = name
+            if isinstance(name, str):
+                info = zipfile.ZipInfo(name, date_time=(2026, 11, 4, 5, 20, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(info, raw)
     return buffer.getvalue()
 
 
