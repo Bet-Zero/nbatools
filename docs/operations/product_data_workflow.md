@@ -3,8 +3,9 @@
 Owner-approved operating policy, **2026-11-05**, for **Bet-Zero/nbatools only**.
 This changes development sequencing, not accuracy standards. It supersedes older
 readiness-only/K08-paused continuation instructions. K12 cold-start work remains
-parked. The [main queue](../../working/nba-tools-completion-program/README.md)
-remains the product/integration authority; the data exception worklist is subordinate.
+parked. [AGENTS.md](../../AGENTS.md) locates the active product checkpoint and
+subordinate data exception worklist. The product checkpoint remains the integration
+authority; the exception worklist is not a second product roadmap.
 
 ## The two workers
 
@@ -104,8 +105,8 @@ protected publication, live verification and backup remain unchanged.
 
 ## Durable exception worklist
 
-Use [data-quality/README.md](../../working/nba-tools-completion-program/data-quality/README.md)
-and its versioned entries, linked to existing exact evidence ledgers. This is a
+Use the data-quality worklist located by [AGENTS.md](../../AGENTS.md) and its
+versioned entries, linked to existing exact evidence ledgers. This is a
 small repository worklist, not a database, dashboard or new agent framework.
 Initial entries refer to PR582's 484 unknown keys/20 groups without copying or
 renumbering those scientific observations. Group tickets may share dependencies;

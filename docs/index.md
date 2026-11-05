@@ -17,8 +17,8 @@ review; historical human-acceptance records retain their original meaning.
 
 The [independent product/data workflow](operations/product_data_workflow.md) governs
 provisional development, strict acceptance, worker ownership and exception cleanup.
-Use the [product checkpoint](../working/nba-tools-completion-program/README.md) and
-[subordinate data-quality worklist](../working/nba-tools-completion-program/data-quality/README.md).
+Use [AGENTS.md](../AGENTS.md) to locate the current product checkpoint and
+subordinate data-quality worklist.
 The policy is not proof that the development-only runtime controls are implemented.
 
 ## Agent Start / Change Impact Matrix
