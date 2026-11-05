@@ -89,6 +89,25 @@ This is a living document. Update it whenever:
 
 ---
 
+## Development quality and portable corrections (2026-11-05)
+
+See [development/data workflow](../operations/product_data_workflow.md).
+Existing numerical/source contracts remain mandatory for qualification. A separate,
+explicit non-production data selection may expose provisional source observations
+with snapshot, scope/cutoff, quality and exception metadata; it must not overwrite
+qualified values, invent unknowns or alter production defaults. Consumers must not
+silently drop flagged rows from aggregates or present a partial denominator as
+complete. Validate app interpretation/math separately with known-good data.
+
+Original source payloads, prepared portable data and versioned keyed correction
+records are distinct. Corrected fields invalidate/recompute affected dependent
+metrics and caches in a new snapshot. Readers pin one version; qualification is
+field/scope-specific, not an unconditional file-wide truth flag. Dataset contracts
+remain useful outside NBA Tools. No game-specific runtime branch is authorized.
+
+These requirements need implementation/testing where not already present; this
+contract amendment is not evidence of a deployed provisional path or release pass.
+
 ## Contract rules
 
 For each dataset, this document should define:

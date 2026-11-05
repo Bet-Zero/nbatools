@@ -41,11 +41,14 @@ Full data validation and production publication remain separate and unfinished.
 4. Verify app semantics with independent fixtures/known-good cases. Provisional
    source outputs demonstrate flow only. Distinguish implementation, fixture
    correctness, real-NBA qualification and deployed acceptance in the receipt.
-5. Deliver one concrete app improvement. First inspect the documented compact
+5. Demonstrate a reviewed correction producing a new immutable snapshot with
+   affected derived values recalculated, originals preserved, stale correction
+   preconditions rejected, and a concurrent reader retaining its pinned old version.
+6. Deliver one concrete app improvement. First inspect the documented compact
    date/absence-clause defect (`miss in2025-26`) in the preserved carry-forward
    scope; repair it if it still exists. If already fixed, select the highest-value
    unfinished Core-1/K08 obligation and state the reason without a broad re-audit.
-6. Review and merge coherent, passing changes. At the first isolation/ownership
+7. Review and merge coherent, passing changes. At the first isolation/ownership
    handoff, make Agent 2 launch-ready without waiting for the app task to finish.
    Stop at a meaningful verified product checkpoint or a genuine execution limit;
    data-only exceptions do not stop unrelated authorized app work.
