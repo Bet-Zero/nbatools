@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "1b86c6f7167d3cfb957450bf28670c578a7ad0ba",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_official_gamebooks_real_data.py::test_capture_five_new_official_gamebooks_without_canonical_promotion"
+  ],
+  "raw_qa_cases": []
+}
