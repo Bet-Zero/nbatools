@@ -110,6 +110,12 @@ def capture(case, output, opener=None):
         if len(raw) > LIMIT:
             raise ValueError("Body exceeds capture bound; prefix hash is not an original checksum")
         name = sha(raw) + (".pdf" if raw.startswith(b"%PDF") else ".body")
+        declared = receipt["response_headers"].get("Content-Length")
+        if declared is not None and (not declared.isdigit() or int(declared) != len(raw)):
+            partial = sha(raw) + ".partial"
+            (output / partial).write_bytes(raw)
+            receipt.update(received_file=partial, incomplete_or_invalid_content_length=True)
+            raise ValueError("Declared Content-Length differs; received bytes are not an original")
         (output / name).write_bytes(raw)
         receipt.update(original_retained=True, raw_file=name, sha256=sha(raw), size_bytes=len(raw))
         return raw

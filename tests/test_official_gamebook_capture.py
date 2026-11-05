@@ -82,3 +82,19 @@ def test_oversize_body_never_gets_an_original_checksum(tmp_path):
     receipt = json.loads((tmp_path / "capture/capture.json").read_text())
     assert opener.calls == 1 and not receipt["original_retained"]
     assert "sha256" not in receipt and "raw_file" not in receipt
+
+
+def test_short_body_is_preserved_without_original_custody(tmp_path):
+    class ShortResponse(Response):
+        headers = {"Content-Type": "application/pdf", "Content-Length": "999"}
+
+    class ShortOpener:
+        def open(self, req, timeout):
+            return ShortResponse(b"%PDF-short")
+
+    with pytest.raises(ValueError, match="Content-Length"):
+        capture.capture(CASE, tmp_path / "capture", ShortOpener())
+    receipt = json.loads((tmp_path / "capture/capture.json").read_text())
+    assert not receipt["original_retained"] and not receipt["pdf_parsed"]
+    assert "sha256" not in receipt and "raw_file" not in receipt
+    assert (tmp_path / "capture" / receipt["received_file"]).read_bytes() == b"%PDF-short"
