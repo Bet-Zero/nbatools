@@ -13,6 +13,14 @@ review; historical human-acceptance records retain their original meaning.
 4. [Query catalog](reference/query_catalog.md) - current supported phrasing and boundaries.
 5. [Full query guide](reference/query_guide.md) - structured/natural query reference.
 
+## Product development and data quality
+
+The [independent product/data workflow](operations/product_data_workflow.md) governs
+provisional development, strict acceptance, worker ownership and exception cleanup.
+Use [AGENTS.md](../AGENTS.md) to locate the current product checkpoint and
+subordinate data-quality worklist.
+The policy is not proof that the development-only runtime controls are implemented.
+
 ## Agent Start / Change Impact Matrix
 
 | Change | Start here | Required checks |
@@ -62,6 +70,8 @@ separate evidence claims; do not fabricate one from another.
 - [Compound-event routing](architecture/parser/compound_event_routing.md)
 
 ## Operations
+
+- [Independent product/data workflow](operations/product_data_workflow.md)
 
 - [Data pipeline](operations/pipeline_runbook.md)
 - [Deployment](operations/deployment.md)

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "kind": "data_quality_work_item",
+  "id": "DQ-001",
+  "title": "Exceptional FT statistical-credit methodology",
+  "status": "blocked_evidence",
+  "owner_role": "agent_2_data_quality",
+  "claim": null,
+  "created_on": "2026-11-05",
+  "last_attempt": {
+    "reference": "https://github.com/Bet-Zero/nbatools/pull/582",
+    "outcome": "external facts still missing; no new acquisition performed by this planning change"
+  },
+  "baseline_commit": "fca90ab50ddb446d1247a80c8bfe4efda269e8e4",
+  "normalized_snapshot_sha256": "b43546c6e911b98b303a81bc23072d5ea08c2cd71a6175f48959c25886f8d8b2",
+  "affected_keys": {
+    "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/official-gamebooks-20261105/remaining-dependencies.json",
+    "git_blob": "de64df067b1b485501692f71a7f0212443f9a08a",
+    "filter": {
+      "game_id": [
+        "0022600091",
+        "0022600118",
+        "0022600121"
+      ],
+      "field": [
+        "tov_pct",
+        "usg_pct"
+      ],
+      "original_1365_member": true
+    },
+    "counting_note": "This is a dependency view over the authoritative484-key ledger; views may overlap. Do not sum work-item populations."
+  },
+  "failure": {
+    "check": "complete independent rate numerator/denominator/credit qualification",
+    "missing_evidence": "Attributable scorer/provider definitions for take, flagrant, retained-possession and canceled-FT trip/use/exposure, including joint FT/turnover credit.",
+    "known_result": "PR582 preserved 412 unresolved original rate values. Attempt ordinals for0091 are now documented;0121 award types were already known. Playing-rule ball retention and fitted reported rates do not supply the missing statistical definition."
+  },
+  "blocking_scope": {
+    "data_acceptance": "affected rate values and dependent numerical/snapshot acceptance",
+    "product_development": false,
+    "production_publication": "Existing complete data/publication gates remain blocking; no waiver."
+  },
+  "next_evidence_trigger": "A genuinely new attributable/versioned method document or authorized clarification that addresses the missing statistical credits.",
+  "do_not_repeat": "Do not replay unchanged gamebooks or PBP or infer methodology by fitting reported rates/POSS. Search/retrieval through existing approved access is authorized; sending outreach or purchasing access is not implied.",
+  "resolution": null,
+  "independent_review": null,
+  "qualified_output_version": null,
+  "source_evidence": {
+    "revision": "fca90ab50ddb446d1247a80c8bfe4efda269e8e4",
+    "readme": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/official-gamebooks-20261105/README.md",
+    "original_capture_sha256": "8ff6e2052f89cf6e0070aee22c5fcee4c83edc7a285a6d7f4c6209135e8b7190",
+    "verification_sha256": "86a49bde57b2b7263736de1bab019375b323180ef0cab7691a44336332b9fc9e"
+  },
+  "fingerprint": "ae37d41809de9051ee60fa3dec6483deb08ed21c0a509d740332b90f3e0f2d1d"
+}

@@ -2,6 +2,46 @@
 
 Instructions for coding agents in `Bet-Zero/nbatools` (NBA Tools, not ScoutZero).
 
+## Owner update: independent product and data-quality work (2026-11-05)
+
+The owner explicitly resumes **product development**, including needed bounded
+acquisition, without waiting for every acquired NBA value to qualify. Extensive
+validation is retained, not reduced. This update supersedes readiness-only work
+ordering, the blanket K08 pause and source-exception stops in older checkpoints.
+K12 cold-start chasing remains parked; publication and final acceptance do not change.
+
+Read [the product/data workflow](docs/operations/product_data_workflow.md) with the
+current [Resume checkpoint](working/nba-tools-completion-program/README.md).
+**Agent 1** owns the app, systematic acquisition and initial validation. It records
+failures and continues development with pinned qualified data, controlled fixtures,
+or explicitly provisional development data. Safe receipt/identity/schema checks
+are mandatory before use. A provisional answer can exercise a feature, but is not
+proof that the real NBA answer is correct. Never turn a missing value into a zero,
+invent a source value, or mark provisional evidence as accepted.
+
+**Agent 2** is a separately launched, on-demand data-quality worker. It consumes
+[the durable exception backlog](working/nba-tools-completion-program/data-quality/README.md),
+finds new evidence, verifies corrections and produces versioned portable data.
+It may run concurrently or later; Agent 1 does not wait for its backlog to empty.
+One failed data group does not halt unrelated collection or app development.
+Transport/security failures and broken data contracts still isolate unsafe inputs.
+
+The main README remains the product/integration checkpoint. Exception records are
+a subordinate data worklist, not a second product roadmap. Each agent owns its own
+branch/worktree, pinned inputs and handoff. Do not edit each other's active files
+or mutate a dataset being tested. Shared loader/schema defects go to Agent 1 for
+integration; Agent 2 must not disguise a code defect as a data correction.
+
+This is authorization for a **development-only** workflow, not an existing runtime
+feature or a validator bypass. Agent 1 must verify or implement opt-in isolation,
+visible/API provisional status and exception export before using flagged data in
+app demonstrations. Public/production behavior stays strict. Do not change Vercel
+settings, secrets, deployment protection, R2 publication gates or production data
+for this workflow. Fixtures independently verify app calculations while complete
+source/numerical/freshness and deployment acceptance remain separately required.
+Ordinary reviewed code merges remain authorized; no repeated owner permission is
+needed. Report data-qualified, feature-tested and production-accepted separately.
+
 ## Product and controlling direction
 
 NBA Tools is a web-based NBA statistics search app. Ordinary basketball questions

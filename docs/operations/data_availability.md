@@ -23,6 +23,21 @@ implied. Keep fixed-plan/$0-overage limits, existing read-only credentials,
 source/numerical/readiness safeguards and separate protected publication.
 Collection/staging does not change the production pointer.
 
+## Current development sequencing (owner, 2026-11-05)
+
+[Independent data QA workflow](product_data_workflow.md) controls work order.
+Agent 1 performs bounded acquisition and initial extensive validation, registers
+failures in the durable exception backlog and continues product work using isolated,
+explicitly provisional development inputs or safe fixtures. Agent 2 investigates
+claimed failures separately/on demand. Successful transport is not numerical
+acceptance; no unsafe input may be loaded and no failed required gate is waived.
+
+Retain existing source originals, requests, cache and exact coverage. Collect known
+needs systematically by source family/season/window. Laptop capture is an accepted
+route, not a reason for a cloud-hosting redesign. A statistical exception alone
+must not cause recollection of successful bodies or a whole-app development stop.
+Complete numerical/current-freshness and protected publication gates remain intact.
+
 ## Before implementing a data-dependent change
 
 1. Read the active generation's generated `inventory.md` and `inventory.json`.
