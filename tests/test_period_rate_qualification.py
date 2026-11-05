@@ -32,11 +32,11 @@ def qualified(tmp_path_factory):
 def test_complete_withheld_population_and_unknowns(qualified):
     out, report = qualified
     assert report["original_withheld"] == 1365
-    assert report["qualified_by_field"] == dict(ast_pct=226, reb_pct=277, tov_pct=112, usg_pct=86)
-    assert report["qualified"] == 701 and report["unresolved"] == 664
+    assert report["qualified_by_field"] == dict(ast_pct=226, reb_pct=277, tov_pct=180, usg_pct=128)
+    assert report["qualified"] == 811 and report["unresolved"] == 554
     keys = {(c["row"], c["field"]) for c in report["changes"]}
     missing = {(c["row"], c["field"]) for c in report["unknown"]}
-    assert len(keys) == 701 and len(missing) == 664 and not keys & missing
+    assert len(keys) == 811 and len(missing) == 554 and not keys & missing
     assert not report["production_ready"] and not report["full_numerical_acceptance"]
     assert not report["reported_rates_used_as_oracle"]
     assert not report["reported_possessions_used_as_oracle"]
@@ -145,3 +145,57 @@ def test_jump_winner_must_independently_establish_owner():
             dict(credit={}, andones={}, dead=set()),
             {1: {}, 2: {"other": {21}}},
         )
+
+
+def test_typed_awards_choose_unique_statistically_eligible_fouls():
+    sources = retained_sources()
+    q1 = [a for a in json.loads(sources["0022600118"])["game"]["actions"] if a["period"] == 1]
+    ft = free_throw_facts(q1, {1610612758, 1610612763})
+    assert ft["credit"][11] == ft["credit"][12] == 10
+    assert ft["trips"][1627734] == 1  # Sabonis's other award is an and-one.
+    q3 = [a for a in json.loads(sources["0022600138"])["game"]["actions"] if a["period"] == 3]
+    ft = free_throw_facts(q3, {1610612745, 1610612749})
+    assert ft["credit"][366] == 365  # Burries technical, separate from Ament's trip.
+    assert ft["credit"][367] == ft["credit"][369] == 364
+    assert ft["trips"][1643415] == 0 and ft["trips"][1643417] == 1
+
+
+@pytest.mark.parametrize(
+    "subtype,description",
+    [
+        ("Shooting", "S.FOUL"),
+        ("Personal", "P.FOUL (P1.PN)"),
+        ("Flagrant Type 1", "FLAGRANT.FOUL.TYPE1"),
+    ],
+)
+def test_competing_eligible_or_unsupported_foul_is_never_discarded(subtype, description):
+    q1 = [
+        a
+        for a in json.loads(retained_sources()["0022600118"])["game"]["actions"]
+        if a["period"] == 1
+    ]
+    q1 = copy.deepcopy(q1)
+    extra = next(a for a in q1 if a["actionId"] == 9)
+    extra["subType"], extra["description"] = subtype, description
+    with pytest.raises(ValueError, match="FT lacks unique same-clock foul"):
+        free_throw_facts(q1, {1610612758, 1610612763})
+
+
+def test_pr580_qualified_values_and_every_other_token_remain_exact(qualified):
+    out, report = qualified
+    prior_dir = PRIOR.parent / "grouped-rates-20261105"
+    name = f"stage/data/raw/player_game_period_stats/{SUFFIX}"
+    with zipfile.ZipFile(prior_dir / "qualification-evidence.zip") as z:
+        prior = json.loads(z.read("qualification.json"))
+        before = list(csv.reader(io.StringIO(z.read(name).decode())))
+    after = list(csv.reader(io.StringIO((out / name).read_text())))
+    old = {(c["row"], c["field"]) for c in prior["changes"]}
+    new = {(c["row"], c["field"]) for c in report["changes"]} - old
+    assert len(old) == 701 and len(new) == 110
+    assert {(c["row"], c["field"]) for c in prior["unknown"]} == new | {
+        (c["row"], c["field"]) for c in report["unknown"]
+    }
+    for i, (left, right) in enumerate(zip(before, after, strict=True)):
+        for j, (a, b) in enumerate(zip(left, right, strict=True)):
+            assert a == b or (i - 1, before[0][j]) in new
+    assert sum(not g["qualified"] for g in report["groups"]) == 22

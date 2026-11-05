@@ -888,7 +888,12 @@ Contract rules:
   their exact clocks. Complete input/player/clock vectors must qualify before a
   group is restored. Unresolved groups remain null. Original source bytes and
   all undeclared accepted cells survive; this does not change the general
-  importer, authorize production publication or establish full readiness.
+  importer, authorize production publication or establish full readiness. FT anchors
+  must be unique among statistically eligible awards: explicit technical attempts
+  match technical/defensive-three-second fouls; ordinary numbered attempts exclude
+  technical fouls, and nonpenalty personal fouls cannot award ordinary multiple
+  attempts. Unsupported retained-possession foul types remain unresolved; neither
+  reported rates nor ball retention alone defines their statistical trip credit.
 - supported period semantics are represented as explicit `period_family` / `period_value`
   pairs:
   - `quarter` with values `1`, `2`, `3`, `4`

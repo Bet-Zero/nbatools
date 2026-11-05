@@ -1,0 +1,340 @@
+{
+  "classification": "typed_foul_anchor_qualified_partial_unpublished_copy",
+  "original_withheld": 1365,
+  "qualified": 811,
+  "unresolved": 554,
+  "qualified_by_field": {
+    "reb_pct": 277,
+    "ast_pct": 226,
+    "tov_pct": 180,
+    "usg_pct": 128
+  },
+  "unresolved_by_field": {
+    "ast_pct": 38,
+    "tov_pct": 206,
+    "usg_pct": 258,
+    "reb_pct": 52
+  },
+  "due_population": {
+    "checked_at": "2026-11-05T06:59:31.715470+00:00",
+    "lag_hours": 24,
+    "due_game_ids": [
+      "0022600001",
+      "0022600002",
+      "0022600003",
+      "0022600004",
+      "0022600005",
+      "0022600006",
+      "0022600007",
+      "0022600008",
+      "0022600009",
+      "0022600015",
+      "0022600016",
+      "0022600017",
+      "0022600018",
+      "0022600019",
+      "0022600020",
+      "0022600021",
+      "0022600022",
+      "0022600023",
+      "0022600024",
+      "0022600085",
+      "0022600086",
+      "0022600087",
+      "0022600088",
+      "0022600089",
+      "0022600090",
+      "0022600091",
+      "0022600092",
+      "0022600093",
+      "0022600094",
+      "0022600095",
+      "0022600096",
+      "0022600097",
+      "0022600098",
+      "0022600099",
+      "0022600100",
+      "0022600101",
+      "0022600102",
+      "0022600103",
+      "0022600104",
+      "0022600105",
+      "0022600106",
+      "0022600107",
+      "0022600108",
+      "0022600109",
+      "0022600110",
+      "0022600111",
+      "0022600112",
+      "0022600113",
+      "0022600114",
+      "0022600115",
+      "0022600116",
+      "0022600117",
+      "0022600118",
+      "0022600119",
+      "0022600120",
+      "0022600121",
+      "0022600122",
+      "0022600123",
+      "0022600124",
+      "0022600125",
+      "0022600126",
+      "0022600127",
+      "0022600128",
+      "0022600129",
+      "0022600130",
+      "0022600131",
+      "0022600132",
+      "0022600133",
+      "0022600134",
+      "0022600135",
+      "0022600136",
+      "0022600137",
+      "0022600138",
+      "0022600139",
+      "0022600140",
+      "0022600141",
+      "0022600142",
+      "0022600143",
+      "0022600144",
+      "0022600145",
+      "0022600146",
+      "0022600147",
+      "0022600148",
+      "0022600149",
+      "0022600150",
+      "0022600151",
+      "0022600152",
+      "0022600153",
+      "0022600154",
+      "0022600155",
+      "0022600156",
+      "0022600157",
+      "0022600158",
+      "0022600159",
+      "0022600160",
+      "0022600161",
+      "0022600162",
+      "0022600163",
+      "0022600164",
+      "0022600165",
+      "0022600166",
+      "0022600167",
+      "0022600168",
+      "0022600169",
+      "0022600170",
+      "0022600171",
+      "0022600172"
+    ],
+    "missing_due_game_ids": [],
+    "schedule_sha256": "53e6083424d33d8941eff07a655e2922b63169f4185392ee0545ff19b0e46563",
+    "archive_revision": "2b57bdead60b670e161e4f9d265380dbab97c4e0",
+    "production_freshness_accepted": false
+  },
+  "reported_rates_used_as_oracle": false,
+  "reported_possessions_used_as_oracle": false,
+  "production_ready": false,
+  "full_numerical_acceptance": false,
+  "production_writes": 0,
+  "source_hashes": {
+    "0022600007": {
+      "events": "b98b68793a9eb8351676661392704d0fb42c2522011eb26659c07872b8e3f3c0",
+      "whole": "67d44cac46a6e5f44251eecbe135786485364acabe53220dc57e9d2d26bf8c51"
+    },
+    "0022600009": {
+      "events": "4a19d25d9894a456a8cff5fb30e49ce402cf4c31a2d78fca2d7fc4241e3d13b6",
+      "whole": "bbf2f8c2b7aeac00cd5cf0821fb19f616018171a19fcf13953d49c4b8bb43662"
+    },
+    "0022600091": {
+      "events": "8470e393d50aa2ca1e4f52ee4fef3ca7c49fef2aabe6f6ca590a375dea5fb87a",
+      "whole": "5cd193319de4cca6ee050d597cce765ce9896df896e836861a0905762ad5c562"
+    },
+    "0022600092": {
+      "events": "f4a9132bc878bc8027cbffbaf8f5fccc29aca154de2afc2f2b62a15ea6a4897c",
+      "whole": "6f3e306d36bee75ad5a55d7ed044145183094baa7c1c706f74f5551d74fe25f6"
+    },
+    "0022600094": {
+      "events": "0bcee41e2f4e42131bfa8b3bda31c7b104b795245e9a69cfebf21e7876686ef2",
+      "whole": "9e63ff01f067bfc14f6041b8ad498d2e63592f8788d880cb15896ebb2181fd9b"
+    },
+    "0022600102": {
+      "events": "f394c63ac2f9c4b57fc98cd3aef5e3e490b90e14f726368945a593831d1713ff",
+      "whole": "4516505a63b6138e8ad3cf8fc1c94137565cbd1411dc30ee7d674b7b0697d081"
+    },
+    "0022600103": {
+      "events": "fc8f345c49486f1bcd4e466f5e63edf4b3e2a6c0d9267c1313268685f12bfb9f",
+      "whole": "3345414be1a3f9e8ff84d87ece04c785c7cea7b60bb5308882a4f34c6d2d4f55"
+    },
+    "0022600104": {
+      "events": "bf171dba74f8f89267b137f0aa76f750e2a0b6987a41e34d1b3610b978be6458",
+      "whole": "a1ccf4a1a246d72e37b03bbbc9907071006c4917e75e6320c0cad1c8b82ca133"
+    },
+    "0022600108": {
+      "events": "2adbdb846d70c154b33d18d0c5a5746c83f228a979d96932c9b38330cced7e9e",
+      "whole": "b5973946c538cc4fa97d5fc48067d689927eb52c526e445eed0bfa2e6698ee75"
+    },
+    "0022600109": {
+      "events": "45bcddad6518ef5275dc471df1403504ae6c48e0322e11aad5d1eaa64d083a6b",
+      "whole": "efffd0b5a9775c823ed1667d1bcc9b7defb05bb954aefc819a3a3df1f259fa0a"
+    },
+    "0022600118": {
+      "events": "2e2f6eeab5cdbdc058ae458f3958ee28c8854715adfa26b4f3488e281d758744",
+      "whole": "c97ada0f8c1b483e1e82ed74409822ecb9ecfe45a962b17734874597b3466d4c"
+    },
+    "0022600121": {
+      "events": "89726dd6ef02bd81037dd2cb4ca68c1030ebc9e094189b0c57be11af5cc4c740",
+      "whole": "0767ec7ea8df3655619a33e63e8bbf7479da88b71838e7cc405782dd9a34cea6"
+    },
+    "0022600138": {
+      "events": "cd687bbb69eb2bf273f18a47c33f53a3a66d24952ffd0156d125076d5afd92b7",
+      "whole": "2bcee6ae1769e1b997d0c98d4002ddd240cf901e4e06926b029c968519c541ab"
+    }
+  },
+  "baseline_main": "ee949ed5f5105f8a4966c96b78d6db91e3937f4f",
+  "reviewed_candidate": "c55a4a590fc1caee52be11b96595461cee59a9d8",
+  "gained_by_statistic": {
+    "tov_pct": 68,
+    "usg_pct": 42
+  },
+  "gained": 110,
+  "starting_unknown": 664,
+  "starting_groups": 27,
+  "resolved_groups": 5,
+  "remaining_groups": 22,
+  "qualified_groups": 36,
+  "all_original_701_exactly_preserved": true,
+  "all_other_tokens_preserved": true,
+  "all_other_15_dataset_files_byte_identical": true,
+  "required_raw": 11,
+  "required_processed": 5,
+  "structural_passes": 14,
+  "period_coverage_failures": 2,
+  "missing_player_keys": 48,
+  "missing_team_keys": 4,
+  "known_period_windows": 645,
+  "required_period_windows": 647,
+  "source_body_requests": 0,
+  "laptop_captures": 0,
+  "production_publication_authorized": false,
+  "freshness": "Fixed historical validation cutoff reused, not current production freshness acceptance. Refresh metadata/source and exact24h due IDs before any full acceptance.",
+  "processed_builder_reuse": "Allfive processed files and alltheir inputs unchanged from accepted prior stage; no repeated rebuild.",
+  "independent_review": {
+    "reviewer": "/root/source_checker",
+    "reviewer_identity": "Separate Codex checker agent, inherited model configuration with no override; exact model alias unavailable",
+    "reviewed_revision": "c55a4a590fc1caee52be11b96595461cee59a9d8",
+    "verdict": "approved_shared_typed_anchor_qualification",
+    "reviewed_files": [
+      {
+        "file": "tools/qualify_period_rates.py",
+        "git_blob": "694b74ac67fbce57a0f1c88af893143d9a262df6"
+      },
+      {
+        "file": "tests/test_period_rate_qualification.py",
+        "git_blob": "c384bbda5a75b0ce8b8437493eb783a38963d4ab"
+      }
+    ],
+    "scope": "Ordinary/technical typed foul eligibility before unique anchor selection. No unsupported retained-possession type filtered away for ordinary awards. Existing count, clock, trip, ownership, population and exposure checks retained.",
+    "new_rates": {
+      "tov_pct": 68,
+      "usg_pct": 42,
+      "ast_pct": 0,
+      "reb_pct": 0
+    },
+    "qualified_total": 811,
+    "remaining_unknown": 554,
+    "qualified_groups": 36,
+    "remaining_groups": 22,
+    "independent_validation": {
+      "new_exact_fractions": 110,
+      "whole_input_comparisons": 256,
+      "window_input_comparisons": 398,
+      "clock_vectors": 42,
+      "complete_positive_player_population": true,
+      "usg_method": "Separate maximal player intervals intersected with independent offensive-play spans; PR580 independent oracle reused, typed-anchor interpretation added",
+      "all_csv_tokens_checked": 667000,
+      "only110newtokenschanged": true,
+      "prior701_entries_exact": true,
+      "other15datasets_byte_identical": true,
+      "independent_tests": "15passed0skipped",
+      "actual_finder_assertions": 3,
+      "reported_rates_used_as_oracle": false,
+      "reported_possessions_used_as_oracle": false
+    },
+    "initial_checker_harness_failure": {
+      "result": "14passed1failed",
+      "cause": "Checker supplied relative stage path while _local_stage changes cwd; APIreturnedno_data",
+      "repair": "Resolve existing stage path to absolute; allpositiveandunknown assertions retained",
+      "final_result": "15passed0skipped"
+    },
+    "remaining_dependencies": "0009scoringchronology;0138Q4actor/entrycontradiction;0091/0121retained-possessionstatisticaldefinitions;0091blankFTsubtypes;0118canceledincompleteFTtrip;0142separateunchangedQ3/H2gap",
+    "fixed_population": "OriginalPR580 cutoff2026-11-05T06:59:31.715470Z; not currentproductionfreshnessacceptance",
+    "production_ready": false,
+    "full_numerical_acceptance": false,
+    "new_source_requests": 0,
+    "production_writes": 0,
+    "ci_merge_gates": "Applicableexact-headCIandnormalleadmergegatesstillrequired;approvaldoesnotwaivethem",
+    "evidence_files": [
+      {
+        "file": "0118-interval-oracle.json",
+        "bytes": 31853,
+        "sha256": "daa26916ac9a4cd3526408a120c83c3f07140c77facc7764c5283637466bf1cb"
+      },
+      {
+        "file": "complete-vectors-preservation.json",
+        "bytes": 142374,
+        "sha256": "8c80fdec52430f48793d53fa6f518fcab9a118e5f97ed5114eaef046254e8146"
+      },
+      {
+        "file": "finder-evidence.json",
+        "bytes": 497,
+        "sha256": "ec2da2eee2088f499b35e8c746270611022cc3500eb1f55a7318c32fd9a14f46"
+      },
+      {
+        "file": "independent_usg.py",
+        "bytes": 6265,
+        "sha256": "6fa36527a5abff503ff024c9f5c397b8475bb35859f433d441ffdb5d7738b354"
+      },
+      {
+        "file": "new-rate-oracle.json",
+        "bytes": 54894,
+        "sha256": "4d5f2c1c662144313bdeb8a7b4a9dc8f6ca240327853b981b1cd10e6c2ccf8cc"
+      },
+      {
+        "file": "source-audit.json",
+        "bytes": 34862,
+        "sha256": "9350410b9910576bc16ecbb4f7afe06ba623107cbefd1af9eddbe00acfa78af7"
+      },
+      {
+        "file": "source-audit.py",
+        "bytes": 4812,
+        "sha256": "7d70a7d9fe2ab544a440113b835d17bb947565893e84910127ff87e3d84c36ef"
+      },
+      {
+        "file": "test_independent_review.py",
+        "bytes": 4095,
+        "sha256": "16961f9c010480eab411afe757569507152278ea94d969a20bab7c9f2a4e6b60"
+      },
+      {
+        "file": "unresolved-evidence.json",
+        "bytes": 7926,
+        "sha256": "5fa98a2dbb99a9ddd5f9f0bde633c81d6dfe7f3da280019410558f30213dc32e"
+      },
+      {
+        "file": "unresolved-evidence.py",
+        "bytes": 3846,
+        "sha256": "9624c0c3bf050b2811d2b3b2b5c81b88529945c03e2891cd0d7980a1ebb2bde2"
+      },
+      {
+        "file": "verify-candidate.py",
+        "bytes": 5333,
+        "sha256": "1f0d946425b3397e3b71ee7e6b38db2d955bc69f7956b33639ec93028ecdefbe"
+      }
+    ]
+  },
+  "focused_author_tests": "15passed0skipped",
+  "qualification-evidence.zip_sha256": "3981e4e459daedee069a30ac49dc84c69078ddb2efb244f07d57b3aa596e076c",
+  "dependency-ledger.json_sha256": "b570cf8f52ca075930730527ff4312f18d06f51fd7bdd9fda4c42b9b1923f5f0",
+  "independent_review_archive_sha256": "9c223c5ca3977854e8838777dc2148f367e3bd1ff87023c58d7b3b7d8a814799",
+  "documentation_delta_review": "Separate source_checker confirmed exact27group/664key starting ledger,22remaininggroups/554keys, validdependencies, historicalfixedcutoff, conditional0142target. Corrected pendinglanding wording; no semantic changes or repeated tests."
+}
