@@ -187,3 +187,58 @@ data, what is qualified versus still provisional, the next independent action, a
 whether another worker is running or stopped. Do not claim background execution
 from a saved checkpoint. Finish bounded coherent outcomes, not one PR per cell;
 reuse applicable evidence and avoid unnecessary full-suite repetition.
+
+## Implemented local development tools
+
+`tools.development_snapshot.prepare` creates a new, separate provisional snapshot
+from one declared season/type of retained CSV/JSON inputs. It checks schema, grain
+and game/team/player identities before use, runs the unchanged slice validators,
+and exports their actual verdict in `data/metadata/initial-validation.json`.
+`intake_report` writes failures to the existing data-quality directory supplied by
+the integration owner. Fingerprints bind dataset, immutable source, check and exact
+scope. Repeated failures retain existing claims/resolutions; later snapshot
+observations link to the same item. Unsafe schema/identity failures are registered
+and quarantined without producing usable data. Seeded source-method exceptions
+remain references to their original ledgers, not duplicated per-cell records.
+
+The snapshot manifest is `data/metadata/development_snapshot.json`; its SHA256
+pins every included file, source-evidence reference, declared cutoff/scope,
+validator report and exception IDs. No active pointer is written. For a local
+query or the existing UI/API on loopback only:
+
+```bash
+python -m tools.development_query --snapshot /path/to/new-snapshot \
+  --manifest-sha256 <manifest-sha256> --query "Austin Reaves average points in 2026-27"
+python -m tools.development_query --snapshot /path/to/new-snapshot \
+  --manifest-sha256 <manifest-sha256> --serve --port 8001
+```
+
+The explicit launcher rejects deployed/preview/production environments and R2
+mode. Public entrypoints have no opt-in query parameter or environment flag.
+Ordinary local loading rejects marked provisional roots, including absolute paths
+and symlink aliases. Selection uses request context rather than process-wide root
+or environment mutation; caches include the snapshot hash. The API/JSON export
+carries `result.metadata.data_quality`; the result UI displays a dedicated warning
+with snapshot, scope, hash and exceptions. Numerical and production acceptance
+remain false. Text/CSV result notices identify the provisional version too.
+
+Consumption currently uses a conservative **file-level** unknown-value guard.
+An accessed statistical CSV with missing numeric inputs yields labeled no-data
+before any filter, sum, mean or fill operation can narrow the denominator.
+Unrelated complete files remain usable. Nulls stay unchanged in the snapshot;
+undefined shooting percentages with known zero attempts remain null. Metadata such
+as an absent roster weight or an unused starter-position/comment is not a metric.
+This is a bounded development path, not field-level coverage certification.
+
+A reviewed correction can create another snapshot after authenticating the entire
+old manifest/file inventory and its exact original source-file hash. The bounded
+adapter accepts explicit whole-game player AST/STL/BLK/PF counts only, with full
+keys, expected old tokens, evidence and separate review references. Canonically
+equal correction keys conflict even when ID formatting differs. It preserves
+correction history and reruns the existing player-game feature builder for affected
+rolling values. Readers keep their old version until a new explicit selection;
+no caches are reused across hashes. Other source families, rate bases and their
+cross-grain qualification keep their existing preparation paths and acceptance.
+The adapter does not claim a generally qualified correction or automatically
+resolve the source backlog. Controlled correction tests are software evidence,
+not corrected NBA facts or protected publication approval.

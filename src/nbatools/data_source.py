@@ -18,6 +18,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.development_data import MANIFEST, selected_snapshot
 from nbatools.r2_errors import format_client_error, is_not_found
 
 DATA_SOURCE_ENV = "DATA_SOURCE"
@@ -120,6 +121,9 @@ def data_generation_context() -> Iterator[str]:
 
 def _data_source_config_key() -> str:
     """Return a cache key for source configuration, excluding generation."""
+    snapshot = selected_snapshot()
+    if snapshot is not None:
+        return f"development:{snapshot.root}:{snapshot.manifest_sha256}"
     mode = data_source_mode()
     if mode == "local":
         root = os.environ.get(LOCAL_DATA_ROOT_ENV, os.getcwd())
@@ -222,6 +226,14 @@ def create_r2_client(config: R2Config) -> Any:
     )
 
 
+def _reject_provisional_path(path: Path) -> None:
+    for ancestor in (path.resolve(), *path.resolve().parents):
+        if (ancestor / MANIFEST.relative_to("data")).exists():
+            raise DataSourceConfigError(
+                "Provisional snapshot requires explicit local development selection"
+            )
+
+
 class _LocalDataSource:
     def __init__(self) -> None:
         root = os.environ.get(LOCAL_DATA_ROOT_ENV)
@@ -233,12 +245,14 @@ class _LocalDataSource:
     def resolve_path(self, path: str | Path) -> Path:
         candidate = Path(path)
         if candidate.is_absolute():
+            _reject_provisional_path(candidate)
             return candidate
         rel = _logical_relative_path(candidate)
         generation = current_data_generation()
         base = self._data_root()
         if generation != LEGACY_GENERATION:
             base = base / GENERATIONS_DIR / generation
+        _reject_provisional_path(base)
         return base / rel
 
     def glob(self, pattern: str | Path) -> list[Path]:
@@ -247,6 +261,7 @@ class _LocalDataSource:
         base = self._data_root()
         if generation != LEGACY_GENERATION:
             base = base / GENERATIONS_DIR / generation
+        _reject_provisional_path(base)
         return [Path("data") / path.relative_to(base) for path in sorted(base.glob(rel.as_posix()))]
 
     def active_generation(self) -> str:
@@ -259,7 +274,12 @@ class _LocalDataSource:
             raise DataSourceError(f"Could not read active generation pointer: {exc}") from exc
 
     def _data_root(self) -> Path:
-        return Path("data") if self.root == Path() else self.root / "data"
+        base = Path("data") if self.root == Path() else self.root / "data"
+        if (base / MANIFEST.relative_to("data")).exists():
+            raise DataSourceConfigError(
+                "Provisional snapshot requires explicit local development selection"
+            )
+        return base
 
 
 class _R2DataSource:
@@ -438,6 +458,9 @@ _DATA_SOURCE_KEY: str | None = None
 def _get_data_source() -> _LocalDataSource | _R2DataSource:
     global _DATA_SOURCE, _DATA_SOURCE_KEY
 
+    snapshot = selected_snapshot()
+    if snapshot is not None:
+        return snapshot
     key = _data_source_config_key()
     if _DATA_SOURCE is not None and _DATA_SOURCE_KEY == key:
         return _DATA_SOURCE
@@ -454,6 +477,9 @@ def _get_data_source() -> _LocalDataSource | _R2DataSource:
 
 
 def _resolve_active_data_generation() -> str:
+    snapshot = selected_snapshot()
+    if snapshot is not None:
+        return "development-" + snapshot.manifest_sha256
     configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
     if configured:
         return validate_data_generation_id(configured)

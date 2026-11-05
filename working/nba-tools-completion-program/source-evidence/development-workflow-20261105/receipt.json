@@ -1,0 +1,50 @@
+{
+  "source_sha": "38cd2b5dff728c7b217b7a0a87634cc83a774cfd",
+  "source_tree": "a123d94b14630b600e52dc3f95ef233f36ef0f29",
+  "pull_request": "https://github.com/Bet-Zero/nbatools/pull/584",
+  "independent_reviewer": "Codex /root/policy_checker",
+  "independent_tests": {
+    "passed": 15,
+    "skipped": 0
+  },
+  "author_tests": {
+    "passed": 14,
+    "skipped": 0
+  },
+  "frontend_targeted_tests": 26,
+  "locked_install_build_lint": "passed",
+  "broad_preflight": {
+    "passed": 10090,
+    "skipped_unavailable_data": 1862,
+    "subtests_passed": 3,
+    "failed": 0,
+    "errors": 0,
+    "scope": "broad integration evidence; later focused safety-edge regressions rerun on exact source"
+  },
+  "local_browser": {
+    "http_status": 200,
+    "page_errors": 0,
+    "dedicated_quality_warning": true,
+    "rebuilt_assets": true
+  },
+  "preservation": {
+    "retained_csvs_byte_identical": 16,
+    "exact_unknown_fields_preserved": 484
+  },
+  "numerical_acceptance": false,
+  "current_freshness_acceptance": false,
+  "r2_acceptance": false,
+  "production_acceptance": false,
+  "production_writes": 0,
+  "agent_2_running": false,
+  "verification_sha256": "28584e59333744a503cbd59215ecb43ec06f1c4d79290473d5b74056cfffd6a9",
+  "archive_files": {
+    "author-provisional-payload.json": "f767c3acb19644ee0bcc015c7780c729286d82583fcf4ad6aaa1e79dee406d51",
+    "browser-check.mjs": "f2bb41cad43dc05808428322883e9786bfaa76c2276f50013e07f23beae39796",
+    "check_retained.py": "1a2e4b889bedd0c058a21ac6483dc759e0d9721f484162e89b9693361b663f0f",
+    "local-ui.png": "b8f7bd3e1d02db6fb6bc703dc7434bf57345d65789ae018785260aa954872135",
+    "retained-flow-result.json": "f1ebec696d7a9b743281ee37d798dd7e25c6ccfec7bb93d82b15b15041aff0ee",
+    "runtime-review-38cd2b5d.json": "837d9e045b1b878385596a2bdebdceafeaf008e2d0b0433a692becd9de812265",
+    "test_independent_development.py": "8bcef3b54ef72198d9ab9e5e893dbb69277c8d9a78bd96feb429a0fb951ed4f7"
+  }
+}

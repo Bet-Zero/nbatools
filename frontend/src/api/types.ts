@@ -109,6 +109,16 @@ export interface DisambiguationCandidate {
 }
 
 export interface ResultMetadata {
+  data_quality?: {
+    state: "provisional";
+    snapshot: string;
+    manifest_sha256: string;
+    scope: string;
+    exceptions: string[];
+    fixture: boolean;
+    numerical_acceptance: false;
+    production_accepted: false;
+  };
   query_text?: string;
   route?: string | null;
   query_class?: string;

@@ -16,7 +16,7 @@ Full data validation and production publication remain separate and unfinished.
 
 | Field | Current handoff |
 | --- | --- |
-| Agent 1 / product | Next implement the smallest safe development-data path and exception intake using existing loaders, validators, fixtures and cache. Explicitly provisional development may proceed while data QA is incomplete. Then deliver one named unfinished app behavior from the retained Core-1/K08/carry-forward obligations; do not make statistical cleanup the primary workstream again. |
+| Agent 1 / product | Local development selection, quality propagation, validation intake and bounded correction versioning are implemented on `codex/provisional-development-20261105`; [PR584](https://github.com/Bet-Zero/nbatools/pull/584) has independent approval of source `38cd2b5d`; final CI and merge remain required. Explicitly provisional development may proceed while data QA is incomplete. Then deliver one named unfinished app behavior from the retained Core-1/K08/carry-forward obligations; do not make statistical cleanup the primary workstream again. |
 | Agent 2 / data quality | Separate on-demand worker; not currently launched by this plan. Own claimed data-quality entries, source research and versioned corrections. Start when there is an actionable group and isolated snapshot/ownership. Existing external-evidence blocks do not require constant retries. |
 | Data baseline | PR582's portable normalized snapshot: **647/647** historical windows; **953/1,365** original rates qualified, **412** original unknowns plus **72** newly withheld = **484** unknown values in **20** groups. All 16 structural checks passed; not full numerical, current-freshness, R2 or production acceptance. |
 | Resolved / do not reopen | 0142 Q3/H2 fully qualified in staging, including scorer-supported correction. 0138's 104 REB/USG values and 0009's 38 AST values restored. 0091 flagrant attempt ordinals documented. The original PDFs are retained; independent upstream generation is **unproven**, while field-specific scorer authority and independent numerical checks support the accepted changes. |
@@ -25,7 +25,29 @@ Full data validation and production publication remain separate and unfinished.
 | Snapshot / freshness | Historical validation population: 107 due games at `2026-11-05T06:59:31.715470Z`, not current production freshness. Pin development/tests; refresh authenticated schedule and exact 24-hour due IDs for final data acceptance. Source/cache invalidation is explicit. |
 | Production preserve | Last recorded active generation `availability-lebron-season-v1-20261031`, manifest `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`. Existing LeBron live checks and backup/restore are retained. Production's missing-new-season incident is still open; no current runtime claim or pointer change is made by this plan. Do not repeat old recovery or publish provisional data. |
 | Architecture | PR582 exports ordinary portable CSVs, separate originals and keyed versioned correction/provenance records. No historical game-specific app runtime branch. Existing preparation-package coupling is documented technical debt, not an automatic rewrite requirement. |
-| Implementation status | Policy/backlog/launch instructions are planning artifacts. Development-only opt-in/status propagation and automatic exception intake must be verified or implemented by Agent 1; this edit does not claim those runtime controls already exist. |
+| Implementation status | The local runtime candidate has controlled fixture/API tests, a dedicated visible warning and a retained PR582 query demonstration. Required final review/CI/merge are still pending; no deployed acceptance is claimed. Provisional CSVs with missing numeric inputs are conservatively unavailable at file level. |
+
+### Agent 1 current implementation handoff
+
+Policy PR583 merged as `a74c4bcf077782c14b9d0db3589e780a1b2205e6` after
+independent policy review and exact-head CI42049148503. Post-merge FULL
+CI42050412593 passed Python3.11/3.12/3.13 and all other blocking gates; the separate
+development-dependency audit remains advisory. The owner packet was reconciled
+semantically; its no-write helper correctly rejected the advanced baseline.
+
+Application lead `/root` owns the local runtime candidate and shared app files.
+The independent checker `/root/policy_checker` owns only its review probes; it is
+not data-QA Agent2. No Agent2 is running. Existing DQ001–003 remain evidence-blocked
+until a new attributable method/ruling/award-association source is available.
+
+The retained PR582 snapshot demonstrates Austin Reaves8games/189PTS/23.625PPG
+with explicit provisional status and DQ001–003, without numerical certification.
+All original16CSVbytes and484unknown rate values remain preserved. A controlled
+AST correction proves a new version and recalculated rolling values; it changes no
+NBA source value. Independent checker approved `38cd2b5dff728c7b217b7a0a87634cc83a774cfd` after15controlled probes/0skips and exact16CSV/484unknown preservation. [Evidence](source-evidence/development-workflow-20261105/receipt.json) retains the review, independent probes and local browser result. Author14focused tests and26frontend tests pass. Exact final-head CI/landing receipts remain in PR584.
+Next product task: repair the reproduced compact `miss in2025-26` clause, which
+currently routes to played-player rows and drops absence. Preserve qualified
+participation, home/date scope, all46obligations and medical-status distinctions.
 
 ### Agent 1 next milestone
 

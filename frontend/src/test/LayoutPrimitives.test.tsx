@@ -736,3 +736,21 @@ it("does not label explicit nonadjacent seasons as a continuous range", () => {
   expect(screen.queryByText("Season range")).not.toBeInTheDocument();
   expect(screen.queryByText("2023-24 to 2025-26")).not.toBeInTheDocument();
 });
+
+it("keeps provisional snapshot quality visible in the public result context", () => {
+  const data = makeResponse();
+  data.result!.metadata = {
+    data_quality: {
+      state: "provisional", snapshot: "controlled-v1", manifest_sha256: "abc123",
+      scope: "controlled fixture cutoff", exceptions: ["DQ-fixture"], fixture: true,
+      numerical_acceptance: false, production_accepted: false,
+    },
+  };
+  render(<ResultContextSummary data={data} />);
+  const warning = screen.getByRole("alert");
+  expect(warning).toHaveTextContent("PROVISIONAL development data");
+  expect(warning).toHaveTextContent("controlled-v1");
+  expect(warning).toHaveTextContent("DQ-fixture");
+  expect(warning).toHaveTextContent("NBA accuracy is not certified");
+  expect(warning).toHaveTextContent("abc123");
+});
