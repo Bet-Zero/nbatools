@@ -877,6 +877,18 @@ Contract rules:
   the traditional box-score columns in this table
 - `BoxScoreAdvancedV3` is an explicit player-only enrichment path for `usg_pct`, `ast_pct`,
   `reb_pct`, and `tov_pct`; the initial team route boundary does not depend on AdvancedV3
+- Bounded offline qualification may export an explicit **unpublished** period copy
+  after count corrections invalidate imported rates. `tools.qualify_period_rates`
+  groups the declared affected population and independently establishes AST over
+  on-court teammate FGM, REB over live rebound opportunities, TOV over FGA plus
+  qualified non-and-one FT trips plus TOV plus AST, and USG over offensive-play
+  exposure. Stored values are fractions (including TOV, whose source
+  `turnoverRatio` uses percent points). Usage exposure requires positive elapsed
+  on-court time or independently qualified scoring credit; substitutions retain
+  their exact clocks. Complete input/player/clock vectors must qualify before a
+  group is restored. Unresolved groups remain null. Original source bytes and
+  all undeclared accepted cells survive; this does not change the general
+  importer, authorize production publication or establish full readiness.
 - supported period semantics are represented as explicit `period_family` / `period_value`
   pairs:
   - `quarter` with values `1`, `2`, `3`, `4`
