@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "purpose": "Retain five newly identified official gamebook originals for PR581 exact source dependencies; capture is not source independence, canonical correction or readiness acceptance",
+  "base_generation": "availability-lebron-season-v1-20261031",
+  "base_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "limits": {
+    "sources": 5,
+    "attempts_per_source": 1,
+    "timeout_seconds": 20,
+    "max_body_bytes": 1500000,
+    "max_pages": 64,
+    "redirects": 0,
+    "retries": 0,
+    "metered_overage_usd": 0
+  },
+  "sources": [
+    {
+      "game_id": "0022600142",
+      "game_code": "20261028/OKCDAL",
+      "url": "https://statsdmz.nba.com/pdfs/20261028/20261028_OKCDAL_book.pdf",
+      "identity_source": {
+        "bundle_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/supplementary-sources.zip",
+        "bundle_sha256": "e2e5dff5ac60cdbb93371556490d5117d40012e452d47ea837092b8dccd53de1",
+        "member": "summaries/0022600142.json",
+        "sha256": "48d3fc44e01bc4deea511159785eddd018e69c7021101ee2363e8b10422b28f8"
+      },
+      "date": "2026-10-28",
+      "teams": {
+        "away": {
+          "id": 1610612760,
+          "city": "Oklahoma City",
+          "name": "Thunder",
+          "points": 96
+        },
+        "home": {
+          "id": 1610612742,
+          "city": "Dallas",
+          "name": "Mavericks",
+          "points": 120
+        }
+      }
+    },
+    {
+      "game_id": "0022600009",
+      "game_code": "20261023/HOUSAS",
+      "url": "https://statsdmz.nba.com/pdfs/20261023/20261023_HOUSAS_book.pdf",
+      "identity_source": {
+        "bundle_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/summary-oracles.zip",
+        "bundle_sha256": "487b42ca27753f778be4be677021bd350dbd212b0837167abe9f7768c81c9d71",
+        "member": "0022600009.json",
+        "sha256": "5103908e5df712e08215047c2808ded58ef82346c7fc6e36c363046a4406b470"
+      },
+      "date": "2026-10-23",
+      "teams": {
+        "away": {
+          "id": 1610612745,
+          "city": "Houston",
+          "name": "Rockets",
+          "points": 114
+        },
+        "home": {
+          "id": 1610612759,
+          "city": "San Antonio",
+          "name": "Spurs",
+          "points": 110
+        }
+      }
+    },
+    {
+      "game_id": "0022600091",
+      "game_code": "20261021/DALHOU",
+      "url": "https://statsdmz.nba.com/pdfs/20261021/20261021_DALHOU_book.pdf",
+      "identity_source": {
+        "bundle_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/partial-capture-20261103/summary-oracles.zip",
+        "bundle_sha256": "487b42ca27753f778be4be677021bd350dbd212b0837167abe9f7768c81c9d71",
+        "member": "0022600091.json",
+        "sha256": "2f92c78ad0ba4935c5807d7055f3d4c62dca35dd2b590c930374dd9916db1ec8"
+      },
+      "date": "2026-10-21",
+      "teams": {
+        "away": {
+          "id": 1610612742,
+          "city": "Dallas",
+          "name": "Mavericks",
+          "points": 110
+        },
+        "home": {
+          "id": 1610612745,
+          "city": "Houston",
+          "name": "Rockets",
+          "points": 128
+        }
+      }
+    },
+    {
+      "game_id": "0022600118",
+      "game_code": "20261025/MEMSAC",
+      "url": "https://statsdmz.nba.com/pdfs/20261025/20261025_MEMSAC_book.pdf",
+      "identity_source": {
+        "bundle_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/supplementary-sources.zip",
+        "bundle_sha256": "e2e5dff5ac60cdbb93371556490d5117d40012e452d47ea837092b8dccd53de1",
+        "member": "summaries/0022600118.json",
+        "sha256": "5b24c6033bbd8bea839ecd7a1e4cce9d593fb3ec93f8f588649d6e58986e5afd"
+      },
+      "date": "2026-10-25",
+      "teams": {
+        "away": {
+          "id": 1610612763,
+          "city": "Memphis",
+          "name": "Grizzlies",
+          "points": 123
+        },
+        "home": {
+          "id": 1610612758,
+          "city": "Sacramento",
+          "name": "Kings",
+          "points": 112
+        }
+      }
+    },
+    {
+      "game_id": "0022600138",
+      "game_code": "20261028/HOUMIL",
+      "url": "https://statsdmz.nba.com/pdfs/20261028/20261028_HOUMIL_book.pdf",
+      "identity_source": {
+        "bundle_path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/recovery-capture-20261104/supplementary-sources.zip",
+        "bundle_sha256": "e2e5dff5ac60cdbb93371556490d5117d40012e452d47ea837092b8dccd53de1",
+        "member": "summaries/0022600138.json",
+        "sha256": "0ba237604dcb37900efeb58a3ba07e813f4ff405f33e0e462c46df317763b417"
+      },
+      "date": "2026-10-28",
+      "teams": {
+        "away": {
+          "id": 1610612745,
+          "city": "Houston",
+          "name": "Rockets",
+          "points": 132
+        },
+        "home": {
+          "id": 1610612749,
+          "city": "Milwaukee",
+          "name": "Bucks",
+          "points": 100
+        }
+      }
+    }
+  ]
+}

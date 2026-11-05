@@ -1,0 +1,4849 @@
+{
+  "original_dependency_ledger_revision": "cd47ab9d4ff3edb00e17c1a21b414213fc0076ad",
+  "original_dependency_ledger_blob": "622798e90c42470a950016f8f79170a13f298dbc",
+  "unknown_rates": [
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642263,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203991,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642384,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1643570,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630256,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642843,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629655,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631108,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 202681,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643516,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642258,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631204,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643547,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630619,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642263,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203991,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642384,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1643570,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630256,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642843,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629655,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631108,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 202681,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643516,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642258,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631204,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643547,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630619,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642263,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642384,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1643570,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630256,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642843,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629655,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631108,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 202681,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642258,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631204,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643547,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630619,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643516,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203991,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642263,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1642384,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1643570,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1630256,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642843,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629023,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1629655,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631108,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 202681,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630230,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1642258,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1631204,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643547,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1630619,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612742,
+      "player_id": 1643516,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 203991,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600091",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1630173,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643411,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1631342,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1642367,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1641778,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641707,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641713,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642366,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1630173,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643411,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1631342,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1642367,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1641778,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641707,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641713,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642366,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1630173,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643411,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1631342,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1642367,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642366,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1641778,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641707,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641713,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1629631,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1630173,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1627734,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 203897,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643411,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1643567,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1631342,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1628370,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1642367,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642377,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1643409,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630191,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642907,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1629660,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642285,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 203924,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1642366,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1630590,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612758,
+      "player_id": 1641778,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641707,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600118",
+      "team_id": 1610612763,
+      "player_id": 1641713,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Incomplete or conflicting FT trip",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "tov_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "quarter",
+      "period_value": "2",
+      "field": "usg_pct",
+      "reason": "Unsupported FT foul semantics",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "half",
+      "period_value": "second",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "tov_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628369,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629011,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1641775,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1642864,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631248,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630568,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 201144,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1631199,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1643416,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643410,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641824,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630200,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1642855,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643591,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643637,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1643517,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1641722,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 202331,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1628401,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1629674,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630202,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612738,
+      "player_id": 1630573,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1626181,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1627741,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1628380,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630171,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630188,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1630581,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600121",
+      "team_id": 1610612741,
+      "player_id": 1631159,
+      "period_family": "quarter",
+      "period_value": "4",
+      "field": "usg_pct",
+      "reason": "Unsupported FT subtype",
+      "original_1365_member": true
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642264,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642264,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630170,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630170,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1641705,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1641705,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642844,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642844,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628368,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628368,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630577,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630577,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1629640,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1629640,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628436,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628436,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642868,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642868,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "quarter",
+      "period_value": "1",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642264,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642264,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630170,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630170,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1641705,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1641705,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642844,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642844,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628368,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628368,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630577,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1630577,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1629640,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1629640,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628436,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1628436,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642868,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 1642868,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 203084,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612759,
+      "player_id": 203084,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 201142,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631095,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1630578,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1641708,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1627832,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203500,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 1631106,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203935,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "tov_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    },
+    {
+      "game_id": "0022600009",
+      "team_id": 1610612745,
+      "player_id": 203992,
+      "period_family": "half",
+      "period_value": "first",
+      "field": "usg_pct",
+      "reason": "0009 one-shot award association/credit is not established",
+      "original_1365_member": false
+    }
+  ],
+  "shared_missing_method": "Attributable NBA/scorer/provider TOV trip and USG use/exposure credit definitions for take/flagrant/retained-possession/canceled awards, including canceled FT plus turnover joint credit.",
+  "event_0118": "Complete adjudication/award record for Q4 1:10 miss1of2, lane-violation turnover and absent2of2.",
+  "event_0009": "Scorer-confirmed award association/credit for Q1 Eason madeFG2:15 and one-shotFT2:06; preserve both literal clocks."
+}

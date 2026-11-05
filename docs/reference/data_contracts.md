@@ -894,6 +894,16 @@ Contract rules:
   technical fouls, and nonpenalty personal fouls cannot award ordinary multiple
   attempts. Unsupported retained-possession foul types remain unresolved; neither
   reported rates nor ball retention alone defines their statistical trip credit.
+- Canonical preparation may incorporate field-scoped official scorer-report
+  corrections after original-byte authentication and independent checks of the
+  complete affected identities, counts, clocks and rate inputs. Versioned data
+  records bind exact keys, original and corrected values, source hashes and
+  supporting scope; originals remain separate. NBA hosting does not establish
+  independent source generation. Literal scorer rows enter the existing pure
+  normalizers without inventing V3 responses. Changed inputs invalidate dependent
+  rates until their complete requirements pass. Consumers read ordinary datasets
+  and never apply historical correction logic. Historical qualification scripts
+  are evidence, not a permanent per-game acquisition or runtime path.
 - supported period semantics are represented as explicit `period_family` / `period_value`
   pairs:
   - `quarter` with values `1`, `2`, `3`, `4`
