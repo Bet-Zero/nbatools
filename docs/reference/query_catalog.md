@@ -102,6 +102,11 @@ required real-data and deployed acceptance remain pending.
 ### 2.2 Time/context filters
 
 - explicit season: `2025-26`
+  - Compact calendar prepositions such as `in2025-26`, `during2025-26` and
+    `on2025-10-24` retain the same scope as their spaced forms. In particular,
+    `how many home games did LeBron miss in2025-26` keeps both absence and home
+    filters; it does not count appearances. Qualified participation coverage is
+    still required, and missed games do not establish injury or its cause.
 - lone year: `in 2024`, `2024 record`, `Lakers record 2024` (a year closing the question) all
   name the 2023-24 season, the one that ended in that year; a number a stat word owns
   (`how many players scored 2000`) is not read as a year

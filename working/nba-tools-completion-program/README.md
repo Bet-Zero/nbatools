@@ -16,7 +16,7 @@ Full data validation and production publication remain separate and unfinished.
 
 | Field | Current handoff |
 | --- | --- |
-| Agent 1 / product | Local development selection, quality propagation, validation intake and bounded correction versioning are implemented on `codex/provisional-development-20261105`; [PR584](https://github.com/Bet-Zero/nbatools/pull/584) has independent approval of source `38cd2b5d`; final CI and merge remain required. Explicitly provisional development may proceed while data QA is incomplete. Then deliver one named unfinished app behavior from the retained Core-1/K08/carry-forward obligations; do not make statistical cleanup the primary workstream again. |
+| Agent 1 / product | Local development selection, quality propagation, validation intake and bounded correction versioning merged in [PR584](https://github.com/Bet-Zero/nbatools/pull/584) as `9eae19078b3f839f908773f30e80b28cea062a4a`. [PR585](https://github.com/Bet-Zero/nbatools/pull/585) now repairs compact absence/date scope; review and required R2/RawQA passed, final-head CI/landing remain pending. Explicitly provisional development may proceed while data QA is incomplete. Then deliver one named unfinished app behavior from the retained Core-1/K08/carry-forward obligations; do not make statistical cleanup the primary workstream again. |
 | Agent 2 / data quality | Separate on-demand worker; not currently launched by this plan. Own claimed data-quality entries, source research and versioned corrections. Start when there is an actionable group and isolated snapshot/ownership. Existing external-evidence blocks do not require constant retries. |
 | Data baseline | PR582's portable normalized snapshot: **647/647** historical windows; **953/1,365** original rates qualified, **412** original unknowns plus **72** newly withheld = **484** unknown values in **20** groups. All 16 structural checks passed; not full numerical, current-freshness, R2 or production acceptance. |
 | Resolved / do not reopen | 0142 Q3/H2 fully qualified in staging, including scorer-supported correction. 0138's 104 REB/USG values and 0009's 38 AST values restored. 0091 flagrant attempt ordinals documented. The original PDFs are retained; independent upstream generation is **unproven**, while field-specific scorer authority and independent numerical checks support the accepted changes. |
@@ -25,7 +25,7 @@ Full data validation and production publication remain separate and unfinished.
 | Snapshot / freshness | Historical validation population: 107 due games at `2026-11-05T06:59:31.715470Z`, not current production freshness. Pin development/tests; refresh authenticated schedule and exact 24-hour due IDs for final data acceptance. Source/cache invalidation is explicit. |
 | Production preserve | Last recorded active generation `availability-lebron-season-v1-20261031`, manifest `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`. Existing LeBron live checks and backup/restore are retained. Production's missing-new-season incident is still open; no current runtime claim or pointer change is made by this plan. Do not repeat old recovery or publish provisional data. |
 | Architecture | PR582 exports ordinary portable CSVs, separate originals and keyed versioned correction/provenance records. No historical game-specific app runtime branch. Existing preparation-package coupling is documented technical debt, not an automatic rewrite requirement. |
-| Implementation status | The local runtime candidate has controlled fixture/API tests, a dedicated visible warning and a retained PR582 query demonstration. Required final review/CI/merge are still pending; no deployed acceptance is claimed. Provisional CSVs with missing numeric inputs are conservatively unavailable at file level. |
+| Implementation status | The merged local runtime has controlled fixture/API tests, a dedicated visible warning and a retained PR582 query demonstration. Compact absence wording has independent fixture and bounded actual-R2/API evidence; no full deployed/Core-1 acceptance is claimed. Provisional CSVs with missing numeric inputs are conservatively unavailable at file level. |
 
 ### Agent 1 current implementation handoff
 
@@ -35,7 +35,7 @@ CI42050412593 passed Python3.11/3.12/3.13 and all other blocking gates; the sepa
 development-dependency audit remains advisory. The owner packet was reconciled
 semantically; its no-write helper correctly rejected the advanced baseline.
 
-Application lead `/root` owns the local runtime candidate and shared app files.
+Application lead `/root` owns shared app files and current `codex/compact-absence-reviewed-20261105`. The prior unpublished local integration branches remain preserved.
 The independent checker `/root/policy_checker` owns only its review probes; it is
 not data-QA Agent2. No Agent2 is running. Existing DQ001–003 remain evidence-blocked
 until a new attributable method/ruling/award-association source is available.
@@ -45,11 +45,33 @@ with explicit provisional status and DQ001–003, without numerical certificatio
 All original16CSVbytes and484unknown rate values remain preserved. A controlled
 AST correction proves a new version and recalculated rolling values; it changes no
 NBA source value. Independent checker approved `38cd2b5dff728c7b217b7a0a87634cc83a774cfd` after15controlled probes/0skips and exact16CSV/484unknown preservation. [Evidence](source-evidence/development-workflow-20261105/receipt.json) retains the review, independent probes and local browser result. Author14focused tests and26frontend tests pass. Exact final-head CI/landing receipts remain in PR584.
-Next product task: repair the reproduced compact `miss in2025-26` clause, which
-currently routes to played-player rows and drops absence. Preserve qualified
+Current product candidate: [PR585](https://github.com/Bet-Zero/nbatools/pull/585),
+`codex/compact-absence-reviewed-20261105`, repairs the
+reproduced compact `miss in2025-26` clause through shared calendar-word boundaries.
+Controlled fixtures distinguish2home DNP games from appearances and preserve an
+explicit compact date. Required actual-data acceptance selects the published
+LeBron season's11home DNP rows and independently aggregates its team record.
+Independent checker approved the exact source tree after21held-out controls.
+Required [R2 run42056791273](https://github.com/Bet-Zero/nbatools/actions/runs/42056791273)
+binds source `a07f0a60aba39653bbe627c153ebb76878de352f` and sole-parent manifest
+request `85b6808aaeae82bfac4577b7da6670190c652194` to immutable generation
+`availability-lebron-season-v1-20261031`:1selected/1executed/1passed,0skips/failures/
+errors/xfails; RawQA `k08_compact_home_absence_season`1case/7checks passed.
+Source data is unchanged. Actual legacy `human_review_pending` fields remain
+literal; agent technical review is not invented human certification. Independent review of actual R2 receipts approved all11IDs and the7–4/1279PTS/
+116.273PPG home record. [Retained evidence](source-evidence/compact-absence-20261105/receipt.json)
+preserves the original numerical/RawQA artifacts and independent probes. Foundation
+post-merge FULL CI42056271661 passed Python3.11/3.12/3.13 and every blocking gate.
+Final-head CI and safe landing remain pending, with execution receipts in PR585.
+
+Next product task after the verified landing: reconcile and independently execute
+the preserved Tatum2023–24 staging candidate at `b835874e7c31dc29c38d62fcda263af404c881fe`
+against live main, reuse its16retained originals, and deliver dated-membership/
+absence support for that season. It is unreviewed saved work, not accepted output.
+Do not reset that branch or re-acquire successful bodies without changed evidence. Preserve qualified
 participation, home/date scope, all46obligations and medical-status distinctions.
 
-### Agent 1 next milestone
+### Foundation acceptance contract
 
 1. Verify live main and concurrent branches; read only the relevant current docs,
    PR582 receipts and the retained product bindings. Preserve all prior work.

@@ -29,6 +29,14 @@ def normalize_text(text: str) -> str:
         for char in unicodedata.normalize("NFKD", normalized)
         if not unicodedata.combining(char)
     )
+    # Compact calendar/season prepositions retain the same clause boundaries as
+    # spaced text. Otherwise a shared season reader sees 2025-26 while an
+    # absence/scope reader misses its word boundary and silently changes subject.
+    normalized = re.sub(
+        r"\b(in|from|since|through|to|on|before|after|during|between)(?=(?:19|20)\d{2}\b)",
+        r"\1 ",
+        normalized,
+    )
     collapsed = " ".join(normalized.strip().split())
     # Drop end-of-sentence punctuation. Detectors that anchor on a word boundary
     # or end of string stop matching when a "?" is glued to the last token, so

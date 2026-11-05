@@ -1,0 +1,61 @@
+{
+  "classification": "bounded_compact_absence_feature_acceptance_not_full_readiness",
+  "pull_request": "https://github.com/Bet-Zero/nbatools/pull/585",
+  "reviewed_source": "3494721bb751a8b2f11ca478cd3e85caf5b7fa90",
+  "reviewed_tree": "e5cc7dcd0c32c6d6336e41edb3349d125f1add15",
+  "actual_equivalent_source": "a07f0a60aba39653bbe627c153ebb76878de352f",
+  "request": "85b6808aaeae82bfac4577b7da6670190c652194",
+  "request_scope": "one sole-parent manifest-only commit; no runtime delta",
+  "generation": "availability-lebron-season-v1-20261031",
+  "generation_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "r2_run": "https://github.com/Bet-Zero/nbatools/actions/runs/42056791273",
+  "required_numerical": {
+    "selected": 1,
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0
+  },
+  "raw_qa": {
+    "cases": 1,
+    "checks_passed": 7,
+    "failed": 0,
+    "case_id": "k08_compact_home_absence_season"
+  },
+  "independent_controlled_tests": {
+    "passed": 21,
+    "skipped": 0
+  },
+  "independent_real_data_review": "approved; all11uniqueIDs,absence/home/season scope and source binding checked",
+  "accepted_output": {
+    "home_dnp_games": 11,
+    "home_record_wins": 7,
+    "home_record_losses": 4,
+    "home_points_sum": 1279,
+    "home_points_per_game": 116.27272727272727
+  },
+  "local_preflight": {
+    "passed": 10100,
+    "skipped_unavailable_data": 1863,
+    "failed": 1,
+    "failure": "stale generated corpus inventory599->600 before refresh",
+    "repair_verification": "88focused inventory/absence/date tests passed; full docs-governance passed; no runtime/test assertion weakened"
+  },
+  "foundation_post_merge_ci": "https://github.com/Bet-Zero/nbatools/actions/runs/42056271661",
+  "legacy_human_review_pending_preserved": true,
+  "full_numerical_acceptance": false,
+  "current_24h_acceptance": false,
+  "production_publication": false,
+  "production_data_writes": 0,
+  "agent_2_running": false,
+  "verification_sha256": "d0fe37502e813ac2bfe3f5e472d74940bf1b322458787eb55b872ca92338d531",
+  "archive_files": {
+    "compact-r2-review-42056791273.json": "930396d8ef67fac2d9fbbd9c161c2e02fd91865c107fc54e5a56e269acf8ed5e",
+    "product-review-3494721b.json": "3a7dcc344f00bef825c91f3295f4153dd4d15087ca950213dea615ca693e82da",
+    "raw-qa.zip": "90b1d660d139356949bb3a576a01c0d63eb37b70bb7f6b27c47076c61ee75481",
+    "required-numerical.zip": "3f6a7a63c30510453059293bde542bf305b1c99414cc43770519c7d52225e9fa",
+    "test_independent_compact_absence.py": "65eb63a8dacd20eb26f6b824f83f806d370b567731266ee9648b78585c8c3f5a"
+  }
+}
