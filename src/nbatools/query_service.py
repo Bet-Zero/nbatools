@@ -83,6 +83,7 @@ from nbatools.data_source import (
     data_read_csv_dicts,
     data_source_cache_key,
 )
+from nbatools.development_data import DevelopmentDataUnavailable, clear_query_issues, label_result
 
 _COUNT_THRESHOLD_EPSILON = 0.0001
 
@@ -3413,10 +3414,29 @@ def _finalize_natural_query_result(
 # ---------------------------------------------------------------------------
 
 
+def _development_unavailable(query: str, reason: str) -> QueryResult:
+    return label_result(
+        QueryResult(
+            result=NoResult(
+                query_class="unknown",
+                reason="no_data",
+                result_reason="no_data",
+                result_status="no_result",
+                notes=[reason],
+            ),
+            query=query,
+        )
+    )
+
+
 def execute_natural_query(query: str) -> QueryResult:
     """Execute a natural query against one request-pinned data generation."""
     with data_generation_context():
-        return _execute_natural_query_in_generation(query)
+        clear_query_issues()
+        try:
+            return label_result(_execute_natural_query_in_generation(query))
+        except DevelopmentDataUnavailable as exc:
+            return _development_unavailable(query, str(exc))
 
 
 def _execute_natural_query_in_generation(query: str) -> QueryResult:
@@ -3702,7 +3722,11 @@ VALID_ROUTES = frozenset(
 def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     """Execute a structured query against one request-pinned data generation."""
     with data_generation_context():
-        return _execute_structured_query_in_generation(route, **kwargs)
+        clear_query_issues()
+        try:
+            return label_result(_execute_structured_query_in_generation(route, **kwargs))
+        except DevelopmentDataUnavailable as exc:
+            return _development_unavailable(f"structured:{route}", str(exc))
 
 
 def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryResult:

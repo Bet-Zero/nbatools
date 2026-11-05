@@ -8,6 +8,8 @@ from enum import StrEnum
 
 import pandas as pd
 
+from nbatools.development_data import selected_snapshot
+
 
 class AggregationKind(StrEnum):
     """How a metric must be combined across game rows."""
@@ -73,6 +75,8 @@ def _numeric_sum(df: pd.DataFrame, column: str) -> float | None:
     if column not in df.columns:
         return None
     values = pd.to_numeric(df[column], errors="coerce")
+    if selected_snapshot() is not None and values.isna().any():
+        return None
     if not values.notna().any():
         return None
     return float(values.sum())
@@ -136,6 +140,8 @@ def aggregate_metric_value(df: pd.DataFrame, metric: str) -> float | None:
     if metric not in df.columns:
         return None
     values = pd.to_numeric(df[metric], errors="coerce")
+    if selected_snapshot() is not None and values.isna().any():
+        return None
     if not values.notna().any():
         return None
     return float(values.mean())

@@ -11,6 +11,8 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.development_data import selected_snapshot
+
 
 def normalize_stat_conditions(conditions: Any) -> list[dict[str, Any]]:
     """Return canonical stat-threshold condition dictionaries.
@@ -152,6 +154,10 @@ def apply_stat_conditions(
             raise ValueError(f"Missing required stat column: {stat_col}")
 
         values = pd.to_numeric(out[stat_col], errors="coerce")
+        if selected_snapshot() is not None and values.isna().any():
+            raise ValueError(
+                f"Provisional {stat_col} has unknown values; filter sample is unresolved"
+            )
         if cond.get("min_value") is not None:
             out = out[values >= cond["min_value"]].copy()
             values = pd.to_numeric(out[stat_col], errors="coerce")

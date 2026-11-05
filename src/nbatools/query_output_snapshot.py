@@ -280,6 +280,20 @@ def build_query_ui_snapshot(payload: dict[str, Any] | None, *, top_rows: int = 3
     )
 
     blocks: list[dict[str, Any]] = []
+    quality = metadata.get("data_quality")
+    if isinstance(quality, dict) and quality.get("state") == "provisional":
+        blocks.append(
+            {
+                "type": "message",
+                "title": "PROVISIONAL development data",
+                "lines": [
+                    str(quality.get("snapshot")),
+                    str(quality.get("scope")),
+                    "NBA accuracy is not certified.",
+                    "Exceptions: " + ", ".join(quality.get("exceptions", [])),
+                ],
+            }
+        )
     if result_status in {"no_result", "error"} or not _has_displayable_rows(sections):
         blocks.append(
             {

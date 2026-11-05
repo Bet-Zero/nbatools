@@ -161,10 +161,20 @@ export function ResultContextSummary({
     );
   const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
 
-  if (contextChips.length === 0 && caveatItems.length === 0) return null;
+  const quality = metadata?.data_quality;
+  if (!quality && contextChips.length === 0 && caveatItems.length === 0) return null;
 
   return (
     <div className={[styles.publicContext, className].filter(Boolean).join(" ")}>
+      {quality?.state === "provisional" && (
+        <div role="alert" className={[styles.infoBlock, styles.caveatsBlock].join(" ")}>
+          <strong>PROVISIONAL development data</strong>
+          <p>{quality.snapshot} · {quality.scope}</p>
+          <p>NBA accuracy is not certified. {quality.fixture ? "Controlled fixture. " : ""}
+            Exceptions: {quality.exceptions.join(", ") || "qualification pending"}.</p>
+          <small>Snapshot SHA256: {quality.manifest_sha256}</small>
+        </div>
+      )}
       {contextChips.length > 0 && (
         <div className={styles.publicContextChips} aria-label="Result context">
           {contextChips.map((chip) => (
