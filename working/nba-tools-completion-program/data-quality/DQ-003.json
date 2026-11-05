@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "data_quality_work_item",
+  "id": "DQ-003",
+  "title": "0009 Eason basket and separated-clock FT association",
+  "status": "blocked_evidence",
+  "owner_role": "agent_2_data_quality",
+  "claim": null,
+  "created_on": "2026-11-05",
+  "last_attempt": {
+    "reference": "https://github.com/Bet-Zero/nbatools/pull/582",
+    "outcome": "external facts still missing; no new acquisition performed by this planning change"
+  },
+  "baseline_commit": "fca90ab50ddb446d1247a80c8bfe4efda269e8e4",
+  "normalized_snapshot_sha256": "b43546c6e911b98b303a81bc23072d5ea08c2cd71a6175f48959c25886f8d8b2",
+  "affected_keys": {
+    "path": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/official-gamebooks-20261105/remaining-dependencies.json",
+    "git_blob": "de64df067b1b485501692f71a7f0212443f9a08a",
+    "filter": {
+      "game_id": [
+        "0022600009"
+      ],
+      "field": [
+        "tov_pct",
+        "usg_pct"
+      ],
+      "original_1365_member": false
+    },
+    "counting_note": "This is a dependency view over the authoritative484-key ledger; views may overlap. Do not sum work-item populations."
+  },
+  "failure": {
+    "check": "complete independent rate numerator/denominator/credit qualification",
+    "missing_evidence": "Scorer-confirmed association/credit between Eason Q1 2:15 made FG and2:06 one-shot FT, with enough evidence to establish the dependent trip/use denominator.",
+    "known_result": "PR582 restored38 AST observations but correctly withheld72 newly identified positive-minute TOV/USG values. Both original clocks remain unchanged."
+  },
+  "blocking_scope": {
+    "data_acceptance": "affected rate values and dependent numerical/snapshot acceptance",
+    "product_development": false,
+    "production_publication": "Existing complete data/publication gates remain blocking; no waiver."
+  },
+  "next_evidence_trigger": "A new attributable award linkage or adjudication that determines the FT association/credit while preserving the actual chronology.",
+  "do_not_repeat": "Do not force equal clocks, presume an and-one or overwrite nulls with previous reported rates merely to make the app numeric.",
+  "resolution": null,
+  "independent_review": null,
+  "qualified_output_version": null,
+  "source_evidence": {
+    "revision": "fca90ab50ddb446d1247a80c8bfe4efda269e8e4",
+    "readme": "working/nba-tools-completion-program/source-evidence/rollover-2026-27/official-gamebooks-20261105/README.md",
+    "original_capture_sha256": "8ff6e2052f89cf6e0070aee22c5fcee4c83edc7a285a6d7f4c6209135e8b7190",
+    "verification_sha256": "86a49bde57b2b7263736de1bab019375b323180ef0cab7691a44336332b9fc9e"
+  },
+  "fingerprint": "2f1141cc72822b6fe5ef772220f49138acd0d5f3fe0b097648f08e8a623825b4"
+}

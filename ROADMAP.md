@@ -1,10 +1,44 @@
 # NBA Tools delivery strategy
 
-Owner-approved revision: 2026-10-15. Keep the product and foundation; change the
-next execution phase. This supersedes the October 2 delivery order and the old
-four-stream continuation instructions, not prior implementation or evidence.
-The approval is for the direction below; publishing this plan is not delivery
-of its runtime changes.
+Owner-approved process revision: **2026-11-05**. Preserve the product, working
+infrastructure, strict data verification and all existing acceptance obligations.
+Separate product development from asynchronous data-quality cleanup. This
+supersedes readiness-only sequencing and the blanket K08 development pause,
+not production safeguards or previous evidence. K12 cold chasing remains parked.
+
+## Current delivery approach
+
+**Agent 1 builds the app**, owns systematic bounded acquisition when needed, runs
+initial validation and creates durable exception records. It can continue against
+safe, explicitly provisional development data and independently verified fixtures.
+**Agent 2 is launched separately when useful** to investigate flagged groups and
+produce reviewed, versioned data corrections. It can run concurrently or later;
+Agent 1 does not wait for its queue to empty. No running worker is implied here.
+
+The first product milestone is a minimal, tested development-only data path and
+deduplicated failure intake, followed by a named unfinished Core-1/K08 app behavior.
+Use existing loaders/reports/cache and a small repository worklist, not a new
+orchestration platform or wholesale data-pipeline rewrite. See the
+[operating policy](docs/operations/product_data_workflow.md) and
+[current product checkpoint](working/nba-tools-completion-program/README.md).
+
+Plan known data requirements by source family, season/type and grain before
+collection; do not repeatedly rediscover predictable quarters/halves/OT needs.
+Preserve immutable originals, portable normalized data and separate correction/
+provenance records. The output is reusable outside NBA Tools. Historical mistakes
+must not become per-game application runtime logic. Expensive anomalies become
+scoped exceptions, not a reason to stop unrelated acquisition or app development.
+
+A provisional answer demonstrates operation, not NBA truth. Software semantics and
+arithmetic still need independent fixtures/qualified cases. Full source/numerical
+qualification, freshness, R2/release checks and separately approved production
+publication remain mandatory for final acceptance. No validator is relaxed, no
+unknown silently becomes zero and no failing numerical gate is called passed.
+
+PR582 closes staged0142 and reaches647/647historical windows. Its484remaining rate
+unknowns are data-quality work, not the sole product agenda. It does not establish
+current freshness or production readiness. Preserve all its accepted evidence and
+its distinction between scorer authority and unproven independent upstream origin.
 
 ## Destination and preserved scope
 
@@ -22,7 +56,7 @@ surfaces in `docs/reference/natural_search_and_deep_tools_boundary.md`.
 Salary/trade-rule engines are not this project. Branding/public launch decisions
 remain separate owner choices.
 
-## What changes now
+## Preserved interpretation strategy
 
 Recent feature work is valuable, but repeated subject swaps, dropped clauses,
 operation-dependent filters and reparsing are evidence to address shared request
@@ -34,12 +68,13 @@ interface, data lifecycle, immutable generations and useful tests. Make bounded
 improvements to interpretation and its connection to execution while delivering
 real answers. Moving code to new files alone is not a delivered capability.
 
-The single active queue remains `working/nba-tools-completion-program/README.md`.
-It contains the starting task, bounded packages, Core-1 acceptance scope and the
-one current resume checkpoint. Read `AGENTS.md` first. Historical task records
+The product/integration queue remains `working/nba-tools-completion-program/README.md`.
+Its data-quality worklist holds separate worker claims and exceptions, not a
+competing product roadmap. Complete Core-1 acceptance obligations are preserved
+byte-for-byte in the linked PR582 baseline. Read `AGENTS.md` first. Historical task records
 are evidence, not competing instructions or proof of current deployment.
 
-## Next execution sequence
+## Preserved product milestones (not a data-cleanup serial gate)
 
 | Package | Outcome | Dependency and stop condition |
 | --- | --- | --- |
