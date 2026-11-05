@@ -327,3 +327,64 @@ def test_hosted_and_remote_configuration_cannot_select_development(
     with pytest.raises(ValueError, match="isolated local"):
         with development_snapshot(root, digest):
             pass
+
+
+def test_failed_known_data_comparison_flows_to_backlog_and_flagged_query(snapshot, tmp_path):
+    old, digest = snapshot
+    raw = pd.read_csv(old / RAW)
+    sample = raw.loc[raw.player_id.eq(2544)]
+    target = sample.iloc[0]
+    # Controlled source-oracle disagreement. Both are synthetic fixture values;
+    # the retained report is intentionally usable but is not certified correct.
+    observed, expected = int(target.ast), int(target.ast) + 2
+    assert observed != expected
+    item = intake(
+        tmp_path / "backlog",
+        dict(
+            dataset="player_game_stats",
+            source_sha256=sha256((old / RAW).read_bytes()),
+            scope={
+                "game_id": int(target.game_id),
+                "team_id": int(target.team_id),
+                "player_id": 2544,
+                "field": "ast",
+            },
+            check="controlled independent source-count comparison",
+            observed=observed,
+            expected=expected,
+            impact=["ast_avg", "ast_sum", "ast_last_5"],
+            evidence={
+                "reference": "controlled oracle; not NBA evidence",
+                "base_manifest_sha256": digest,
+            },
+            next_evidence="reviewed controlled correction",
+            snapshot="controlled-v1",
+        ),
+    )
+    root = tmp_path / "flagged-comparison"
+    flagged = prepare(
+        old,
+        root,
+        version="controlled-flagged-comparison",
+        season="2025-26",
+        season_type="Regular Season",
+        scope="controlled failed comparison",
+        source_evidence={"reference": "controlled fixture", "sha256": digest},
+        backlog=tmp_path / "backlog",
+        exceptions=[item],
+        fixture=True,
+    )
+    with development_snapshot(root, flagged):
+        payload = query_result_to_payload(
+            execute_natural_query("LeBron average assists in 2025-26")
+        )
+        assert payload["result_status"] == "ok"
+        summary = payload["result"]["sections"]["summary"][0]
+        assert summary["games"] == len(sample)
+        assert summary["ast_sum"] == sample.ast.sum()  # flagged row was not omitted or corrected
+        assert summary["ast_avg"] == pytest.approx(sample.ast.mean(), abs=0.001)
+        quality = payload["result"]["metadata"]["data_quality"]
+        assert item in quality["exceptions"] and quality["fixture"]
+        assert not quality["numerical_acceptance"] and not quality["production_accepted"]
+    entry = json.loads((tmp_path / "backlog" / (item + ".json")).read_bytes())
+    assert (entry["observed"], entry["expected"], entry["status"]) == (observed, expected, "open")
