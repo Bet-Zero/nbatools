@@ -21,7 +21,7 @@
       1610612759,
       1610612761
     ],
-    "scope": "Full candidate-club chronology; proposed SAS seasonstart-Feb8 / TOR Feb10-Apr9, not qualified NBA intervals"
+    "scope": "Qualified finite2022-23regular-season SAS2022-10-18..2023-02-08 / TOR2023-02-10..2023-04-09; Feb9date-onlyunknown, no candidate club game."
   },
   "source_evidence": {
     "archive_originals": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/archive-originals.zip",
@@ -43,7 +43,8 @@
     "check": "native original provenance plus complete dated-membership qualification",
     "missing_evidence": "Native official tenure/transaction article bodies; extracted web text is a lead, not certified original bytes.",
     "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies.",
-    "historical": true
+    "historical": true,
+    "original_affected_scope": "Full candidate-club chronology; proposed SAS seasonstart-Feb8 / TOR Feb10-Apr9, not qualified NBA intervals"
   },
   "blocking_scope": {
     "data_acceptance": "Resolved for this full-season historical staged population; all other unqualified scope remains outside acceptance.",
@@ -95,6 +96,6 @@
     "collection_sha256": "42134b026ae53e9ca3c731815f3290cc79937d14b5768c1f1eda9c9a7547361e",
     "capture_receipt_unchanged": true,
     "source_review": "independent-source-verdict.md",
-    "source_qualification": "Finite SAS-through-Feb8/TOR-from-Feb10 supported by3original chain;Feb9unknown and no club game then. Full consumer/hosted acceptance pending."
+    "source_qualification": "Finite SAS-through-Feb8/TOR-from-Feb10 supported by all3originals;Feb9date-onlyunknown preserved. Independent consumer review and required read-only hosted acceptance completed; see resolution and hosted receipt."
   }
 }
