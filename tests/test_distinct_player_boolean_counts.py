@@ -214,3 +214,50 @@ def test_missing_requested_season_never_returns_partial_union(population):
     )
     assert answer.result_status != "ok"
     assert answer.result_reason == "no_data"
+
+
+@pytest.mark.parametrize(
+    "wording",
+    ["Boston or Phoenix", "Boston or against Phoenix", "Boston, Phoenix", "Boston and Phoenix"],
+)
+def test_common_opponent_list_cannot_become_subject_team(wording):
+    raw = pd.read_csv(RAW)
+    expected = raw.loc[
+        raw.opponent_team_abbr.isin(["BOS", "PHX"]) & (raw.pts.gt(20) | raw.ast.gt(10))
+    ]
+    answer = execute_natural_query(
+        f"How many distinct players had (over 20 points or over 10 assists) in 2025-26 against {wording}?"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    assert answer.metadata["primary_count"] == expected.player_id.nunique()
+    assert answer.metadata["team"] is None
+    assert set(answer.metadata["opponents"]) == {"BOS", "PHX"}
+    assert {
+        r["player_id"]: r["matching_games"] for r in answer.to_dict()["sections"]["leaderboard"]
+    } == expected.groupby("player_id").size().to_dict()
+
+
+def test_common_team_and_opponent_union_are_separate_filters():
+    raw = pd.read_csv(RAW)
+    expected = raw.loc[
+        raw.team_abbr.eq("LAL")
+        & raw.opponent_team_abbr.isin(["BOS", "PHX"])
+        & (raw.pts.gt(20) | raw.ast.gt(10))
+    ]
+    answer = execute_natural_query(
+        "How many Lakers players had (over 20 points or over 10 assists) in 2025-26 against Boston or against Phoenix?"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    assert answer.metadata["team"] == "LAL"
+    assert answer.metadata["primary_count"] == expected.player_id.nunique()
+
+
+@pytest.mark.parametrize(
+    "scope", ["at home or on the road", "against Boston or against UnknownClub"]
+)
+def test_unrepresented_outer_scope_or_withholds(scope):
+    answer = execute_natural_query(
+        f"How many distinct players had (over 20 points or over 10 assists) in 2025-26 {scope}?"
+    )
+    assert answer.result_status != "ok"
+    assert "primary_count" not in answer.metadata

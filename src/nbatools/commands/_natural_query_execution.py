@@ -1878,6 +1878,27 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
 # ---------------------------------------------------------------------------
 
 
+def _bind_distinct_player_opponents(query: str, parsed: dict, kwargs: dict) -> None:
+    """Keep a common opponent list out of the subject-team slot."""
+    from nbatools.commands._parse_helpers import opponent_lists
+    from nbatools.commands.natural_query import _team_mentions
+
+    text = normalize_text(query)
+    lists = opponent_lists(text, repeated_leads=True, allow_subject_before=True)
+    if not lists:
+        return
+    if len(lists) != 1:
+        raise ValueError("Multiple opponent scopes cannot be flattened into a common filter.")
+    start, end, opponents = lists[0]
+    outside = text[:start] + " " * (end - start) + text[end:]
+    subjects = {team for _, _, team in _team_mentions(outside)}
+    if len(subjects) > 1:
+        raise ValueError("Multiple subject-team scopes are not yet supported here.")
+    subject = next(iter(subjects), None)
+    kwargs.update(team=subject, opponent=list(dict.fromkeys(opponents)))
+    parsed.update(team=subject, opponent=kwargs["opponent"])
+
+
 def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
     """Read a complete stat expression and retain only proven common scope."""
     from nbatools.commands._leaderboard_eligibility import (
@@ -1914,6 +1935,14 @@ def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
     # No names, filters or other clauses between predicates are stripped.
     parse_condition_text(expression)
     outer = text[:start] + " " + text[end:]
+    from nbatools.commands._parse_helpers import opponent_lists
+
+    for a, b, _ in reversed(opponent_lists(outer, repeated_leads=True, allow_subject_before=True)):
+        outer = outer[:a] + " " * (b - a) + outer[b:]
+    if contains_boolean_or(outer):
+        raise ValueError(
+            "Boolean scope clauses outside the statistical expression are not yet supported."
+        )
     # A detected field is claimable only if this consumer actually receives it.
     # Reuse the existing scope claims; do not let leaderboard-only qualifiers
     # disappear merely because the broad parse recognized them.

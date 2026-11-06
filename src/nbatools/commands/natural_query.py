@@ -7191,9 +7191,13 @@ def _route_parsed_query(parsed: dict) -> dict:
         and parsed.get("distinct_player_count")
         and (contains_boolean_or(q) or "(" in q or ")" in q)
     ):
-        from nbatools.commands._natural_query_execution import _distinct_player_boolean_text
+        from nbatools.commands._natural_query_execution import (
+            _bind_distinct_player_opponents,
+            _distinct_player_boolean_text,
+        )
 
         try:
+            _bind_distinct_player_opponents(q, parsed, route_kwargs)
             expression = _distinct_player_boolean_text(q, {**parsed, "route_kwargs": route_kwargs})
         except ValueError:
             route_kwargs["unsupported_filters"] = list(

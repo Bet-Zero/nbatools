@@ -1025,18 +1025,26 @@ def _team_ends_here(text: str) -> bool:
     return any(text.endswith(" " + k) or text == k for k in TEAM_ALIASES)
 
 
-def opponent_lists(text: str) -> list[tuple[int, int, list[str]]]:
+def opponent_lists(
+    text: str, *, repeated_leads: bool = False, allow_subject_before: bool = False
+) -> list[tuple[int, int, list[str]]]:
     """Lists of two or more teams after vs/against ("vs Celtics, Knicks and
     Heat"): (start of the first team, end of the last, teams in order)."""
     found = []
     for vs in _LIST_VS.finditer(text):
+        if repeated_leads and found and vs.start() < found[-1][1]:
+            continue
         first = _team_at(text, vs.end())
-        if not first or _team_ends_here(text[: vs.start()].rstrip()):
+        if not first or (not allow_subject_before and _team_ends_here(text[: vs.start()].rstrip())):
             # "Celtics vs Knicks or Heat" pairs teams; a list there is not read.
             continue
         end, teams = first[0], [first[1]]
         joined = False
-        while (sep := _LIST_SEP.match(text, end)) and (item := _team_at(text, sep.end())):
+        while sep := _LIST_SEP.match(text, end):
+            lead = _LIST_VS.match(text, sep.end()) if repeated_leads else None
+            item = _team_at(text, lead.end() if lead else sep.end())
+            if not item:
+                break
             bare_comma = re.fullmatch(r"\s*,\s*(?:the\s+)?", sep.group(0))
             if joined and bare_comma:
                 # "against the Celtics and Knicks, Lakers best stretch": the
