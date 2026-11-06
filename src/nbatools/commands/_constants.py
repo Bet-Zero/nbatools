@@ -469,4 +469,22 @@ def route_to_intent(route: str | None, *, count_intent: bool = False) -> str:
 
 
 # Explicit equality is inclusive at both endpoints in every statistical reader.
-STAT_EQUALITY_OPERATOR = r"(?:exactly|equal(?:s)?(?:\s+to)?|=)"
+STAT_EQUALITY_OPERATOR = r"(?:exactly|equal(?:s)?(?:\s+to)?|(?<![!<>=])=(?!=))"
+
+
+def invalid_stat_equality(text: str) -> bool:
+    """Reject unread negation or combined operators, without changing a bound."""
+    equality = rf"{STAT_EQUALITY_OPERATOR}\s*\d+(?:\.\d+)?"
+    verb = (
+        r"(?:scor(?:e|es|ed|ing)|ha(?:ve|s|d)|ma(?:ke|kes|de)|hits?|hit|"
+        r"record(?:s|ed)?|post(?:s|ed)?|commit(?:s|ted)?|grab(?:s|bed)?|"
+        r"dish(?:es|ed)?|shoot(?:s|ing)?|reach(?:es|ed)?)"
+    )
+    return bool(
+        re.search(
+            rf"[!<>]=|={{2,}}|\b(?:not|never|no|didn't|doesn't|don't)\s+(?:{verb}\s+)?{equality}"
+            rf"|{equality}\s*\+"
+            rf"|{equality}\s+(?:(?:team|opponent)\s+)?{STAT_PATTERN}\s+or\s+(?:more|fewer|less)\b",
+            text.lower(),
+        )
+    )

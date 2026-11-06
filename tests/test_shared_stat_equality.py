@@ -120,6 +120,10 @@ def test_explicit_zero_is_equality(clause):
         "exactly 20+ points",
         "exactly 20 points or more",
         "points = 20+",
+        "!= 20 points",
+        "points != 20",
+        "points >= 20",
+        "points == 20",
     ],
 )
 def test_unimplemented_or_contradictory_operators_withhold_answer(clause):
@@ -137,3 +141,11 @@ def test_compound_equality_does_not_hide_other_inclusive_bound():
     )
     assert result.result_status == "ok", result.metadata
     assert result.metadata["primary_count"] == len(expected)
+
+
+def test_negated_owned_verbal_equality_cannot_become_own_score():
+    result = execute_natural_query(
+        "Celtics record when opponents do not score exactly 102 points in 2025-26"
+    )
+    assert result.result_status != "ok"
+    assert "primary_count" not in result.metadata

@@ -12191,14 +12191,9 @@ def parse_query(query: str) -> dict:
     if since is not None:
         return since
     out = _parse_query_once(query)
-    from nbatools.commands._constants import STAT_EQUALITY_OPERATOR, STAT_PATTERN
+    from nbatools.commands._constants import invalid_stat_equality
 
-    equality = rf"{STAT_EQUALITY_OPERATOR}\s*\d+(?:\.\d+)?"
-    if re.search(
-        rf"\b(?:not|never|no)\s+{equality}|{equality}\s*\+"
-        rf"|{equality}\s+(?:(?:team|opponent)\s+)?{STAT_PATTERN}\s+or\s+(?:more|fewer|less)\b",
-        query.lower(),
-    ):
+    if invalid_stat_equality(query):
         out["route_kwargs"]["unsupported_filters"] = ["statistical_equality_syntax"]
         return out
     if {"availability_status", "on_court_presence", "teammate_stat_condition"}.intersection(
