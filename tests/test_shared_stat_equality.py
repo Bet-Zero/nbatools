@@ -120,6 +120,8 @@ def test_explicit_zero_is_equality(clause):
         "exactly 20+ points",
         "exactly 20 points or more",
         "points = 20+",
+        "points equal to 20 or more",
+        "points = 20 or fewer",
         "!= 20 points",
         "points != 20",
         "points >= 20",
@@ -166,3 +168,31 @@ def test_opponent_count_answer_keeps_equality_label():
     assert answer.metadata["primary_count"] == len(expected)
     assert "allowed exactly 100 points" in answer.metadata["count_phrase"]
     assert "or fewer" not in answer.metadata["count_phrase"]
+
+
+@pytest.mark.parametrize("modifier", ["once", "ever", "actually", "even once"])
+def test_negated_governor_modifiers_are_not_discarded(modifier):
+    result = execute_natural_query(
+        f"Celtics record when opponents never {modifier} scored exactly 102 points in 2025-26"
+    )
+    assert result.result_status != "ok"
+    assert "primary_count" not in result.metadata
+
+
+def test_opponent_verbal_equality_preserves_owner():
+    teams = pd.read_csv(ROOT / "team_game_stats/2025-26_regular_season.csv")
+    expected = teams.loc[teams.team_abbr.eq("LAL")].merge(
+        teams.loc[teams.pts.eq(100), ["game_id", "team_id"]].rename(
+            columns={"team_id": "opponent_team_id"}
+        ),
+        on=["game_id", "opponent_team_id"],
+    )
+    for clause in (
+        "opponents score exactly 100 points",
+        "opponents scored exactly 100 points",
+        "opponents score exactly 100",
+    ):
+        answer = execute_natural_query(f"How many Lakers games when {clause} in 2025-26?")
+        assert answer.result_status == "ok", answer.metadata
+        assert answer.metadata["primary_count"] == len(expected)
+        assert "allowed exactly 100 points" in answer.metadata["count_phrase"]

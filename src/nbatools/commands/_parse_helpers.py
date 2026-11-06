@@ -3777,6 +3777,24 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
             }
         )
 
+    # Explicit equality preserves the defensive score even with the points
+    # noun elided, using the same subject/suffix ownership as other bounds.
+    for m in re.finditer(
+        rf"(?:{_MIN_SUBJECTS}|{_OPPONENT_SCORERS}){STAT_EQUALITY_OPERATOR}\s*{_NUM}{_POINT_SUFFIX}",
+        text,
+    ):
+        value = float(m.group(1))
+        matches.append(
+            dict(
+                start=m.start(),
+                end=m.end(),
+                stat="opponent_pts",
+                min_value=value,
+                max_value=value,
+                text=m.group(0),
+            )
+        )
+
     matches.extend(_opponent_box_stat_conditions(text))
 
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
@@ -3805,6 +3823,7 @@ _OPP_STAT_NUM = r"(\d+(?:\.\d+)?)"
 # (prefix, suffix, mode, epsilon): the bound sits before the number, after
 # it, or the number carries "+".
 _OPP_STAT_BOUNDS = (
+    (rf"{STAT_EQUALITY_OPERATOR}\s*", r"\s+", "eq", 0.0),
     (r"(?:at\s+least|a\s+min(?:imum)?\s+of)\s+", r"\s+", "min", 0.0),
     (r"(?:over|more\s+than)\s+", r"\s+", "min", 0.0001),
     (r"(?:under|below|fewer\s+than|less\s+than)\s+", r"\s+", "max", 0.0001),
@@ -3873,8 +3892,8 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
                     "start": m.start(),
                     "end": m.end(),
                     "stat": base,
-                    "min_value": value + epsilon if bound == "min" else None,
-                    "max_value": value - epsilon if bound == "max" else None,
+                    "min_value": value + epsilon if bound in ("min", "eq") else None,
+                    "max_value": value - epsilon if bound in ("max", "eq") else None,
                     "text": m.group(0),
                 }
             )
@@ -3916,7 +3935,7 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
 # subject. Each may carry its own bound; a bare count takes the first one's.
 _OPP_LIST_ITEM = re.compile(
     r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)"
-    r"(?P<pre>at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
+    rf"(?P<pre>{STAT_EQUALITY_OPERATOR}\s*|at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
     r"|fewer\s+than\s+|less\s+than\s+|no\s+more\s+than\s+)?"
     r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?P<mid>\s+or\s+(?:more|fewer|less))?\s*"
     rf"(?P<stat>points?|pts|{_OPP_STAT_WORD})(?![\w-])"
@@ -3940,8 +3959,14 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
 
     found: list[dict] = []
     for cond in conditions:
-        mode = "min" if cond.get("min_value") is not None else "max"
-        bound = cond.get("min_value") if mode == "min" else cond.get("max_value")
+        mode = (
+            "eq"
+            if cond.get("min_value") is not None and cond.get("min_value") == cond.get("max_value")
+            else "min"
+            if cond.get("min_value") is not None
+            else "max"
+        )
+        bound = cond.get("min_value") if mode in ("min", "eq") else cond.get("max_value")
         # "under 100 points and 40 rebounds": a strict first bound stays strict.
         strict = 0.0 if float(bound).is_integer() else 0.0001
         end = cond["end"]
@@ -3958,7 +3983,10 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
                 break
             item_mode, epsilon = mode, strict
             if m.group("pre"):
-                item_mode, epsilon = _OPP_LIST_PRE[re.sub(r"\s+", " ", m.group("pre").strip())]
+                pre = re.sub(r"\s+", " ", m.group("pre").strip())
+                item_mode, epsilon = (
+                    ("eq", 0.0) if re.fullmatch(STAT_EQUALITY_OPERATOR, pre) else _OPP_LIST_PRE[pre]
+                )
             elif m.group("plus"):
                 item_mode, epsilon = "min", 0.0
             elif bound_words := m.group("mid") or m.group("post"):
@@ -3970,8 +3998,8 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
                     "start": m.start("num") if not m.group("pre") else m.start("pre"),
                     "end": m.end(),
                     "stat": base,
-                    "min_value": value + epsilon if item_mode == "min" else None,
-                    "max_value": value - epsilon if item_mode == "max" else None,
+                    "min_value": value + epsilon if item_mode in ("min", "eq") else None,
+                    "max_value": value - epsilon if item_mode in ("max", "eq") else None,
                     "text": m.group(0).strip(),
                 }
             )
