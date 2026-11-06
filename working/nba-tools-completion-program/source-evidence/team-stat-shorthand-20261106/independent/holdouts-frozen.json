@@ -1,0 +1,433 @@
+{
+  "baseline": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "evidence": "controlled committed synthetic fixture; no real NBA fact qualification",
+  "raw_hashes": {
+    "qa/fixtures/query_engine_sample/data/raw/team_game_stats/2025-26_regular_season.csv": "993c6f3594081f9259c0f03b974dd7b3adad0323c9723305f6e44aef67073305",
+    "qa/fixtures/query_engine_sample/data/raw/player_game_stats/2025-26_regular_season.csv": "2dcb6e767abbb340fa0d2a5af838cf64fd1fc87ef634ff5a275b32b60efdcaf6"
+  },
+  "cases": [
+    {
+      "id": "H01",
+      "query": "Stephen Curry games in 2025-26 with fewer than 20 team assists",
+      "kind": "finder",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        369,
+        370,
+        372,
+        377,
+        382,
+        402,
+        407,
+        421,
+        428,
+        447,
+        451,
+        457,
+        458,
+        472,
+        486,
+        488,
+        489,
+        490,
+        497,
+        502,
+        518,
+        520,
+        527,
+        532
+      ],
+      "expected_games": 24,
+      "expected_points_sum": 605,
+      "expected_points_avg": 25.208333333333332,
+      "expected_wins": 7,
+      "conditions": [
+        [
+          "team_ast",
+          null,
+          19.9999
+        ]
+      ]
+    },
+    {
+      "id": "H02",
+      "query": "Stephen Curry games in 2025-26 with 20 or fewer team assists",
+      "kind": "finder",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        369,
+        370,
+        372,
+        377,
+        382,
+        397,
+        399,
+        402,
+        407,
+        421,
+        428,
+        429,
+        447,
+        451,
+        457,
+        458,
+        472,
+        486,
+        488,
+        489,
+        490,
+        497,
+        502,
+        507,
+        518,
+        520,
+        527,
+        532
+      ],
+      "expected_games": 28,
+      "expected_points_sum": 710,
+      "expected_points_avg": 25.357142857142858,
+      "expected_wins": 9,
+      "conditions": [
+        [
+          "team_ast",
+          null,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "H03",
+      "query": "Nikola Jokic games with 35+ team rebounds in 2025-26",
+      "kind": "finder",
+      "player": "Nikola Joki\u0107",
+      "expected_ids": [
+        388,
+        397,
+        418,
+        422,
+        431,
+        432,
+        438,
+        443,
+        478,
+        482,
+        494,
+        495,
+        503,
+        512,
+        525,
+        533
+      ],
+      "expected_games": 16,
+      "expected_points_sum": 436,
+      "expected_points_avg": 27.25,
+      "expected_wins": 2,
+      "conditions": [
+        [
+          "team_reb",
+          35,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H04",
+      "query": "Anthony Davis games with at most 12 team turnovers in 2025-26",
+      "kind": "finder",
+      "player": "Anthony Davis",
+      "expected_ids": [
+        365,
+        381,
+        392,
+        395,
+        396,
+        401,
+        406,
+        423,
+        446,
+        486,
+        501,
+        515,
+        516,
+        526,
+        536
+      ],
+      "expected_games": 15,
+      "expected_points_sum": 355,
+      "expected_points_avg": 23.666666666666668,
+      "expected_wins": 11,
+      "conditions": [
+        [
+          "team_tov",
+          null,
+          12
+        ]
+      ]
+    },
+    {
+      "id": "H05",
+      "query": "Stephen Curry games with 25 points and 20+ team assists in 2025-26",
+      "kind": "finder",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        366,
+        367,
+        368,
+        396,
+        397,
+        399,
+        400,
+        417,
+        426,
+        427,
+        429,
+        430,
+        432,
+        456,
+        459,
+        460,
+        462,
+        477,
+        487,
+        511,
+        516,
+        517,
+        519,
+        522,
+        537
+      ],
+      "expected_games": 25,
+      "expected_points_sum": 764,
+      "expected_points_avg": 30.56,
+      "expected_wins": 9,
+      "conditions": [
+        [
+          "pts",
+          25,
+          null
+        ],
+        [
+          "team_ast",
+          20,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H06",
+      "query": "Stephen Curry average points in 2025-26 with under 20 team assists",
+      "kind": "summary",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        369,
+        370,
+        372,
+        377,
+        382,
+        402,
+        407,
+        421,
+        428,
+        447,
+        451,
+        457,
+        458,
+        472,
+        486,
+        488,
+        489,
+        490,
+        497,
+        502,
+        518,
+        520,
+        527,
+        532
+      ],
+      "expected_games": 24,
+      "expected_points_sum": 605,
+      "expected_points_avg": 25.208333333333332,
+      "expected_wins": 7,
+      "conditions": [
+        [
+          "team_ast",
+          null,
+          19.9999
+        ]
+      ]
+    },
+    {
+      "id": "H07",
+      "query": "Stephen Curry home away splits with 20+ team assists in 2025-26",
+      "kind": "split",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        361,
+        366,
+        367,
+        368,
+        387,
+        391,
+        396,
+        397,
+        398,
+        399,
+        400,
+        412,
+        417,
+        426,
+        427,
+        429,
+        430,
+        432,
+        437,
+        442,
+        456,
+        459,
+        460,
+        462,
+        467,
+        477,
+        481,
+        487,
+        492,
+        507,
+        511,
+        516,
+        517,
+        519,
+        522,
+        537
+      ],
+      "expected_games": 36,
+      "expected_points_sum": 971,
+      "expected_points_avg": 26.97222222222222,
+      "expected_wins": 11,
+      "conditions": [
+        [
+          "team_ast",
+          20,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H08",
+      "query": "Celtics record with 15+ team threes in 2025-26",
+      "kind": "record",
+      "team": "BOS",
+      "expected_ids": [
+        363,
+        368,
+        373,
+        377,
+        403,
+        436,
+        437,
+        458,
+        463,
+        466,
+        474,
+        496,
+        499,
+        500,
+        504,
+        523,
+        526,
+        528,
+        539
+      ],
+      "expected_games": 19,
+      "expected_wins": 15,
+      "conditions": [
+        [
+          "fg3m",
+          15,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H09",
+      "query": "Nuggets games with more than 100 team points in 2025-26",
+      "kind": "finder",
+      "team": "DEN",
+      "expected_ids": [
+        367,
+        373,
+        418,
+        462,
+        508
+      ],
+      "expected_games": 5,
+      "expected_wins": 5,
+      "conditions": [
+        [
+          "pts",
+          100.0001,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H10",
+      "query": "Stephen Curry games with 20+ opponent assists and 20+ team assists in 2025-26",
+      "kind": "finder",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        361,
+        366,
+        368,
+        391,
+        396,
+        397,
+        417,
+        442,
+        459,
+        462,
+        481,
+        487,
+        492,
+        511,
+        516,
+        517,
+        522,
+        537
+      ],
+      "expected_games": 18,
+      "conditions": [
+        [
+          "opponent_ast",
+          20,
+          null
+        ],
+        [
+          "team_ast",
+          20,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H11",
+      "query": "Stephen Curry last 8 games with 20+ team assists in 2025-26",
+      "kind": "finder",
+      "player": "Stephen Curry",
+      "expected_ids": [
+        517,
+        519,
+        522,
+        537
+      ],
+      "expected_games": 4,
+      "conditions": [
+        [
+          "team_ast",
+          20,
+          null
+        ]
+      ]
+    }
+  ]
+}

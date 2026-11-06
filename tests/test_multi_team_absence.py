@@ -213,11 +213,33 @@ def test_natural_team_stat_condition_counts_absences_and_keeps_team_ownership(tr
     assert "team points 100+" in result.metadata["answer_phrase"]
 
 
-@pytest.mark.parametrize("tail", ["when he scored at least 20 points", "with 80+ team points"])
+@pytest.mark.parametrize("tail", ["when he scored at least 20 points"])
 def test_unread_stat_condition_never_counts_appearances(transferred, tail):
     result = execute_natural_query(f"How many games did Jimmy Butler miss in 2025-26 {tail}?")
     assert result.result_status != "ok", result.metadata
     assert "count" not in result.result.to_dict()["sections"]
+
+
+@pytest.mark.parametrize(
+    ("wording", "stat", "predicate"),
+    [
+        ("80+ team points", "pts", lambda v: v >= 80),
+        ("under 110 team points", "pts", lambda v: v < 110),
+        ("110 team points or fewer", "pts", lambda v: v <= 110),
+        ("at least 25 team assists", "ast", lambda v: v >= 25),
+    ],
+)
+def test_team_noun_positive_counts_only_verified_absences(transferred, wording, stat, predicate):
+    _, eligible, missed = transferred
+    expected = eligible.loc[eligible.game_id.isin(missed) & predicate(eligible[stat])]
+    answer = execute_natural_query(
+        f"How many games did Jimmy Butler miss in 2025-26 with {wording}?"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    sections = answer.result.to_dict()["sections"]
+    assert sections["count"] == [{"count": len(expected)}]
+    assert {int(r["game_id"]) for r in sections.get("finder", [])} == set(expected.game_id)
+    assert "team " in answer.metadata["answer_phrase"]
 
 
 def test_explicit_dnp_club_is_never_hidden_when_it_has_no_appearances_or_interval(transferred):

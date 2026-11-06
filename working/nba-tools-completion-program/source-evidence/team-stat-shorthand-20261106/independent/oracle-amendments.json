@@ -1,0 +1,21 @@
+{
+  "reason": "Checker contract corrections after first ec45943b run; original frozen oracles and failed receipt retained. Corrections follow unchanged documented API/sample contracts, not application output.",
+  "H11": {
+    "policy": "docs/reference/query_catalog.md:120 and tests/test_last_n_sample_scope.py::test_last_n_qualifying_games",
+    "expected_ids": [
+      492,
+      507,
+      511,
+      516,
+      517,
+      519,
+      522,
+      537
+    ],
+    "expected_games": 8,
+    "last_n_scope": "qualifying"
+  },
+  "H12_H14": {
+    "policy": "Existing explicit-team missed path may use without_player coverage rather than multi-club membership_coverage metadata; IDs/count/absence label remain required. Oracle values unchanged."
+  }
+}

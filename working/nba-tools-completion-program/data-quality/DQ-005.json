@@ -102,7 +102,7 @@
     "source_values_changed": 0,
     "qualified_correction_version": null
   },
-  "next_evidence_trigger": "Obtain and retain the exact native official final-box PDFs https://statsdmz.nba.com/pdfs/20221105/20221105_SASDEN.pdf and https://statsdmz.nba.com/pdfs/20230128/20230128_LALBOS.pdf (or equally qualified independent original scorer evidence) covering both complete team vectors; qualify field meaning and corrections against preserved originals. Use a restored approved route within existing cost/access limits or returned acquisition-laptop capture. No unchanged cloud retry after the recorded automatic approval rejection; no DQ001-DQ004 reruns.",
+  "next_evidence_trigger": "Parked; do not restart source searches or PDF acquisition. Reopen investigation only when (1) newly available attributable original scorer evidence or endpoint-specific field documentation addresses both complete game/team vectors, or (2) a concrete future consumer needs the unqualified source-reported GameFinder PLUS_MINUS or individual player/lineup +/- instead of the current paired-score canonical margin, or changes that canonical contract. Name that consumer and exact affected keys before investigating. Mere availability of a capture route, passage of time, or unrelated application development is not a trigger.",
   "resolution": null,
   "independent_review": {
     "reviewer": "/root/dq005_checker",
@@ -118,5 +118,20 @@
       "reference": "PR587 independent native-source initial validation",
       "outcome": "Two observations retained; no data cleanup investigation or correction performed."
     }
-  ]
+  ],
+  "administrative_closeout": {
+    "kind": "evidence_only",
+    "status": "closed_out_as_evidence_only",
+    "source_issue_status": "blocked_evidence",
+    "application_development_blocked": false,
+    "application_defect_established": false,
+    "qualified_data_correction_established": false,
+    "investigation_revision": "cd488fc44d0c00a91bd139c192d04e8217cd9b74",
+    "evidence_version": "dq005-investigation-v1-20261106",
+    "active_acquisition_test": "Removed from tests; historical reviewed runner remains only in prior Git history. No acquisition or approval request is pending.",
+    "source_statistics_changed": false,
+    "canonical_data_changed": false,
+    "production_changed": false,
+    "next_action": "No further investigation. Final review, required checks and verified landing receipts belong in PR588."
+  }
 }

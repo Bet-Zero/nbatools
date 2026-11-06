@@ -1,10 +1,17 @@
-# DQ-005: source field investigation, blocked evidence
+# DQ-005: evidence-only closeout, blocked evidence
 
 Agent2 session `/root`, branch `codex/agent2-dq005-20261106`, starts from live
 main after PR587: `4bd2f799ddeb06544ef2223e56449ec609318dec`.
 Investigation version: **dq005-investigation-v1-20261106**. This is an evidence
 version, not a qualified corrected dataset. [PR588](https://github.com/Bet-Zero/nbatools/pull/588)
-retains the exact revision and handoff. Agent1's application checkpoint is untouched.
+retains the investigation and administrative closeout. Agent1's application
+checkpoint is untouched.
+
+The investigation is administratively closed out with **blocked_evidence** retained.
+It is **nonblocking for application development**: current canonical team margins
+already match final-score arithmetic, no application defect was established, and
+no qualified data correction was established. No source statistic, canonical
+dataset or production value changes in this PR.
 
 ## Complete affected values
 
@@ -72,23 +79,37 @@ NBA game summaries, ESPN/Basketball-Reference score pages and the glossary were
 discovered only; their upstream independence and native bodies are unqualified.
 `sources-investigated.json` records exact routes and limitations.
 
-The reviewed two-final-box capture runner is retained in
-`tests/cloud_dq005_source_capture_real_data.py`. Independent collector review
-approved frozen remote`e548f629d038055f84c3b448ed4ec184f2d62ecf`; controlled success
-and failure checks made zero network calls. Automatic approval review rejected
-the request-manifest write before it happened, citing possible new compute costs
-or credential-bearing execution under the user's constraints. **No targeted
-workflow ran, no PDFs were acquired, no rejection was bypassed.** The empty
-`r2-validation/dq005-source-e548f629` branch has no request commit.
+The historical two-final-box capture runner was reviewed at
+`e548f629d038055f84c3b448ed4ec184f2d62ecf`; controlled success and failure checks
+made zero network calls. It is **removed from active test execution**: the file
+`tests/cloud_dq005_source_capture_real_data.py` is deleted in this closeout. Its
+exact original implementation and review remain available in that immutable Git
+revision; they are historical evidence, not a runnable test or queued acquisition.
+Automatic approval review previously rejected the request-manifest write before
+it happened, citing possible new compute costs or credential-bearing execution.
+No targeted workflow ran, no PDFs were acquired, and no rejection was bypassed.
+The empty `r2-validation/dq005-source-e548f629` branch has no request commit.
+There is no pending capture, approval request, acquisition packet or owner action.
 
-Next evidence is the two exact native official final-box PDFs (both team totals,
-full score identity and complete affected values), or an equally attributable
-independent original scorer source plus field semantics. The concrete request
-is2fixedURLs,1attempt each,20seconds/request,1.5MB/body,no redirects/retries or
-publication. A restored existing approved route under unchanged spending/access
-limits or a returned existing acquisition-laptop capture can supply those bytes.
-Reusing the four new JSON bodies and old ZIP needs no owner intervention. Do not
-repeat the same blocked cloud request or old searches without changed evidence.
+## Reopening trigger
+
+Keep DQ-005 parked. Reopen investigation only for one of these concrete changes:
+
+- Newly available attributable original scorer evidence for both complete team
+  vectors, or endpoint-specific documentation, establishes whether the raw field
+  is erroneous/stale or intentionally uses an alternate basis. Existing extracted
+  web text and agreement among shared NBA Stats endpoints remain insufficient.
+- A named future consumer actually requires source-reported GameFinder PLUS_MINUS
+  or individual player/lineup plus/minus instead of canonical score margins, or
+  changes the current paired-score canonical contract. Record the consumer,
+  exact affected keys and required field meaning before taking further action.
+
+A restored capture route, elapsed time or unrelated app development alone does
+not justify reopening. Independent scorer totals plus intended field meaning may
+establish a correction even if the precise upstream algorithm remains unknown.
+Any future correction still needs original preservation, complete affected-vector
+checks, independent review and a new qualified version. This closeout authorizes
+no acquisition and requests no new approval.
 
 ## Verification and stop
 
@@ -104,11 +125,16 @@ Independent `/root/dq005_checker` separately replayed the producer and dependent
 schedule calculations. Its actual model identifier is not exposed; no Claude or
 cross-model identity is claimed. Review covers the investigation, **not** correction
 acceptance. `independent-review.json` and `independent_replay.py` preserve its work.
+The original review hashes bind the investigation at
+`cd488fc44d0c00a91bd139c192d04e8217cd9b74`; they are not relabeled as a review of
+subsequent administrative wording. The closeout review and exact-head checks are
+recorded in PR588. Numerical originals, analysis and review artifacts stay unchanged.
 
 Status: **blocked_evidence**. Zero source values corrected; no qualified output
 version, production publication or acceptance. No application/core data changes,
 Agent1 coordination, new credentials, permissions, services or schedules.
 The worker stops after this bounded investigation; no worker/service continues
-in the background. DQ001-DQ004 and their evidence are unchanged. The precise next
-step is native independent scorer acquisition, then affected-vector qualification
-and separate correction review if the facts establish a correction.
+in the background. DQ001-DQ004 and their evidence are unchanged. The administrative
+next step is reviewed evidence-only landing and verification,
+then stop. No further source investigation is active; use the reopening triggers
+above if a future consumer or new original evidence makes it necessary.

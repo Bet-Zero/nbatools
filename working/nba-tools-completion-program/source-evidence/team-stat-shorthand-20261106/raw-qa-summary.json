@@ -1,0 +1,538 @@
+{
+  "request_sha": "be1fde1b054c139c248092fad1d935924a079e5a",
+  "reviewed_sha": "3105fee4dabfe8826d10151cbe932699800b2af9",
+  "run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/42202957484",
+  "generation": "availability-lebron-season-v1-20261031",
+  "cases": [
+    {
+      "id": "k08_compact_home_absence_season",
+      "query": "how many home games did LeBron miss in2025-26",
+      "status": "ok",
+      "route": "game_finder",
+      "checks": 7,
+      "failed_checks": 0,
+      "expectation": "pass",
+      "suspicious_flags": [],
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "LeBron James missed 11 Lakers home games in the 2025-26 regular season."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "team_game_log_default",
+            "filters": [
+              "Without player: LeBron James",
+              "Location: Home"
+            ],
+            "mode": "Team game log",
+            "row_count": 11,
+            "rows": [
+              [
+                "1",
+                "Apr 7",
+                "LAL",
+                "",
+                "OKC",
+                "L",
+                "87",
+                "—",
+                "38",
+                "26",
+                "9",
+                "—",
+                "—",
+                "—",
+                "17",
+                "7",
+                "3",
+                "8",
+                "30"
+              ],
+              [
+                "2",
+                "Mar 10",
+                "LAL",
+                "",
+                "MIN",
+                "W",
+                "120",
+                "—",
+                "47",
+                "31",
+                "11",
+                "—",
+                "—",
+                "—",
+                "6",
+                "7",
+                "2",
+                "14",
+                "33"
+              ],
+              [
+                "3",
+                "Mar 8",
+                "LAL",
+                "",
+                "NYK",
+                "W",
+                "110",
+                "—",
+                "42",
+                "20",
+                "15",
+                "—",
+                "—",
+                "—",
+                "13",
+                "10",
+                "5",
+                "12",
+                "30"
+              ]
+            ],
+            "section_key": "finder",
+            "subject": "Los Angeles Lakers",
+            "table_type": "team_game_log",
+            "title": "Game Detail",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Date",
+              "Team",
+              "",
+              "Opp",
+              "W/L",
+              "PTS",
+              "Margin",
+              "REB",
+              "AST",
+              "3PM",
+              "FG",
+              "3P",
+              "FT",
+              "TOV",
+              "STL",
+              "BLK",
+              "oreb",
+              "dreb"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "team_noun_looney_summary_2022_23",
+      "query": "Kevon Looney average rebounds in 2022-23 with under 110 team points",
+      "status": "ok",
+      "route": "player_game_summary",
+      "checks": 9,
+      "failed_checks": 0,
+      "expectation": "pass",
+      "suspicious_flags": [],
+      "rendered_output": {
+        "answer": {
+          "source": "snapshot_summary",
+          "text": "Kevon Looney -- 3-11 over 14 games, 6.0 PPG, 8.1 RPG, 2.4 APG"
+        },
+        "blocks": [
+          {
+            "filters": [
+              "team_pts max: 110 (exclusive)"
+            ],
+            "lines": [
+              "Games: 14",
+              "Record: 3-11",
+              "PPG: 6.0",
+              "RPG: 8.1",
+              "APG: 2.4"
+            ],
+            "mode": "entity summary",
+            "section_key": "summary",
+            "subject": "Kevon Looney",
+            "title": "Summary",
+            "type": "hero_card"
+          },
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "player_by_season_default",
+            "filters": [
+              "team_pts max: 110 (exclusive)"
+            ],
+            "mode": "season stats",
+            "row_count": 1,
+            "rows": [
+              [
+                "2022-23",
+                "14",
+                "3",
+                "11",
+                "6.0",
+                "8.1",
+                "2.4"
+              ]
+            ],
+            "section_key": "by_season",
+            "subject": "Kevon Looney",
+            "table_type": "record_summary",
+            "title": "By Season",
+            "type": "table",
+            "visible_columns": [
+              "Season",
+              "Games",
+              "Wins",
+              "Losses",
+              "PPG",
+              "REB",
+              "AST"
+            ]
+          },
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "player_game_log_default",
+            "filters": [
+              "team_pts max: 110 (exclusive)"
+            ],
+            "mode": "Player game log",
+            "row_count": 14,
+            "rows": [
+              [
+                "1",
+                "Oct 25",
+                "GSW",
+                "",
+                "PHX",
+                "L",
+                "17",
+                "6",
+                "4",
+                "3",
+                "—",
+                "—",
+                "—",
+                "0",
+                "0",
+                "1",
+                "-4",
+                "100.0%",
+                "100.0%"
+              ],
+              [
+                "2",
+                "Nov 1",
+                "GSW",
+                "",
+                "MIA",
+                "L",
+                "24",
+                "4",
+                "3",
+                "2",
+                "—",
+                "—",
+                "—",
+                "1",
+                "0",
+                "0",
+                "11",
+                "100.0%",
+                "100.0%"
+              ],
+              [
+                "3",
+                "Nov 4",
+                "GSW",
+                "",
+                "NOP",
+                "L",
+                "25",
+                "5",
+                "5",
+                "2",
+                "—",
+                "—",
+                "—",
+                "0",
+                "0",
+                "0",
+                "-7",
+                "72.7%",
+                "66.7%"
+              ]
+            ],
+            "section_key": "game_log",
+            "subject": "Kevon Looney",
+            "table_type": "player_game_log",
+            "title": "Player Game Log",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Date",
+              "TM",
+              "",
+              "Opp",
+              "W/L",
+              "MIN",
+              "PTS",
+              "REB",
+              "AST",
+              "FG",
+              "3P",
+              "FT",
+              "STL",
+              "BLK",
+              "TOV",
+              "+/-",
+              "TS%",
+              "eFG%"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "team_noun_warriors_record_2022_23",
+      "query": "Warriors record in 2022-23 with under 110 team points",
+      "status": "ok",
+      "route": "team_record",
+      "checks": 8,
+      "failed_checks": 0,
+      "expectation": "pass",
+      "suspicious_flags": [],
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "The Golden State Warriors are 3-11 in 2022-23 Regular Season, a 21.4% win rate."
+        },
+        "blocks": [
+          {
+            "filters": [
+              "pts max: 110 (exclusive)"
+            ],
+            "lines": [
+              "Record: 3-11",
+              "Games: 14",
+              "Win %: 21.4%",
+              "PPG: 102.4",
+              "+/-: -11.4"
+            ],
+            "mode": "Team record",
+            "section_key": "summary",
+            "subject": "Golden State Warriors",
+            "title": "Team Record",
+            "type": "hero_card"
+          },
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "team_record_summary_default",
+            "filters": [
+              "pts max: 110 (exclusive)"
+            ],
+            "mode": "Team record",
+            "row_count": 1,
+            "rows": [
+              [
+                "Golden State Warriors",
+                "3-11",
+                "14",
+                "21.4%",
+                "102.4",
+                "-11.4"
+              ]
+            ],
+            "section_key": "summary",
+            "subject": "Golden State Warriors",
+            "table_type": "record_summary",
+            "title": "Team record",
+            "type": "table",
+            "visible_columns": [
+              "Team",
+              "W-L",
+              "Games",
+              "Win %",
+              "PPG",
+              "+/-"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "team_noun_looney_inclusive_2022_23",
+      "query": "Kevon Looney average rebounds in 2022-23 with 110 team points or fewer",
+      "status": "ok",
+      "route": "player_game_summary",
+      "checks": 9,
+      "failed_checks": 0,
+      "expectation": "pass",
+      "suspicious_flags": [],
+      "rendered_output": {
+        "answer": {
+          "source": "snapshot_summary",
+          "text": "Kevon Looney -- 4-13 over 17 games, 6.1 PPG, 8.4 RPG, 2.2 APG"
+        },
+        "blocks": [
+          {
+            "filters": [
+              "team_pts max: 110.0"
+            ],
+            "lines": [
+              "Games: 17",
+              "Record: 4-13",
+              "PPG: 6.1",
+              "RPG: 8.4",
+              "APG: 2.2"
+            ],
+            "mode": "entity summary",
+            "section_key": "summary",
+            "subject": "Kevon Looney",
+            "title": "Summary",
+            "type": "hero_card"
+          },
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "player_by_season_default",
+            "filters": [
+              "team_pts max: 110.0"
+            ],
+            "mode": "season stats",
+            "row_count": 1,
+            "rows": [
+              [
+                "2022-23",
+                "17",
+                "4",
+                "13",
+                "6.1",
+                "8.4",
+                "2.2"
+              ]
+            ],
+            "section_key": "by_season",
+            "subject": "Kevon Looney",
+            "table_type": "record_summary",
+            "title": "By Season",
+            "type": "table",
+            "visible_columns": [
+              "Season",
+              "Games",
+              "Wins",
+              "Losses",
+              "PPG",
+              "REB",
+              "AST"
+            ]
+          },
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "player_game_log_default",
+            "filters": [
+              "team_pts max: 110.0"
+            ],
+            "mode": "Player game log",
+            "row_count": 17,
+            "rows": [
+              [
+                "1",
+                "Oct 25",
+                "GSW",
+                "",
+                "PHX",
+                "L",
+                "17",
+                "6",
+                "4",
+                "3",
+                "—",
+                "—",
+                "—",
+                "0",
+                "0",
+                "1",
+                "-4",
+                "100.0%",
+                "100.0%"
+              ],
+              [
+                "2",
+                "Nov 1",
+                "GSW",
+                "",
+                "MIA",
+                "L",
+                "24",
+                "4",
+                "3",
+                "2",
+                "—",
+                "—",
+                "—",
+                "1",
+                "0",
+                "0",
+                "11",
+                "100.0%",
+                "100.0%"
+              ],
+              [
+                "3",
+                "Nov 4",
+                "GSW",
+                "",
+                "NOP",
+                "L",
+                "25",
+                "5",
+                "5",
+                "2",
+                "—",
+                "—",
+                "—",
+                "0",
+                "0",
+                "0",
+                "-7",
+                "72.7%",
+                "66.7%"
+              ]
+            ],
+            "section_key": "game_log",
+            "subject": "Kevon Looney",
+            "table_type": "player_game_log",
+            "title": "Player Game Log",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Date",
+              "TM",
+              "",
+              "Opp",
+              "W/L",
+              "MIN",
+              "PTS",
+              "REB",
+              "AST",
+              "FG",
+              "3P",
+              "FT",
+              "STL",
+              "BLK",
+              "TOV",
+              "+/-",
+              "TS%",
+              "eFG%"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

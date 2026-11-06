@@ -25,7 +25,7 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-003](DQ-003.json) | 0009 EasonQ1 2:15FG/2:06FT association and credit | Preserve both clocks; require attributable evidence, not a guessed and-one. |
 
 | [DQ-004](DQ-004.json) | Native official Poeltl tenure bodies; approved cloud HTML capture returned403 | Existing acquisition-laptop packet; no repeated unchanged cloud request. Combined-season positive remains open; date-bounded app work continues. |
-| [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), blocked_evidence/stopped. Four source fields investigated; no qualified correction. Existing canonical margins already derive scores. |
+| [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), evidence-only closeout; blocked_evidence/stopped and nonblocking for app development. No correction or app defect established; canonical margins already derive scores. |
 
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent
@@ -93,6 +93,13 @@ canonical team margins already match paired scores. Raw-source field semantics/
 upstream mechanism and independent native scorer corroboration remain unqualified.
 No data value was corrected or published. The2PDF Actions request was rejected by
 automatic approval review before execution for possible compute-cost/credential
-concerns. Reuse retained bodies; resume only with newly available independent
-originals or a restored approved capture route. Agent2 is stopped; no background
-worker or Agent1 coordination is implied. DQ001-DQ004 are untouched.
+concerns. The acquisition test is removed from active test execution; its original
+reviewed implementation remains only in immutable Git history. No capture or
+approval request is pending. This is an **evidence-only administrative closeout**:
+DQ-005 stays **blocked_evidence and nonblocking for application development**.
+Reopen only for newly available attributable scorer originals/field documentation,
+or a named consumer that needs the unqualified source field/player-lineup basis
+or changes the paired-score canonical contract; record exact affected keys first.
+A restored capture route or elapsed time alone is insufficient. Agent2 stops after
+verified landing; no background worker or Agent1 coordination is implied.
+DQ001-DQ004, source statistics, canonical data and production are untouched.

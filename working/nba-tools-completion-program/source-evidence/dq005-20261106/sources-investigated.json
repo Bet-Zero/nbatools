@@ -76,5 +76,14 @@
     "Independent native original scorer corroboration for both complete game/team vectors and field meaning; shared Stats endpoint agreement does not establish independent origin.",
     "Attributable cause, stale-source explanation, or documented alternate GameFinder basis remains unknown; observed sum/5 must not be called a proven algorithm."
   ],
-  "next_action": "Capture and retain the2reviewed exact official final boxes or equivalent independent original scorer evidence; then review qualification/correction. Reuse4newJSONs and oldZIP, never repeat DQ001-DQ004 absent new evidence."
+  "next_action": "Administrative evidence-only closeout and verified landing, then stop. No PDF acquisition, approval request or further investigation. Reopen only for new attributable scorer originals/field documentation or a named future consumer dependency on the unqualified source field or changed canonical contract; exact keys required.",
+  "administrative_closeout": {
+    "status": "parked_blocked_evidence",
+    "application_development_blocked": false,
+    "active_acquisition_test_removed": true,
+    "historical_runner_revision": "e548f629d038055f84c3b448ed4ec184f2d62ecf",
+    "acquisition_pending": false,
+    "approval_requested": false,
+    "historical_observations_retained": true
+  }
 }

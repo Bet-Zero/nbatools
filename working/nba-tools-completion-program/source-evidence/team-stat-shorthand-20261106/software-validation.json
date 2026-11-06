@@ -1,0 +1,71 @@
+{
+  "broad": {
+    "revision": "3e38cbe209c2d0d4fa0e972a31b12596d960aeda",
+    "passed": 10201,
+    "skipped_unavailable_data": 1863,
+    "failed": 2,
+    "seconds": 466.28,
+    "failures": [
+      "stale generated inventory600vs603",
+      "obsolete refusal for ranked player games with opponent threes allowed"
+    ],
+    "not_exact_final_head": true
+  },
+  "delta": {
+    "runtime_revision": "3105fee4dabfe8826d10151cbe932699800b2af9",
+    "owner_family_initial": {
+      "passed": 122,
+      "failed_new_test_section_assumptions": 2
+    },
+    "corrected_owner_id_assertions": {
+      "passed": 2,
+      "failed": 0
+    },
+    "broad_findings_and_noun_tests": {
+      "passed": 60,
+      "failed": 0
+    },
+    "docs_governance": "passed after regeneration",
+    "independent_ranked_opponent_promotion": {
+      "passed": 2,
+      "failed": 0,
+      "review": "independent/ranked-opponent-promotion-review.md"
+    }
+  },
+  "historical_author_findings": [
+    "initial RawQA YAML indentation repaired",
+    "initial RawQA team-record shape assertion repaired",
+    "two new named-owner tests initially assumed finder, but existing route returns game_log; exact four IDs verified after assertion repair",
+    "first broad ec45943b stopped incomplete for actual opponent ownership review repair"
+  ],
+  "final_runtime_sha256": {
+    "src/nbatools/commands/_player_game_context.py": "07ca02f91ec6a329cebd78b1dfac132e2bfff0a038fac175276ad1667f9cb912",
+    "src/nbatools/commands/_matchup_utils.py": "483bcd5b3acc07d1f318802fe14741f83438dbcb9f70470ae7f86b9a0e84f24d",
+    "src/nbatools/commands/_parse_helpers.py": "7a4f95be4ae863aa5db824b1f47a0cb70e502949ec4ecb3fbe652a68d68f8861"
+  },
+  "independent_review": "independent/independent-review.md",
+  "hosted_required": {
+    "run_url": "https://github.com/Bet-Zero/nbatools/actions/runs/42202957484",
+    "reviewed_sha": "3105fee4dabfe8826d10151cbe932699800b2af9",
+    "request_sha": "be1fde1b054c139c248092fad1d935924a079e5a",
+    "numerical": {
+      "selected": 4,
+      "executed": 4,
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "xfailed": 0
+    },
+    "raw_qa": {
+      "cases": 4,
+      "checks": 33,
+      "passed_cases": 4,
+      "suspicious_flags": 0
+    },
+    "generation": "availability-lebron-season-v1-20261031",
+    "manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3"
+  },
+  "full_season_poeltl_accepted": false,
+  "production_published": false
+}

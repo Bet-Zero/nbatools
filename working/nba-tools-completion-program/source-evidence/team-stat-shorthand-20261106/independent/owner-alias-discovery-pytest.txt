@@ -1,0 +1,13 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_named_opponent_owner_keeps_raw_same_game_ids[BOS and DEN-BOS] ______
+work/team-threshold-checker/test_independent_owner_alias_delta.py:25: in test_named_opponent_owner_keeps_raw_same_game_ids
+    assert sorted(int(row['game_id'])for row in rows)==sorted(expected.game_id.astype(int).tolist())
+E   assert [368, 372, 37...407, 458, ...] == [368, 377, 407, 458]
+E     
+E     At index 1 diff: 372 != 377
+E     Left contains 5 more items, first extra item: 407
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED work/team-threshold-checker/test_independent_owner_alias_delta.py::test_named_opponent_owner_keeps_raw_same_game_ids[BOS and DEN-BOS]
+1 failed, 1 passed in 1.64s

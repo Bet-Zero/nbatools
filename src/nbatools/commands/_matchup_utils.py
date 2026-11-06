@@ -1106,6 +1106,35 @@ _STAT_COUNT_CLAUSE = (
 _STAT_COUNT_PHRASE = re.compile(
     rf"{_STAT_COUNT_CLAUSE}(?:\s*(?:,|and|,\s*and)\s+{_STAT_COUNT_CLAUSE})*(?![\w-])"
 )
+
+
+def _stat_count_phrase(text: str, pos: int) -> re.Match | None:
+    """Consume a count list with explicit team owners using the shared reader.
+
+    Keep the existing unread-tail checks: recognizing a count cannot hide a
+    trailing name, unknown unit or another unexecuted predicate.
+    """
+    from nbatools.commands._player_game_context import (
+        _TEAM_NOUN_BOUND,
+        team_noun_stat_conditions,
+    )
+
+    last = None
+    while True:
+        ordinary = _STAT_COUNT_PHRASE.match(text, pos)
+        owned = _TEAM_NOUN_BOUND.match(text, pos)
+        if owned and not team_noun_stat_conditions(owned.group(0)):
+            owned = None
+        matches = [m for m in (ordinary, owned) if m]
+        if not matches:
+            return last
+        last = max(matches, key=lambda m: m.end())
+        join = re.match(r"\s*(?:,\s*(?:and\s+)?|and\s+)", text[last.end() :])
+        if not join:
+            return last
+        pos = last.end() + join.end()
+
+
 _MONTH = (
     r"(?:january|february|march|april|may|june|july|august|september|october"
     r"|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)"
@@ -1273,7 +1302,7 @@ def detect_unresolved_availability_player(
                 r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase
             ):
                 continue
-            stat_bound = _STAT_COUNT_PHRASE.match(text, m.start(1)) if mode == "with" else None
+            stat_bound = _stat_count_phrase(text, m.start(1)) if mode == "with" else None
             if (
                 stat_bound
                 and m.end(1) <= stat_bound.end()
