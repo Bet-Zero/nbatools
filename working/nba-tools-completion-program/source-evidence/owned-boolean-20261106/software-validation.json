@@ -1,0 +1,41 @@
+{
+  "reviewed_runtime": "736b3d0df63d86a06983fd2d765a1a000e063d8d",
+  "focused_final": {
+    "passed": 240,
+    "unavailable_data_skips": 94,
+    "failed": 0,
+    "log": "semantic-owner-repair.log"
+  },
+  "initial_focused": {
+    "passed": 207,
+    "unavailable_data_skips": 51,
+    "failed": 0
+  },
+  "initial_broad": {
+    "revision": "3f3f9ae481ef796fa1988f53e6854d1a68d24463",
+    "passed": 10307,
+    "unavailable_data_skips": 1863,
+    "failed": 1,
+    "failed_test": "tests/test_query_service.py::TestCountFinalizerParity::test_grouped_or_evaluates_against_an_unfiltered_base",
+    "duration_seconds": 565.49
+  },
+  "repair_follow_through": "Original own-only grouped finder base+mask path restored; unchanged positive passes independently and in focused/exact-head CI. No failed broad outer run relabelled green. Separate checker approved bounded unchanged broad pass reuse with affected delta and exact-head fast/33requiredR2 coverage.",
+  "blocking_runtime_ci": {
+    "run_id": 42245312310,
+    "all_applicable_passed": true,
+    "python": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ],
+    "development_dependency_audit": "existing informational failure"
+  },
+  "local_original_rawqa": {
+    "revision": "3f3f9ae481ef796fa1988f53e6854d1a68d24463",
+    "cases": 4,
+    "checks_passed": 24,
+    "suspicious": 0
+  },
+  "final_receipt_only_descendant": "Runtime/tests/tools/config/executableQA unchanged; final exact-head CI and landing receipts in PR593",
+  "production_accepted": false
+}

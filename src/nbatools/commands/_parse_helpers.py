@@ -458,6 +458,11 @@ def detect_opponent_division_boundary(text: str) -> bool:
 
 
 def wants_team_leaderboard(text: str) -> bool:
+    # A team-owned threshold is a predicate, not the requested population.
+    from nbatools.commands._player_game_context import team_noun_stat_conditions
+
+    for item in sorted(team_noun_stat_conditions(text), key=lambda c: c["start"], reverse=True):
+        text = text[: item["start"]] + " " * (item["end"] - item["start"]) + text[item["end"] :]
     # Explicit player population outranks a generic team-flavored metric alias.
     if re.search(r"\bplayers?\b", text) and not re.search(r"\bteams?\b", text):
         return False

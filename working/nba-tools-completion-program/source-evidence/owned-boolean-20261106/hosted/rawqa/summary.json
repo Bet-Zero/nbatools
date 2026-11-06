@@ -1,0 +1,138 @@
+{
+  "run_id": "r2_validation",
+  "started_at": "2026-11-06T15:46:12.781368+00:00",
+  "completed_at": "2026-11-06T15:46:21.921584+00:00",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "slice_names": [],
+  "case_count": 9,
+  "result_status_counts": {
+    "ok": 9
+  },
+  "category_counts": {
+    "boolean_distinct_player_counts": 4,
+    "boolean_owned_predicates": 4,
+    "participation": 1
+  },
+  "route_counts": {
+    "game_finder": 1,
+    "player_game_finder": 3,
+    "player_occurrence_leaders": 5
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 9
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "requires_backend_answer_text": 9
+  },
+  "answer_text_status_counts": {
+    "backend_answer_text_present": 9
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 0,
+  "informational_flag_case_ids": [],
+  "informational_flag_counts": {},
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 9
+  },
+  "expectation_check_counts": {
+    "pass": 52
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "k08_compact_home_absence_season",
+      "query": "how many home games did LeBron miss in2025-26",
+      "duration_seconds": 5.566907,
+      "result_status": "ok",
+      "route": "game_finder"
+    },
+    {
+      "id": "k03_distinct_or_owner_example_2023",
+      "query": "How many different players had a game with over 40 points OR over 12 assists in 2023-24?",
+      "duration_seconds": 0.825945,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "k03_distinct_or_2022",
+      "query": "How many different players had a game with (over 40 points or over 12 assists) in 2022-23?",
+      "duration_seconds": 0.76927,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "k03_owned_boolean_team_distinct_2022",
+      "query": "How many distinct players had (over 37 points or over 10 assists) with at least 125 team points in 2022-23?",
+      "duration_seconds": 0.4448,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "k03_owned_boolean_opponent_games_2022",
+      "query": "How many player games with (over 37 points or over 10 assists) when opponents scored under 110 points in 2022-23?",
+      "duration_seconds": 0.419873,
+      "result_status": "ok",
+      "route": "player_game_finder"
+    },
+    {
+      "id": "k03_owned_boolean_opponent_distinct_2022",
+      "query": "How many distinct players had (over 37 points or over 10 assists) when opponents scored under 110 points in 2022-23?",
+      "duration_seconds": 0.404667,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "k03_owned_boolean_team_games_2022",
+      "query": "How many player games with (over 37 points or over 10 assists) with at least 125 team points in 2022-23?",
+      "duration_seconds": 0.392009,
+      "result_status": "ok",
+      "route": "player_game_finder"
+    },
+    {
+      "id": "k03_player_game_or_2022",
+      "query": "How many player games with (over 40 points or over 12 assists) in 2022-23?",
+      "duration_seconds": 0.172103,
+      "result_status": "ok",
+      "route": "player_game_finder"
+    },
+    {
+      "id": "k03_distinct_or_qualified_zero_2022",
+      "query": "How many distinct players had (over 1000 points or over 100 assists) in 2022-23?",
+      "duration_seconds": 0.1445,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "outputs/raw_query_answer_qa/r2_validation/report.jsonl",
+    "report_md": "outputs/raw_query_answer_qa/r2_validation/report.md",
+    "summary_json": "outputs/raw_query_answer_qa/r2_validation/summary.json",
+    "product_review_md": "outputs/raw_query_answer_qa/r2_validation/product_review.md",
+    "product_review_json": "outputs/raw_query_answer_qa/r2_validation/product_review.json"
+  },
+  "scope": "custom_selection",
+  "source_commit": "65077c7c6441c40fb56196cb82e4919d4107e12b",
+  "source_tree_clean": true,
+  "data_generation": "availability-lebron-season-v1-20261031",
+  "corpus_sha256": "d62a1dbe2f70eaea0112bfb5fd83f54f346b9da1d9ac0fb4eeca3288ca43335a",
+  "case_ids": [
+    "k08_compact_home_absence_season",
+    "k03_distinct_or_2022",
+    "k03_player_game_or_2022",
+    "k03_distinct_or_qualified_zero_2022",
+    "k03_distinct_or_owner_example_2023",
+    "k03_owned_boolean_team_distinct_2022",
+    "k03_owned_boolean_team_games_2022",
+    "k03_owned_boolean_opponent_distinct_2022",
+    "k03_owned_boolean_opponent_games_2022"
+  ],
+  "selected_cases_sha256": "c02072256bb2000c22879239266e03c641b517e329ea65efa1ebf8245e788546",
+  "output_sha256": "c0fc81801b40ebaf4b103f4d97a566c0b50a691146fbcf973eb2fd224da29625"
+}

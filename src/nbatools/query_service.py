@@ -1063,7 +1063,9 @@ def _build_count_phrase(
         ):
             return f"{entity} {verb} played {count} {noun} {context}."
 
-    if parsed.get("boolean_query_used") and parsed.get("distinct_player_count"):
+    if (parsed.get("boolean_query_used") or parsed.get("condition_expression")) and parsed.get(
+        "distinct_player_count"
+    ):
         times = parsed.get("min_occurrences") or 1
         sample = "a matching game" if times == 1 else f"at least {times} matching games"
         context = " ".join(
@@ -3591,7 +3593,9 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             condition_text = _extract_grouped_condition_text(
                 query, player=parsed.get("player"), team=parsed.get("team"), parsed=parsed
             )
-            parsed["boolean_filter_mode"] = boolean_filter_mode(condition_text)
+            parsed["boolean_filter_mode"] = boolean_filter_mode(
+                condition_text, team=parsed.get("team"), opponent=parsed.get("opponent")
+            )
             result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
@@ -3609,7 +3613,11 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         try:
             result, parsed = _execute_or_query_build_result(query)
             parsed["boolean_filter_mode"] = (
-                boolean_filter_mode(parsed["condition_expression"])
+                boolean_filter_mode(
+                    parsed["condition_expression"],
+                    team=parsed.get("team"),
+                    opponent=parsed.get("opponent"),
+                )
                 if parsed.get("condition_expression")
                 else "any"
             )
@@ -3619,7 +3627,11 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             except ValueError:
                 parsed = _build_parse_state(query)
             parsed["boolean_filter_mode"] = (
-                boolean_filter_mode(parsed["condition_expression"])
+                boolean_filter_mode(
+                    parsed["condition_expression"],
+                    team=parsed.get("team"),
+                    opponent=parsed.get("opponent"),
+                )
                 if parsed.get("condition_expression")
                 else "any"
             )

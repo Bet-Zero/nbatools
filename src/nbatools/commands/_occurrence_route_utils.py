@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 
+from nbatools.commands._constants import contains_boolean_or
 from nbatools.commands._seasons import default_end_season
 
 # ---------------------------------------------------------------------------
@@ -535,6 +536,8 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
     Returns ``(route, route_kwargs)`` or ``None`` if no occurrence route matches.
     """
     q = parsed["normalized_query"]
+    if parsed.get("count_intent") and re.search(r"\bplayer\s+games?\b", q):
+        return None  # Explicit appearance grain belongs to the existing finder.
     compound_occurrence_conditions = parsed.get("compound_occurrence_conditions")
     occurrence_event = parsed.get("occurrence_event")
     occurrence_leaderboard_intent = parsed.get("occurrence_leaderboard_intent", False)
@@ -856,13 +859,53 @@ def _unaccounted_words(q: str, parsed: dict) -> list[str]:
 def try_league_game_finder_route(parsed: dict) -> tuple[str, dict] | None:
     """Route a subjectless list of player games that meet game conditions."""
     q = parsed["normalized_query"]
-    if any(
-        parsed.get(key) for key in ("player", "player_a", "player_b", "team", "team_a", "team_b")
+    from nbatools.commands.query_boolean_parser import has_owned_conjunction
+
+    explicit_player_games = bool(re.search(r"\bplayer\s+games?\b", q))
+    if any(parsed.get(key) for key in ("player", "player_a", "player_b", "team_a", "team_b")) or (
+        parsed.get("team") and not explicit_player_games
     ):
         return None
     if parsed.get("occurrence_leaderboard_intent"):
         return None
     count_intent = bool(parsed.get("count_intent"))
+    if (
+        (count_intent or _GAME_LIST_WORDING.search(q))
+        and not parsed.get("distinct_player_count")
+        and ("(" in q or ")" in q or contains_boolean_or(q) or has_owned_conjunction(q))
+    ):
+        from nbatools.commands._natural_query_execution import _distinct_player_boolean_text
+
+        scope = {
+            key: parsed.get(key)
+            for key in (
+                "season",
+                "start_season",
+                "end_season",
+                "season_type",
+                "start_date",
+                "end_date",
+                "team",
+                "opponent",
+                "home_only",
+                "away_only",
+                "wins_only",
+                "losses_only",
+            )
+        }
+        try:
+            expression = _distinct_player_boolean_text(q, {**parsed, "route_kwargs": scope})
+        except ValueError:
+            return None
+        if not scope["season"] and not scope["start_season"] and not scope["end_season"]:
+            scope["season"] = default_end_season(parsed["season_type"])
+        return "player_game_finder", dict(
+            scope,
+            condition_expression=expression,
+            limit=None if count_intent else 25,
+            sort_by="game_date",
+            ascending=False,
+        )
     if re.search(r"\bteams?\b", q) or not (count_intent or _GAME_LIST_WORDING.search(q)):
         return None
 

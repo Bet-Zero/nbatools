@@ -325,7 +325,7 @@ def build_result(
     conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
-    limit: int = 25,
+    limit: int | None = 25,
     sort_by: str = "game_date",
     ascending: bool = False,
     last_n: int | None = None,
@@ -340,10 +340,20 @@ def build_result(
     per_season_limit: int | None = None,
     without_player_reason: str | None = None,
     _reported_reason_evidence: dict | None = None,
+    condition_expression: str | None = None,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
     validate_last_n_scope(last_n_scope)
+    tree = None
+    if condition_expression is not None:
+        from nbatools.commands.query_boolean_parser import parse_condition_text
+
+        if stat is not None or conditions or special_event or last_n is not None:
+            raise ValueError(
+                "Boolean expressions cannot combine with scalar/event/window predicates"
+            )
+        tree = parse_condition_text(condition_expression, team=team, opponent=opponent)
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
 
@@ -374,6 +384,13 @@ def build_result(
     period_filter_requested = quarter is not None or half is not None
 
     try:
+        if tree is not None:
+            from nbatools.commands.data_utils import normalize_season_type
+            from nbatools.data_source import data_exists
+
+            safe = normalize_season_type(season_type)
+            if any(not data_exists(f"data/raw/player_game_stats/{s}_{safe}.csv") for s in seasons):
+                raise FileNotFoundError("Requested Boolean season has unknown coverage")
         base_df = load_player_games_for_seasons(seasons, season_type, player=player)
     except FileNotFoundError:
         if clutch:
@@ -541,6 +558,26 @@ def build_result(
             outcome=last_n_outcome(last_n_scope, wins_only, losses_only),
         )
 
+    if tree is not None:
+        from nbatools.commands.query_boolean_parser import require_player_boolean_scope
+
+        try:
+            require_player_boolean_scope(
+                df,
+                dict(
+                    team=team,
+                    opponent=opponent,
+                    start_date=start_date,
+                    end_date=end_date,
+                    home_only=home_only,
+                    away_only=away_only,
+                    wins_only=wins_only,
+                    losses_only=losses_only,
+                ),
+            )
+        except FileNotFoundError as exc:
+            return NoResult(query_class="finder", reason="no_data", notes=[str(exc)])
+
     df = _apply_filters(
         df=df,
         player=player,
@@ -600,6 +637,17 @@ def build_result(
                 reason="filter_not_supported",
                 notes=[roster_note],
             )
+
+    if tree is not None:
+        from nbatools.commands.query_boolean_parser import (
+            evaluate_condition_tree,
+            prepare_player_condition_frame,
+        )
+
+        try:
+            df = evaluate_condition_tree(tree, prepare_player_condition_frame(tree, df))
+        except FileNotFoundError as exc:
+            return NoResult(query_class="finder", reason="no_data", notes=[str(exc)])
 
     # Last N runs after every filter: on the qualifying games, or (window
     # scope) on the N most recent games in play.

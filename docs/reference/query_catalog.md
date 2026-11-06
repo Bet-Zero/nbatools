@@ -1409,3 +1409,30 @@ that filters executed or that the answer is zero. A qualified empty query remain
 player summary identity metadata follows the uniquely selected game-log player ID,
 so a same-name roster entry cannot substitute a different player's display context.
 “Win-loss record” names record basis; genuine won/lost sample clauses remain separate.
+
+### Shared team/opponent-owned Boolean player conditions
+
+`player_game_finder` and `player_occurrence_leaders` accept `condition_expression`
+using the same AND/OR tree, bounds and equality grammar. Explicit `team points`
+refer to the player's club; `opponent points` refer to its opponent in the same
+game. Common supported scope filters apply before either branch. The finder
+returns matching player-games; the distinct-player natural count projects player
+identity once and retains each player's matching-game count. Both structured
+consumers accept `limit=None` for the complete population.
+
+For example, `How many distinct players had (over 37 points or over 10 assists)
+with at least 125 team points in 2022-23?` is the owned-team composition, while
+`when opponents scored under 110 points` is the opposing-side composition.
+Unknown required source/join/stat coverage withholds the count; a covered empty
+selection is a qualified zero. Elided owned verbal stat lists, branch-specific scopes, ranked/windowed
+compositions and global unique-NBA-game projection remain unfinished. A verbal
+team/opponent governor cannot silently change the next statistic into a player
+statistic; such elision is safely withheld pending full list interpretation. Numerical,
+rendering and deployed acceptance are recorded separately in the application
+checkpoint; these examples do not assert current production readiness.
+
+The qualified retained 2022–23 owned-team example selects **82 distinct players
+across 263 matching player-games**; the opposing-score example selects **63 across
+176**. Exact raw identities and occurrence vectors were independently checked,
+with 33/33 required numerical cases and 9 RawQA cases/52checks in PR593. These are
+historical pinned-data results; current production readiness remains separate.

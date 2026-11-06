@@ -1,0 +1,96 @@
+{
+  "qualified_version": "poeltl-tenure-qualified-v1-20261106",
+  "base_manifest": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "eligible": 81,
+  "played": 72,
+  "missed": 9,
+  "unknown": 0,
+  "original_receipt_unchanged": true,
+  "filtered_answers": [
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 at home?",
+      "count": 6,
+      "eligible": 43,
+      "game_ids": [
+        22200333,
+        22200345,
+        22200375,
+        22200406,
+        22200420,
+        22200591
+      ],
+      "answer": "Jakob Poeltl missed 6 NBA home games in the 2022-23 regular season. By team: SAS: 6; TOR: 0."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 on the road?",
+      "count": 3,
+      "eligible": 38,
+      "game_ids": [
+        22200247,
+        22200319,
+        22200387
+      ],
+      "answer": "Jakob Poeltl missed 3 NBA road games in the 2022-23 regular season. By team: SAS: 3; TOR: 0."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with 105+ team points?",
+      "count": 6,
+      "eligible": 60,
+      "game_ids": [
+        22200319,
+        22200375,
+        22200387,
+        22200406,
+        22200420,
+        22200591
+      ],
+      "answer": "Jakob Poeltl missed 6 NBA games in the 2022-23 regular season with team points 105+. By team: SAS: 6; TOR: 0."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with under 105 team points?",
+      "count": 3,
+      "eligible": 21,
+      "game_ids": [
+        22200247,
+        22200333,
+        22200345
+      ],
+      "answer": "Jakob Poeltl missed 3 NBA games in the 2022-23 regular season with team points under 105. By team: SAS: 3; TOR: 0."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 against the Lakers?",
+      "count": 1,
+      "eligible": 5,
+      "game_ids": [
+        22200247
+      ],
+      "answer": "Jakob Poeltl missed 1 NBA game against the LAL in the 2022-23 regular season. By team: SAS: 1; TOR: 0."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 for the Spurs?",
+      "count": 9,
+      "eligible": 55,
+      "game_ids": [
+        22200247,
+        22200319,
+        22200333,
+        22200345,
+        22200375,
+        22200387,
+        22200406,
+        22200420,
+        22200591
+      ],
+      "answer": "Jakob Poeltl missed 9 San Antonio Spurs games in the 2022-23 regular season."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 for the Raptors?",
+      "count": 0,
+      "eligible": 26,
+      "game_ids": [],
+      "answer": "Jakob Poeltl did not miss a Toronto Raptors game in the 2022-23 regular season."
+    }
+  ],
+  "ordinary_answer": "Jakob Poeltl missed 9 NBA games in the 2022-23 regular season. By team: SAS: 9; TOR: 0.",
+  "production_writes": 0
+}

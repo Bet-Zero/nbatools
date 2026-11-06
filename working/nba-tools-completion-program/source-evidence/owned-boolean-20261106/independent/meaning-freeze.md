@@ -1,0 +1,15 @@
+# Independent owned-Boolean meaning freeze
+
+Baseline: `b6edb9e3b14268c92bfab91fec4129252bfb94b7`. Separate Codex checker session `/root/poeltl_source_checker`; exact backend model ID unavailable. This is Agent 1 application checking, not Agent 2 work.
+
+Before author candidate review, stdlib raw-row arithmetic froze `oracle.json` (SHA256 `4d16e0cfa11d3bc4e6e1cc9af93700610ae4d81c6416964f342ef3f19b85a44b`) and 28 private language cases in `heldouts.json` (SHA256 `d8588c162450649e1885d0dfd9ef7bc0deeeeb48b6eb48f8ab449c2971fb09a7`). The portable `freeze.py` reuses retained qualified original NBA bodies and the coherent controlled seven-row fixture; no download, player-specific runtime exception or accepted-source mutation occurred.
+
+Each owner belongs to its Boolean AST leaf: an unqualified points leaf remains player points when another leaf says team points. Evaluate complete branches against one common filtered player-game frame, union matches once, then count distinct players, player appearances or fixture IDs as requested. Grouping and outer conjunction remain meaningful. Team and opponent facts join by game ID and that row's team ID; current franchise alone is insufficient, including traded-player rows. Never infer DNP from absent appearance rows.
+
+Required context coverage is checked across the eligible base before any OR branch can mask missing data. Missing source, required cell, team join or ambiguous join yields unavailable data; it cannot become false, zero, a dropped player or a partial count. Unrequested nullable rate fields must not block supported count-stat predicates. Strict/inclusive/equality bounds, exact zero versus0+, common team/opponent scopes, ownership labels and count/list grain survive natural, structured and HTTP consumers. No count is truncated by display limit.
+
+The native source is the retained 2022-23 archive SHA256 `6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1`: 25,895 distinct player appearances, 2,460 regular-season team rows in 1,230 games. The replay explicitly filters season because the team body contains multiple seasons. Control data remains synthetic, never real-data acceptance. The three carry-forward refused populations are exactly2PG/1fixture/2players,263PG/195fixtures/82players and176PG/164fixtures/63players.
+
+Controlled-only baseline execution at the detached baseline confirms all13 relevant controlled queries safely refuse unsupported ownership composition. This establishes a real application gap rather than a fabricated failing expectation. Results stay in `baseline-results.json`; no current-author execution is claimed. All28 heldouts remain private until candidate freeze.
+
+No broader branch-specific entity scopes, summary/ranking engine, injury/status inference or new rate/minute precision behavior is demanded by this bounded task. Desired safe-unsupported combinations remain unfinished. Final approval requires reviewed frozen code, complete raw-key comparisons, unknown/join damage controls and applicable required hosted acceptance; author totals alone do not establish them.

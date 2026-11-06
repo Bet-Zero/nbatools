@@ -26,3 +26,17 @@ Independent checker accepted exact receipts and frozen samples; eight manual-rev
 ## Ownership/comparison browser checks (2026-10-18)
 
 The existing browser harness now binds all eight K05 and twelve K06 questions on desktop/mobile. The final 40 local executions pass frozen-source arithmetic, summary/comparison values, exact player game keys, distinct ordered comparison columns and their displayed values, plus opponent/date/venue and head-to-head meaning. Initial screenshots exposed omitted season context in head-to-head heroes and contradictory strict-threshold prose; bounded frontend repairs address both. Equivalent canonical team abbreviations and readable strict/date labels were independently reviewed without weakening identity or predicate ownership. All 468 frontend tests pass; before/after receipt hashes and selected screenshot hashes are retained in [ownership-comparison-browser-verification.json](ownership-comparison-browser-verification.json). This is qualified local `legacy` evidence only. Final independent visual review, CI, merge and the deployed selector remain required; no human review or production acceptance is inferred.
+
+## Current shared ownership follow-through (2026-11-06)
+
+PR593 reviewed runtime736b3d0d carries explicit team/opponent ownership in the
+existing Boolean tree for player-game finder and distinct-player count consumers.
+Both branches receive one complete common-scoped population; context joins use
+exact game/team identities and preserve same-game dates/reciprocal sides. Current
+required read-only run42245902610 passes all8original K05primary/heldout controls
+within33executed numerical cases, zero skips, alongside original K03, equality and
+participation controls. Independent owner/grouping/identity/source checks and
+9RawQA cases/52checks are preserved in PR593/evidence. This advances P1/S3 with
+K03/K05 consumers; it neither changes the original8K05 obligations nor makes every
+Boolean extension a new Core-1 prerequisite. Elided verbal owned lists, broader
+scopes and current integrated/deployed acceptance remain unfinished.

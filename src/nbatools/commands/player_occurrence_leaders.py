@@ -387,7 +387,7 @@ def build_result(
     if condition_expression is not None:
         from nbatools.commands.query_boolean_parser import parse_condition_text
 
-        tree = parse_condition_text(condition_expression)
+        tree = parse_condition_text(condition_expression, team=team, opponent=opponent)
 
     # Normalize conditions from dicts to OccurrenceCondition objects
     normalized_conditions: list[OccurrenceCondition] | None = None
@@ -457,19 +457,23 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="no_data")
 
     if tree is not None:
-        scope_columns = [
-            c
-            for enabled, c in (
-                (team, "team_abbr"),
-                (opponent, "opponent_team_abbr"),
-                (home_only, "is_home"),
-                (away_only, "is_away"),
-                (wins_only or losses_only, "wl"),
-                (start_date or end_date, "game_date"),
+        from nbatools.commands.query_boolean_parser import require_player_boolean_scope
+
+        try:
+            require_player_boolean_scope(
+                basic,
+                dict(
+                    team=team,
+                    opponent=opponent,
+                    home_only=home_only,
+                    away_only=away_only,
+                    wins_only=wins_only,
+                    losses_only=losses_only,
+                    start_date=start_date,
+                    end_date=end_date,
+                ),
             )
-            if enabled
-        ]
-        if any(c not in basic or basic[c].isna().any() for c in scope_columns):
+        except FileNotFoundError:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_data",
@@ -515,19 +519,13 @@ def build_result(
     # Determine which games qualify
     if tree is not None:
         from nbatools.commands.query_boolean_parser import (
-            condition_tree_leaves,
             evaluate_condition_tree_to_mask,
+            prepare_player_condition_frame,
         )
 
-        predicates = condition_tree_leaves(tree)
-        _validate_conditions(
-            [OccurrenceCondition(n.stat, n.min_value, n.max_value) for n in predicates]
-        )
-        required = {"player_id", *(n.stat for n in predicates)}
-        if any(
-            c not in basic or pd.to_numeric(basic[c], errors="coerce").isna().any()
-            for c in required
-        ):
+        try:
+            basic = prepare_player_condition_frame(tree, basic)
+        except FileNotFoundError:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_data",

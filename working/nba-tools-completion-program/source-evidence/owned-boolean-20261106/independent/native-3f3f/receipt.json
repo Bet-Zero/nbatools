@@ -1,0 +1,229 @@
+{
+  "reviewed_revision": "3f3f9ae481ef796fa1988f53e6854d1a68d24463",
+  "checker": "Separate Codex checker session /root/poeltl_source_checker; exact backend model not exposed",
+  "oracle_sha256": "4d16e0cfa11d3bc4e6e1cc9af93700610ae4d81c6416964f342ef3f19b85a44b",
+  "phase": "native",
+  "checks": [
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) with at least 125 team points in 2022-23?",
+      "oracle": "carry_native_team_owned",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "82 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or over 10 assists) with at least 125 team points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) when opponents scored under 110 points in 2022-23?",
+      "oracle": "carry_native_opponent_owned",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "63 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or over 10 assists) when opponents scored under 110 points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 37 points or at least 125 team points) in 2022-23?",
+      "oracle": "n_player_or_team",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "512 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or at least 125 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 37 points or under 100 opponent points) in 2022-23?",
+      "oracle": "n_player_or_opponent",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "469 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or under 100 opponent points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had ((over 37 points and at least 30 team assists) or (at least 12 rebounds and at most 100 opponent points)) in 2022-23?",
+      "oracle": "n_nested_owners",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "89 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "((over 37 points and at least 30 team assists) or (at least 12 rebounds and at most 100 opponent points))",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (exactly 29 points or team assists equal to 30) and exactly 12 opponent turnovers in 2022-23?",
+      "oracle": "n_equality_mixed",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "140 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(exactly 29 points or team assists equal to 30) and exactly 12 opponent turnovers",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) and at least 18 team threes in 2022-23?",
+      "oracle": "n_team_threes_outer",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "53 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or over 10 assists) and at least 18 team threes",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many Warriors players had (at least 12 rebounds or exactly 113 team points) and at least 110 opponent points in 2022-23?",
+      "oracle": "n_scoped_gsw",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "16 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(at least 12 rebounds or exactly 113 team points) and at least 110 opponent points",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 100 points or over 300 team points) in 2022-23?",
+      "oracle": "n_known_zero",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "0 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 100 points or over 300 team points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (exactly 0 team turnovers or exactly 0 points) in 2022-23?",
+      "oracle": "n_zero_team_tov_or_player",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "400 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(exactly 0 team turnovers or exactly 0 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (0+ team turnovers or exactly 0 points) in 2022-23?",
+      "oracle": "n_team_tov_floor_or_player",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "539 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(0+ team turnovers or exactly 0 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 37 points or opponents scored under 100 points) in 2022-23?",
+      "oracle": "n_player_or_opponent",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "count_phrase": "469 distinct players had a matching game in the 2022-23 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 37 points or opponents scored under 100 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "structured": "over 37 points or under 100 opponent points",
+      "oracle": "n_player_or_opponent",
+      "passed": true
+    },
+    {
+      "structured": "(exactly 29 points or team assists equal to 30) and exactly 12 opponent turnovers",
+      "oracle": "n_equality_mixed",
+      "passed": true
+    },
+    {
+      "structured": "(over 37 points and at least 30 team assists) or (at least 12 rebounds and at most 100 opponent points)",
+      "oracle": "n_nested_owners",
+      "passed": true
+    }
+  ],
+  "failures": [
+    {
+      "query": "How many Stephen Curry games had (exactly 5 threes or at least 33 team assists) in 2022-23?",
+      "oracle": "n_curry_threes",
+      "grain": "player_games",
+      "data": "native",
+      "error": "AssertionError(({'query': 'How many Stephen Curry games had (exactly 5 threes or at least 33 team assists) in 2022-23?', 'oracle': 'n_curry_threes', 'grain': 'player_games', 'data': 'native'}, 'unsupported', {'query_text': 'How many Stephen Curry games had (exactly 5 threes or at least 33 team assists) in 2022-23?', 'route': 'player_game_finder', 'query_class': 'count', 'season': '2022-23', 'start_season': None, 'end_season': None, 'explicit_relative_season': False, 'season_type': 'Regular Season', 'start_date': None, 'end_date': None, 'game_dates': None, 'last_n': None, 'last_n_scope': None, 'player': 'Stephen Curry', 'team': None, 'opponent': None, 'opponent_conference': None, 'opponent_division': None, 'opponent_team_abbrs': None, 'with_player': None, 'without_player': None, 'without_player_reason': None, 'unresolved_availability_player': None, 'unsupported_filters': None, 'opponent_quality': None, 'lineup_members': [], 'presence_state': None, 'unit_size': None, 'minute_minimum': None, 'window_size': None, 'stretch_metric': None, 'stretch_display_mode': None, 'min_streak_length': None, 'stat': 'fg3m', 'ranking_key': None, 'requested_stat': None, 'requested_metrics': None, 'requested_event_conditions': None, 'unsupported_availability': None, 'unsupported_scope': None, 'requested_aggregation': None, 'available_aggregation': None, 'min_value': 5.0, 'max_value': 5.0, 'sort_by': 'stat', 'ascending': False, 'ranked_intent': True, 'threshold_conditions': [{'stat': 'fg3m', 'min_value': 5.0, 'max_value': 5.0}, {'stat': 'team_ast', 'min_value': 33.0, 'max_value': None}], 'extra_conditions': [], 'conditions': [{'stat': 'fg3m', 'min_value': 5.0, 'max_value': 5.0}, {'stat': 'team_ast', 'min_value': 33.0, 'max_value': None}], 'occurrence_event': {'stat': 'fg3m', 'min_value': 5.0, 'max_value': 5.0}, 'split_type': None, 'season_list': None, 'clutch': False, 'back_to_back': False, 'series_situation': None, 'rest_days': None, 'one_possession': False, 'nationally_televised': False, 'role': None, 'quarter': None, 'half': None, 'position_filter': None, 'grouped_boolean_used': True, 'boolean_filter_mode': None, 'condition_expression': None, 'boolean_filter_branches': None, 'head_to_head_used': False, 'scope_kind': 'single_season', 'applied_filters': [{'label': 'fg3m', 'value': 'exactly 5', 'kind': 'threshold'}, {'label': 'team_ast min', 'value': '33.0', 'kind': 'threshold'}], 'confidence': 1.0, 'intent': 'count', 'notes': ['The distinct-player boolean request contains an unread scope or clause.']}))"
+    },
+    {
+      "query": "List Kevon Looney games with (over 10 points or at least 4 assists) and at least 50 team rebounds in 2022-23",
+      "oracle": "n_looney_reb",
+      "grain": "list",
+      "data": "native",
+      "error": "AssertionError(({'query': 'List Kevon Looney games with (over 10 points or at least 4 assists) and at least 50 team rebounds in 2022-23', 'oracle': 'n_looney_reb', 'grain': 'list', 'data': 'native'}, 'unsupported', {'query_text': 'List Kevon Looney games with (over 10 points or at least 4 assists) and at least 50 team rebounds in 2022-23', 'route': 'player_game_finder', 'query_class': 'finder', 'season': '2022-23', 'start_season': None, 'end_season': None, 'explicit_relative_season': False, 'season_type': 'Regular Season', 'start_date': None, 'end_date': None, 'game_dates': None, 'last_n': None, 'last_n_scope': None, 'player': 'Kevon Looney', 'team': None, 'opponent': None, 'opponent_conference': None, 'opponent_division': None, 'opponent_team_abbrs': None, 'with_player': None, 'without_player': None, 'without_player_reason': None, 'unresolved_availability_player': None, 'unsupported_filters': None, 'opponent_quality': None, 'lineup_members': [], 'presence_state': None, 'unit_size': None, 'minute_minimum': None, 'window_size': None, 'stretch_metric': None, 'stretch_display_mode': None, 'min_streak_length': None, 'stat': 'pts', 'ranking_key': None, 'requested_stat': None, 'requested_metrics': None, 'requested_event_conditions': None, 'unsupported_availability': None, 'unsupported_scope': None, 'requested_aggregation': None, 'available_aggregation': None, 'min_value': 10.0001, 'max_value': None, 'sort_by': 'stat', 'ascending': False, 'ranked_intent': True, 'threshold_conditions': [{'stat': 'pts', 'min_value': 10.0001, 'max_value': None, 'text': 'over 10 points'}, {'stat': 'ast', 'min_value': 4.0, 'max_value': None, 'text': 'at least 4 assists'}, {'stat': 'team_reb', 'min_value': 50.0, 'max_value': None}], 'extra_conditions': [], 'conditions': [{'stat': 'pts', 'min_value': 10.0001, 'max_value': None, 'text': 'over 10 points'}, {'stat': 'ast', 'min_value': 4.0, 'max_value': None, 'text': 'at least 4 assists'}, {'stat': 'team_reb', 'min_value': 50.0, 'max_value': None}], 'occurrence_event': None, 'split_type': None, 'season_list': None, 'clutch': False, 'back_to_back': False, 'series_situation': None, 'rest_days': None, 'one_possession': False, 'nationally_televised': False, 'role': None, 'quarter': None, 'half': None, 'position_filter': None, 'grouped_boolean_used': True, 'boolean_filter_mode': None, 'condition_expression': None, 'boolean_filter_branches': None, 'head_to_head_used': False, 'scope_kind': 'single_season', 'applied_filters': [{'label': 'pts min', 'value': '10 (exclusive)', 'kind': 'threshold'}, {'label': 'ast min', 'value': '4.0', 'kind': 'threshold'}, {'label': 'team_reb min', 'value': '50.0', 'kind': 'threshold'}], 'confidence': 1.0, 'intent': 'finder', 'notes': ['The distinct-player boolean request contains an unread scope or clause.']}))"
+    },
+    {
+      "query": "List Jakob Poeltl games with (at least 12 rebounds or exactly 110 team points) in 2022-23",
+      "oracle": "n_poeltl_team",
+      "grain": "list",
+      "data": "native",
+      "error": "AssertionError(({'query': 'List Jakob Poeltl games with (at least 12 rebounds or exactly 110 team points) in 2022-23', 'oracle': 'n_poeltl_team', 'grain': 'list', 'data': 'native'}, 'unsupported', {'query_text': 'List Jakob Poeltl games with (at least 12 rebounds or exactly 110 team points) in 2022-23', 'route': 'player_game_finder', 'query_class': 'finder', 'season': '2022-23', 'start_season': None, 'end_season': None, 'explicit_relative_season': False, 'season_type': 'Regular Season', 'start_date': None, 'end_date': None, 'game_dates': None, 'last_n': None, 'last_n_scope': None, 'player': 'Jakob Poeltl', 'team': None, 'opponent': None, 'opponent_conference': None, 'opponent_division': None, 'opponent_team_abbrs': None, 'with_player': None, 'without_player': None, 'without_player_reason': None, 'unresolved_availability_player': None, 'unsupported_filters': None, 'opponent_quality': None, 'lineup_members': [], 'presence_state': None, 'unit_size': None, 'minute_minimum': None, 'window_size': None, 'stretch_metric': None, 'stretch_display_mode': None, 'min_streak_length': None, 'stat': 'reb', 'ranking_key': None, 'requested_stat': None, 'requested_metrics': None, 'requested_event_conditions': None, 'unsupported_availability': None, 'unsupported_scope': None, 'requested_aggregation': None, 'available_aggregation': None, 'min_value': 12.0, 'max_value': None, 'sort_by': 'stat', 'ascending': False, 'ranked_intent': True, 'threshold_conditions': [{'stat': 'reb', 'min_value': 12.0, 'max_value': None}, {'stat': 'team_pts', 'min_value': 110.0, 'max_value': 110.0}], 'extra_conditions': [], 'conditions': [{'stat': 'reb', 'min_value': 12.0, 'max_value': None}, {'stat': 'team_pts', 'min_value': 110.0, 'max_value': 110.0}], 'occurrence_event': None, 'split_type': None, 'season_list': None, 'clutch': False, 'back_to_back': False, 'series_situation': None, 'rest_days': None, 'one_possession': False, 'nationally_televised': False, 'role': None, 'quarter': None, 'half': None, 'position_filter': None, 'grouped_boolean_used': True, 'boolean_filter_mode': None, 'condition_expression': None, 'boolean_filter_branches': None, 'head_to_head_used': False, 'scope_kind': 'single_season', 'applied_filters': [{'label': 'reb min', 'value': '12.0', 'kind': 'threshold'}, {'label': 'team_pts', 'value': 'exactly 110', 'kind': 'threshold'}], 'confidence': 1.0, 'intent': 'finder', 'notes': ['The distinct-player boolean request contains an unread scope or clause.']}))"
+    }
+  ],
+  "query_invocations": 39,
+  "production_writes": 0,
+  "skipped": 0
+}

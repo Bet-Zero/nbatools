@@ -1,0 +1,85 @@
+{
+  "revision": "0469b4e696691f3cd0118ebb62f3d0c3d8ce7911",
+  "checks": [
+    {
+      "positive": "(team had at least 100 points) or at least 25 assists",
+      "leaves": [
+        "team_pts",
+        "ast"
+      ]
+    },
+    {
+      "positive": "(opponents had at least 100 points) or at least 25 assists",
+      "leaves": [
+        "opponent_pts",
+        "ast"
+      ]
+    },
+    {
+      "positive": "(exactly 100 team points or exactly 100 opponent points) and at least 20 points",
+      "leaves": [
+        "team_pts",
+        "opponent_pts",
+        "pts"
+      ]
+    },
+    {
+      "positive": "over 20 points or (team had at least 100 points and exactly 25 team assists)",
+      "leaves": [
+        "pts",
+        "team_pts",
+        "team_ast"
+      ]
+    },
+    {
+      "positive": "over 20 points or (opponents had at least 100 points and exactly 25 opponent assists)",
+      "leaves": [
+        "pts",
+        "opponent_pts",
+        "opponent_ast"
+      ]
+    },
+    {
+      "contained_unfinished": "over 20 points or team had at least 100 points and at least 25 assists"
+    },
+    {
+      "contained_unfinished": "over 20 points or opponents had at least 100 points and at least 25 assists"
+    },
+    {
+      "contained_unfinished": "over 20 points or allowed at most 100 points and at most 20 assists"
+    },
+    {
+      "wrong_zero_repaired_to_contained_unfinished": "How many distinct players had (over 100 points or team had at least 125 points and at least 30 assists) in 2022-23?",
+      "status": "no_result",
+      "reason": "unsupported"
+    },
+    {
+      "fresh_related_wording": "Count distinct players who recorded (over 20 points or the team had exactly 100 points) during 2025-26",
+      "count": 3,
+      "filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or the team had exactly 100 points)",
+          "kind": "boolean"
+        }
+      ]
+    },
+    {
+      "fresh_related_wording": "How many player games had (over 20 points or the other team scored exactly 100 points) during 2025-26?",
+      "count": 5,
+      "filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or the other team scored exactly 100 points)",
+          "kind": "boolean"
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "expression": "over 20 points or held opponents under 100 points and under 20 assists",
+      "error": "accepted_elided_owner"
+    }
+  ]
+}

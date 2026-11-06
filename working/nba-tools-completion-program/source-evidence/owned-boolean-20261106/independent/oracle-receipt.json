@@ -1,0 +1,8 @@
+{
+  "classification": "independently_frozen_raw_row_oracle_not_production",
+  "original_file": "oracle.json",
+  "original_sha256": "4d16e0cfa11d3bc4e6e1cc9af93700610ae4d81c6416964f342ef3f19b85a44b",
+  "original_size": 3264832,
+  "archive_sha256": "c3d44d80b022205dcbceb558a9c64f4c866c83513b0a1e8904db0858e5f2dc4a",
+  "archive_size": 199479
+}

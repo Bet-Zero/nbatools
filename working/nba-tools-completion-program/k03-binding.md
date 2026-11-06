@@ -178,7 +178,7 @@ these expectations require no new framework or shared parser changes. Keep this
 controlled set separate from the 12 frozen real-data questions above. This
 proposal does not certify implementation, execution, or product review.
 
-Reviewer findings retained historically: nonzero exact equality and distinct-player grouped OR were unfinished at this binding. PR591 now qualifies shared explicit count-stat equality with independently frozen fixture/native expectations and actual required execution; PR592 now implements the distinct-player grouped OR projection through the shared occurrence engine, with common scoped base and complete raw-ID proofs. Global NBA-fixture projection and owned-stat expressions remain unfinished. The old zero-only containment was deliberately promoted to positive equality support, preserving unread operator/owner guards. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
+Reviewer findings retained historically: nonzero exact equality and distinct-player grouped OR were unfinished at this binding. PR591 now qualifies shared explicit count-stat equality with independently frozen fixture/native expectations and actual required execution; PR592 now implements the distinct-player grouped OR projection through the shared occurrence engine, with common scoped base and complete raw-ID proofs. PR593 qualifies explicit team/opponent-owned Boolean expressions across the existing finder and distinct-count consumers; global NBA-fixture projection, elided owned lists and broader scopes remain unfinished. The old zero-only containment was deliberately promoted to positive equality support, preserving unread operator/owner guards. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
 
 ## Player-game rendering correction (2026-10-18)
 
@@ -222,6 +222,23 @@ against retained authenticated originals:77players/295appearances/266fixtures.
 Base RawQA5cases/28checks and qualified-stage4cases/27checks pass. The sole Resume
 checkpoint records version/manifest, independent56groups/100calls, original scope
 finding, broader evidence reuse and exact continuation. Final hosted review/CI/
-landing receipts are in PR592. Contained owned-stat compositions, branch-specific
+landing receipts are in PR592. PR593 subsequently qualifies the three explicit owned-stat compositions. Elided owned lists, branch-specific
 scopes, ranked/windowed distinct counts and global unique-NBA-fixture projection
 remain unfinished. This is not deployed/full Core-1/freshness acceptance.
+
+## Shared owned Boolean follow-through (2026-11-06)
+
+[PR593](https://github.com/Bet-Zero/nbatools/pull/593), reviewed runtime736b3d0d,
+closes the three retained explicit owner composition gaps through existing Boolean
+parser, same-game context, finder and occurrence/count consumers. Actual read-only
+run42245902610 executes all33selected numerical controls, including all12original
+K03 and8K05, with zero required skips. RawQA9cases/52checks passes. Full raw
+keys/player IDs and per-player arithmetic match independently selected retained
+2022–23 originals and pinned rows: own-team263appearances/82players; opposing
+side176/63. Natural/structured/HTTP/rendered grain is explicit.
+
+The controlled exact100teamPTS union selects2appearances/2players. Verbal owned
+list elision remains unfinished containment; branch-specific/ranked/windowed and
+global NBA-fixture projection are not new original-binding prerequisites. Original
+12case denominator, equality and qualified zero/unknown requirements remain.
+Historical/development acceptance does not establish current deployed Core-1.
