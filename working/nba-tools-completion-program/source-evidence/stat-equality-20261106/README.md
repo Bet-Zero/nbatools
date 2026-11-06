@@ -28,3 +28,27 @@ raw oracle before author implementation, without exposing them for tuning. Revie
 identity/model availability and actual revision/results will be recorded here and
 in the PR. Rate precision/exact-minute-time expansion and distinct-player grouped
 OR remain outside this finite capability; their pending obligations are preserved.
+
+## Executed acceptance
+
+Independent review approved runtime74252410:69groups/130query invocations,
+zero skips/failures, all27pre-author heldouts. See independent/final-verdict.md and
+its hash-indexed portable raw oracle/replay. The intermediate operator, negative
+scope, owned-span/interface, defensive-owner and margin failures remain preserved;
+they are not accepted behavior. software-validation.json records exact broad and
+focused applicability, without relabeling the failing broad run.
+
+Actual required [run42215938578](https://github.com/Bet-Zero/nbatools/actions/runs/42215938578)
+passed21selected/21executed/21passed, zero skips/failures/errors/xfails, using
+request49caeb31whose sole parent is reviewed74252410. Base RawQA3cases/19checks and
+qualified-stage4cases/27checks passed. The pinned manifest is3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3.
+Original artifact13501955657is23832bytes/SHA14edc580eb7ad073073d7fd30d6b06142d2aa8be178d0ae118d83a0c886e5c09;
+hosted/ retains actual structured receipts, qualified-stage rendering and raw IDs.
+Jokic30has23AST/11.5mean;Edwards35has12AST/4mean. The complete qualified Poeltl
+population remains81eligible/72played/9DNP/0unknown. Membership gaps or missing
+participation still withhold totals; no medical cause is inferred.
+
+These are historical staged/API/numerical and rendered-output checks. No current
+freshness, production publication, browser/deployed or all-history acceptance is
+claimed. Remaining K08/Core-1 obligations stay required. Final exact-head CI,
+independent hosted-receipt review and safe landing receipts belong in PR591.

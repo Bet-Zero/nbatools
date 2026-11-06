@@ -1,6 +1,6 @@
-# Frozen K03 binding — implementation pending
+# Frozen K03 binding — finite execution and equality checkpoint
 
-This is a finite binding for the existing completion-program K03 row, not another queue. The independent checker froze these expectations before interpreter execution. A later single cached baseline is preserved in [k03-baseline.json](k03-baseline.json); no capability acceptance is claimed. The controlling checkpoint requires I/N/L/D, controlled discrimination, actual raw arithmetic, a second entity/value, and rendered/deployed evidence. Source: pinned queue-d-production-0574735-20260716, regular season 2023-24.
+This is a finite binding for the existing completion-program K03 row, not another queue. The independent checker froze these expectations before interpreter execution. The historical cached baseline is preserved in [k03-baseline.json](k03-baseline.json). The bounded equality/execution advancement below is current; full K03/Core-1 acceptance is not claimed. The controlling checkpoint requires I/N/L/D, controlled discrimination, actual raw arithmetic, a second entity/value, and rendered/deployed evidence. Source: pinned queue-d-production-0574735-20260716, regular season 2023-24.
 
 ## Existing anchors to reuse
 
@@ -178,7 +178,7 @@ these expectations require no new framework or shared parser changes. Keep this
 controlled set separate from the 12 frozen real-data questions above. This
 proposal does not certify implementation, execution, or product review.
 
-Reviewer findings retained: nonzero exact equality and distinct-player grouped OR remain unfinished; no K03 acceptance claims these compositions. The new exact-zero league grammar is restricted to zero to prevent silently accepting nonzero equality as an inclusive floor. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
+Reviewer findings retained historically: nonzero exact equality and distinct-player grouped OR were unfinished at this binding. PR591 now qualifies shared explicit count-stat equality with independently frozen fixture/native expectations and actual required execution; distinct-player grouped OR remains unfinished. The old zero-only containment was deliberately promoted to positive equality support, preserving unread operator/owner guards. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
 
 ## Player-game rendering correction (2026-10-18)
 
@@ -187,3 +187,19 @@ Production browser review found K03-D1's correct 20-player-game response rendere
 Five renderer controls cover league count/list, pinned-player count, actual team count/score/margin, and partially populated explicit team scores. Locked offline installation, lint, production build, and all 454 frontend tests (38 files) pass. The existing browser harness now requires K03-D1's Player heading and Edwards/Embiid names and rejects Score/Margin/Opp PTS headings. All 52 actual local backend/browser answers pass desktop/mobile assertions and the existing raw-data answer validator, with no console errors or document overflow.
 
 Final local evidence: `/workspace/work/player-game-rendering-final-evidence/browser-receipt.json`, SHA256 `cc7745dd31bb5c2f00b4ad3e6a8306fb57970c26345ab81ce45793fd649a46fb`; K03-D1 desktop screenshot `1131ca21cf6ac7ca7ed0b3e8dde85c423e4b4a9f798d91ecec63bfa339d5e32b`, mobile `e587ef2d75e0312c8e6bdd63a982d57cf67474ba3ffe52b2592bf550de7a0763`. This uses the retained qualified local subset under `legacy`, not a production-generation readiness claim. Independent review, CI, merge, and a fresh deployed browser check remain required before K03 D acceptance. No backend interpretation or raw expectations changed.
+
+## Verified equality application checkpoint (2026-11-06)
+
+[PR591](https://github.com/Bet-Zero/nbatools/pull/591) reviewed source74252410
+implements shared explicit count-stat equality through existing natural, structured
+and HTTP consumers. All12original K03 numerical selectors plus3new equality tests,
+4qualified participation/safety tests and2preserved consumer controls actually
+executed/passed in read-only run42215938578, zero skips/failures/errors/xfails.
+Jokic30selects2games/23assists;Edwards35selects3games/12assists, matching the frozen
+B2-minus-B1/B4-minus-B3 raw keys. Base RawQA3cases/19checks and staged4cases/27checks
+passed. The immutable generation/manifest, independent69groups/130queries, original
+failed iterations and applicability limits are in the sole Resume checkpoint and
+source-evidence/stat-equality-20261106. This advances finite I/N/L evidence; it does
+not close the retained deployment/freshness/Core-1 obligations or distinct-player
+grouped OR. Rate/exact-time precision expansion remains separate. Final exact-head
+CI/landing receipts belong in PR591; no production data or pointer was published.

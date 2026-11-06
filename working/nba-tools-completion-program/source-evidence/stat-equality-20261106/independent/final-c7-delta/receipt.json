@@ -1,0 +1,175 @@
+{
+  "reviewed_revision": "c7ee8bef6d779b0779047aaebf0525a28968401d",
+  "checker": "/root/poeltl_source_checker; separate Codex session, exact backend model not exposed",
+  "records": [
+    {
+      "query": "List Jayson Tatum games with points equal to 31 or more in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "List Jayson Tatum games with points = 31 or fewer in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "Celtics record when opponents never once scored exactly 102 points in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "List Stephen Curry games when his team did not once score exactly 102 points in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "List Stephen Curry games with exactly 102 team points or more in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "Celtics record with exactly 102 opponent points or more in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "How many Stephen Curry games with exactly 7 assists and 0 turnovers in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        481,
+        516
+      ]
+    },
+    {
+      "query": "How many Stephen Curry games with no turnovers and exactly 7 assists in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        481,
+        516
+      ]
+    },
+    {
+      "query": "How many Stephen Curry games with assists = 7 in 2025-26?",
+      "passed": true,
+      "expected_count": 11,
+      "game_ids": [
+        367,
+        387,
+        397,
+        412,
+        427,
+        442,
+        447,
+        456,
+        481,
+        490,
+        516
+      ]
+    },
+    {
+      "query": "How many times did the Lakers win by 1 in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        453,
+        461
+      ],
+      "count_phrase": "The Los Angeles Lakers have won 2 games by exactly 1 point in the 2025-26 regular season."
+    },
+    {
+      "query": "How many Celtics games allowed exactly 102 points in 2025-26?",
+      "passed": true,
+      "expected_count": 1,
+      "game_ids": [
+        474
+      ],
+      "count_phrase": "The Boston Celtics have allowed exactly 102 points 1 time in the 2025-26 regular season, going 1-0."
+    },
+    {
+      "query": "Celtics record when holding opponents to exactly 102 points in 2025-26",
+      "passed": true,
+      "game_ids": [
+        474
+      ],
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 120.0,
+        "reb_avg": 30.0,
+        "ast_avg": 16.0,
+        "fg3m_avg": 17.0,
+        "stl_avg": 13.0,
+        "blk_avg": 9.0,
+        "tov_avg": 17.0,
+        "plus_minus_avg": 18.0,
+        "efg_pct_avg": 0.728,
+        "ts_pct_avg": 0.716
+      }
+    },
+    {
+      "query": "Celtics record when held opponents to exactly 102 in 2025-26",
+      "passed": true,
+      "game_ids": [
+        474
+      ],
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 120.0,
+        "reb_avg": 30.0,
+        "ast_avg": 16.0,
+        "fg3m_avg": 17.0,
+        "stl_avg": 13.0,
+        "blk_avg": 9.0,
+        "tov_avg": 17.0,
+        "plus_minus_avg": 18.0,
+        "efg_pct_avg": 0.728,
+        "ts_pct_avg": 0.716
+      }
+    },
+    {
+      "query": "Celtics record when limiting opponents to exactly 102 points in 2025-26",
+      "passed": true,
+      "game_ids": [
+        474
+      ],
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 120.0,
+        "reb_avg": 30.0,
+        "ast_avg": 16.0,
+        "fg3m_avg": 17.0,
+        "stl_avg": 13.0,
+        "blk_avg": 9.0,
+        "tov_avg": 17.0,
+        "plus_minus_avg": 18.0,
+        "efg_pct_avg": 0.728,
+        "ts_pct_avg": 0.716
+      }
+    }
+  ],
+  "failures": [],
+  "skipped": 0,
+  "production_writes": 0
+}

@@ -1,0 +1,101 @@
+{
+  "reviewed_revision": "8c896f8be92ed1f92756e492f887c7f91281c5d0",
+  "checker": "/root/poeltl_source_checker; separate Codex session, exact backend model not exposed",
+  "records": [
+    {
+      "query": "List Jayson Tatum games with points equal to 31 or more in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "List Jayson Tatum games with points = 31 or fewer in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "Celtics record when opponents never once scored exactly 102 points in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "List Stephen Curry games when his team did not once score exactly 102 points in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "Celtics record with exactly 102 opponent points or more in 2025-26",
+      "passed": true,
+      "status": "no_result"
+    },
+    {
+      "query": "How many Stephen Curry games with exactly 7 assists and 0 turnovers in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        481,
+        516
+      ]
+    },
+    {
+      "query": "How many Stephen Curry games with no turnovers and exactly 7 assists in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        481,
+        516
+      ]
+    },
+    {
+      "query": "How many Stephen Curry games with assists = 7 in 2025-26?",
+      "passed": true,
+      "expected_count": 11,
+      "game_ids": [
+        367,
+        387,
+        397,
+        412,
+        427,
+        442,
+        447,
+        456,
+        481,
+        490,
+        516
+      ]
+    },
+    {
+      "query": "How many times did the Lakers win by 1 in 2025-26?",
+      "passed": true,
+      "expected_count": 2,
+      "game_ids": [
+        453,
+        461
+      ],
+      "count_phrase": "The Los Angeles Lakers have won 2 games by exactly 1 point in the 2025-26 regular season."
+    }
+  ],
+  "failures": [
+    {
+      "query": "List Stephen Curry games with exactly 102 team points or more in 2025-26",
+      "error": "AssertionError(({'query_text': 'List Stephen Curry games with exactly 102 team points or more in 2025-26', 'route': 'player_game_finder', 'query_class': 'finder', 'season': '2025-26', 'start_season': None, 'end_season': None, 'explicit_relative_season': False, 'season_type': 'Regular Season', 'start_date': None, 'end_date': None, 'game_dates': None, 'last_n': None, 'last_n_scope': None, 'player': 'Stephen Curry', 'team': None, 'opponent': None, 'opponent_conference': None, 'opponent_division': None, 'opponent_team_abbrs': None, 'with_player': None, 'without_player': None, 'without_player_reason': None, 'unresolved_availability_player': None, 'unsupported_filters': None, 'opponent_quality': None, 'lineup_members': [], 'presence_state': None, 'unit_size': None, 'minute_minimum': None, 'window_size': None, 'stretch_metric': None, 'stretch_display_mode': None, 'min_streak_length': None, 'stat': 'team_pts', 'ranking_key': None, 'requested_stat': None, 'requested_metrics': None, 'requested_event_conditions': None, 'unsupported_availability': None, 'unsupported_scope': None, 'requested_aggregation': None, 'available_aggregation': None, 'min_value': 102.0, 'max_value': 102.0, 'sort_by': 'stat', 'ascending': False, 'ranked_intent': False, 'threshold_conditions': [{'stat': 'team_pts', 'min_value': 102.0, 'max_value': 102.0}], 'extra_conditions': [], 'conditions': [{'stat': 'team_pts', 'min_value': 102.0, 'max_value': 102.0}], 'occurrence_event': None, 'split_type': None, 'season_list': None, 'clutch': False, 'back_to_back': False, 'series_situation': None, 'rest_days': None, 'one_possession': False, 'nationally_televised': False, 'role': None, 'quarter': None, 'half': None, 'position_filter': None, 'grouped_boolean_used': False, 'boolean_filter_mode': None, 'boolean_filter_branches': None, 'head_to_head_used': False, 'scope_kind': 'single_season', 'applied_filters': [{'label': 'team_pts', 'value': 'exactly 102', 'kind': 'threshold'}], 'player_context': {'player_id': 201939, 'player_name': 'Stephen Curry'}, 'confidence': 0.98, 'intent': 'finder'}, {'finder': [{'rank': 1, 'game_date': Timestamp('2026-06-30 00:00:00'), 'game_id': 487, 'season': '2025-26', 'season_type': 'Regular Season', 'player_name': 'Stephen Curry', 'player_id': 201939, 'team_name': 'Golden State Warriors', 'team_abbr': 'GSW', 'opponent_team_name': 'Denver Nuggets', 'opponent_team_abbr': 'DEN', 'is_home': True, 'is_away': False, 'wl': 'W', 'minutes': 29.3, 'pts': 36, 'reb': 15, 'ast': 11, 'stl': 1, 'blk': 2, 'fgm': 14, 'fga': 22, 'fg_pct': 0.6363636363636364, 'fg3m': 4, 'fg3a': 7, 'fg3_pct': 0.5714285714285714, 'ftm': 4, 'fta': 4, 'ft_pct': 1.0, 'tov': 1, 'plus_minus': 15, 'efg_pct': 0.7272727272727273, 'ts_pct': 0.7575757575757576, 'tov_pct': 4.038772213247173}, {'rank': 2, 'game_date': Timestamp('2026-05-05 00:00:00'), 'game_id': 459, 'season': '2025-26', 'season_type': 'Regular Season', 'player_name': 'Stephen Curry', 'player_id': 201939, 'team_name': 'Golden State Warriors', 'team_abbr': 'GSW', 'opponent_team_name': 'New York Knicks', 'opponent_team_abbr': 'NYK', 'is_home': True, 'is_away': False, 'wl': 'W', 'minutes': 33.7, 'pts': 35, 'reb': 12, 'ast': 14, 'stl': 4, 'blk': 0, 'fgm': 14, 'fga': 23, 'fg_pct': 0.6086956521739131, 'fg3m': 2, 'fg3a': 7, 'fg3_pct': 0.2857142857142857, 'ftm': 5, 'fta': 7, 'ft_pct': 0.7142857142857143, 'tov': 2, 'plus_minus': -2, 'efg_pct': 0.6521739130434783, 'ts_pct': 0.6710122699386504, 'tov_pct': 7.122507122507122}]}))"
+    },
+    {
+      "query": "How many Celtics games allowed exactly 102 points in 2025-26?",
+      "error": "AttributeError(\"'_Span' object has no attribute 'start'\")"
+    },
+    {
+      "query": "Celtics record when holding opponents to exactly 102 points in 2025-26",
+      "error": "AttributeError(\"'_Span' object has no attribute 'start'\")"
+    },
+    {
+      "query": "Celtics record when held opponents to exactly 102 in 2025-26",
+      "error": "AttributeError(\"'_Span' object has no attribute 'start'\")"
+    },
+    {
+      "query": "Celtics record when limiting opponents to exactly 102 points in 2025-26",
+      "error": "AttributeError(\"'_Span' object has no attribute 'start'\")"
+    }
+  ],
+  "skipped": 0,
+  "production_writes": 0
+}

@@ -1,0 +1,36 @@
+{
+  "native_source_zip_sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+  "base_manifest": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "answers": [
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023?",
+      "game_ids": [
+        22200247,
+        22200319,
+        22200333,
+        22200345,
+        22200375,
+        22200387,
+        22200406,
+        22200420,
+        22200591
+      ],
+      "count": 9,
+      "answer": "Jakob Poeltl missed 9 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss for the Raptors in 2022-23 from February 10 to April 9, 2023?",
+      "game_ids": [],
+      "count": 0,
+      "answer": "Jakob Poeltl did not miss a Toronto Raptors game from 2023-02-10 to 2023-04-09 in the 2022-23 regular season."
+    }
+  ],
+  "single_club_control": {
+    "player": "Kevon Looney",
+    "played": 82,
+    "missed": 0
+  },
+  "ordinary_combined_season_positive": "unavailable in this source-only stage; see separately qualified full-season acceptance",
+  "full_season_nba_acceptance": false,
+  "production_writes": 0
+}

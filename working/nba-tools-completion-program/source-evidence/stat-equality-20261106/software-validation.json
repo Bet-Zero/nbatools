@@ -1,0 +1,70 @@
+{
+  "reviewed_source": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+  "stable_broad": {
+    "source": "f401393320b05dfb6d9f6d44ef37959d06538521",
+    "command": "pytest -n4 -m 'not slow'",
+    "selected": 12085,
+    "passed": 10220,
+    "skipped": 1863,
+    "failed": 2,
+    "failures": [
+      "test_small_bare_margin_stays_exact: repaired range-event interpretation/wording",
+      "test_committed_repository_inventory_matches_current_authoritative_sources: regenerated 603 to605"
+    ],
+    "interpretation": "Not a final-head broad pass; independent verdict explicitly bounds reuse of unaffected passes."
+  },
+  "focused": [
+    {
+      "source": "c7ee8bef6d779b0779047aaebf0525a28968401d",
+      "passed": 199,
+      "skipped": 0,
+      "failed": 0,
+      "modules": 8
+    },
+    {
+      "source": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+      "passed": 122,
+      "skipped": 0,
+      "failed": 0,
+      "scope": "final defensive negative delta and affected equality/opponent/negated/margin controls"
+    }
+  ],
+  "independent": {
+    "groups": 69,
+    "queries": 130,
+    "skipped": 0,
+    "failed": 0,
+    "preauthor_heldouts": 27,
+    "oracle_sha256": "52c21ee2d0b27160f8b6bdd8f2eead5850e6b6f532384c6887350085b18acbbd"
+  },
+  "historical_iteration": {
+    "source": "8c896f8be92ed1f92756e492f887c7f91281c5d0",
+    "author_focused_passed": 187,
+    "author_focused_failed": 12,
+    "disposition": "Shared span interface and consumed owned suffix errors fixed; all affected controls rerun on c7. Not passing evidence."
+  },
+  "scope": "Explicit count-stat equality; rates/exact-time precision and distinct-player grouped OR unfinished; no production publication or source download.",
+  "reviewed_runtime_ci": {
+    "source": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+    "run_id": 42215796475,
+    "blocking_jobs": "all_passed; test-fast Python3.11/3.12/3.13, frontend,lint,docs,scope,productionaudit",
+    "advisory": "existing frontend-security-dev failure informational",
+    "final_receipt_head_ci": "required separately in PR591"
+  },
+  "required_hosted": {
+    "request_sha": "49caeb315b10ab79751f0e552997422549df0134",
+    "sole_parent_reviewed_source": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+    "run_id": 42215938578,
+    "selected": 21,
+    "executed": 21,
+    "passed": 21,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "base_rawqa_cases": 3,
+    "base_rawqa_checks": 19,
+    "qualified_stage_rawqa_cases": 4,
+    "qualified_stage_rawqa_checks": 27
+  }
+}

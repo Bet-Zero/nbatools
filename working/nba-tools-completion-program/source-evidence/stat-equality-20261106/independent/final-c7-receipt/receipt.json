@@ -1,0 +1,797 @@
+{
+  "checker": "/root/poeltl_source_checker; independent Codex session, exact backend model not exposed",
+  "revision": "c7ee8bef6d779b0779047aaebf0525a28968401d",
+  "oracle_sha256": "52c21ee2d0b27160f8b6bdd8f2eead5850e6b6f532384c6887350085b18acbbd",
+  "phase": "all",
+  "checks": [
+    {
+      "query": "List Stephen Curry games with exactly 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "How many games did Stephen Curry record exactly 7 assists in 2025-26?",
+      "oracle": "fixture_curry_assists7",
+      "kind": "count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 11
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "Stephen Curry stats when he has exactly 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "summary",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "Stephen Curry stats with exactly 7 assists in 2024-25 vs 2025-26",
+      "oracle": "season_splits_curry_ast7",
+      "kind": "season_split",
+      "passed": true,
+      "http": true,
+      "route": "player_split_summary",
+      "count": null,
+      "summary": [
+        {
+          "player_name": "Stephen Curry",
+          "season_start": "2024-25",
+          "season_end": "2025-26",
+          "season_type": "Regular Season",
+          "split": "season",
+          "games_total": 20
+        }
+      ]
+    },
+    {
+      "query": "Stephen Curry top 3 scoring games with exactly 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "ranking",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Anthony Davis games with rebounds equal to 12 in 2025-26",
+      "oracle": "fixture_ad_rebounds12",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with points = 31 in 2025-26",
+      "oracle": "fixture_tatum_points31",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with assists equals 7 in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "How many player games with exactly 27 points in 2025-26?",
+      "oracle": "fixture_league_pts27",
+      "kind": "player_game_count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 45
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "How many distinct players had exactly 27 points in 2025-26?",
+      "oracle": "fixture_league_pts27",
+      "kind": "distinct_player_count",
+      "passed": true,
+      "http": true,
+      "route": "player_occurrence_leaders",
+      "count": [
+        {
+          "count": 18
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "How many player games with exactly 27 points and at least 5 assists in 2025-26?",
+      "oracle": "fixture_league_pts27_ast5",
+      "kind": "player_game_count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 25
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "Celtics record when scoring exactly 102 points in 2025-26",
+      "oracle": "fixture_bos_pts102",
+      "kind": "team_record",
+      "passed": true,
+      "http": true,
+      "route": "team_record",
+      "count": null,
+      "summary": [
+        {
+          "team_name": "Boston Celtics",
+          "season_start": "2025-26",
+          "season_end": "2025-26",
+          "season_type": "Regular Season",
+          "games": 5,
+          "wins": 4,
+          "losses": 1,
+          "win_pct": 0.8,
+          "pts_avg": 102.0,
+          "reb_avg": 32.4,
+          "ast_avg": 19.2,
+          "fg3m_avg": 9.6,
+          "stl_avg": 10.6,
+          "blk_avg": 9.0,
+          "tov_avg": 15.2,
+          "plus_minus_avg": 9.6,
+          "efg_pct_avg": 0.6,
+          "ts_pct_avg": 0.591
+        }
+      ]
+    },
+    {
+      "query": "Celtics record with exactly 102 opponent points in 2025-26",
+      "oracle": "fixture_bos_opponentpts102",
+      "kind": "team_record",
+      "passed": true,
+      "http": true,
+      "route": "team_record",
+      "count": null,
+      "summary": [
+        {
+          "team_name": "Boston Celtics",
+          "season_start": "2025-26",
+          "season_end": "2025-26",
+          "season_type": "Regular Season",
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 1.0,
+          "pts_avg": 120.0,
+          "reb_avg": 30.0,
+          "ast_avg": 16.0,
+          "fg3m_avg": 17.0,
+          "stl_avg": 13.0,
+          "blk_avg": 9.0,
+          "tov_avg": 17.0,
+          "plus_minus_avg": 18.0,
+          "efg_pct_avg": 0.728,
+          "ts_pct_avg": 0.716
+        }
+      ]
+    },
+    {
+      "query": "List Stephen Curry games with exactly 102 team points in 2025-26",
+      "oracle": "fixture_player_teampts102",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games when the opponents score exactly 102 points in 2025-26",
+      "oracle": "fixture_player_opponentpts102",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with exactly 7 assists and at least 99 team points in 2025-26",
+      "oracle": "fixture_curry_assists7_ownpts99",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with exactly 0 turnovers in 2025-26",
+      "oracle": "fixture_curry_tov0",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with 0+ turnovers in 2025-26",
+      "oracle": "fixture_curry_tov0plus",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with at least 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7_floor",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with over 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7_strictfloor",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with at most 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7_ceiling",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with under 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7_strictceiling",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "Stephen Curry averages with exactly 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "summary",
+      "passed": true,
+      "http": true,
+      "route": "player_game_summary",
+      "count": null,
+      "summary": [
+        {
+          "player_name": "Stephen Curry",
+          "season_start": "2025-26",
+          "season_end": "2025-26",
+          "season_type": "Regular Season",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "win_pct": 0.364,
+          "minutes_avg": 26.409,
+          "minutes_sum": 290.5,
+          "pts_avg": 25.273,
+          "pts_sum": 278.0,
+          "fgm_avg": 9.818,
+          "fgm_sum": 108.0,
+          "fga_avg": 15.0,
+          "fga_sum": 165.0,
+          "fg_pct_avg": 0.655,
+          "fg3m_avg": 2.545,
+          "fg3m_sum": 28.0,
+          "fg3a_avg": 5.455,
+          "fg3a_sum": 60.0,
+          "fg3_pct_avg": 0.467,
+          "ftm_avg": 2.909,
+          "ftm_sum": 32.0,
+          "fta_avg": 3.909,
+          "fta_sum": 43.0,
+          "ft_pct_avg": 0.744,
+          "oreb_avg": 1.091,
+          "oreb_sum": 12.0,
+          "dreb_avg": 4.545,
+          "dreb_sum": 50.0,
+          "reb_avg": 5.636,
+          "reb_sum": 62.0,
+          "ast_avg": 7.0,
+          "ast_sum": 77.0,
+          "stl_avg": 2.273,
+          "stl_sum": 25.0,
+          "blk_avg": 1.545,
+          "blk_sum": 17.0,
+          "tov_avg": 2.909,
+          "tov_sum": 32.0,
+          "pf_avg": 3.0,
+          "pf_sum": 33.0,
+          "plus_minus_avg": 3.636,
+          "plus_minus_sum": 40.0,
+          "efg_pct_avg": 0.739,
+          "ts_pct_avg": 0.756,
+          "usg_pct_avg": 40.607,
+          "ast_pct_avg": 78.315,
+          "reb_pct_avg": 15.522,
+          "tov_pct_avg": 14.82
+        }
+      ]
+    },
+    {
+      "query": "Stephen Curry average rebounds with exactly 7 assists in 2025-26",
+      "oracle": "fixture_curry_assists7",
+      "kind": "summary",
+      "passed": true,
+      "http": true,
+      "route": "player_game_summary",
+      "count": null,
+      "summary": [
+        {
+          "player_name": "Stephen Curry",
+          "season_start": "2025-26",
+          "season_end": "2025-26",
+          "season_type": "Regular Season",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "win_pct": 0.364,
+          "minutes_avg": 26.409,
+          "minutes_sum": 290.5,
+          "pts_avg": 25.273,
+          "pts_sum": 278.0,
+          "fgm_avg": 9.818,
+          "fgm_sum": 108.0,
+          "fga_avg": 15.0,
+          "fga_sum": 165.0,
+          "fg_pct_avg": 0.655,
+          "fg3m_avg": 2.545,
+          "fg3m_sum": 28.0,
+          "fg3a_avg": 5.455,
+          "fg3a_sum": 60.0,
+          "fg3_pct_avg": 0.467,
+          "ftm_avg": 2.909,
+          "ftm_sum": 32.0,
+          "fta_avg": 3.909,
+          "fta_sum": 43.0,
+          "ft_pct_avg": 0.744,
+          "oreb_avg": 1.091,
+          "oreb_sum": 12.0,
+          "dreb_avg": 4.545,
+          "dreb_sum": 50.0,
+          "reb_avg": 5.636,
+          "reb_sum": 62.0,
+          "ast_avg": 7.0,
+          "ast_sum": 77.0,
+          "stl_avg": 2.273,
+          "stl_sum": 25.0,
+          "blk_avg": 1.545,
+          "blk_sum": 17.0,
+          "tov_avg": 2.909,
+          "tov_sum": 32.0,
+          "pf_avg": 3.0,
+          "pf_sum": 33.0,
+          "plus_minus_avg": 3.636,
+          "plus_minus_sum": 40.0,
+          "efg_pct_avg": 0.739,
+          "ts_pct_avg": 0.756,
+          "usg_pct_avg": 40.607,
+          "ast_pct_avg": 78.315,
+          "reb_pct_avg": 15.522,
+          "tov_pct_avg": 14.82
+        }
+      ]
+    },
+    {
+      "query": "How many games did Stephen Curry have 0+ turnovers in 2025-26?",
+      "oracle": "fixture_curry_tov0plus",
+      "kind": "count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 60
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "How many games did Stephen Curry have at most 7 assists in 2025-26?",
+      "oracle": "fixture_curry_assists7_ceiling",
+      "kind": "count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 52
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "How many games did Stephen Curry have under 7 assists in 2025-26?",
+      "oracle": "fixture_curry_assists7_strictceiling",
+      "kind": "count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 41
+        }
+      ],
+      "summary": null
+    },
+    {
+      "structured": "player_game_finder",
+      "oracle": "fixture_ad_rebounds12",
+      "passed": true
+    },
+    {
+      "structured": "player_game_summary",
+      "oracle": "fixture_curry_assists7",
+      "passed": true
+    },
+    {
+      "structured": "player_game_finder",
+      "oracle": "fixture_league_pts27",
+      "passed": true
+    },
+    {
+      "structured": "game_finder",
+      "oracle": "fixture_bos_opponentpts102",
+      "passed": true
+    },
+    {
+      "query": "List Jayson Tatum games with != 31 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with <= 31 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with >= 31 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with not exactly 31 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with exactly 31+ points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with points != 31 in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with points <= 31 in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with points >= 31 in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Jayson Tatum games with points not equal to 31 in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "Celtics record when opponents do not score exactly 102 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "team_record",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games when his team does not score exactly 102 points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "List Stephen Curry games with exactly 102+ team points in 2025-26",
+      "kind": "unsafe",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "How many games did Kevon Looney have exactly 7 rebounds in 2022-23?",
+      "oracle": "nba_looney_reb7",
+      "kind": "count",
+      "data": "native",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 9
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "Warriors record when scoring exactly 113 points in 2022-23",
+      "oracle": "nba_gsw_pts113",
+      "kind": "team_record",
+      "data": "native",
+      "passed": true,
+      "http": true,
+      "route": "team_record",
+      "count": null,
+      "summary": [
+        {
+          "team_name": "Golden State Warriors",
+          "season_start": "2022-23",
+          "season_end": "2022-23",
+          "season_type": "Regular Season",
+          "games": 4,
+          "wins": 0,
+          "losses": 4,
+          "win_pct": 0.0,
+          "pts_avg": 113.0,
+          "reb_avg": 45.0,
+          "ast_avg": 28.5,
+          "fg3m_avg": 13.5,
+          "stl_avg": 8.25,
+          "blk_avg": 3.0,
+          "tov_avg": 16.0,
+          "plus_minus_avg": -13.0,
+          "efg_pct_avg": 0.52,
+          "ts_pct_avg": 0.555
+        }
+      ]
+    },
+    {
+      "query": "Warriors record when opponents score exactly 117 points in 2022-23",
+      "oracle": "nba_gsw_opponentpts117",
+      "kind": "team_record",
+      "data": "native",
+      "passed": true,
+      "http": true,
+      "route": "team_record",
+      "count": null,
+      "summary": [
+        {
+          "team_name": "Golden State Warriors",
+          "season_start": "2022-23",
+          "season_end": "2022-23",
+          "season_type": "Regular Season",
+          "games": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 1.0,
+          "pts_avg": 129.0,
+          "reb_avg": 43.0,
+          "ast_avg": 40.0,
+          "fg3m_avg": 18.0,
+          "stl_avg": 5.0,
+          "blk_avg": 1.0,
+          "tov_avg": 12.0,
+          "plus_minus_avg": 12.0,
+          "efg_pct_avg": 0.656,
+          "ts_pct_avg": 0.668
+        }
+      ]
+    },
+    {
+      "query": "How many games did Stephen Curry make exactly 5 threes in 2022-23?",
+      "oracle": "nba_curry_fg3m5",
+      "kind": "count",
+      "data": "native",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 10
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with exactly 112 team points?",
+      "oracle": "nba_poeltl_missed_teampts112",
+      "kind": "missed_count",
+      "data": "native",
+      "passed": true,
+      "http": true,
+      "route": "game_finder",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "summary": null
+    },
+    {
+      "query": "Stephen Curry average rebounds with exactly 8 assists in 2022-23",
+      "oracle": "nba_curry_ast8",
+      "kind": "summary",
+      "passed": true,
+      "http": true,
+      "route": "player_game_summary",
+      "count": null,
+      "summary": [
+        {
+          "player_name": "Stephen Curry",
+          "season_start": "2022-23",
+          "season_end": "2022-23",
+          "season_type": "Regular Season",
+          "games": 4,
+          "wins": 3,
+          "losses": 1,
+          "win_pct": 0.75,
+          "minutes_avg": 34.5,
+          "minutes_sum": 138.0,
+          "pts_avg": 33.0,
+          "pts_sum": 132.0,
+          "fgm_avg": 11.25,
+          "fgm_sum": 45.0,
+          "fga_avg": 20.75,
+          "fga_sum": 83.0,
+          "fg_pct_avg": 0.542,
+          "fg3m_avg": 5.75,
+          "fg3m_sum": 23.0,
+          "fg3a_avg": 11.75,
+          "fg3a_sum": 47.0,
+          "fg3_pct_avg": 0.489,
+          "ftm_avg": 4.75,
+          "ftm_sum": 19.0,
+          "fta_avg": 5.75,
+          "fta_sum": 23.0,
+          "ft_pct_avg": 0.826,
+          "oreb_avg": 0.75,
+          "oreb_sum": 3.0,
+          "dreb_avg": 7.75,
+          "dreb_sum": 31.0,
+          "reb_avg": 8.5,
+          "reb_sum": 34.0,
+          "ast_avg": 8.0,
+          "ast_sum": 32.0,
+          "stl_avg": 1.25,
+          "stl_sum": 5.0,
+          "blk_avg": 0.0,
+          "blk_sum": 0.0,
+          "tov_avg": 3.0,
+          "tov_sum": 12.0,
+          "pf_avg": 1.0,
+          "pf_sum": 4.0,
+          "plus_minus_avg": 9.25,
+          "plus_minus_sum": 37.0,
+          "efg_pct_avg": 0.681,
+          "ts_pct_avg": 0.709,
+          "usg_pct_avg": 32.851,
+          "ast_pct_avg": 38.583,
+          "reb_pct_avg": 13.954,
+          "tov_pct_avg": 11.416
+        }
+      ]
+    },
+    {
+      "query": "List Kevon Looney games with exactly 7 rebounds and exactly 113 team points in 2022-23",
+      "oracle": "nba_looney_reb7_teampts113",
+      "kind": "finder",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": null,
+      "summary": null
+    },
+    {
+      "query": "How many player games with exactly 27 points in 2022-23?",
+      "oracle": "nba_league_pts27",
+      "kind": "player_game_count",
+      "passed": true,
+      "http": true,
+      "route": "player_game_finder",
+      "count": [
+        {
+          "count": 229
+        }
+      ],
+      "summary": null
+    },
+    {
+      "control": "qualified exact-bound DNP observation missing: unknown retained, total withheld",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "skipped": 0,
+  "production_writes": 0
+}
