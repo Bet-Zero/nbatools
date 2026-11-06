@@ -1,0 +1,41 @@
+{
+  "revision": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+  "checks": [
+    {
+      "query": "Celtics record when they never held opponents to exactly 102 points in 2025-26",
+      "passed": true,
+      "result_status": "no_result"
+    },
+    {
+      "query": "Celtics record when they never limited opponents to exactly 102 points in 2025-26",
+      "passed": true,
+      "result_status": "no_result"
+    },
+    {
+      "query": "Celtics record when holding opponents to exactly 102 points in 2025-26",
+      "passed": true,
+      "summary": {
+        "team_name": "Boston Celtics",
+        "season_start": "2025-26",
+        "season_end": "2025-26",
+        "season_type": "Regular Season",
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "win_pct": 1.0,
+        "pts_avg": 120.0,
+        "reb_avg": 30.0,
+        "ast_avg": 16.0,
+        "fg3m_avg": 17.0,
+        "stl_avg": 13.0,
+        "blk_avg": 9.0,
+        "tov_avg": 17.0,
+        "plus_minus_avg": 18.0,
+        "efg_pct_avg": 0.728,
+        "ts_pct_avg": 0.716
+      }
+    }
+  ],
+  "failed": 0,
+  "skipped": 0
+}

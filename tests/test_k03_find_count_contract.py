@@ -98,14 +98,16 @@ def test_count_grain_grammar(query, distinct):
     assert detect_distinct_player_count(query) is distinct
 
 
-def test_unimplemented_exact_nonzero_cannot_be_silently_inclusive(population):
+def test_explicit_nonzero_equality_replaces_inclusive_floor(population):
     response = execute_natural_query(
         "How many player games with exactly 10 assists and zero turnovers in 2025-26?"
     )
-    # A future positive equality implementation may replace this containment,
-    # but accepting all >=10 assist games is never correct.
-    assert response.result_status != "ok"
-    assert "primary_count" not in response.metadata
+    assert response.result_status == "ok", response.to_dict()
+    assert response.metadata["primary_count"] == 1
+    assert [(r["game_id"], r["player_id"]) for r in response.to_dict()["sections"]["finder"]] == [
+        (5, population["C"])
+    ]
+    assert "exactly 10 assists" in response.metadata["count_phrase"]
 
 
 @pytest.mark.parametrize("operator", ["above", "exceeded"])

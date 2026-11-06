@@ -1,0 +1,29 @@
+{
+  "checker": "/root/poeltl_source_checker; separate Codex session, actual backend model not exposed",
+  "approved_source": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+  "final_full_replay_source": "c7ee8bef6d779b0779047aaebf0525a28968401d",
+  "full_groups": 52,
+  "full_query_invocations": 99,
+  "delta_groups": 14,
+  "delta_query_invocations": 28,
+  "final_one_line_delta_groups": 3,
+  "final_one_line_query_invocations": 3,
+  "total_final_selected_groups": 69,
+  "total_final_selected_query_invocations": 130,
+  "failures": 0,
+  "skipped": 0,
+  "required_hosted_status": "pending actual21required/3baseRawQA/4stagedRawQA and finalblockingCI",
+  "files": {
+    "oracle.json": "52c21ee2d0b27160f8b6bdd8f2eead5850e6b6f532384c6887350085b18acbbd",
+    "heldouts.json": "149dcd13f5636d3a39281eebacf295ac6a4626dc78af7bbbfec510273be400d1",
+    "meaning-freeze.md": "ebc094922082813381b637d32b29ceaae4655c2cfa72c6da562290722de90879",
+    "portable-source-replay.py": "7514a7d01916eaaf43c593d888f3bfb94134ea0372e19318455245906b7142bf",
+    "check.py": "ccc382dd8a48b0fa276de0df1e97a07a9f3f633910974025335c2ecd40a8fb46",
+    "delta-check.py": "953db4efc587c51081cc9615b191c7343bb3e7be3bd8d00004797a52f2c71806",
+    "defensive-delta-check.py": "513c6aa0df75c688c913041dd333570865cfe05883eeca0e00a45fd5e7043987",
+    "findings.json": "b33a12a565d89fa53da76441e865a505e462b5ada43303d5362538c9ed44324b",
+    "final-c7-receipt/receipt.json": "425628d35322b97042dcc5b1d9a54bb1afabe61b4dd3ae00b9f1d37600377a9f",
+    "final-c7-delta/receipt.json": "6bf1be9f2754af5a0e0dcf0d1e3cae3f80a50ac9131b6acc4822e77a6bea82aa",
+    "742-delta.json": "b0cae69d6b5ada79e15a42fa36833fe4f40fa09fcceea8e43d77b8ebd3747a73"
+  }
+}

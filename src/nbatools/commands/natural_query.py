@@ -12191,6 +12191,11 @@ def parse_query(query: str) -> dict:
     if since is not None:
         return since
     out = _parse_query_once(query)
+    from nbatools.commands._parse_helpers import invalid_stat_equality
+
+    if invalid_stat_equality(query):
+        out["route_kwargs"]["unsupported_filters"] = ["statistical_equality_syntax"]
+        return out
     if {"availability_status", "on_court_presence", "teammate_stat_condition"}.intersection(
         (out.get("route_kwargs") or {}).get("unsupported_filters", [])
     ):

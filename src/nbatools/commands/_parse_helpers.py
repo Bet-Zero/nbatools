@@ -3,6 +3,7 @@ from contextvars import ContextVar
 
 from nbatools.commands._constants import (
     STAT_ALIASES,
+    STAT_EQUALITY_OPERATOR,
     STAT_PATTERN,
     canonicalize_500_team_bars,
     canonicalize_trailing_ceilings,
@@ -2822,6 +2823,8 @@ def _threshold_bounds(
     epsilon: float,
 ) -> tuple[float | None, float | None]:
     value = _normalize_threshold_value(value_text, stat)
+    if mode == "eq":
+        return value, value
     if mode == "min":
         return value + epsilon, None
     return None, value - epsilon
@@ -3170,6 +3173,8 @@ def extract_threshold_conditions(
 
     def bounds(value_text, stat, mode, epsilon):
         value = numeric(value_text, stat)
+        if mode == "eq":
+            return value, value
         if stat in exact_stats:
             return (value, None) if mode == "min" else (None, value)
         return (value + epsilon, None) if mode == "min" else (None, value - epsilon)
@@ -3186,6 +3191,7 @@ def extract_threshold_conditions(
 
     # Standard patterns: operator NUMBER STAT
     patterns = [
+        (rf"(?<![\w]){STAT_EQUALITY_OPERATOR}\s*{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b", "eq", 0.0),
         (
             rf"\bbetween\s+{_NUM}\s+and\s+{_NUM}\s+{STAT_PATTERN}\b",
             "between",
@@ -3283,6 +3289,7 @@ def extract_threshold_conditions(
 
     # Reverse patterns: STAT operator NUMBER (for advanced stats like "TS% over .700")
     reverse_patterns = [
+        (rf"{STAT_PATTERN}\s*{STAT_EQUALITY_OPERATOR}\s*{_NUM}(?![\d.])", "eq", 0.0),
         (
             rf"{STAT_PATTERN}\s+over\s+{_NUM}",
             "min",
@@ -3493,6 +3500,26 @@ def extract_threshold_conditions(
                 "max_value": numeric(m.group(1), stat),
                 "text": m.group(0),
             }
+        )
+
+    # An explicit equality can also carry an implied points noun.
+    for m in re.finditer(
+        rf"\b(?:scor(?:e|es|ed|ing)|drops?|dropped|puts?\s+up|put\s+up)\s+"
+        rf"{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)(?:\s+{STAT_PATTERN}\b)?",
+        text,
+    ):
+        stat = (detect_stat(m.group(2)) if m.group(2) else None) or "pts"
+        value = numeric(m.group(1), stat)
+        matches.append(
+            dict(
+                start=m.start(),
+                end=m.end(),
+                stat=stat,
+                min_value=value,
+                max_value=value,
+                text=m.group(0),
+                **exact_flags(stat),
+            )
         )
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
@@ -3750,6 +3777,24 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
             }
         )
 
+    # Explicit equality preserves the defensive score even with the points
+    # noun elided, using the same subject/suffix ownership as other bounds.
+    for m in re.finditer(
+        rf"{_RANGE_LEAD}{STAT_EQUALITY_OPERATOR}\s*{_NUM}{_POINT_SUFFIX}",
+        text,
+    ):
+        value = float(m.group(1))
+        matches.append(
+            dict(
+                start=m.start(),
+                end=m.end(),
+                stat="opponent_pts",
+                min_value=value,
+                max_value=value,
+                text=m.group(0),
+            )
+        )
+
     matches.extend(_opponent_box_stat_conditions(text))
 
     matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
@@ -3778,6 +3823,7 @@ _OPP_STAT_NUM = r"(\d+(?:\.\d+)?)"
 # (prefix, suffix, mode, epsilon): the bound sits before the number, after
 # it, or the number carries "+".
 _OPP_STAT_BOUNDS = (
+    (rf"{STAT_EQUALITY_OPERATOR}\s*", r"\s+", "eq", 0.0),
     (r"(?:at\s+least|a\s+min(?:imum)?\s+of)\s+", r"\s+", "min", 0.0),
     (r"(?:over|more\s+than)\s+", r"\s+", "min", 0.0001),
     (r"(?:under|below|fewer\s+than|less\s+than)\s+", r"\s+", "max", 0.0001),
@@ -3846,8 +3892,8 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
                     "start": m.start(),
                     "end": m.end(),
                     "stat": base,
-                    "min_value": value + epsilon if bound == "min" else None,
-                    "max_value": value - epsilon if bound == "max" else None,
+                    "min_value": value + epsilon if bound in ("min", "eq") else None,
+                    "max_value": value - epsilon if bound in ("max", "eq") else None,
                     "text": m.group(0),
                 }
             )
@@ -3889,7 +3935,7 @@ def _opponent_box_stat_conditions(text: str) -> list[dict]:
 # subject. Each may carry its own bound; a bare count takes the first one's.
 _OPP_LIST_ITEM = re.compile(
     r"\s*(?:,\s*(?:and\s+)?|\s+and\s+)"
-    r"(?P<pre>at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
+    rf"(?P<pre>{STAT_EQUALITY_OPERATOR}\s*|at\s+least\s+|at\s+most\s+|over\s+|more\s+than\s+|under\s+|below\s+"
     r"|fewer\s+than\s+|less\s+than\s+|no\s+more\s+than\s+)?"
     r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?P<mid>\s+or\s+(?:more|fewer|less))?\s*"
     rf"(?P<stat>points?|pts|{_OPP_STAT_WORD})(?![\w-])"
@@ -3913,8 +3959,14 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
 
     found: list[dict] = []
     for cond in conditions:
-        mode = "min" if cond.get("min_value") is not None else "max"
-        bound = cond.get("min_value") if mode == "min" else cond.get("max_value")
+        mode = (
+            "eq"
+            if cond.get("min_value") is not None and cond.get("min_value") == cond.get("max_value")
+            else "min"
+            if cond.get("min_value") is not None
+            else "max"
+        )
+        bound = cond.get("min_value") if mode in ("min", "eq") else cond.get("max_value")
         # "under 100 points and 40 rebounds": a strict first bound stays strict.
         strict = 0.0 if float(bound).is_integer() else 0.0001
         end = cond["end"]
@@ -3931,7 +3983,10 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
                 break
             item_mode, epsilon = mode, strict
             if m.group("pre"):
-                item_mode, epsilon = _OPP_LIST_PRE[re.sub(r"\s+", " ", m.group("pre").strip())]
+                pre = re.sub(r"\s+", " ", m.group("pre").strip())
+                item_mode, epsilon = (
+                    ("eq", 0.0) if re.fullmatch(STAT_EQUALITY_OPERATOR, pre) else _OPP_LIST_PRE[pre]
+                )
             elif m.group("plus"):
                 item_mode, epsilon = "min", 0.0
             elif bound_words := m.group("mid") or m.group("post"):
@@ -3943,8 +3998,8 @@ def _opponent_list_continuations(text: str, conditions: list[dict]) -> list[dict
                     "start": m.start("num") if not m.group("pre") else m.start("pre"),
                     "end": m.end(),
                     "stat": base,
-                    "min_value": value + epsilon if item_mode == "min" else None,
-                    "max_value": value - epsilon if item_mode == "max" else None,
+                    "min_value": value + epsilon if item_mode in ("min", "eq") else None,
+                    "max_value": value - epsilon if item_mode in ("max", "eq") else None,
                     "text": m.group(0).strip(),
                 }
             )
@@ -5283,3 +5338,52 @@ def detect_series_situation(text: str) -> str | None:
 
 def _series_game_value(token: str) -> int:
     return int(token) if token.isdigit() else _SERIES_GAME_WORDS[token]
+
+
+def invalid_stat_equality(text: str) -> bool:
+    """Keep unread operators and a negated statistical governor out of equality.
+
+    Validate each complete bound span, in either word order. Negation is scoped
+    to its clause and statistical governor, not to unrelated zero/absence facts.
+    """
+    from nbatools.commands._player_game_context import _opponent_bounds, team_noun_stat_conditions
+
+    text = text.lower()
+    if re.search(r"[!<>]=|={2,}", text):
+        return True
+    operators = list(
+        re.finditer(rf"(?<!\w){STAT_EQUALITY_OPERATOR}\s*(?:\d+(?:\.\d+)?|\.\d+)", text)
+    )
+    if not operators:
+        return False
+    conditions = extract_threshold_conditions(text)
+    conditions.extend(team_noun_stat_conditions(text))
+    conditions.extend(dict(start=m.span()[0], end=m.span()[1]) for m, _ in _opponent_bounds(text))
+    governor = re.compile(
+        r"\b(?:scor(?:e|es|ed|ing)|ha(?:ve|s|d)|ma(?:ke|kes|de)|hits?|hit|"
+        r"record(?:s|ed)?|post(?:s|ed)?|commit(?:s|ted)?|grab(?:s|bed)?|"
+        r"dish(?:es|ed)?|shoot(?:s|ing)?|reach(?:es|ed)?|puts?\s+up|put\s+up)\b"
+    )
+    for operator in operators:
+        spans = [
+            c for c in conditions if c["start"] <= operator.start() and c["end"] >= operator.end()
+        ]
+        if any(
+            re.search(r"\bor\s+(?:more|fewer|less)\b", text[operator.end() : c["end"]])
+            for c in spans
+        ):
+            return True
+        ends = [operator.end(), *(c["end"] for c in spans)]
+        if any(re.match(r"\s*(?:\+|or\s+(?:more|fewer|less)\b)", text[end:]) for end in ends):
+            return True
+        clause = re.split(
+            r"[,;()]|\b(?:and|or|but|when|where|while|if)\b", text[: operator.start()]
+        )[-1]
+        negative = list(re.finditer(r"\b(?:not|never|didn't|doesn't|don't)\b", clause))
+        if negative:
+            tail = clause[negative[-1].end() :].strip()
+            if not tail or governor.search(tail) or re.search(_OPP_STAT_SUBJECT, tail + " "):
+                return True
+        if re.search(r"\bno\s*$", clause):
+            return True
+    return False

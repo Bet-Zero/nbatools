@@ -1,0 +1,59 @@
+{
+  "checker": "/root/poeltl_source_checker; independent Codex session, exact backend model not exposed",
+  "findings": [
+    {
+      "revision": "f401393320b05dfb6d9f6d44ef37959d06538521",
+      "class": "compound comparison symbols claimed as standalone equality",
+      "query": "List Jayson Tatum games with != 31 points in 2025-26",
+      "actual": "ok, exact31,6rows",
+      "disposition": "951 boundary/guard repair independently verified"
+    },
+    {
+      "revision": "f401393320b05dfb6d9f6d44ef37959d06538521",
+      "class": "negative statistical governor and opponent owner dropped",
+      "query": "Celtics record when opponents do not score exactly 102 points in 2025-26",
+      "actual": "ok, ownPTS102,5games4W1L",
+      "disposition": "951 immediate-negation repair;3603 modifier-aware repair independently verified"
+    },
+    {
+      "revision": "9510723882f02895cce339d32fff1ab5173b52de",
+      "class": "reverse equality followed by conflicting floor",
+      "query": "List Jayson Tatum games with points equal to 31 or more in 2025-26",
+      "actual": "ok, exact31",
+      "disposition": "3603 complete-span guard independently verified for generic-stat spans"
+    },
+    {
+      "revision": "9510723882f02895cce339d32fff1ab5173b52de",
+      "class": "negative statistical governor with intervening modifier dropped",
+      "query": "Celtics record when opponents never once scored exactly 102 points in 2025-26",
+      "actual": "ok, ownPTS102",
+      "disposition": "3603 independently verified to withhold"
+    },
+    {
+      "revision": "3603f6936f7fb043f5267ebca1f2cb69fb8b84be",
+      "class": "complete-span guard omitted team/opponent-owned noun spans",
+      "query": "List Stephen Curry games with exactly 102 team points or more in 2025-26",
+      "actual": "ok, exactteamPTS102",
+      "related_query": "Celtics record with exactly 102 opponent points or more in 2025-26",
+      "disposition": "Resolved by shared owned/defensive span repairs; independently verified on c7ee8bef with final742defensive-negation delta."
+    },
+    {
+      "revision": "3603f6936f7fb043f5267ebca1f2cb69fb8b84be",
+      "class": "legitimate defensive holding equality drops opponent owner",
+      "query": "Celtics record when holding opponents to exactly 102 points in 2025-26",
+      "actual": "ownPTS102,5games4W1L",
+      "expected": "opponentPTS102,game474,1game1W0L",
+      "disposition": "Resolved by shared owned/defensive span repairs; independently verified on c7ee8bef with final742defensive-negation delta."
+    }
+  ],
+  "harness_history": [
+    "Initial oracle script coerced fixture True/False flags as integers; corrected before frozen oracle generation/interpreter execution.",
+    "Delta harness assumed every successful count response exposes a finder section. Two valid count-only responses had correct counts but raised harness KeyError; corrected to retain count/declared-games assertions and check exact row IDs when exposed. No application fix required."
+  ],
+  "author_findings_preserved": [
+    "Broadf401:10220passed,1863unavailabledata skips,2failures: stale inventory and existing exact-margin wording regression. Not a green full suite.",
+    "699 repair restricts occurrence equality extraction to actual equality operators, restoring equal-range margin semantics, and labels opponent equality counts as allowed exactlyNpoints. Independent margin IDs453/461 and opponent count ID474 verify these repairs.",
+    "8c author targeted iteration:187passed/12failed due shared _Span interface and consumed owned-conflict interior. Independent8c full52groups had50pass/2Spanfailures; delta14groups had9pass/5failures. c7 fixes independently reran all corresponding cases successfully.",
+    "Final742 adds existing defensive-governor grammar to negation validation; independent2negative+1positive direct checks pass."
+  ]
+}

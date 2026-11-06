@@ -1,0 +1,33 @@
+{
+  "baseline": "d0744a435e90872e91a7e37b2b56bb59a60f3baa",
+  "scope": "Explicit equality on count statistics; same owner/stat/row grain. Exact zero, explicit zero floor and neighboring bounds remain controls. Rate precision, minute exact-time and unsupported cross-player/grouped distinct-OR composition remain separate.",
+  "cases": [
+    {"query": "List Stephen Curry games with exactly 7 assists in 2025-26", "oracle": "fixture_curry_assists7", "kind": "finder"},
+    {"query": "How many games did Stephen Curry record exactly 7 assists in 2025-26?", "oracle": "fixture_curry_assists7", "kind": "count"},
+    {"query": "Stephen Curry stats when he has exactly 7 assists in 2025-26", "oracle": "fixture_curry_assists7", "kind": "summary"},
+    {"query": "Stephen Curry stats with exactly 7 assists in 2024-25 vs 2025-26", "oracle": "season_splits_curry_ast7", "kind": "season_split"},
+    {"query": "Stephen Curry top 3 scoring games with exactly 7 assists in 2025-26", "oracle": "fixture_curry_assists7", "kind": "ranking"},
+    {"query": "List Anthony Davis games with rebounds equal to 12 in 2025-26", "oracle": "fixture_ad_rebounds12", "kind": "finder"},
+    {"query": "List Jayson Tatum games with points = 31 in 2025-26", "oracle": "fixture_tatum_points31", "kind": "finder"},
+    {"query": "List Stephen Curry games with assists equals 7 in 2025-26", "oracle": "fixture_curry_assists7", "kind": "finder"},
+    {"query": "How many player games with exactly 27 points in 2025-26?", "oracle": "fixture_league_pts27", "kind": "player_game_count"},
+    {"query": "How many distinct players had exactly 27 points in 2025-26?", "oracle": "fixture_league_pts27", "kind": "distinct_player_count"},
+    {"query": "How many player games with exactly 27 points and at least 5 assists in 2025-26?", "oracle": "fixture_league_pts27_ast5", "kind": "player_game_count"},
+    {"query": "Celtics record when scoring exactly 102 points in 2025-26", "oracle": "fixture_bos_pts102", "kind": "team_record"},
+    {"query": "Celtics record with exactly 102 opponent points in 2025-26", "oracle": "fixture_bos_opponentpts102", "kind": "team_record"},
+    {"query": "List Stephen Curry games with exactly 102 team points in 2025-26", "oracle": "fixture_player_teampts102", "kind": "finder"},
+    {"query": "List Stephen Curry games when the opponents score exactly 102 points in 2025-26", "oracle": "fixture_player_opponentpts102", "kind": "finder"},
+    {"query": "List Stephen Curry games with exactly 7 assists and at least 99 team points in 2025-26", "oracle": "fixture_curry_assists7_ownpts99", "kind": "finder"},
+    {"query": "List Stephen Curry games with exactly 0 turnovers in 2025-26", "oracle": "fixture_curry_tov0", "kind": "finder"},
+    {"query": "List Stephen Curry games with 0+ turnovers in 2025-26", "oracle": "fixture_curry_tov0plus", "kind": "finder"},
+    {"query": "List Stephen Curry games with at least 7 assists in 2025-26", "oracle": "fixture_curry_assists7_floor", "kind": "finder"},
+    {"query": "List Stephen Curry games with over 7 assists in 2025-26", "oracle": "fixture_curry_assists7_strictfloor", "kind": "finder"},
+    {"query": "List Stephen Curry games with at most 7 assists in 2025-26", "oracle": "fixture_curry_assists7_ceiling", "kind": "finder"},
+    {"query": "List Stephen Curry games with under 7 assists in 2025-26", "oracle": "fixture_curry_assists7_strictceiling", "kind": "finder"},
+    {"query": "How many games did Kevon Looney have exactly 7 rebounds in 2022-23?", "oracle": "nba_looney_reb7", "kind": "count", "data": "native"},
+    {"query": "Warriors record when scoring exactly 113 points in 2022-23", "oracle": "nba_gsw_pts113", "kind": "team_record", "data": "native"},
+    {"query": "Warriors record when opponents score exactly 117 points in 2022-23", "oracle": "nba_gsw_opponentpts117", "kind": "team_record", "data": "native"},
+    {"query": "How many games did Stephen Curry make exactly 5 threes in 2022-23?", "oracle": "nba_curry_fg3m5", "kind": "count", "data": "native"},
+    {"query": "How many games did Jakob Poeltl miss in 2022-23 with exactly 112 team points?", "oracle": "nba_poeltl_missed_teampts112", "kind": "missed_count", "data": "native"}
+  ]
+}

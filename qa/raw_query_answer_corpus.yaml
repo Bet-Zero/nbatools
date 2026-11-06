@@ -17628,3 +17628,29 @@ cases:
     review_notes: Independent raw JSON selection from retained PR587 originals (2022-23
       regular season), source-evidence/team-stat-shorthand-20261106. Team box-score
       threshold, not player points; no membership inference.
+  - id: k03_equality_jokic_30_2023_24
+    query: How many games did Nikola Jokic score exactly 30 points in 2023-24?
+    category: explicit_stat_equality
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [count, finder]
+    expected_row_counts: {count: 1, finder: 2}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 2
+    review_notes: Existing frozen K03-B2 minus B1 raw keys; exact equality, not inclusive floor. Historical pinned data only.
+  - id: k03_equality_edwards_35_2023_24
+    query: How many games did Anthony Edwards score exactly 35 points in 2023-24?
+    category: explicit_stat_equality
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [count, finder]
+    expected_row_counts: {count: 1, finder: 3}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 3
+    review_notes: Existing frozen K03-B4 minus B3 raw keys; second entity/value. Historical pinned data only.

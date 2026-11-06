@@ -1,0 +1,357 @@
+{
+  "run_id": 42215938578,
+  "source_sha": "74252410b75d0eff5b53ec5fe2f72011b3d91e67",
+  "cases": [
+    {
+      "id": "k08_compact_home_absence_season",
+      "status": "pass",
+      "checks": 7,
+      "query_output_snapshot": {
+        "query": "how many home games did LeBron miss in2025-26",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "LeBron James missed 11 Lakers home games in the 2025-26 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "team_game_log_default",
+              "filters": [
+                "Without player: LeBron James",
+                "Location: Home"
+              ],
+              "mode": "Team game log",
+              "row_count": 11,
+              "rows": [
+                [
+                  "1",
+                  "Apr 7",
+                  "LAL",
+                  "",
+                  "OKC",
+                  "L",
+                  "87",
+                  "—",
+                  "38",
+                  "26",
+                  "9",
+                  "—",
+                  "—",
+                  "—",
+                  "17",
+                  "7",
+                  "3",
+                  "8",
+                  "30"
+                ],
+                [
+                  "2",
+                  "Mar 10",
+                  "LAL",
+                  "",
+                  "MIN",
+                  "W",
+                  "120",
+                  "—",
+                  "47",
+                  "31",
+                  "11",
+                  "—",
+                  "—",
+                  "—",
+                  "6",
+                  "7",
+                  "2",
+                  "14",
+                  "33"
+                ],
+                [
+                  "3",
+                  "Mar 8",
+                  "LAL",
+                  "",
+                  "NYK",
+                  "W",
+                  "110",
+                  "—",
+                  "42",
+                  "20",
+                  "15",
+                  "—",
+                  "—",
+                  "—",
+                  "13",
+                  "10",
+                  "5",
+                  "12",
+                  "30"
+                ]
+              ],
+              "section_key": "finder",
+              "subject": "Los Angeles Lakers",
+              "table_type": "team_game_log",
+              "title": "Game Detail",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Date",
+                "Team",
+                "",
+                "Opp",
+                "W/L",
+                "PTS",
+                "Margin",
+                "REB",
+                "AST",
+                "3PM",
+                "FG",
+                "3P",
+                "FT",
+                "TOV",
+                "STL",
+                "BLK",
+                "oreb",
+                "dreb"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "game_finder"
+        }
+      }
+    },
+    {
+      "id": "k03_equality_jokic_30_2023_24",
+      "status": "pass",
+      "checks": 6,
+      "query_output_snapshot": {
+        "query": "How many games did Nikola Jokic score exactly 30 points in 2023-24?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "Nikola Jokić has had 2 games with exactly 30 points in the 2023-24 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "player_game_log_default",
+              "filters": [
+                "pts: exactly 30"
+              ],
+              "mode": "Player game log",
+              "row_count": 2,
+              "rows": [
+                [
+                  "1",
+                  "Mar 21",
+                  "DEN",
+                  "",
+                  "NYK",
+                  "W",
+                  "39",
+                  "30",
+                  "14",
+                  "11",
+                  "—",
+                  "—",
+                  "—",
+                  "1",
+                  "0",
+                  "1",
+                  "30",
+                  "57.5%",
+                  "52.2%"
+                ],
+                [
+                  "2",
+                  "Nov 22",
+                  "DEN",
+                  "",
+                  "ORL",
+                  "L",
+                  "36",
+                  "30",
+                  "13",
+                  "12",
+                  "—",
+                  "—",
+                  "—",
+                  "3",
+                  "2",
+                  "1",
+                  "4",
+                  "74.3%",
+                  "69.4%"
+                ]
+              ],
+              "section_key": "finder",
+              "subject": "Nikola Jokić",
+              "table_type": "player_game_log",
+              "title": "Player Game Detail",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Date",
+                "TM",
+                "",
+                "Opp",
+                "W/L",
+                "MIN",
+                "PTS",
+                "REB",
+                "AST",
+                "FG",
+                "3P",
+                "FT",
+                "STL",
+                "BLK",
+                "TOV",
+                "+/-",
+                "TS%",
+                "eFG%"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_game_finder"
+        }
+      }
+    },
+    {
+      "id": "k03_equality_edwards_35_2023_24",
+      "status": "pass",
+      "checks": 6,
+      "query_output_snapshot": {
+        "query": "How many games did Anthony Edwards score exactly 35 points in 2023-24?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "Anthony Edwards has had 3 games with exactly 35 points in the 2023-24 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "player_game_log_default",
+              "filters": [
+                "pts: exactly 35"
+              ],
+              "mode": "Player game log",
+              "row_count": 3,
+              "rows": [
+                [
+                  "1",
+                  "Jan 3",
+                  "MIN",
+                  "",
+                  "NOP",
+                  "L",
+                  "37",
+                  "35",
+                  "4",
+                  "5",
+                  "—",
+                  "—",
+                  "—",
+                  "1",
+                  "1",
+                  "6",
+                  "-15",
+                  "66.3%",
+                  "59.1%"
+                ],
+                [
+                  "2",
+                  "Jan 1",
+                  "MIN",
+                  "",
+                  "NYK",
+                  "L",
+                  "38",
+                  "35",
+                  "4",
+                  "2",
+                  "—",
+                  "—",
+                  "—",
+                  "0",
+                  "2",
+                  "4",
+                  "2",
+                  "68.9%",
+                  "61.9%"
+                ],
+                [
+                  "3",
+                  "Nov 24",
+                  "MIN",
+                  "",
+                  "SAC",
+                  "L",
+                  "40",
+                  "35",
+                  "7",
+                  "5",
+                  "—",
+                  "—",
+                  "—",
+                  "2",
+                  "2",
+                  "4",
+                  "5",
+                  "60.5%",
+                  "42.9%"
+                ]
+              ],
+              "section_key": "finder",
+              "subject": "Anthony Edwards",
+              "table_type": "player_game_log",
+              "title": "Player Game Detail",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Date",
+                "TM",
+                "",
+                "Opp",
+                "W/L",
+                "MIN",
+                "PTS",
+                "REB",
+                "AST",
+                "FG",
+                "3P",
+                "FT",
+                "STL",
+                "BLK",
+                "TOV",
+                "+/-",
+                "TS%",
+                "eFG%"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_game_finder"
+        }
+      }
+    }
+  ],
+  "case_count": 3,
+  "passed_checks": 19
+}
