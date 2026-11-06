@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "736b3d0df63d86a06983fd2d765a1a000e063d8d",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_owned_boolean_predicates_real_data.py",
+    "tests/test_k03_find_count_real_data.py",
+    "tests/test_k05_subject_ownership_real_data.py",
+    "tests/cloud_poeltl_full_season_real_data.py",
+    "tests/cloud_shared_stat_equality_real_data.py",
+    "tests/cloud_distinct_player_boolean_counts_real_data.py",
+    "tests/cloud_team_stat_shorthand_real_data.py"
+  ],
+  "raw_qa_cases": [
+    "k03_owned_boolean_team_distinct_2022",
+    "k03_owned_boolean_team_games_2022",
+    "k03_owned_boolean_opponent_distinct_2022",
+    "k03_owned_boolean_opponent_games_2022",
+    "k03_distinct_or_2022",
+    "k03_player_game_or_2022",
+    "k03_distinct_or_qualified_zero_2022",
+    "k03_distinct_or_owner_example_2023",
+    "k08_compact_home_absence_season"
+  ]
+}
