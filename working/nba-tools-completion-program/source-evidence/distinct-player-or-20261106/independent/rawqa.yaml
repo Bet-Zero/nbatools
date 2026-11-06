@@ -1,0 +1,47 @@
+version: 1
+cases:
+- id: independent_distinct_union
+  query: How many distinct players had (over 20 points or over 10 assists) in 2025-26?
+  category: query
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: player_occurrence_leaders
+  expected_sections: [count, leaderboard]
+  expected_row_counts: {count: 1, leaderboard: 3}
+  hard_assertions:
+  - {path: result.sections.count.0.count, equals: 3}
+  - {path: result.sections.leaderboard.0.matching_games, equals: 2}
+- id: independent_player_game_union
+  query: How many player games with (over 20 points or over 10 assists) in 2025-26?
+  category: query
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: player_game_finder
+  expected_sections: [count, finder]
+  expected_row_counts: {count: 1, finder: 4}
+  hard_assertions:
+  - {path: result.sections.count.0.count, equals: 4}
+- id: independent_opponent_union
+  query: How many distinct players had (over 20 points or over 10 assists) against the Warriors or against the Lakers in 2025-26?
+  category: query
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: player_occurrence_leaders
+  expected_sections: [count, leaderboard]
+  expected_row_counts: {count: 1, leaderboard: 3}
+  hard_assertions:
+  - {path: result.sections.count.0.count, equals: 3}
+- id: independent_distinct_zero
+  query: How many distinct players had (over 90 points or over 90 assists) in 2025-26?
+  category: query
+  priority: p1
+  answer_text_policy: requires_backend_answer_text
+  expected_status: ok
+  expected_route: player_occurrence_leaders
+  expected_sections: [count]
+  expected_row_counts: {count: 1}
+  hard_assertions:
+  - {path: result.sections.count.0.count, equals: 0}

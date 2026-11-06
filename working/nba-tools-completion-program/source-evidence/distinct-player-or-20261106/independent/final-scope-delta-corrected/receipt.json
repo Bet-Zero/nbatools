@@ -1,0 +1,140 @@
+{
+  "revision": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "checks": [
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Warriors or against the Lakers?",
+      "passed": true,
+      "count": 3,
+      "team": null,
+      "opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW, LAL",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Lakers or against the Warriors?",
+      "passed": true,
+      "count": 3,
+      "team": null,
+      "opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "LAL, GSW",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Warriors, Lakers?",
+      "passed": true,
+      "count": 3,
+      "team": null,
+      "opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW, LAL",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "query": "How many distinct players against the Warriors or against the Lakers had (over 20 points or over 10 assists) in 2025-26?",
+      "passed": true,
+      "count": 3,
+      "team": null,
+      "opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW, LAL",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "query": "How many Nuggets players had (over 20 points or over 10 assists) against the Warriors or against the Lakers in 2025-26?",
+      "passed": true,
+      "count": 2,
+      "team": "DEN",
+      "opponents": [
+        "GSW",
+        "LAL"
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season.",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW, LAL",
+          "kind": "team"
+        }
+      ]
+    },
+    {
+      "unsupported_scope": "against the Warriors or against Unlistedclub",
+      "passed": true
+    },
+    {
+      "unsupported_scope": "at home or on the road",
+      "passed": true
+    },
+    {
+      "unsupported_scope": "against Boston or while injured",
+      "passed": true
+    },
+    {
+      "structured_subject_and_opponents": true,
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "query_invocations": 17,
+  "skipped": 0,
+  "production_writes": 0
+}

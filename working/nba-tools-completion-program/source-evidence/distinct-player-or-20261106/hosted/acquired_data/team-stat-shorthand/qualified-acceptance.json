@@ -1,0 +1,99 @@
+{
+  "answers": [
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with 80+ team points?",
+      "game_ids": [
+        22200247,
+        22200319,
+        22200333,
+        22200345,
+        22200375,
+        22200387,
+        22200406,
+        22200420,
+        22200591
+      ],
+      "count": 9,
+      "team_points_sum": 970,
+      "answer": "Jakob Poeltl missed 9 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season with team points 80+."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with under 110 team points?",
+      "game_ids": [
+        22200247,
+        22200333,
+        22200345
+      ],
+      "count": 3,
+      "team_points_sum": 286,
+      "answer": "Jakob Poeltl missed 3 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season with team points under 110."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with 110 or fewer team points?",
+      "game_ids": [
+        22200247,
+        22200333,
+        22200345
+      ],
+      "count": 3,
+      "team_points_sum": 286,
+      "answer": "Jakob Poeltl missed 3 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season with team points at most 110."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with at least 25 team assists?",
+      "game_ids": [
+        22200247,
+        22200319,
+        22200333,
+        22200375,
+        22200406,
+        22200591
+      ],
+      "count": 6,
+      "team_points_sum": 648,
+      "answer": "Jakob Poeltl missed 6 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season with team assists 25+."
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with at most 12 team turnovers?",
+      "game_ids": [
+        22200247,
+        22200319,
+        22200333,
+        22200406,
+        22200420
+      ],
+      "count": 5,
+      "team_points_sum": 526,
+      "answer": "Jakob Poeltl missed 5 San Antonio Spurs games through 2023-02-08 in the 2022-23 regular season with team turnovers at most 12."
+    },
+    {
+      "query": "Looney summary with under 110 team points",
+      "game_ids": [
+        22200055,
+        22200104,
+        22200128,
+        22200182,
+        22200253,
+        22200359,
+        22200432,
+        22200463,
+        22200594,
+        22200853,
+        22200916,
+        22200953,
+        22200964,
+        22201121
+      ],
+      "games": 14,
+      "rebounds_sum": 113
+    }
+  ],
+  "warriors_record": {
+    "games": 14,
+    "wins": 3,
+    "losses": 11
+  },
+  "scope": "retained qualified scoped originals; no new source capture",
+  "full_season_poeltl_accepted": false,
+  "production_writes": 0
+}

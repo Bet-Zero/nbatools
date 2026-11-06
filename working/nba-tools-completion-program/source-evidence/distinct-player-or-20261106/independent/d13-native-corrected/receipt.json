@@ -1,0 +1,173 @@
+{
+  "reviewed_revision": "d13c8e24dfc7ed7fb818f6422e8f6a917184b2fd",
+  "checker": "/root/poeltl_source_checker; independent Codex session, exact backend model not exposed",
+  "oracle_sha256": "9915885cc7afa1ba96cb47e8d38aa621c808a41ed3146b6c35ad96aeb596afd6",
+  "phase": "native",
+  "checks": [
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) in 2022-23?",
+      "oracle": "native_union",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 116
+        }
+      ],
+      "count_phrase": "116 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many player games with (over 37 points or over 10 assists) in 2022-23?",
+      "oracle": "native_union",
+      "grain": "player_games",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 674
+        }
+      ],
+      "count_phrase": "There were 674 matching player-games in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) for the Warriors in 2022-23?",
+      "oracle": "native_scoped_GSW",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 5
+        }
+      ],
+      "count_phrase": "5 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) at home in 2022-23?",
+      "oracle": "native_home",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 95
+        }
+      ],
+      "count_phrase": "95 distinct players had a matching game at home in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) against the Celtics in 2022-23?",
+      "oracle": "native_opponent_BOS",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 20
+        }
+      ],
+      "count_phrase": "20 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) and exactly 0 turnovers in 2022-23?",
+      "oracle": "native_outer_zero_tov",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 35
+        }
+      ],
+      "count_phrase": "35 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had ((over 37 points and at least 7 assists) or (at least 18 rebounds and at least 3 blocks)) in 2022-23?",
+      "oracle": "native_grouped_and_or",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 45
+        }
+      ],
+      "count_phrase": "45 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (exactly 29 points or exactly 9 assists) in 2022-23?",
+      "oracle": "native_exact_or",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 158
+        }
+      ],
+      "count_phrase": "158 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) with at least 125 team points in 2022-23?",
+      "oracle": "native_team_owned",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "safe_unsupported_unfinished",
+      "count": null,
+      "count_phrase": null
+    },
+    {
+      "query": "How many distinct players had (over 37 points or over 10 assists) when opponents scored under 110 points in 2022-23?",
+      "oracle": "native_opponent_owned",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "safe_unsupported_unfinished",
+      "count": null,
+      "count_phrase": null
+    },
+    {
+      "query": "How many distinct players had over 37 points or over 10 assists in 2022-23?",
+      "oracle": "native_union",
+      "grain": "distinct_players",
+      "data": "native",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 116
+        }
+      ],
+      "count_phrase": "116 distinct players had a matching game in the 2022-23 regular season."
+    },
+    {
+      "structured": "over 37 points or over 10 assists",
+      "oracle": "native_union",
+      "passed": true
+    },
+    {
+      "structured": "(over 37 points and at least 7 assists) or (at least 18 rebounds and at least 3 blocks)",
+      "oracle": "native_grouped_and_or",
+      "passed": true
+    },
+    {
+      "structured": "over 37 points or over 10 assists",
+      "oracle": "native_opponent_BOS",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "query_invocations": 28,
+  "skipped": 0,
+  "production_writes": 0
+}

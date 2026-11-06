@@ -1,0 +1,86 @@
+{
+  "baseline": "cbf46c7d08c5e41f4bf87a4000d6fee4d698bd3a",
+  "reviewed": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "cases": [
+    "players against celtics or heat",
+    "celtics vs knicks or heat",
+    "players against warriors or against lakers",
+    "players vs celtics, knicks and heat",
+    "players vs the celtics and knicks, lakers best stretch",
+    "players against unlistedclub or celtics",
+    "players against warriors or warriors",
+    "lakers players against celtics or heat",
+    "players against celtics and heat",
+    "players against celtics, heat"
+  ],
+  "results": [
+    [
+      [
+        16,
+        31,
+        [
+          "BOS",
+          "MIA"
+        ]
+      ]
+    ],
+    [],
+    [],
+    [
+      [
+        11,
+        35,
+        [
+          "BOS",
+          "NYK",
+          "MIA"
+        ]
+      ]
+    ],
+    [
+      [
+        15,
+        33,
+        [
+          "BOS",
+          "NYK"
+        ]
+      ]
+    ],
+    [],
+    [],
+    [
+      [
+        23,
+        38,
+        [
+          "BOS",
+          "MIA"
+        ]
+      ]
+    ],
+    [
+      [
+        16,
+        32,
+        [
+          "BOS",
+          "MIA"
+        ]
+      ]
+    ],
+    [
+      [
+        16,
+        29,
+        [
+          "BOS",
+          "MIA"
+        ]
+      ]
+    ]
+  ],
+  "passed": 10,
+  "failure": 0,
+  "scope": "old default flags only; opt-in list semantics checked by independent scoped raw population controls"
+}

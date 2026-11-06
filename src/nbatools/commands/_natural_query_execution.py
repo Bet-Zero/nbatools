@@ -1423,6 +1423,9 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return yes_no
 
     full = parse_query(query)
+    if full.get("distinct_player_count") and full.get("route") == "player_occurrence_leaders":
+        condition_text = _distinct_player_boolean_text(query, full)
+        return _execute_grouped_boolean_build_result(condition_text, full), full
     if full.get("last_n_scope") == "original_window":
         raise ValueError("Original participation windows with OR logic are not yet supported")
 
@@ -1688,6 +1691,24 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
         # an opponent owner. Do not discard an owned predicate on this path.
         raise ValueError("Named opponent stat conditions with grouped logic are not yet supported.")
 
+    if route == "player_occurrence_leaders" and parsed.get("distinct_player_count"):
+        # Existing occurrence filters select the common base, then the shared
+        # tree runs before aggregation and before any leaderboard display limit.
+        kwargs = dict(parsed["route_kwargs"])
+        for key in (
+            "stat",
+            "min_value",
+            "max_value",
+            "conditions",
+            "special_event",
+            "occurrence_event",
+        ):
+            kwargs.pop(key, None)
+        kwargs.update(condition_expression=condition_text, limit=None)
+        parsed["condition_expression"] = condition_text
+        parsed["route_kwargs"] = kwargs
+        return _execute_build_result(route, kwargs)
+
     if route in {"player_game_summary", "player_split_summary"}:
         if not expression_contains_boolean_ops(condition_text):
             raise ValueError("No grouped boolean expression detected.")
@@ -1857,12 +1878,101 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
 # ---------------------------------------------------------------------------
 
 
+def _bind_distinct_player_opponents(query: str, parsed: dict, kwargs: dict) -> None:
+    """Keep a common opponent list out of the subject-team slot."""
+    from nbatools.commands._parse_helpers import opponent_lists
+    from nbatools.commands.natural_query import _team_mentions
+
+    text = normalize_text(query)
+    lists = opponent_lists(text, repeated_leads=True, allow_subject_before=True)
+    if not lists:
+        return
+    if len(lists) != 1:
+        raise ValueError("Multiple opponent scopes cannot be flattened into a common filter.")
+    start, end, opponents = lists[0]
+    outside = text[:start] + " " * (end - start) + text[end:]
+    subjects = {team for _, _, team in _team_mentions(outside)}
+    if len(subjects) > 1:
+        raise ValueError("Multiple subject-team scopes are not yet supported here.")
+    subject = next(iter(subjects), None)
+    kwargs.update(team=subject, opponent=list(dict.fromkeys(opponents)))
+    parsed.update(team=subject, opponent=kwargs["opponent"])
+
+
+def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
+    """Read a complete stat expression and retain only proven common scope."""
+    from nbatools.commands._leaderboard_eligibility import (
+        _SLOT_CLAIMS,
+        _claimed_ranges,
+        _residual_tokens,
+    )
+    from nbatools.commands._player_game_context import (
+        _opponent_bounds,
+        team_subject_stat_conditions,
+    )
+    from nbatools.commands.query_boolean_parser import consume_condition_at
+
+    text = normalize_text(query)
+    if parsed.get("player") or parsed.get("player_a") or parsed.get("player_b"):
+        raise ValueError("Cross-player boolean conditions are not yet supported.")
+    if parsed.get("last_n") or parsed.get("top_n"):
+        raise ValueError("Ranked/windowed distinct-player boolean counts are not yet supported.")
+    if team_subject_stat_conditions(text) or _opponent_bounds(text):
+        raise ValueError("Team/opponent-owned boolean statistics are not yet supported.")
+    spans = []
+    for m in re.finditer(r"(?<!\w)(?=\S)", text):
+        found = consume_condition_at(text, m.start())
+        if found:
+            spans.append((m.start(), found[1]))
+    if not spans:
+        raise ValueError("No complete statistical boolean expression was read.")
+    start, end = min(a for a, _ in spans), max(b for _, b in spans)
+    while start and text[start - 1] in " (":
+        start -= 1
+    while end < len(text) and text[end] in " )":
+        end += 1
+    expression = text[start:end].strip()
+    # No names, filters or other clauses between predicates are stripped.
+    parse_condition_text(expression)
+    outer = text[:start] + " " + text[end:]
+    from nbatools.commands._parse_helpers import opponent_lists
+
+    for a, b, _ in reversed(opponent_lists(outer, repeated_leads=True, allow_subject_before=True)):
+        outer = outer[:a] + " " * (b - a) + outer[b:]
+    if contains_boolean_or(outer):
+        raise ValueError(
+            "Boolean scope clauses outside the statistical expression are not yet supported."
+        )
+    # A detected field is claimable only if this consumer actually receives it.
+    # Reuse the existing scope claims; do not let leaderboard-only qualifiers
+    # disappear merely because the broad parse recognized them.
+    scope = dict(parsed)
+    kwargs = parsed.get("route_kwargs") or {}
+    for keys, _ in _SLOT_CLAIMS:
+        for key in keys:
+            scope[key] = kwargs.get(key)
+    scope["min_value"] = scope["max_value"] = None
+    ranges = _claimed_ranges(outer, scope, None)
+    grammar = (
+        r"\b(?:how\s+many|number\s+of|count(?:\s+of)?|distinct|different|unique|players?)\b",
+        r"\b(?:a|an|the|game|games|with|had|have|has|did|got|posted|recorded|put\s+up|in|during|for|from|at|on|that|who)\b",
+    )
+    for pattern in grammar:
+        ranges.extend(m.span() for m in re.finditer(pattern, outer))
+    if _residual_tokens(outer, ranges):
+        raise ValueError("The distinct-player boolean request contains an unread scope or clause.")
+    return expression
+
+
 def _extract_grouped_condition_text(
     query: str,
     *,
     player: str | None = None,
     team: str | None = None,
+    parsed: dict | None = None,
 ) -> str:
+    if parsed and parsed.get("distinct_player_count"):
+        return _distinct_player_boolean_text(query, parsed)
     normalized = normalize_text(query)
     condition_text = normalized
 

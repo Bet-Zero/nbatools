@@ -17,6 +17,7 @@ from nbatools.commands._constants import (
     STAT_ALIASES,
     STAT_PATTERN,
     TEAM_SEASON_ADVANCED_STATS,
+    contains_boolean_or,
     normalize_text,
     route_to_intent,
 )
@@ -5370,6 +5371,7 @@ def _route_parsed_query(parsed: dict) -> dict:
         occurrence_event
         or (stat and (min_value is not None or max_value is not None))
         or len(parsed.get("compound_occurrence_conditions") or []) >= 2
+        or (contains_boolean_or(q) or "(" in q or ")" in q)
     ):
         # "How many players have had a 40 point game this season?"
         # "How many players scored 40 points this season?"
@@ -5397,6 +5399,7 @@ def _route_parsed_query(parsed: dict) -> dict:
             # must hold in the same game.
             "conditions": compound_conditions if compound else None,
             "limit": None,
+            "team": team,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -7182,6 +7185,38 @@ def _route_parsed_query(parsed: dict) -> dict:
             f"{', '.join(unexecuted_markers)} but has no execution path for it; "
             "no unfiltered fallback was returned"
         )
+
+    if (
+        route == "player_occurrence_leaders"
+        and parsed.get("distinct_player_count")
+        and (contains_boolean_or(q) or "(" in q or ")" in q)
+    ):
+        from nbatools.commands._natural_query_execution import (
+            _bind_distinct_player_opponents,
+            _distinct_player_boolean_text,
+        )
+
+        try:
+            _bind_distinct_player_opponents(q, parsed, route_kwargs)
+            expression = _distinct_player_boolean_text(q, {**parsed, "route_kwargs": route_kwargs})
+        except ValueError:
+            route_kwargs["unsupported_filters"] = list(
+                dict.fromkeys(
+                    [*(route_kwargs.get("unsupported_filters") or []), "distinct_boolean_scope"]
+                )
+            )
+        else:
+            parsed["condition_expression"] = expression
+            route_kwargs["condition_expression"] = expression
+            for key in (
+                "stat",
+                "min_value",
+                "max_value",
+                "conditions",
+                "special_event",
+                "occurrence_event",
+            ):
+                route_kwargs.pop(key, None)
 
     # An "or fewer" / "at most" bound the parse or the route dropped refuses
     # rather than answering unfiltered.
@@ -11028,6 +11063,11 @@ def _team_players_threshold(parsed: dict) -> dict | None:
     if not team or parsed.get("player") or parsed.get("team_a") or parsed.get("team_b"):
         return None
     if not _TEAM_PLAYERS_SUBJECT.search(q):
+        return None
+    if parsed.get("count_intent") and (contains_boolean_or(q) or "(" in q or ")" in q):
+        # The shared occurrence engine now accepts the complete boolean tree;
+        # keep the team's player population instead of the one-bound adapter.
+        parsed["distinct_player_count"] = True
         return None
     stat, low, high = parsed.get("stat"), parsed.get("min_value"), parsed.get("max_value")
     event = parsed.get("occurrence_event") or {}

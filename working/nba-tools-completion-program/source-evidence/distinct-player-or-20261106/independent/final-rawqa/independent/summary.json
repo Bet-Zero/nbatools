@@ -1,0 +1,95 @@
+{
+  "run_id": "independent",
+  "started_at": "2026-11-06T14:04:25.839452+00:00",
+  "completed_at": "2026-11-06T14:04:26.640946+00:00",
+  "corpus_path": "/workspace/nbatools/work/distinct-or-checker/rawqa.yaml",
+  "slice_names": [],
+  "case_count": 4,
+  "result_status_counts": {
+    "ok": 4
+  },
+  "category_counts": {
+    "query": 4
+  },
+  "route_counts": {
+    "player_game_finder": 1,
+    "player_occurrence_leaders": 3
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 4
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "requires_backend_answer_text": 4
+  },
+  "answer_text_status_counts": {
+    "backend_answer_text_present": 4
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 0,
+  "informational_flag_case_ids": [],
+  "informational_flag_counts": {},
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 4
+  },
+  "expectation_check_counts": {
+    "pass": 24
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "independent_distinct_union",
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26?",
+      "duration_seconds": 0.543776,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "independent_opponent_union",
+      "query": "How many distinct players had (over 20 points or over 10 assists) against the Warriors or against the Lakers in 2025-26?",
+      "duration_seconds": 0.116993,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "independent_distinct_zero",
+      "query": "How many distinct players had (over 90 points or over 90 assists) in 2025-26?",
+      "duration_seconds": 0.080449,
+      "result_status": "ok",
+      "route": "player_occurrence_leaders"
+    },
+    {
+      "id": "independent_player_game_union",
+      "query": "How many player games with (over 20 points or over 10 assists) in 2025-26?",
+      "duration_seconds": 0.060102,
+      "result_status": "ok",
+      "route": "player_game_finder"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "/workspace/nbatools/work/distinct-or-checker/final-rawqa/independent/report.jsonl",
+    "report_md": "/workspace/nbatools/work/distinct-or-checker/final-rawqa/independent/report.md",
+    "summary_json": "/workspace/nbatools/work/distinct-or-checker/final-rawqa/independent/summary.json",
+    "product_review_md": "/workspace/nbatools/work/distinct-or-checker/final-rawqa/independent/product_review.md",
+    "product_review_json": "/workspace/nbatools/work/distinct-or-checker/final-rawqa/independent/product_review.json"
+  },
+  "scope": "full_corpus",
+  "source_commit": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "source_tree_clean": true,
+  "data_generation": "legacy",
+  "corpus_sha256": "96e983fbc2fbd5bf117c76cf9073be0f9cff04c9273efc1f76b22dfe2ab6f47e",
+  "case_ids": [
+    "independent_distinct_union",
+    "independent_player_game_union",
+    "independent_opponent_union",
+    "independent_distinct_zero"
+  ],
+  "selected_cases_sha256": "e8f5855dfd8d65f165f03677f1909c78b23694b7d8debc784be3a360f02721c4",
+  "output_sha256": "c8b240232d6c9a030be15bd59f72335af96439d18f8a4cd00c439714b99fc2bc"
+}

@@ -36,10 +36,12 @@ from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
     load_player_games_for_seasons,
+    normalize_season_type,
     team_value_mask,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.data_source import data_exists
 
 # ---------------------------------------------------------------------------
 # Condition dataclass for compound occurrence queries
@@ -311,6 +313,7 @@ def build_result(
     max_value: float | None = None,
     special_event: str | None = None,
     conditions: list[OccurrenceCondition | dict] | None = None,
+    condition_expression: str | None = None,
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -332,10 +335,11 @@ def build_result(
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
 
-    Supports three modes:
+    Supports four modes:
     1. Single stat threshold: stat + min_value (legacy, still supported)
     2. Special events: special_event (triple_double, double_double)
     3. Compound conditions: conditions list with multiple thresholds (AND logic)
+    4. Boolean expression: the shared parser/tree, evaluated before aggregation
 
     Parameters
     ----------
@@ -354,6 +358,8 @@ def build_result(
         List of threshold conditions that must ALL be met (AND logic).
         Each can be an OccurrenceCondition or a dict with {stat, min_value, max_value}.
         Mutually exclusive with *stat* and *special_event*.
+    condition_expression : str or None
+        Complete statistical AND/OR expression. Mutually exclusive with other modes.
     season, start_season, end_season : str or None
         Season parameters forwarded to ``resolve_seasons()``.
     season_type : str
@@ -377,6 +383,12 @@ def build_result(
     -------
     LeaderboardResult or NoResult
     """
+    tree = None
+    if condition_expression is not None:
+        from nbatools.commands.query_boolean_parser import parse_condition_text
+
+        tree = parse_condition_text(condition_expression)
+
     # Normalize conditions from dicts to OccurrenceCondition objects
     normalized_conditions: list[OccurrenceCondition] | None = None
     if conditions:
@@ -398,6 +410,7 @@ def build_result(
         [
             normalized_conditions is not None and len(normalized_conditions) > 0,
             special_event is not None,
+            tree is not None,
         ]
     )
 
@@ -423,6 +436,17 @@ def build_result(
     except ValueError:
         return NoResult(query_class="leaderboard", reason="no_data")
 
+    if tree is not None:
+        safe = normalize_season_type(season_type)
+        if any(not data_exists(f"data/raw/player_game_stats/{s}_{safe}.csv") for s in seasons):
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_data",
+                notes=[
+                    "A requested season is unavailable; no partial distinct count was returned."
+                ],
+            )
+
     # Load game data
     try:
         basic = load_player_games_for_seasons(seasons, season_type)
@@ -431,6 +455,26 @@ def build_result(
 
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
+
+    if tree is not None:
+        scope_columns = [
+            c
+            for enabled, c in (
+                (team, "team_abbr"),
+                (opponent, "opponent_team_abbr"),
+                (home_only, "is_home"),
+                (away_only, "is_away"),
+                (wins_only or losses_only, "wl"),
+                (start_date or end_date, "game_date"),
+            )
+            if enabled
+        ]
+        if any(c not in basic or basic[c].isna().any() for c in scope_columns):
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_data",
+                notes=["A requested scope filter has unknown coverage."],
+            )
 
     # Apply base filters
     basic = _apply_base_filters(
@@ -469,23 +513,50 @@ def build_result(
             return NoResult(query_class="leaderboard", reason="no_match")
 
     # Determine which games qualify
-    if special_event:
+    if tree is not None:
+        from nbatools.commands.query_boolean_parser import (
+            condition_tree_leaves,
+            evaluate_condition_tree_to_mask,
+        )
+
+        predicates = condition_tree_leaves(tree)
+        _validate_conditions(
+            [OccurrenceCondition(n.stat, n.min_value, n.max_value) for n in predicates]
+        )
+        required = {"player_id", *(n.stat for n in predicates)}
+        if any(
+            c not in basic or pd.to_numeric(basic[c], errors="coerce").isna().any()
+            for c in required
+        ):
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_data",
+                notes=["Requested boolean predicate or player identity has unknown coverage."],
+            )
+        # Both branches use this same scoped frame; overlap is one true row.
+        qualifying_mask = evaluate_condition_tree_to_mask(tree, basic)
+    elif special_event:
         qualifying_mask = _flag_special_event(basic, special_event)
     else:
         qualifying_mask = _flag_compound_conditions(basic, normalized_conditions or [])
 
     # Build event label for output column
-    event_label = _build_event_label(
-        conditions=normalized_conditions,
-        stat=stat,
-        min_value=min_value,
-        special_event=special_event,
+    event_label = (
+        "matching_games"
+        if tree is not None
+        else _build_event_label(
+            conditions=normalized_conditions,
+            stat=stat,
+            min_value=min_value,
+            special_event=special_event,
+        )
     )
 
     # Count qualifying games and total games per player
     basic["_qualifies"] = qualifying_mask.astype(int)
 
-    grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(
+    grouped = basic.groupby("player_id", as_index=False).agg(
+        player_name=("player_name", "last"),
         occurrence_count=("_qualifies", "sum"),
         games_played=("game_id", "nunique"),
     )
@@ -521,7 +592,7 @@ def build_result(
     grouped = grouped.rename(columns={"occurrence_count": event_label})
 
     # Build output columns
-    out_cols = ["rank", "player_name"]
+    out_cols = ["rank", "player_id", "player_name"]
     if "team_abbr" in grouped.columns:
         out_cols.append("team_abbr")
     out_cols.extend(["games_played", event_label])
@@ -542,6 +613,8 @@ def build_result(
 
     # Caveats
     caveats: list[str] = []
+    if condition_expression is not None:
+        caveats.append(f"matching games: {condition_expression}")
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
     if len(seasons) > 1:

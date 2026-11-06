@@ -1,0 +1,336 @@
+{
+  "reviewed_revision": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "checker": "/root/poeltl_source_checker; independent Codex session, exact backend model not exposed",
+  "oracle_sha256": "9915885cc7afa1ba96cb47e8d38aa621c808a41ed3146b6c35ad96aeb596afd6",
+  "phase": "controlled",
+  "checks": [
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26?",
+      "oracle": "controlled_union",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 3
+        }
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "Number of distinct players with (above 10 assists or above 20 points) in 2025-26",
+      "oracle": "controlled_union",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 3
+        }
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many player games with (over 20 points or over 10 assists) in 2025-26?",
+      "oracle": "controlled_union",
+      "grain": "player_games",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 4
+        }
+      ],
+      "count_phrase": "There were 4 matching player-games in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) for the Nuggets in 2025-26?",
+      "oracle": "controlled_team_DEN",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) at home in 2025-26?",
+      "oracle": "controlled_home",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 3
+        }
+      ],
+      "count_phrase": "3 distinct players had a matching game at home in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) on the road in 2025-26?",
+      "oracle": "controlled_away",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 1
+        }
+      ],
+      "count_phrase": "1 distinct player had a matching game on the road in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) against the Warriors in 2025-26?",
+      "oracle": "controlled_opponent_GSW",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 3
+        }
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) and zero turnovers in 2025-26?",
+      "oracle": "controlled_outer_zero_tov",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had ((over 20 points and zero turnovers) or (over 10 assists and zero turnovers)) in 2025-26?",
+      "oracle": "controlled_grouped_and_or",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) and exactly 25 points in 2025-26?",
+      "oracle": "controlled_outer_exact25pts",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 1
+        }
+      ],
+      "count_phrase": "1 distinct player had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (exactly 20 points or exactly 0 plus-minus) in 2025-26?",
+      "oracle": "controlled_exact_or_signedzero",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 90 points or over 90 assists) in 2025-26?",
+      "oracle": "controlled_zero",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 0
+        }
+      ],
+      "count_phrase": "0 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) with exactly 100 team points in 2025-26?",
+      "oracle": "controlled_team_owned",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "safe_unsupported_unfinished",
+      "count": null,
+      "count_phrase": null
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 20 points) in 2025-26?",
+      "oracle": "controlled_duplicate_or",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points or over 10 assists) from November 2 to November 3, 2025?",
+      "oracle": "controlled_date_scope",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game from 2025-11-02 to 2025-11-03 in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had (over 20 points and over 10 assists) in 2025-26?",
+      "oracle": "controlled_crossgame_and_trap",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 2
+        }
+      ],
+      "count_phrase": "2 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "query": "How many distinct players had over 20 points or over 10 assists in 2025-26?",
+      "oracle": "controlled_union",
+      "grain": "distinct_players",
+      "data": "controlled",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 3
+        }
+      ],
+      "count_phrase": "3 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "structured": "(over 20 points or over 10 assists)",
+      "oracle": "controlled_union",
+      "passed": true
+    },
+    {
+      "structured": "(over 20 points or over 10 assists) and exactly 25 points",
+      "oracle": "controlled_outer_exact25pts",
+      "passed": true
+    },
+    {
+      "structured": "(over 20 points or over 10 assists)",
+      "oracle": "controlled_team_DEN",
+      "passed": true
+    },
+    {
+      "structured": "(over 90 points or over 90 assists)",
+      "oracle": "controlled_zero",
+      "passed": true
+    },
+    {
+      "query": "How many distinct players had (at least 26 points or at least 7 assists) in 2025-26?",
+      "oracle": "synthetic_full_limit",
+      "grain": "distinct_players",
+      "data": "synthetic_full",
+      "passed": true,
+      "acceptance": "positive",
+      "count": [
+        {
+          "count": 27
+        }
+      ],
+      "count_phrase": "27 distinct players had a matching game in the 2025-26 regular season."
+    },
+    {
+      "control": "missing_source",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_data"
+    },
+    {
+      "control": "missing_branch",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_data"
+    },
+    {
+      "control": "unknown_branch",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_data"
+    },
+    {
+      "control": "unknown_scope",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_data"
+    },
+    {
+      "control": "alias_identity",
+      "passed": true,
+      "status": "ok",
+      "reason": null
+    },
+    {
+      "control": "missing_season",
+      "passed": true,
+      "status": "no_result",
+      "reason": "no_data"
+    },
+    {
+      "unread_scope": "when everyone was happy",
+      "passed": true
+    },
+    {
+      "unread_scope": "against Unlistedclub",
+      "passed": true
+    },
+    {
+      "unread_scope": "while injured",
+      "passed": true
+    },
+    {
+      "unread_scope": "and (over 20 points against Boston or over 10 assists against Phoenix)",
+      "passed": true
+    },
+    {
+      "unread_scope": "in the last 3 games",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "query_invocations": 55,
+  "skipped": 0,
+  "production_writes": 0
+}

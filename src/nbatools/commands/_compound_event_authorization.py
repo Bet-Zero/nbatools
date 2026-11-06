@@ -202,6 +202,15 @@ def condition_is_executed(
     return False
 
 
+def _boolean_conditions(expression: str) -> tuple[dict[str, Any], ...]:
+    from nbatools.commands.query_boolean_parser import condition_tree_leaves, parse_condition_text
+
+    return tuple(
+        dict(stat=n.stat, min_value=n.min_value, max_value=n.max_value)
+        for n in condition_tree_leaves(parse_condition_text(expression))
+    )
+
+
 def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
     """Every *game-level* condition the question states, in query order.
 
@@ -210,6 +219,8 @@ def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
     averaging 25+ points"), a different and correctly executed thing. Conflating
     the two would refuse ordinary working leaderboards.
     """
+    if parsed.get("condition_expression"):
+        return _boolean_conditions(parsed["condition_expression"])
     declared: list[dict[str, Any]] = []
     for condition in parsed.get("compound_occurrence_conditions") or []:
         normalized = _normalize_condition(condition)
@@ -223,6 +234,8 @@ def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
 
 def executed_event_conditions(route: str | None, route_kwargs: dict) -> tuple[dict[str, Any], ...]:
     """Every game-level condition the chosen route will actually apply."""
+    if route in OCCURRENCE_COUNT_ROUTES and route_kwargs.get("condition_expression"):
+        return _boolean_conditions(route_kwargs["condition_expression"])
     executed: list[dict[str, Any]] = []
 
     if route in OCCURRENCE_COUNT_ROUTES:

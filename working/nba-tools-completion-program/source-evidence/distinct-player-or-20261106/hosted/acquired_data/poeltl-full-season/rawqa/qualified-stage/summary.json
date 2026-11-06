@@ -1,0 +1,94 @@
+{
+  "run_id": "qualified-stage",
+  "started_at": "2026-11-06T14:08:40.234697+00:00",
+  "completed_at": "2026-11-06T14:08:41.437405+00:00",
+  "corpus_path": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/raw-query-corpus.yaml",
+  "slice_names": [],
+  "case_count": 4,
+  "result_status_counts": {
+    "ok": 4
+  },
+  "category_counts": {
+    "participation": 4
+  },
+  "route_counts": {
+    "game_finder": 4
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 4
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "requires_backend_answer_text": 4
+  },
+  "answer_text_status_counts": {
+    "backend_answer_text_present": 4
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 0,
+  "informational_flag_case_ids": [],
+  "informational_flag_counts": {},
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 4
+  },
+  "expectation_check_counts": {
+    "pass": 27
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "poeltl_qualified_full",
+      "query": "How many games did Jakob Poeltl miss in 2022-23?",
+      "duration_seconds": 0.708256,
+      "result_status": "ok",
+      "route": "game_finder"
+    },
+    {
+      "id": "poeltl_qualified_home",
+      "query": "How many home games did Jakob Poeltl miss in 2022-23?",
+      "duration_seconds": 0.217055,
+      "result_status": "ok",
+      "route": "game_finder"
+    },
+    {
+      "id": "poeltl_qualified_toronto_zero",
+      "query": "How many games did Jakob Poeltl miss for the Raptors in 2022-23?",
+      "duration_seconds": 0.181626,
+      "result_status": "ok",
+      "route": "game_finder"
+    },
+    {
+      "id": "poeltl_qualified_lakers",
+      "query": "How many games did Jakob Poeltl miss against the Lakers in 2022-23?",
+      "duration_seconds": 0.095667,
+      "result_status": "ok",
+      "route": "game_finder"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "outputs/required_data_validation/acquired_data/poeltl-full-season/rawqa/qualified-stage/report.jsonl",
+    "report_md": "outputs/required_data_validation/acquired_data/poeltl-full-season/rawqa/qualified-stage/report.md",
+    "summary_json": "outputs/required_data_validation/acquired_data/poeltl-full-season/rawqa/qualified-stage/summary.json",
+    "product_review_md": "outputs/required_data_validation/acquired_data/poeltl-full-season/rawqa/qualified-stage/product_review.md",
+    "product_review_json": "outputs/required_data_validation/acquired_data/poeltl-full-season/rawqa/qualified-stage/product_review.json"
+  },
+  "scope": "full_corpus",
+  "source_commit": "6a6c7099013648913a87d81eab6a311717fa5de3",
+  "source_tree_clean": true,
+  "data_generation": "legacy",
+  "corpus_sha256": "70dc64c7be02c84d82e4cb56310447211468859bfe92ee4a0091460711790ca5",
+  "case_ids": [
+    "poeltl_qualified_full",
+    "poeltl_qualified_home",
+    "poeltl_qualified_lakers",
+    "poeltl_qualified_toronto_zero"
+  ],
+  "selected_cases_sha256": "e7417202ddd274c320be4e69518f902d579aa639e167cc3c4f3401d99dc87a64",
+  "output_sha256": "a79b31d43c4f20d5e8a0be9a6b6a60c39698d80bbbb3638bc620667467d2fb6e"
+}

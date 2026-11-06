@@ -1,0 +1,32 @@
+{
+  "baseline": "cbf46c7d08c5e41f4bf87a4000d6fee4d698bd3a",
+  "cases": [
+    {"query":"How many distinct players had (over 20 points or over 10 assists) in 2025-26?","oracle":"controlled_union","grain":"distinct_players","data":"controlled"},
+    {"query":"Number of distinct players with (above 10 assists or above 20 points) in 2025-26","oracle":"controlled_union","grain":"distinct_players","data":"controlled"},
+    {"query":"How many player games with (over 20 points or over 10 assists) in 2025-26?","oracle":"controlled_union","grain":"player_games","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) for the Nuggets in 2025-26?","oracle":"controlled_team_DEN","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) at home in 2025-26?","oracle":"controlled_home","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) on the road in 2025-26?","oracle":"controlled_away","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) against the Warriors in 2025-26?","oracle":"controlled_opponent_GSW","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) and zero turnovers in 2025-26?","oracle":"controlled_outer_zero_tov","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had ((over 20 points and zero turnovers) or (over 10 assists and zero turnovers)) in 2025-26?","oracle":"controlled_grouped_and_or","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) and exactly 25 points in 2025-26?","oracle":"controlled_outer_exact25pts","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (exactly 20 points or exactly 0 plus-minus) in 2025-26?","oracle":"controlled_exact_or_signedzero","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 90 points or over 90 assists) in 2025-26?","oracle":"controlled_zero","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) with exactly 100 team points in 2025-26?","oracle":"controlled_team_owned","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 20 points) in 2025-26?","oracle":"controlled_duplicate_or","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points or over 10 assists) from November 2 to November 3, 2025?","oracle":"controlled_date_scope","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (over 20 points and over 10 assists) in 2025-26?","oracle":"controlled_crossgame_and_trap","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had (at least 26 points or at least 7 assists) in 2025-26?","oracle":"synthetic_full_limit","grain":"distinct_players","data":"synthetic_full"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) in 2022-23?","oracle":"native_union","grain":"distinct_players","data":"native"},
+    {"query":"How many player games with (over 37 points or over 10 assists) in 2022-23?","oracle":"native_union","grain":"player_games","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) for the Warriors in 2022-23?","oracle":"native_scoped_GSW","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) at home in 2022-23?","oracle":"native_home","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) against the Celtics in 2022-23?","oracle":"native_opponent_BOS","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) and exactly 0 turnovers in 2022-23?","oracle":"native_outer_zero_tov","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had ((over 37 points and at least 7 assists) or (at least 18 rebounds and at least 3 blocks)) in 2022-23?","oracle":"native_grouped_and_or","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (exactly 29 points or exactly 9 assists) in 2022-23?","oracle":"native_exact_or","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) with at least 125 team points in 2022-23?","oracle":"native_team_owned","grain":"distinct_players","data":"native"},
+    {"query":"How many distinct players had (over 37 points or over 10 assists) when opponents scored under 110 points in 2022-23?","oracle":"native_opponent_owned","grain":"distinct_players","data":"native"}
+  ]
+}
