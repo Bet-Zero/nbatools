@@ -24,14 +24,19 @@ DQ-004's owner acquisition packet remains separate. **K12 stays parked.**
 | Still unfinished / preserved | DQ-004 original complete-tenure bodies remain pending; proposed81=72+9full-season Poeltl arithmetic is unaccepted. Do not retry the unchanged403cloud route or wait for the separate acquisition packet. DQ-005 reported margins remain unqualified/unused. Prior484unknowns/20groups, all46positive obligations, wider comparison/condition composition, current freshness, integrated Core-1 and production acceptance remain open. |
 | Safeguards / workers | No Agent2 launch, coordination, monitoring or wait. No new source acquisition, production data publication/pointer change, access/spending/schedule changes or K12 work. Existing data qualifiers, unknown handling, clinical/participation distinction, required positives, security and publication gates remain intact. |
 
-**Next general-purpose application task:** reproduce and implement explicit nonzero
-stat equality (for example `exactly 20 points`) through shared finder/count and
-summary predicates, as retained in the [K03 binding](k03-binding.md). Freeze meaning
-and independent raw-row expectations first; preserve equality versus floor/ceiling,
-condition ownership and grain. This is a named unfinished product obligation that
-can proceed with qualified retained data/independent fixtures while DQ-004 remains
-pending. No owner intervention is needed for that application task. Unsupported
-composition remains unfinished, not completed by a guard.
+**Active application task (owner, 2026-11-06):** before K03 equality, authenticate
+and independently qualify the recovered Poeltl originals and finish the ordinary
+full-season multi-team missed-game acceptance from PR587. Current branch
+`codex/poeltl-tenure-acceptance-20261106`, live-main base
+`f06464577b105c039b1e543eaf91d2ed75d03699`; PR589 is complete. The attached ZIP
+matches PR587 comment6682443108 and is preserved with its unchanged receipt in
+[source evidence](source-evidence/poeltl-full-season-20261106/). Separate source
+review supports finite SAS-through-Feb8/TOR-from-Feb10 intervals, retaining Feb9
+as date-only unknown (no candidate-club game occurs then). Full consumer/numerical
+acceptance remains pending; do not relabel the former proposed totals accepted
+before those checks. Reuse existing native records; no downloads or Agent2 work.
+After this bounded task reaches its verified checkpoint, continue the retained
+K03 shared explicit nonzero equality capability with independent raw expectations.
 
 This is a substantive independently verified application checkpoint; safe integration
 requires final exact-head blocking CI. Normal landing/post-merge receipts are

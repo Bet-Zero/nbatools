@@ -1,0 +1,3 @@
+season,player_id,player_name,team_id,start_date,end_date,membership_state,coverage_scope,source,source_sha256
+2022-23,1627751,Jakob Poeltl,1610612759,2022-10-18,2023-02-08,member,explicit_dated_nba_membership,https://www.nba.com/raptors/news/raptors-extend-poeltl,4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d
+2022-23,1627751,Jakob Poeltl,1610612761,2023-02-10,2023-04-09,member,explicit_dated_nba_membership,https://www.nba.com/raptors/news/raptors-re-sign-poeltl,95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2

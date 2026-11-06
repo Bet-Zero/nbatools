@@ -1,0 +1,1853 @@
+{
+  "checker": "/root/poeltl_source_checker; separate Codex checker session; exact backend model not exposed",
+  "baseline": "f06464577b105c039b1e543eaf91d2ed75d03699",
+  "attached": {
+    "bytes": 111037,
+    "sha256": "42134b026ae53e9ca3c731815f3290cc79937d14b5768c1f1eda9c9a7547361e",
+    "members": [
+      "receipt.json",
+      "sources/tenure.html",
+      "sources/trade.html",
+      "sources/return.html"
+    ]
+  },
+  "receipt_sha256": "f194129df2b936a77b91aa6a9292e970d1f3a6f2ff04f80dcda8060a0fcf16c2",
+  "original_receipt_classification": "original_capture_only_not_qualified",
+  "article_evidence": [
+    {
+      "file": "tenure.html",
+      "sha256": "4af4b343c948e0fbe28b1f49fb1f7cfad65638de48fbf35e7a2a4c44fa27239d",
+      "url": "https://www.nba.com/raptors/news/raptors-extend-poeltl",
+      "title": "RAPTORS EXTEND POELTL",
+      "date": "2025-07-08T15:37:07Z",
+      "modified": "2025-07-08T15:37:07Z",
+      "body": [
+        "The Toronto Raptors announced Tuesday they have signed centre Jakob Poeltl (YAH-cub PER-tull) to a multi-year contract extension. Per team policy, financial terms of the deal were not disclosed.",
+        "Poeltl, 7-foot, 253 pounds, averaged career highs of 14.5 points, 9.6 rebounds and 29.6 minutes in 57 games (56 starts) last season. He ranked fifth in the NBA with a .627 (363-579) field goal percentage, his eighth consecutive season shooting better than 60 percent from the floor. Poeltl scored 20+ points 12 times, including a career-high 35 points Nov. 16 at Boston, and recorded 23 double-doubles.",
+        "\u201cJakob has developed into one of the league\u2019s top two-way centres and signing him to an extension was a top priority this off season. As valuable as he is on the floor, we also really appreciate his leadership and experience off-court,\u201d Raptors General Manager Bobby Webster said. \u201cJak shares our goals \u2013 he wants to win as much we do, and we\u2019re thrilled he\u2019ll be a Raptor for seasons to come.\u201d",
+        "\u201cToronto has always felt like home for me \u2013 I want to be a Raptor for life. Thanks to Bobby and team ownership for believing in me, and to the fans for their amazing support,\u201d Poeltl said. \u201cWe have a young core that\u2019s full of potential and I believe we\u2019re ready to take the next step. I can\u2019t wait to get together back on the Scotiabank Arena court.\u201d",
+        "A native of Vienna, Austria, Poeltl owns career averages of 8.9 points, 7.0 rebounds, 1.3 blocks and 22.4 minutes in 595 games (341 starts) with San Antonio and Toronto. He was selected ninth overall by the Raptors in the 2016 NBA Draft becoming the first Austrian player in league history. Poeltl spent four-plus seasons with the Spurs prior to being re-acquired by Toronto in February 2023."
+      ]
+    },
+    {
+      "file": "trade.html",
+      "sha256": "23f9c10ff29bf887bd3e83557efba68b5754a88e55c18cfc4cc2d79822000eb5",
+      "url": "https://www.nba.com/raptors/news/raptors-acquire-poeltl-from-san-antonio",
+      "title": "RAPTORS ACQUIRE POELTL FROM SAN ANTONIO",
+      "date": "2023-02-09T18:42:48Z",
+      "modified": "2023-02-23T22:14:31Z",
+      "body": [
+        "The Toronto Raptors announced Thursday they have\u00a0acquired centre Jakob Poeltl (YAH-cub PER-tull) from San Antonio in exchange for centre Khem Birch, a protected 2024 first round draft pick and second round draft picks in 2023 and 2025. Poeltl was selected ninth overall by the Raptors in the 2016 NBA Draft.",
+        "Poeltl, 7-foot-1, 260 pounds, is averaging 12.1 points, 9.0 rebounds, 1.1 blocks and 26.1 minutes in 46 games (all starts) this season. He is shooting .616 (239-388) from the field, has scored 20+ points six times and recorded 11 doubles-doubles. Poeltl scored a career-high 31 points Nov. 15 at Portland and grabbed a season-best 16 rebounds Jan. 6 against Detroit.",
+        "A native of Vienna, Austria, Poeltl owns career averages of 7.8 points, 6.4 rebounds, 1.2 blocks and 20.8 minutes in 462 games (210 starts) with San Antonio and Toronto.",
+        "Prior to the NBA, Poeltl played two years (2014-16) at Utah and one season (2013-14) for the Arkadia Traiskirchen Lions in Austria. He was the 2016 Pac-12 Player of the Year, an AP second-team All-American and the recipient of the Kareem Abdul-Jabbar Award for the nation's top centre his sophomore year with the Utes.",
+        "Birch averaged 5.5 points, 4.3 rebounds and 18.4 minutes in 94 games with the Raptors after signing as a free agent in April 2021."
+      ]
+    },
+    {
+      "file": "return.html",
+      "sha256": "95ba9440784d6ffa3666e8d9f318561dd6a3d059b262dc4ce1ea6958262e3ed2",
+      "url": "https://www.nba.com/raptors/news/raptors-re-sign-poeltl",
+      "title": "RAPTORS RE-SIGN POELTL",
+      "date": "2023-07-06T16:49:30Z",
+      "modified": "2023-07-06T16:49:30Z",
+      "body": [
+        "The Toronto Raptors announced Thursday they have re-signed centre Jakob Poeltl (YAH-cub PER-tull) to a multi-year contract. Per team policy, financial terms of the deal were not disclosed.",
+        "Poeltl, 7-foot-1, 260 pounds, averaged 12.5 points, 9.1 rebounds, 2.7 assists, 1.2 blocks and 26.5 minutes in 72 games (71 starts) with San Antonio and Toronto last season. He shot .629 (389-618) from the field \u2013 his highest field goal percentage since the 2018-19 season \u2013 which ranked ninth in the NBA.",
+        "\u201cJakob brought an immediate presence on the floor when he returned to us last season. He\u2019s a smart, hard-nosed rim protector,\u201d Raptors Vice-Chairman and President Masai Ujiri said. \u201cWe have been strong believers in Jakob as a player and as an individual since day one, and we are thrilled that he will be a Raptor for years to come.\u201d",
+        "After being acquired on Feb. 9, he played 26 games (25 starts) for the Raptors, averaging 13.1 points, 9.1 rebounds and 27.2 minutes. He tied Pascal Siakam (eight) for most double-doubles on the team since the trade deadline and also led the Raptors in total rebounds (237), blocks (34), and field goal percentage (.652) in that span. Poeltl recorded 21 points and a career-high 18 rebounds Feb. 23 vs. New Orleans becoming the sixth player in franchise history to record 20/18 in the regular season.",
+        "A native of Vienna, Austria, Poeltl owns career averages of 8.1 points, 6.5 rebounds, 1.3 blocks and 21.1 minutes in 488 games (235 starts) with San Antonio and Toronto. He was selected ninth overall by the Raptors in the 2016 becoming the first Austrian player in league history.",
+        "Prior to the NBA, Poeltl played two years (2014-16) at Utah and one season (2013-14) for the Arkadia Traiskirchen Lions in Austria. He was the 2016 Pac-12 Player of the Year, an AP second-team All-American and the recipient of the Kareem Abdul-Jabbar Award for the nation's top centre his sophomore year with the Utes."
+      ]
+    }
+  ],
+  "archive": {
+    "bytes": 2070622,
+    "sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+    "members": [
+      "pairs/boxscoresummaryv2_0022200247.json",
+      "pairs/boxscoresummaryv2_0022200319.json",
+      "pairs/boxscoresummaryv2_0022200333.json",
+      "pairs/boxscoresummaryv2_0022200345.json",
+      "pairs/boxscoresummaryv2_0022200375.json",
+      "pairs/boxscoresummaryv2_0022200387.json",
+      "pairs/boxscoresummaryv2_0022200406.json",
+      "pairs/boxscoresummaryv2_0022200420.json",
+      "pairs/boxscoresummaryv2_0022200591.json",
+      "pairs/boxscoretraditionalv3_0022200247.json",
+      "pairs/boxscoretraditionalv3_0022200319.json",
+      "pairs/boxscoretraditionalv3_0022200333.json",
+      "pairs/boxscoretraditionalv3_0022200345.json",
+      "pairs/boxscoretraditionalv3_0022200375.json",
+      "pairs/boxscoretraditionalv3_0022200387.json",
+      "pairs/boxscoretraditionalv3_0022200406.json",
+      "pairs/boxscoretraditionalv3_0022200420.json",
+      "pairs/boxscoretraditionalv3_0022200591.json",
+      "pairs/receipt.json",
+      "players.json",
+      "receipt.json",
+      "teams.json"
+    ]
+  },
+  "raw_population": {
+    "team_rows": 2460,
+    "unique_games": 1230,
+    "player_rows": 25895,
+    "all_30_teams_exactly_82_games": true
+  },
+  "qualified_full_day_intervals": [
+    {
+      "team": "SAS",
+      "start": "2022-10-18",
+      "end": "2023-02-08"
+    },
+    {
+      "team": "TOR",
+      "start": "2023-02-10",
+      "end": "2023-04-09"
+    }
+  ],
+  "unresolved_date": "2023-02-09 intraday transaction; no full-day club assertion",
+  "candidate_club_games_on_unresolved_date": [],
+  "by_team": {
+    "SAS": {
+      "eligible": 55,
+      "played": 46,
+      "explicit_dnp": 9,
+      "unknown": 0
+    },
+    "TOR": {
+      "eligible": 26,
+      "played": 26,
+      "explicit_dnp": 0,
+      "unknown": 0
+    }
+  },
+  "eligible_games": [
+    {
+      "game_id": "0022200011",
+      "date": "2022-10-19",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. CHA",
+      "pts": 102,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200018",
+      "date": "2022-10-21",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ IND",
+      "pts": 137,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200028",
+      "date": "2022-10-22",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ PHI",
+      "pts": 114,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200050",
+      "date": "2022-10-24",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ MIN",
+      "pts": 115,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200062",
+      "date": "2022-10-26",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ MIN",
+      "pts": 122,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200077",
+      "date": "2022-10-28",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. CHI",
+      "pts": 129,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200092",
+      "date": "2022-10-30",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. MIN",
+      "pts": 107,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200114",
+      "date": "2022-11-02",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. TOR",
+      "pts": 100,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200126",
+      "date": "2022-11-04",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. LAC",
+      "pts": 106,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200138",
+      "date": "2022-11-05",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ DEN",
+      "pts": 101,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200154",
+      "date": "2022-11-07",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. DEN",
+      "pts": 109,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200169",
+      "date": "2022-11-09",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. MEM",
+      "pts": 122,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200180",
+      "date": "2022-11-11",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. MIL",
+      "pts": 111,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200205",
+      "date": "2022-11-14",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ GSW",
+      "pts": 95,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200209",
+      "date": "2022-11-15",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ POR",
+      "pts": 110,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200222",
+      "date": "2022-11-17",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ SAC",
+      "pts": 112,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200239",
+      "date": "2022-11-19",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ LAC",
+      "pts": 97,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200247",
+      "date": "2022-11-20",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ LAL",
+      "pts": 92,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200269",
+      "date": "2022-11-23",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. NOP",
+      "pts": 110,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200282",
+      "date": "2022-11-25",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. LAL",
+      "pts": 94,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200288",
+      "date": "2022-11-26",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. LAL",
+      "pts": 138,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200319",
+      "date": "2022-11-30",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ OKC",
+      "pts": 111,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200333",
+      "date": "2022-12-02",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. NOP",
+      "pts": 99,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200345",
+      "date": "2022-12-04",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. PHX",
+      "pts": 95,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200375",
+      "date": "2022-12-08",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. HOU",
+      "pts": 118,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200387",
+      "date": "2022-12-10",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ MIA",
+      "pts": 115,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200406",
+      "date": "2022-12-12",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. CLE",
+      "pts": 112,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200420",
+      "date": "2022-12-14",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. POR",
+      "pts": 112,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200439",
+      "date": "2022-12-17",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. MIA",
+      "pts": 101,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200455",
+      "date": "2022-12-19",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ HOU",
+      "pts": 124,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200477",
+      "date": "2022-12-22",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ NOP",
+      "pts": 117,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200479",
+      "date": "2022-12-23",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ ORL",
+      "pts": 113,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200503",
+      "date": "2022-12-26",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. UTA",
+      "pts": 126,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200511",
+      "date": "2022-12-27",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ OKC",
+      "pts": 114,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200527",
+      "date": "2022-12-29",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. NYK",
+      "pts": 122,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200542",
+      "date": "2022-12-31",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. DAL",
+      "pts": 125,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200555",
+      "date": "2023-01-02",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ BKN",
+      "pts": 103,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200568",
+      "date": "2023-01-04",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ NYK",
+      "pts": 114,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200585",
+      "date": "2023-01-06",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. DET",
+      "pts": 121,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200591",
+      "date": "2023-01-07",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. BOS",
+      "pts": 116,
+      "status": "explicit_dnp"
+    },
+    {
+      "game_id": "0022200608",
+      "date": "2023-01-09",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ MEM",
+      "pts": 113,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200623",
+      "date": "2023-01-11",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ MEM",
+      "pts": 129,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200635",
+      "date": "2023-01-13",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. GSW",
+      "pts": 113,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200652",
+      "date": "2023-01-15",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. SAC",
+      "pts": 119,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200666",
+      "date": "2023-01-17",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. BKN",
+      "pts": 106,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200687",
+      "date": "2023-01-20",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. LAC",
+      "pts": 126,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200711",
+      "date": "2023-01-23",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ POR",
+      "pts": 127,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200729",
+      "date": "2023-01-25",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ LAL",
+      "pts": 104,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200735",
+      "date": "2023-01-26",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ LAC",
+      "pts": 100,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200748",
+      "date": "2023-01-28",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. PHX",
+      "pts": 118,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200760",
+      "date": "2023-01-30",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. WAS",
+      "pts": 106,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200775",
+      "date": "2023-02-01",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. SAC",
+      "pts": 109,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200791",
+      "date": "2023-02-03",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS vs. PHI",
+      "pts": 125,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200811",
+      "date": "2023-02-06",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ CHI",
+      "pts": 104,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200826",
+      "date": "2023-02-08",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "matchup": "SAS @ TOR",
+      "pts": 98,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200839",
+      "date": "2023-02-10",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. UTA",
+      "pts": 116,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200856",
+      "date": "2023-02-12",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. DET",
+      "pts": 119,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200868",
+      "date": "2023-02-14",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. ORL",
+      "pts": 123,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200890",
+      "date": "2023-02-23",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. NOP",
+      "pts": 115,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200903",
+      "date": "2023-02-25",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ DET",
+      "pts": 95,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200914",
+      "date": "2023-02-26",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ CLE",
+      "pts": 93,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200925",
+      "date": "2023-02-28",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. CHI",
+      "pts": 104,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200942",
+      "date": "2023-03-02",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ WAS",
+      "pts": 108,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200956",
+      "date": "2023-03-04",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ WAS",
+      "pts": 116,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200975",
+      "date": "2023-03-06",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ DEN",
+      "pts": 113,
+      "status": "played"
+    },
+    {
+      "game_id": "0022200991",
+      "date": "2023-03-08",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ LAC",
+      "pts": 100,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201003",
+      "date": "2023-03-10",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ LAL",
+      "pts": 112,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201029",
+      "date": "2023-03-14",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. DEN",
+      "pts": 125,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201044",
+      "date": "2023-03-16",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. OKC",
+      "pts": 128,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201058",
+      "date": "2023-03-18",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. MIN",
+      "pts": 122,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201068",
+      "date": "2023-03-19",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ MIL",
+      "pts": 111,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201085",
+      "date": "2023-03-22",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. IND",
+      "pts": 114,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201099",
+      "date": "2023-03-24",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. DET",
+      "pts": 118,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201119",
+      "date": "2023-03-26",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. WAS",
+      "pts": 114,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201132",
+      "date": "2023-03-28",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. MIA",
+      "pts": 106,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201150",
+      "date": "2023-03-31",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ PHI",
+      "pts": 110,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201163",
+      "date": "2023-04-02",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ CHA",
+      "pts": 128,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201176",
+      "date": "2023-04-04",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ CHA",
+      "pts": 120,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201192",
+      "date": "2023-04-05",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ BOS",
+      "pts": 93,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201206",
+      "date": "2023-04-07",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR @ BOS",
+      "pts": 102,
+      "status": "played"
+    },
+    {
+      "game_id": "0022201221",
+      "date": "2023-04-09",
+      "team_id": 1610612761,
+      "team": "TOR",
+      "matchup": "TOR vs. MIL",
+      "pts": 121,
+      "status": "played"
+    }
+  ],
+  "explicit_dnps": [
+    {
+      "game_id": "0022200247",
+      "date": "2022-11-20",
+      "team_id": 1610612759,
+      "matchup": "SAS @ LAL",
+      "pts": 92,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200319",
+      "date": "2022-11-30",
+      "team_id": 1610612759,
+      "matchup": "SAS @ OKC",
+      "pts": 111,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200333",
+      "date": "2022-12-02",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. NOP",
+      "pts": 99,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200345",
+      "date": "2022-12-04",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. PHX",
+      "pts": 95,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200375",
+      "date": "2022-12-08",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. HOU",
+      "pts": 118,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200387",
+      "date": "2022-12-10",
+      "team_id": 1610612759,
+      "matchup": "SAS @ MIA",
+      "pts": 115,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200406",
+      "date": "2022-12-12",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. CLE",
+      "pts": 112,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200420",
+      "date": "2022-12-14",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. POR",
+      "pts": 112,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    },
+    {
+      "game_id": "0022200591",
+      "date": "2023-01-07",
+      "team_id": 1610612759,
+      "matchup": "SAS vs. BOS",
+      "pts": 116,
+      "explicit_evidence": "SummaryV2 InactivePlayers identity; TraditionalV3 no played row; exact played-player IDs match LeagueGameLog"
+    }
+  ],
+  "filters": {
+    "home": {
+      "eligible": [
+        "0022200011",
+        "0022200077",
+        "0022200092",
+        "0022200114",
+        "0022200126",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200269",
+        "0022200282",
+        "0022200288",
+        "0022200333",
+        "0022200345",
+        "0022200375",
+        "0022200406",
+        "0022200420",
+        "0022200439",
+        "0022200503",
+        "0022200527",
+        "0022200542",
+        "0022200585",
+        "0022200591",
+        "0022200635",
+        "0022200652",
+        "0022200666",
+        "0022200687",
+        "0022200748",
+        "0022200760",
+        "0022200775",
+        "0022200791",
+        "0022200839",
+        "0022200856",
+        "0022200868",
+        "0022200890",
+        "0022200925",
+        "0022201029",
+        "0022201044",
+        "0022201058",
+        "0022201085",
+        "0022201099",
+        "0022201119",
+        "0022201132",
+        "0022201221"
+      ],
+      "played": [
+        "0022200011",
+        "0022200077",
+        "0022200092",
+        "0022200114",
+        "0022200126",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200269",
+        "0022200282",
+        "0022200288",
+        "0022200439",
+        "0022200503",
+        "0022200527",
+        "0022200542",
+        "0022200585",
+        "0022200635",
+        "0022200652",
+        "0022200666",
+        "0022200687",
+        "0022200748",
+        "0022200760",
+        "0022200775",
+        "0022200791",
+        "0022200839",
+        "0022200856",
+        "0022200868",
+        "0022200890",
+        "0022200925",
+        "0022201029",
+        "0022201044",
+        "0022201058",
+        "0022201085",
+        "0022201099",
+        "0022201119",
+        "0022201132",
+        "0022201221"
+      ],
+      "missed": [
+        "0022200333",
+        "0022200345",
+        "0022200375",
+        "0022200406",
+        "0022200420",
+        "0022200591"
+      ]
+    },
+    "away": {
+      "eligible": [
+        "0022200018",
+        "0022200028",
+        "0022200050",
+        "0022200062",
+        "0022200138",
+        "0022200205",
+        "0022200209",
+        "0022200222",
+        "0022200239",
+        "0022200247",
+        "0022200319",
+        "0022200387",
+        "0022200455",
+        "0022200477",
+        "0022200479",
+        "0022200511",
+        "0022200555",
+        "0022200568",
+        "0022200608",
+        "0022200623",
+        "0022200711",
+        "0022200729",
+        "0022200735",
+        "0022200811",
+        "0022200826",
+        "0022200903",
+        "0022200914",
+        "0022200942",
+        "0022200956",
+        "0022200975",
+        "0022200991",
+        "0022201003",
+        "0022201068",
+        "0022201150",
+        "0022201163",
+        "0022201176",
+        "0022201192",
+        "0022201206"
+      ],
+      "played": [
+        "0022200018",
+        "0022200028",
+        "0022200050",
+        "0022200062",
+        "0022200138",
+        "0022200205",
+        "0022200209",
+        "0022200222",
+        "0022200239",
+        "0022200455",
+        "0022200477",
+        "0022200479",
+        "0022200511",
+        "0022200555",
+        "0022200568",
+        "0022200608",
+        "0022200623",
+        "0022200711",
+        "0022200729",
+        "0022200735",
+        "0022200811",
+        "0022200826",
+        "0022200903",
+        "0022200914",
+        "0022200942",
+        "0022200956",
+        "0022200975",
+        "0022200991",
+        "0022201003",
+        "0022201068",
+        "0022201150",
+        "0022201163",
+        "0022201176",
+        "0022201192",
+        "0022201206"
+      ],
+      "missed": [
+        "0022200247",
+        "0022200319",
+        "0022200387"
+      ]
+    },
+    "team_points_at_least_105": {
+      "eligible": [
+        "0022200018",
+        "0022200028",
+        "0022200050",
+        "0022200062",
+        "0022200077",
+        "0022200092",
+        "0022200126",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200209",
+        "0022200222",
+        "0022200269",
+        "0022200288",
+        "0022200319",
+        "0022200375",
+        "0022200387",
+        "0022200406",
+        "0022200420",
+        "0022200455",
+        "0022200477",
+        "0022200479",
+        "0022200503",
+        "0022200511",
+        "0022200527",
+        "0022200542",
+        "0022200568",
+        "0022200585",
+        "0022200591",
+        "0022200608",
+        "0022200623",
+        "0022200635",
+        "0022200652",
+        "0022200666",
+        "0022200687",
+        "0022200711",
+        "0022200748",
+        "0022200760",
+        "0022200775",
+        "0022200791",
+        "0022200839",
+        "0022200856",
+        "0022200868",
+        "0022200890",
+        "0022200942",
+        "0022200956",
+        "0022200975",
+        "0022201003",
+        "0022201029",
+        "0022201044",
+        "0022201058",
+        "0022201068",
+        "0022201085",
+        "0022201099",
+        "0022201119",
+        "0022201132",
+        "0022201150",
+        "0022201163",
+        "0022201176",
+        "0022201221"
+      ],
+      "played": [
+        "0022200018",
+        "0022200028",
+        "0022200050",
+        "0022200062",
+        "0022200077",
+        "0022200092",
+        "0022200126",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200209",
+        "0022200222",
+        "0022200269",
+        "0022200288",
+        "0022200455",
+        "0022200477",
+        "0022200479",
+        "0022200503",
+        "0022200511",
+        "0022200527",
+        "0022200542",
+        "0022200568",
+        "0022200585",
+        "0022200608",
+        "0022200623",
+        "0022200635",
+        "0022200652",
+        "0022200666",
+        "0022200687",
+        "0022200711",
+        "0022200748",
+        "0022200760",
+        "0022200775",
+        "0022200791",
+        "0022200839",
+        "0022200856",
+        "0022200868",
+        "0022200890",
+        "0022200942",
+        "0022200956",
+        "0022200975",
+        "0022201003",
+        "0022201029",
+        "0022201044",
+        "0022201058",
+        "0022201068",
+        "0022201085",
+        "0022201099",
+        "0022201119",
+        "0022201132",
+        "0022201150",
+        "0022201163",
+        "0022201176",
+        "0022201221"
+      ],
+      "missed": [
+        "0022200319",
+        "0022200375",
+        "0022200387",
+        "0022200406",
+        "0022200420",
+        "0022200591"
+      ]
+    },
+    "team_points_under_105": {
+      "eligible": [
+        "0022200011",
+        "0022200114",
+        "0022200138",
+        "0022200205",
+        "0022200239",
+        "0022200247",
+        "0022200282",
+        "0022200333",
+        "0022200345",
+        "0022200439",
+        "0022200555",
+        "0022200729",
+        "0022200735",
+        "0022200811",
+        "0022200826",
+        "0022200903",
+        "0022200914",
+        "0022200925",
+        "0022200991",
+        "0022201192",
+        "0022201206"
+      ],
+      "played": [
+        "0022200011",
+        "0022200114",
+        "0022200138",
+        "0022200205",
+        "0022200239",
+        "0022200282",
+        "0022200439",
+        "0022200555",
+        "0022200729",
+        "0022200735",
+        "0022200811",
+        "0022200826",
+        "0022200903",
+        "0022200914",
+        "0022200925",
+        "0022200991",
+        "0022201192",
+        "0022201206"
+      ],
+      "missed": [
+        "0022200247",
+        "0022200333",
+        "0022200345"
+      ]
+    },
+    "against_lakers": {
+      "eligible": [
+        "0022200247",
+        "0022200282",
+        "0022200288",
+        "0022200729",
+        "0022201003"
+      ],
+      "played": [
+        "0022200282",
+        "0022200288",
+        "0022200729",
+        "0022201003"
+      ],
+      "missed": [
+        "0022200247"
+      ]
+    },
+    "november_only": {
+      "eligible": [
+        "0022200114",
+        "0022200126",
+        "0022200138",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200205",
+        "0022200209",
+        "0022200222",
+        "0022200239",
+        "0022200247",
+        "0022200269",
+        "0022200282",
+        "0022200288",
+        "0022200319"
+      ],
+      "played": [
+        "0022200114",
+        "0022200126",
+        "0022200138",
+        "0022200154",
+        "0022200169",
+        "0022200180",
+        "0022200205",
+        "0022200209",
+        "0022200222",
+        "0022200239",
+        "0022200269",
+        "0022200282",
+        "0022200288"
+      ],
+      "missed": [
+        "0022200247",
+        "0022200319"
+      ]
+    }
+  },
+  "unknown_participation": [],
+  "excluded_club_games": [
+    {
+      "GAME_ID": "0022200008",
+      "GAME_DATE": "2022-10-19",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. CLE"
+    },
+    {
+      "GAME_ID": "0022200021",
+      "GAME_DATE": "2022-10-21",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ BKN"
+    },
+    {
+      "GAME_ID": "0022200031",
+      "GAME_DATE": "2022-10-22",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ MIA"
+    },
+    {
+      "GAME_ID": "0022200045",
+      "GAME_DATE": "2022-10-24",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ MIA"
+    },
+    {
+      "GAME_ID": "0022200059",
+      "GAME_DATE": "2022-10-26",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. PHI"
+    },
+    {
+      "GAME_ID": "0022200073",
+      "GAME_DATE": "2022-10-28",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. PHI"
+    },
+    {
+      "GAME_ID": "0022200099",
+      "GAME_DATE": "2022-10-31",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. ATL"
+    },
+    {
+      "GAME_ID": "0022200114",
+      "GAME_DATE": "2022-11-02",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ SAS"
+    },
+    {
+      "GAME_ID": "0022200127",
+      "GAME_DATE": "2022-11-04",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ DAL"
+    },
+    {
+      "GAME_ID": "0022200141",
+      "GAME_DATE": "2022-11-06",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. CHI"
+    },
+    {
+      "GAME_ID": "0022200151",
+      "GAME_DATE": "2022-11-07",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ CHI"
+    },
+    {
+      "GAME_ID": "0022200165",
+      "GAME_DATE": "2022-11-09",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. HOU"
+    },
+    {
+      "GAME_ID": "0022200179",
+      "GAME_DATE": "2022-11-11",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ OKC"
+    },
+    {
+      "GAME_ID": "0022200187",
+      "GAME_DATE": "2022-11-12",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ IND"
+    },
+    {
+      "GAME_ID": "0022200199",
+      "GAME_DATE": "2022-11-14",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ DET"
+    },
+    {
+      "GAME_ID": "0022200215",
+      "GAME_DATE": "2022-11-16",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. MIA"
+    },
+    {
+      "GAME_ID": "0022200235",
+      "GAME_DATE": "2022-11-19",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ ATL"
+    },
+    {
+      "GAME_ID": "0022200266",
+      "GAME_DATE": "2022-11-23",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. BKN"
+    },
+    {
+      "GAME_ID": "0022200286",
+      "GAME_DATE": "2022-11-26",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. DAL"
+    },
+    {
+      "GAME_ID": "0022200303",
+      "GAME_DATE": "2022-11-28",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. CLE"
+    },
+    {
+      "GAME_ID": "0022200318",
+      "GAME_DATE": "2022-11-30",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ NOP"
+    },
+    {
+      "GAME_ID": "0022200329",
+      "GAME_DATE": "2022-12-02",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ BKN"
+    },
+    {
+      "GAME_ID": "0022200340",
+      "GAME_DATE": "2022-12-03",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. ORL"
+    },
+    {
+      "GAME_ID": "0022200355",
+      "GAME_DATE": "2022-12-05",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. BOS"
+    },
+    {
+      "GAME_ID": "0022200366",
+      "GAME_DATE": "2022-12-07",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. LAL"
+    },
+    {
+      "GAME_ID": "0022200379",
+      "GAME_DATE": "2022-12-09",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ ORL"
+    },
+    {
+      "GAME_ID": "0022200398",
+      "GAME_DATE": "2022-12-11",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ ORL"
+    },
+    {
+      "GAME_ID": "0022200417",
+      "GAME_DATE": "2022-12-14",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. SAC"
+    },
+    {
+      "GAME_ID": "0022200433",
+      "GAME_DATE": "2022-12-16",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. BKN"
+    },
+    {
+      "GAME_ID": "0022200448",
+      "GAME_DATE": "2022-12-18",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. GSW"
+    },
+    {
+      "GAME_ID": "0022200453",
+      "GAME_DATE": "2022-12-19",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ PHI"
+    },
+    {
+      "GAME_ID": "0022200471",
+      "GAME_DATE": "2022-12-21",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ NYK"
+    },
+    {
+      "GAME_ID": "0022200484",
+      "GAME_DATE": "2022-12-23",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ CLE"
+    },
+    {
+      "GAME_ID": "0022200509",
+      "GAME_DATE": "2022-12-27",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. LAC"
+    },
+    {
+      "GAME_ID": "0022200526",
+      "GAME_DATE": "2022-12-29",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. MEM"
+    },
+    {
+      "GAME_ID": "0022200531",
+      "GAME_DATE": "2022-12-30",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. PHX"
+    },
+    {
+      "GAME_ID": "0022200553",
+      "GAME_DATE": "2023-01-02",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ IND"
+    },
+    {
+      "GAME_ID": "0022200569",
+      "GAME_DATE": "2023-01-04",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. MIL"
+    },
+    {
+      "GAME_ID": "0022200582",
+      "GAME_DATE": "2023-01-06",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. NYK"
+    },
+    {
+      "GAME_ID": "0022200597",
+      "GAME_DATE": "2023-01-08",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. POR"
+    },
+    {
+      "GAME_ID": "0022200613",
+      "GAME_DATE": "2023-01-10",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. CHA"
+    },
+    {
+      "GAME_ID": "0022200629",
+      "GAME_DATE": "2023-01-12",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. CHA"
+    },
+    {
+      "GAME_ID": "0022200644",
+      "GAME_DATE": "2023-01-14",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. ATL"
+    },
+    {
+      "GAME_ID": "0022200659",
+      "GAME_DATE": "2023-01-16",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ NYK"
+    },
+    {
+      "GAME_ID": "0022200665",
+      "GAME_DATE": "2023-01-17",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ MIL"
+    },
+    {
+      "GAME_ID": "0022200680",
+      "GAME_DATE": "2023-01-19",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ MIN"
+    },
+    {
+      "GAME_ID": "0022200692",
+      "GAME_DATE": "2023-01-21",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. BOS"
+    },
+    {
+      "GAME_ID": "0022200700",
+      "GAME_DATE": "2023-01-22",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. NYK"
+    },
+    {
+      "GAME_ID": "0022200728",
+      "GAME_DATE": "2023-01-25",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ SAC"
+    },
+    {
+      "GAME_ID": "0022200740",
+      "GAME_DATE": "2023-01-27",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ GSW"
+    },
+    {
+      "GAME_ID": "0022200751",
+      "GAME_DATE": "2023-01-28",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ POR"
+    },
+    {
+      "GAME_ID": "0022200762",
+      "GAME_DATE": "2023-01-30",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ PHX"
+    },
+    {
+      "GAME_ID": "0022200776",
+      "GAME_DATE": "2023-02-01",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ UTA"
+    },
+    {
+      "GAME_ID": "0022200789",
+      "GAME_DATE": "2023-02-03",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ HOU"
+    },
+    {
+      "GAME_ID": "0022200805",
+      "GAME_DATE": "2023-02-05",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR @ MEM"
+    },
+    {
+      "GAME_ID": "0022200826",
+      "GAME_DATE": "2023-02-08",
+      "TEAM_ID": 1610612761,
+      "MATCHUP": "TOR vs. SAS"
+    },
+    {
+      "GAME_ID": "0022200835",
+      "GAME_DATE": "2023-02-10",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ DET"
+    },
+    {
+      "GAME_ID": "0022200850",
+      "GAME_DATE": "2023-02-11",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ ATL"
+    },
+    {
+      "GAME_ID": "0022200858",
+      "GAME_DATE": "2023-02-13",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ CLE"
+    },
+    {
+      "GAME_ID": "0022200873",
+      "GAME_DATE": "2023-02-15",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ CHA"
+    },
+    {
+      "GAME_ID": "0022200891",
+      "GAME_DATE": "2023-02-23",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ DAL"
+    },
+    {
+      "GAME_ID": "0022200909",
+      "GAME_DATE": "2023-02-25",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ UTA"
+    },
+    {
+      "GAME_ID": "0022200930",
+      "GAME_DATE": "2023-02-28",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ UTA"
+    },
+    {
+      "GAME_ID": "0022200944",
+      "GAME_DATE": "2023-03-02",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. IND"
+    },
+    {
+      "GAME_ID": "0022200959",
+      "GAME_DATE": "2023-03-04",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. HOU"
+    },
+    {
+      "GAME_ID": "0022200967",
+      "GAME_DATE": "2023-03-05",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ HOU"
+    },
+    {
+      "GAME_ID": "0022201002",
+      "GAME_DATE": "2023-03-10",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. DEN"
+    },
+    {
+      "GAME_ID": "0022201018",
+      "GAME_DATE": "2023-03-12",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. OKC"
+    },
+    {
+      "GAME_ID": "0022201032",
+      "GAME_DATE": "2023-03-14",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. ORL"
+    },
+    {
+      "GAME_ID": "0022201040",
+      "GAME_DATE": "2023-03-15",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. DAL"
+    },
+    {
+      "GAME_ID": "0022201052",
+      "GAME_DATE": "2023-03-17",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. MEM"
+    },
+    {
+      "GAME_ID": "0022201065",
+      "GAME_DATE": "2023-03-19",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. ATL"
+    },
+    {
+      "GAME_ID": "0022201080",
+      "GAME_DATE": "2023-03-21",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ NOP"
+    },
+    {
+      "GAME_ID": "0022201089",
+      "GAME_DATE": "2023-03-22",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ MIL"
+    },
+    {
+      "GAME_ID": "0022201098",
+      "GAME_DATE": "2023-03-24",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ WAS"
+    },
+    {
+      "GAME_ID": "0022201116",
+      "GAME_DATE": "2023-03-26",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ BOS"
+    },
+    {
+      "GAME_ID": "0022201143",
+      "GAME_DATE": "2023-03-29",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. UTA"
+    },
+    {
+      "GAME_ID": "0022201158",
+      "GAME_DATE": "2023-03-31",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ GSW"
+    },
+    {
+      "GAME_ID": "0022201170",
+      "GAME_DATE": "2023-04-02",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ SAC"
+    },
+    {
+      "GAME_ID": "0022201188",
+      "GAME_DATE": "2023-04-04",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ PHX"
+    },
+    {
+      "GAME_ID": "0022201199",
+      "GAME_DATE": "2023-04-06",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. POR"
+    },
+    {
+      "GAME_ID": "0022201214",
+      "GAME_DATE": "2023-04-08",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS vs. MIN"
+    },
+    {
+      "GAME_ID": "0022201224",
+      "GAME_DATE": "2023-04-09",
+      "TEAM_ID": 1610612759,
+      "MATCHUP": "SAS @ DAL"
+    }
+  ],
+  "limitations": [
+    "Historical qualified staging only; no current freshness or production publication claim.",
+    "Retrospective tenure plus dated official transfer and re-signing, not appearance-derived tenure.",
+    "NBA-native endpoint structures share upstream origin; archive mirror is provenance custody, not independent upstream corroboration.",
+    "Explicit inactive observation proves nonparticipation, never medical injury cause.",
+    "No Feb9 date-only membership answer is certified."
+  ]
+}
