@@ -3,9 +3,15 @@
   "kind": "data_quality_work_item",
   "id": "DQ-005",
   "title": "Pinned2022-23 GameFinder reported PLUS_MINUS conflicts with literal scores",
-  "status": "open",
+  "status": "claimed",
   "owner_role": "agent_2_data_quality",
-  "claim": null,
+  "claim": {
+    "session": "Agent 2 /root; DQ-005 independent data-quality session",
+    "branch": "codex/agent2-dq005-20261106",
+    "claimed_at": "2026-11-06 10:05:48 UTC",
+    "base_commit": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+    "scope": "Only DQ-005: complete two-game team PLUS_MINUS vectors, source semantics and processing diagnosis; no application changes."
+  },
   "created_on": "2026-11-06",
   "baseline_commit": "9a01942c61042946d1ffe1d4e1118399230f8117",
   "source_evidence": {
