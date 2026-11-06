@@ -1230,7 +1230,9 @@ def _load_player_games_cached(season: str, season_type: str, data_root: str) -> 
     )
 
 
-def attach_player_game_context_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFrame:
+def attach_player_game_context_stats(
+    df: pd.DataFrame, wanted: Any, *, strict: bool = False
+) -> pd.DataFrame:
     """Add the ``team_<stat>`` / ``opponent_<stat>`` columns named in *wanted*.
 
     Player rows carry only their own box score; "games when the Lakers score
@@ -1255,10 +1257,16 @@ def attach_player_game_context_stats(df: pd.DataFrame, wanted: Any) -> pd.DataFr
             sorted(group["season"].astype(str).unique()), season_type
         )
         parts.append(team[["game_id", "team_id", *[b for b in bases if b in team.columns]]])
-    team = pd.concat(parts, ignore_index=True).drop_duplicates(subset=["game_id", "team_id"])
+    team = pd.concat(parts, ignore_index=True)
     out = df.copy()
     team["game_id"] = team["game_id"].astype(out["game_id"].dtype)
     team["team_id"] = team["team_id"].astype(out["team_id"].dtype)
+    if strict and (
+        team[["game_id", "team_id"]].isna().any().any()
+        or team.duplicated(["game_id", "team_id"]).any()
+    ):
+        raise FileNotFoundError("Requested team/opponent context has ambiguous game/team keys")
+    team = team.drop_duplicates(subset=["game_id", "team_id"])
     for side, key in (("team", "team_id"), ("opponent", "opponent_team_id")):
         side_names = [n for n in names if n.startswith(f"{side}_")]
         if not side_names:

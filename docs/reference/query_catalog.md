@@ -1409,3 +1409,22 @@ that filters executed or that the answer is zero. A qualified empty query remain
 player summary identity metadata follows the uniquely selected game-log player ID,
 so a same-name roster entry cannot substitute a different player's display context.
 “Win-loss record” names record basis; genuine won/lost sample clauses remain separate.
+
+### Shared team/opponent-owned Boolean player conditions
+
+`player_game_finder` and `player_occurrence_leaders` accept `condition_expression`
+using the same AND/OR tree, bounds and equality grammar. Explicit `team points`
+refer to the player's club; `opponent points` refer to its opponent in the same
+game. Common supported scope filters apply before either branch. The finder
+returns matching player-games; the distinct-player natural count projects player
+identity once and retains each player's matching-game count. Both structured
+consumers accept `limit=None` for the complete population.
+
+For example, `How many distinct players had (over 37 points or over 10 assists)
+with at least 125 team points in 2022-23?` is the owned-team composition, while
+`when opponents scored under 110 points` is the opposing-side composition.
+Unknown required source/join/stat coverage withholds the count; a covered empty
+selection is a qualified zero. Branch-specific scopes, ranked/windowed
+compositions and global unique-NBA-game projection remain unfinished. Numerical,
+rendering and deployed acceptance are recorded separately in the application
+checkpoint; these examples do not assert current production readiness.

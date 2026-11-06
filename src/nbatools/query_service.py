@@ -3591,7 +3591,9 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             condition_text = _extract_grouped_condition_text(
                 query, player=parsed.get("player"), team=parsed.get("team"), parsed=parsed
             )
-            parsed["boolean_filter_mode"] = boolean_filter_mode(condition_text)
+            parsed["boolean_filter_mode"] = boolean_filter_mode(
+                condition_text, team=parsed.get("team"), opponent=parsed.get("opponent")
+            )
             result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
@@ -3609,7 +3611,11 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         try:
             result, parsed = _execute_or_query_build_result(query)
             parsed["boolean_filter_mode"] = (
-                boolean_filter_mode(parsed["condition_expression"])
+                boolean_filter_mode(
+                    parsed["condition_expression"],
+                    team=parsed.get("team"),
+                    opponent=parsed.get("opponent"),
+                )
                 if parsed.get("condition_expression")
                 else "any"
             )
@@ -3619,7 +3625,11 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             except ValueError:
                 parsed = _build_parse_state(query)
             parsed["boolean_filter_mode"] = (
-                boolean_filter_mode(parsed["condition_expression"])
+                boolean_filter_mode(
+                    parsed["condition_expression"],
+                    team=parsed.get("team"),
+                    opponent=parsed.get("opponent"),
+                )
                 if parsed.get("condition_expression")
                 else "any"
             )

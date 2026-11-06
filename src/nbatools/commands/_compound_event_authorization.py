@@ -202,12 +202,14 @@ def condition_is_executed(
     return False
 
 
-def _boolean_conditions(expression: str) -> tuple[dict[str, Any], ...]:
+def _boolean_conditions(expression: str, scope: dict) -> tuple[dict[str, Any], ...]:
     from nbatools.commands.query_boolean_parser import condition_tree_leaves, parse_condition_text
 
     return tuple(
         dict(stat=n.stat, min_value=n.min_value, max_value=n.max_value)
-        for n in condition_tree_leaves(parse_condition_text(expression))
+        for n in condition_tree_leaves(
+            parse_condition_text(expression, team=scope.get("team"), opponent=scope.get("opponent"))
+        )
     )
 
 
@@ -220,7 +222,9 @@ def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
     the two would refuse ordinary working leaderboards.
     """
     if parsed.get("condition_expression"):
-        return _boolean_conditions(parsed["condition_expression"])
+        return _boolean_conditions(
+            parsed["condition_expression"], parsed.get("route_kwargs") or parsed
+        )
     declared: list[dict[str, Any]] = []
     for condition in parsed.get("compound_occurrence_conditions") or []:
         normalized = _normalize_condition(condition)
@@ -234,8 +238,10 @@ def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
 
 def executed_event_conditions(route: str | None, route_kwargs: dict) -> tuple[dict[str, Any], ...]:
     """Every game-level condition the chosen route will actually apply."""
-    if route in OCCURRENCE_COUNT_ROUTES and route_kwargs.get("condition_expression"):
-        return _boolean_conditions(route_kwargs["condition_expression"])
+    if route in {*OCCURRENCE_COUNT_ROUTES, "player_game_finder"} and route_kwargs.get(
+        "condition_expression"
+    ):
+        return _boolean_conditions(route_kwargs["condition_expression"], route_kwargs)
     executed: list[dict[str, Any]] = []
 
     if route in OCCURRENCE_COUNT_ROUTES:
@@ -306,6 +312,11 @@ def named_metrics(parsed: dict) -> tuple[str, ...]:
     )
 
     text = parsed.get("normalized_query") or ""
+    expression = parsed.get("condition_expression")
+    if expression:
+        # Metrics inside the complete predicate tree are conditions. Only a
+        # metric outside that executed span can request an additional ranking.
+        text = text.replace(expression, "", 1)
     aliases: dict[str, str] = {**STAT_ALIASES, **LEADERBOARD_STAT_ALIASES}
     if parsed.get("team_leaderboard_intent") or "team" in text:
         aliases = {**aliases, **TEAM_LEADERBOARD_STAT_ALIASES}

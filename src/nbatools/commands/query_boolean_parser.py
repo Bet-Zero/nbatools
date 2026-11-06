@@ -62,7 +62,7 @@ def detect_stat(text: str) -> str | None:
 def _parse_threshold_match(
     value_text: str, stat_text: str, mode: str, epsilon: float
 ) -> ConditionNode:
-    value = float(value_text)
+    value = 0.0 if value_text in {"zero", "no"} else float(value_text)
     stat = detect_stat(stat_text)
     if stat is None:
         raise BooleanQueryParseError(f"Unsupported stat phrase: {stat_text}")
@@ -86,12 +86,89 @@ def _parse_threshold_match(
     )
 
 
-def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, int] | None:
+def _consume_owned_condition(text: str, *, team=None, opponent=None):
+    """Reuse the context readers, retaining their owner and complete text span."""
+    from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
+    from nbatools.commands._player_game_context import (
+        _opponent_bounds,
+        team_subject_stat_conditions,
+    )
+
+    # Noun owners use exactly the same bound grammar as player statistics.
+    # Remove only the owner token while reading this one leaf, then restore
+    # its span and prefixed column; no query-wide phrase rewriting occurs.
+    candidates = []
+    noun = re.search(
+        rf"\b(?P<owner>(?:(?:the|his|her|their|our)\s+)?team(?:'s)?|opponents?(?:'s?|s')?)\s+(?P<stat>{STAT_PATTERN})\b",
+        text,
+    )
+    if noun:
+        a = noun.start("owner")
+        clean = text[:a] + text[noun.start("stat") :]
+        consumed = consume_condition_at(clean, 0, team=team, opponent=opponent)
+        removed = noun.start("stat") - a
+        if consumed and consumed[1] + removed >= noun.end("stat"):
+            leaf, end = consumed
+            end += removed
+            side = "opponent" if noun.group("owner").startswith("opponent") else "team"
+            candidates.append(
+                (
+                    end,
+                    f"{side}_{leaf.stat}",
+                    dict(min_value=leaf.min_value, max_value=leaf.max_value),
+                )
+            )
+    for item in team_subject_stat_conditions(
+        text,
+        tuple(x for x in (team, *(opponent if isinstance(opponent, list) else [opponent])) if x),
+    ):
+        if item["start"] != 0:
+            continue
+        owner = item["team"]
+        if owner == "TEAM" or owner == team:
+            stat = "team_" + item["stat"]
+        elif isinstance(opponent, str) and owner == opponent:
+            stat = "opponent_" + item["stat"]
+        else:
+            raise BooleanQueryParseError(
+                "Named statistical owner needs an explicit common team/opponent scope"
+            )
+        candidates.append((item["end"], stat, item))
+    for span, item in _opponent_bounds(text):
+        if span.span()[0] == 0:
+            candidates.append((span.span()[1], item["stat"], item))
+    for item in extract_opponent_points_allowed_conditions(text):
+        if item["start"] == 0:
+            candidates.append((item["end"], item["stat"], item))
+    # The existing team verbal grammar also describes the explicitly opposing
+    # side. Reuse its bounds rather than strip that subject and read a player stat.
+    lead = re.match(r"(?:the\s+)?(?:opponents?|other\s+team|opposing\s+team)\s+", text)
+    if lead:
+        replacement = "team " + text[lead.end() :]
+        for item in team_subject_stat_conditions(replacement):
+            if item["start"] == 0:
+                candidates.append((item["end"] + lead.end() - 5, "opponent_" + item["stat"], item))
+    if not candidates:
+        return None
+    end, stat, item = max(candidates, key=lambda c: c[0])
+    return ConditionNode(stat, item["min_value"], item["max_value"], text[:end]), end
+
+
+def consume_condition_at(
+    text: str, start_index: int, *, team=None, opponent=None
+) -> tuple[ConditionNode, int] | None:
     remaining = text[start_index:]
+    owned = _consume_owned_condition(remaining, team=team, opponent=opponent)
+    if owned:
+        return owned[0], start_index + owned[1]
 
     patterns = [
-        (rf"^{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b", "eq", 0.0),
-        (rf"^{STAT_PATTERN}\s*{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)\b", "reverse_eq", 0.0),
+        (rf"^{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?|zero|no)\s+{STAT_PATTERN}\b", "eq", 0.0),
+        (
+            rf"^{STAT_PATTERN}\s*{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?|zero|no)\b",
+            "reverse_eq",
+            0.0,
+        ),
         (
             rf"^between\s+(\d+(?:\.\d+)?)\s+and\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
             "between",
@@ -182,7 +259,7 @@ def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, in
     return None
 
 
-def tokenize_condition_expression(text: str) -> list[Token]:
+def tokenize_condition_expression(text: str, *, team=None, opponent=None) -> list[Token]:
     normalized = normalize_condition_text(text)
     tokens: list[Token] = []
     i = 0
@@ -230,7 +307,13 @@ def tokenize_condition_expression(text: str) -> list[Token]:
                 i = after_idx
                 continue
 
-        consumed = consume_condition_at(normalized, i)
+        join = re.match(r"(?:with|when|while|where)\b\s*", normalized[i:])
+        if join:
+            if tokens and tokens[-1].kind in {"CONDITION", "RPAREN"}:
+                tokens.append(Token(kind="AND", source_text=join.group()))
+            i += join.end()
+            continue
+        consumed = consume_condition_at(normalized, i, team=team, opponent=opponent)
         if consumed is not None:
             node, new_i = consumed
             tokens.append(Token(kind="CONDITION", value=node, source_text=node.source_text))
@@ -324,8 +407,8 @@ def parse_condition_expression(tokens: list[Token]) -> Node:
     return root
 
 
-def parse_condition_text(text: str) -> Node:
-    tokens = tokenize_condition_expression(text)
+def parse_condition_text(text: str, *, team=None, opponent=None) -> Node:
+    tokens = tokenize_condition_expression(text, team=team, opponent=opponent)
     return parse_condition_expression(tokens)
 
 
@@ -334,6 +417,27 @@ def condition_tree_leaves(node: Node) -> tuple[ConditionNode, ...]:
     if isinstance(node, ConditionNode):
         return (node,)
     return condition_tree_leaves(node.left) + condition_tree_leaves(node.right)
+
+
+def prepare_player_condition_frame(node: Node, df: pd.DataFrame) -> pd.DataFrame:
+    """Attach same-game context before either branch; unknown is not a zero."""
+    from nbatools.commands.data_utils import attach_player_game_context_stats
+    from nbatools.commands.player_game_finder import ALLOWED_STATS
+
+    wanted = {leaf.stat for leaf in condition_tree_leaves(node)}
+    if wanted - ALLOWED_STATS.keys():
+        raise BooleanQueryParseError(
+            f"Unsupported player-game statistics: {sorted(wanted - ALLOWED_STATS.keys())}"
+        )
+    frame = attach_player_game_context_stats(df, wanted, strict=True)
+    required = {"player_id", *wanted}
+    if any(
+        c not in frame or pd.to_numeric(frame[c], errors="coerce").isna().any() for c in required
+    ):
+        raise FileNotFoundError(
+            "Requested Boolean predicate or player identity has unknown coverage"
+        )
+    return frame
 
 
 def condition_node_to_mask(node: ConditionNode, df: pd.DataFrame) -> pd.Series:
@@ -388,10 +492,30 @@ def expression_contains_boolean_ops(text: str) -> bool:
     )
 
 
-def boolean_filter_mode(text: str) -> str | None:
+def has_owned_conjunction(text: str) -> bool:
+    """Identify the existing owned-stat grammar beside an AND condition."""
+    if not re.search(r"\band\b", text):
+        return False
+    from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
+    from nbatools.commands._player_game_context import (
+        _opponent_bounds,
+        team_subject_stat_conditions,
+    )
+
+    return bool(
+        team_subject_stat_conditions(text)
+        or _opponent_bounds(text)
+        or extract_opponent_points_allowed_conditions(text)
+        or re.search(rf"\b(?:team|opponents?)(?:'s)?\s+{STAT_PATTERN}\b", text)
+    )
+
+
+def boolean_filter_mode(text: str, *, team=None, opponent=None) -> str | None:
     """Describe how parsed threshold filters are combined for consumers."""
     operator_kinds = {
-        token.kind for token in tokenize_condition_expression(text) if token.kind in {"AND", "OR"}
+        token.kind
+        for token in tokenize_condition_expression(text, team=team, opponent=opponent)
+        if token.kind in {"AND", "OR"}
     }
     if operator_kinds == {"OR"}:
         return "any"

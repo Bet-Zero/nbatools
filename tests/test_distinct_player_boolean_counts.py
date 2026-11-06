@@ -128,8 +128,6 @@ def test_team_player_subject_uses_the_same_boolean_engine():
         "(over 20 points or over 10 assists) while injured",
         "(over 20 points against Boston or over 10 assists against Phoenix)",
         "(over 20 points or over 10 assists) before Christmas",
-        "(over 20 team points or over 10 assists)",
-        "(over 20 points or over 10 opponent assists)",
     ],
 )
 def test_unread_scopes_and_owners_never_become_partial_answers(clause):

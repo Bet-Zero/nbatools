@@ -2188,3 +2188,14 @@ When adding a new core dataset, add it here before making it an implicit depende
   untrusted coverage keeps the explicit unsupported-data response. Roster
   membership remains rejected as a lineup-unit substitute because it has no
   shared-court, possession, or unit-level sample boundary.
+
+The shared Boolean player-game consumers (`player_game_finder` and
+`player_occurrence_leaders.condition_expression`) reuse the existing
+`team_<stat>` / `opponent_<stat>` contract and `attach_player_game_context_stats`.
+Each predicate retains its column owner in the shared condition tree. Team box
+scores join on `(game_id, team_id)` for the subject club and
+`(game_id, opponent_team_id)` for the opposing club, before any Boolean branch
+can filter rows. Requested unknown columns/joins/identities or missing requested
+player seasons withhold the result rather than forming a partial union or zero.
+The final projection preserves player-game rows or aggregates by `player_id`;
+no absent appearance, medical status or membership fact is inferred.

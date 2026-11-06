@@ -7186,10 +7186,12 @@ def _route_parsed_query(parsed: dict) -> dict:
             "no unfiltered fallback was returned"
         )
 
+    from nbatools.commands.query_boolean_parser import has_owned_conjunction
+
     if (
         route == "player_occurrence_leaders"
         and parsed.get("distinct_player_count")
-        and (contains_boolean_or(q) or "(" in q or ")" in q)
+        and (contains_boolean_or(q) or "(" in q or ")" in q or has_owned_conjunction(q))
     ):
         from nbatools.commands._natural_query_execution import (
             _bind_distinct_player_opponents,
@@ -7208,6 +7210,11 @@ def _route_parsed_query(parsed: dict) -> dict:
         else:
             parsed["condition_expression"] = expression
             route_kwargs["condition_expression"] = expression
+            # The complete owned expression now executes in this consumer.
+            # Retain every unrelated unsupported-clause marker.
+            route_kwargs["unsupported_filters"] = [
+                f for f in route_kwargs.get("unsupported_filters", []) if f != "team_stat_context"
+            ]
             for key in (
                 "stat",
                 "min_value",
@@ -7237,6 +7244,8 @@ def _route_parsed_query(parsed: dict) -> dict:
     # for every meaningful part of the request - executes it, is defined by it,
     # or refuses and says so. Runs last so it sees the kwargs that will actually
     # be executed rather than the parser's reading of them.
+    if route_kwargs.get("condition_expression"):
+        parsed["condition_expression"] = route_kwargs["condition_expression"]
     compound_authorization = authorize_compound_event_route(parsed, route, route_kwargs)
     if not compound_authorization.authorized:
         existing_unsupported = route_kwargs.get("unsupported_filters") or []

@@ -1423,6 +1423,11 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return yes_no
 
     full = parse_query(query)
+    if full.get("route") == "player_game_finder" and (full.get("route_kwargs") or {}).get(
+        "condition_expression"
+    ):
+        expression = full["route_kwargs"]["condition_expression"]
+        return _execute_grouped_boolean_build_result(expression, full), full
     if full.get("distinct_player_count") and full.get("route") == "player_occurrence_leaders":
         condition_text = _distinct_player_boolean_text(query, full)
         return _execute_grouped_boolean_build_result(condition_text, full), full
@@ -1684,7 +1689,7 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     if parsed.get("last_n_scope") == "original_window":
         raise ValueError("Original participation windows with grouped logic are not yet supported")
 
-    if any(
+    if route != "player_game_finder" and any(
         "opponent_team" in c for c in (parsed.get("route_kwargs") or {}).get("conditions") or []
     ):
         # This older boolean tree reparses plain stat bounds and cannot carry
@@ -1837,6 +1842,13 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     base_kwargs["sort_by"] = "game_date"
     base_kwargs["ascending"] = False
 
+    if route == "player_game_finder":
+        base_kwargs["condition_expression"] = condition_text
+        base_kwargs["limit"] = result_limit
+        parsed["condition_expression"] = condition_text
+        parsed["route_kwargs"] = base_kwargs
+        return _execute_build_result(route, base_kwargs)
+
     base_result = _execute_build_result(route, base_kwargs)
     if isinstance(base_result, NoResult):
         return base_result
@@ -1906,22 +1918,22 @@ def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
         _claimed_ranges,
         _residual_tokens,
     )
-    from nbatools.commands._player_game_context import (
-        _opponent_bounds,
-        team_subject_stat_conditions,
-    )
     from nbatools.commands.query_boolean_parser import consume_condition_at
 
     text = normalize_text(query)
-    if parsed.get("player") or parsed.get("player_a") or parsed.get("player_b"):
+    if (
+        parsed.get("player_a")
+        or parsed.get("player_b")
+        or (parsed.get("distinct_player_count") and parsed.get("player"))
+    ):
         raise ValueError("Cross-player boolean conditions are not yet supported.")
     if parsed.get("last_n") or parsed.get("top_n"):
         raise ValueError("Ranked/windowed distinct-player boolean counts are not yet supported.")
-    if team_subject_stat_conditions(text) or _opponent_bounds(text):
-        raise ValueError("Team/opponent-owned boolean statistics are not yet supported.")
     spans = []
     for m in re.finditer(r"(?<!\w)(?=\S)", text):
-        found = consume_condition_at(text, m.start())
+        found = consume_condition_at(
+            text, m.start(), team=parsed.get("team"), opponent=parsed.get("opponent")
+        )
         if found:
             spans.append((m.start(), found[1]))
     if not spans:
@@ -1933,8 +1945,10 @@ def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
         end += 1
     expression = text[start:end].strip()
     # No names, filters or other clauses between predicates are stripped.
-    parse_condition_text(expression)
+    parse_condition_text(expression, team=parsed.get("team"), opponent=parsed.get("opponent"))
     outer = text[:start] + " " + text[end:]
+    if not parsed.get("distinct_player_count") and re.search(r"\b(?:unique|distinct)\b", outer):
+        raise ValueError("A global unique-game projection is not yet supported")
     from nbatools.commands._parse_helpers import opponent_lists
 
     for a, b, _ in reversed(opponent_lists(outer, repeated_leads=True, allow_subject_before=True)):
@@ -1953,9 +1967,15 @@ def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
             scope[key] = kwargs.get(key)
     scope["min_value"] = scope["max_value"] = None
     ranges = _claimed_ranges(outer, scope, None)
+    if kwargs.get("player"):
+        from nbatools.commands.entity_resolution import PLAYER_ALIASES
+
+        for alias, identity in PLAYER_ALIASES.items():
+            if identity == kwargs["player"]:
+                ranges.extend(m.span() for m in re.finditer(rf"\b{re.escape(alias)}\b", outer))
     grammar = (
         r"\b(?:how\s+many|number\s+of|count(?:\s+of)?|distinct|different|unique|players?)\b",
-        r"\b(?:a|an|the|game|games|with|had|have|has|did|got|posted|recorded|put\s+up|in|during|for|from|at|on|that|who)\b",
+        r"\b(?:a|an|the|game|games|with|had|have|has|did|got|posted|recorded|put\s+up|in|during|for|from|at|on|that|who|show|me|list|find)\b",
     )
     for pattern in grammar:
         ranges.extend(m.span() for m in re.finditer(pattern, outer))
@@ -1971,7 +1991,9 @@ def _extract_grouped_condition_text(
     team: str | None = None,
     parsed: dict | None = None,
 ) -> str:
-    if parsed and parsed.get("distinct_player_count"):
+    if parsed and (
+        parsed.get("distinct_player_count") or parsed.get("route") == "player_game_finder"
+    ):
         return _distinct_player_boolean_text(query, parsed)
     normalized = normalize_text(query)
     condition_text = normalized
