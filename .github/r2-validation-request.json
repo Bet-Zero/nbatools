@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "4f0b010e62400818a663acca6a628948065093cf",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_poeltl_full_season_real_data.py",
+    "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control"
+  ],
+  "raw_qa_cases": [
+    "k08_compact_home_absence_season"
+  ]
+}
