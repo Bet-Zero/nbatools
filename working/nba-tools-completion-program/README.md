@@ -27,21 +27,18 @@ unfinished because required native tenure evidence is unavailable.
 | Source discrepancies / preserve | [DQ-005](data-quality/DQ-005.json) records2022-23 reported PLUS_MINUS discrepancies at0022200138/0022200749; values unchanged and margins unqualified. They do not affect selected DNP identities/counts. All20successful archive originals retained/reused. Prior484unknowns/20groups and accepted K08 evidence remain unchanged; no Agent2 cleanup worker was launched. |
 | Preserved safeguards | All46positive obligations and prior qualified behavior remain required. No full historical coverage, fullseason Poeltl acceptance, Core-1 completion, current freshness or production acceptance claim. No production data writes, pointer changes, credentials, permission/spend expansion or schedules. |
 
-**Next application action:** capture and independently qualify the3native tenure
-originals through the existing acquisition-laptop packet, establish the inclusive
-membership intervals and exact81-game population, then execute the ordinary
-combined-season Poeltl positive plus per-team/filter controls through natural,
-structured and HTTP paths. The sources may establish or change that proposed
-population; do not stamp81/9accepted in advance. Reuse all20archive bodies and
-PR587's unchanged engine/accepted bounded evidence. Obtain affected review and
-required checks for the new qualified version; publication still needs separate
-authority. The noun-style `with80+team points` positive also remains open; its
-safe withholding is containment, not delivery. Do not start a bulk backfill or K12.
-
-Stop is a verified scoped application checkpoint with a genuine source-provenance
-dependency. Owner acquisition-laptop execution is the only remaining owner action;
-no product decision, coding, source selection, new credentials or spending is
-requested. No agent/service/schedule continues in the background after the turn.
+**Active application action (Agent1, 2026-11-06):** repair shared noun-style
+team-stat threshold ownership (for example `with 80+ team points`) across the
+existing player/team consumers and qualified missed-game counts. This closes the
+recorded PR587 positive gap and P1/S3 ownership defect before source-blocked K08
+full-season acceptance; it is not a new phrase-specific feature. Controlled
+fixtures and retained qualified scoped NBA originals provide independent IDs and
+arithmetic; no new acquisition is needed. Current branch
+`codex/team-stat-shorthand-20261106`, base merged PR587
+`4bd2f799ddeb06544ef2223e56449ec609318dec`. The current owner's direction supersedes
+the old acquisition-first continuation: DQ-004 remains pending in its separate
+packet; do not retry the 403 route, wait for it, or accept the proposed full-season
+total. Agent2 is neither launched nor monitored. K12 stays parked.
 
 ### Foundation acceptance contract
 

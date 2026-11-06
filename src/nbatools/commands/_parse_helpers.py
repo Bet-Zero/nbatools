@@ -3085,6 +3085,26 @@ def upper_bound_boundary(text: str, conditions: list[dict], route_kwargs: dict) 
         (c.get("stat"), c.get("max_value")) for c in route_kwargs.get("conditions") or []
     ]
 
+    # Explicit noun ownership also covers a trailing ceiling ("110 team
+    # points or less"). Mask only a complete bound that the final consumer
+    # actually received with the same owner, floor and ceiling.
+    from nbatools.commands._player_game_context import team_noun_stat_conditions
+
+    executable = list(route_kwargs.get("conditions") or []) + [route_kwargs]
+    for item in reversed(team_noun_stat_conditions(masked)):
+        owner_stat = ("team_" if route_kwargs.get("player") else "") + item["stat"]
+        if any(
+            c.get("stat") == owner_stat
+            and c.get("min_value") == item["min_value"]
+            and c.get("max_value") == item["max_value"]
+            for c in executable
+        ):
+            masked = (
+                masked[: item["start"]]
+                + " " * (item["end"] - item["start"])
+                + masked[item["end"] :]
+            )
+
     def _applied(m: re.Match) -> str:
         stat = detect_stat(masked[m.end() : m.end() + 40])
         names = {stat, f"opponent_{stat}", f"team_{stat}"} if stat else set()

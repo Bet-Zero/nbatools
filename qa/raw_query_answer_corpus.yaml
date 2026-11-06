@@ -17557,3 +17557,71 @@ cases:
     - path: result.metadata.without_player
       equals: LeBron James
     review_notes: Compact IN+season must preserve the absence predicate and home scope. PR559's qualified published generation contains22explicit DNP observations,11home. Appearance omission is not the oracle; no injury, tenure or current-freshness claim.
+
+- id: team_noun_looney_summary_2022_23
+  query: Kevon Looney average rebounds in 2022-23 with under 110 team points
+  category: team_owned_stat_conditions
+  priority: p1
+  expected_status: ok
+  expected_route: player_game_summary
+  expected_shape: entity_summary
+  expected_sections:
+  - summary
+  - game_log
+  expected_row_counts:
+    summary: 1
+    game_log: 14
+  hard_assertions:
+  - path: result.sections.summary.0.games
+    equals: 14
+  - path: result.sections.summary.0.reb_sum
+    equals: 113.0
+  - path: result.sections.summary.0.reb_avg
+    equals: 8.071
+  review_notes: Independent raw JSON selection from retained PR587 originals (2022-23
+    regular season), source-evidence/team-stat-shorthand-20261106. Team box-score
+    threshold, not player points; no membership inference.
+- id: team_noun_warriors_record_2022_23
+  query: Warriors record in 2022-23 with under 110 team points
+  category: team_owned_stat_conditions
+  priority: p1
+  expected_status: ok
+  expected_route: team_record
+  expected_shape: entity_summary
+  expected_sections:
+  - summary
+  expected_row_counts:
+    summary: 1
+  hard_assertions:
+  - path: result.sections.summary.0.games
+    equals: 14
+  - path: result.sections.summary.0.wins
+    equals: 3
+  - path: result.sections.summary.0.losses
+    equals: 11
+  review_notes: Independent raw JSON selection from retained PR587 originals (2022-23
+    regular season), source-evidence/team-stat-shorthand-20261106. Team box-score
+    threshold, not player points; no membership inference.
+- id: team_noun_looney_inclusive_2022_23
+  query: Kevon Looney average rebounds in 2022-23 with 110 team points or fewer
+  category: team_owned_stat_conditions
+  priority: p1
+  expected_status: ok
+  expected_route: player_game_summary
+  expected_shape: entity_summary
+  expected_sections:
+  - summary
+  - game_log
+  expected_row_counts:
+    summary: 1
+    game_log: 17
+  hard_assertions:
+  - path: result.sections.summary.0.games
+    equals: 17
+  - path: result.sections.summary.0.reb_sum
+    equals: 143.0
+  - path: result.sections.summary.0.reb_avg
+    equals: 8.412
+  review_notes: Independent raw JSON selection from retained PR587 originals (2022-23
+    regular season), source-evidence/team-stat-shorthand-20261106. Team box-score
+    threshold, not player points; no membership inference.
