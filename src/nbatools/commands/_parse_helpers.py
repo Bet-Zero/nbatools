@@ -5338,3 +5338,48 @@ def detect_series_situation(text: str) -> str | None:
 
 def _series_game_value(token: str) -> int:
     return int(token) if token.isdigit() else _SERIES_GAME_WORDS[token]
+
+
+def invalid_stat_equality(text: str) -> bool:
+    """Keep unread operators and a negated statistical governor out of equality.
+
+    Validate each complete bound span, in either word order. Negation is scoped
+    to its clause and statistical governor, not to unrelated zero/absence facts.
+    """
+    from nbatools.commands._player_game_context import _opponent_bounds, team_noun_stat_conditions
+
+    text = text.lower()
+    if re.search(r"[!<>]=|={2,}", text):
+        return True
+    conditions = extract_threshold_conditions(text)
+    conditions.extend(team_noun_stat_conditions(text))
+    conditions.extend(dict(start=m.start(), end=m.end()) for m, _ in _opponent_bounds(text))
+    governor = re.compile(
+        r"\b(?:scor(?:e|es|ed|ing)|ha(?:ve|s|d)|ma(?:ke|kes|de)|hits?|hit|"
+        r"record(?:s|ed)?|post(?:s|ed)?|commit(?:s|ted)?|grab(?:s|bed)?|"
+        r"dish(?:es|ed)?|shoot(?:s|ing)?|reach(?:es|ed)?|puts?\s+up|put\s+up)\b"
+    )
+    for operator in re.finditer(
+        rf"(?<!\w){STAT_EQUALITY_OPERATOR}\s*(?:\d+(?:\.\d+)?|\.\d+)", text
+    ):
+        ends = [
+            operator.end(),
+            *(
+                c["end"]
+                for c in conditions
+                if c["start"] <= operator.start() and c["end"] >= operator.end()
+            ),
+        ]
+        if any(re.match(r"\s*(?:\+|or\s+(?:more|fewer|less)\b)", text[end:]) for end in ends):
+            return True
+        clause = re.split(
+            r"[,;()]|\b(?:and|or|but|when|where|while|if)\b", text[: operator.start()]
+        )[-1]
+        negative = list(re.finditer(r"\b(?:not|never|didn't|doesn't|don't)\b", clause))
+        if negative:
+            tail = clause[negative[-1].end() :].strip()
+            if not tail or governor.search(tail):
+                return True
+        if re.search(r"\bno\s*$", clause):
+            return True
+    return False

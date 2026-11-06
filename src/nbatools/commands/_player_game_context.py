@@ -578,6 +578,17 @@ def _opponent_bounds(
 ) -> list[tuple[re.Match | _Span, dict]]:
     found: list[tuple[re.Match | _Span, dict]] = list(_held_bounds(text))
     found.extend(_opponent_shooting_bounds(text))
+    # Use the shared defensive subject reader for explicit equality as well as
+    # the context noun reader. This retains hold/limit and list ownership.
+    for c in extract_opponent_points_allowed_conditions(text):
+        if (
+            c.get("min_value") is not None
+            and c.get("min_value") == c.get("max_value")
+            and re.search(STAT_EQUALITY_OPERATOR, c.get("text", ""))
+        ):
+            found.append(
+                (_Span(c["start"], c["end"]), {k: c[k] for k in ("stat", "min_value", "max_value")})
+            )
     for m in _OPP_STAT_BOUND.finditer(text):
         stat = _opponent_stat(
             m.group("stat")

@@ -196,3 +196,31 @@ def test_opponent_verbal_equality_preserves_owner():
         assert answer.result_status == "ok", answer.metadata
         assert answer.metadata["primary_count"] == len(expected)
         assert "allowed exactly 100 points" in answer.metadata["count_phrase"]
+
+
+@pytest.mark.parametrize("owner", ["team", "opponent"])
+def test_conflicting_owned_equality_does_not_discard_trailing_floor(owner):
+    result = execute_natural_query(
+        f"Celtics record with exactly 102 {owner} points or more in 2025-26"
+    )
+    assert result.result_status != "ok"
+    assert "primary_count" not in result.metadata
+
+
+@pytest.mark.parametrize("verb", ["holding", "held", "limiting"])
+def test_defensive_governor_preserves_equality_owner(verb):
+    teams = pd.read_csv(ROOT / "team_game_stats/2025-26_regular_season.csv")
+    expected = teams.loc[teams.team_abbr.eq("BOS")].merge(
+        teams.loc[teams.pts.eq(102), ["game_id", "team_id"]].rename(
+            columns={"team_id": "opponent_team_id"}
+        ),
+        on=["game_id", "opponent_team_id"],
+    )
+    answer = execute_natural_query(
+        f"Celtics record when {verb} opponents to exactly 102 points in 2025-26"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    row = answer.to_dict()["sections"]["summary"][0]
+    assert row["games"] == len(expected)
+    assert row["wins"] == int(expected.wl.eq("W").sum())
+    assert row["losses"] == int(expected.wl.eq("L").sum())
