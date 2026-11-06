@@ -323,6 +323,30 @@ def tokenize_condition_expression(text: str, *, team=None, opponent=None) -> lis
         snippet = normalized[i : i + 40]
         raise BooleanQueryParseError(f"Could not parse condition expression near: '{snippet}'")
 
+    # A governing verbal subject can own a list ("team had 120 points and
+    # 30 assists"). Until complete elided lists are bound, never reinterpret
+    # that second statistic as the player's. Explicit noun owners remain
+    # per-leaf and do not make a separate player-stat sibling inherit them.
+    from nbatools.commands._player_game_context import _HELD, _TEAM_STAT_VERB
+
+    governed = [False]
+    for token in tokens:
+        if token.kind == "LPAREN":
+            governed.append(governed[-1])
+        elif token.kind == "RPAREN" and len(governed) > 1:
+            governed.pop()
+        elif token.kind == "CONDITION":
+            leaf = token.value
+            owned = leaf.stat.startswith(("team_", "opponent_"))
+            if not owned and governed[-1]:
+                raise BooleanQueryParseError(
+                    "Elided team/opponent stat lists are not yet supported"
+                )
+            governed[-1] = owned and bool(
+                _TEAM_STAT_VERB.search(leaf.source_text)
+                or _HELD.search(leaf.source_text)
+                or re.match(r"(?:allow\w*|limit\w*|gave|give\w*|kept|keep\w*)\b", leaf.source_text)
+            )
     return tokens
 
 
@@ -438,6 +462,21 @@ def prepare_player_condition_frame(node: Node, df: pd.DataFrame) -> pd.DataFrame
             "Requested Boolean predicate or player identity has unknown coverage"
         )
     return frame
+
+
+def require_player_boolean_scope(df: pd.DataFrame, scope: dict) -> None:
+    """Do not let a missing requested scope value drop rows before the tree."""
+    for column, keys in {
+        "team_abbr": ("team",),
+        "opponent_team_abbr": ("opponent",),
+        "game_date": ("start_date", "end_date"),
+        "is_home": ("home_only",),
+        "is_away": ("away_only",),
+        "wl": ("wins_only", "losses_only"),
+    }.items():
+        if any(scope.get(key) for key in keys):
+            if column not in df or df[column].isna().any():
+                raise FileNotFoundError(f"Requested Boolean scope has unknown {column} coverage")
 
 
 def condition_node_to_mask(node: ConditionNode, df: pd.DataFrame) -> pd.Series:

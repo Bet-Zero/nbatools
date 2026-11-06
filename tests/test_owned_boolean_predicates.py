@@ -220,3 +220,55 @@ def test_named_player_keeps_same_game_context(owned_rows):
     assert result.result_status == "ok", result.to_dict()
     assert result.metadata["primary_count"] == len(expected)
     assert keys(result.to_dict()["sections"]["finder"]) == keys(expected.to_dict("records"))
+
+
+def test_plain_owned_and_uses_complete_count_label(owned_rows):
+    result = execute_natural_query(
+        "How many distinct players had over 20 points and exactly 100 team points in 2025-26?"
+    )
+    assert result.metadata["primary_count"] == 2
+    assert "2 distinct players had a matching game" in result.metadata["count_phrase"]
+    assert any(
+        "100 team points" in f["value"]
+        for f in result.metadata["applied_filters"]
+        if f["kind"] == "boolean"
+    )
+
+
+@pytest.mark.parametrize("distinct", [False, True])
+@pytest.mark.parametrize("damage", ["self_opponent", "different_date", "unknown_venue"])
+def test_context_and_scope_integrity(owned_rows, distinct, damage):
+    root = Path(os.environ["NBATOOLS_DATA_ROOT"])
+    family = (
+        "player_game_stats" if damage in ["self_opponent", "unknown_venue"] else "team_game_stats"
+    )
+    path = root / f"data/raw/{family}/2025-26_regular_season.csv"
+    raw = pd.read_csv(path)
+    if damage == "self_opponent":
+        raw.loc[0, "opponent_team_id"] = raw.loc[0, "team_id"]
+    elif damage == "different_date":
+        raw.loc[raw.game_id.eq(1) & raw.team_abbr.eq("GSW"), "game_date"] = "2025-11-12"
+    else:
+        raw["is_home"] = raw["is_home"].astype(object)
+        raw.loc[0, "is_home"] = None
+    raw.to_csv(path, index=False)
+    reset_data_source_cache()
+    question = f"How many {'distinct players had' if distinct else 'player games with'} (over 0 points or under 100 opponent points) at home in 2025-26?"
+    result = execute_natural_query(question)
+    assert result.result_status != "ok", result.to_dict()
+    assert "primary_count" not in result.metadata
+
+
+@pytest.mark.parametrize(
+    "governor",
+    [
+        "team had at least 100 points",
+        "opponents had at least 100 points",
+        "allowed at most 100 points",
+    ],
+)
+def test_elided_verbal_owner_is_not_silently_a_player_stat(owned_rows, governor):
+    query = f"How many distinct players had (over 100 points or {governor} and at least 25 assists) in 2025-26?"
+    result = execute_natural_query(query)
+    assert result.result_status != "ok"
+    assert "primary_count" not in result.metadata

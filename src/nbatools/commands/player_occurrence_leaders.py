@@ -457,19 +457,23 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="no_data")
 
     if tree is not None:
-        scope_columns = [
-            c
-            for enabled, c in (
-                (team, "team_abbr"),
-                (opponent, "opponent_team_abbr"),
-                (home_only, "is_home"),
-                (away_only, "is_away"),
-                (wins_only or losses_only, "wl"),
-                (start_date or end_date, "game_date"),
+        from nbatools.commands.query_boolean_parser import require_player_boolean_scope
+
+        try:
+            require_player_boolean_scope(
+                basic,
+                dict(
+                    team=team,
+                    opponent=opponent,
+                    home_only=home_only,
+                    away_only=away_only,
+                    wins_only=wins_only,
+                    losses_only=losses_only,
+                    start_date=start_date,
+                    end_date=end_date,
+                ),
             )
-            if enabled
-        ]
-        if any(c not in basic or basic[c].isna().any() for c in scope_columns):
+        except FileNotFoundError:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_data",

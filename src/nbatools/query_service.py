@@ -1063,7 +1063,9 @@ def _build_count_phrase(
         ):
             return f"{entity} {verb} played {count} {noun} {context}."
 
-    if parsed.get("boolean_query_used") and parsed.get("distinct_player_count"):
+    if (parsed.get("boolean_query_used") or parsed.get("condition_expression")) and parsed.get(
+        "distinct_player_count"
+    ):
         times = parsed.get("min_occurrences") or 1
         sample = "a matching game" if times == 1 else f"at least {times} matching games"
         context = " ".join(

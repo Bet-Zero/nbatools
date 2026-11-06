@@ -1256,7 +1256,12 @@ def attach_player_game_context_stats(
         team = load_team_games_for_seasons(
             sorted(group["season"].astype(str).unique()), season_type
         )
-        parts.append(team[["game_id", "team_id", *[b for b in bases if b in team.columns]]])
+        context_keys = ["game_date", "opponent_team_id"] if strict else []
+        if strict and any(c not in team for c in context_keys):
+            raise FileNotFoundError("Requested team context lacks date/opponent identity coverage")
+        parts.append(
+            team[["game_id", "team_id", *context_keys, *[b for b in bases if b in team.columns]]]
+        )
     team = pd.concat(parts, ignore_index=True)
     out = df.copy()
     team["game_id"] = team["game_id"].astype(out["game_id"].dtype)
@@ -1267,16 +1272,30 @@ def attach_player_game_context_stats(
     ):
         raise FileNotFoundError("Requested team/opponent context has ambiguous game/team keys")
     team = team.drop_duplicates(subset=["game_id", "team_id"])
+    if strict and out.team_id.eq(out.opponent_team_id).any():
+        raise FileNotFoundError("A player's team cannot be its own opponent")
     for side, key in (("team", "team_id"), ("opponent", "opponent_team_id")):
         side_names = [n for n in names if n.startswith(f"{side}_")]
         if not side_names:
             continue
         columns = {n.split("_", 1)[1]: n for n in side_names if n.split("_", 1)[1] in team}
-        side_frame = team[["game_id", "team_id", *columns]].rename(
-            columns={"team_id": key, **columns}
+        metadata = (
+            {"game_date": "_context_date", "opponent_team_id": "_context_other"} if strict else {}
+        )
+        side_frame = team[["game_id", "team_id", *metadata, *columns]].rename(
+            columns={"team_id": key, **metadata, **columns}
         )
         merged = out.merge(side_frame, on=["game_id", key], how="left")
         merged.index = out.index
+        if strict:
+            other_key = "opponent_team_id" if side == "team" else "team_id"
+            dates = pd.to_datetime(merged["_context_date"], errors="coerce")
+            player_dates = pd.to_datetime(merged["game_date"], errors="coerce")
+            if not (dates.eq(player_dates) & merged["_context_other"].eq(merged[other_key])).all():
+                raise FileNotFoundError(
+                    "Requested context does not match the same game's date and opposing identities"
+                )
+            merged = merged.drop(columns=list(metadata.values()))
         out = merged
     return out
 

@@ -558,6 +558,26 @@ def build_result(
             outcome=last_n_outcome(last_n_scope, wins_only, losses_only),
         )
 
+    if tree is not None:
+        from nbatools.commands.query_boolean_parser import require_player_boolean_scope
+
+        try:
+            require_player_boolean_scope(
+                df,
+                dict(
+                    team=team,
+                    opponent=opponent,
+                    start_date=start_date,
+                    end_date=end_date,
+                    home_only=home_only,
+                    away_only=away_only,
+                    wins_only=wins_only,
+                    losses_only=losses_only,
+                ),
+            )
+        except FileNotFoundError as exc:
+            return NoResult(query_class="finder", reason="no_data", notes=[str(exc)])
+
     df = _apply_filters(
         df=df,
         player=player,

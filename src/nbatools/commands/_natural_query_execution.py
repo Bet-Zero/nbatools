@@ -1827,7 +1827,9 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     if not expression_contains_boolean_ops(condition_text):
         raise ValueError("No grouped boolean expression detected.")
 
-    tree = parse_condition_text(condition_text)
+    tree = parse_condition_text(
+        condition_text, team=parsed.get("team"), opponent=parsed.get("opponent")
+    )
 
     # Build a base result without stat filters to get all matching games
     base_kwargs = dict(parsed["route_kwargs"])
@@ -1835,6 +1837,7 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     base_kwargs["min_value"] = None
     base_kwargs["max_value"] = None
     base_kwargs["conditions"] = None
+    base_kwargs.pop("condition_expression", None)
     # A display limit applies after evaluating the complete boolean expression.
     # Limiting the unfiltered base silently discards older qualifying games.
     result_limit = base_kwargs.get("limit")
@@ -1842,7 +1845,11 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     base_kwargs["sort_by"] = "game_date"
     base_kwargs["ascending"] = False
 
-    if route == "player_game_finder":
+    from nbatools.commands.query_boolean_parser import condition_tree_leaves
+
+    if route == "player_game_finder" and any(
+        n.stat.startswith(("team_", "opponent_")) for n in condition_tree_leaves(tree)
+    ):
         base_kwargs["condition_expression"] = condition_text
         base_kwargs["limit"] = result_limit
         parsed["condition_expression"] = condition_text
@@ -1968,11 +1975,17 @@ def _distinct_player_boolean_text(query: str, parsed: dict) -> str:
     scope["min_value"] = scope["max_value"] = None
     ranges = _claimed_ranges(outer, scope, None)
     if kwargs.get("player"):
-        from nbatools.commands.entity_resolution import PLAYER_ALIASES
+        from nbatools.commands.entity_resolution import (
+            _normalize_for_matching,
+            allowed_player_reference_tokens,
+        )
 
-        for alias, identity in PLAYER_ALIASES.items():
-            if identity == kwargs["player"]:
-                ranges.extend(m.span() for m in re.finditer(rf"\b{re.escape(alias)}\b", outer))
+        allowed = allowed_player_reference_tokens(kwargs["player"])
+        ranges.extend(
+            m.span()
+            for m in re.finditer(r"[^\W\d_]+", outer)
+            if _normalize_for_matching(m.group()) in allowed
+        )
     grammar = (
         r"\b(?:how\s+many|number\s+of|count(?:\s+of)?|distinct|different|unique|players?)\b",
         r"\b(?:a|an|the|game|games|with|had|have|has|did|got|posted|recorded|put\s+up|in|during|for|from|at|on|that|who|show|me|list|find)\b",
