@@ -192,7 +192,7 @@ def _same_bound(cond: dict, other: dict) -> bool:
         or (
             cond.get(k) is not None
             and other.get(k) is not None
-            and abs(float(cond[k]) - float(other[k])) < 1e-3
+            and abs(float(cond[k]) - float(other[k])) < 1e-9
         )
         for k in ("min_value", "max_value")
     )

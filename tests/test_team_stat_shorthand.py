@@ -158,3 +158,19 @@ def test_zero_noun_count_is_exact_unless_an_explicit_floor(wording, floor, ceili
     assert any(
         c["stat"] == "team_tov" and c["max_value"] == ceiling for c in answer.metadata["conditions"]
     )
+
+
+@pytest.mark.parametrize("operation", ["LeBron James average points", "Lakers average points"])
+def test_same_stat_strict_conjunction_keeps_boundary(operation):
+    teams, players = raw_rows()
+    expected = teams.loc[teams.team_abbr.eq("LAL") & teams.pts.gt(110)]
+    query = f"{operation} in 2025-26 with 110+ team points and over 110 team points"
+    result = execute_natural_query(query)
+    assert result.result_status == "ok", result.metadata
+    if operation.startswith("LeBron"):
+        expected = players.loc[players.player_name.eq("LeBron James")].merge(
+            expected[["game_id", "team_id"]], on=["game_id", "team_id"], validate="one_to_one"
+        )
+    summary = result.result.to_dict()["sections"]["summary"][0]
+    assert summary["games"] == len(expected)
+    assert summary["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
