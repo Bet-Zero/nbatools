@@ -427,7 +427,9 @@ def _build_applied_filters(
     if opponent:
         value = ", ".join(opponent) if isinstance(opponent, list) else opponent
         applied_filters.append({"label": "Opponent", "value": value, "kind": "team"})
-    without_player = route_kwargs.get("without_player", source.get("without_player"))
+    without_player = route_kwargs.get(
+        "without_player", source.get("without_player")
+    ) or route_kwargs.get("membership_player", source.get("membership_player"))
     with_player = route_kwargs.get("with_player", source.get("with_player"))
     if without_player:
         applied_filters.append(
@@ -2102,8 +2104,11 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
     team = team_context.get("team_name") or listed_name or team_context.get("team_abbr")
     team = team or match.group(1)
     coverage = getattr(result, "metadata", {}).get("membership_coverage")
-    if coverage and match.group(1) == "NBA":
-        team = "NBA"
+    if coverage:
+        if match.group(1) == "NBA":
+            team = "NBA"
+        elif len(coverage["by_team"]) == 1:
+            team = coverage["by_team"][0].get("team_name") or team
     player = match.group(2)
     opponent_context = metadata.get("opponent_context") or {}
     opponent = opponent_context.get("team_name") or opponent_context.get("team_abbr")
@@ -3854,7 +3859,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "opponent_division": kwargs.get("opponent_division"),
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "with_player": kwargs.get("with_player"),
-        "without_player": kwargs.get("without_player"),
+        "without_player": kwargs.get("without_player") or kwargs.get("membership_player"),
         "without_player_reason": kwargs.get("without_player_reason"),
         "unresolved_availability_player": kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,

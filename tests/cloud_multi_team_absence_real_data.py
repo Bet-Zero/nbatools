@@ -144,10 +144,10 @@ def test_native_exact_game_date_scopes_and_single_club_control(tmp_path, monkeyp
                 MISSED,
             ),
             (
-                "How many games did Jakob Poeltl miss for the Raptors in 2022-23 after February 9, 2023?",
+                "How many games did Jakob Poeltl miss for the Raptors in 2022-23 from February 10 to April 9, 2023?",
                 "TOR",
                 "2023-02-10",
-                None,
+                "2023-04-09",
                 set(),
             ),
         ]

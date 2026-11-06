@@ -210,7 +210,7 @@ def test_natural_team_stat_condition_counts_absences_and_keeps_team_ownership(tr
         int(r["game_id"]) for r in result.result.to_dict()["sections"].get("finder", [])
     } == expected
     assert any(c["stat"] == "pts" and c["min_value"] == 100 for c in result.metadata["conditions"])
-    assert "team points at least 100" in result.metadata["answer_phrase"]
+    assert "team points 100+" in result.metadata["answer_phrase"]
 
 
 @pytest.mark.parametrize("tail", ["when he scored at least 20 points", "with 80+ team points"])

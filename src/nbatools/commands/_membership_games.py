@@ -75,6 +75,7 @@ def missed_membership_games(candidates, player, seasons, season_type, *, team_sc
             dict(
                 season=str(season),
                 team_abbr=str(club),
+                team_name=str(rows.team_name.iloc[0]) if "team_name" in rows else str(club),
                 candidate_games=len(rows),
                 eligible_games=sum(r["membership_state"] == "member" for r in facts),
                 **counts,
