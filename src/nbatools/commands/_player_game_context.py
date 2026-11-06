@@ -1907,7 +1907,13 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             route_kwargs["team"] = own_team = team
             found.append({**item, "side": "team"})
     # "when opponents score 120", "the other team made 15 threes".
-    for item in extract_opponent_points_allowed_conditions(text):
+    opposing = extract_opponent_points_allowed_conditions(text)
+    opposing += [
+        {**bound, "start": match.span()[0], "end": match.span()[1]}
+        for match, bound in _opponent_bounds(text, opponent, own_team)
+        if bound["stat"].removeprefix("opponent_") in PLAYER_GAME_CONTEXT_BASES
+    ]
+    for item in opposing:
         if any(item["start"] < f["end"] and f["start"] < item["end"] for f in found):
             continue
         base = item["stat"][len("opponent_") :]

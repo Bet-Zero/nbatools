@@ -174,3 +174,21 @@ def test_same_stat_strict_conjunction_keeps_boundary(operation):
     summary = result.result.to_dict()["sections"]["summary"][0]
     assert summary["games"] == len(expected)
     assert summary["pts_avg"] == pytest.approx(expected.pts.mean(), abs=0.001)
+
+
+def test_opponent_noun_and_team_noun_preserve_separate_rows():
+    teams, players = raw_rows()
+    ours = teams.loc[teams.ast.ge(20)]
+    opposing = teams.loc[teams.ast.ge(20), ["game_id", "team_id"]].rename(
+        columns={"team_id": "opponent_team_id"}
+    )
+    context = ours.merge(opposing, on=["game_id", "opponent_team_id"], validate="one_to_one")
+    expected = players.loc[players.player_name.eq("Stephen Curry")].merge(
+        context[["game_id", "team_id"]], on=["game_id", "team_id"], validate="one_to_one"
+    )
+    result = execute_natural_query(
+        "Stephen Curry average points with 20+ opponent assists and 20+ team assists in 2025-26"
+    )
+    assert result.result_status == "ok", result.metadata
+    assert ids(result.result.to_dict()["sections"]["game_log"]) == set(expected.game_id)
+    assert {c["stat"] for c in result.metadata["conditions"]} == {"opponent_ast", "team_ast"}
