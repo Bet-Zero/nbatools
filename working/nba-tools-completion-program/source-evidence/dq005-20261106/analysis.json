@@ -1,0 +1,410 @@
+{
+  "version": "dq005-investigation-v1-20261106",
+  "kind": "unqualified_source_investigation",
+  "baseline_commit": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "original_zip_sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+  "source_receipts": [
+    {
+      "file": "originals/boxscoresummaryv2_0022200138.json",
+      "sha256": "5ba9d933148301cce2399f821f4daf7a8980e32a86cdc0bb2619fd2befe4da21",
+      "bytes": 3868,
+      "git_blob_sha1": "8be71b41bb3565d2c3bdaf5213eb8e12c52d2900",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2023/0022200138.json",
+      "retrieved_on": "2026-11-06",
+      "retrieval_route": "Connected GitHub read-only file tool",
+      "exact_retrieval_timestamp": "Not supplied by connector; not invented",
+      "original_source_capture_time": "Unverified; body metadata retained verbatim"
+    },
+    {
+      "file": "originals/boxscoresummaryv2_0022200749.json",
+      "sha256": "2665610b604f2effb2906b447cb9bee9acd4380c90f05469ade258170afe024b",
+      "bytes": 3753,
+      "git_blob_sha1": "30383f45890bc3a6a7f798dda726c90cdb6c99d3",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2023/0022200749.json",
+      "retrieved_on": "2026-11-06",
+      "retrieval_route": "Connected GitHub read-only file tool",
+      "exact_retrieval_timestamp": "Not supplied by connector; not invented",
+      "original_source_capture_time": "Unverified; body metadata retained verbatim"
+    },
+    {
+      "file": "originals/boxscoretraditionalv3_0022200138.json",
+      "sha256": "b936d05d2f2ba83aa11da3f48e60748f544f9659d0e88a8bba5f6b4fd6a29958",
+      "bytes": 18378,
+      "git_blob_sha1": "2729aa7cd0eabeb7aa5401258dd23ba4619c57eb",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2023/0022200138.json",
+      "retrieved_on": "2026-11-06",
+      "retrieval_route": "Connected GitHub read-only file tool",
+      "exact_retrieval_timestamp": "Not supplied by connector; not invented",
+      "original_source_capture_time": "Unverified; body metadata retained verbatim"
+    },
+    {
+      "file": "originals/boxscoretraditionalv3_0022200749.json",
+      "sha256": "d6fb2ea57a230e41379684f7ce3947039ffeeb0ac577048369d0b82e189f8b2f",
+      "bytes": 18490,
+      "git_blob_sha1": "33e8e7664615eb6b29ea06e0e33bab62557c7eb2",
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2023/0022200749.json",
+      "retrieved_on": "2026-11-06",
+      "retrieval_route": "Connected GitHub read-only file tool",
+      "exact_retrieval_timestamp": "Not supplied by connector; not invented",
+      "original_source_capture_time": "Unverified; body metadata retained verbatim"
+    }
+  ],
+  "affected_team_vectors": [
+    {
+      "game_id": "0022200138",
+      "team_id": 1610612743,
+      "team": "DEN",
+      "reported_gamefinder_plus_minus": 22.4,
+      "traditional_team_plus_minus": 25.0,
+      "pts": 126,
+      "opponent_pts": 101,
+      "period_points": [
+        40,
+        30,
+        29,
+        27,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "score_margin": 25,
+      "existing_canonical_output": 25,
+      "reported_player_sum": 112,
+      "reported_player_sum_divided_by_five": 22.4,
+      "complete_reported_player_vector": [
+        {
+          "player_id": 201145,
+          "name": "Jeff Green",
+          "reported_plus_minus": 8
+        },
+        {
+          "player_id": 201599,
+          "name": "DeAndre Jordan",
+          "reported_plus_minus": 3
+        },
+        {
+          "player_id": 203484,
+          "name": "Kentavious Caldwell-Pope",
+          "reported_plus_minus": 16
+        },
+        {
+          "player_id": 203932,
+          "name": "Aaron Gordon",
+          "reported_plus_minus": 15
+        },
+        {
+          "player_id": 203999,
+          "name": "Nikola Joki\u0107",
+          "reported_plus_minus": 20
+        },
+        {
+          "player_id": 1627750,
+          "name": "Jamal Murray",
+          "reported_plus_minus": 17
+        },
+        {
+          "player_id": 1628427,
+          "name": "Vlatko \u010can\u010dar",
+          "reported_plus_minus": 0
+        },
+        {
+          "player_id": 1628432,
+          "name": "Davon Reed",
+          "reported_plus_minus": 0
+        },
+        {
+          "player_id": 1628971,
+          "name": "Bruce Brown",
+          "reported_plus_minus": 13
+        },
+        {
+          "player_id": 1629008,
+          "name": "Michael Porter Jr.",
+          "reported_plus_minus": 24
+        },
+        {
+          "player_id": 1630538,
+          "name": "Bones Hyland",
+          "reported_plus_minus": 6
+        },
+        {
+          "player_id": 1631128,
+          "name": "Christian Braun",
+          "reported_plus_minus": -10
+        }
+      ],
+      "reported_gamefinder_minutes": 241,
+      "traditional_team_minutes": "240:00"
+    },
+    {
+      "game_id": "0022200138",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "reported_gamefinder_plus_minus": -20.0,
+      "traditional_team_plus_minus": -25.0,
+      "pts": 101,
+      "opponent_pts": 126,
+      "period_points": [
+        27,
+        24,
+        25,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "score_margin": -25,
+      "existing_canonical_output": -25,
+      "reported_player_sum": -100,
+      "reported_player_sum_divided_by_five": -20.0,
+      "complete_reported_player_vector": [
+        {
+          "player_id": 203476,
+          "name": "Gorgui Dieng",
+          "reported_plus_minus": -4
+        },
+        {
+          "player_id": 203926,
+          "name": "Doug McDermott",
+          "reported_plus_minus": -15
+        },
+        {
+          "player_id": 1626196,
+          "name": "Josh Richardson",
+          "reported_plus_minus": -3
+        },
+        {
+          "player_id": 1627751,
+          "name": "Jakob Poeltl",
+          "reported_plus_minus": -19
+        },
+        {
+          "player_id": 1628966,
+          "name": "Keita Bates-Diop",
+          "reported_plus_minus": -12
+        },
+        {
+          "player_id": 1629640,
+          "name": "Keldon Johnson",
+          "reported_plus_minus": -11
+        },
+        {
+          "player_id": 1629676,
+          "name": "Isaiah Roby",
+          "reported_plus_minus": -5
+        },
+        {
+          "player_id": 1630170,
+          "name": "Devin Vassell",
+          "reported_plus_minus": -13
+        },
+        {
+          "player_id": 1630200,
+          "name": "Tre Jones",
+          "reported_plus_minus": -17
+        },
+        {
+          "player_id": 1631103,
+          "name": "Malaki Branham",
+          "reported_plus_minus": -7
+        },
+        {
+          "player_id": 1631110,
+          "name": "Jeremy Sochan",
+          "reported_plus_minus": 6
+        },
+        {
+          "player_id": 1631160,
+          "name": "Jordan Hall",
+          "reported_plus_minus": 0
+        }
+      ],
+      "reported_gamefinder_minutes": 240,
+      "traditional_team_minutes": "240:00"
+    },
+    {
+      "game_id": "0022200749",
+      "team_id": 1610612738,
+      "team": "BOS",
+      "reported_gamefinder_plus_minus": 3.0,
+      "traditional_team_plus_minus": 4.0,
+      "pts": 125,
+      "opponent_pts": 121,
+      "period_points": [
+        28,
+        20,
+        33,
+        24,
+        20,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "score_margin": 4,
+      "existing_canonical_output": 4,
+      "reported_player_sum": 15,
+      "reported_player_sum_divided_by_five": 3.0,
+      "complete_reported_player_vector": [
+        {
+          "player_id": 201143,
+          "name": "Al Horford",
+          "reported_plus_minus": -6
+        },
+        {
+          "player_id": 1627759,
+          "name": "Jaylen Brown",
+          "reported_plus_minus": 1
+        },
+        {
+          "player_id": 1627763,
+          "name": "Malcolm Brogdon",
+          "reported_plus_minus": 10
+        },
+        {
+          "player_id": 1628369,
+          "name": "Jayson Tatum",
+          "reported_plus_minus": 2
+        },
+        {
+          "player_id": 1628401,
+          "name": "Derrick White",
+          "reported_plus_minus": -7
+        },
+        {
+          "player_id": 1628436,
+          "name": "Luke Kornet",
+          "reported_plus_minus": 8
+        },
+        {
+          "player_id": 1629684,
+          "name": "Grant Williams",
+          "reported_plus_minus": 3
+        },
+        {
+          "player_id": 1630202,
+          "name": "Payton Pritchard",
+          "reported_plus_minus": 4
+        },
+        {
+          "player_id": 1630573,
+          "name": "Sam Hauser",
+          "reported_plus_minus": 0
+        }
+      ],
+      "reported_gamefinder_minutes": 265,
+      "traditional_team_minutes": "265:00"
+    },
+    {
+      "game_id": "0022200749",
+      "team_id": 1610612747,
+      "team": "LAL",
+      "reported_gamefinder_plus_minus": -3.0,
+      "traditional_team_plus_minus": -4.0,
+      "pts": 121,
+      "opponent_pts": 125,
+      "period_points": [
+        27,
+        27,
+        27,
+        24,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "score_margin": -4,
+      "existing_canonical_output": -4,
+      "reported_player_sum": -15,
+      "reported_player_sum_divided_by_five": -3.0,
+      "complete_reported_player_vector": [
+        {
+          "player_id": 2544,
+          "name": "LeBron James",
+          "reported_plus_minus": 2
+        },
+        {
+          "player_id": 201566,
+          "name": "Russell Westbrook",
+          "reported_plus_minus": -10
+        },
+        {
+          "player_id": 201976,
+          "name": "Patrick Beverley",
+          "reported_plus_minus": 1
+        },
+        {
+          "player_id": 203076,
+          "name": "Anthony Davis",
+          "reported_plus_minus": -15
+        },
+        {
+          "player_id": 203471,
+          "name": "Dennis Schr\u00f6der",
+          "reported_plus_minus": 2
+        },
+        {
+          "player_id": 1628418,
+          "name": "Thomas Bryant",
+          "reported_plus_minus": 12
+        },
+        {
+          "player_id": 1628972,
+          "name": "Troy Brown Jr.",
+          "reported_plus_minus": -13
+        },
+        {
+          "player_id": 1629022,
+          "name": "Lonnie Walker IV",
+          "reported_plus_minus": 0
+        },
+        {
+          "player_id": 1629060,
+          "name": "Rui Hachimura",
+          "reported_plus_minus": 6
+        }
+      ],
+      "reported_gamefinder_minutes": 265,
+      "traditional_team_minutes": "265:00"
+    }
+  ],
+  "checks": {
+    "authenticated_new_bodies": 4,
+    "complete_team_values": 4,
+    "complete_played_player_values": 42
+  },
+  "qualification": {
+    "independent_upstream_origin_proven": false,
+    "native_scorer_pdf_bodies_retained": 0,
+    "source_mechanism_proven": false,
+    "corrected_output_version": null,
+    "data_qualified": false,
+    "production_accepted": false
+  },
+  "conclusion": "Raw GameFinder contradictions precede local parsing. Player-sum/5 relationship is observed, not a proven implementation. Separate team endpoints support literal margins but share NBA upstream. Existing canonical producer already derives score margins. No original or dataset changed; further independent native evidence required."
+}

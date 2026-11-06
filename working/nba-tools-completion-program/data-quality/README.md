@@ -25,7 +25,7 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-003](DQ-003.json) | 0009 EasonQ1 2:15FG/2:06FT association and credit | Preserve both clocks; require attributable evidence, not a guessed and-one. |
 
 | [DQ-004](DQ-004.json) | Native official Poeltl tenure bodies; approved cloud HTML capture returned403 | Existing acquisition-laptop packet; no repeated unchanged cloud request. Combined-season positive remains open; date-bounded app work continues. |
-| [DQ-005](DQ-005.json) | Attributable exact2022-23 reported margin evidence for0022200138/0022200749 | Source group, unclaimed. Preserve raw margins; unrelated participation/count work continues. |
+| [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), blocked_evidence/stopped. Four source fields investigated; no qualified correction. Existing canonical margins already derive scores. |
 
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent
@@ -81,3 +81,18 @@ checked/added, validated corrections, affected-output checks, remaining evidence
 review status, next trigger and running/stopped state. Keep large ledgers in the
 existing source-evidence packages. Agent2 updates this worklist/its PR, not Agent1's
 main checkpoint. Agent1 links accepted results during normal integration.
+
+### DQ-005 bounded investigation,2026-11-06
+
+Agent2 `/root` claimed [DQ-005](DQ-005.json) on `codex/agent2-dq005-20261106`
+from post-PR587 main`4bd2f799ddeb06544ef2223e56449ec609318dec`.
+[PR588](https://github.com/Bet-Zero/nbatools/pull/588) retains the exact final
+revision and [versioned investigation](../source-evidence/dq005-20261106/README.md).
+Four source fields and42played-player values checked; independent checker confirms
+canonical team margins already match paired scores. Raw-source field semantics/
+upstream mechanism and independent native scorer corroboration remain unqualified.
+No data value was corrected or published. The2PDF Actions request was rejected by
+automatic approval review before execution for possible compute-cost/credential
+concerns. Reuse retained bodies; resume only with newly available independent
+originals or a restored approved capture route. Agent2 is stopped; no background
+worker or Agent1 coordination is implied. DQ001-DQ004 are untouched.

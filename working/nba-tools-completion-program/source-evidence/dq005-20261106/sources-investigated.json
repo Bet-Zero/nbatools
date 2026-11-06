@@ -1,0 +1,80 @@
+{
+  "version": "dq005-investigation-v1-20261106",
+  "native_independent_scorer_bodies_retained": 0,
+  "source_corrections": 0,
+  "investigated_sources": [
+    {
+      "source": "Pinned NBA Stats archive",
+      "repository": "sportsdataverse/hoopR-nba-stats-raw",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "original_bodies_retained": 4,
+      "families": [
+        "boxscoretraditionalv3",
+        "boxscoresummaryv2"
+      ],
+      "games": [
+        "0022200138",
+        "0022200749"
+      ],
+      "detail": "analysis.json source_receipts; shared NBA Stats upstream disclosed, not falsely labeled independent"
+    },
+    {
+      "source": "Retained PR587 GameFinder/GameLog",
+      "original_zip": "../multi-team-absence-20261106/archive-originals.zip",
+      "outcome": "Reused successful originals unchanged; no recollection"
+    },
+    {
+      "source": "Official scorer gamebook via connected web read",
+      "url": "https://statsdmz.nba.com/pdfs/20230128/20230128_LALBOS_book.pdf",
+      "outcome": "PDF page0 extracted text shows team-4/+4 and full player vector; no native PDF body or reusable image bytes returned. Lead only, not source qualification"
+    },
+    {
+      "source": "SAS-DEN PDF candidates via connected web read",
+      "urls": [
+        "https://statsdmz.nba.com/pdfs/20221105/20221105_SASDEN_book.pdf",
+        "https://statsdmz.nba.com/pdfs/20221105/20221105_SASDEN.pdf",
+        "https://statsdmz.nba.com/pdfs/20221105/20221105_SASDEN_gamebook.pdf"
+      ],
+      "outcome": "Inaccessible/internal errors. The book and final-box URLs each appeared in2web opens; gamebook suffix in1. No originals returned; no further identical opens"
+    },
+    {
+      "source": "Official glossary via web search",
+      "url": "https://www.nba.com/stats/help/glossary?hidenav=true",
+      "outcome": "General on-floor point-differential meaning; no retained native body or endpoint-specific processing definition"
+    },
+    {
+      "source": "Score corroboration leads discovered via web search only",
+      "urls": [
+        "https://www.nba.com/game/sas-vs-den-0022200138",
+        "https://www.nba.com/game/lal-vs-bos-0022200749/box-score",
+        "https://www.espn.com/nba/boxscore/_/gameId/401468904",
+        "https://www.basketball-reference.com/boxscores/202211050DEN.html",
+        "https://www.basketball-reference.com/boxscores/202301280BOS.html"
+      ],
+      "outcome": "Scores are consistent in search results; native bodies/upstream independence not qualified. Not treated as correction evidence"
+    },
+    {
+      "source": "Archive TraditionalV2 candidate via connected GitHub read",
+      "path": "nba_stats/json/boxscoretraditionalv2/2023/0022200138.json",
+      "revision": "2e44b7c039f104bc6b41a1de494411e83a03714e",
+      "outcome": "404. Archive family listing confirms V3/Summary families; no TraditionalV2 body retained"
+    },
+    {
+      "source": "Local GitHub transport",
+      "outcome": "Initial git ls-remote failed connecting to inherited proxy:8080; used available connected GitHub tools for authorized repository reads/writes, without changing network/permissions"
+    },
+    {
+      "source": "Existing reviewed targeted Actions acquisition route",
+      "reviewed_candidate": "e548f629d038055f84c3b448ed4ec184f2d62ecf",
+      "branch": "r2-validation/dq005-source-e548f629",
+      "request_manifest_written": false,
+      "workflow_started": false,
+      "outcome": "Automatic approval review rejected github_create_file for .github/r2-validation-request.json citing possible new compute costs or credential-bearing execution conflicting with user no-new-costs/expanded-access constraints. No retry/bypass. Empty branch only; normal draft-PR CI is separate."
+    }
+  ],
+  "missing_facts": [
+    "Independent native original scorer corroboration for both complete game/team vectors and field meaning; shared Stats endpoint agreement does not establish independent origin.",
+    "Attributable cause, stale-source explanation, or documented alternate GameFinder basis remains unknown; observed sum/5 must not be called a proven algorithm."
+  ],
+  "next_action": "Capture and retain the2reviewed exact official final boxes or equivalent independent original scorer evidence; then review qualification/correction. Reuse4newJSONs and oldZIP, never repeat DQ001-DQ004 absent new evidence."
+}

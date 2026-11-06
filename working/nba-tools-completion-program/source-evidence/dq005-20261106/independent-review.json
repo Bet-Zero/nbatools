@@ -1,0 +1,161 @@
+{
+  "reviewer": "/root/dq005_checker",
+  "model": "Exact model identifier not exposed",
+  "reviewed_application_baseline": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "source_hashes": {
+    "boxscoretraditionalv3_0022200138.json": "b936d05d2f2ba83aa11da3f48e60748f544f9659d0e88a8bba5f6b4fd6a29958",
+    "boxscoresummaryv2_0022200138.json": "5ba9d933148301cce2399f821f4daf7a8980e32a86cdc0bb2619fd2befe4da21",
+    "boxscoretraditionalv3_0022200749.json": "d6fb2ea57a230e41379684f7ce3947039ffeeb0ac577048369d0b82e189f8b2f",
+    "boxscoresummaryv2_0022200749.json": "2665610b604f2effb2906b447cb9bee9acd4380c90f05469ade258170afe024b"
+  },
+  "vectors": [
+    {
+      "game_id": "0022200138",
+      "team_id": 1610612743,
+      "team": "DEN",
+      "reported_plus_minus": 22.4,
+      "pts": 126,
+      "opponent_pts": 101,
+      "paired_margin": 25,
+      "v3_team_plus_minus": 25.0,
+      "player_count": 12,
+      "player_plus_minus_sum": 112,
+      "v3_player_plus_minus_sum": 112.0,
+      "minutes_reported": 241,
+      "v3_minutes": "240:00",
+      "canonical_team_plus_minus": 25.0,
+      "loaded_team_plus_minus": 25.0,
+      "schedule_score_margin": 25.0,
+      "schedule_one_possession": 0
+    },
+    {
+      "game_id": "0022200138",
+      "team_id": 1610612759,
+      "team": "SAS",
+      "reported_plus_minus": -20.0,
+      "pts": 101,
+      "opponent_pts": 126,
+      "paired_margin": -25,
+      "v3_team_plus_minus": -25.0,
+      "player_count": 12,
+      "player_plus_minus_sum": -100,
+      "v3_player_plus_minus_sum": -100.0,
+      "minutes_reported": 240,
+      "v3_minutes": "240:00",
+      "canonical_team_plus_minus": -25.0,
+      "loaded_team_plus_minus": -25.0,
+      "schedule_score_margin": 25.0,
+      "schedule_one_possession": 0
+    },
+    {
+      "game_id": "0022200749",
+      "team_id": 1610612738,
+      "team": "BOS",
+      "reported_plus_minus": 3.0,
+      "pts": 125,
+      "opponent_pts": 121,
+      "paired_margin": 4,
+      "v3_team_plus_minus": 4.0,
+      "player_count": 9,
+      "player_plus_minus_sum": 15,
+      "v3_player_plus_minus_sum": 15.0,
+      "minutes_reported": 265,
+      "v3_minutes": "265:00",
+      "canonical_team_plus_minus": 4.0,
+      "loaded_team_plus_minus": 4.0,
+      "schedule_score_margin": 4.0,
+      "schedule_one_possession": 0
+    },
+    {
+      "game_id": "0022200749",
+      "team_id": 1610612747,
+      "team": "LAL",
+      "reported_plus_minus": -3.0,
+      "pts": 121,
+      "opponent_pts": 125,
+      "paired_margin": -4,
+      "v3_team_plus_minus": -4.0,
+      "player_count": 9,
+      "player_plus_minus_sum": -15,
+      "v3_player_plus_minus_sum": -15.0,
+      "minutes_reported": 265,
+      "v3_minutes": "265:00",
+      "canonical_team_plus_minus": -4.0,
+      "loaded_team_plus_minus": -4.0,
+      "schedule_score_margin": 4.0,
+      "schedule_one_possession": 0
+    }
+  ],
+  "checks": "Two-game four-team complete vector; paired score/V3 team/Summary period checks; 12/12/9/9 player counts and sums; unchanged canonical producer/load arithmetic and schedule features",
+  "result": "blocked_evidence; no source correction qualified",
+  "findings": [
+    "Raw Finder JSON already contains all4anomalies: no local parse origin.",
+    "Canonical producer and loader already derive margins from paired scores; no application correction indicated.",
+    "Player-sum/5 equality across endpoint variants is observed; undocumented upstream algorithm/cause remains unproven.",
+    "V3 and Summary share NBA Stats upstream; their agreement is not independent original scorer corroboration.",
+    "No native official scorer PDF bytes retained; extracted web text cannot substitute exact original-body provenance."
+  ],
+  "missing": [
+    "Retained attributable original scorer final boxes or equivalent qualified independent original evidence for both complete game/team vectors."
+  ],
+  "unknown_mechanism": "Upstream processing, stale-source cause or alternate Finder basis remains unknown. This need not block a future field correction if independent original scorer totals and the intended field meaning establish the complete correction.",
+  "qualified_output_version": null,
+  "provenance_checks": [
+    {
+      "file": "originals/boxscoresummaryv2_0022200138.json",
+      "sha256": "5ba9d933148301cce2399f821f4daf7a8980e32a86cdc0bb2619fd2befe4da21",
+      "git_blob_sha1": "8be71b41bb3565d2c3bdaf5213eb8e12c52d2900",
+      "bytes": 3868,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2023/0022200138.json"
+    },
+    {
+      "file": "originals/boxscoresummaryv2_0022200749.json",
+      "sha256": "2665610b604f2effb2906b447cb9bee9acd4380c90f05469ade258170afe024b",
+      "git_blob_sha1": "30383f45890bc3a6a7f798dda726c90cdb6c99d3",
+      "bytes": 3753,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoresummaryv2/2023/0022200749.json"
+    },
+    {
+      "file": "originals/boxscoretraditionalv3_0022200138.json",
+      "sha256": "b936d05d2f2ba83aa11da3f48e60748f544f9659d0e88a8bba5f6b4fd6a29958",
+      "git_blob_sha1": "2729aa7cd0eabeb7aa5401258dd23ba4619c57eb",
+      "bytes": 18378,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2023/0022200138.json"
+    },
+    {
+      "file": "originals/boxscoretraditionalv3_0022200749.json",
+      "sha256": "d6fb2ea57a230e41379684f7ce3947039ffeeb0ac577048369d0b82e189f8b2f",
+      "git_blob_sha1": "33e8e7664615eb6b29ea06e0e33bab62557c7eb2",
+      "bytes": 18490,
+      "url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/boxscoretraditionalv3/2023/0022200749.json"
+    }
+  ],
+  "reviewed_files_sha256": {
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/README.md": "31cef764ea8692b61567d12274b051ec96cad869e7519d68354da9c947291be0",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/replay.py": "7a2c2c3e5e1d4e27053c5d17874267ed66b75e1eefc411e2ac589d3b45bc93ce",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/analysis.json": "777833357f2ae84be35d11511a138095a2926db7c12d9cf5e85975a664587fed",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/sources-investigated.json": "4dbf225da280dc0eb34d0c69bcc65aa7bfcf22b0117d0ed7f3587304232f0afb",
+    "working/nba-tools-completion-program/data-quality/DQ-005.json": "f8b2c67ee70296999de9f1df425c5185d9bea113d8b521ed11031b4f638dfd6e",
+    "working/nba-tools-completion-program/data-quality/README.md": "1161f0a22653dc69a707f9197a1730a0d42fe96ca0ea1a163a3be9ab76d38c55",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/originals/boxscoresummaryv2_0022200138.json": "5ba9d933148301cce2399f821f4daf7a8980e32a86cdc0bb2619fd2befe4da21",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/originals/boxscoresummaryv2_0022200749.json": "2665610b604f2effb2906b447cb9bee9acd4380c90f05469ade258170afe024b",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/originals/boxscoretraditionalv3_0022200138.json": "b936d05d2f2ba83aa11da3f48e60748f544f9659d0e88a8bba5f6b4fd6a29958",
+    "working/nba-tools-completion-program/source-evidence/dq005-20261106/originals/boxscoretraditionalv3_0022200749.json": "d6fb2ea57a230e41379684f7ce3947039ffeeb0ac577048369d0b82e189f8b2f"
+  },
+  "collector_review": {
+    "reviewed_remote_revision": "e548f629d038055f84c3b448ed4ec184f2d62ecf",
+    "reviewed_local_revision": "711273320c8d71f9b5648466343941147deb461d",
+    "path": "tests/cloud_dq005_source_capture_real_data.py",
+    "file_sha256": "1dea578ce657f878ab5270f027cedbff5fcbe699851d6f0567770cc90ca09a05",
+    "approval": "Bounded two-original collector only; not statistical or corrected-data approval",
+    "controlled_checks": "Success and two-failure receipt branches passed, zero network calls",
+    "execution": "No hosted workflow executed; request manifest rejected before write per author receipt"
+  },
+  "package_review": {
+    "approval": "Accurate blocked-evidence investigation only; no correction acceptance or merge approval",
+    "native_pdf_claims": "README accurately identifies extracted web text as unretained native-body leads",
+    "root_cause_claims": "README accurately limits player-sum/5 relationship to observed hypothesis",
+    "author_script_scope": "Offline hash-bound two-game four-team/42player analysis; no network or app mutation",
+    "independent_script_sha256": "7e271fdca4cf99f0dac4cec6cef587a70a0a280821d300f6c7e630ac92e907d5"
+  }
+}
