@@ -12,6 +12,7 @@ import type { QueryResponse } from "../../../api/types";
  */
 export type PatternConfig =
   | { type: "entity_summary"; sectionKey?: string }
+  | { type: "membership" }
   | {
       type: "game_log";
       sectionKey?: string;
@@ -90,6 +91,8 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
   }
 
   switch (data.route ?? data.result?.metadata?.route) {
+    case "player_membership":
+      return [{ type: "membership" }];
     case "player_game_summary":
       return shouldShowPlayerSummaryGameLog(data)
         ? [

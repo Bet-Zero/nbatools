@@ -12,6 +12,7 @@ import EntitySummaryResult from "./patterns/EntitySummaryResult";
 import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
+import MembershipResult from "./patterns/MembershipResult";
 import PlayoffHistoryResult from "./patterns/PlayoffHistoryResult";
 import RecordResult from "./patterns/RecordResult";
 import RollingStretchResult from "./patterns/RollingStretchResult";
@@ -157,6 +158,8 @@ function PatternBlock({
   afterHero,
 }: PatternBlockProps) {
   switch (pattern.type) {
+    case "membership":
+      return <MembershipResult data={data} afterHero={afterHero} />;
     case "entity_summary":
       return (
         <EntitySummaryResult

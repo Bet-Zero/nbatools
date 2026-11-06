@@ -35,6 +35,9 @@ def build_result(
     intervals = load_membership([season])
     membership = membership_on_date(intervals, player_id, day, team_id)
     participation = "unknown"
+    identity = intervals.loc[intervals.player_id.eq(player_id)]
+    player_name = str(identity.player_name.iloc[0]) if len(identity) else None
+    team_abbr = None
     if game_id is not None:
         from nbatools.commands.data_utils import load_team_games_for_seasons
 
@@ -50,6 +53,8 @@ def build_result(
         exact = observations.loc[
             observations.player_id.eq(player_id) & observations.game_id.eq(game_id)
         ]
+        if len(exact):
+            player_name = str(exact.player_name.iloc[0])
         target = team_id
         if target is None:
             target = int(exact.team_id.iloc[0]) if len(exact) else membership.team_id
@@ -71,10 +76,15 @@ def build_result(
             # A side-specific negative does not answer which club the player joined.
             membership = membership_on_date(intervals, player_id, day)
             participation = "unknown"
+        known_club = games.loc[games.team_id.eq(membership.team_id)]
+        if not known_club.empty and "team_abbr" in known_club:
+            team_abbr = str(known_club.team_abbr.iloc[0])
     summary = pd.DataFrame(
         [
             dict(
                 player_id=player_id,
+                player_name=player_name,
+                member_team_abbr=team_abbr,
                 date=date,
                 requested_team_id=team_id,
                 member_team_id=membership.team_id,

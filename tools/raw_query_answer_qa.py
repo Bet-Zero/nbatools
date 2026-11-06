@@ -157,6 +157,7 @@ SHAPE_BY_ROUTE = {
     "lineup_leaderboard": "leaderboard_table",
     "lineup_summary": "entity_summary",
     "player_game_summary": "entity_summary",
+    "player_membership": "entity_summary",
     "player_on_off": "on_off_split",
     "player_streak_finder": "streak_table",
     "player_stretch_leaderboard": "rolling_stretch",

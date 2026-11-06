@@ -172,6 +172,9 @@ def build_report(
         if len({participation.player_name_key(name) for name in names}) != 1:
             raise ValueError("Requested player has unavailable or conflicting name identity")
         name = names[0]
+        matching = identities.loc[participation.player_name_mask(identities, name)]
+        if len(set(pd.to_numeric(matching.player_id))) != 1:
+            combination_error = f"Unavailable or ambiguous participation identity for {name}"
         rows = []
         for _, game in games.sort_values(["game_date", "game_id"]).iterrows():
             row = dict(
@@ -202,7 +205,9 @@ def build_report(
                 row["member_team_id"] = membership.team_id
                 row["membership_basis"] = membership.basis
                 if state == "unknown":
-                    row["qualification_error"] = "Incomplete game-day participation evidence"
+                    row["qualification_error"] = (
+                        f"Incomplete game-day participation coverage for {name}"
+                    )
             except (ValueError, FileNotFoundError) as exc:
                 row["qualification_error"] = str(exc)
             rows.append(row)
