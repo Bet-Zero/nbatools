@@ -1,0 +1,7 @@
+{
+  "scope":"Equivalent bare OR wording uses the same frozen raw selectors; no new count expectations or Boolean grammar are invented.",
+  "cases":[
+    {"query":"How many distinct players had over 20 points or over 10 assists in 2025-26?","oracle":"controlled_union","grain":"distinct_players","data":"controlled"},
+    {"query":"How many distinct players had over 37 points or over 10 assists in 2022-23?","oracle":"native_union","grain":"distinct_players","data":"native"}
+  ]
+}

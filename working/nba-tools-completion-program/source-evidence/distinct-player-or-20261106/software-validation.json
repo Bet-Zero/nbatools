@@ -1,0 +1,72 @@
+{
+  "baseline": "cbf46c7d08c5e41f4bf87a4000d6fee4d698bd3a",
+  "review_candidate": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "stable_broad": {
+    "source": "d13c8e24dfc7ed7fb818f6422e8f6a917184b2fd",
+    "command": "pytest -n4 -m 'not slow'",
+    "passed": 10271,
+    "skipped": 1863,
+    "failed": 0,
+    "errors": 0,
+    "scope": "Unavailable real-data tests are not numerical acceptance; subsequent scope-only delta requires focused verification/review and final-head CI."
+  },
+  "initial_focused": {
+    "passed": 97,
+    "skipped": 2,
+    "failed": 3,
+    "disposition": "Existing plain-AND regression repaired; old positive tests retained. Not passing acceptance."
+  },
+  "repaired_scope_focused": {
+    "source": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+    "passed": 116,
+    "skipped": 2,
+    "failed": 0,
+    "scope": "new common-opponent-list and unrepresented outer-scope guards plus existing occurrence/compound/boolean controls"
+  },
+  "local_rawqa": {
+    "source": "d13c8e24dfc7ed7fb818f6422e8f6a917184b2fd",
+    "cases": 3,
+    "checks": 17,
+    "failed": 0,
+    "scope": "Qualified isolated2022stage; actual rendered77players/295player-games/qualifiedzero. Not R2 or deployed acceptance."
+  },
+  "actual_required_hosted": {
+    "run_id": 42231041230,
+    "request_sha": "6a6c7099013648913a87d81eab6a311717fa5de3",
+    "source": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+    "selected": 23,
+    "executed": 23,
+    "passed": 23,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "base_rawqa_cases": 5,
+    "base_rawqa_checks": 28,
+    "qualified_stage_rawqa_cases": 4,
+    "qualified_stage_rawqa_checks": 27
+  },
+  "publication": {
+    "production_data_changes": 0,
+    "active_pointer_changes": 0,
+    "manual_deployments": 0,
+    "source_downloads": 0,
+    "agent2_coordination": 0,
+    "k12_changes": 0
+  },
+  "actual_global_2023": {
+    "distinct_players": 76,
+    "player_games": 276,
+    "nba_games": 254,
+    "left": 125,
+    "right": 155,
+    "overlap": 4,
+    "left_only": 121,
+    "right_only": 151
+  },
+  "reviewed_source_ci": {
+    "run_id": 42229669017,
+    "all_blocking_jobs": "passed; Python3.11/3.12/3.13,frontend,productionaudit,lint,docs,scope",
+    "advisory": "existing development-only audit failure"
+  }
+}

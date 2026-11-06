@@ -1,0 +1,488 @@
+[
+  {
+    "id": "independent_distinct_union",
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "player_occurrence_leaders",
+          "expected": "player_occurrence_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "leaderboard"
+          ],
+          "expected": [
+            "count",
+            "leaderboard"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "name": "expected_row_counts.leaderboard",
+          "status": "pass"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "name": "result.sections.leaderboard.0.matching_games",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 7,
+      "status": "pass"
+    },
+    "query_output_snapshot": {
+      "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "3 distinct players had a matching game in the 2025-26 regular season."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "leaderboard_default",
+            "filters": [
+              "Game conditions: (over 20 points or over 10 assists)"
+            ],
+            "mode": "Leaderboard",
+            "row_count": 3,
+            "rows": [
+              [
+                "1",
+                "Nikola Joki\u0107",
+                "2",
+                "2025-26",
+                "DEN",
+                "3",
+                "Regular Season"
+              ],
+              [
+                "2",
+                "Jalen Brunson",
+                "1",
+                "2025-26",
+                "NYK",
+                "2",
+                "Regular Season"
+              ],
+              [
+                "3",
+                "Jamal Murray",
+                "1",
+                "2025-26",
+                "DEN",
+                "2",
+                "Regular Season"
+              ]
+            ],
+            "section_key": "leaderboard",
+            "subject": "League",
+            "table_type": "leaderboard",
+            "title": "Leaderboard",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Matching Games",
+              "Season",
+              "TM",
+              "GP",
+              "Type"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "player_occurrence_leaders"
+      }
+    }
+  },
+  {
+    "id": "independent_player_game_union",
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "player_game_finder",
+          "expected": "player_game_finder",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "finder"
+          ],
+          "expected": [
+            "count",
+            "finder"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 4,
+          "expected": 4,
+          "name": "expected_row_counts.finder",
+          "status": "pass"
+        },
+        {
+          "actual": 4,
+          "expected": 4,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 6,
+      "status": "pass"
+    },
+    "query_output_snapshot": {
+      "query": "How many player games with (over 20 points or over 10 assists) in 2025-26?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "There were 4 matching player-games in the 2025-26 regular season."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "player_game_log_default",
+            "filters": [
+              "pts min: 20 (exclusive)",
+              "ast min: 10 (exclusive)"
+            ],
+            "mode": "Player game log",
+            "row_count": 4,
+            "rows": [
+              [
+                "1",
+                "Jalen Brunson",
+                "Nov 3",
+                "NYK",
+                "vs",
+                "GSW",
+                "L",
+                "30",
+                "18",
+                "0",
+                "12",
+                "\u2014",
+                "\u2014",
+                "\u2014",
+                "4",
+                "0",
+                "0",
+                "2",
+                "45.0%",
+                "45.0%"
+              ],
+              [
+                "2",
+                "Nikola Joki\u0107",
+                "Nov 2",
+                "DEN",
+                "@",
+                "LAL",
+                "L",
+                "30",
+                "25",
+                "12",
+                "5",
+                "\u2014",
+                "\u2014",
+                "\u2014",
+                "4",
+                "0",
+                "1",
+                "0",
+                "61.2%",
+                "60.0%"
+              ],
+              [
+                "3",
+                "Nikola Joki\u0107",
+                "Nov 1",
+                "DEN",
+                "vs",
+                "GSW",
+                "W",
+                "30",
+                "25",
+                "12",
+                "12",
+                "\u2014",
+                "\u2014",
+                "\u2014",
+                "4",
+                "0",
+                "0",
+                "-2",
+                "61.2%",
+                "60.0%"
+              ]
+            ],
+            "section_key": "finder",
+            "subject": "Jalen Brunson",
+            "table_type": "player_game_log",
+            "title": "Player Game Detail",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Date",
+              "TM",
+              "",
+              "Opp",
+              "W/L",
+              "MIN",
+              "PTS",
+              "REB",
+              "AST",
+              "FG",
+              "3P",
+              "FT",
+              "STL",
+              "BLK",
+              "TOV",
+              "+/-",
+              "TS%",
+              "eFG%"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "player_game_finder"
+      }
+    }
+  },
+  {
+    "id": "independent_opponent_union",
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "player_occurrence_leaders",
+          "expected": "player_occurrence_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "leaderboard"
+          ],
+          "expected": [
+            "count",
+            "leaderboard"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "name": "expected_row_counts.leaderboard",
+          "status": "pass"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 6,
+      "status": "pass"
+    },
+    "query_output_snapshot": {
+      "query": "How many distinct players had (over 20 points or over 10 assists) against the Warriors or against the Lakers in 2025-26?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "3 distinct players had a matching game in the 2025-26 regular season."
+        },
+        "blocks": [
+          {
+            "collapsed": false,
+            "collapsed_label": null,
+            "column_schema": "leaderboard_default",
+            "filters": [
+              "Game conditions: (over 20 points or over 10 assists)",
+              "Opponent: GSW, LAL"
+            ],
+            "mode": "Leaderboard",
+            "row_count": 3,
+            "rows": [
+              [
+                "1",
+                "Nikola Joki\u0107",
+                "2",
+                "2025-26",
+                "DEN",
+                "3",
+                "Regular Season"
+              ],
+              [
+                "2",
+                "Jalen Brunson",
+                "1",
+                "2025-26",
+                "NYK",
+                "2",
+                "Regular Season"
+              ],
+              [
+                "3",
+                "Jamal Murray",
+                "1",
+                "2025-26",
+                "DEN",
+                "2",
+                "Regular Season"
+              ]
+            ],
+            "section_key": "leaderboard",
+            "subject": "League",
+            "table_type": "leaderboard",
+            "title": "Leaderboard",
+            "type": "table",
+            "visible_columns": [
+              "#",
+              "Player",
+              "Matching Games",
+              "Season",
+              "TM",
+              "GP",
+              "Type"
+            ]
+          }
+        ]
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "player_occurrence_leaders"
+      }
+    }
+  },
+  {
+    "id": "independent_distinct_zero",
+    "expectation_results": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "player_occurrence_leaders",
+          "expected": "player_occurrence_leaders",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count"
+          ],
+          "expected": [
+            "count"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 5,
+      "status": "pass"
+    },
+    "query_output_snapshot": {
+      "query": "How many distinct players had (over 90 points or over 90 assists) in 2025-26?",
+      "rendered_output": {
+        "answer": {
+          "source": "ResultHero",
+          "text": "0 distinct players had a matching game in the 2025-26 regular season."
+        },
+        "blocks": []
+      },
+      "status": {
+        "ok": true,
+        "result_reason": null,
+        "result_status": "ok",
+        "route": "player_occurrence_leaders"
+      }
+    }
+  }
+]

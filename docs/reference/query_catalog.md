@@ -376,6 +376,13 @@ including unparenthesized OR. For example:
 - `How many different players had a game with (over 40 points or over 12 assists) in 2022-23?`
 - `How many Lakers players had (over 20 points or over 10 assists) in 2025-26?`
 
+Historical pinned-data acceptance gives76distinct players for the analogous
+2023-24question, from276qualifying player-games across254NBA fixtures. In2022-23,
+the quoted condition selects77players/295player-games/266NBA fixtures. Those grains
+are different; the independent fixture/raw-ID and actual HTTP/rendered receipts
+are attached to [PR592](https://github.com/Bet-Zero/nbatools/pull/592). These checks
+do not establish a new production deployment or current-data freshness.
+
 The occurrence engine evaluates the shared predicate tree on one scoped player-game
 base before grouping by player ID. Matching both branches contributes one matching
 game; repeated appearances never add another distinct player. Common team, opponent,

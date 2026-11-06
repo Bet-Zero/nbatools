@@ -1,0 +1,29 @@
+{
+  "checker": "/root/poeltl_source_checker; independent Codex session, exact backend model not exposed",
+  "finding": {
+    "revision": "d13c8e24dfc7ed7fb818f6422e8f6a917184b2fd",
+    "class": "A requested common opponent union was reinterpreted as subjectteam+singleopponent",
+    "queries": [
+      "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against Boston or against Phoenix",
+      "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Warriors or against the Lakers?"
+    ],
+    "actual": "second opponent became subjectteam; controlledGSW/LALquery returned0players instead3",
+    "expected": "Commonopponentmembershipunion, subjectteamnone;3players/4qualifyingPG for thecontrolledscope, or safeunsupportedifnotimplemented",
+    "evidence": "d13-opponent-scope-finding.json",
+    "resolved_by": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+    "resolution": "Existing opponent list helper gains opt-in repeated leads/subject-before scope; new Boolean mode binds proven common opponent union before resolving separate subject; unrepresented outerOR safelyrefuses. Old default list behavior unchanged.",
+    "independent_delta": "final-scope-delta-corrected/receipt.json:9groups/17calls passed"
+  },
+  "remaining_unfinished": [
+    "The three frozen owned-stat compositions controlled_team_owned/native_team_owned/native_opponent_owned remain safely unsupported by the bounded own-box-count Boolean mode. Their raw mathematical oracles are retained; containment is not positive feature acceptance.",
+    "Global2023-24example total remainsnull until complete qualified pinned R2 raw selection; no extrapolation from named-player K03 subsets.",
+    "Distinct NBA-game projection, branch-specific scope, ranked/windowed Boolean distinct counts and other unread compositions remain outside this acceptance."
+  ],
+  "harness_history": [
+    "Initial HTTP checker used top-level metadata instead of result.metadata; corrected.",
+    "Player-game evaluator observation omits team_id in its displayed frame; corrected using frozen unique(game,player)->team identity mapping.",
+    "Nullable bool damage fixture needed object dtype before writing a null; corrected.",
+    "Opponent display metadata is comma-joined while canonical opponents is a list; checker normalized these existing shapes.",
+    "Initial raw QA corpus path was relative to the detached worktree; corrected to the absolute workpath. These harness issues were not application failures."
+  ]
+}

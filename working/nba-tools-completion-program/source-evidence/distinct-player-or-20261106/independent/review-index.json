@@ -1,0 +1,33 @@
+{
+  "checker": "/root/poeltl_source_checker; independent Codex session, actual backend model not exposed",
+  "approved_source": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "terminal_groups": 56,
+  "terminal_query_invocations": 100,
+  "failures": 0,
+  "skipped": 0,
+  "heldout_positive_wordings": 26,
+  "heldout_contained_unfinished_owned_compositions": 3,
+  "default_helper_compatibility_cases": 10,
+  "rawqa_cases": 4,
+  "rawqa_passed_checks": 24,
+  "actual_global_2023_total": null,
+  "hosted_status": "pending23required/5RawQA and exact-headblockingCI",
+  "files": {
+    "oracle.json": "9915885cc7afa1ba96cb47e8d38aa621c808a41ed3146b6c35ad96aeb596afd6",
+    "heldouts.json": "7614446c3cce40a16f74e1c9dca7f2359a3d95bc6f808274ba675c4dbc29e92c",
+    "wording-supplement.json": "5f3c53d27695659c06c5e69acd6d8d95af192578627138537d0d6ae8001763cf",
+    "meaning-freeze.md": "67baef381b0218ac7d3a7fd235fecdc9196b0eefb5edfcfbfeaa7d925d586378",
+    "portable-source-replay.py": "d80c78ac9efdb5e4b61b4d5addfbcb7ab79631e5f289e663ec8238fc0d7d8248",
+    "check.py": "3290f62e0067e8762776725105c4b3060b00e34d40d579a1e51d604e051e587d",
+    "scope-delta-check.py": "270fc55abb5d90d491ca780b6ee0386d715b672c4dcb6044bcfafb41606e8de2",
+    "default-list-compatibility.json": "b4b432d47b201813f8ad96a8b7e8fa74fea2395172f19c06c23d7dc1522bc371",
+    "findings.json": "070bd7f963c584334e2fecb0288b0253372bdb400456f7944c3d47046afd06f7",
+    "d13-opponent-scope-finding.json": "ddff9dcc54ade5d6310f37feb7cec4abc290e0c6ca927daa59b196d18314e137",
+    "final-controlled/receipt.json": "0cd2e8c79dcdabb27e45e1e6e7d5f13d2ec8e29b507c8f4d9e062ab087d71234",
+    "d13-native-corrected/receipt.json": "256058aefde7f1e8b847a9f4010e57808a8d24c060183729c534fd11de6aa8f3",
+    "final-scope-delta-corrected/receipt.json": "617d5ced1a494e2a4f08f47d50af9c6e63eef6c428d0cdcc2f1929b05c9e10c0",
+    "rawqa.yaml": "96e983fbc2fbd5bf117c76cf9073be0f9cff04c9273efc1f76b22dfe2ab6f47e",
+    "final-rawqa/independent/summary.json": "d773d015b37400d01cb1d18ed7e7703227017d4caac78586dc805ccaa0bdd188",
+    "final-verdict.md": "2534743bbf76a896cc0192e13050ee568665b1354c8c4b369d749bb6199eeb40"
+  }
+}

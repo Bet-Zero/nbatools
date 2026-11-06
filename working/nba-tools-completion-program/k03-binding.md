@@ -178,7 +178,7 @@ these expectations require no new framework or shared parser changes. Keep this
 controlled set separate from the 12 frozen real-data questions above. This
 proposal does not certify implementation, execution, or product review.
 
-Reviewer findings retained historically: nonzero exact equality and distinct-player grouped OR were unfinished at this binding. PR591 now qualifies shared explicit count-stat equality with independently frozen fixture/native expectations and actual required execution; distinct-player grouped OR remains unfinished. The old zero-only containment was deliberately promoted to positive equality support, preserving unread operator/owner guards. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
+Reviewer findings retained historically: nonzero exact equality and distinct-player grouped OR were unfinished at this binding. PR591 now qualifies shared explicit count-stat equality with independently frozen fixture/native expectations and actual required execution; PR592 now implements the distinct-player grouped OR projection through the shared occurrence engine, with common scoped base and complete raw-ID proofs. Global NBA-fixture projection and owned-stat expressions remain unfinished. The old zero-only containment was deliberately promoted to positive equality support, preserving unread operator/owner guards. Controlled grain tests use PTS>=20: four player-game rows, three distinct game IDs and two players. The OR fixture independently retains four rows, three players and three game IDs with both overlap and branch-only rows.
 
 ## Player-game rendering correction (2026-10-18)
 
@@ -203,3 +203,25 @@ source-evidence/stat-equality-20261106. This advances finite I/N/L evidence; it 
 not close the retained deployment/freshness/Core-1 obligations or distinct-player
 grouped OR. Rate/exact-time precision expansion remains separate. Final exact-head
 CI/landing receipts belong in PR591; no production data or pointer was published.
+
+## Verified grouped OR identity projection (2026-11-06)
+
+[PR592](https://github.com/Bet-Zero/nbatools/pull/592) reviewed runtime9fda883a
+extends the existing shared tree and occurrence/count engine. Branch union is
+rowwise before aggregation by player ID; repeated appearances and overlapping
+branches cannot inflate the distinct count. Common team/opponent/date/venue/outcome
+filters select the same complete base for both branches. Nested AND remains within
+one game. The canonical controlled union is4player-games/3NBAfixtures/3players.
+
+Actual required run42231041230 executes/passes23tests with zero skips/errors/failures,
+including all12existing K03 cases and3new independent raw-row checks. The2023-24
+owner example has76distinctplayers/276matchingplayer-games/254NBAfixtures;
+125left+155right-4overlap=276, with every key/playerID/occurrence vector checked
+through natural/structured/HTTP consumers. Complete pinned2022-23 keys reconcile
+against retained authenticated originals:77players/295appearances/266fixtures.
+Base RawQA5cases/28checks and qualified-stage4cases/27checks pass. The sole Resume
+checkpoint records version/manifest, independent56groups/100calls, original scope
+finding, broader evidence reuse and exact continuation. Final hosted review/CI/
+landing receipts are in PR592. Contained owned-stat compositions, branch-specific
+scopes, ranked/windowed distinct counts and global unique-NBA-fixture projection
+remain unfinished. This is not deployed/full Core-1/freshness acceptance.

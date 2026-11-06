@@ -1,0 +1,652 @@
+{
+  "run_id": 42231041230,
+  "reviewed_source": "9fda883a5fd66f58f1cbd80150a363af5d0c71dd",
+  "case_count": 5,
+  "passed_checks": 28,
+  "cases": [
+    {
+      "id": "k08_compact_home_absence_season",
+      "expectation_results": {
+        "checks": [
+          {
+            "actual": "ok",
+            "expected": "ok",
+            "name": "expected_status",
+            "status": "pass"
+          },
+          {
+            "actual": "game_finder",
+            "expected": "game_finder",
+            "name": "expected_route",
+            "status": "pass"
+          },
+          {
+            "actual": [
+              "count",
+              "finder"
+            ],
+            "expected": [
+              "count",
+              "finder"
+            ],
+            "name": "expected_sections",
+            "status": "pass"
+          },
+          {
+            "actual": 1,
+            "expected": 1,
+            "name": "expected_row_counts.count",
+            "status": "pass"
+          },
+          {
+            "actual": 11,
+            "expected": 11,
+            "name": "expected_row_counts.finder",
+            "status": "pass"
+          },
+          {
+            "actual": 11,
+            "expected": 11,
+            "name": "result.sections.count.0.count",
+            "status": "pass"
+          },
+          {
+            "actual": "LeBron James",
+            "expected": "LeBron James",
+            "name": "result.metadata.without_player",
+            "status": "pass"
+          }
+        ],
+        "fail_count": 0,
+        "pass_count": 7,
+        "status": "pass"
+      },
+      "query_output_snapshot": {
+        "query": "how many home games did LeBron miss in2025-26",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "LeBron James missed 11 Lakers home games in the 2025-26 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "team_game_log_default",
+              "filters": [
+                "Without player: LeBron James",
+                "Location: Home"
+              ],
+              "mode": "Team game log",
+              "row_count": 11,
+              "rows": [
+                [
+                  "1",
+                  "Apr 7",
+                  "LAL",
+                  "",
+                  "OKC",
+                  "L",
+                  "87",
+                  "—",
+                  "38",
+                  "26",
+                  "9",
+                  "—",
+                  "—",
+                  "—",
+                  "17",
+                  "7",
+                  "3",
+                  "8",
+                  "30"
+                ],
+                [
+                  "2",
+                  "Mar 10",
+                  "LAL",
+                  "",
+                  "MIN",
+                  "W",
+                  "120",
+                  "—",
+                  "47",
+                  "31",
+                  "11",
+                  "—",
+                  "—",
+                  "—",
+                  "6",
+                  "7",
+                  "2",
+                  "14",
+                  "33"
+                ],
+                [
+                  "3",
+                  "Mar 8",
+                  "LAL",
+                  "",
+                  "NYK",
+                  "W",
+                  "110",
+                  "—",
+                  "42",
+                  "20",
+                  "15",
+                  "—",
+                  "—",
+                  "—",
+                  "13",
+                  "10",
+                  "5",
+                  "12",
+                  "30"
+                ]
+              ],
+              "section_key": "finder",
+              "subject": "Los Angeles Lakers",
+              "table_type": "team_game_log",
+              "title": "Game Detail",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Date",
+                "Team",
+                "",
+                "Opp",
+                "W/L",
+                "PTS",
+                "Margin",
+                "REB",
+                "AST",
+                "3PM",
+                "FG",
+                "3P",
+                "FT",
+                "TOV",
+                "STL",
+                "BLK",
+                "oreb",
+                "dreb"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "game_finder"
+        }
+      }
+    },
+    {
+      "id": "k03_distinct_or_2022",
+      "expectation_results": {
+        "checks": [
+          {
+            "actual": "ok",
+            "expected": "ok",
+            "name": "expected_status",
+            "status": "pass"
+          },
+          {
+            "actual": "player_occurrence_leaders",
+            "expected": "player_occurrence_leaders",
+            "name": "expected_route",
+            "status": "pass"
+          },
+          {
+            "actual": [
+              "count",
+              "leaderboard"
+            ],
+            "expected": [
+              "count",
+              "leaderboard"
+            ],
+            "name": "expected_sections",
+            "status": "pass"
+          },
+          {
+            "actual": 1,
+            "expected": 1,
+            "name": "expected_row_counts.count",
+            "status": "pass"
+          },
+          {
+            "actual": 77,
+            "expected": 77,
+            "name": "expected_row_counts.leaderboard",
+            "status": "pass"
+          },
+          {
+            "actual": 77,
+            "expected": 77,
+            "name": "result.sections.count.0.count",
+            "status": "pass"
+          }
+        ],
+        "fail_count": 0,
+        "pass_count": 6,
+        "status": "pass"
+      },
+      "query_output_snapshot": {
+        "query": "How many different players had a game with (over 40 points or over 12 assists) in 2022-23?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "77 distinct players had a matching game in the 2022-23 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "leaderboard_default",
+              "filters": [
+                "Game conditions: (over 40 points or over 12 assists)"
+              ],
+              "mode": "Leaderboard",
+              "row_count": 77,
+              "rows": [
+                [
+                  "1",
+                  "Trae Young",
+                  "19",
+                  "2022-23",
+                  "ATL",
+                  "73",
+                  "Regular Season"
+                ],
+                [
+                  "2",
+                  "Luka Dončić",
+                  "16",
+                  "2022-23",
+                  "DAL",
+                  "66",
+                  "Regular Season"
+                ],
+                [
+                  "3",
+                  "Tyrese Haliburton",
+                  "16",
+                  "2022-23",
+                  "IND",
+                  "56",
+                  "Regular Season"
+                ]
+              ],
+              "section_key": "leaderboard",
+              "subject": "League",
+              "table_type": "leaderboard",
+              "title": "Leaderboard",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Player",
+                "Matching Games",
+                "Season",
+                "TM",
+                "GP",
+                "Type"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_occurrence_leaders"
+        }
+      }
+    },
+    {
+      "id": "k03_player_game_or_2022",
+      "expectation_results": {
+        "checks": [
+          {
+            "actual": "ok",
+            "expected": "ok",
+            "name": "expected_status",
+            "status": "pass"
+          },
+          {
+            "actual": "player_game_finder",
+            "expected": "player_game_finder",
+            "name": "expected_route",
+            "status": "pass"
+          },
+          {
+            "actual": [
+              "count",
+              "finder"
+            ],
+            "expected": [
+              "count",
+              "finder"
+            ],
+            "name": "expected_sections",
+            "status": "pass"
+          },
+          {
+            "actual": 1,
+            "expected": 1,
+            "name": "expected_row_counts.count",
+            "status": "pass"
+          },
+          {
+            "actual": 295,
+            "expected": 295,
+            "name": "expected_row_counts.finder",
+            "status": "pass"
+          },
+          {
+            "actual": 295,
+            "expected": 295,
+            "name": "result.sections.count.0.count",
+            "status": "pass"
+          }
+        ],
+        "fail_count": 0,
+        "pass_count": 6,
+        "status": "pass"
+      },
+      "query_output_snapshot": {
+        "query": "How many player games with (over 40 points or over 12 assists) in 2022-23?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "There were 295 matching player-games in the 2022-23 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "player_game_log_default",
+              "filters": [
+                "pts min: 40 (exclusive)",
+                "ast min: 12 (exclusive)"
+              ],
+              "mode": "Player game log",
+              "row_count": 295,
+              "rows": [
+                [
+                  "1",
+                  "Kenneth Lofton Jr.",
+                  "Apr 9",
+                  "MEM",
+                  "",
+                  "OKC",
+                  "L",
+                  "40",
+                  "42",
+                  "14",
+                  "0",
+                  "—",
+                  "—",
+                  "—",
+                  "1",
+                  "0",
+                  "2",
+                  "-17",
+                  "69.4%",
+                  "68.0%"
+                ],
+                [
+                  "2",
+                  "Brandon Ingram",
+                  "Apr 9",
+                  "NOP",
+                  "",
+                  "MIN",
+                  "L",
+                  "42",
+                  "42",
+                  "12",
+                  "7",
+                  "—",
+                  "—",
+                  "—",
+                  "2",
+                  "1",
+                  "4",
+                  "7",
+                  "65.7%",
+                  "58.9%"
+                ],
+                [
+                  "3",
+                  "Cam Thomas",
+                  "Apr 9",
+                  "BKN",
+                  "",
+                  "PHI",
+                  "L",
+                  "43",
+                  "46",
+                  "2",
+                  "1",
+                  "—",
+                  "—",
+                  "—",
+                  "1",
+                  "1",
+                  "4",
+                  "-20",
+                  "70.7%",
+                  "65.5%"
+                ]
+              ],
+              "section_key": "finder",
+              "subject": "Kenneth Lofton Jr.",
+              "table_type": "player_game_log",
+              "title": "Player Game Detail",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Player",
+                "Date",
+                "TM",
+                "",
+                "Opp",
+                "W/L",
+                "MIN",
+                "PTS",
+                "REB",
+                "AST",
+                "FG",
+                "3P",
+                "FT",
+                "STL",
+                "BLK",
+                "TOV",
+                "+/-",
+                "TS%",
+                "eFG%"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_game_finder"
+        }
+      }
+    },
+    {
+      "id": "k03_distinct_or_qualified_zero_2022",
+      "expectation_results": {
+        "checks": [
+          {
+            "actual": "ok",
+            "expected": "ok",
+            "name": "expected_status",
+            "status": "pass"
+          },
+          {
+            "actual": "player_occurrence_leaders",
+            "expected": "player_occurrence_leaders",
+            "name": "expected_route",
+            "status": "pass"
+          },
+          {
+            "actual": [
+              "count"
+            ],
+            "expected": [
+              "count"
+            ],
+            "name": "expected_sections",
+            "status": "pass"
+          },
+          {
+            "actual": 1,
+            "expected": 1,
+            "name": "expected_row_counts.count",
+            "status": "pass"
+          },
+          {
+            "actual": 0,
+            "expected": 0,
+            "name": "result.sections.count.0.count",
+            "status": "pass"
+          }
+        ],
+        "fail_count": 0,
+        "pass_count": 5,
+        "status": "pass"
+      },
+      "query_output_snapshot": {
+        "query": "How many distinct players had (over 1000 points or over 100 assists) in 2022-23?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "0 distinct players had a matching game in the 2022-23 regular season."
+          },
+          "blocks": []
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_occurrence_leaders"
+        }
+      }
+    },
+    {
+      "id": "k03_distinct_or_owner_example_2023",
+      "expectation_results": {
+        "checks": [
+          {
+            "actual": "ok",
+            "expected": "ok",
+            "name": "expected_status",
+            "status": "pass"
+          },
+          {
+            "actual": "player_occurrence_leaders",
+            "expected": "player_occurrence_leaders",
+            "name": "expected_route",
+            "status": "pass"
+          },
+          {
+            "actual": [
+              "count",
+              "leaderboard"
+            ],
+            "expected": [
+              "count",
+              "leaderboard"
+            ],
+            "name": "expected_sections",
+            "status": "pass"
+          },
+          {
+            "actual": 1,
+            "expected": 1,
+            "name": "expected_row_counts.count",
+            "status": "pass"
+          }
+        ],
+        "fail_count": 0,
+        "pass_count": 4,
+        "status": "pass"
+      },
+      "query_output_snapshot": {
+        "query": "How many different players had a game with over 40 points OR over 12 assists in 2023-24?",
+        "rendered_output": {
+          "answer": {
+            "source": "ResultHero",
+            "text": "76 distinct players had a matching game in the 2023-24 regular season."
+          },
+          "blocks": [
+            {
+              "collapsed": false,
+              "collapsed_label": null,
+              "column_schema": "leaderboard_default",
+              "filters": [
+                "Game conditions: over 40 points or over 12 assists"
+              ],
+              "mode": "Leaderboard",
+              "row_count": 76,
+              "rows": [
+                [
+                  "1",
+                  "Tyrese Haliburton",
+                  "26",
+                  "2023-24",
+                  "IND",
+                  "69",
+                  "Regular Season"
+                ],
+                [
+                  "2",
+                  "Luka Dončić",
+                  "21",
+                  "2023-24",
+                  "DAL",
+                  "70",
+                  "Regular Season"
+                ],
+                [
+                  "3",
+                  "Trae Young",
+                  "16",
+                  "2023-24",
+                  "ATL",
+                  "54",
+                  "Regular Season"
+                ]
+              ],
+              "section_key": "leaderboard",
+              "subject": "League",
+              "table_type": "leaderboard",
+              "title": "Leaderboard",
+              "type": "table",
+              "visible_columns": [
+                "#",
+                "Player",
+                "Matching Games",
+                "Season",
+                "TM",
+                "GP",
+                "Type"
+              ]
+            }
+          ]
+        },
+        "status": {
+          "ok": true,
+          "result_reason": null,
+          "result_status": "ok",
+          "route": "player_occurrence_leaders"
+        }
+      }
+    }
+  ]
+}

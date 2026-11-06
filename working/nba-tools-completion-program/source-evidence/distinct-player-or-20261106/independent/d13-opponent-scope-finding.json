@@ -1,0 +1,135 @@
+{
+  "query": "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Warriors or against the Lakers?",
+  "expected_if_supported": 3,
+  "source_reason": "All seven controlledplayerrows faceGSWorLAL; unionkeysG1A/G2A/G3B/G1C,threeplayers. No LALsubjectplayerrows exist.",
+  "actual": {
+    "query_class": "count",
+    "result_status": "ok",
+    "result_reason": null,
+    "metadata": {
+      "query_text": "How many distinct players had (over 20 points or over 10 assists) in 2025-26 against the Warriors or against the Lakers?",
+      "route": "player_occurrence_leaders",
+      "query_class": "count",
+      "season": "2025-26",
+      "start_season": null,
+      "end_season": null,
+      "explicit_relative_season": false,
+      "season_type": "Regular Season",
+      "start_date": null,
+      "end_date": null,
+      "game_dates": null,
+      "last_n": null,
+      "last_n_scope": null,
+      "player": null,
+      "team": "LAL",
+      "opponent": "GSW",
+      "opponent_conference": null,
+      "opponent_division": null,
+      "opponent_team_abbrs": null,
+      "with_player": null,
+      "without_player": null,
+      "without_player_reason": null,
+      "unresolved_availability_player": null,
+      "unsupported_filters": null,
+      "opponent_quality": null,
+      "lineup_members": [],
+      "presence_state": null,
+      "unit_size": null,
+      "minute_minimum": null,
+      "window_size": null,
+      "stretch_metric": null,
+      "stretch_display_mode": null,
+      "min_streak_length": null,
+      "stat": "pts",
+      "ranking_key": "occurrence_count",
+      "requested_stat": null,
+      "requested_metrics": null,
+      "requested_event_conditions": null,
+      "unsupported_availability": null,
+      "unsupported_scope": null,
+      "requested_aggregation": null,
+      "available_aggregation": null,
+      "min_value": 20.0001,
+      "max_value": null,
+      "sort_by": null,
+      "ascending": null,
+      "ranked_intent": false,
+      "threshold_conditions": [
+        {
+          "stat": "pts",
+          "min_value": 20.0001,
+          "max_value": null,
+          "text": "over 20 points"
+        },
+        {
+          "stat": "ast",
+          "min_value": 10.0001,
+          "max_value": null,
+          "text": "over 10 assists"
+        }
+      ],
+      "extra_conditions": [
+        {
+          "stat": "ast",
+          "min_value": 10.0001,
+          "max_value": null,
+          "text": "over 10 assists"
+        }
+      ],
+      "conditions": null,
+      "occurrence_event": null,
+      "split_type": null,
+      "season_list": null,
+      "clutch": false,
+      "back_to_back": false,
+      "series_situation": null,
+      "rest_days": null,
+      "one_possession": false,
+      "nationally_televised": false,
+      "role": null,
+      "quarter": null,
+      "half": null,
+      "position_filter": null,
+      "grouped_boolean_used": true,
+      "boolean_filter_mode": "any",
+      "condition_expression": "(over 20 points or over 10 assists)",
+      "boolean_filter_branches": null,
+      "head_to_head_used": false,
+      "notes": [
+        "distinct_count: counting distinct players meeting condition"
+      ],
+      "scope_kind": "single_season",
+      "applied_filters": [
+        {
+          "label": "Game conditions",
+          "value": "(over 20 points or over 10 assists)",
+          "kind": "boolean"
+        },
+        {
+          "label": "Opponent",
+          "value": "GSW",
+          "kind": "team"
+        }
+      ],
+      "team_context": {
+        "team_abbr": "LAL"
+      },
+      "opponent_context": {
+        "team_abbr": "GSW"
+      },
+      "confidence": 1.0,
+      "intent": "leaderboard",
+      "primary_count": 0,
+      "count_phrase": "0 distinct players had a matching game in the 2025-26 regular season."
+    },
+    "notes": [],
+    "caveats": [],
+    "sections": {
+      "count": [
+        {
+          "count": 0
+        }
+      ]
+    }
+  }
+}
