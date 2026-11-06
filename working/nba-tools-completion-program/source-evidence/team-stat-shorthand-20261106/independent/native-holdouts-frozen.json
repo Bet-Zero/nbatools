@@ -1,0 +1,189 @@
+{
+  "baseline": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "qualification": "Retained archive originals, exact date-scoped played/DNP populations; no full-season tenure acceptance. Different endpoint structures share NBA upstream.",
+  "archive_sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+  "original_sha256": {
+    "teams.json": "04d3562ca95976278569c70c50dfc521e984300fc6af0f6d5ac21e21d2af9f06",
+    "players.json": "8fe0beda6aaafee1bf39f48b6ffd86a94fef0d3dbe71d8d08fc059609b6c0f47",
+    "receipt.json": "fd755432bc89ef7903a08f2136730ef7d988dd11a13ac68382a30ec881499b42"
+  },
+  "cases": [
+    {
+      "id": "HN01",
+      "query": "Stephen Curry games from November 1 to November 30, 2022 with 25+ team assists in 2022-23",
+      "player_id": 201939,
+      "kind": "finder",
+      "stat": "team_ast",
+      "min_value": 25,
+      "max_value": null,
+      "expected_ids": [
+        22200104,
+        22200118,
+        22200156,
+        22200182,
+        22200197,
+        22200205,
+        22200220,
+        22200233,
+        22200245,
+        22200271,
+        22200284,
+        22200291,
+        22200310
+      ],
+      "expected_games": 13,
+      "additive_checks": [
+        {
+          "game_id": "0022200310",
+          "team_id": 1610612744,
+          "team_value": 27,
+          "player_sum": 27
+        },
+        {
+          "game_id": "0022200291",
+          "team_id": 1610612744,
+          "team_value": 36,
+          "player_sum": 36
+        },
+        {
+          "game_id": "0022200284",
+          "team_id": 1610612744,
+          "team_value": 33,
+          "player_sum": 33
+        },
+        {
+          "game_id": "0022200271",
+          "team_id": 1610612744,
+          "team_value": 36,
+          "player_sum": 36
+        },
+        {
+          "game_id": "0022200245",
+          "team_id": 1610612744,
+          "team_value": 38,
+          "player_sum": 38
+        },
+        {
+          "game_id": "0022200233",
+          "team_id": 1610612744,
+          "team_value": 32,
+          "player_sum": 32
+        },
+        {
+          "game_id": "0022200220",
+          "team_id": 1610612744,
+          "team_value": 30,
+          "player_sum": 30
+        },
+        {
+          "game_id": "0022200205",
+          "team_id": 1610612744,
+          "team_value": 35,
+          "player_sum": 35
+        },
+        {
+          "game_id": "0022200197",
+          "team_id": 1610612744,
+          "team_value": 27,
+          "player_sum": 27
+        },
+        {
+          "game_id": "0022200182",
+          "team_id": 1610612744,
+          "team_value": 29,
+          "player_sum": 29
+        },
+        {
+          "game_id": "0022200156",
+          "team_id": 1610612744,
+          "team_value": 28,
+          "player_sum": 28
+        },
+        {
+          "game_id": "0022200118",
+          "team_id": 1610612744,
+          "team_value": 31,
+          "player_sum": 31
+        },
+        {
+          "game_id": "0022200104",
+          "team_id": 1610612744,
+          "team_value": 31,
+          "player_sum": 31
+        }
+      ]
+    },
+    {
+      "id": "HN02",
+      "query": "Kevon Looney games from November 1 to November 30, 2022 with at least 18 team turnovers in 2022-23",
+      "player_id": 1626172,
+      "kind": "finder",
+      "stat": "team_tov",
+      "min_value": 18,
+      "max_value": null,
+      "expected_ids": [
+        22200104,
+        22200128,
+        22200197,
+        22200253,
+        22200284,
+        22200310
+      ],
+      "expected_games": 6,
+      "additive_checks": [
+        {
+          "game_id": "0022200310",
+          "team_id": 1610612744,
+          "team_value": 18,
+          "player_sum": 18
+        },
+        {
+          "game_id": "0022200284",
+          "team_id": 1610612744,
+          "team_value": 19,
+          "player_sum": 19
+        },
+        {
+          "game_id": "0022200253",
+          "team_id": 1610612744,
+          "team_value": 26,
+          "player_sum": 26
+        },
+        {
+          "game_id": "0022200197",
+          "team_id": 1610612744,
+          "team_value": 18,
+          "player_sum": 18
+        },
+        {
+          "game_id": "0022200128",
+          "team_id": 1610612744,
+          "team_value": 22,
+          "player_sum": 22
+        },
+        {
+          "game_id": "0022200104",
+          "team_id": 1610612744,
+          "team_value": 20,
+          "player_sum": 20
+        }
+      ]
+    },
+    {
+      "id": "HN03",
+      "query": "How many games did Jakob Poeltl miss for the Spurs in 2022-23 before February 9, 2023 with at most 110 team points?",
+      "kind": "missed",
+      "player_id": 1627751,
+      "stat": "pts",
+      "min_value": null,
+      "max_value": 110,
+      "expected_ids": [
+        22200247,
+        22200333,
+        22200345
+      ],
+      "expected_games": 3,
+      "expected_team_points": 286
+    }
+  ]
+}

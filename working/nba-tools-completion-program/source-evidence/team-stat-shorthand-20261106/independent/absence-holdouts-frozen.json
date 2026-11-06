@@ -1,0 +1,73 @@
+{
+  "baseline": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "evidence": "Controlled synthetic absence; no NBA membership/injury facts.",
+  "player": "Bam Adebayo",
+  "player_id": 202355,
+  "missed_ids": [
+    365,
+    370,
+    375,
+    380,
+    385
+  ],
+  "candidates": 60,
+  "cases": [
+    {
+      "id": "H12",
+      "query": "How many games did Bam Adebayo miss for Miami in 2025-26 with under 22 team assists?",
+      "kind": "missed",
+      "expected_ids": [
+        375,
+        380,
+        385
+      ],
+      "expected_games": 3,
+      "conditions": [
+        [
+          "ast",
+          null,
+          21.9999
+        ]
+      ]
+    },
+    {
+      "id": "H13",
+      "query": "How many games did Bam Adebayo miss for Miami in 2025-26 with 22+ team assists?",
+      "kind": "missed",
+      "expected_ids": [
+        365,
+        370
+      ],
+      "expected_games": 2,
+      "conditions": [
+        [
+          "ast",
+          22,
+          null
+        ]
+      ]
+    },
+    {
+      "id": "H14",
+      "query": "How many games did Bam Adebayo miss for Miami in 2025-26 with 22+ team assists and under 90 team points?",
+      "kind": "missed",
+      "expected_ids": [
+        365,
+        370
+      ],
+      "expected_games": 2,
+      "conditions": [
+        [
+          "ast",
+          22,
+          null
+        ],
+        [
+          "pts",
+          null,
+          89.9999
+        ]
+      ]
+    }
+  ]
+}

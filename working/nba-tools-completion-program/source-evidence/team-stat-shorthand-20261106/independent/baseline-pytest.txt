@@ -1,0 +1,127 @@
+FFFFFFF.FFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H01] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry games in 2025-26 with fewer than 20 team assists', [['team_ast', None, 19.9999]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674346d0>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H02] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry games in 2025-26 with 20 or fewer team assists', [['team_ast', None, 20]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa267436a70>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H03] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Nikola Jokic games with 35+ team rebounds in 2025-26', [['team_reb', 35, None]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674347c0>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H04] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Anthony Davis games with at most 12 team turnovers in 2025-26', [['team_tov', None, 12]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa267436b60>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H05] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry games with 25 points and 20+ team assists in 2025-26', [['pts', 25, None], ['team_ast', 20, None]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa267434d60>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H06] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry average points in 2025-26 with under 20 team assists', [['team_ast', None, 19.9999]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674371f0>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H07] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry home away splits with 20+ team assists in 2025-26', [['team_ast', 20, None]], {'split': 'home_away', 'season': '2025-26', 'start_season': None, 'end_season': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674376a0>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H09] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Nuggets games with more than 100 team points in 2025-26', [['pts', 100.0001, None]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa267778310>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H10] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry games with 20+ opponent assists and 20+ team assists in 2025-26', [['opponent_ast', 20, None], ['team_ast', 20, None]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa267437c40>)
+___________ test_held_out_interpretation_and_raw_fixture_oracle[H11] ___________
+work/team-threshold-checker/test_independent_team_threshold.py:42: in test_held_out_interpretation_and_raw_fixture_oracle
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('Stephen Curry last 8 games with 20+ team assists in 2025-26', [['team_ast', 20, None]], {'season': '2025-26', 'start_season': None, 'end_season': None, 'start_date': None, ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2676cb2e0>)
+______________ test_missed_population_not_played_population[H12] _______________
+work/team-threshold-checker/test_independent_team_threshold.py:94: in test_missed_population_not_played_population
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('How many games did Bam Adebayo miss for Miami in 2025-26 with under 22 team assists?', [['ast', None, 21.9999]], {'season': None, 'start_season': None, 'end_season': None, 'season_type': 'Regular Season', ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674346d0>)
+______________ test_missed_population_not_played_population[H13] _______________
+work/team-threshold-checker/test_independent_team_threshold.py:94: in test_missed_population_not_played_population
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('How many games did Bam Adebayo miss for Miami in 2025-26 with 22+ team assists?', [['ast', 22, None]], {'season': None, 'start_season': None, 'end_season': None, 'season_type': 'Regular Season', ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2674371f0>)
+______________ test_missed_population_not_played_population[H14] _______________
+work/team-threshold-checker/test_independent_team_threshold.py:94: in test_missed_population_not_played_population
+    condition_check(case['query'],case['conditions'])
+work/team-threshold-checker/test_independent_team_threshold.py:35: in condition_check
+    assert any(c.get('stat')==stat and c.get('min_value')==pytest.approx(lo) and c.get('max_value')==pytest.approx(hi)for c in conditions),(query,expected,kwargs)
+E   AssertionError: ('How many games did Bam Adebayo miss for Miami in 2025-26 with 22+ team assists and under 90 team points?', [['ast', ...ts', None, 89.9999]], {'season': None, 'start_season': None, 'end_season': None, 'season_type': 'Regular Season', ...})
+E   assert False
+E    +  where False = any(<generator object condition_check.<locals>.<genexpr> at 0x7fa2677789a0>)
+=============================== warnings summary ===============================
+../../../.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/nbatools/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H01]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H02]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H03]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H04]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H05]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H06]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H07]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H09]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H10]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_held_out_interpretation_and_raw_fixture_oracle[H11]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_missed_population_not_played_population[H12]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_missed_population_not_played_population[H13]
+FAILED work/team-threshold-checker/test_independent_team_threshold.py::test_missed_population_not_played_population[H14]
+13 failed, 1 passed, 1 warning in 3.35s

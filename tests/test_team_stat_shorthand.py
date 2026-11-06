@@ -210,7 +210,10 @@ def test_named_opponent_owner_survives_noun_context(opponents):
         "with 80+ team points in 2025-26"
     )
     assert answer.result_status == "ok", answer.metadata
-    assert ids(answer.result.to_dict()["sections"]["finder"]) == set(expected.game_id)
+    sections = answer.result.to_dict()["sections"]
+    rows = sections.get("finder", sections.get("game_log", []))
+    assert ids(rows) == set(expected.game_id)
+    assert len(expected) == 4
     assert any(
         c["stat"] == "opponent_ast" and c.get("opponent_team") == "BOS"
         for c in answer.metadata["conditions"]

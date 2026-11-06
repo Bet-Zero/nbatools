@@ -1,0 +1,134 @@
+{
+  "reviewed_runtime": "3105fee4dabfe8826d10151cbe932699800b2af9",
+  "evidence": "Controlled synthetic fixture; no NBA fact qualification.",
+  "raw_sha256": {
+    "qa/fixtures/query_engine_sample/data/raw/player_game_stats/2025-26_regular_season.csv": "2dcb6e767abbb340fa0d2a5af838cf64fd1fc87ef634ff5a275b32b60efdcaf6",
+    "qa/fixtures/query_engine_sample/data/raw/team_game_stats/2025-26_regular_season.csv": "993c6f3594081f9259c0f03b974dd7b3adad0323c9723305f6e44aef67073305"
+  },
+  "cases": [
+    {
+      "query": "LeBron James most points in a game with 5 threes allowed",
+      "qualified_games": 57,
+      "qualified_ids": [
+        361,
+        362,
+        363,
+        364,
+        365,
+        366,
+        371,
+        376,
+        386,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        406,
+        411,
+        416,
+        421,
+        422,
+        423,
+        424,
+        425,
+        426,
+        431,
+        436,
+        441,
+        446,
+        451,
+        452,
+        453,
+        454,
+        456,
+        461,
+        466,
+        471,
+        476,
+        481,
+        482,
+        483,
+        484,
+        485,
+        486,
+        491,
+        496,
+        501,
+        506,
+        511,
+        512,
+        513,
+        514,
+        515,
+        516,
+        521,
+        526,
+        531,
+        536
+      ],
+      "own_count_games": 14,
+      "top_ids": [
+        425,
+        376,
+        453,
+        416,
+        531
+      ],
+      "top_points": [
+        36,
+        35,
+        33,
+        33,
+        32
+      ],
+      "top_opponent_threes": [
+        5,
+        8,
+        5,
+        12,
+        11
+      ]
+    },
+    {
+      "query": "Stephen Curry most points in a game with 18 threes allowed",
+      "qualified_games": 11,
+      "qualified_ids": [
+        361,
+        367,
+        368,
+        391,
+        432,
+        437,
+        458,
+        489,
+        502,
+        507,
+        517
+      ],
+      "own_count_games": 0,
+      "top_ids": [
+        517,
+        432,
+        489,
+        367,
+        368
+      ],
+      "top_points": [
+        39,
+        31,
+        30,
+        27,
+        26
+      ],
+      "top_opponent_threes": [
+        24,
+        18,
+        22,
+        20,
+        18
+      ]
+    }
+  ]
+}

@@ -17,8 +17,27 @@ refusal is containment, never positive acceptance.
 originals and producers, validates identity/schema before consumption, and checks
 five date-specific Spurs absence predicates plus Looney/Warriors consumers.
 The author direct local replay passed; it is not an executed pytest/R2 gate.
-`author-native-replay.json` retains exact IDs/counts/answers. Hosted execution is
-required before landing. No new source was acquired or data published.
+`author-native-replay.json` retains exact IDs/counts/answers. Actual required hosted execution now passed in
+[run42202957484](https://github.com/Bet-Zero/nbatools/actions/runs/42202957484):
+4selected/4executed/4passed, zero skips/failures/errors/xfails. The request
+`be1fde1b054c139c248092fad1d935924a079e5a` has sole parent/reviewed source
+`3105fee4dabfe8826d10151cbe932699800b2af9`. Pinned immutable base
+`availability-lebron-season-v1-20261031`, manifest
+`3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`.
+Actual R2 RawQA passed4cases/33checks with zero suspicious flags.
+`required-summary.json` and `raw-qa-summary.json` preserve actual structured
+job-log verdicts and the unchanged renderer output snapshots.
+
+Broad preflight3e38cbe2 ended10201passed/1863unavailable-data skips/2failed.
+The stale inventory600vs603 was regenerated, and the old ranked-opponent refusal
+was deliberately replaced with raw exact-ID positive support after independent
+verification (including a different entity/threshold). Affected60tests and
+2corrected named-owner assertions pass;19initial independent controls and the
+2ranked-opponent promotion controls pass. Review explicitly bounds applicability
+of unaffected broad results across the narrow named-owner runtime delta.
+`software-validation.json` retains original failures/resolutions; no failing or
+incomplete broad execution is relabeled an exact-head pass. Final exact-head CI
+and landing receipts remain in PR589. No new source was acquired or data published.
 
 Three new canonical Raw QA cases check the strict versus inclusive110teamPTS
 boundary: Warriors under110=14games/3wins/11losses; Looney14games/113REB;
