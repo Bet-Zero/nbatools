@@ -444,7 +444,13 @@ Common combinations:
   path for multiple observed/qualified clubs. Qualified evidence remains required
   for every eligible game, including an original club with zero appearances.
   Team-owned statistical clauses such as `when his team scored at least100
-  points` use team-game filters; unread additional clauses cannot fall through
+  points` or `with 80+ team points` use team-game filters. Shared noun thresholds
+  support floors, strict/inclusive ceilings and explicit team box-score counts
+  (points, assists, rebounds, turnovers, made threes and other supported counts).
+  Player finders/summaries, supported splits and team records retain that ownership
+  alongside separate player/opponent bounds; bare `0 team turnovers` is exact zero,
+  while `0+ team turnovers` is a floor. This reuses whole-game team rows, not a new
+  metric or broader membership certification. Unread additional clauses cannot fall through
   and count appearances. Unknown membership/participation withholds totals and
   remains visible in `metadata.membership_coverage`.
   Native date-bounded Poeltl2022-23 controls return9Spurs missed games through

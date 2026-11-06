@@ -38,12 +38,24 @@ _TEAM_STAT_VERB = re.compile(
     rf"\s({_SCORE_VERB}|ha(?:d|s|ve)|ma(?:de|kes?)|hits?|grab(?:s|bed)?"
     r"|record(?:s|ed)?|reach(?:es|ed)?|(?:did|does|do)\s+not\s+reach|dish(?:es|ed)?|commit(?:s|ted)?)\s+"
 )
-_BOUND = re.compile(
+_BOUND_HEAD = (
     r"(?P<pre>at\s+least\s+|a\s+min(?:imum)?\s+of\s+|over\s+|more\s+than\s+|under\s+"
     r"|below\s+|fewer\s+than\s+|less\s+than\s+|at\s+most\s+|no\s+more\s+than\s+)?"
     r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?:\s+or\s+(?P<mid>more|fewer|less))?"
-    rf"(?:\s+(?:made\s+)?(?P<stat>{_OPP_STAT_WORD}|points?|pts))?"
-    r"(?:\s+or\s+(?P<post>more|fewer|less))?(?![\w-])"
+)
+_BOUND_TAIL = r"(?:\s+or\s+(?P<post>more|fewer|less))?(?![\w-])"
+_BOUND = re.compile(
+    _BOUND_HEAD + rf"(?:\s+(?:made\s+)?(?P<stat>{_OPP_STAT_WORD}|points?|pts))?" + _BOUND_TAIL
+)
+# The number belongs to the explicitly named team's box score, even without a
+# verb: "with under 110 team points", "25 or more team assists". The same
+# span/owner contract feeds played-game contexts and qualified absence counts.
+_TEAM_NOUN_BOUND = re.compile(
+    r"(?<![\w.+-])"
+    + _BOUND_HEAD
+    + r"\s+(?:(?:the|his|her|their|our)\s+)?team(?:'s)?\s+"
+    + rf"(?:made\s+)?(?P<stat>{_OPP_STAT_WORD})(?![\w-])"
+    + _BOUND_TAIL
 )
 _PRE = {
     "at least": ("min", 0.0),
@@ -95,12 +107,47 @@ def _subject_team(prefix: str, known_teams: tuple[str, ...] = ()) -> tuple[str, 
     return None
 
 
+def team_noun_stat_conditions(text: str) -> list[dict[str, Any]]:
+    """Read explicit team-owned noun bounds using the verbal bound contract."""
+    found = []
+    for bound in _TEAM_NOUN_BOUND.finditer(text):
+        stat = _opponent_stat_word(bound.group("stat"), "")
+        if stat not in PLAYER_GAME_CONTEXT_BASES:
+            continue
+        value = float(bound.group("num"))
+        pre = re.sub(r"\s+", " ", (bound.group("pre") or "").strip())
+        mode, epsilon = _PRE.get(pre, ("min", 0.0))
+        if (bound.group("mid") or bound.group("post")) in ("fewer", "less"):
+            mode, epsilon = "max", 0.0
+        found.append(
+            dict(
+                team="TEAM",
+                start=bound.start(),
+                end=bound.end(),
+                stat=stat,
+                min_value=value + epsilon if mode == "min" else None,
+                max_value=(
+                    0.0
+                    if value == 0
+                    and not pre
+                    and not bound.group("plus")
+                    and not bound.group("mid")
+                    and not bound.group("post")
+                    else value - epsilon
+                    if mode == "max"
+                    else None
+                ),
+            )
+        )
+    return found
+
+
 def team_subject_stat_conditions(
     text: str, known_teams: tuple[str, ...] = ()
 ) -> list[dict[str, Any]]:
     """Bounds whose subject is a team: "the Lakers score 120", "they had 30
     assists", "the team makes 15 threes"."""
-    found = []
+    found = team_noun_stat_conditions(text)
     for verb in _TEAM_STAT_VERB.finditer(text):
         subject = _subject_team(text[: verb.start()], known_teams)
         if subject is None:
@@ -145,14 +192,14 @@ def _same_bound(cond: dict, other: dict) -> bool:
         or (
             cond.get(k) is not None
             and other.get(k) is not None
-            and abs(float(cond[k]) - float(other[k])) < 1e-3
+            and abs(float(cond[k]) - float(other[k])) < 1e-9
         )
         for k in ("min_value", "max_value")
     )
 
 
 # The joining word before a removed team clause: "... with 30 points when".
-_DANGLING_JOIN = re.compile(r"\s*,?\s*(?:and|but|while|when|where|if|in\s+games?)?\s*$")
+_DANGLING_JOIN = re.compile(r"\s*,?\s*(?:and|but|while|when|where|if|with|in\s+games?)?\s*$")
 
 
 def _without_team_clauses(text: str, found: list[dict]) -> str:
@@ -553,7 +600,8 @@ def _own_bounds(text: str, spans: list[tuple[int, int]]) -> list[dict]:
     rest = text
     for start, end in sorted(spans, reverse=True):
         rest = rest[:start] + " " + rest[end:]
-    state = _build_parse_state(rest)
+    nouns = team_noun_stat_conditions(rest)
+    state = _build_parse_state(_without_team_clauses(rest, nouns) if nouns else rest)
     found = list(state.get("threshold_conditions") or [])
     if (
         not found
@@ -566,6 +614,7 @@ def _own_bounds(text: str, spans: list[tuple[int, int]]) -> list[dict]:
         bound = {k: item.get(k) for k in ("stat", "min_value", "max_value")}
         if bound["stat"] and not any(c["stat"] == bound["stat"] for c in own):
             own.append(bound)
+    own.extend({k: item[k] for k in ("stat", "min_value", "max_value")} for item in nouns)
     return own
 
 
@@ -692,12 +741,16 @@ def apply_player_game_context(route: str | None, route_kwargs: dict, text: str) 
     """Read team/opponent bounds and the ranking stat of a player game list."""
     # Ownership checks must see the complete opponent set and actual subject,
     # not a scalar detection that mistook the last opponent for the team.
+    if route and route not in (*_PLAYER_CONTEXT_ROUTES, *_TEAM_CONTEXT_ROUTES):
+        if team_noun_stat_conditions(text):
+            _refuse(route_kwargs, "team_stat_context")
     _apply_opponent_list(route, route_kwargs, text)
     _apply_allowed_ranking(route, route_kwargs, text)
     _apply_opponent_stat_bounds(route, route_kwargs, text)
     _apply_opponent_stat_ranking(route, route_kwargs, text)
     _apply_team_context(route, route_kwargs, text)
     _apply_own_team_clauses(route, route_kwargs, text)
+    _apply_noun_team_bounds(route, route_kwargs, text)
     _refuse_unread_held_to(route, route_kwargs, text)
     _refuse_game_clock(route, route_kwargs, text)
     _refuse_other_player_stat(route, route_kwargs, text)
@@ -1278,6 +1331,25 @@ def _opponent_subject(before: str, team: str | None) -> bool:
     return named != (first or team)
 
 
+def _apply_noun_team_bounds(route: str | None, route_kwargs: dict, text: str) -> None:
+    """Rebuild own bounds without misreading the explicitly team-owned nouns."""
+    if route not in _TEAM_CONTEXT_ROUTES or not team_noun_stat_conditions(text):
+        return
+    opposing = _opponent_bounds(text, route_kwargs.get("opponent"), route_kwargs.get("team"))
+    own = _own_bounds(text, [m.span() for m, _ in opposing])
+    conditions = own + [bound for _, bound in opposing]
+    if not conditions:
+        return
+    route_kwargs["conditions"] = conditions
+    # Ranking retains its own metric; the scalar threshold slot must agree with
+    # the predicates rather than repeat an earlier, unowned number reading.
+    if route_kwargs.get("sort_by") == "stat" and _RANKING_WORDS.search(text):
+        route_kwargs["min_value"] = route_kwargs["max_value"] = None
+    else:
+        primary = conditions[0]
+        route_kwargs.update({k: primary[k] for k in ("stat", "min_value", "max_value")})
+
+
 def _apply_own_team_clauses(route: str | None, route_kwargs: dict, text: str) -> None:
     """Keep the team's own stat beside an opponent bound on a team route.
 
@@ -1835,7 +1907,13 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             route_kwargs["team"] = own_team = team
             found.append({**item, "side": "team"})
     # "when opponents score 120", "the other team made 15 threes".
-    for item in extract_opponent_points_allowed_conditions(text):
+    opposing = extract_opponent_points_allowed_conditions(text)
+    opposing += [
+        {**bound, "start": match.span()[0], "end": match.span()[1]}
+        for match, bound in _opponent_bounds(text, opponent, own_team)
+        if bound["stat"].removeprefix("opponent_") in PLAYER_GAME_CONTEXT_BASES
+    ]
+    for item in opposing:
         if any(item["start"] < f["end"] and f["start"] < item["end"] for f in found):
             continue
         base = item["stat"][len("opponent_") :]
@@ -1878,8 +1956,9 @@ def _apply_team_context(route: str | None, route_kwargs: dict, text: str) -> Non
             "min_value": item["min_value"],
             "max_value": item["max_value"],
         }
-        if item["side"] == "opponent" and item.get("team") in opponents:
-            target["opponent_team"] = item["team"]
+        named_opponent = item.get("opponent_team") or item.get("team")
+        if item["side"] == "opponent" and named_opponent in opponents:
+            target["opponent_team"] = named_opponent
         if not any(
             c["stat"] == target["stat"]
             and _same_bound(c, target)

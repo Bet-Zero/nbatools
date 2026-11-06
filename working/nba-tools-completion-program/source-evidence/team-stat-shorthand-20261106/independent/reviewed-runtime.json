@@ -1,0 +1,11 @@
+{
+  "reviewed_revision": "3105fee4dabfe8826d10151cbe932699800b2af9",
+  "base_revision": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+  "reviewer": "/root/team_threshold_checker",
+  "reviewer_identity": "Separate Codex agent session. Exact model identifier not exposed; no cross-model or human-review claim.",
+  "runtime_sha256": {
+    "src/nbatools/commands/_player_game_context.py": "07ca02f91ec6a329cebd78b1dfac132e2bfff0a038fac175276ad1667f9cb912",
+    "src/nbatools/commands/_matchup_utils.py": "483bcd5b3acc07d1f318802fe14741f83438dbcb9f70470ae7f86b9a0e84f24d",
+    "src/nbatools/commands/_parse_helpers.py": "7a4f95be4ae863aa5db824b1f47a0cb70e502949ec4ecb3fbe652a68d68f8861"
+  }
+}

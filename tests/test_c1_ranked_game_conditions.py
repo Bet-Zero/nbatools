@@ -108,9 +108,8 @@ def test_ceiling_after_the_stat_stays_a_ceiling(query, stat, values):
 @pytest.mark.parametrize(
     "query",
     [
-        # Another bound on the same stat, a defensive stat and a margin are
-        # not read as the player's own floor.
-        "LeBron James most points in a game with 5 threes allowed",
+        # A margin must not become the player's own floor. Opponent box-score
+        # bounds have a separately verified positive below.
         "LeBron James most assists in 3 point games",
         # A total no player reaches is the team's score.
         "LeBron James most rebounds in a 120 point game",
@@ -125,3 +124,35 @@ def test_unread_conditions_still_refuse(query):
     result = execute_natural_query(query)
     assert result.result_status == "no_result"
     assert result.result_reason == "filter_not_supported"
+
+
+@pytest.mark.parametrize("threshold", [5, 18])
+def test_ranked_player_games_keep_opponent_noun_bound(threshold):
+    from pathlib import Path
+
+    import pandas as pd
+
+    from nbatools.query_service import execute_natural_query
+
+    root = Path("qa/fixtures/query_engine_sample/data/raw")
+    teams = pd.read_csv(root / "team_game_stats/2025-26_regular_season.csv")
+    players = pd.read_csv(root / "player_game_stats/2025-26_regular_season.csv")
+    opposing = teams.loc[teams.fg3m.ge(threshold), ["game_id", "team_id"]].rename(
+        columns={"team_id": "opponent_team_id"}
+    )
+    expected = players.loc[players.player_name.eq("LeBron James")].merge(
+        opposing, on=["game_id", "opponent_team_id"], validate="one_to_one"
+    )
+    expected = expected.sort_values(["pts", "game_date"], ascending=False).head(5)
+    answer = execute_natural_query(
+        f"LeBron James most points in a game with {threshold} threes allowed"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    rows = answer.result.to_dict()["sections"]["finder"]
+    assert [int(r["game_id"]) for r in rows] == list(expected.game_id)
+    assert [r["pts"] for r in rows] == list(expected.pts)
+    assert answer.metadata["stat"] == "pts"
+    assert any(
+        c["stat"] == "opponent_fg3m" and c["min_value"] == threshold
+        for c in answer.metadata["conditions"]
+    )

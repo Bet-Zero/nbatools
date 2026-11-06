@@ -8,40 +8,35 @@ cleanup, not a competing product roadmap. No worker is launched by this document
 
 ## Resume checkpoint
 
-Application baseline: merged **[PR586](https://github.com/Bet-Zero/nbatools/pull/586)**,
-main `9a01942c61042946d1ffe1d4e1118399230f8117`. Agent1 continues the owner's
-multi-club membership/absence objective. **K12 stays parked.** This is a scoped
-application checkpoint; the ordinary combined full-season NBA positive remains
-unfinished because required native tenure evidence is unavailable.
+Application baseline is merged [PR587](https://github.com/Bet-Zero/nbatools/pull/587),
+`4bd2f799ddeb06544ef2223e56449ec609318dec`. Agent1 now delivers the shared team-stat
+noun-threshold capability in [PR589](https://github.com/Bet-Zero/nbatools/pull/589).
+The pending full-season Poeltl acceptance is independent of application progress;
+DQ-004's owner acquisition packet remains separate. **K12 stays parked.**
 
 | Field | Current application handoff |
 | --- | --- |
-| Package / owner | Agent1 `/root`, [PR587](https://github.com/Bet-Zero/nbatools/pull/587), `codex/multi-team-absence-20261106`. Runtime `a93aa4b8eaeb1d9e2c00765d9349d2bc1205d9c6`; subsequent receipt/checkpoint-only descendants preserve it. Final exact-head CI, safe landing and post-merge receipts belong in PR587. |
-| General application functionality | Ordinary missed-game questions and structured `game_finder(membership_player=...)` can combine qualified club-game populations through PR586's shared classifier. Per-team/combined results preserve season/type, date, opponent, venue and supported team-stat filters. Positive intervals or explicit DNP observations expose an original club even with zero appearances. No player/team/trade exceptions. |
-| Unknowns / scope | Candidate game/team rows preserve played, explicit DNP, verified nonmember and unknown separately. Unknown member games stay eligible and unknown chronology dates remain visible; verified totals are withheld. Both sides of one club matchup remain auditable. `complete` is the requested observed candidate-club population, never full historical NBA certification. Full interval/club chronology requires separate source qualification. |
-| Native NBA answers actually verified | Staged Poeltl2022-23: Spurs throughFeb8 has55exactgameobservations=46played+9DNP; Raptors Feb10-Apr9 has26=26played+0DNP. Natural/structured/HTTP exactIDs/counts/labels pass. Independent original replay verifies all9DNPs,6home/3away and970PTS across endpoint structures. Looney single-club control has82exactappearances/0missed. No native dated tenure intervals were adopted;81=72+9 fullseason arithmetic remains conditional. |
-| Required hosted checking | [R2 run42185414036](https://github.com/Bet-Zero/nbatools/actions/runs/42185414036), source `580cc61099a462918175fdb4881cfcb4fb1608be`, sole-parent request `25b806517c8a086d5cdc9d5c4e58e51f19b9bca3`:3selected/3executed/3passed/0skips/failures/errors/xfails. New native scoped consumers plus preserved Tatum staged population and LeBron compact absence passed. RawQA compact-home1case/7checks passed. Immutable base `availability-lebron-season-v1-20261031`, manifest `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`. This is staged/API acceptance, not data publication/live Poeltl acceptance. |
-| Review / software evidence | Separate `/root/multi_team_checker` reviewed source/runtime and independently checked originals and arithmetic.12held-out controls passed; one valid noun-style team-stat shorthand remains unfinished and safely withheld. Fictional multi-club populations verify combined/per-team IDs and totals, unknowns, boundaries and filters; they do not qualify NBA tenure. Final explicit-observation club-discovery delta has10author controls and separate review/applicability receipt. Detailed records in [the evidence package](source-evidence/multi-team-absence-20261106/). |
-| Broad / exact-head distinction | Initial broad working-tree preflight:10177passed/1863unavailable-data skips/1failed new label assertion (`at least100` vs existing`100+`). Assertion repaired and focused delta passed; this initial run is not final-head proof. Final exact-head blocking CI must pass before landing; receipts are in PR587. Existing frontend development-security advisories remain informational; production security remains blocking. |
-| Genuine dependency | [DQ-004](data-quality/DQ-004.json): approved native tenure HTML capture [run42183017232](https://github.com/Bet-Zero/nbatools/actions/runs/42183017232) returned403 on first article; no native body retained, other2unattempted. No unchanged cloud retry. Extracted web text/one transaction/first-last appearance cannot replace required originals. The [three-source acquisition packet](collection-requests/poeltl-membership-capture.zip) is ready for the existing acquisition laptop; return its ZIP including failures. |
-| Source discrepancies / preserve | [DQ-005](data-quality/DQ-005.json) records2022-23 reported PLUS_MINUS discrepancies at0022200138/0022200749; values unchanged and margins unqualified. They do not affect selected DNP identities/counts. All20successful archive originals retained/reused. Prior484unknowns/20groups and accepted K08 evidence remain unchanged; no Agent2 cleanup worker was launched. |
-| Preserved safeguards | All46positive obligations and prior qualified behavior remain required. No full historical coverage, fullseason Poeltl acceptance, Core-1 completion, current freshness or production acceptance claim. No production data writes, pointer changes, credentials, permission/spend expansion or schedules. |
+| Package / owner | Agent1 `/root`, PR589 remote branch `codex/team-stat-shorthand-20261106`; final integration worktree branch `codex/team-stat-shorthand-final-20261106`. Independently approved runtime `3105fee4dabfe8826d10151cbe932699800b2af9`; receipt/test/checkpoint descendants preserve its recorded source hashes. Final-head and landing receipts belong in PR589. |
+| Now implemented | Explicit noun thresholds such as `with 80+ team points`, strict/inclusive ceilings, supported team box-score counts and repeated bounds retain team ownership across existing player finders/summaries/splits and team consumers. Qualified missed-game counts use the same spans/bounds. Separate own-player and opponent predicates survive, including a named opponent within an explicit opponent set. Bare zero is exact zero; explicit zero-plus is a floor. No player/phrase/season exceptions. |
+| Verified NBA scope | Retained PR587 originals: Poeltl Spurs throughFeb8 has55exactobservations/9DNP; five team-stat filtered natural/structured/HTTP consumers independently check exact IDs/counts. Looney/Warriors2022-23 below110teamPTS:14games,113LooneyREB,GSW3W/11L; inclusive110:17games/143REB. Existing Raptors26played/0DNP and Looney82played/0DNP controls remain. This is scoped staging/API plus qualified historical rows, not full-season Poeltl or fresh-data acceptance. |
+| Review / software | Separate `/root/team_threshold_checker` approved runtime3105fee4:19independent controls passed with zero skips/failures. Two discovered ownership findings were repaired; an additional independent ranked-opponent positive checks an obsolete refusal. Broad3e38cbe2 actually had10201passes/1863unavailable-data skips/2failures: stale generated inventory and obsolete refusal. Inventory regenerated; positive support independently verified; affected60test run and exact-owner2test rerun pass. Broad evidence is reused only for unaffected paths; it is not relabeled an exact-final-head pass. [Durable evidence](source-evidence/team-stat-shorthand-20261106/) retains original failures, raw oracles and reviewed source hashes. |
+| Hosted checking / acceptance | Read-only [run42202957484](https://github.com/Bet-Zero/nbatools/actions/runs/42202957484), reviewed3105fee4, sole-parent request `be1fde1b054c139c248092fad1d935924a079e5a`, pinned base `availability-lebron-season-v1-20261031` / manifest `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`. Actual numerical4selected/4executed/4passed, zero skips/failures/errors/xfails; R2RawQA4cases/33checks passed with zero suspicious flags. [Structured summaries](source-evidence/team-stat-shorthand-20261106/) preserve the original execution identity. Final exact-head blocking CI and landing receipts belong in PR589, not a duplicate checkpoint-only merge. |
+| Still unfinished / preserved | DQ-004 original complete-tenure bodies remain pending; proposed81=72+9full-season Poeltl arithmetic is unaccepted. Do not retry the unchanged403cloud route or wait for the separate acquisition packet. DQ-005 reported margins remain unqualified/unused. Prior484unknowns/20groups, all46positive obligations, wider comparison/condition composition, current freshness, integrated Core-1 and production acceptance remain open. |
+| Safeguards / workers | No Agent2 launch, coordination, monitoring or wait. No new source acquisition, production data publication/pointer change, access/spending/schedule changes or K12 work. Existing data qualifiers, unknown handling, clinical/participation distinction, required positives, security and publication gates remain intact. |
 
-**Next application action:** capture and independently qualify the3native tenure
-originals through the existing acquisition-laptop packet, establish the inclusive
-membership intervals and exact81-game population, then execute the ordinary
-combined-season Poeltl positive plus per-team/filter controls through natural,
-structured and HTTP paths. The sources may establish or change that proposed
-population; do not stamp81/9accepted in advance. Reuse all20archive bodies and
-PR587's unchanged engine/accepted bounded evidence. Obtain affected review and
-required checks for the new qualified version; publication still needs separate
-authority. The noun-style `with80+team points` positive also remains open; its
-safe withholding is containment, not delivery. Do not start a bulk backfill or K12.
+**Next general-purpose application task:** reproduce and implement explicit nonzero
+stat equality (for example `exactly 20 points`) through shared finder/count and
+summary predicates, as retained in the [K03 binding](k03-binding.md). Freeze meaning
+and independent raw-row expectations first; preserve equality versus floor/ceiling,
+condition ownership and grain. This is a named unfinished product obligation that
+can proceed with qualified retained data/independent fixtures while DQ-004 remains
+pending. No owner intervention is needed for that application task. Unsupported
+composition remains unfinished, not completed by a guard.
 
-Stop is a verified scoped application checkpoint with a genuine source-provenance
-dependency. Owner acquisition-laptop execution is the only remaining owner action;
-no product decision, coding, source selection, new credentials or spending is
-requested. No agent/service/schedule continues in the background after the turn.
+This is a substantive independently verified application checkpoint; safe integration
+requires final exact-head blocking CI. Normal landing/post-merge receipts are
+recorded in PR589. No
+background service or future worker execution is implied by a saved checkpoint.
 
 ### Foundation acceptance contract
 

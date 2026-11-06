@@ -1,0 +1,93 @@
+{
+  "run_id": "scoped-native-final",
+  "started_at": "2026-11-06T10:17:15.608221+00:00",
+  "completed_at": "2026-11-06T10:17:16.548608+00:00",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "slice_names": [],
+  "case_count": 3,
+  "result_status_counts": {
+    "ok": 3
+  },
+  "category_counts": {
+    "team_owned_stat_conditions": 3
+  },
+  "route_counts": {
+    "player_game_summary": 2,
+    "team_record": 1
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 3
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "frontend_hero_expected": 3
+  },
+  "answer_text_status_counts": {
+    "frontend_hero_expected": 3
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 3,
+  "informational_flag_case_ids": [
+    "team_noun_looney_summary_2022_23",
+    "team_noun_warriors_record_2022_23",
+    "team_noun_looney_inclusive_2022_23"
+  ],
+  "informational_flag_counts": {
+    "frontend_hero_expected": 3
+  },
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 3
+  },
+  "expectation_check_counts": {
+    "pass": 26
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "team_noun_looney_summary_2022_23",
+      "query": "Kevon Looney average rebounds in 2022-23 with under 110 team points",
+      "duration_seconds": 0.756948,
+      "result_status": "ok",
+      "route": "player_game_summary"
+    },
+    {
+      "id": "team_noun_looney_inclusive_2022_23",
+      "query": "Kevon Looney average rebounds in 2022-23 with 110 team points or fewer",
+      "duration_seconds": 0.126976,
+      "result_status": "ok",
+      "route": "player_game_summary"
+    },
+    {
+      "id": "team_noun_warriors_record_2022_23",
+      "query": "Warriors record in 2022-23 with under 110 team points",
+      "duration_seconds": 0.056117,
+      "result_status": "ok",
+      "route": "team_record"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "work/team-stat-shorthand/rawqa/scoped-native-final/report.jsonl",
+    "report_md": "work/team-stat-shorthand/rawqa/scoped-native-final/report.md",
+    "summary_json": "work/team-stat-shorthand/rawqa/scoped-native-final/summary.json",
+    "product_review_md": "work/team-stat-shorthand/rawqa/scoped-native-final/product_review.md",
+    "product_review_json": "work/team-stat-shorthand/rawqa/scoped-native-final/product_review.json"
+  },
+  "scope": "custom_selection",
+  "source_commit": "ec45943be28609f9a66bf2a637ca6c5c1496ad4b",
+  "source_tree_clean": true,
+  "data_generation": "legacy",
+  "corpus_sha256": "92c1ad2b1cb698aaf7551e1eda3ca65f7a4bdd48429c020385cea5d4d5c9a077",
+  "case_ids": [
+    "team_noun_looney_summary_2022_23",
+    "team_noun_warriors_record_2022_23",
+    "team_noun_looney_inclusive_2022_23"
+  ],
+  "selected_cases_sha256": "c4770b7f9d248c319024ba380c80b7f510568c3ca455f43666989ea29e4da19d",
+  "output_sha256": "0437e1a6551ec08220de12518866d51e8d42bdc421ac6cdf037656d0a2613730"
+}
