@@ -1119,7 +1119,9 @@ def _build_count_phrase(
     if metadata.get("stat") == "opponent_pts" and team:
         max_value = metadata.get("max_value")
         min_value = metadata.get("min_value")
-        if max_value is None and min_value is not None:
+        if min_value is not None and min_value == max_value:
+            action = f"allowed exactly {_count_threshold_text(min_value)} points"
+        elif max_value is None and min_value is not None:
             # "allow 110 or more points": a floor, not "held opponents under".
             # "over 119" is stored as 119.0001: say "more than 119".
             floor = _count_threshold_text(min_value)

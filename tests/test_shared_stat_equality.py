@@ -149,3 +149,20 @@ def test_negated_owned_verbal_equality_cannot_become_own_score():
     )
     assert result.result_status != "ok"
     assert "primary_count" not in result.metadata
+
+
+def test_opponent_count_answer_keeps_equality_label():
+    teams = pd.read_csv(ROOT / "team_game_stats/2025-26_regular_season.csv")
+    opponents = teams.loc[teams.pts.eq(100), ["game_id", "team_id"]].rename(
+        columns={"team_id": "opponent_team_id"}
+    )
+    expected = teams.loc[teams.team_abbr.eq("LAL")].merge(
+        opponents, on=["game_id", "opponent_team_id"]
+    )
+    answer = execute_natural_query(
+        "How many Lakers games with exactly 100 opponent points in 2025-26?"
+    )
+    assert answer.result_status == "ok", answer.metadata
+    assert answer.metadata["primary_count"] == len(expected)
+    assert "allowed exactly 100 points" in answer.metadata["count_phrase"]
+    assert "or fewer" not in answer.metadata["count_phrase"]

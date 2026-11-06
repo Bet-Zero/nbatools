@@ -25,10 +25,15 @@ _OR_FEWER_AFTER = re.compile(r"\s+or\s+(?:fewer|less)\b(?!\s+than)")
 
 def _explicit_equality(text: str) -> dict | None:
     """Reuse shared spans before a bare event reader can reinterpret the value."""
+    from nbatools.commands._constants import STAT_EQUALITY_OPERATOR
     from nbatools.commands._parse_helpers import extract_threshold_conditions
 
     for condition in extract_threshold_conditions(text):
-        if condition["min_value"] is not None and condition["min_value"] == condition["max_value"]:
+        if (
+            re.search(STAT_EQUALITY_OPERATOR, condition.get("text", ""))
+            and condition["min_value"] is not None
+            and condition["min_value"] == condition["max_value"]
+        ):
             return {k: condition[k] for k in ("stat", "min_value", "max_value")}
     return None
 
