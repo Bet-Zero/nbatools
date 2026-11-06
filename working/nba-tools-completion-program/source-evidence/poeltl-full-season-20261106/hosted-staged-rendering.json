@@ -1,0 +1,529 @@
+[
+  {
+    "id": "poeltl_qualified_full",
+    "query": "How many games did Jakob Poeltl miss in 2022-23?",
+    "status": "ok",
+    "expectation": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "game_finder",
+          "expected": "game_finder",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "finder"
+          ],
+          "expected": [
+            "count"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 9,
+          "expected": 9,
+          "name": "expected_row_counts.finder",
+          "status": "pass"
+        },
+        {
+          "actual": 9,
+          "expected": 9,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        },
+        {
+          "actual": "Jakob Poeltl",
+          "expected": "Jakob Poeltl",
+          "name": "result.metadata.without_player",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 7,
+      "status": "pass"
+    },
+    "suspicious_flags": [],
+    "rendered_output": {
+      "answer": {
+        "source": "ResultHero",
+        "text": "Jakob Poeltl missed 9 NBA games in the 2022-23 regular season. By team: SAS: 9; TOR: 0."
+      },
+      "blocks": [
+        {
+          "collapsed": false,
+          "collapsed_label": null,
+          "column_schema": "team_game_log_default",
+          "filters": [
+            "Without player: Jakob Poeltl"
+          ],
+          "mode": "Team game log",
+          "row_count": 9,
+          "rows": [
+            [
+              "1",
+              "Jan 7",
+              "SAS",
+              "",
+              "BOS",
+              "L",
+              "116",
+              "\u2014",
+              "51",
+              "25",
+              "7",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "13",
+              "6",
+              "3",
+              "12",
+              "39"
+            ],
+            [
+              "2",
+              "Dec 14",
+              "SAS",
+              "",
+              "POR",
+              "L",
+              "112",
+              "\u2014",
+              "40",
+              "23",
+              "11",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "11",
+              "9",
+              "3",
+              "14",
+              "26"
+            ],
+            [
+              "3",
+              "Dec 12",
+              "SAS",
+              "",
+              "CLE",
+              "W",
+              "112",
+              "\u2014",
+              "46",
+              "25",
+              "9",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "12",
+              "6",
+              "2",
+              "19",
+              "27"
+            ]
+          ],
+          "section_key": "finder",
+          "subject": "San Antonio Spurs",
+          "table_type": "team_game_log",
+          "title": "Game Detail",
+          "type": "table",
+          "visible_columns": [
+            "#",
+            "Date",
+            "Team",
+            "",
+            "Opp",
+            "W/L",
+            "PTS",
+            "Margin",
+            "REB",
+            "AST",
+            "3PM",
+            "FG",
+            "3P",
+            "FT",
+            "TOV",
+            "STL",
+            "BLK",
+            "oreb",
+            "dreb"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "poeltl_qualified_home",
+    "query": "How many home games did Jakob Poeltl miss in 2022-23?",
+    "status": "ok",
+    "expectation": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "game_finder",
+          "expected": "game_finder",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "finder"
+          ],
+          "expected": [
+            "count"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 6,
+          "expected": 6,
+          "name": "expected_row_counts.finder",
+          "status": "pass"
+        },
+        {
+          "actual": 6,
+          "expected": 6,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        },
+        {
+          "actual": "Jakob Poeltl",
+          "expected": "Jakob Poeltl",
+          "name": "result.metadata.without_player",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 7,
+      "status": "pass"
+    },
+    "suspicious_flags": [],
+    "rendered_output": {
+      "answer": {
+        "source": "ResultHero",
+        "text": "Jakob Poeltl missed 6 NBA home games in the 2022-23 regular season. By team: SAS: 6; TOR: 0."
+      },
+      "blocks": [
+        {
+          "collapsed": false,
+          "collapsed_label": null,
+          "column_schema": "team_game_log_default",
+          "filters": [
+            "Without player: Jakob Poeltl",
+            "Location: Home"
+          ],
+          "mode": "Team game log",
+          "row_count": 6,
+          "rows": [
+            [
+              "1",
+              "Jan 7",
+              "SAS",
+              "",
+              "BOS",
+              "L",
+              "116",
+              "\u2014",
+              "51",
+              "25",
+              "7",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "13",
+              "6",
+              "3",
+              "12",
+              "39"
+            ],
+            [
+              "2",
+              "Dec 14",
+              "SAS",
+              "",
+              "POR",
+              "L",
+              "112",
+              "\u2014",
+              "40",
+              "23",
+              "11",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "11",
+              "9",
+              "3",
+              "14",
+              "26"
+            ],
+            [
+              "3",
+              "Dec 12",
+              "SAS",
+              "",
+              "CLE",
+              "W",
+              "112",
+              "\u2014",
+              "46",
+              "25",
+              "9",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "12",
+              "6",
+              "2",
+              "19",
+              "27"
+            ]
+          ],
+          "section_key": "finder",
+          "subject": "San Antonio Spurs",
+          "table_type": "team_game_log",
+          "title": "Game Detail",
+          "type": "table",
+          "visible_columns": [
+            "#",
+            "Date",
+            "Team",
+            "",
+            "Opp",
+            "W/L",
+            "PTS",
+            "Margin",
+            "REB",
+            "AST",
+            "3PM",
+            "FG",
+            "3P",
+            "FT",
+            "TOV",
+            "STL",
+            "BLK",
+            "oreb",
+            "dreb"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "poeltl_qualified_lakers",
+    "query": "How many games did Jakob Poeltl miss against the Lakers in 2022-23?",
+    "status": "ok",
+    "expectation": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "game_finder",
+          "expected": "game_finder",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count",
+            "finder"
+          ],
+          "expected": [
+            "count"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.finder",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        },
+        {
+          "actual": "Jakob Poeltl",
+          "expected": "Jakob Poeltl",
+          "name": "result.metadata.without_player",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 7,
+      "status": "pass"
+    },
+    "suspicious_flags": [],
+    "rendered_output": {
+      "answer": {
+        "source": "ResultHero",
+        "text": "Jakob Poeltl missed 1 NBA game against the LAL in the 2022-23 regular season. By team: SAS: 1; TOR: 0."
+      },
+      "blocks": [
+        {
+          "collapsed": false,
+          "collapsed_label": null,
+          "column_schema": "team_game_log_default",
+          "filters": [
+            "Opponent: LAL",
+            "Without player: Jakob Poeltl"
+          ],
+          "mode": "Team game log",
+          "row_count": 1,
+          "rows": [
+            [
+              "1",
+              "Nov 20",
+              "SAS",
+              "",
+              "LAL",
+              "L",
+              "92",
+              "\u2014",
+              "44",
+              "26",
+              "7",
+              "\u2014",
+              "\u2014",
+              "\u2014",
+              "10",
+              "7",
+              "2",
+              "13",
+              "31"
+            ]
+          ],
+          "section_key": "finder",
+          "subject": "San Antonio Spurs",
+          "table_type": "team_game_log",
+          "title": "Game Detail",
+          "type": "table",
+          "visible_columns": [
+            "#",
+            "Date",
+            "Team",
+            "",
+            "Opp",
+            "W/L",
+            "PTS",
+            "Margin",
+            "REB",
+            "AST",
+            "3PM",
+            "FG",
+            "3P",
+            "FT",
+            "TOV",
+            "STL",
+            "BLK",
+            "oreb",
+            "dreb"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "poeltl_qualified_toronto_zero",
+    "query": "How many games did Jakob Poeltl miss for the Raptors in 2022-23?",
+    "status": "ok",
+    "expectation": {
+      "checks": [
+        {
+          "actual": "ok",
+          "expected": "ok",
+          "name": "expected_status",
+          "status": "pass"
+        },
+        {
+          "actual": "game_finder",
+          "expected": "game_finder",
+          "name": "expected_route",
+          "status": "pass"
+        },
+        {
+          "actual": [
+            "count"
+          ],
+          "expected": [
+            "count"
+          ],
+          "name": "expected_sections",
+          "status": "pass"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "name": "expected_row_counts.count",
+          "status": "pass"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "name": "result.sections.count.0.count",
+          "status": "pass"
+        },
+        {
+          "actual": "Jakob Poeltl",
+          "expected": "Jakob Poeltl",
+          "name": "result.metadata.without_player",
+          "status": "pass"
+        }
+      ],
+      "fail_count": 0,
+      "pass_count": 6,
+      "status": "pass"
+    },
+    "suspicious_flags": [],
+    "rendered_output": {
+      "answer": {
+        "source": "ResultHero",
+        "text": "Jakob Poeltl did not miss a Toronto Raptors game in the 2022-23 regular season."
+      },
+      "blocks": []
+    }
+  }
+]

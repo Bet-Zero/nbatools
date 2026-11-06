@@ -8,40 +8,31 @@ cleanup, not a competing product roadmap. No worker is launched by this document
 
 ## Resume checkpoint
 
-Application baseline is merged [PR587](https://github.com/Bet-Zero/nbatools/pull/587),
-`4bd2f799ddeb06544ef2223e56449ec609318dec`. Agent1 now delivers the shared team-stat
-noun-threshold capability in [PR589](https://github.com/Bet-Zero/nbatools/pull/589).
-The pending full-season Poeltl acceptance is independent of application progress;
-DQ-004's owner acquisition packet remains separate. **K12 stays parked.**
+Live baseline after merged PR589 is main
+`f06464577b105c039b1e543eaf91d2ed75d03699` (including independent PR588 evidence).
+Agent1 completes the existing PR587 full-season participation acceptance in
+[PR590](https://github.com/Bet-Zero/nbatools/pull/590). **K12 stays parked.**
+The recovered originals resolve DQ-004 for this finite historical staged version;
+production data/pointers remain unchanged. Next is shared K03 explicit equality.
 
 | Field | Current application handoff |
 | --- | --- |
-| Package / owner | Agent1 `/root`, PR589 remote branch `codex/team-stat-shorthand-20261106`; final integration worktree branch `codex/team-stat-shorthand-final-20261106`. Independently approved runtime `3105fee4dabfe8826d10151cbe932699800b2af9`; receipt/test/checkpoint descendants preserve its recorded source hashes. Final-head and landing receipts belong in PR589. |
-| Now implemented | Explicit noun thresholds such as `with 80+ team points`, strict/inclusive ceilings, supported team box-score counts and repeated bounds retain team ownership across existing player finders/summaries/splits and team consumers. Qualified missed-game counts use the same spans/bounds. Separate own-player and opponent predicates survive, including a named opponent within an explicit opponent set. Bare zero is exact zero; explicit zero-plus is a floor. No player/phrase/season exceptions. |
-| Verified NBA scope | Retained PR587 originals: Poeltl Spurs throughFeb8 has55exactobservations/9DNP; five team-stat filtered natural/structured/HTTP consumers independently check exact IDs/counts. Looney/Warriors2022-23 below110teamPTS:14games,113LooneyREB,GSW3W/11L; inclusive110:17games/143REB. Existing Raptors26played/0DNP and Looney82played/0DNP controls remain. This is scoped staging/API plus qualified historical rows, not full-season Poeltl or fresh-data acceptance. |
-| Review / software | Separate `/root/team_threshold_checker` approved runtime3105fee4:19independent controls passed with zero skips/failures. Two discovered ownership findings were repaired; an additional independent ranked-opponent positive checks an obsolete refusal. Broad3e38cbe2 actually had10201passes/1863unavailable-data skips/2failures: stale generated inventory and obsolete refusal. Inventory regenerated; positive support independently verified; affected60test run and exact-owner2test rerun pass. Broad evidence is reused only for unaffected paths; it is not relabeled an exact-final-head pass. [Durable evidence](source-evidence/team-stat-shorthand-20261106/) retains original failures, raw oracles and reviewed source hashes. |
-| Hosted checking / acceptance | Read-only [run42202957484](https://github.com/Bet-Zero/nbatools/actions/runs/42202957484), reviewed3105fee4, sole-parent request `be1fde1b054c139c248092fad1d935924a079e5a`, pinned base `availability-lebron-season-v1-20261031` / manifest `3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`. Actual numerical4selected/4executed/4passed, zero skips/failures/errors/xfails; R2RawQA4cases/33checks passed with zero suspicious flags. [Structured summaries](source-evidence/team-stat-shorthand-20261106/) preserve the original execution identity. Final exact-head blocking CI and landing receipts belong in PR589, not a duplicate checkpoint-only merge. |
-| Still unfinished / preserved | DQ-004 original complete-tenure bodies remain pending; proposed81=72+9full-season Poeltl arithmetic is unaccepted. Do not retry the unchanged403cloud route or wait for the separate acquisition packet. DQ-005 reported margins remain unqualified/unused. Prior484unknowns/20groups, all46positive obligations, wider comparison/condition composition, current freshness, integrated Core-1 and production acceptance remain open. |
-| Safeguards / workers | No Agent2 launch, coordination, monitoring or wait. No new source acquisition, production data publication/pointer change, access/spending/schedule changes or K12 work. Existing data qualifiers, unknown handling, clinical/participation distinction, required positives, security and publication gates remain intact. |
+| Package / owner | Agent1 `/root`, `codex/poeltl-tenure-acceptance-20261106`. Independently reviewed source/staging candidate `4f0b010e62400818a663acca6a628948065093cf`; receipt/checkpoint-only descendants preserve qualified inputs and all runtime. Exact-head CI and landing receipts belong in PR590. |
+| Now answers | Ordinary `How many games did Jakob Poeltl miss in 2022-23?` returns9 in the qualified historical stage through natural, structured and HTTP consumers. Perclub/home/away/opponent/date/team-stat filters preserve membership and exact IDs. PR589's generalized noun thresholds and other existing app behavior remain unchanged. No player-specific runtime exception. |
+| Numerical/source acceptance | Three authenticated original NBA.com articles jointly qualify SAS2022-10-18..Feb8 and TORFeb10..Apr9. Complete retained season records establish81eligible=72played+9explicitDNP,unknown0;SAS55=46+9,TOR26=26+0. All81eligibleIDs,72appearances,9explicit inactive proofs and83excludedclub-game rows are independently replayed. Feb9 remains unknown for date-only membership; neither club played then, so no game-population gap. No missing-row absence or medical-cause inference. |
+| Evidence/version | Exact owner ZIP111037bytes/SHA`42134b026ae53e9ca3c731815f3290cc79937d14b5768c1f1eda9c9a7547361e` and unchanged capture receipt are preserved in [the evidence package](source-evidence/poeltl-full-season-20261106/), with portable `poeltl-tenure-qualified-v1-20261106` ledger, all supporting hashes, original source verdict, independent consumer review/oracle and actual hosted/rendering receipts. No successful source was downloaded again. |
+| Review and required gates | Separate `/root/poeltl_source_checker` approved reviewed4f0b010e:13independent checkgroups/31queries passed, including unfamiliar filters, Looney82/0, finite dates and unknown/hash probes. [Read-only run42209600862](https://github.com/Bet-Zero/nbatools/actions/runs/42209600862), sole-parent request`0fbd7facfcdfb977060fe161a2caacf8cf957124`:5selected/5executed/5passed/0skips/failures/errors/xfails; staged RawQA4cases/27checks and preserved baseRawQA1case/7checks passed. Base`availability-lebron-season-v1-20261031`, manifest`3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`.67focused fixture controls pass. Prior PR589 software/K08 evidence is reused only for unchanged paths; no duplicate full suite or relabeled execution. Final exact-head CI/merge receipts remain in PR590. |
+| Unknowns/limits preserved | Missing participation or an actual-game membership gap withholds the total; corrupted originals reject. Date-onlyFeb9 and dates outside finite intervals remain unknown. This is historical staged/API/numerical acceptance, not production publication/current freshness/full-history/Core-1 completion. All existing K08 positives remain required. |
+| Independence / safeguards | DQ-004 is resolved only for this source/version. DQ-005/PR588 and all other data-quality work are preserved untouched; no Agent2 launch, assignment, coordination, monitoring or wait. Prior484unknowns/20groups, remaining K08 requirements and security/production gates remain. No active data/pointer, credentials/permissions/spending/schedules, clinical labels or K12 changes. |
 
-**Active application task (owner, 2026-11-06):** before K03 equality, authenticate
-and independently qualify the recovered Poeltl originals and finish the ordinary
-full-season multi-team missed-game acceptance from PR587. Current branch
-`codex/poeltl-tenure-acceptance-20261106`, live-main base
-`f06464577b105c039b1e543eaf91d2ed75d03699`; PR589 is complete. The attached ZIP
-matches PR587 comment6682443108 and is preserved with its unchanged receipt in
-[source evidence](source-evidence/poeltl-full-season-20261106/). Separate source
-review supports finite SAS-through-Feb8/TOR-from-Feb10 intervals, retaining Feb9
-as date-only unknown (no candidate-club game occurs then). Full consumer/numerical
-acceptance remains pending; do not relabel the former proposed totals accepted
-before those checks. Reuse existing native records; no downloads or Agent2 work.
-After this bounded task reaches its verified checkpoint, continue the retained
-K03 shared explicit nonzero equality capability with independent raw expectations.
-
-This is a substantive independently verified application checkpoint; safe integration
-requires final exact-head blocking CI. Normal landing/post-merge receipts are
-recorded in PR589. No
-background service or future worker execution is implied by a saved checkpoint.
+**Next application task (already authorized):** reproduce and implement shared
+explicit nonzero statistical equality (for example `exactly 20 points`) from the
+[K03 binding](k03-binding.md), with independent qualified raw-row/fixture
+expectations through finder/count and summary consumers. Preserve condition
+ownership, exact zero, strict/inclusive bounds, grain and unknowns. This is the
+next general-purpose capability after the verified PR587/590 acceptance checkpoint;
+no owner source acquisition or Agent2 action is needed. Normal final integration
+receipts are in PR590; no background coding worker or future execution is implied.
 
 ### Foundation acceptance contract
 

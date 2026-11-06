@@ -1,0 +1,185 @@
+{
+  "reviewed_revision": "4f0b010e62400818a663acca6a628948065093cf",
+  "checker": "/root/poeltl_source_checker, independent Codex session; backend model unspecified",
+  "oracle_sha256": "c83efdbb4543a5c15b3861da065c7cae4ec161b35c299e1255722754eea1e43f",
+  "checks": [
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 ?",
+      "eligible": 81,
+      "played": 72,
+      "missed": 9,
+      "ids": [
+        [
+          22200247,
+          "SAS"
+        ],
+        [
+          22200319,
+          "SAS"
+        ],
+        [
+          22200333,
+          "SAS"
+        ],
+        [
+          22200345,
+          "SAS"
+        ],
+        [
+          22200375,
+          "SAS"
+        ],
+        [
+          22200387,
+          "SAS"
+        ],
+        [
+          22200406,
+          "SAS"
+        ],
+        [
+          22200420,
+          "SAS"
+        ],
+        [
+          22200591,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with 113+ team points?",
+      "eligible": 42,
+      "played": 39,
+      "missed": 3,
+      "ids": [
+        [
+          22200375,
+          "SAS"
+        ],
+        [
+          22200387,
+          "SAS"
+        ],
+        [
+          22200591,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with 113+ team points at home?",
+      "eligible": 25,
+      "played": 23,
+      "missed": 2,
+      "ids": [
+        [
+          22200375,
+          "SAS"
+        ],
+        [
+          22200591,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 with at most 99 team points?",
+      "eligible": 10,
+      "played": 7,
+      "missed": 3,
+      "ids": [
+        [
+          22200247,
+          "SAS"
+        ],
+        [
+          22200333,
+          "SAS"
+        ],
+        [
+          22200345,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 on the road with under 110 team points?",
+      "eligible": 15,
+      "played": 14,
+      "missed": 1,
+      "ids": [
+        [
+          22200247,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 from November 1 to November 30, 2022?",
+      "eligible": 15,
+      "played": 13,
+      "missed": 2,
+      "ids": [
+        [
+          22200247,
+          "SAS"
+        ],
+        [
+          22200319,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 against the Suns?",
+      "eligible": 2,
+      "played": 1,
+      "missed": 1,
+      "ids": [
+        [
+          22200345,
+          "SAS"
+        ]
+      ],
+      "all_three_consumers": "passed"
+    },
+    {
+      "query": "How many games did Jakob Poeltl miss in 2022-23 for the Raptors?",
+      "eligible": 26,
+      "played": 26,
+      "missed": 0,
+      "ids": [],
+      "all_three_consumers": "passed"
+    },
+    {
+      "control": "independent raw-row Looney/GSW all82appearances,0missed",
+      "passed": true
+    },
+    {
+      "control": "exact finite membership Feb8SAS/Feb9unknown/Feb10TOR",
+      "passed": true
+    },
+    {
+      "control": "missing_participation",
+      "passed": true
+    },
+    {
+      "control": "membership_gap",
+      "passed": true
+    },
+    {
+      "control": "source_hash",
+      "passed": true
+    }
+  ],
+  "failures": 0,
+  "skips": 0,
+  "production_writes": 0
+}

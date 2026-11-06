@@ -1,0 +1,20 @@
+{
+  "candidate_sha": "0fbd7facfcdfb977060fe161a2caacf8cf957124",
+  "generation": "availability-lebron-season-v1-20261031",
+  "scope": "targeted",
+  "required_selection": [
+    "tests/cloud_poeltl_full_season_real_data.py",
+    "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control"
+  ],
+  "required_test_limit": 100,
+  "selected": 5,
+  "executed": 5,
+  "passed": 5,
+  "skipped": 0,
+  "failed": 0,
+  "errors": 0,
+  "xfailed": 0,
+  "pytest_exit": 0,
+  "conclusion": "success",
+  "problems": []
+}

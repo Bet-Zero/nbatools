@@ -776,8 +776,15 @@ attributable dated evidence, independently review it, and pin normalized rows,
 originals and qualification receipts in the selected immutable generation before
 qualified use. No current roster snapshot, first/last appearance, isolated
 transaction date or unrelated same-date game automatically supplies an interval.
-There is no automatic tenure collector or production interval population in this
-change; controlled fixture intervals verify software only.
+There is no automatic tenure collector or production interval population.
+[PR590](https://github.com/Bet-Zero/nbatools/pull/590) adds a separately qualified
+finite historical Poeltl2022-23 staging ledger and retains its evidence package.
+Its primary row hashes are witnesses within a pinned three-original support chain;
+`qualification.json` preserves every dependency and the independent source/consumer
+receipts. The original capture receipt is unchanged and remains capture-only.
+February9 is deliberately uncertified as a full-day interval; no candidate club
+game occurs then. This staged version does not expand production membership data.
+Controlled fixture intervals remain software evidence only.
 
 `_dated_membership` validates and resolves these facts. Contradictory overlapping
 clubs, explicit positive/negative overlap, invalid dates/IDs and original-hash

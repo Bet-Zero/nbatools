@@ -24,7 +24,7 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-002](DQ-002.json) | 0118Q4 incomplete-award/violation ruling | May be solved by the same method/source package asDQ-001; do not double-count affected rates. |
 | [DQ-003](DQ-003.json) | 0009 EasonQ1 2:15FG/2:06FT association and credit | Preserve both clocks; require attributable evidence, not a guessed and-one. |
 
-| [DQ-004](DQ-004.json) | Native official Poeltl tenure bodies; approved cloud HTML capture returned403 | Existing acquisition-laptop packet; no repeated unchanged cloud request. Combined-season positive remains open; date-bounded app work continues. |
+| [DQ-004](DQ-004.json) | Resolved: authenticated owner3article originals, finite membership chain and all eligible game IDs independently qualified | Agent1 [PR590](https://github.com/Bet-Zero/nbatools/pull/590): full-season historical staged acceptance81eligible/72played/9explicitDNP,unknown0; hosted5/5required and4stagedRawQAcases passed. Feb9date-onlyunknown preserved. No production publication or repeated download. |
 | [DQ-005](DQ-005.json) | Native independent scorer bodies for both complete team vectors;4JSON originals now retained | Agent2 [PR588](https://github.com/Bet-Zero/nbatools/pull/588), evidence-only closeout; blocked_evidence/stopped and nonblocking for app development. No correction or app defect established; canonical margins already derive scores. |
 
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older

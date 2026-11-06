@@ -3,7 +3,7 @@
   "kind": "data_quality_work_item",
   "id": "DQ-004",
   "title": "Poeltl2022-23 native dated-membership evidence unavailable through cloud HTML route",
-  "status": "ready_for_review",
+  "status": "resolved",
   "owner_role": "agent_1_application_acquisition",
   "claim": null,
   "created_on": "2026-11-06",
@@ -42,18 +42,52 @@
   "failure": {
     "check": "native original provenance plus complete dated-membership qualification",
     "missing_evidence": "Native official tenure/transaction article bodies; extracted web text is a lead, not certified original bytes.",
-    "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies."
+    "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies.",
+    "historical": true
   },
   "blocking_scope": {
-    "data_acceptance": "Ordinary combined full-season Poeltl positive remains UNFINISHED",
+    "data_acceptance": "Resolved for this full-season historical staged population; all other unqualified scope remains outside acceptance.",
     "product_development": false,
     "production_publication": "Not authorized"
   },
-  "next_evidence_trigger": "Original capture blocker overcome; no downloads/retries needed. Complete separate consumer review and required real-data acceptance on pinned recovered originals, then resolve with qualified output version.",
+  "next_evidence_trigger": "None for accepted finite scope. Reuse preserved originals/qualified ledger; publication and other seasons/players need their own existing safeguards.",
   "do_not_repeat": "Do not retry unchanged cloud HTML route or substitute transaction date/appearance endpoints alone for full tenure.",
-  "resolution": null,
-  "independent_review": null,
-  "qualified_output_version": null,
+  "resolution": {
+    "scope": "Qualified finite2022-23regular-season historical staging; not production publication",
+    "version": "poeltl-tenure-qualified-v1-20261106",
+    "membership_intervals": [
+      {
+        "team": "SAS",
+        "start_date": "2022-10-18",
+        "end_date": "2023-02-08"
+      },
+      {
+        "team": "TOR",
+        "start_date": "2023-02-10",
+        "end_date": "2023-04-09"
+      }
+    ],
+    "unknown_calendar_date": "2023-02-09;intraday transfer,neitherclubhasagame",
+    "eligible_games": 81,
+    "played": 72,
+    "explicit_dnp": 9,
+    "unknown_game_observations": 0,
+    "original_failed_cloud_attempt": "Preserved unchanged under last_attempt; overcome by authenticated owner capture, no repeat downloads",
+    "qualified_ledger": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/2022-23.csv",
+    "qualification": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/qualification.json",
+    "hosted_receipt": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/hosted-receipt.json"
+  },
+  "independent_review": {
+    "reviewer": "/root/poeltl_source_checker;separateCodexsession,exactmodelnotexposed",
+    "reviewed_sha": "4f0b010e62400818a663acca6a628948065093cf",
+    "source_review": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/independent-source-verdict.md",
+    "consumer_review": "working/nba-tools-completion-program/source-evidence/poeltl-full-season-20261106/independent-consumer-review.md",
+    "check_groups": 13,
+    "query_invocations": 31,
+    "skipped": 0,
+    "application_failures": 0
+  },
+  "qualified_output_version": "poeltl-tenure-qualified-v1-20261106",
   "fingerprint": "e3aefb47a224116a06c05e6f20f38ff01f95c5558beef87baecfbee219fc200f",
   "recovered_originals": {
     "receipt_reference": "https://github.com/Bet-Zero/nbatools/pull/587#issuecomment-6682443108",

@@ -42,10 +42,29 @@ membership gap and corrupted original bytes must withhold totals/reject safely.
 An old source-only stage still correctly withholds without this ledger; that
 negative control does not replace the new full-season positive.
 
-Author direct native-stage replay passes; it is not a required hosted execution.
-Independent frozen-candidate consumer review and required read-only hosted gates
-remain pending before numerical acceptance/merge. Current originals, manifest,
-ledger and source review remain pinned and are never mutated during tests.
+Author direct native-stage replay passed; it is not relabeled a hosted execution.
+Separate checker `/root/poeltl_source_checker` independently approved source and
+consumer semantics at4f0b010e, with13checkgroups/31natural/structured/HTTP calls,
+zero skips or application failures, including unfamiliar filters and unknowns.
+The original frozen source verdict is historical; the completed consumer review
+and actual receipt are retained separately.
+
+Actual read-only [run42209600862](https://github.com/Bet-Zero/nbatools/actions/runs/42209600862)
+then selected/executed/passed5requiredtests with zero skips/failures/errors/xfails.
+The standard failing staged RawQA passed4cases/27checks; preserved production-base
+LeBron RawQA passed1case/7checks. `required-summary.json`, `hosted-receipt.json`,
+`hosted-acceptance.json` and staged summary/rendering retain actual outputs and
+identities. Request0fbd7fac has sole parent/reviewed4f0b010e; immutable base and
+manifest are pinned in the receipt. This accepts the ordinary full-season
+historical staged answer:81eligible=72played+9explicitDNP,unknown0, while preserving
+Feb9date-onlyunknown and the absence of any clinical-cause assertion.
+
+Runtime/producers/contracts/dependencies/workflows/frontend are unchanged, so
+PR589's applicable software/K08 evidence is reused with its original identities;
+67focused fixture controls also passed. No unrelated full-suite replay was added.
+Final exact-head CI and safe-merge receipts belong in PR590; no pending CI is
+counted as passed. Sources/ledger/qualification bytes stay pinned and unchanged.
+
 
 Historical staging acceptance is separate from production publication/live data.
 No active data/pointer, security/access/spending gate, K12 work or Agent2 task is
