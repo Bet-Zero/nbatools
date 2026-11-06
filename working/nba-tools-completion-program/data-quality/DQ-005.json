@@ -3,16 +3,25 @@
   "kind": "data_quality_work_item",
   "id": "DQ-005",
   "title": "Pinned2022-23 GameFinder reported PLUS_MINUS conflicts with literal scores",
-  "status": "open",
+  "status": "blocked_evidence",
   "owner_role": "agent_2_data_quality",
-  "claim": null,
+  "claim": {
+    "session": "Agent 2 /root; DQ-005 independent data-quality session",
+    "branch": "codex/agent2-dq005-20261106",
+    "claimed_at": "2026-11-06 10:05:48 UTC",
+    "base_commit": "4bd2f799ddeb06544ef2223e56449ec609318dec",
+    "scope": "Only DQ-005: complete two-game team PLUS_MINUS vectors, source semantics and processing diagnosis; no application changes.",
+    "worker_state": "stopped_after_bounded_investigation",
+    "pull_request": "https://github.com/Bet-Zero/nbatools/pull/588"
+  },
   "created_on": "2026-11-06",
   "baseline_commit": "9a01942c61042946d1ffe1d4e1118399230f8117",
   "source_evidence": {
     "original_zip": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/archive-originals.zip",
     "source_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-stats-raw/2e44b7c039f104bc6b41a1de494411e83a03714e/nba_stats/json/leaguegamefinder/2023/regular-season.json",
     "source_sha256": "04d3562ca95976278569c70c50dfc521e984300fc6af0f6d5ac21e21d2af9f06",
-    "observations": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/source-failures-observed.json"
+    "observations": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/source-failures-observed.json",
+    "investigation_package": "working/nba-tools-completion-program/source-evidence/dq005-20261106"
   },
   "affected_keys": {
     "season": "2022-23",
@@ -45,6 +54,36 @@
         "computed_score_margin": -25,
         "impact": "Eligible played game; this margin is unqualified. Participation/game-ID/absence count proof does not depend on reported margin; do not treat this source row as statistically clean."
       }
+    ],
+    "complete_team_vector": [
+      {
+        "game_id": "0022200138",
+        "team": "SAS",
+        "reported_plus_minus": -20,
+        "traditional_team_plus_minus": -25,
+        "existing_canonical_margin": -25
+      },
+      {
+        "game_id": "0022200138",
+        "team": "DEN",
+        "reported_plus_minus": 22.4,
+        "traditional_team_plus_minus": 25,
+        "existing_canonical_margin": 25
+      },
+      {
+        "game_id": "0022200749",
+        "team": "BOS",
+        "reported_plus_minus": 3,
+        "traditional_team_plus_minus": 4,
+        "existing_canonical_margin": 4
+      },
+      {
+        "game_id": "0022200749",
+        "team": "LAL",
+        "reported_plus_minus": -3,
+        "traditional_team_plus_minus": -4,
+        "existing_canonical_margin": -4
+      }
     ]
   },
   "failure": {
@@ -52,17 +91,47 @@
     "reason": "SAS0138 -20 vs101-126=-25; BOS0749 +3 vs125-121=+4. Preserve original values; no correction inferred."
   },
   "blocking_scope": {
-    "data_acceptance": "These reported margins and dependent team-stat filters/arithmetic remain unqualified. Game/date/participation and9missed-game counts do not depend on these margins.",
+    "data_acceptance": "Raw reported PLUS_MINUS and dependent raw-source calculations remain unqualified. Existing canonical producer/load team margins derive paired scores and already match-25/+25/+4/-4; this is software/lineage evidence, not independent source qualification. Original game/date/participation and9DNP counts remain outside this discrepancy.",
     "product_development": false,
     "production_publication": "Existing gates unchanged"
   },
   "last_attempt": {
-    "reference": "PR587 independent native-source initial validation",
-    "outcome": "Two observations retained; no data cleanup investigation or correction performed."
+    "reference": "PR588; dq005-investigation-v1-20261106",
+    "outcome": "Four original JSON bodies authenticated; complete4team/42played-player vectors checked. GameFinder values equal reported player-sum/5; TraditionalV3 team values and SummaryV2 period/final scores agree on-25/+25/+4/-4. Raw discrepancies predate local parsing. Existing canonical producer/load margins and schedule flags are already consistent with paired scores. No correction qualified. Native independent scorer bodies remain missing; upstream mechanism or alternate intended basis unproven. Automatic approval review rejected the two-file Actions request before its manifest write; no workflow executed.",
+    "worker_state": "stopped",
+    "source_values_changed": 0,
+    "qualified_correction_version": null
   },
-  "next_evidence_trigger": "Attributable official correction/independent scorer evidence for exact margins; investigate in one coherent source group.",
+  "next_evidence_trigger": "Parked; do not restart source searches or PDF acquisition. Reopen investigation only when (1) newly available attributable original scorer evidence or endpoint-specific field documentation addresses both complete game/team vectors, or (2) a concrete future consumer needs the unqualified source-reported GameFinder PLUS_MINUS or individual player/lineup +/- instead of the current paired-score canonical margin, or changes that canonical contract. Name that consumer and exact affected keys before investigating. Mere availability of a capture route, passage of time, or unrelated application development is not a trigger.",
   "resolution": null,
-  "independent_review": null,
+  "independent_review": {
+    "reviewer": "/root/dq005_checker",
+    "model": "Exact model identifier not exposed",
+    "scope": "Investigation and complete numerical/lineage replay only; no data correction acceptance",
+    "evidence": "working/nba-tools-completion-program/source-evidence/dq005-20261106/independent-review.json",
+    "collector_reviewed_remote_revision": "e548f629d038055f84c3b448ed4ec184f2d62ecf"
+  },
   "qualified_output_version": null,
-  "fingerprint": "403dd37df5d03a5a4d11e97baf87e6bbdf72c640f2e8f5e61a319cb4443cf275"
+  "fingerprint": "403dd37df5d03a5a4d11e97baf87e6bbdf72c640f2e8f5e61a319cb4443cf275",
+  "attempt_history": [
+    {
+      "reference": "PR587 independent native-source initial validation",
+      "outcome": "Two observations retained; no data cleanup investigation or correction performed."
+    }
+  ],
+  "administrative_closeout": {
+    "kind": "evidence_only",
+    "status": "closed_out_as_evidence_only",
+    "source_issue_status": "blocked_evidence",
+    "application_development_blocked": false,
+    "application_defect_established": false,
+    "qualified_data_correction_established": false,
+    "investigation_revision": "cd488fc44d0c00a91bd139c192d04e8217cd9b74",
+    "evidence_version": "dq005-investigation-v1-20261106",
+    "active_acquisition_test": "Removed from tests; historical reviewed runner remains only in prior Git history. No acquisition or approval request is pending.",
+    "source_statistics_changed": false,
+    "canonical_data_changed": false,
+    "production_changed": false,
+    "next_action": "No further investigation. Final review, required checks and verified landing receipts belong in PR588."
+  }
 }
