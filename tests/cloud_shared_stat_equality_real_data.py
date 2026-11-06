@@ -121,6 +121,8 @@ def test_qualified_team_equality_and_full_season_absence(tmp_path, monkeypatch):
         answer = execute_natural_query(query)
         assert answer.result_status == "ok", answer.metadata
         assert answer.metadata["primary_count"] == len(missed)
+        assert "exactly 112" in answer.metadata["answer_phrase"]
+        assert "112+" not in answer.metadata["answer_phrase"]
         assert _ids(answer.to_dict()["sections"]["finder"]) == set(missed.game_id)
         structured = execute_structured_query(
             "game_finder",

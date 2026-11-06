@@ -40,6 +40,7 @@ def test_player_equality_list_count_summary_and_http(clause):
     assert count.result_status == "ok", count.metadata
     assert count.metadata["primary_count"] == 3
     assert "exactly 20 points" in count.metadata["count_phrase"]
+    assert any(f["value"] == "exactly 20" for f in count.metadata["applied_filters"])
     assert _ids(count.to_dict()["sections"]["finder"]) == set(expected.game_id)
     summary = execute_natural_query(f"LeBron James average assists with {clause} in 2025-26")
     assert summary.result_status == "ok", summary.metadata

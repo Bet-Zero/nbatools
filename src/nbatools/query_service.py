@@ -392,6 +392,13 @@ def _build_applied_filters(
             for condition in branch["conditions"]:
                 owner = f"{condition['opponent_team']} " if condition.get("opponent_team") else ""
                 label = owner + _filter_stat_label(condition["stat"]).upper()
+                if condition.get("min_value") is not None and condition.get(
+                    "min_value"
+                ) == condition.get("max_value"):
+                    bounds.append(
+                        f"{_range_phrase(condition['min_value'], condition['max_value'])} {label}"
+                    )
+                    continue
                 if condition.get("min_value") is not None:
                     bounds.append(f"{_minimum_threshold_phrase(condition['min_value'])} {label}")
                 if condition.get("max_value") is not None:
@@ -536,6 +543,15 @@ def _build_applied_filters(
         for cond in conditions:
             stat = cond["stat"]
             owner = f"{cond['opponent_team']} " if cond.get("opponent_team") else ""
+            if cond.get("min_value") is not None and cond.get("min_value") == cond.get("max_value"):
+                applied_filters.append(
+                    {
+                        "label": f"{owner}{_filter_stat_label(stat)}",
+                        "value": _range_phrase(cond["min_value"], cond["max_value"]),
+                        "kind": "threshold",
+                    }
+                )
+                continue
             if cond.get("min_value") is not None:
                 label = f"{owner}{_filter_stat_label(stat)} min"
                 applied_filters.append(
@@ -558,7 +574,16 @@ def _build_applied_filters(
         stat = route_kwargs.get("stat", source.get("stat"))
         min_value = route_kwargs.get("min_value", source.get("min_value"))
         max_value = route_kwargs.get("max_value", source.get("max_value"))
-        if stat and min_value is not None:
+        equality = stat and min_value is not None and min_value == max_value
+        if equality:
+            applied_filters.append(
+                {
+                    "label": _filter_stat_label(stat),
+                    "value": _range_phrase(min_value, max_value),
+                    "kind": "threshold",
+                }
+            )
+        if not equality and stat and min_value is not None:
             label = f"{_filter_stat_label(stat)} min"
             applied_filters.append(
                 {
@@ -567,7 +592,7 @@ def _build_applied_filters(
                     "kind": "threshold",
                 }
             )
-        if stat and max_value is not None:
+        if not equality and stat and max_value is not None:
             label = f"{_filter_stat_label(stat)} max"
             applied_filters.append(
                 {
@@ -2134,6 +2159,14 @@ def _add_missed_games_metadata(metadata: dict[str, Any], result: Any) -> None:
         owner = "opponent" if stat.startswith("opponent_") else "team"
         metric = stat.removeprefix("opponent_")
         bounds = []
+        if condition.get("min_value") is not None and condition.get("min_value") == condition.get(
+            "max_value"
+        ):
+            predicates.append(
+                f"{owner} {stat_phrase_label(metric)} "
+                f"{_range_phrase(condition['min_value'], condition['max_value'])}"
+            )
+            continue
         if condition.get("min_value") is not None:
             bounds.append(_minimum_threshold_phrase(condition["min_value"]))
         if condition.get("max_value") is not None:
