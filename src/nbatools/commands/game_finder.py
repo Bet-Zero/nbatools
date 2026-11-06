@@ -204,6 +204,7 @@ def build_result(
     game_dates: list[str] | None = None,
     without_player_reason: str | None = None,
     _reported_reason_evidence: dict | None = None,
+    membership_player: str | None = None,
 ) -> FinderResult | NoResult:
     from nbatools.commands.data_utils import validate_last_n_scope
 
@@ -258,6 +259,42 @@ def build_result(
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
+
+    membership_coverage = None
+    if membership_player is not None:
+        if last_n is not None and last_n_scope in WINDOW_SCOPES:
+            raise ValueError("Original last-N windows across membership clubs are not supported")
+        if without_player not in (None, membership_player) or without_player_reason is not None:
+            raise ValueError("Membership missed-game scope requires one participation subject")
+        from nbatools.commands._membership_games import missed_membership_games
+
+        scoped = _apply_filters(
+            df,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            wins_only=wins_only,
+            losses_only=losses_only,
+            stat=stat,
+            min_value=min_value,
+            max_value=max_value,
+            conditions=conditions,
+            start_date=start_date,
+            end_date=end_date,
+            game_dates=game_dates,
+        )
+        df, membership_coverage = missed_membership_games(
+            scoped, membership_player, seasons, season_type, team_scoped=bool(team)
+        )
+        if not membership_coverage["complete"]:
+            return NoResult(
+                query_class="finder",
+                reason="no_data",
+                metadata={"membership_coverage": membership_coverage},
+                notes=["Incomplete qualified membership or participation; missed total withheld."],
+            )
+        without_player = None
 
     if without_player_reason is not None:
         scoped = _apply_filters(
@@ -330,7 +367,10 @@ def build_result(
         df = apply_last_n_sample(df, last_n, window_game_ids)
 
     if df.empty:
-        return NoResult(query_class="finder")
+        return NoResult(
+            query_class="finder",
+            metadata={"membership_coverage": membership_coverage} if membership_coverage else {},
+        )
 
     stat_col = None
     if stat:
@@ -404,6 +444,7 @@ def build_result(
 
     return FinderResult(
         games=df[output_cols].copy(),
+        metadata={"membership_coverage": membership_coverage} if membership_coverage else {},
         current_through=current_through,
         caveats=(
             [f"playoff series situation: {series_situation_label(series_situation)}"]

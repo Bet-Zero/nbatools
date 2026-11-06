@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "data_quality_work_item",
+  "id": "DQ-004",
+  "title": "Poeltl2022-23 native dated-membership evidence unavailable through cloud HTML route",
+  "status": "blocked_evidence",
+  "owner_role": "agent_1_application_acquisition",
+  "claim": null,
+  "created_on": "2026-11-06",
+  "baseline_commit": "9a01942c61042946d1ffe1d4e1118399230f8117",
+  "last_attempt": {
+    "reference": "https://github.com/Bet-Zero/nbatools/actions/runs/42183017232",
+    "reviewed_source": "21947db9f53b4ea3c80ce1ddece0b7ca48106051",
+    "request_sha": "ed2036d63f3a4235aa61bba5f16f6f3b4653104d",
+    "outcome": "First official HTML returned403; no native original retained. Remaining two same-family HTML requests unattempted. No retry or access expansion."
+  },
+  "affected_keys": {
+    "season": "2022-23",
+    "player_id": 1627751,
+    "team_ids": [
+      1610612759,
+      1610612761
+    ],
+    "scope": "Full candidate-club chronology; proposed SAS seasonstart-Feb8 / TOR Feb10-Apr9, not qualified NBA intervals"
+  },
+  "source_evidence": {
+    "archive_originals": "working/nba-tools-completion-program/source-evidence/multi-team-absence-20261106/archive-originals.zip",
+    "archive_zip_sha256": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+    "native_tenure_source_hashes": null,
+    "urls": [
+      "https://www.nba.com/raptors/news/raptors-extend-poeltl",
+      "https://www.nba.com/raptors/news/raptors-acquire-poeltl-from-san-antonio",
+      "https://www.nba.com/raptors/news/raptors-re-sign-poeltl"
+    ],
+    "failure_artifact_id": 13486685513,
+    "failure_artifact_sha256": "6c4e5b1c3c3d9a704d5cd72ed8dc5cba82266b0a3e98885c49292120f66bc7e5"
+  },
+  "failure": {
+    "check": "native original provenance plus complete dated-membership qualification",
+    "missing_evidence": "Native official tenure/transaction article bodies; extracted web text is a lead, not certified original bytes.",
+    "known_result": "72 appearances and9 exact DNPs independently replayed; proposed81=72+9 is conditional until tenure qualifies."
+  },
+  "blocking_scope": {
+    "data_acceptance": "Ordinary combined full-season Poeltl positive remains UNFINISHED",
+    "product_development": false,
+    "production_publication": "Not authorized"
+  },
+  "next_evidence_trigger": "Capture these exact3 public bodies through existing acquisition laptop, then independently qualify boundaries/chronology and replay all81eligible IDs. Do not reacquire20 successful archive originals.",
+  "do_not_repeat": "Do not retry unchanged cloud HTML route or substitute transaction date/appearance endpoints alone for full tenure.",
+  "resolution": null,
+  "independent_review": null,
+  "qualified_output_version": null,
+  "fingerprint": "e3aefb47a224116a06c05e6f20f38ff01f95c5558beef87baecfbee219fc200f"
+}

@@ -24,6 +24,9 @@ can overlap; use the authoritative key ledger for totals. All three are currentl
 | [DQ-002](DQ-002.json) | 0118Q4 incomplete-award/violation ruling | May be solved by the same method/source package asDQ-001; do not double-count affected rates. |
 | [DQ-003](DQ-003.json) | 0009 EasonQ1 2:15FG/2:06FT association and credit | Preserve both clocks; require attributable evidence, not a guessed and-one. |
 
+| [DQ-004](DQ-004.json) | Native official Poeltl tenure bodies; approved cloud HTML capture returned403 | Existing acquisition-laptop packet; no repeated unchanged cloud request. Combined-season positive remains open; date-bounded app work continues. |
+| [DQ-005](DQ-005.json) | Attributable exact2022-23 reported margin evidence for0022200138/0022200749 | Source group, unclaimed. Preserve raw margins; unrelated participation/count work continues. |
+
 **Do not reopen resolved0142,0138,0009AST or0160timing** merely because an older
 handoff says blocked. PR582 accepts the relevant scorer facts and independent
 numerical checks while honestly leaving independent upstream generation unproven.
