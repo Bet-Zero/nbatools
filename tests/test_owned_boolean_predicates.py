@@ -265,6 +265,8 @@ def test_context_and_scope_integrity(owned_rows, distinct, damage):
         "team had at least 100 points",
         "opponents had at least 100 points",
         "allowed at most 100 points",
+        "held opponents under 100 points",
+        "limited opponents to at most 100 points",
     ],
 )
 def test_elided_verbal_owner_is_not_silently_a_player_stat(owned_rows, governor):

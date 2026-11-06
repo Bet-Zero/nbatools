@@ -19,6 +19,7 @@ class ConditionNode:
     min_value: float | None = None
     max_value: float | None = None
     source_text: str = ""
+    governs_following_stats: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,7 +91,9 @@ def _consume_owned_condition(text: str, *, team=None, opponent=None):
     """Reuse the context readers, retaining their owner and complete text span."""
     from nbatools.commands._parse_helpers import extract_opponent_points_allowed_conditions
     from nbatools.commands._player_game_context import (
+        _OPP_STAT_BOUND,
         _opponent_bounds,
+        team_noun_stat_conditions,
         team_subject_stat_conditions,
     )
 
@@ -116,8 +119,11 @@ def _consume_owned_condition(text: str, *, team=None, opponent=None):
                     end,
                     f"{side}_{leaf.stat}",
                     dict(min_value=leaf.min_value, max_value=leaf.max_value),
+                    False,
                 )
             )
+    noun_spans = {(c["start"], c["end"]) for c in team_noun_stat_conditions(text)}
+    opponent_noun_spans = {m.span() for m in _OPP_STAT_BOUND.finditer(text)}
     for item in team_subject_stat_conditions(
         text,
         tuple(x for x in (team, *(opponent if isinstance(opponent, list) else [opponent])) if x),
@@ -133,13 +139,22 @@ def _consume_owned_condition(text: str, *, team=None, opponent=None):
             raise BooleanQueryParseError(
                 "Named statistical owner needs an explicit common team/opponent scope"
             )
-        candidates.append((item["end"], stat, item))
+        candidates.append((item["end"], stat, item, (item["start"], item["end"]) not in noun_spans))
     for span, item in _opponent_bounds(text):
         if span.span()[0] == 0:
-            candidates.append((span.span()[1], item["stat"], item))
+            candidates.append(
+                (span.span()[1], item["stat"], item, span.span() not in opponent_noun_spans)
+            )
     for item in extract_opponent_points_allowed_conditions(text):
         if item["start"] == 0:
-            candidates.append((item["end"], item["stat"], item))
+            candidates.append(
+                (
+                    item["end"],
+                    item["stat"],
+                    item,
+                    (item["start"], item["end"]) not in opponent_noun_spans,
+                )
+            )
     # The existing team verbal grammar also describes the explicitly opposing
     # side. Reuse its bounds rather than strip that subject and read a player stat.
     lead = re.match(r"(?:the\s+)?(?:opponents?|other\s+team|opposing\s+team)\s+", text)
@@ -147,11 +162,13 @@ def _consume_owned_condition(text: str, *, team=None, opponent=None):
         replacement = "team " + text[lead.end() :]
         for item in team_subject_stat_conditions(replacement):
             if item["start"] == 0:
-                candidates.append((item["end"] + lead.end() - 5, "opponent_" + item["stat"], item))
+                candidates.append(
+                    (item["end"] + lead.end() - 5, "opponent_" + item["stat"], item, True)
+                )
     if not candidates:
         return None
-    end, stat, item = max(candidates, key=lambda c: c[0])
-    return ConditionNode(stat, item["min_value"], item["max_value"], text[:end]), end
+    end, stat, item, governs = max(candidates, key=lambda c: c[0])
+    return ConditionNode(stat, item["min_value"], item["max_value"], text[:end], governs), end
 
 
 def consume_condition_at(
@@ -327,8 +344,6 @@ def tokenize_condition_expression(text: str, *, team=None, opponent=None) -> lis
     # 30 assists"). Until complete elided lists are bound, never reinterpret
     # that second statistic as the player's. Explicit noun owners remain
     # per-leaf and do not make a separate player-stat sibling inherit them.
-    from nbatools.commands._player_game_context import _HELD, _TEAM_STAT_VERB
-
     governed = [False]
     for token in tokens:
         if token.kind == "LPAREN":
@@ -342,11 +357,7 @@ def tokenize_condition_expression(text: str, *, team=None, opponent=None) -> lis
                 raise BooleanQueryParseError(
                     "Elided team/opponent stat lists are not yet supported"
                 )
-            governed[-1] = owned and bool(
-                _TEAM_STAT_VERB.search(leaf.source_text)
-                or _HELD.search(leaf.source_text)
-                or re.match(r"(?:allow\w*|limit\w*|gave|give\w*|kept|keep\w*)\b", leaf.source_text)
-            )
+            governed[-1] = leaf.governs_following_stats
     return tokens
 
 
