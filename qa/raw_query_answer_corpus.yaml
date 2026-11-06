@@ -17654,3 +17654,52 @@ cases:
     - path: result.sections.count.0.count
       equals: 3
     review_notes: Existing frozen K03-B4 minus B3 raw keys; second entity/value. Historical pinned data only.
+  - id: k03_distinct_or_2022
+    query: How many different players had a game with (over 40 points or over 12 assists) in 2022-23?
+    category: boolean_distinct_player_counts
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections: [count, leaderboard]
+    expected_row_counts: {count: 1, leaderboard: 77}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 77
+    review_notes: Original retained 2022-23 LeagueGameLog row union295/playerIDs77, overlaps2; not NBA fixture count266.
+  - id: k03_player_game_or_2022
+    query: How many player games with (over 40 points or over 12 assists) in 2022-23?
+    category: boolean_distinct_player_counts
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections: [count, finder]
+    expected_row_counts: {count: 1, finder: 295}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 295
+    review_notes: Same independently selected original raw union as distinct77; preserve player-game grain and all rows.
+  - id: k03_distinct_or_qualified_zero_2022
+    query: How many distinct players had (over 1000 points or over 100 assists) in 2022-23?
+    category: boolean_distinct_player_counts
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections: [count]
+    expected_row_counts: {count: 1}
+    hard_assertions:
+    - path: result.sections.count.0.count
+      equals: 0
+    review_notes: Complete qualified historical raw population, both maxima below bounds; missing sources remain a separate no-data control.
+  - id: k03_distinct_or_owner_example_2023
+    query: How many different players had a game with over 40 points OR over 12 assists in 2023-24?
+    category: boolean_distinct_player_counts
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_sections: [count, leaderboard]
+    expected_row_counts: {count: 1}
+    review_notes: Prospective global2023total remains unset until complete pinned R2 raw selector executes; cloud_distinct_player_boolean_counts_real_data checks all selected raw keys/playerIDs/arithmetic independently. Do not extrapolate named-player K03 subset.

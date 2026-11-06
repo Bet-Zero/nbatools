@@ -5152,7 +5152,7 @@ def detect_distinct_player_count(text: str) -> bool:
     return bool(
         re.search(
             r"\b(?:how\s+many|number\s+of|count(?:\s+of)?)\s+"
-            r"(?:distinct\s+)?players?\b(?!\s+games?\b)",
+            r"(?:(?:distinct|different|unique)\s+)?players?\b(?!\s+games?\b)",
             text,
         )
     )

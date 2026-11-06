@@ -258,6 +258,16 @@ Some commands may also rely on these fields if they are present or built during 
 - natural-query player finder/summary/comparison/split/streak routes
 - grouped boolean execution over player game samples
 
+The existing `player_occurrence_leaders` consumer also accepts a complete
+`condition_expression` using the shared boolean parser/tree. It filters one complete
+requested-season player-game base before aggregating by `player_id`; overlap is one
+qualifying row and different names for the same ID do not create extra players.
+`matching_games` counts qualifying appearances, while a distinct count projects
+player identity once. Structured results retain IDs and occurrence counts for
+independent reconciliation. A missing requested season, identity, predicate column
+or applicable scope value remains unavailable, not a partial/zero boolean count.
+No new upstream source or production generation is introduced.
+
 ### Notes
 
 This is one of the most important datasets in the repo.

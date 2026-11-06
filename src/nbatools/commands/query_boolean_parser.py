@@ -156,6 +156,29 @@ def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, in
         )
         return node, start_index + len(matched_text)
 
+    # Share the established bound vocabulary (reverse bounds, ceilings,
+    # inclusive shorthand) instead of maintaining a second operator list.
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+
+    shared = [c for c in extract_threshold_conditions(remaining) if c["start"] == 0]
+    if shared:
+        bound = max(shared, key=lambda c: c["end"])
+        return ConditionNode(
+            stat=bound["stat"],
+            min_value=bound["min_value"],
+            max_value=bound["max_value"],
+            source_text=bound["text"],
+        ), start_index + bound["end"]
+    bare = re.match(rf"^(\d+(?:\.\d+)?|zero|no)(\+)?\s+{STAT_PATTERN}\b", remaining)
+    if bare:
+        value = 0.0 if bare.group(1) in ("zero", "no") else float(bare.group(1))
+        return ConditionNode(
+            stat=detect_stat(bare.group(3)),
+            min_value=value,
+            max_value=0.0 if value == 0 and not bare.group(2) else None,
+            source_text=bare.group(0),
+        ), start_index + bare.end()
+
     return None
 
 
@@ -304,6 +327,13 @@ def parse_condition_expression(tokens: list[Token]) -> Node:
 def parse_condition_text(text: str) -> Node:
     tokens = tokenize_condition_expression(text)
     return parse_condition_expression(tokens)
+
+
+def condition_tree_leaves(node: Node) -> tuple[ConditionNode, ...]:
+    """Return the predicates of the existing tree without flattening its logic."""
+    if isinstance(node, ConditionNode):
+        return (node,)
+    return condition_tree_leaves(node.left) + condition_tree_leaves(node.right)
 
 
 def condition_node_to_mask(node: ConditionNode, df: pd.DataFrame) -> pd.Series:

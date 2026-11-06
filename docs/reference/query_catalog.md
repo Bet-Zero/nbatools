@@ -370,6 +370,25 @@ Examples:
 
 Routes to `player_occurrence_leaders` with `limit=None` and a note indicating distinct-count semantics.
 
+Distinct-player counts also accept complete grouped AND/OR statistical expressions,
+including unparenthesized OR. For example:
+
+- `How many different players had a game with (over 40 points or over 12 assists) in 2022-23?`
+- `How many Lakers players had (over 20 points or over 10 assists) in 2025-26?`
+
+The occurrence engine evaluates the shared predicate tree on one scoped player-game
+base before grouping by player ID. Matching both branches contributes one matching
+game; repeated appearances never add another distinct player. Common team, opponent,
+date, venue and outcome filters remain attached to that base. Counts and detail
+rows identify their grain: distinct-player counts carry a player leaderboard with
+`player_id` and `matching_games`; player-game counts retain matching game rows.
+The structured `player_occurrence_leaders` route accepts `condition_expression`
+instead of `stat`, `special_event` or `conditions`, with `limit=None` for the full
+player set. Missing requested seasons or unknown predicate/filter coverage withhold
+the new boolean count. Unsupported branch-specific scopes or team/opponent-owned
+statistic expressions are not silently turned into player-stat predicates. Global
+unique-NBA-fixture projection remains a separate unsupported operation.
+
 **Limitation:** requires a stat + threshold (e.g., "scored 40 points"). Phrasing without an explicit threshold (e.g., "how many players played this season") is not supported.
 
 ---

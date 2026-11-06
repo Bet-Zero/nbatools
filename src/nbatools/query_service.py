@@ -368,6 +368,9 @@ def _build_applied_filters(
             applied_filters.append(
                 {"label": "Playing for", "value": str(playing_for), "kind": "team"}
             )
+    expression = route_kwargs.get("condition_expression") or source.get("condition_expression")
+    if expression:
+        applied_filters.append({"label": "Game conditions", "value": expression, "kind": "boolean"})
     if branches := source.get("boolean_filter_branches"):
         descriptions = []
         for branch in branches:
@@ -528,8 +531,10 @@ def _build_applied_filters(
             }
         )
 
-    conditions = normalize_stat_conditions(
-        route_kwargs.get("conditions") or source.get("conditions")
+    conditions = (
+        []
+        if expression
+        else normalize_stat_conditions(route_kwargs.get("conditions") or source.get("conditions"))
     )
     comparison_scope = source.get("player_comparison_scope") or {}
     if comparison_scope.get("count_checks"):
@@ -570,7 +575,7 @@ def _build_applied_filters(
                         "kind": "threshold",
                     }
                 )
-    else:
+    elif not expression:
         stat = route_kwargs.get("stat", source.get("stat"))
         min_value = route_kwargs.get("min_value", source.get("min_value"))
         max_value = route_kwargs.get("max_value", source.get("max_value"))
@@ -841,6 +846,7 @@ def _build_query_metadata(
         "position_filter": parsed.get("position_filter"),
         "grouped_boolean_used": grouped_boolean_used,
         "boolean_filter_mode": parsed.get("boolean_filter_mode"),
+        "condition_expression": parsed.get("condition_expression"),
         "boolean_filter_branches": parsed.get("boolean_filter_branches"),
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
@@ -1056,6 +1062,16 @@ def _build_count_phrase(
             or parsed.get("max_value") is not None
         ):
             return f"{entity} {verb} played {count} {noun} {context}."
+
+    if parsed.get("boolean_query_used") and parsed.get("distinct_player_count"):
+        times = parsed.get("min_occurrences") or 1
+        sample = "a matching game" if times == 1 else f"at least {times} matching games"
+        context = " ".join(
+            filter(
+                None, [_venue_and_dates(metadata, parsed), _count_context(metadata, player=False)]
+            )
+        )
+        return f"{count} distinct {'player' if count == 1 else 'players'} had {sample} {context}."
 
     if parsed.get("boolean_query_used"):
         game_word = "matching game" if count == 1 else "matching games"
@@ -3304,7 +3320,13 @@ def _apply_count_intent(
         )
         detail = leaders
     elif parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
-        entity_count = len(result.leaders)
+        entity_count = (
+            int(result.leaders["player_id"].nunique())
+            if parsed.get("distinct_player_count") and "player_id" in result.leaders
+            else len(result.leaders)
+        )
+        if route_kwargs.get("condition_expression"):
+            detail = result.leaders
         if "distinct_teams" in (parsed.get("notes") or []) and "team_id" in result.leaders:
             # "how many different teams have had 40 wins": franchises.
             entity_count = int(result.leaders["team_id"].nunique())
@@ -3565,12 +3587,10 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             parsed = parse_query(query)
         except ValueError:
             pass  # keep _build_parse_state result
-        condition_text = _extract_grouped_condition_text(
-            query,
-            player=parsed.get("player"),
-            team=parsed.get("team"),
-        )
         try:
+            condition_text = _extract_grouped_condition_text(
+                query, player=parsed.get("player"), team=parsed.get("team"), parsed=parsed
+            )
             parsed["boolean_filter_mode"] = boolean_filter_mode(condition_text)
             result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
@@ -3588,13 +3608,21 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
     if contains_boolean_or(normalized):
         try:
             result, parsed = _execute_or_query_build_result(query)
-            parsed["boolean_filter_mode"] = "any"
+            parsed["boolean_filter_mode"] = (
+                boolean_filter_mode(parsed["condition_expression"])
+                if parsed.get("condition_expression")
+                else "any"
+            )
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             try:
                 parsed = parse_query(query)
             except ValueError:
                 parsed = _build_parse_state(query)
-            parsed["boolean_filter_mode"] = "any"
+            parsed["boolean_filter_mode"] = (
+                boolean_filter_mode(parsed["condition_expression"])
+                if parsed.get("condition_expression")
+                else "any"
+            )
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=False)
 
         return _finalize_natural_query_result(
@@ -3916,6 +3944,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         "min_value": kwargs.get("min_value"),
         "max_value": kwargs.get("max_value"),
         "conditions": kwargs.get("conditions"),
+        "condition_expression": kwargs.get("condition_expression"),
         "sort_by": kwargs.get("sort_by"),
         "ascending": kwargs.get("ascending"),
         "ranked_intent": kwargs.get("sort_by") == "stat",

@@ -8,13 +8,21 @@ cleanup, not a competing product roadmap. No worker is launched by this document
 
 ## Resume checkpoint
 
-Agent1 completes the qualified PR587 full-season acceptance in merged
-[PR590](https://github.com/Bet-Zero/nbatools/pull/590), then delivers shared K03
-explicit count-stat equality in [PR591](https://github.com/Bet-Zero/nbatools/pull/591).
-Baseline main is `d0744a435e90872e91a7e37b2b56bb59a60f3baa`; reviewed equality
-runtime is `74252410b75d0eff5b53ec5fe2f72011b3d91e67`. Receipt/checkpoint-only
-descendants retain that runtime. Final exact-head CI and landing receipts belong
-in PR591. **K12 stays parked.** Next application task is distinct-player grouped OR.
+Live main is `cbf46c7d08c5e41f4bf87a4000d6fee4d698bd3a`, after merged PR590/591.
+Active Agent1 package: `codex/distinct-player-grouped-or-20261106`, shared grouped
+OR distinct-player counts. This closes the named unfinished K03 obligation.
+Meaning frozen before implementation: evaluate both branches against one complete,
+appropriately scoped player-game base; union overlaps rowwise; then project player
+identity exactly once. AND applies within a game, never across different games.
+The retained seven-row K03 oracle has4matching player-games/3NBA fixtures/3players,
+with both branch-only sides, overlap and repeated appearances. Complete2023-24
+league totals remain unaccepted until the actual pinned R2 raw-row oracle executes.
+Separate checker has frozen27unfamiliar cases before implementation; no new source
+acquisition, Agent2 action or production publication is needed. Next: reuse the
+boolean parser and occurrence/count engine, verify IDs/grain/filters/unknowns and
+structured/HTTP/rendered consumers, obtain independent review and safe integration.
+K12 stays parked. The table below retains the previous accepted equality/source
+checkpoint while this bounded package is implemented.
 
 | Field | Current application handoff |
 | --- | --- |
