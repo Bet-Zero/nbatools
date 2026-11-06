@@ -8,12 +8,21 @@ cleanup, not a competing product roadmap. No worker is launched by this document
 
 ## Resume checkpoint
 
-Live baseline after merged PR589 is main
-`f06464577b105c039b1e543eaf91d2ed75d03699` (including independent PR588 evidence).
-Agent1 completes the existing PR587 full-season participation acceptance in
-[PR590](https://github.com/Bet-Zero/nbatools/pull/590). **K12 stays parked.**
-The recovered originals resolve DQ-004 for this finite historical staged version;
-production data/pointers remain unchanged. Next is shared K03 explicit equality.
+Live baseline is merged PR590 main `d0744a435e90872e91a7e37b2b56bb59a60f3baa`.
+Agent1 now implements shared K03 explicit statistical equality on
+`codex/shared-stat-equality-20261106`. K12 stays parked. PR590 closes the bounded
+full-season participation acceptance; production data and pointers are unchanged.
+
+**Active meaning freeze:** explicit `exactly N`, `equal to N`, `equals N` and `= N`
+mean inclusive min=max on the named stat and owner, applied before aggregation,
+ranking, split or count. Player-game, NBA-game and distinct-player grains stay
+separate. Negated equality and contradictory equality-plus syntax must not silently
+become ordinary bounds. Existing exact zero and strict/inclusive neighbors remain.
+Author cases use fixture LeBron20/team110 and retained NBA Jokic30/Edwards35;
+a separate checker froze27 unfamiliar cases before implementation. Rate precision,
+exact-minute-time expansion and distinct-player grouped OR are separate unfinished
+work. Next: implement shared readers, qualify raw-row expectations, replay
+natural/structured/HTTP consumers, obtain independent review and required gates.
 
 | Field | Current application handoff |
 | --- | --- |
@@ -24,15 +33,6 @@ production data/pointers remain unchanged. Next is shared K03 explicit equality.
 | Review and required gates | Separate `/root/poeltl_source_checker` approved reviewed4f0b010e:13independent checkgroups/31queries passed, including unfamiliar filters, Looney82/0, finite dates and unknown/hash probes. [Read-only run42209600862](https://github.com/Bet-Zero/nbatools/actions/runs/42209600862), sole-parent request`0fbd7facfcdfb977060fe161a2caacf8cf957124`:5selected/5executed/5passed/0skips/failures/errors/xfails; staged RawQA4cases/27checks and preserved baseRawQA1case/7checks passed. Base`availability-lebron-season-v1-20261031`, manifest`3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3`.67focused fixture controls pass. Prior PR589 software/K08 evidence is reused only for unchanged paths; no duplicate full suite or relabeled execution. Final exact-head CI/merge receipts remain in PR590. |
 | Unknowns/limits preserved | Missing participation or an actual-game membership gap withholds the total; corrupted originals reject. Date-onlyFeb9 and dates outside finite intervals remain unknown. This is historical staged/API/numerical acceptance, not production publication/current freshness/full-history/Core-1 completion. All existing K08 positives remain required. |
 | Independence / safeguards | DQ-004 is resolved only for this source/version. DQ-005/PR588 and all other data-quality work are preserved untouched; no Agent2 launch, assignment, coordination, monitoring or wait. Prior484unknowns/20groups, remaining K08 requirements and security/production gates remain. No active data/pointer, credentials/permissions/spending/schedules, clinical labels or K12 changes. |
-
-**Next application task (already authorized):** reproduce and implement shared
-explicit nonzero statistical equality (for example `exactly 20 points`) from the
-[K03 binding](k03-binding.md), with independent qualified raw-row/fixture
-expectations through finder/count and summary consumers. Preserve condition
-ownership, exact zero, strict/inclusive bounds, grain and unknowns. This is the
-next general-purpose capability after the verified PR587/590 acceptance checkpoint;
-no owner source acquisition or Agent2 action is needed. Normal final integration
-receipts are in PR590; no background coding worker or future execution is implied.
 
 ### Foundation acceptance contract
 

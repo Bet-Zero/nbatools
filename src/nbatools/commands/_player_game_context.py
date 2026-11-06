@@ -15,7 +15,7 @@ import re
 from typing import Any
 
 from nbatools.commands._condition_utils import PLAYER_GAME_CONTEXT_BASES
-from nbatools.commands._constants import STAT_PATTERN
+from nbatools.commands._constants import STAT_EQUALITY_OPERATOR, STAT_PATTERN
 from nbatools.commands._parse_helpers import (
     _OPP_STAT_WORD,
     _opponent_stat_word,
@@ -39,7 +39,7 @@ _TEAM_STAT_VERB = re.compile(
     r"|record(?:s|ed)?|reach(?:es|ed)?|(?:did|does|do)\s+not\s+reach|dish(?:es|ed)?|commit(?:s|ted)?)\s+"
 )
 _BOUND_HEAD = (
-    r"(?P<pre>at\s+least\s+|a\s+min(?:imum)?\s+of\s+|over\s+|more\s+than\s+|under\s+"
+    rf"(?P<pre>{STAT_EQUALITY_OPERATOR}\s*|at\s+least\s+|a\s+min(?:imum)?\s+of\s+|over\s+|more\s+than\s+|under\s+"
     r"|below\s+|fewer\s+than\s+|less\s+than\s+|at\s+most\s+|no\s+more\s+than\s+)?"
     r"(?P<num>\d+(?:\.\d+)?)(?P<plus>\+)?(?:\s+or\s+(?P<mid>more|fewer|less))?"
 )
@@ -56,6 +56,11 @@ _TEAM_NOUN_BOUND = re.compile(
     + r"\s+(?:(?:the|his|her|their|our)\s+)?team(?:'s)?\s+"
     + rf"(?:made\s+)?(?P<stat>{_OPP_STAT_WORD})(?![\w-])"
     + _BOUND_TAIL
+)
+_TEAM_NOUN_EQUALITY = re.compile(
+    rf"\b(?:(?:the|his|her|their|our)\s+)?team(?:'s)?\s+"
+    rf"(?P<stat>{_OPP_STAT_WORD})\s*{STAT_EQUALITY_OPERATOR}\s*"
+    r"(?P<num>\d+(?:\.\d+)?)(?![\d.])"
 )
 _PRE = {
     "at least": ("min", 0.0),
@@ -116,7 +121,11 @@ def team_noun_stat_conditions(text: str) -> list[dict[str, Any]]:
             continue
         value = float(bound.group("num"))
         pre = re.sub(r"\s+", " ", (bound.group("pre") or "").strip())
-        mode, epsilon = _PRE.get(pre, ("min", 0.0))
+        mode, epsilon = (
+            ("eq", 0.0)
+            if re.fullmatch(STAT_EQUALITY_OPERATOR, pre)
+            else _PRE.get(pre, ("min", 0.0))
+        )
         if (bound.group("mid") or bound.group("post")) in ("fewer", "less"):
             mode, epsilon = "max", 0.0
         found.append(
@@ -125,7 +134,7 @@ def team_noun_stat_conditions(text: str) -> list[dict[str, Any]]:
                 start=bound.start(),
                 end=bound.end(),
                 stat=stat,
-                min_value=value + epsilon if mode == "min" else None,
+                min_value=value + epsilon if mode in ("min", "eq") else None,
                 max_value=(
                     0.0
                     if value == 0
@@ -134,11 +143,25 @@ def team_noun_stat_conditions(text: str) -> list[dict[str, Any]]:
                     and not bound.group("mid")
                     and not bound.group("post")
                     else value - epsilon
-                    if mode == "max"
+                    if mode in ("max", "eq")
                     else None
                 ),
             )
         )
+    for bound in _TEAM_NOUN_EQUALITY.finditer(text):
+        stat = _opponent_stat_word(bound.group("stat"), "")
+        if stat in PLAYER_GAME_CONTEXT_BASES:
+            value = float(bound.group("num"))
+            found.append(
+                dict(
+                    team="TEAM",
+                    start=bound.start(),
+                    end=bound.end(),
+                    stat=stat,
+                    min_value=value,
+                    max_value=value,
+                )
+            )
     return found
 
 
@@ -167,7 +190,11 @@ def team_subject_stat_conditions(
             continue
         value = float(bound.group("num"))
         pre = re.sub(r"\s+", " ", (bound.group("pre") or "").strip())
-        mode, epsilon = _PRE.get(pre, ("min", 0.0))
+        mode, epsilon = (
+            ("eq", 0.0)
+            if re.fullmatch(STAT_EQUALITY_OPERATOR, pre)
+            else _PRE.get(pre, ("min", 0.0))
+        )
         if re.fullmatch(r"(?:did|does|do)\s+not\s+reach", verb.group(1)):
             mode, epsilon = "max", 0.0001
         tail = bound.group("mid") or bound.group("post")
@@ -179,8 +206,8 @@ def team_subject_stat_conditions(
                 "start": start,
                 "end": bound.end(),
                 "stat": stat,
-                "min_value": value + epsilon if mode == "min" else None,
-                "max_value": value - epsilon if mode == "max" else None,
+                "min_value": value + epsilon if mode in ("min", "eq") else None,
+                "max_value": value - epsilon if mode in ("max", "eq") else None,
             }
         )
     return found
@@ -312,13 +339,15 @@ _OPP_STAT_RANK = re.compile(
 # "at least 15 opponent turnovers", "over 120 opponent points": a bound on the
 # opponent's number, not a ranking.
 _OPP_STAT_BOUND = re.compile(
-    r"\b(?P<op>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+"
+    rf"(?<![\w])(?P<op>{STAT_EQUALITY_OPERATOR}|at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+"
     rf"(?P<num>\d+)\s+{_OPP_WORD}\s+(?P<stat>{_OPP_STAT_WORDS})"
     rf"|\b(?P<num2>\d+)\+\s*{_OPP_WORD}\s+(?P<stat2>{_OPP_STAT_WORDS})"
     # "120 points allowed", "at most 10 threes given up": the opponent's.
-    r"|(?:\b(?P<op3>at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?"
+    rf"|(?:(?<![\w])(?P<op3>{STAT_EQUALITY_OPERATOR}|at\s+least|at\s+most|over|under|more\s+than|fewer\s+than|less\s+than)\s+)?"
     r"\b(?P<num3>\d+)(?:\+|\s+or\s+(?P<orx>more|fewer|less))?\s+"
     rf"(?P<stat3>{_OPP_STAT_WORDS})\s+(?:allowed|given\s+up)\b"
+    rf"|\b{_OPP_WORD}\s+(?P<stat5>{_OPP_STAT_WORDS})\s*"
+    rf"(?P<op5>{STAT_EQUALITY_OPERATOR})\s*(?P<num5>\d+)(?![\d.])"
     # "with 15 opponent turnovers", "10 or fewer opponent turnovers": a bare
     # count is a floor, as the team's own counts are.
     r"|(?<![\d.])\b(?P<num4>\d+)(?:\s+or\s+(?P<orx4>more|fewer|less))?\s+"
@@ -551,16 +580,31 @@ def _opponent_bounds(
     found.extend(_opponent_shooting_bounds(text))
     for m in _OPP_STAT_BOUND.finditer(text):
         stat = _opponent_stat(
-            m.group("stat") or m.group("stat2") or m.group("stat3") or m.group("stat4") or ""
+            m.group("stat")
+            or m.group("stat2")
+            or m.group("stat3")
+            or m.group("stat4")
+            or m.group("stat5")
+            or ""
         )
-        op = m.group("op") or m.group("op3")
+        op = m.group("op") or m.group("op3") or m.group("op5")
         if not stat:
             continue
         orx = m.group("orx") or m.group("orx4") or m.group("orx5")
         if not op and orx:
             op = "at least" if orx == "more" else "at most"
-        mode, eps = _OPP_BOUND_MODE[re.sub(r"\s+", " ", op or "at least")]
-        value = float(m.group("num") or m.group("num2") or m.group("num3") or m.group("num4"))
+        mode, eps = (
+            ("eq", 0.0)
+            if op and re.fullmatch(STAT_EQUALITY_OPERATOR, op)
+            else _OPP_BOUND_MODE[re.sub(r"\s+", " ", op or "at least")]
+        )
+        value = float(
+            m.group("num")
+            or m.group("num2")
+            or m.group("num3")
+            or m.group("num4")
+            or m.group("num5")
+        )
         if stat.endswith("_pct") and value > 1:
             # "at least 50 opponent field goal percentage": the rate as a fraction.
             value /= 100
@@ -569,8 +613,8 @@ def _opponent_bounds(
                 m,
                 {
                     "stat": stat,
-                    "min_value": value + eps if mode == "min" else None,
-                    "max_value": value - eps if mode == "max" else None,
+                    "min_value": value + eps if mode in ("min", "eq") else None,
+                    "max_value": value - eps if mode in ("max", "eq") else None,
                 },
             )
         )
@@ -1489,6 +1533,17 @@ _EVENT_PATTERNS = (
 
 
 def _event_condition(match: re.Match, stat: str) -> dict:
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+
+    for condition in extract_threshold_conditions(match.string):
+        if (
+            condition["stat"] == stat
+            and condition["min_value"] is not None
+            and condition["min_value"] == condition["max_value"]
+            and condition["start"] < match.end()
+            and condition["end"] > match.start()
+        ):
+            return {k: condition[k] for k in ("stat", "min_value", "max_value")}
     number = match.group("n")
     explicit_zero = not number.isdigit() or (
         float(number) == 0

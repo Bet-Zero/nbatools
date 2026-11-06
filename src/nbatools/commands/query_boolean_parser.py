@@ -5,7 +5,12 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN, contains_boolean_or
+from nbatools.commands._constants import (
+    STAT_ALIASES,
+    STAT_EQUALITY_OPERATOR,
+    STAT_PATTERN,
+    contains_boolean_or,
+)
 
 
 @dataclass(frozen=True)
@@ -62,6 +67,9 @@ def _parse_threshold_match(
     if stat is None:
         raise BooleanQueryParseError(f"Unsupported stat phrase: {stat_text}")
 
+    if mode == "eq":
+        return ConditionNode(stat=stat, min_value=value, max_value=value)
+
     if mode == "min":
         return ConditionNode(
             stat=stat,
@@ -82,6 +90,8 @@ def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, in
     remaining = text[start_index:]
 
     patterns = [
+        (rf"^{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b", "eq", 0.0),
+        (rf"^{STAT_PATTERN}\s*{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)\b", "reverse_eq", 0.0),
         (
             rf"^between\s+(\d+(?:\.\d+)?)\s+and\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
             "between",
@@ -133,7 +143,11 @@ def consume_condition_at(text: str, start_index: int) -> tuple[ConditionNode, in
             )
             return node, start_index + len(matched_text)
 
-        node = _parse_threshold_match(m.group(1), m.group(2), mode, epsilon)
+        node = (
+            _parse_threshold_match(m.group(2), m.group(1), "eq", epsilon)
+            if mode == "reverse_eq"
+            else _parse_threshold_match(m.group(1), m.group(2), mode, epsilon)
+        )
         node = ConditionNode(
             stat=node.stat,
             min_value=node.min_value,

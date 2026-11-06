@@ -3,6 +3,7 @@ from contextvars import ContextVar
 
 from nbatools.commands._constants import (
     STAT_ALIASES,
+    STAT_EQUALITY_OPERATOR,
     STAT_PATTERN,
     canonicalize_500_team_bars,
     canonicalize_trailing_ceilings,
@@ -2822,6 +2823,8 @@ def _threshold_bounds(
     epsilon: float,
 ) -> tuple[float | None, float | None]:
     value = _normalize_threshold_value(value_text, stat)
+    if mode == "eq":
+        return value, value
     if mode == "min":
         return value + epsilon, None
     return None, value - epsilon
@@ -3170,6 +3173,8 @@ def extract_threshold_conditions(
 
     def bounds(value_text, stat, mode, epsilon):
         value = numeric(value_text, stat)
+        if mode == "eq":
+            return value, value
         if stat in exact_stats:
             return (value, None) if mode == "min" else (None, value)
         return (value + epsilon, None) if mode == "min" else (None, value - epsilon)
@@ -3186,6 +3191,7 @@ def extract_threshold_conditions(
 
     # Standard patterns: operator NUMBER STAT
     patterns = [
+        (rf"(?<![\w]){STAT_EQUALITY_OPERATOR}\s*{_NUM}\s+(?:made\s+)?{STAT_PATTERN}\b", "eq", 0.0),
         (
             rf"\bbetween\s+{_NUM}\s+and\s+{_NUM}\s+{STAT_PATTERN}\b",
             "between",
@@ -3283,6 +3289,7 @@ def extract_threshold_conditions(
 
     # Reverse patterns: STAT operator NUMBER (for advanced stats like "TS% over .700")
     reverse_patterns = [
+        (rf"{STAT_PATTERN}\s*{STAT_EQUALITY_OPERATOR}\s*{_NUM}(?![\d.])", "eq", 0.0),
         (
             rf"{STAT_PATTERN}\s+over\s+{_NUM}",
             "min",
@@ -3493,6 +3500,26 @@ def extract_threshold_conditions(
                 "max_value": numeric(m.group(1), stat),
                 "text": m.group(0),
             }
+        )
+
+    # An explicit equality can also carry an implied points noun.
+    for m in re.finditer(
+        rf"\b(?:scor(?:e|es|ed|ing)|drops?|dropped|puts?\s+up|put\s+up)\s+"
+        rf"{STAT_EQUALITY_OPERATOR}\s*(\d+(?:\.\d+)?)(?:\s+{STAT_PATTERN}\b)?",
+        text,
+    ):
+        stat = (detect_stat(m.group(2)) if m.group(2) else None) or "pts"
+        value = numeric(m.group(1), stat)
+        matches.append(
+            dict(
+                start=m.start(),
+                end=m.end(),
+                stat=stat,
+                min_value=value,
+                max_value=value,
+                text=m.group(0),
+                **exact_flags(stat),
+            )
         )
 
     # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10

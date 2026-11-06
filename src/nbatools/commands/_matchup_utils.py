@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 
-from nbatools.commands._constants import STOP_WORDS, normalize_text
+from nbatools.commands._constants import STAT_EQUALITY_OPERATOR, STOP_WORDS, normalize_text
 from nbatools.commands.entity_resolution import (
     PLAYER_ALIASES,
     TEAM_ALIASES,
@@ -1086,7 +1086,7 @@ def detect_with_player(
 
 
 _STAT_COUNT_QUALIFIER = (
-    r"(?:at\s+(?:least|most)\s+|(?:no(?:t)?\s+)?(?:over|above|under|below)\s+"
+    rf"(?:{STAT_EQUALITY_OPERATOR}\s*|at\s+(?:least|most)\s+|(?:no(?:t)?\s+)?(?:over|above|under|below)\s+"
     r"|(?:no(?:t)?\s+)?(?:more|fewer|less|greater)\s+than\s+)?"
 )
 # Only nouns the threshold reader turns into a stat; "3-pointers", "rebs" or
@@ -1099,7 +1099,7 @@ _STAT_COUNT_CLAUSE = (
     rf"{_STAT_COUNT_QUALIFIER}\d+\+?(?:\s+or\s+(?:more|fewer|less))?\s+"
     # "with 15 opponent turnovers": the opponent's count, still not a teammate.
     rf"(?:opponents?(?:'s?|s')?\s+)?{_STAT_COUNT_NOUN}"
-    r"(?:\s+or\s+(?:more|fewer|less|better))?"
+    r"(?:\s+or\s+(?:more|fewer|less|better))?(?:\s+(?:allowed|given\s+up))?"
 )
 # "120 points", "15+ threes and 30 assists": every clause is a count of a
 # box-score stat. "1 day of rest", "2 players scoring 30" and "23" are not.
@@ -1116,16 +1116,21 @@ def _stat_count_phrase(text: str, pos: int) -> re.Match | None:
     """
     from nbatools.commands._player_game_context import (
         _TEAM_NOUN_BOUND,
+        _TEAM_NOUN_EQUALITY,
         team_noun_stat_conditions,
     )
 
     last = None
     while True:
         ordinary = _STAT_COUNT_PHRASE.match(text, pos)
-        owned = _TEAM_NOUN_BOUND.match(text, pos)
+        owned = _TEAM_NOUN_BOUND.match(text, pos) or _TEAM_NOUN_EQUALITY.match(text, pos)
         if owned and not team_noun_stat_conditions(owned.group(0)):
             owned = None
-        matches = [m for m in (ordinary, owned) if m]
+        reverse = re.compile(
+            rf"(?:opponents?(?:'s?|s')?\s+)?{_STAT_COUNT_NOUN}\s*"
+            rf"{STAT_EQUALITY_OPERATOR}\s*\d+(?:\.\d+)?(?![\d.])"
+        ).match(text, pos)
+        matches = [m for m in (ordinary, owned, reverse) if m]
         if not matches:
             return last
         last = max(matches, key=lambda m: m.end())

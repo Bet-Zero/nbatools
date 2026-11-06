@@ -466,3 +466,7 @@ def route_to_intent(route: str | None, *, count_intent: bool = False) -> str:
     if count_intent and base == QueryIntent.FINDER:
         return QueryIntent.COUNT
     return base
+
+
+# Explicit equality is inclusive at both endpoints in every statistical reader.
+STAT_EQUALITY_OPERATOR = r"(?:exactly|equal(?:s)?(?:\s+to)?|=)"

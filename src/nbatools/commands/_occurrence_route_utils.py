@@ -23,6 +23,16 @@ _RANKED_COUNT = re.compile(r"\b(?:top|best|worst|highest|lowest|biggest|greatest
 _OR_FEWER_AFTER = re.compile(r"\s+or\s+(?:fewer|less)\b(?!\s+than)")
 
 
+def _explicit_equality(text: str) -> dict | None:
+    """Reuse shared spans before a bare event reader can reinterpret the value."""
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
+
+    for condition in extract_threshold_conditions(text):
+        if condition["min_value"] is not None and condition["min_value"] == condition["max_value"]:
+            return {k: condition[k] for k in ("stat", "min_value", "max_value")}
+    return None
+
+
 def extract_occurrence_event(text: str) -> dict | None:
     """Detect and extract an occurrence-event definition from natural language.
 
@@ -47,6 +57,10 @@ def extract_occurrence_event(text: str) -> dict | None:
         return {"special_event": "triple_double"}
     if re.search(r"\bdouble[- ]?doubles?\b", text):
         return {"special_event": "double_double"}
+
+    equality = _explicit_equality(text)
+    if equality:
+        return equality
 
     # Pattern: "NUMBER+ STAT games" or "NUMBER STAT games" or "NUMBER-STAT games"
     stat_event_patterns = [
@@ -237,6 +251,10 @@ def _parse_single_threshold(text: str) -> dict | None:
     """
     # Pattern: "NUMBER+ STAT" or "NUMBER STAT" or "under NUMBER STAT"
     # Examples: "30+ points", "10 rebounds", "5+ threes", "under 10 turnovers"
+
+    equality = _explicit_equality(text)
+    if equality:
+        return equality
 
     # Upper bounds. "under 2 turnovers" / "fewer than 2" are strict; "at most 1
     # turnover" / "1 or fewer turnovers" include the number. Read as a bare
@@ -819,8 +837,12 @@ _GAME_LIST_GRAMMAR = (
 
 def _unaccounted_words(q: str, parsed: dict) -> list[str]:
     from nbatools.commands._leaderboard_eligibility import _claimed_ranges, _residual_tokens
+    from nbatools.commands._parse_helpers import extract_threshold_conditions
 
     ranges = _claimed_ranges(q, parsed, None)
+    # Claim only complete predicates read by the shared threshold reader. An
+    # isolated operator or an unread subject/unit still remains residual.
+    ranges.extend((c["start"], c["end"]) for c in extract_threshold_conditions(q))
     for pattern in _GAME_LIST_GRAMMAR:
         ranges.extend(m.span() for m in re.finditer(pattern, q))
     return _residual_tokens(q, ranges)

@@ -2973,6 +2973,8 @@ def _minimum_threshold_phrase(value: int | float) -> str:
 
 
 def _range_phrase(low: int | float, high: int | float) -> str:
+    if low == high:
+        return f"exactly {compact_number(low)}"
     # "between 20 and 30 points" reads as "20-30", not "20+".
     return f"{compact_number(low)}-{compact_number(high)}"
 
