@@ -1,0 +1,112 @@
+{
+  "classification": "bounded_general_membership_participation_feature; staging_not_production",
+  "pull_request": "https://github.com/Bet-Zero/nbatools/pull/586",
+  "implementation_revision": "2a310bdf5c776e905508c8afd1d8decbd1f65e08",
+  "initial_reviewed_revision": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+  "actual_preflight_revision": "8ec2efdd6ec75bd8abde39fceb1d3f0cabd99047",
+  "initial_tree": "9191aae214c79455e1ed97be00b7aa8f4bacb406",
+  "request": "5db1448783efc40f7801956e67c5afc282a8f2f7",
+  "generation": "availability-lebron-season-v1-20261031",
+  "generation_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "r2_run": "https://github.com/Bet-Zero/nbatools/actions/runs/42177289405",
+  "required_numerical": {
+    "selected": 2,
+    "executed": 2,
+    "passed": 2,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0
+  },
+  "raw_qa": {
+    "cases": 1,
+    "checks_passed": 7,
+    "failed": 0,
+    "case_id": "k08_compact_home_absence_season"
+  },
+  "verified_real_source_scope": {
+    "tatum_observed_team_games": 82,
+    "played": 74,
+    "did_not_play": 8,
+    "unknown": 0,
+    "home_dnp": 5,
+    "wins": 7,
+    "losses": 1,
+    "points_sum": 1030,
+    "points_per_game": 128.75,
+    "held_out_other_team_http_checks": 6
+  },
+  "original_source_calls": 0,
+  "reused_retained_originals": 16,
+  "original_saved_revision": "b835874e7c31dc29c38d62fcda263af404c881fe",
+  "preserved_prior_overlay_paths": 407,
+  "new_composed_overlay_paths": 431,
+  "new_source_qualified_cells": 278,
+  "actual_stage_acceptance": "acquired_data/tatum-2023-stage/acceptance.json inside required-numerical.zip",
+  "qualification": "Runtime qualified original and canonical rows before composition; independent checker separately compared original oracle and output. Finite membership intervals remain controlled-fixture evidence only, without NBA interval population.",
+  "independent_reviewer": "/root/membership_checker; separate Codex session, exact model ID unavailable",
+  "independent_fixture_checks": {
+    "selected": 34,
+    "executed": 34,
+    "passed": 34,
+    "skipped": 0,
+    "input_probes": 7
+  },
+  "delta_checks": {
+    "independent_python": 66,
+    "skipped": 0,
+    "frontend_renderer": 4
+  },
+  "author_checks": {
+    "focused_after_repairs": 211,
+    "unavailable_needs_data_skips": 17,
+    "frontend_focused": 24,
+    "frontend_build": true,
+    "frontend_lint": true,
+    "docs_governance": true
+  },
+  "browser": {
+    "controlled_fixture_states": [
+      "explicit_DNP",
+      "unknown"
+    ],
+    "rebuilt_assets": true,
+    "real_browser": true,
+    "page_errors": 0,
+    "nba_statistical_acceptance": false
+  },
+  "original_preflight_result": "10159passed/1863unavailable-data skips/10failed; original failures retained in preflight-and-repair.json. Exact-head CI must prove repaired complete secret-free set.",
+  "final_head_ci_and_landing": "See final execution receipts in PR586; later documentation-only commit does not relabel prior execution as new-head evidence.",
+  "source_discrepancies_new": 0,
+  "legacy_46_obligations_preserved": true,
+  "outstanding": [
+    "qualified historical interval population",
+    "multi-team natural missed-season totals",
+    "all historical participation coverage",
+    "full Core-1",
+    "current24-hour freshness",
+    "production data publication and live Tatum acceptance"
+  ],
+  "production_data_writes": 0,
+  "active_pointer_changes": 0,
+  "full_historical_coverage": false,
+  "production_publication": false,
+  "archive_files": {
+    "raw-qa-summary.json": "14d254e0cf5761d6a1953235ef53c293d0fda3b8671780c1ab7158034538cdb6",
+    "preflight-and-repair.json": "385abbe73d1ffd9f674bd977b1f71aa0e931d84278cb284e1382af3eebcb977c",
+    "browser-receipt.json": "af75534e1ac70eb2fb9977cad32f0c326e5e2ab5f660711e6b9af876eed642f1",
+    "raw-qa.zip": "d66a08055dc0dbc3fe831f8a22a20783a9b175755d80c09398d2474354a0b3e3",
+    "original-score-receipt.json": "1b9da6d2c8b3a62b8589af1800d67ef4e1d5dd3ae07ebfe0af8972c182db4616",
+    "source-review.json": "c332094abb8f21ab6abbf956805402fda0fe59212abf61b93257b5388da1262e",
+    "required-summary.json": "0c9ba1f1ace2b9d9f7623a539fb52537f30ec455ea2ee5f10d0a582b0b527714",
+    "controlled-dnp.png": "3d1b4a206e452f409840e0f5e97918004046c94cd10f65b076873b7bf24499ff",
+    "review_r2_outputs.py": "b85efce4fb6d0aa85befbcfb026b6429d16486a77abdbd09f8572d2079b85873",
+    "required-numerical.zip": "cd1d1c9022458c3e92cb61bc351df617ee627bca7690e164333aa0692cc6aff2",
+    "original-source-receipt.json": "06925e7d27ab5343ba442753736b0cd6f5873743d3a15f37c3a2a673ef7d244a",
+    "final-independent-review.json": "d1809151d3f91779b7da01a19bbb525afbe33bd2e4c08f5bc073f0a77a0f2c8c",
+    "controlled-unknown.png": "8f15498a1b98910f192f1b4e25d4e2189462430586ebb2eb65e699e61bfdf46a",
+    "source_oracle.py": "8f33999320c4806e3e060207fa56fab6a4d25212b4f73fb309506ad1c4831274"
+  },
+  "independent_final_approval": "final-independent-review.json",
+  "evidence_reuse": "Independent reviewer approved R2 reuse for2a310bdf: qualifier/classifier/data/arithmetic/staging harness unchanged; display fields tested fresh; restored ambiguity guard irrelevant to proven unique Tatum identity."
+}

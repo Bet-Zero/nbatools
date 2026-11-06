@@ -1,0 +1,84 @@
+{
+  "reviewer": "/root/membership_checker",
+  "model_identity": "Separate Codex checker session; exact model ID unavailable; no Claude or cross-model claim",
+  "reviewed_revision": "2a310bdf5c776e905508c8afd1d8decbd1f65e08",
+  "prior_source_approval": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+  "approval": "APPROVED_CODE_AND_BOUNDED_STAGED_OUTPUT_FINAL_CI_PENDING",
+  "blocking_findings": [],
+  "delta_review": {
+    "registry_and_rawqa_metadata": "complete descriptive contracts; no new query interpretation",
+    "display": "player_name and member_team_abbr only; four renderer tests and React best-practices checklist passed",
+    "coverage": "restored actionable error string and prior same-name/multiple-ID guard;31coverage tests pass",
+    "historical_clock": "only one retained107-game regression test clock pinned to recorded2026-11-05T06:59:31.715470Z; staging/default clock byte-identical; baseline14new-due-ID failure reproduced separately, no live freshness acceptance"
+  },
+  "executions": {
+    "python": {
+      "selected": 66,
+      "executed": 66,
+      "passed": 66,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 18.4,
+      "scope": [
+        "tests/test_dated_membership_independent.py",
+        "tests/test_dated_membership_consumers.py",
+        "tests/test_participation_coverage.py",
+        "tests/test_current_season_stage.py::test_current107_stage_preserves_history_and_exposes_missing_period_data"
+      ]
+    },
+    "frontend": {
+      "test_file": "src/test/resultRenderer/membership.test.tsx",
+      "executed": 4,
+      "passed": 4,
+      "seconds": 2.17
+    }
+  },
+  "real_data": {
+    "run_id": 42177289405,
+    "actual_test_revision": "5db1448783efc40f7801956e67c5afc282a8f2f7",
+    "sole_parent": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+    "only_request_diff": ".github/r2-validation-request.json",
+    "generation": "availability-lebron-season-v1-20261031",
+    "required_selected": 2,
+    "required_executed": 2,
+    "required_passed": 2,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfails": 0,
+    "rawqa_cases": 1,
+    "rawqa_checks": 7,
+    "required_zip_sha256": "cd1d1c9022458c3e92cb61bc351df617ee627bca7690e164333aa0692cc6aff2",
+    "rawqa_zip_sha256": "d66a08055dc0dbc3fe831f8a22a20783a9b175755d80c09398d2474354a0b3e3",
+    "independent_output_checks": {
+      "observed_game_states": 82,
+      "new_original_listed_cells": 278,
+      "played": 74,
+      "explicit_dnp": 8,
+      "home_dnp": 5,
+      "boston_wins": 7,
+      "boston_losses": 1,
+      "boston_points": 1030,
+      "boston_ppg": 128.75,
+      "held_out_native_source_http_cases": 6,
+      "all_composed_path_hashes_checked": 431,
+      "prior_paths_preserved": 407,
+      "prior_cells_preserved": 597,
+      "prior_imports_preserved": 17,
+      "all_16originals_reused": true,
+      "unknown_control": "withheld missed total and returned no-result after removing source group"
+    }
+  },
+  "reuse_for_current_delta": {
+    "approved": true,
+    "reason": "Dated-membership resolver, shared participation classifier, source normalizer/qualifier, canonical/staging/composition harness, existing Tatum/LeBron query computations, sources and generation are unchanged. New membership summary display fields are independently fixture/renderer tested. Coverage guard restores prior ambiguity rejection; successful Tatum natural consumers already establish unique identity, and known82states are unchanged. Descriptive registry and test-only historical clock changes do not affect source arithmetic. Real-data executions retain their actual original revision; no exact-new-head R2 execution is claimed.",
+    "new_required_execution": "Final exact-head blocking CI; no additional R2 replay required for this narrowly reviewed delta."
+  },
+  "acceptance_limits": [
+    "Bounded observed-game/staged participation output accepted, not independently complete NBA season/history coverage.",
+    "No real production dated-interval population or natural membership-question grammar claimed.",
+    "No publication, active-pointer change, freshness or all46positive-obligation acceptance.",
+    "Original artifacts retain pending-review fields literally; this separate review supplies independent acceptance without mutating originals."
+  ]
+}

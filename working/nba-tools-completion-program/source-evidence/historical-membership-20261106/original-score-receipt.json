@@ -1,0 +1,27 @@
+{
+  "baseline_revision": "b835874e7c31dc29c38d62fcda263af404c881fe",
+  "source_rows": "retained SummaryV2 LineScore and GameSummary plus explicit player-listed facts",
+  "games": 8,
+  "wins": 7,
+  "losses": 1,
+  "points": 1030,
+  "ppg": 128.75,
+  "home_game_ids": [
+    "0022300432",
+    "0022300984",
+    "0022301134",
+    "0022301173",
+    "0022301186"
+  ],
+  "all_game_ids": [
+    "0022300373",
+    "0022300432",
+    "0022300507",
+    "0022300984",
+    "0022301011",
+    "0022301134",
+    "0022301173",
+    "0022301186"
+  ],
+  "classification": "independent original-source arithmetic, not executed consumer acceptance"
+}

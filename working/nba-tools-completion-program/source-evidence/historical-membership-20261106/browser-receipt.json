@@ -1,0 +1,14 @@
+[
+  {
+    "state": "dnp",
+    "rendered_text": "DATE\tMEMBERSHIP\tVERIFIED NBA TEAM\tPARTICIPATION\n2025-12-10\tVerified member\tMIA\tExplicitly did not play",
+    "page_errors": [],
+    "kind": "controlled local browser rendering; API JSON from actual isolated fixture engine; no NBA truth or deployed claim"
+  },
+  {
+    "state": "unknown",
+    "rendered_text": "DATE\tMEMBERSHIP\tVERIFIED NBA TEAM\tPARTICIPATION\n2025-10-30\tMembership unknown\tUnknown\tUnknown — insufficient participation evidence",
+    "page_errors": [],
+    "kind": "controlled local browser rendering; API JSON from actual isolated fixture engine; no NBA truth or deployed claim"
+  }
+]
