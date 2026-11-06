@@ -1,0 +1,29 @@
+{
+  "revision": "b835874e7c31dc29c38d62fcda263af404c881fe",
+  "original_files": 16,
+  "game_count": 8,
+  "cells": 278,
+  "states": {
+    "played": 173,
+    "did_not_play": 105
+  },
+  "source_hashes": {
+    "boxscoretraditionalv3_0022300373.json": "3759fa94b2635f9f5f5dbeb3d6f7d9dc72e400812b741cbf743afac496e68ae7",
+    "boxscoresummaryv2_0022300373.json": "30ff4b74b545e5955d39318aa60f542bfb9ada46eabf8e95ffc8de798e804fff",
+    "boxscoretraditionalv3_0022300432.json": "238cdfe7d1e691f433ae3d313dc46e8626e4c34af6262c12287a4790098fc57f",
+    "boxscoresummaryv2_0022300432.json": "753f5eb3d995a81d501a1555cfc3606ca40140f445d6040660c0622197287094",
+    "boxscoretraditionalv3_0022300507.json": "2b2f6f3155739e8a5503a4ccbcc1c5c145503cccb9e0f46decebb02b50824309",
+    "boxscoresummaryv2_0022300507.json": "d3bc6a5b405346c57ed25b6b16638723c16cd56eaf078050543d9aa2df2e769e",
+    "boxscoretraditionalv3_0022300984.json": "65043fbaf1de19d4991554e6565b119b05b38613e7ba248de6075bd859d57ca1",
+    "boxscoresummaryv2_0022300984.json": "605f332d64b287f4748277dfe18df5d5c31423d589f447e7ac8530712bcbd48f",
+    "boxscoretraditionalv3_0022301011.json": "12ef4cb5ea46ee35c75c1096c7fa45946e74162ae7182cf132138adc7dc75410",
+    "boxscoresummaryv2_0022301011.json": "ad9f6dbab6988bb6ca1bb6d1dedbac8eee3aace5e8c8d202a2e317239bfcf751",
+    "boxscoretraditionalv3_0022301134.json": "854218dc1ff50386d9a38812738cc69808b2b12de0ef7813cbde3c947f197541",
+    "boxscoresummaryv2_0022301134.json": "96555d579d5655bc7a9fac48d9e7dc69e64368852553b8d815d49c21af1f6738",
+    "boxscoretraditionalv3_0022301173.json": "a92d97e14240edb89a4c5e2ae765c094f9d1415a0e559126ec03b39367d409f7",
+    "boxscoresummaryv2_0022301173.json": "a1601b58dc0933e4d564cd77451805a202f78623233052d75850300b1dd0dcfa",
+    "boxscoretraditionalv3_0022301186.json": "16ccd5ed97a14ef31bc8554fec21e3950292ce378af55764cbd4d3b734ebe12e",
+    "boxscoresummaryv2_0022301186.json": "8264ab3ac6529c4ea094ec01b6a978998f81f13030b04e495268352d35628bf0"
+  },
+  "classification": "independent_original_listed_fact_checks_not_season_tenure_or_canonical_acceptance"
+}

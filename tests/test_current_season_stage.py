@@ -5,6 +5,7 @@ import csv
 import io
 import json
 import zipfile
+from datetime import UTC, datetime
 from fractions import Fraction
 
 import pandas as pd
@@ -158,7 +159,17 @@ def test_projection_has_exact_basis_and_preserves_reported_values():
         project_season_basis(core, reported)
 
 
-def test_current107_stage_preserves_history_and_exposes_missing_period_data(tmp_path):
+def test_current107_stage_preserves_history_and_exposes_missing_period_data(tmp_path, monkeypatch):
+    # This retained107-game population was qualified at the recorded Nov5
+    # cutoff. The production/default clock must continue to find newer due IDs.
+    import tools.stage_current_season as staging
+
+    class HistoricalClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 11, 5, 6, 59, 31, 715470, tzinfo=UTC).astimezone(tz)
+
+    monkeypatch.setattr(staging, "datetime", HistoricalClock)
     report = stage(tmp_path / "qualified")
     assert (report["game_count"], report["player_rows"], report["team_rows"]) == (107, 2413, 214)
     assert report["prior88_core_cells_preserved"]

@@ -29,6 +29,7 @@ MINIMUM_ROUTE_KWARGS: dict[str, dict[str, Any]] = {
     "player_split_summary": {"split": "home_away"},
     "team_split_summary": {"split": "home_away"},
     "team_record": {"team": "LAL"},
+    "player_membership": {"player_id": 203076, "date": "2023-10-01", "season": "2023-24"},
     "team_matchup_record": {"team_a": "LAL", "team_b": "BOS"},
     "playoff_history": {"team": "LAL"},
     "playoff_matchup_history": {"team_a": "LAL", "team_b": "BOS"},

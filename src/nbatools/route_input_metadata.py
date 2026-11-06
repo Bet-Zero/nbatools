@@ -145,6 +145,17 @@ SEASON_LEADER_STAT_VALUES = (
 
 
 ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
+    "player_membership": RouteInputMetadata(
+        route="player_membership",
+        implementation_module="nbatools.commands.player_membership",
+        implementation_function="build_result",
+        description="Resolve qualified dated NBA membership and exact-game participation.",
+        required_kwargs=("player_id", "date", "season"),
+        optional_kwargs=("team_id", "game_id", "season_type"),
+        allowed_values={"season_type": SEASON_TYPE_VALUES},
+        examples=({"player_id": 203076, "date": "2023-10-01", "season": "2023-24"},),
+        notes=("Missing evidence is unknown; membership alone cannot establish DNP or injury.",),
+    ),
     "top_player_games": RouteInputMetadata(
         route="top_player_games",
         implementation_module="nbatools.commands.top_player_games",

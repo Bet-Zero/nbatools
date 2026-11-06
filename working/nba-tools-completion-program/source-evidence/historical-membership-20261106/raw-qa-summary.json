@@ -1,0 +1,70 @@
+{
+  "run_id": "r2_validation",
+  "started_at": "2026-11-06T06:54:42.815069+00:00",
+  "completed_at": "2026-11-06T06:54:48.948426+00:00",
+  "corpus_path": "qa/raw_query_answer_corpus.yaml",
+  "slice_names": [],
+  "case_count": 1,
+  "result_status_counts": {
+    "ok": 1
+  },
+  "category_counts": {
+    "participation": 1
+  },
+  "route_counts": {
+    "game_finder": 1
+  },
+  "manual_review_status_counts": {
+    "unreviewed": 1
+  },
+  "manual_review_tag_counts": {},
+  "answer_text_policy_counts": {
+    "requires_backend_answer_text": 1
+  },
+  "answer_text_status_counts": {
+    "backend_answer_text_present": 1
+  },
+  "suspicious_flag_case_count": 0,
+  "suspicious_flag_case_ids": [],
+  "suspicious_flag_counts": {},
+  "informational_flag_case_count": 0,
+  "informational_flag_case_ids": [],
+  "informational_flag_counts": {},
+  "verified_outlier_case_count": 0,
+  "verified_outlier_case_ids": [],
+  "verified_outlier_counts": {},
+  "suggested_review_tag_counts": {},
+  "expectation_case_counts": {
+    "pass": 1
+  },
+  "expectation_check_counts": {
+    "pass": 7
+  },
+  "failed_case_ids": [],
+  "slowest_cases": [
+    {
+      "id": "k08_compact_home_absence_season",
+      "query": "how many home games did LeBron miss in2025-26",
+      "duration_seconds": 6.133275,
+      "result_status": "ok",
+      "route": "game_finder"
+    }
+  ],
+  "output_file_paths": {
+    "report_jsonl": "outputs/raw_query_answer_qa/r2_validation/report.jsonl",
+    "report_md": "outputs/raw_query_answer_qa/r2_validation/report.md",
+    "summary_json": "outputs/raw_query_answer_qa/r2_validation/summary.json",
+    "product_review_md": "outputs/raw_query_answer_qa/r2_validation/product_review.md",
+    "product_review_json": "outputs/raw_query_answer_qa/r2_validation/product_review.json"
+  },
+  "scope": "custom_selection",
+  "source_commit": "5db1448783efc40f7801956e67c5afc282a8f2f7",
+  "source_tree_clean": true,
+  "data_generation": "availability-lebron-season-v1-20261031",
+  "corpus_sha256": "469a4c4b826ffffeead8da344bc0c78d4d5854d5d9a46b3a9c7ca94b0d615759",
+  "case_ids": [
+    "k08_compact_home_absence_season"
+  ],
+  "selected_cases_sha256": "9e0941bab6c6ada50448d98ba4f8e7aacf07fb13df7ee45e5b57cc855eb96f9a",
+  "output_sha256": "527117b55b044a3fb33205fe93392562f50fdbf95690240e5d0a075b2a2c4dd8"
+}

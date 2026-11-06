@@ -1,0 +1,46 @@
+{
+  "executed_revision": "8ec2efdd6ec75bd8abde39fceb1d3f0cabd99047",
+  "identical_tree_revision": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+  "tree": "9191aae214c79455e1ed97be00b7aa8f4bacb406",
+  "command": "pytest -m \"not slow\" -n4 -q",
+  "passed": 10159,
+  "failed": 10,
+  "skipped_unavailable_data": 1863,
+  "classification": "initial_broad_preflight_not_passed; compatibility_repairs_followed",
+  "failed_cases": [
+    "tests.test_current_season_stage::test_current107_stage_preserves_history_and_exposes_missing_period_data",
+    "tests.test_direct_participation_audit::test_normal_missing_evidence_keeps_exact_unknown_keys_and_no_total",
+    "tests.test_direct_participation_audit::test_comparison_failure_still_retains_raw_report_and_bindings",
+    "tests.test_direct_participation_audit::test_unfamiliar_report_qualification_error_is_persisted_then_fails",
+    "tests.test_direct_participation_audit::test_known_ambiguous_identity_report_remains_diagnostic_without_collection",
+    "tests.test_raw_query_answer_qa::test_shape_hint_route_policy_covers_valid_routes",
+    "tests.test_route_input_metadata::test_route_input_metadata_covers_every_valid_route",
+    "tests.test_route_input_metadata::test_backend_route_registries_cover_the_same_routes",
+    "tests.test_route_input_metadata::test_frontend_backend_route_fixture_matches_valid_routes",
+    "tests.test_structured_first_orchestration.TestBuildResultMap::test_all_routes_have_build_result"
+  ],
+  "baseline_clock_reproduction": {
+    "revision": "d730cb133a6f59aadeaee0318cb468fd818cdf63",
+    "failed": 1,
+    "missing_due_games": 14,
+    "meaning": "Historical107stage compared to new wall clock; not new source disagreement or freshness acceptance"
+  },
+  "repairs": {
+    "route_registrations": true,
+    "legacy_report_errors_and_identity_guard": true,
+    "historical_test_only_clock_pin": true,
+    "production_clock_unchanged": true
+  },
+  "focused_after_repair": {
+    "passed": 211,
+    "skipped_needs_data": 17,
+    "failed": 0
+  },
+  "frontend": {
+    "build": "passed",
+    "lint": "passed",
+    "focused_tests": 24,
+    "failed": 0
+  },
+  "missing_required_premerge": "final exact-head CI; independent delta/output review approved2a310bdf in final-independent-review.json"
+}

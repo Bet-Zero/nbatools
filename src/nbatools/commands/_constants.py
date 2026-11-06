@@ -411,6 +411,7 @@ class QueryIntent:
 ROUTE_TO_INTENT: dict[str, str] = {
     # Summary routes
     "player_game_summary": QueryIntent.SUMMARY,
+    "player_membership": QueryIntent.SUMMARY,
     "game_summary": QueryIntent.SUMMARY,
     "team_record": QueryIntent.SUMMARY,
     "playoff_history": QueryIntent.SUMMARY,

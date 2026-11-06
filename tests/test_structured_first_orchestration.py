@@ -67,6 +67,7 @@ class TestBuildResultMap:
             "season_leaders",
             "season_team_leaders",
             "player_game_summary",
+            "player_membership",
             "game_summary",
             "player_game_finder",
             "game_finder",

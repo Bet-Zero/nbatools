@@ -1,0 +1,63 @@
+{
+  "reviewer": "/root/membership_checker",
+  "model_identity": "Separate Codex checker session; exact model ID not exposed, no Claude or cross-model claim",
+  "reviewed_revision": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+  "reviewed_tree": "9191aae214c79455e1ed97be00b7aa8f4bacb406",
+  "approval": "APPROVED_SOURCE_TREE_REQUIRED_REAL_DATA_ACCEPTANCE_PENDING",
+  "independent_tests": {
+    "executed_revision": "8ec2efdd6ec75bd8abde39fceb1d3f0cabd99047",
+    "reused_for": "fb01080d5e411b0079c98c9bd8dc7847183fe5fd",
+    "reuse_reason": "Only commit author metadata changed; exact complete Git tree identity verified",
+    "selected": 34,
+    "executed": 34,
+    "passed": 34,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "seconds": 5.82,
+    "execution_condition": "network-enabled command sandbox required for local TestClient asyncio wakeups; no external NBA calls",
+    "tests": {
+      "tests/test_dated_membership_independent.py": "72d64e39148ff206a93ce0da260f52305e5eba0c5217b873c13e149d5898b0b8",
+      "tests/test_dated_membership_consumers.py": "b1ad9113d3d49b50b1afd957a810360e51450cffa8df08fe236eae6f16f14f89",
+      "work/membership-review/source_oracle.py": "8f33999320c4806e3e060207fa56fab6a4d25212b4f73fb309506ad1c4831274"
+    }
+  },
+  "independent_input_probes": {
+    "executed_revision": "8ec2efdd6ec75bd8abde39fceb1d3f0cabd99047",
+    "executed": 7,
+    "passed": 7,
+    "scope": "boolean/fractional identities, unsafe/nonconsecutive seasons, unsupported season type"
+  },
+  "source_originals": {
+    "saved_revision": "b835874e7c31dc29c38d62fcda263af404c881fe",
+    "all16bytes_unchanged_on_candidate": true,
+    "sha256_git_blob_sha1_and_size_checked": true,
+    "source_groups": 8,
+    "listed_cells": 278,
+    "played": 173,
+    "explicit_dnp": 105,
+    "scope": "original listed facts only, not tenure intervals or canonical/staged/season acceptance",
+    "receipt": "original-source-receipt.json"
+  },
+  "reviewed_scope": [
+    "finite inclusive intervals and gaps",
+    "source integrity versus separate source qualification",
+    "exact game/date/side and conflicting evidence",
+    "member/played/DNP/nonmember/unknown distinctions",
+    "existing teammate/stat/home-away/opponent/date/season consumers",
+    "new structured route and actual HTTP payloads",
+    "saved Tatum stage first qualifies against original and canonical rows, then composes and preserves accepted overlay; real execution pending"
+  ],
+  "findings": {
+    "blocking": [],
+    "resolved_early": [
+      "structured route now rejects booleans/fractional IDs",
+      "opponent interval ownership now participates in side inference"
+    ]
+  },
+  "remaining": [
+    "Authenticated R2 test must actually qualify Tatum stage and execute canonical82-game and held-out HTTP cases",
+    "No production membership interval population or natural membership-question grammar is claimed",
+    "Full historical coverage, publication, freshness,46prior positive obligations remain separately open"
+  ]
+}

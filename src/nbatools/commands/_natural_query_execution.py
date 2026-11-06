@@ -95,6 +95,7 @@ from nbatools.commands.player_game_summary import (
 from nbatools.commands.player_game_summary import (
     resolve_seasons as resolve_player_summary_seasons,
 )
+from nbatools.commands.player_membership import build_result as player_membership_build_result
 from nbatools.commands.player_occurrence_leaders import (
     build_result as player_occurrence_leaders_build_result,
 )
@@ -249,6 +250,7 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "season_leaders": season_leaders_build_result,
                 "season_team_leaders": season_team_leaders_build_result,
                 "player_game_summary": player_game_summary_build_result,
+                "player_membership": player_membership_build_result,
                 "game_summary": game_summary_build_result,
                 "player_on_off": player_on_off_build_result,
                 "player_stretch_leaderboard": player_stretch_leaderboard_build_result,
