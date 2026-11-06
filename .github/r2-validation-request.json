@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "580cc61099a462918175fdb4881cfcb4fb1608be",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control",
+    "tests/cloud_tatum_2023_participation_stage_real_data.py::test_new_tatum_population_is_qualified_before_joint_composition",
+    "tests/test_compact_absence_scope_real_data.py::test_compact_home_absence_matches_literal_qualified_rows_and_api"
+  ],
+  "raw_qa_cases": [
+    "k08_compact_home_absence_season"
+  ]
+}
