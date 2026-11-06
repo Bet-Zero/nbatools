@@ -5351,25 +5351,29 @@ def invalid_stat_equality(text: str) -> bool:
     text = text.lower()
     if re.search(r"[!<>]=|={2,}", text):
         return True
+    operators = list(
+        re.finditer(rf"(?<!\w){STAT_EQUALITY_OPERATOR}\s*(?:\d+(?:\.\d+)?|\.\d+)", text)
+    )
+    if not operators:
+        return False
     conditions = extract_threshold_conditions(text)
     conditions.extend(team_noun_stat_conditions(text))
-    conditions.extend(dict(start=m.start(), end=m.end()) for m, _ in _opponent_bounds(text))
+    conditions.extend(dict(start=m.span()[0], end=m.span()[1]) for m, _ in _opponent_bounds(text))
     governor = re.compile(
         r"\b(?:scor(?:e|es|ed|ing)|ha(?:ve|s|d)|ma(?:ke|kes|de)|hits?|hit|"
         r"record(?:s|ed)?|post(?:s|ed)?|commit(?:s|ted)?|grab(?:s|bed)?|"
         r"dish(?:es|ed)?|shoot(?:s|ing)?|reach(?:es|ed)?|puts?\s+up|put\s+up)\b"
     )
-    for operator in re.finditer(
-        rf"(?<!\w){STAT_EQUALITY_OPERATOR}\s*(?:\d+(?:\.\d+)?|\.\d+)", text
-    ):
-        ends = [
-            operator.end(),
-            *(
-                c["end"]
-                for c in conditions
-                if c["start"] <= operator.start() and c["end"] >= operator.end()
-            ),
+    for operator in operators:
+        spans = [
+            c for c in conditions if c["start"] <= operator.start() and c["end"] >= operator.end()
         ]
+        if any(
+            re.search(r"\bor\s+(?:more|fewer|less)\b", text[operator.end() : c["end"]])
+            for c in spans
+        ):
+            return True
+        ends = [operator.end(), *(c["end"] for c in spans)]
         if any(re.match(r"\s*(?:\+|or\s+(?:more|fewer|less)\b)", text[end:]) for end in ends):
             return True
         clause = re.split(
