@@ -225,3 +225,12 @@ def test_defensive_governor_preserves_equality_owner(verb, suffix):
     assert row["games"] == len(expected)
     assert row["wins"] == int(expected.wl.eq("W").sum())
     assert row["losses"] == int(expected.wl.eq("L").sum())
+
+
+@pytest.mark.parametrize("verb", ["held", "limited"])
+def test_negative_defensive_governor_is_not_ordinary_equality(verb):
+    answer = execute_natural_query(
+        f"Celtics record when they never {verb} opponents to exactly 102 points in 2025-26"
+    )
+    assert answer.result_status != "ok"
+    assert "primary_count" not in answer.metadata

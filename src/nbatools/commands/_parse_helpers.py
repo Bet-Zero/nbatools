@@ -5382,7 +5382,7 @@ def invalid_stat_equality(text: str) -> bool:
         negative = list(re.finditer(r"\b(?:not|never|didn't|doesn't|don't)\b", clause))
         if negative:
             tail = clause[negative[-1].end() :].strip()
-            if not tail or governor.search(tail):
+            if not tail or governor.search(tail) or re.search(_OPP_STAT_SUBJECT, tail + " "):
                 return True
         if re.search(r"\bno\s*$", clause):
             return True
