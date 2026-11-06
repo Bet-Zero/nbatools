@@ -1,0 +1,26 @@
+{
+  "decision": "approved_scoped_integration_subject_to_required_gates",
+  "reviewed_revision": "580cc61099a462918175fdb4881cfcb4fb1608be",
+  "baseline": "9a01942c61042946d1ffe1d4e1118399230f8117",
+  "reviewer_session": "/root/multi_team_checker",
+  "reviewer_model": "Codex; exact model identifier unavailable",
+  "full_season_nba_positive_accepted": false,
+  "unresolved_required_positive": "DQ-004 native complete tenure originals; ordinary full-season Poeltl answer",
+  "heldout_run": {
+    "passed": 12,
+    "unfinished_positive": 1,
+    "unfinished_phrase": "with 80+ team points",
+    "failure_now_safely_withheld": true
+  },
+  "native_local_harness": "passed; not R2 execution",
+  "file_sha256": {
+    "src/nbatools/commands/_membership_games.py": "455c71e145857abc612c863903e439efff895bc403f3e551dd8724b9aaf3229e",
+    "src/nbatools/commands/game_finder.py": "6e727bccd64cd2b455616f2910229d31da6edc850b7464f4fcc55e5b419a7269",
+    "src/nbatools/commands/natural_query.py": "a8f91076466db407a7c068936feaef8ac5f2ca7b8df1e2083f6b85e0a27db0ca",
+    "src/nbatools/query_service.py": "57094769d4c80ebb23b07fe83395768e182b94878b2897611351e9e58f97daed",
+    "src/nbatools/route_input_metadata.py": "9a4b0d4b40183f012646097998a68206dba949014ee01feebbc0339e701a8ea8",
+    "tests/cloud_multi_team_absence_real_data.py": "d1e3def2d71fe84d93169470020255ba3aac4c3260da7bd5dbe2801cec9cd274",
+    "tests/test_multi_team_absence.py": "6f4043891b8fbdc565f3bffb77928579d957279d4471aa682179628472127cab"
+  },
+  "review_receipt_sha256": "0834c0f106fd64cdd2bd5b3a3f15ec918934a2923c323d9f4fd460ad6bb8ad30"
+}

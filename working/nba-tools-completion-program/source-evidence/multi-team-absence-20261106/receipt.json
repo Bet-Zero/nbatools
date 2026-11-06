@@ -1,0 +1,127 @@
+{
+  "classification": "scoped_application_checkpoint; full_combined_season_positive_unfinished",
+  "pull_request": "https://github.com/Bet-Zero/nbatools/pull/587",
+  "baseline_main": "9a01942c61042946d1ffe1d4e1118399230f8117",
+  "reviewed_initial_runtime": "580cc61099a462918175fdb4881cfcb4fb1608be",
+  "final_runtime": "a93aa4b8eaeb1d9e2c00765d9349d2bc1205d9c6",
+  "r2_run": "https://github.com/Bet-Zero/nbatools/actions/runs/42185414036",
+  "r2_reviewed_source": "580cc61099a462918175fdb4881cfcb4fb1608be",
+  "r2_request": "25b806517c8a086d5cdc9d5c4e58e51f19b9bca3",
+  "generation": "availability-lebron-season-v1-20261031",
+  "generation_manifest_sha256": "3073653a50872a4c25bb573c3b4c0540e6e3204e8a4caef5c548eb2dff1e0cf3",
+  "required_numerical": {
+    "candidate_sha": "25b806517c8a086d5cdc9d5c4e58e51f19b9bca3",
+    "generation": "availability-lebron-season-v1-20261031",
+    "scope": "targeted",
+    "required_selection": [
+      "tests/cloud_multi_team_absence_real_data.py::test_native_exact_game_date_scopes_and_single_club_control",
+      "tests/cloud_tatum_2023_participation_stage_real_data.py::test_new_tatum_population_is_qualified_before_joint_composition",
+      "tests/test_compact_absence_scope_real_data.py::test_compact_home_absence_matches_literal_qualified_rows_and_api"
+    ],
+    "required_test_limit": 100,
+    "selected": 3,
+    "executed": 3,
+    "passed": 3,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0,
+    "xfailed": 0,
+    "pytest_exit": 0,
+    "conclusion": "success",
+    "problems": []
+  },
+  "raw_qa": {
+    "cases": 1,
+    "checks_passed": 7,
+    "checks_failed": 0,
+    "case_id": "k08_compact_home_absence_season"
+  },
+  "native_verified_scope": {
+    "poeltl_spurs_through_2023_02_08": {
+      "candidate_games": 55,
+      "played": 46,
+      "explicit_dnp": 9
+    },
+    "poeltl_raptors_2023_02_10_to_2023_04_09": {
+      "candidate_games": 26,
+      "played": 26,
+      "explicit_dnp": 0
+    },
+    "looney_warriors_2022_23": {
+      "candidate_games": 82,
+      "played": 82,
+      "explicit_dnp": 0
+    },
+    "routes": [
+      "natural",
+      "structured",
+      "HTTP"
+    ],
+    "staging_only": true
+  },
+  "software_fixture_scope": "Independent fictional BOS/DEN/GSW and MIA/LAL transfers; combined/perteam IDs/counts, unknowns, boundaries, source-only DNPclub, filters, API labels. These are not NBA tenure facts.",
+  "full_poeltl_season_positive_accepted": false,
+  "conditional_not_accepted_season_arithmetic": {
+    "eligible": 81,
+    "played": 72,
+    "explicit_dnp": 9,
+    "dependency": "DQ-004 native tenure originals"
+  },
+  "source_capture_failure": {
+    "run": "https://github.com/Bet-Zero/nbatools/actions/runs/42183017232",
+    "status": "FAILED firstNBAarticle403;0nativebodies;other2unattempted",
+    "retries": 0
+  },
+  "source_bodies_reacquired": 0,
+  "new_exceptions": [
+    "DQ-004",
+    "DQ-005"
+  ],
+  "initial_broad_preflight": {
+    "passed": 10177,
+    "skipped_unavailable_data": 1863,
+    "failed": 1,
+    "failure": "New label assertion expected at least100 instead of existing100+ formatter. Repaired assertion and focused delta pass. Initial working-tree preflight before final metadata/discovery delta, not final-head evidence."
+  },
+  "final_own_focused": {
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0
+  },
+  "additional_focused_runs": "198and129passes retained as separate overlapping scope runs, not added as unique tests.",
+  "independent_review": "independent-review.json; final discovery delta review retained separately",
+  "final_exact_head_ci_and_landing": "Final execution receipts inPR587; required before merge. Prior failing label-CI is not acceptance.",
+  "outstanding": [
+    "Full ordinary combined-season Poeltl positive: native official tenure originals",
+    "with80+team points natural shorthand positive; safe withholding only",
+    "Full historical membership/participation population",
+    "All46K08positives/Core-1/production/currentfreshness acceptance"
+  ],
+  "production_data_writes": 0,
+  "active_pointer_changes": 0,
+  "new_credentials": 0,
+  "spending": 0,
+  "schedules_created": 0,
+  "evidence_sha256": {
+    "archive-originals.zip": "6e4b06650519da0b9bfc46269fff5e4f0c231949d8922585e7f4590fbac9d6a1",
+    "collector-review.md": "7d29cdf7fdbe0789ba2c936b5c905185f09232f6ccad5a4cb7e69f3d1ad270e8",
+    "discovery-delta-review.json": "f98fd183d04873ec668133490608a2b95673a88459141ad29b1fa26d93d6d3f3",
+    "discovery-delta-review.md": "d04b9080a3ad538c903c599204df011e097e475484aa7595993e384a0d70cd84",
+    "exploratory-2023-24-originals.zip": "07b0d9d6a4546a0926247064e81d6d45e38b1773d4892aaa7c6003beb714b736",
+    "independent-review.json": "c162d99ac4d6c23e62d925c04001be41e6878cb2d86d54a08b7856808853fed4",
+    "independent-review.md": "0834c0f106fd64cdd2bd5b3a3f15ec918934a2923c323d9f4fd460ad6bb8ad30",
+    "independent-source-arithmetic.json": "2359d79642176acc789ca77221adf7ba1fb520c23922d5d18404c8099ddf1c13",
+    "independent_source_arithmetic.py": "3ace760cefe606e1e6a87747f44698a59d280d5bf199d41d7f73d1f0990c6a24",
+    "local-native-acceptance.json": "87faa3ae97e72c6315c60645202c61f4703b03c41a718bb75932d5b4e8b76aa5",
+    "raw-qa-summary.json": "6c5a2af3a68818fe64eb9f4ea2c03e2668a574ec5bc85c9eec079abb4bc0e4ec",
+    "required-summary.json": "0d60b01f3069a2fca83f006769b281b112563d3c846fe1d75acdb4a31a1749fe",
+    "source-failures-observed.json": "8843687e78583a4f57b205e6fb1b565856199ed0cccf536e86e585e044611273",
+    "source-recommendation.md": "df923a81f3cc704a0f83b6a45f7403f7116970b7c9145d3ecb6e6f51c8b23a15",
+    "test_independent_multi_team.py": "6f26de0c308bad4b21c64cc28b1c167cb61f9108ff90695d09732b37bf9523b9"
+  },
+  "active_source_bodies_acquired": 20,
+  "exploratory_source_bodies_retained_not_qualified": 2,
+  "source_body_acquisition_total_this_session": 22,
+  "independent_final_delta_review": "discovery-delta-review.json",
+  "r2_evidence_reuse": "Independent discovery-delta review confirms identical actual club sets/paths, classifiers, input hashes and harness assertions for all R2 cases. Original run580cc is not relabeled as executed on a93aa."
+}

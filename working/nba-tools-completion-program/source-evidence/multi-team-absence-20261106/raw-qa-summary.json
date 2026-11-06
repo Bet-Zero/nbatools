@@ -1,0 +1,79 @@
+{
+  "run_id": 42185414036,
+  "case_id": "k08_compact_home_absence_season",
+  "query": "how many home games did LeBron miss in2025-26",
+  "ok": true,
+  "checks": {
+    "checks": [
+      {
+        "actual": "ok",
+        "expected": "ok",
+        "name": "expected_status",
+        "status": "pass"
+      },
+      {
+        "actual": "game_finder",
+        "expected": "game_finder",
+        "name": "expected_route",
+        "status": "pass"
+      },
+      {
+        "actual": [
+          "count",
+          "finder"
+        ],
+        "expected": [
+          "count",
+          "finder"
+        ],
+        "name": "expected_sections",
+        "status": "pass"
+      },
+      {
+        "actual": 1,
+        "expected": 1,
+        "name": "expected_row_counts.count",
+        "status": "pass"
+      },
+      {
+        "actual": 11,
+        "expected": 11,
+        "name": "expected_row_counts.finder",
+        "status": "pass"
+      },
+      {
+        "actual": 11,
+        "expected": 11,
+        "name": "result.sections.count.0.count",
+        "status": "pass"
+      },
+      {
+        "actual": "LeBron James",
+        "expected": "LeBron James",
+        "name": "result.metadata.without_player",
+        "status": "pass"
+      }
+    ],
+    "fail_count": 0,
+    "pass_count": 7,
+    "status": "pass"
+  },
+  "answer": "LeBron James missed 11 Lakers home games in the 2025-26 regular season.",
+  "game_ids": [
+    22501155,
+    22500946,
+    22500922,
+    22500914,
+    22500774,
+    22500308,
+    22500179,
+    22500155,
+    22500122,
+    22500019,
+    22500002
+  ],
+  "rendered_answer": {
+    "source": "ResultHero",
+    "text": "LeBron James missed 11 Lakers home games in the 2025-26 regular season."
+  }
+}
