@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "21947db9f53b4ea3c80ce1ddece0b7ca48106051",
+  "generation": "availability-lebron-season-v1-20261031",
+  "tests": [
+    "tests/cloud_poeltl_membership_capture_real_data.py::test_capture_bounded_official_membership_originals"
+  ],
+  "raw_qa_cases": []
+}
